@@ -219,8 +219,6 @@ def GetToolEnv(env=None):
   # environment so that those commands will use the same settings.
   for s in properties.VALUES:
     for p in s:
-      if p.is_feature_flag:
-        continue
       encoding.SetEncodedValue(
           env, p.EnvironmentName(), p.Get(required=False, validate=False))
 

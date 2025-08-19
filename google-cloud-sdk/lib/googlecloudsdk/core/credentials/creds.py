@@ -190,12 +190,29 @@ def HasDefaultUniverseDomain(credentials):
   return True
 
 
-def GetEffectiveTokenUri(cred_json, key='token_uri'):
+def GetDefaultTokenUri():
+  """Get default token URI for credential based on context aware settings."""
+  if properties.VALUES.context_aware.use_client_certificate.GetBool():
+    return properties.VALUES.auth.mtls_token_host.Get(required=True)
+  else:
+    return properties.VALUES.auth.token_host.Get(required=True)
+
+
+def GetEffectiveTokenUriFromCreds(cred_json, key='token_uri'):
+  """Get the effective token URI for the given credential."""
   if properties.VALUES.auth.token_host.IsExplicitlySet():
     return properties.VALUES.auth.token_host.Get()
-  if cred_json.get(key):
+  # If credentials JSON is provided and token_uri is present and not
+  # default/mTLS host, use the token_uri from the credentials JSON.
+  if (
+      cred_json.get(key)
+      and cred_json.get(key) != properties.VALUES.auth.DEFAULT_TOKEN_HOST
+      and cred_json.get(key) != properties.VALUES.auth.mtls_token_host.Get()
+  ):
     return cred_json.get(key)
-  return properties.VALUES.auth.DEFAULT_TOKEN_HOST
+  # Otherwise, the default or mTLS token host is used. The decision is driven by
+  # context_aware or use_client_certificate settings.
+  return GetDefaultTokenUri()
 
 
 def UseSelfSignedJwt(creds):
@@ -1384,7 +1401,7 @@ def FromJson(json_value):
   """Returns Oauth2client credentials from library independent json format."""
   json_key = json.loads(json_value)
   cred_type = CredentialType.FromTypeKey(json_key['type'])
-  json_key['token_uri'] = GetEffectiveTokenUri(json_key)
+  json_key['token_uri'] = GetEffectiveTokenUriFromCreds(json_key)
   if cred_type == CredentialType.SERVICE_ACCOUNT:
     cred = service_account.ServiceAccountCredentials.from_json_keyfile_dict(
         json_key, scopes=config.CLOUDSDK_SCOPES)
@@ -1442,7 +1459,7 @@ def FromJsonGoogleAuth(json_value):
   json_key = json.loads(json_value)
   cred_type = CredentialTypeGoogleAuth.FromTypeKey(json_key['type'])
   if cred_type == CredentialTypeGoogleAuth.SERVICE_ACCOUNT:
-    json_key['token_uri'] = GetEffectiveTokenUri(json_key)
+    json_key['token_uri'] = GetEffectiveTokenUriFromCreds(json_key)
     # Import only when necessary to decrease the startup time. Move it to
     # global once google-auth is ready to replace oauth2client.
     # pylint: disable=g-import-not-at-top
@@ -1461,7 +1478,7 @@ def FromJsonGoogleAuth(json_value):
     EnableSelfSignedJwtIfApplicable(cred)
     return cred
   if cred_type == CredentialTypeGoogleAuth.P12_SERVICE_ACCOUNT:
-    json_key['token_uri'] = GetEffectiveTokenUri(json_key)
+    json_key['token_uri'] = GetEffectiveTokenUriFromCreds(json_key)
     from googlecloudsdk.core.credentials import p12_service_account  # pylint: disable=g-import-not-at-top
     cred = p12_service_account.CreateP12ServiceAccount(
         base64.b64decode(json_key['private_key']),
@@ -1537,7 +1554,7 @@ def FromJsonGoogleAuth(json_value):
     return WrapGoogleAuthExternalAccountRefresh(cred)
 
   if cred_type == CredentialTypeGoogleAuth.USER_ACCOUNT:
-    json_key['token_uri'] = GetEffectiveTokenUri(json_key)
+    json_key['token_uri'] = GetEffectiveTokenUriFromCreds(json_key)
     # Import only when necessary to decrease the startup time. Move it to
     # global once google-auth is ready to replace oauth2client.
     # pylint: disable=g-import-not-at-top

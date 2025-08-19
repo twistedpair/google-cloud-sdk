@@ -51,6 +51,10 @@ def MaybeGetAutoscalingOverride(msgs, asymmetric_autoscaling_option):
       and 'min_processing_units' not in asymmetric_autoscaling_option
       and 'max_processing_units' not in asymmetric_autoscaling_option
       and 'high_priority_cpu_target' not in asymmetric_autoscaling_option
+      and 'total_cpu_target' not in asymmetric_autoscaling_option
+      and 'disable_high_priority_cpu_autoscaling'
+      not in asymmetric_autoscaling_option
+      and 'disable_total_cpu_autoscaling' not in asymmetric_autoscaling_option
   ):
     return None
 
@@ -72,6 +76,18 @@ def MaybeGetAutoscalingOverride(msgs, asymmetric_autoscaling_option):
   if 'high_priority_cpu_target' in asymmetric_autoscaling_option:
     obj.autoscalingTargetHighPriorityCpuUtilizationPercent = (
         asymmetric_autoscaling_option['high_priority_cpu_target']
+    )
+  if 'total_cpu_target' in asymmetric_autoscaling_option:
+    obj.autoscalingTargetTotalCpuUtilizationPercent = (
+        asymmetric_autoscaling_option['total_cpu_target']
+    )
+  if 'disable_high_priority_cpu_autoscaling' in asymmetric_autoscaling_option:
+    obj.disableHighPriorityCpuAutoscaling = (
+        asymmetric_autoscaling_option['disable_high_priority_cpu_autoscaling']
+    )
+  if 'disable_total_cpu_autoscaling' in asymmetric_autoscaling_option:
+    obj.disableTotalCpuAutoscaling = (
+        asymmetric_autoscaling_option['disable_total_cpu_autoscaling']
     )
   return obj
 
@@ -130,6 +146,22 @@ def MergeAutoscalingConfigOverride(msgs, existing_overrides, new_overrides):
         new_overrides.autoscalingTargetHighPriorityCpuUtilizationPercent
     )
 
+  if new_overrides.autoscalingTargetTotalCpuUtilizationPercent is not None:
+    result.autoscalingTargetTotalCpuUtilizationPercent = (
+        new_overrides.autoscalingTargetTotalCpuUtilizationPercent
+    )
+
+  if new_overrides.disableHighPriorityCpuAutoscaling is not None:
+    result.disableHighPriorityCpuAutoscaling = (
+        new_overrides.disableHighPriorityCpuAutoscaling
+    )
+    if result.disableHighPriorityCpuAutoscaling:
+      result.autoscalingTargetHighPriorityCpuUtilizationPercent = None
+
+  if new_overrides.disableTotalCpuAutoscaling is not None:
+    result.disableTotalCpuAutoscaling = new_overrides.disableTotalCpuAutoscaling
+    if result.disableTotalCpuAutoscaling:
+      result.autoscalingTargetTotalCpuUtilizationPercent = None
   return result
 
 
@@ -181,6 +213,7 @@ def Create(
     autoscaling_min_processing_units=None,
     autoscaling_max_processing_units=None,
     autoscaling_high_priority_cpu_target=None,
+    autoscaling_total_cpu_target=None,
     autoscaling_storage_target=None,
     asymmetric_autoscaling_options=None,
     instance_type=None,
@@ -206,6 +239,7 @@ def Create(
     autoscaling_max_processing_units: The maximum number of processing units to
       use.
     autoscaling_high_priority_cpu_target: The high priority CPU target to use.
+    autoscaling_total_cpu_target: The total CPU target to use.
     autoscaling_storage_target: The storage target to use.
     asymmetric_autoscaling_options: A list of ordered dict of key-value pairs
       representing the asymmetric autoscaling options.
@@ -244,6 +278,7 @@ def Create(
       or autoscaling_min_processing_units
       or autoscaling_max_processing_units
       or autoscaling_high_priority_cpu_target
+      or autoscaling_total_cpu_target
       or autoscaling_storage_target
   ):
     instance_obj.autoscalingConfig = msgs.AutoscalingConfig(
@@ -255,6 +290,7 @@ def Create(
         ),
         autoscalingTargets=msgs.AutoscalingTargets(
             highPriorityCpuUtilizationPercent=autoscaling_high_priority_cpu_target,
+            totalCpuUtilizationPercent=autoscaling_total_cpu_target,
             storageUtilizationPercent=autoscaling_storage_target,
         ),
     )
@@ -385,6 +421,7 @@ def Patch(
     autoscaling_min_processing_units=None,
     autoscaling_max_processing_units=None,
     autoscaling_high_priority_cpu_target=None,
+    autoscaling_total_cpu_target=None,
     autoscaling_storage_target=None,
     asymmetric_autoscaling_options=None,
     clear_asymmetric_autoscaling_options=None,
@@ -406,7 +443,8 @@ def Patch(
   if (
       (autoscaling_min_nodes and autoscaling_max_nodes)
       or (autoscaling_min_processing_units and autoscaling_max_processing_units)
-  ) and (autoscaling_high_priority_cpu_target and autoscaling_storage_target):
+  ) and ((autoscaling_high_priority_cpu_target or autoscaling_total_cpu_target)
+         and autoscaling_storage_target):
     fields.append(_FIELD_MASK_AUTOSCALING_CONFIG)
   else:
     if autoscaling_min_nodes:
@@ -420,6 +458,10 @@ def Patch(
     if autoscaling_high_priority_cpu_target:
       fields.append(
           'autoscalingConfig.autoscalingTargets.highPriorityCpuUtilizationPercent'
+      )
+    if autoscaling_total_cpu_target:
+      fields.append(
+          'autoscalingConfig.autoscalingTargets.totalCpuUtilizationPercent'
       )
     if autoscaling_storage_target:
       fields.append(
@@ -439,6 +481,7 @@ def Patch(
       or autoscaling_min_processing_units
       or autoscaling_max_processing_units
       or autoscaling_high_priority_cpu_target
+      or autoscaling_total_cpu_target
       or autoscaling_storage_target
   ):
     instance_obj.autoscalingConfig = msgs.AutoscalingConfig(
@@ -450,6 +493,7 @@ def Patch(
         ),
         autoscalingTargets=msgs.AutoscalingTargets(
             highPriorityCpuUtilizationPercent=autoscaling_high_priority_cpu_target,
+            totalCpuUtilizationPercent=autoscaling_total_cpu_target,
             storageUtilizationPercent=autoscaling_storage_target,
         ),
     )

@@ -963,7 +963,7 @@ def _LoadFromFileOverride(cred_file_override, scopes, use_google_auth):
         cred._token_uri = token_uri_override
         # pylint: enable=protected-access
     elif cred_type == c_creds.CredentialTypeGoogleAuth.USER_ACCOUNT:
-      token_uri_override = auth_util.GetTokenUri()
+      token_uri_override = c_creds.GetDefaultTokenUri()
       # pylint: disable=protected-access
       cred._token_uri = token_uri_override
       # pylint: enable=protected-access
@@ -1757,7 +1757,7 @@ def AcquireFromToken(refresh_token,
   use_google_auth = use_google_auth and (not GoogleAuthDisabledGlobally())
 
   if token_uri is None:
-    token_uri = auth_util.GetTokenUri()
+    token_uri = c_creds.GetDefaultTokenUri()
   if use_google_auth:
     # Import only when necessary to decrease the startup time. Move it to
     # global once google-auth is ready to replace oauth2client.

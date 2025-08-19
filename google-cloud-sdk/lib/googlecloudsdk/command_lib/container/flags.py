@@ -611,7 +611,7 @@ def AddAutoscalingProfilesFlag(parser, hidden=False):
   )
 
 
-def AddEnableDefaultComputeClassFlag(parser, hidden=True):
+def AddEnableDefaultComputeClassFlag(parser, hidden=False):
   """Adds default compute class flag to parser.
 
   Default compute class flag is --enable-default-compute-class.

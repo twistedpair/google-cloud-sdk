@@ -349,10 +349,33 @@ def AddTargetForAttachments(unused_repo_ref, repo_args, request):
   """
   if not repo_args.target:
     return request
-  docker_version = docker_util.ParseDockerVersionStr(repo_args.target)
-  request.filter = 'target="{target}"'.format(
-      target=docker_version.GetVersionName()
-  )
+  target = repo_args.target
+  try:
+    docker_version = docker_util.ParseDockerVersionStr(repo_args.target)
+    target = docker_version.GetVersionName()
+  except ar_exceptions.InvalidInputValueError:
+    pass
+  request.filter = f'target="{target}"'
+  return request
+
+
+def AddTypeForAttachments(unused_repo_ref, repo_args, request):
+  """If the type field is set, add it to the server side request.
+
+  Args:
+    unused_repo_ref: Repo reference input.
+    repo_args: User input arguments.
+    request: ListAttachments request.
+
+  Returns:
+    ListAttachments request.
+  """
+  if not repo_args.attachment_type:
+    return request
+  if request.filter:
+    request.filter += f' AND type="{repo_args.attachment_type}"'
+  else:
+    request.filter = f'type="{repo_args.attachment_type}"'
   return request
 
 

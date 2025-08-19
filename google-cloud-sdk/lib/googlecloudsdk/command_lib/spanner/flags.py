@@ -367,14 +367,28 @@ def AutoscalingMinProcessingUnits(required=False):
   )
 
 
-def AutoscalingHighPriorityCpuTarget(required=False):
+def AutoscalingHighPriorityCpuTarget(required=False, hidden=False):
   return base.Argument(
       '--autoscaling-high-priority-cpu-target',
       required=required,
+      hidden=hidden,
       type=int,
       help=(
           'Specifies the target percentage of high-priority CPU the autoscaled'
           ' instance can utilize.'
+      ),
+  )
+
+
+def AutoscalingTotalCpuTarget(required=False, hidden=True):
+  return base.Argument(
+      '--autoscaling-total-cpu-target',
+      required=required,
+      hidden=hidden,
+      type=int,
+      help=(
+          'Specifies the target percentage of total CPU the autoscaled instance'
+          ' can utilize.'
       ),
   )
 
@@ -391,21 +405,63 @@ def AutoscalingStorageTarget(required=False):
   )
 
 
-def AsymmetricAutoscalingOptionFlag():
-  help_text = (
-      'Specify the asymmetric autoscaling option for the instance. '
+def DisableHighPriorityCpuAutoscaling(required=False, hidden=True):
+  return base.Argument(
+      '--disable-high-priority-cpu-autoscaling',
+      required=required,
+      hidden=hidden,
+      type=bool,
+      help=(
+          'Set the flag to disable high priority CPU autoscaling on the '
+          'replica.'
+      ),
   )
+
+
+def DisableTotalCpuAutoscaling(required=False, hidden=True):
+  return base.Argument(
+      '--disable-total-cpu-autoscaling',
+      required=required,
+      hidden=hidden,
+      type=bool,
+      help='Set the flag to disable total CPU autoscaling on the replica.',
+  )
+
+
+def AsymmetricAutoscalingOptionFlag(
+    include_total_cpu_target=False, include_disable_autoscaling_args=False
+):
+  """Adds the --asymmetric-autoscaling-option flag.
+
+  Args:
+    include_total_cpu_target: bool. If True, include 'total_cpu_target' in the
+      ArgDict spec.
+    include_disable_autoscaling_args: bool. If True, include
+      'disable_high_priority_cpu_autoscaling' and
+      'disable_total_cpu_autoscaling' in the ArgDict spec.
+
+  Returns:
+    A base.Argument for the --asymmetric-autoscaling-option flag.
+  """
+  help_text = 'Specify the asymmetric autoscaling option for the instance. '
+  spec = {
+            'location': str,
+            'min_nodes': int,
+            'max_nodes': int,
+            'min_processing_units': int,
+            'max_processing_units': int,
+            'high_priority_cpu_target': int,
+  }
+  if include_total_cpu_target:
+    spec['total_cpu_target'] = int
+  if include_disable_autoscaling_args:
+    spec['disable_high_priority_cpu_autoscaling'] = bool
+    spec['disable_total_cpu_autoscaling'] = bool
+
   return base.Argument(
       '--asymmetric-autoscaling-option',
       type=arg_parsers.ArgDict(
-          spec={
-              'location': str,
-              'min_nodes': int,
-              'max_nodes': int,
-              'min_processing_units': int,
-              'max_processing_units': int,
-              'high_priority_cpu_target': int,
-          },
+          spec=spec,
           required_keys=['location'],
       ),
       required=False,
@@ -515,6 +571,9 @@ def AddCapacityArgsForInstance(
     parser,
     add_asymmetric_option_flag=False,
     asymmetric_options_group=False,
+    autoscaling_cpu_target_group=False,
+    add_asymmetric_total_cpu_target_flag=False,
+    add_asymmetric_disable_autoscaling_flags=False,
 ):
   """Parse the instance capacity arguments, including manual and autoscaling.
 
@@ -526,6 +585,12 @@ def AddCapacityArgsForInstance(
       option flag.
     asymmetric_options_group: bool. If True, add the asymmetric autoscaling
       options group.
+    autoscaling_cpu_target_group: bool. If True, add the autoscaling cpu target
+      group.
+    add_asymmetric_total_cpu_target_flag: bool. If True, add the asymmetric
+      total cpu target flag.
+    add_asymmetric_disable_autoscaling_flags: bool. If True, add the asymmetric
+      disable autoscaling flags.
   """
   capacity_parser = parser.add_argument_group(mutex=True, required=False)
 
@@ -537,12 +602,29 @@ def AddCapacityArgsForInstance(
   autoscaling_config_group_parser = capacity_parser.add_argument_group(
       help='Autoscaling'
   )
-  AutoscalingHighPriorityCpuTarget(
+  if autoscaling_cpu_target_group:
+    cpu_target_options_group_parser = (
+        autoscaling_config_group_parser.add_argument_group(
+            required=require_all_autoscaling_args,
+            help=(
+                'Specify both or only one of the CPU targets:'
+            ),
+        ))
+    AutoscalingHighPriorityCpuTarget(
+        required=False
+    ).AddToParser(cpu_target_options_group_parser)
+    AutoscalingTotalCpuTarget(
+        required=False, hidden=True
+    ).AddToParser(cpu_target_options_group_parser)
+  else:
+    AutoscalingHighPriorityCpuTarget(
+        required=require_all_autoscaling_args
+    ).AddToParser(autoscaling_config_group_parser)
+
+  AutoscalingStorageTarget(
       required=require_all_autoscaling_args
-  ).AddToParser(autoscaling_config_group_parser)
-  AutoscalingStorageTarget(required=require_all_autoscaling_args).AddToParser(
-      autoscaling_config_group_parser
-  )
+    ).AddToParser(autoscaling_config_group_parser)
+
   autoscaling_limits_group_parser = autoscaling_config_group_parser.add_argument_group(
       mutex=True,
       required=require_all_autoscaling_args,
@@ -582,23 +664,39 @@ def AddCapacityArgsForInstance(
               mutex=True
           )
       )
-      AsymmetricAutoscalingOptionFlag().AddToParser(
-          asymmetric_options_group_parser
-      )
+      AsymmetricAutoscalingOptionFlag(
+          add_asymmetric_total_cpu_target_flag,
+          add_asymmetric_disable_autoscaling_flags
+      ).AddToParser(asymmetric_options_group_parser)
       ClearAsymmetricAutoscalingOptionsFlag().AddToParser(
           asymmetric_options_group_parser
       )
     else:
-      AsymmetricAutoscalingOptionFlag().AddToParser(
-          autoscaling_config_group_parser
-      )
+      AsymmetricAutoscalingOptionFlag(
+          include_total_cpu_target=add_asymmetric_total_cpu_target_flag,
+          include_disable_autoscaling_args=add_asymmetric_disable_autoscaling_flags,
+      ).AddToParser(parser=autoscaling_config_group_parser)
 
 
-def AddCapacityArgsForInstancePartition(parser):
+def AddCapacityArgsForInstancePartition(
+    parser,
+    add_autoscaling_args=True,
+    autoscaling_args_hidden=False,
+    require_all_autoscaling_args=True,
+):
   """Parse the instance partition capacity arguments.
 
   Args:
     parser: the argparse parser for the command.
+    add_autoscaling_args: bool. If True, add the autoscaling arguments. This is
+      required because these arguments are only available in the ALPHA track.
+      This will be removed once the arguments are promoted to BETA and GA.
+    autoscaling_args_hidden: bool. If True, mark the autoscaling arguments as
+      hidden. This will be removed once the arguments are promoted to BETA and
+      GA.
+    require_all_autoscaling_args: bool. If True, a complete autoscaling config
+      is required. This is required during instance partition creation, but not
+      during instance partition update.
   """
   capacity_parser = parser.add_argument_group(mutex=True, required=False)
 
@@ -609,6 +707,64 @@ def AddCapacityArgsForInstancePartition(parser):
   ProcessingUnits(
       text='Number of processing units for the instance partition.'
   ).AddToParser(capacity_parser)
+
+  # TODO(b/434234543): Remove this check once the autoscaling arguments are
+  # promoted to BETA and GA.
+  if not add_autoscaling_args:
+    return
+
+  # Autoscaling.
+  autoscaling_config_group_parser = capacity_parser.add_argument_group(
+      help='Autoscaling',
+      hidden=autoscaling_args_hidden,
+  )
+  cpu_target_options_group_parser = (
+      autoscaling_config_group_parser.add_argument_group(
+          required=require_all_autoscaling_args,
+          help='Target for high priority CPU utilization.',
+      )
+  )
+  AutoscalingHighPriorityCpuTarget(
+      required=False,
+      hidden=autoscaling_args_hidden,
+  ).AddToParser(cpu_target_options_group_parser)
+  AutoscalingTotalCpuTarget(
+      required=False,
+      hidden=autoscaling_args_hidden,
+  ).AddToParser(cpu_target_options_group_parser)
+  AutoscalingStorageTarget(required=require_all_autoscaling_args).AddToParser(
+      autoscaling_config_group_parser
+  )
+  autoscaling_limits_group_parser = autoscaling_config_group_parser.add_argument_group(
+      mutex=True,
+      required=require_all_autoscaling_args,
+      help=(
+          'Autoscaling limits can be defined in either nodes or processing'
+          ' units.'
+      ),
+  )
+  autoscaling_node_limits_group_parser = (
+      autoscaling_limits_group_parser.add_argument_group(
+          help='Autoscaling limits in nodes:'
+      )
+  )
+  AutoscalingMinNodes(required=require_all_autoscaling_args).AddToParser(
+      autoscaling_node_limits_group_parser
+  )
+  AutoscalingMaxNodes(required=require_all_autoscaling_args).AddToParser(
+      autoscaling_node_limits_group_parser
+  )
+  autoscaling_pu_limits_group_parser = (
+      autoscaling_limits_group_parser.add_argument_group(
+          help='Autoscaling limits in processing units:'
+      )
+  )
+  AutoscalingMinProcessingUnits(
+      required=require_all_autoscaling_args
+  ).AddToParser(autoscaling_pu_limits_group_parser)
+  AutoscalingMaxProcessingUnits(
+      required=require_all_autoscaling_args
+  ).AddToParser(autoscaling_pu_limits_group_parser)
 
 
 def TargetConfig(required=True):
@@ -1109,7 +1265,7 @@ def SourceUri(req, text='URI of the file with data to import'):
 
 
 def SourceFormat(req, text='Format of the file with data to import.'
-                 'Supported formats: csv or myssqldump or pgdump'):
+                 'Supported formats: csv or mysqldump or pgdump'):
   return base.Argument(
       '--source-format', required=req, help=text)
 

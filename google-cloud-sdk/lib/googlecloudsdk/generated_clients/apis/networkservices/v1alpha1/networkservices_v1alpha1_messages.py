@@ -202,14 +202,9 @@ class AuthzExtension(_messages.Message):
         The backend service for the extension must use HTTP2 or H2C as the
         protocol. All `supported_events` for a client request are sent as part
         of the same gRPC stream.
-      EXT_AUTHZ_GRPC: The extension service uses Envoy's `ext_authz` gRPC API.
-        The backend service for the extension must use HTTP2, or H2C as the
-        protocol. `EXT_AUTHZ_GRPC` is only supported for `AuthzExtension`
-        resources.
     """
     WIRE_FORMAT_UNSPECIFIED = 0
     EXT_PROC_GRPC = 1
-    EXT_AUTHZ_GRPC = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1484,7 +1479,7 @@ class ExtensionChainExtension(_messages.Message):
       the HTTP request logs. The name must conform with RFC-1034, is
       restricted to lower-cased letters, numbers and hyphens, and can have a
       maximum length of 63 characters. Additionally, the first character must
-      be a letter and the last a letter or a number.
+      be a letter and the last a letter or a number. This field is required.
     requestBodySendMode: Optional. Configures the send mode for request body
       processing. The field can only be set if `supported_events` includes
       `REQUEST_BODY`. If `supported_events` includes `REQUEST_BODY`, but

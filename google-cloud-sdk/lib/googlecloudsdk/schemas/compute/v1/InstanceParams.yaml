@@ -25,6 +25,11 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
+  requestValidForDuration:
+    description: |-
+      Relative deadline for waiting for capacity. Relevant only for
+      Instances.Insert.
+    $ref: Duration.yaml
   resourceManagerTags:
     description: |-
       Resource manager tags to be bound to the instance. Tag keys and values

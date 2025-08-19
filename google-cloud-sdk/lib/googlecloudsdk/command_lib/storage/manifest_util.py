@@ -26,6 +26,54 @@ import os
 from googlecloudsdk.command_lib.storage import thread_messages
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import retry
+
+
+def _should_retry_if_permission_error(
+    exc_type, exc_value, exc_traceback, state
+):
+  """Check if the exception is a PermissionError."""
+  del exc_value, exc_traceback, state
+  return exc_type == PermissionError
+
+
+@retry.RetryOnException(
+    max_retrials=5,
+    sleep_ms=600,
+    should_retry_if=_should_retry_if_permission_error,
+)
+def get_file_write_handle(file_path, append=False, newline=None):
+  """Returns the file handle for the given file path.
+
+  We use a retry approach here to avoid failing early if
+  another process, like an antivirus, has acquired the file.
+  See https://github.com/python/cpython/issues/136965 for more details.
+
+  Args:
+    file_path (str): The path to the file to open.
+    append (bool): Whether to open the file in append mode.
+    newline (str|None): The line ending style to use, or None to use plaform
+      default.
+  """
+  return files.FileWriter(file_path, append=append, newline=newline)
+
+
+@retry.RetryOnException(
+    max_retrials=5,
+    sleep_ms=600,
+    should_retry_if=_should_retry_if_permission_error,
+)
+def get_file_read_handle(file_path):
+  """Returns the file handle for the given file path.
+
+  We use a retry approach here to avoid failing early if
+  another process, like an antivirus, has acquired the file.
+  See https://github.com/python/cpython/issues/136965 for more details.
+
+  Args:
+    file_path (str): The path to the file to open.
+  """
+  return files.FileReader(file_path)
 
 
 class ResultStatus(enum.Enum):
@@ -40,24 +88,34 @@ class ManifestManager:
   def __init__(self, manifest_path):
     """Creates manifest file with correct headers."""
     # UploadId is never populated and kept around for compatibility with gsutil.
-    self._manifest_column_headers = [
-        'Source',
-        'Destination',
-        'Start',
-        'End',
-        'Md5',
-    ] + (['UploadId']
-         if properties.VALUES.storage.run_by_gsutil_shim.GetBool() else []) + [
-             'Source Size',
-             'Bytes Transferred',
-             'Result',
-             'Description',
-         ]
+    self._manifest_column_headers = (
+        [
+            'Source',
+            'Destination',
+            'Start',
+            'End',
+            'Md5',
+        ]
+        + (
+            ['UploadId']
+            if properties.VALUES.storage.run_by_gsutil_shim.GetBool()
+            else []
+        )
+        + [
+            'Source Size',
+            'Bytes Transferred',
+            'Result',
+            'Description',
+        ]
+    )
 
     self._manifest_path = manifest_path
     if os.path.exists(manifest_path) and os.path.getsize(manifest_path) > 0:
       return
-    with files.FileWriter(manifest_path, newline='\n') as file_writer:
+
+    with get_file_write_handle(
+        manifest_path, newline='\n'
+    ) as file_writer:
       csv.DictWriter(file_writer, self._manifest_column_headers).writeheader()
 
   def write_row(self, manifest_message, file_progress=None):
@@ -92,7 +150,7 @@ class ManifestManager:
     }
     if properties.VALUES.storage.run_by_gsutil_shim.GetBool():
       row_dictionary['UploadId'] = None
-    with files.FileWriter(
+    with get_file_write_handle(
         self._manifest_path, append=True, newline='\n') as file_writer:
       csv.DictWriter(file_writer,
                      self._manifest_column_headers).writerow(row_dictionary)
@@ -103,7 +161,7 @@ def parse_for_completed_sources(manifest_path):
   if not (manifest_path and os.path.exists(manifest_path)):
     return set()
   res = set()
-  with files.FileReader(manifest_path) as file_reader:
+  with get_file_read_handle(manifest_path) as file_reader:
     csv_reader = csv.DictReader(file_reader)
     for row in csv_reader:
       if row['Result'] in (ResultStatus.OK.value, ResultStatus.SKIP.value):

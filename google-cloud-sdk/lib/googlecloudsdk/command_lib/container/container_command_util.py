@@ -223,7 +223,7 @@ def ClusterUpgradeMessage(name,
     )
 
   return (
-      '{} This operation is longs-running and will block other operations on'
+      '{} This operation is long-running and will block other operations on'
       ' the cluster (except other node pool upgrades) until it has run to'
       ' completion.'.format(upgrade_message)
   )

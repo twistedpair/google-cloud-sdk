@@ -31,7 +31,6 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 import six
@@ -50,7 +49,8 @@ CONTEXT_AWARE_ACCESS_HELP_MSG = (
     ' remote machine via SSH and your organization requires gcloud from a'
     ' company managed device, please first CRD (Chrome Remote Desktop) or RDP'
     ' (Remote Desktop Protocol) into your remote machine and log into Chrome'
-    ' using your credentials to register your remote machine.'
+    ' using your credentials to register your remote machine. After that, you'
+    ' may need to wait for a few minutes before retrying.'
 )
 CONTEXT_AWARE_ACCESS_HELP_MSG_GOOGLER = (
     'Access was blocked by Context Aware Access. Possible solutions:\n\n 1. If'
@@ -58,12 +58,24 @@ CONTEXT_AWARE_ACCESS_HELP_MSG_GOOGLER = (
     ' your organization requires gcloud from a company managed device, please'
     ' first CRD (Chrome Remote Desktop) or RDP (Remote Desktop Protocol) into'
     ' your remote machine and log into Chrome using your credentials to'
-    ' register your remote machine.\n\n 2. Please do not use gcloud in Cloud'
-    ' Shell as it is not a Google managed device. Choose corp machines instead,'
-    ' for example, gMac, gLinux, gWindows, or Cloudtop.\n\n If you are not able'
-    ' to do any of the above, please apply for policy exemption via'
+    ' register your remote machine. After that, you may need to wait for a few'
+    ' minutes before retrying. \n\n 2. Please do not use gcloud in Cloud Shell'
+    ' as it is not a Google managed device. Choose corp machines instead, for'
+    ' example, gMac, gLinux, gWindows, or Cloudtop.\n\n If you are not able to'
+    ' do any of the above, please apply for policy exemption via'
     ' go/gcloud-cba-exemption. If you have any questions, please reach out to'
     ' go/gcloud-cba-investigation.'
+)
+# The suggestion is to set CLOUDSDK_CONTEXT_AWARE_USE_CLIENT_CERTIFICATE to
+# true because properties.VALUES.context_aware.use_client_certificate.GetBool()
+# would be overridden by the environment variable, and does not solve the issue.
+CONTEXT_AWARE_ACCESS_MTLS_HELP_MSG_GOOGLER = (
+    'Access was blocked by Context Aware Access. You can try to fix this by'
+    ' updating the context_aware/use_client_certificate flag to true. To do'
+    ' that, run `gcloud config set context_aware/use_client_certificate true`'
+    ' and try running your command again. If your device has the env variable'
+    ' CLOUDSDK_CONTEXT_AWARE_USE_CLIENT_CERTIFICATE configured, ensure it is'
+    ' set to true as that overrides the gcloud properties flag.'
 )
 
 
@@ -94,13 +106,16 @@ class ContextAwareAccessError:
 
   @staticmethod
   def Get():
-    if (
-        encoding.GetEncodedValue(
-            os.environ, 'CLOUDSDK_INTERNAL_USER'
-        )
-        == 'true'
-    ):
-      return CONTEXT_AWARE_ACCESS_HELP_MSG_GOOGLER
+    """Get ContextAwareAccessError based on the users organization.
+
+    Returns:
+      str: Context aware access help message.
+    """
+    if properties.IsInternalUserCheck():
+      if not properties.VALUES.context_aware.use_client_certificate.GetBool():
+        return CONTEXT_AWARE_ACCESS_MTLS_HELP_MSG_GOOGLER
+      else:
+        return CONTEXT_AWARE_ACCESS_HELP_MSG_GOOGLER
     return CONTEXT_AWARE_ACCESS_HELP_MSG
 
 

@@ -2273,14 +2273,21 @@ class PresetChange(TemplateConfigChanger):
   def Adjust(self, resource):
     # TODO(b/412784660): Add support for multiple presets and merge existing
     # presets.
+    presets = []
     if service.PRESETS_ANNOTATION in resource.annotations:
       presets = json.loads(resource.annotations[service.PRESETS_ANNOTATION])
+
+    if presets and presets[0]['type'] != self.type:
+      presets.append({
+          'type': self.type,
+          'config': self.config,
+          'flatten': self.flatten,
+      })
     else:
-      presets = []
-    presets.append({
-        'type': self.type,
-        'config': self.config,
-        'flatten': self.flatten,
-    })
+      presets = [{
+          'type': self.type,
+          'config': self.config,
+          'flatten': self.flatten,
+      }]
     resource.annotations[service.PRESETS_ANNOTATION] = json.dumps(presets)
     return resource

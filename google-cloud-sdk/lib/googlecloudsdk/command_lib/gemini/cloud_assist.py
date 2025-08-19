@@ -291,7 +291,7 @@ def ReformatInvestigation(investigation):
   inputs, observations, hypotheses = ExtractObservations(investigation)
   return {
       "name": investigation["name"],
-      "title": investigation["title"],
+      "title": investigation.get("title", "No Title"),
       "executionState": investigation["executionState"],
       "inputs": inputs,
       "observations": observations,

@@ -3858,8 +3858,9 @@ class NetworkconnectivityProjectsLocationsListRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).

@@ -47,11 +47,35 @@ class BuildConfig:
     )
 
 
+class SecretConfig:
+  """Represents the secret configuration for a service."""
+
+  def __init__(
+      self, secret_name: Optional[str] = None, file: Optional[str] = None
+  ):
+    self.secret_name = secret_name
+    self.file = file
+    # secret_version is only set after the secret is created.
+    self.secret_version: Optional[str] = None
+
+  @classmethod
+  def from_dict(cls, data: Dict[str, Any]) -> 'SecretConfig':
+    return cls(
+        secret_name=data.get('secret_name'),
+        file=data.get('file'),
+    )
+
+
 class ResourcesConfig:
   """Represents the resources config sent form runcompose go binary."""
 
-  def __init__(self, source_builds: Optional[Dict[str, BuildConfig]] = None):
+  def __init__(
+      self,
+      source_builds: Optional[Dict[str, BuildConfig]] = None,
+      secrets: Optional[Dict[str, SecretConfig]] = None,
+  ):
     self.source_builds = source_builds if source_builds is not None else {}
+    self.secrets = secrets if secrets is not None else {}
 
   @classmethod
   def from_json(cls, json_data: str) -> 'ResourcesConfig':
@@ -66,4 +90,8 @@ class ResourcesConfig:
         key: BuildConfig.from_dict(value)
         for key, value in data.get('source_builds', {}).items()
     }
-    return cls(source_builds=source_builds)
+    secrets = {
+        key: SecretConfig.from_dict(value)
+        for key, value in data.get('secrets', {}).items()
+    }
+    return cls(source_builds=source_builds, secrets=secrets)

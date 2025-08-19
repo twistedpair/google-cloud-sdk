@@ -4138,3 +4138,22 @@ def AddSkipGuestOsShutdownArgs(parser):
       is immediately stopped without giving time to the guest OS to cleanly
       shut down.
       """)
+
+
+def AddRequestValidForDurationArgs(parser):
+  parser.add_argument(
+      '--request-valid-for-duration',
+      type=arg_parsers.Duration(),
+      help="""
+      When you create an instance by using the FLEX_START provisioning model,
+      you can specify the duration to wait for available resources. If the
+      instance creation request is still pending after this duration, then the
+      request fails. You specify a duration by using numbers followed
+      by `h`, `m`, and `s` for hours, minutes, and seconds, respectively. For
+      example, specify `30m` for a duration of 30 minutes, or `1h2m3s` for
+      1 hour, 2 minutes, and 3 seconds. Longer durations give you higher chances
+      that your instance creation request succeeds when resources are in high
+      demand. If you don't specify a duration, then the default duration is 90
+      seconds.
+      """,
+  )

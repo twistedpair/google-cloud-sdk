@@ -131,15 +131,15 @@ def ValidateSharedResourceArgs(
     )
   if min_replica_count is not None:
     raise exceptions.InvalidArgumentException(
-        '--max-replica-count',
-        """Cannot
-    use max replica count and shared resources in the same command.""",
-    )
-  if max_replica_count is not None:
-    raise exceptions.InvalidArgumentException(
         '--min-replica-count',
         """Cannot
     use min replica count and shared resources in the same command.""",
+    )
+  if max_replica_count is not None:
+    raise exceptions.InvalidArgumentException(
+        '--max-replica-count',
+        """Cannot
+    use max replica count and shared resources in the same command.""",
     )
   if autoscaling_metric_specs is not None:
     raise exceptions.InvalidArgumentException(

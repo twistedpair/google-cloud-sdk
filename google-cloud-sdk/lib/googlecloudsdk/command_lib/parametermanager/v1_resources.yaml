@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2024 Google LLC. All Rights Reserved.
+# Copyright 2025 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -41,6 +41,22 @@ projects_locations_parameters:
     parameter_name: parametersId
     attribute_name: parameter
     help: The parameter id of the {resource} resource.
+  disable_auto_completers: true
+projects_locations_key_rings_crypto_keys:
+  name: cryptoKey
+  plural_name: cryptoKeys
+  collection: parametermanager.projects.locations.keyRings.cryptoKeys
+  attributes:
+  - *project
+  - *location
+  - &keyRing
+    parameter_name: keyRingsId
+    attribute_name: key_ring
+    help: The keyRing id of the {resource} resource.
+  - &cryptoKey
+    parameter_name: cryptoKeysId
+    attribute_name: crypto_key
+    help: The cryptoKey id of the {resource} resource.
   disable_auto_completers: true
 projects_locations_parameters_versions:
   name: version

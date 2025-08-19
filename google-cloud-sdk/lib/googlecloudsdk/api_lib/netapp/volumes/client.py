@@ -148,6 +148,7 @@ class VolumesClient(object):
       throughput_mibps=None,
       cache_parameters=None,
       labels=None,
+      block_devices=None,
   ):
     """Parses the command line arguments for Create Volume into a config."""
     return self._adapter.ParseVolumeConfig(
@@ -176,6 +177,7 @@ class VolumesClient(object):
         throughput_mibps=throughput_mibps,
         cache_parameters=cache_parameters,
         labels=labels,
+        block_devices=block_devices,
     )
 
   def GetVolume(self, volume_ref):
@@ -271,6 +273,7 @@ class VolumesClient(object):
       tiering_policy=None,
       cache_parameters=None,
       throughput_mibps=None,
+      block_devices=None,
   ):
     """Parses updates into a volume config."""
     return self._adapter.ParseUpdatedVolumeConfig(
@@ -298,6 +301,7 @@ class VolumesClient(object):
         tiering_policy=tiering_policy,
         cache_parameters=cache_parameters,
         throughput_mibps=throughput_mibps,
+        block_devices=block_devices,
     )
 
   def UpdateVolume(self, volume_ref, volume_config, update_mask, async_):
@@ -431,6 +435,24 @@ class VolumesAdapter(object):
       export_policy_config.rules.append(simple_export_policy_rule)
     volume.exportPolicy = export_policy_config
 
+  def ParseBlockDevices(self, volume, block_devices):
+    """Parses Block Devices for Volume into a config."""
+
+    volume.blockDevices = []  # clear volume block devices
+    if block_devices is None:
+      return
+    for block_device_args in block_devices:
+      block_device_message = self.messages.BlockDevice()
+      if 'name' in block_device_args:
+        block_device_message.name = block_device_args['name']
+      for host_group in block_device_args.get('host-groups', []):
+        block_device_message.hostGroups.append(host_group)
+      if 'os-type' in block_device_args:
+        block_device_message.osType = block_device_args['os-type']
+      if 'size-gib' in block_device_args:
+        block_device_message.sizeGib = block_device_args['size-gib']
+      volume.blockDevices.append(block_device_message)
+
   def ParseProtocols(self, volume, protocols):
     """Parses Protocols from a list of Protocol Enums into the given volume.
 
@@ -524,6 +546,7 @@ class VolumesAdapter(object):
       throughput_mibps=None,
       cache_parameters=None,
       labels=None,
+      block_devices=None,
   ):
     """Parses the command line arguments for Create Volume into a config.
 
@@ -554,6 +577,7 @@ class VolumesAdapter(object):
       throughput_mibps: throughput of the Volume (in MiB/s).
       cache_parameters: the cache parameters for the volume.
       labels: the parsed labels value.
+      block_devices: the block devices for the volume.
 
     Returns:
       the configuration that will be used as the request body for creating a
@@ -602,6 +626,8 @@ class VolumesAdapter(object):
     ):
       if throughput_mibps is not None:
         volume.throughputMibps = throughput_mibps
+      if block_devices is not None:
+        self.ParseBlockDevices(volume, block_devices)
     if cache_parameters is not None:
       self.ParseCacheParameters(volume, cache_parameters)
     return volume
@@ -633,6 +659,7 @@ class VolumesAdapter(object):
       tiering_policy=None,
       cache_parameters=None,
       throughput_mibps=None,
+      block_devices=None,
   ):
     """Parse update information into an updated Volume message."""
     if description is not None:
@@ -681,6 +708,11 @@ class VolumesAdapter(object):
       self.ParseCacheParameters(volume_config, cache_parameters)
     if throughput_mibps is not None:
       volume_config.throughputMibps = throughput_mibps
+    if block_devices is not None and self.release_track in [
+        base.ReleaseTrack.ALPHA,
+        base.ReleaseTrack.BETA,
+    ]:
+      self.ParseBlockDevices(volume_config, block_devices)
     return volume_config
 
   def ParseBackupConfig(self, volume, backup_config):
@@ -753,6 +785,7 @@ class VolumesAdapter(object):
     Returns:
       Volume message populated with Hybrid Replication Parameters
     """
+    del release_track
     hybrid_replication_parameters_message = (
         self.messages.HybridReplicationParameters()
     )
@@ -789,18 +822,15 @@ class VolumesAdapter(object):
             )
         ]
     )
-    # TODO(b/425281073): Remove this check once the bidirectional snapmirror
-    # is AGA.
-    if release_track in [base.ReleaseTrack.BETA, base.ReleaseTrack.ALPHA]:
-      hybrid_replication_parameters_message.replicationSchedule = (
-          hybrid_replication_parameters.get('replication-schedule')
-      )
-      hybrid_replication_parameters_message.hybridReplicationType = (
-          hybrid_replication_parameters.get('hybrid-replication-type')
-      )
-      hybrid_replication_parameters_message.largeVolumeConstituentCount = (
-          hybrid_replication_parameters.get('large-volume-constituent-count')
-      )
+    hybrid_replication_parameters_message.replicationSchedule = (
+        hybrid_replication_parameters.get('replication-schedule')
+    )
+    hybrid_replication_parameters_message.hybridReplicationType = (
+        hybrid_replication_parameters.get('hybrid-replication-type')
+    )
+    hybrid_replication_parameters_message.largeVolumeConstituentCount = (
+        hybrid_replication_parameters.get('large-volume-constituent-count')
+    )
 
     volume.hybridReplicationParameters = hybrid_replication_parameters_message
 

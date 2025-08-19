@@ -77,3 +77,19 @@ def MakeZoneConfiguration(
       additionalProperties=zone_configs_parsed
   )
   return res
+
+
+def SetResourceName(unused_ref, unused_args, request):
+  """Set resource.name to the provided haController ID.
+
+  Args:
+    unused_ref: An unused resource ref to the parsed resource.
+    unused_args: The unused argparse namespace.
+    request: The request to modify.
+
+  Returns:
+    The updated request.
+  """
+  if hasattr(request.haControllerResource, "name"):
+    request.haControllerResource.name = request.haController
+  return request

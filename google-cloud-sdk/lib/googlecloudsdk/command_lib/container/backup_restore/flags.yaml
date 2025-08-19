@@ -118,7 +118,7 @@ all_namespaces:
   default: null
   help_text: |
     Scope of the backup includes resources from all namespaces.  Mutually exclusive with
-    --selected-namespaces and --selected-applications.
+    --selected-namespaces, --selected-applications and --selected-namespace-labels.
 
 selected_namespaces:
   arg_name: selected-namespaces
@@ -128,7 +128,7 @@ selected_namespaces:
   default: null
   help_text: |
     List of namespaces whose resources are included in the backup. Mutually exclusive with
-    --all-namespaces and --selected-applications. e.g:
+    --all-namespaces, --selected-applications and --selected-namespace-labels. e.g:
     --selected-namespaces=foo,bar
 
 selected_applications:
@@ -138,8 +138,18 @@ selected_applications:
   default: null
   help_text: |
     List of ProtectedApplication instances whose resources are included in the backup. Mutually
-    exclusive with --all-namespaces and --selected-namespaces. e.g:
+    exclusive with --all-namespaces, --selected-namespaces and --selected-namespace-labels. e.g:
     --selected-applications=namespace1/foo,namespace2/bar
+
+selected_namespace_labels:
+  arg_name: selected-namespace-labels
+  api_field: backupPlan.backupConfig.selectedNamespaceLabels
+  processor: googlecloudsdk.command_lib.container.backup_restore.hooks:ProcessSelectedNamespaceLabels
+  default: null
+  help_text: |
+    List of Namespace labels whose resources are included in the backup. Mutually
+    exclusive with --all-namespaces, --selected-namespaces and --selected-applications. e.g:
+    --selected-namespace-labels=namespacelabel1=value1,namespacelabel2=value2
 
 include_volume_data:
   arg_name: include-volume-data

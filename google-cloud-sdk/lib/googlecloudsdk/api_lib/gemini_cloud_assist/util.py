@@ -18,6 +18,7 @@ import datetime
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.gemini import cloud_assist
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import resources
 
@@ -345,7 +346,9 @@ def RunInvestigationRevisionBlocking(revision_name):
       collection='geminicloudassist.projects.locations.operations',
   )
   waiter.WaitFor(poller, operation_ref, message='Running investigation')
-  return GetInvestigation(revision_name.split('/revisions/')[0])
+  return cloud_assist.ReformatInvestigation(
+      GetInvestigation(revision_name.split('/revisions/')[0])
+  )
 
 
 def GetInvestigationIamPolicy(investigations_resource_name):

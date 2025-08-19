@@ -28,3 +28,11 @@ def Insert(client, ha_controller, ha_controller_ref):
   return client.MakeRequests(
       [(client.apitools_client.haControllers, 'Insert', request)]
   )
+
+
+def InsertAsync(client, ha_controller, ha_controller_ref, errors_to_collect):
+  request = CreateInsertRequest(client, ha_controller, ha_controller_ref)
+  return client.AsyncRequests(
+      [(client.apitools_client.haControllers, 'Insert', request)],
+      errors_to_collect
+  )[0]

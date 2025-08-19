@@ -705,15 +705,6 @@ class Paths(object):
     return os.path.join(self.global_config_dir, '.metricsUUID')
 
   @property
-  def feature_flags_config_path(self):
-    """Gets the path to the file to store the cached feature flags config file.
-
-    Returns:
-      str, The path to the file.
-    """
-    return os.path.join(self.global_config_dir, '.feature_flags_config.yaml')
-
-  @property
   def update_check_cache_path(self):
     """Gets the path to the file to cache information about update checks.
 

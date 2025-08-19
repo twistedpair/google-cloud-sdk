@@ -2047,6 +2047,7 @@ canonical_surfaces:
   cloudnumberregistry:
     name: cloudnumberregistry
     hidden: true
+    command: number-registry
   cloudresourcemanager:
     name: cloudresourcemanager
     command: projects
@@ -2437,7 +2438,7 @@ canonical_surfaces:
     name: speech
     command: ml speech
   sql:
-    name: sql
+    name: sqladmin
     command: sql
   storage:
     name: storage

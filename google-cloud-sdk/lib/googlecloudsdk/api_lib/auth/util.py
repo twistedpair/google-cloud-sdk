@@ -31,6 +31,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.credentials import creds
 from googlecloudsdk.core.util import files
 import six
 
@@ -274,7 +275,7 @@ def _CreateGoogleAuthClientConfig(client_id_file=None):
 def _CreateGoogleAuthClientConfigFromProperties():
   """Creates a client config from gcloud's properties."""
   auth_uri = properties.VALUES.auth.auth_host.Get(required=True)
-  token_uri = GetTokenUri()
+  token_uri = creds.GetDefaultTokenUri()
 
   client_id = properties.VALUES.auth.client_id.Get(required=True)
   client_secret = properties.VALUES.auth.client_secret.Get(required=True)
@@ -408,15 +409,6 @@ def AssertClientSecretIsInstalledType(client_id_file):
         f"Only client IDs of type '{CLIENT_SECRET_INSTALLED_TYPE}' are allowed,"
         f" but encountered type '{client_type}'. {actionable_message}"
     )
-
-
-def GetTokenUri():
-  """Get context dependent Token URI."""
-  if properties.VALUES.context_aware.use_client_certificate.GetBool():
-    token_uri = properties.VALUES.auth.mtls_token_host.Get(required=True)
-  else:
-    token_uri = properties.VALUES.auth.token_host.Get(required=True)
-  return token_uri
 
 
 def HandleUniverseDomainConflict(new_universe_domain, account):

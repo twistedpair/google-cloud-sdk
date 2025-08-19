@@ -29,6 +29,7 @@ from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.compute import zone_utils
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.compute import resource_manager_tags_utils
 from googlecloudsdk.command_lib.compute import scope as compute_scopes
 from googlecloudsdk.command_lib.compute.instances import flags
 from googlecloudsdk.command_lib.compute.sole_tenancy import util as sole_tenancy_util
@@ -1139,6 +1140,49 @@ def ExtractGracefulShutdownFromArgs(args, support_graceful_shutdown=False):
         graceful_shutdown['maxDuration'] = args.graceful_shutdown_max_duration
 
   return graceful_shutdown
+
+
+def CreateParams(args, client):
+  """Create a Params message for the instance."""
+
+  params = client.messages.InstanceParams()
+
+  if args.IsKnownAndSpecified('resource_manager_tags'):
+    ret_resource_manager_tags = (
+        resource_manager_tags_utils.GetResourceManagerTags(
+            args.resource_manager_tags
+        )
+    )
+    if ret_resource_manager_tags is not None:
+      resource_manager_tags_value = (
+          client.messages.InstanceParams.ResourceManagerTagsValue
+      )
+      params.resourceManagerTags = resource_manager_tags_value(
+          additionalProperties=[
+              resource_manager_tags_value.AdditionalProperty(
+                  key=key, value=value
+              )
+              for key, value in sorted(six.iteritems(ret_resource_manager_tags))
+          ]
+      )
+
+  if args.IsKnownAndSpecified('request_valid_for_duration'):
+    if (
+        not hasattr(args, 'provisioning_model')
+        or not args.IsSpecified('provisioning_model')
+        or args.provisioning_model != 'FLEX_START'
+    ):
+      raise calliope_exceptions.InvalidArgumentException(
+          '--request_valid_for_duration',
+          '[--request_valid_for_duration] is only supported for FLEX_START'
+          ' provisioning model.',
+      )
+
+    params.requestValidForDuration = client.messages.Duration(
+        seconds=args.request_valid_for_duration
+    )
+
+  return params
 
 
 _RESERVATION_AFFINITY_KEY = 'compute.googleapis.com/reservation-name'

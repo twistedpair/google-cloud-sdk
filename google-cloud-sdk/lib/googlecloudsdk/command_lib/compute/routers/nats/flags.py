@@ -172,10 +172,11 @@ def _AddAutoNetworkTier(parser):
   parser.add_argument(
       '--auto-network-tier',
       help=textwrap.dedent(
-          'The network tier to use when automatically reserving NAT IP '
-          'addresses.'),
+          'Network tier to use when automatically reserving NAT IP addresses.'
+      ),
       choices=choices,
-      required=False)
+      required=False,
+  )
 
 
 def _AddIpAllocationArgs(parser):

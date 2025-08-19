@@ -94,7 +94,7 @@ def TranslateCustomEndTimeArg(args):
     if try_date_only_parse:
       try:
         # try to parse the date string in the format of YYYY-MM-DD
-        tz = pytz.timezone('US/Pacific')
+        tz = pytz.timezone('America/Los_Angeles')
         midnight_date_time_mtv = tz.localize(
             datetime.datetime.strptime(args.custom_end_time, DATE_ONLY_FORMAT)
         )

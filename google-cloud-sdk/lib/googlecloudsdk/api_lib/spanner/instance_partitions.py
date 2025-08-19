@@ -51,6 +51,13 @@ def Create(
     description,
     nodes,
     processing_units=None,
+    autoscaling_min_nodes=None,
+    autoscaling_max_nodes=None,
+    autoscaling_min_processing_units=None,
+    autoscaling_max_processing_units=None,
+    autoscaling_high_priority_cpu_target=None,
+    autoscaling_total_cpu_target=None,
+    autoscaling_storage_target=None,
 ):
   """Create a new instance partition."""
   client = apis.GetClientInstance(_API_NAME, _API_VERSION)
@@ -68,6 +75,28 @@ def Create(
     instance_partition_obj.nodeCount = nodes
   elif processing_units:
     instance_partition_obj.processingUnits = processing_units
+  elif (
+      autoscaling_min_nodes
+      or autoscaling_max_nodes
+      or autoscaling_min_processing_units
+      or autoscaling_max_processing_units
+      or autoscaling_high_priority_cpu_target
+      or autoscaling_total_cpu_target
+      or autoscaling_storage_target
+  ):
+    instance_partition_obj.autoscalingConfig = msgs.AutoscalingConfig(
+        autoscalingLimits=msgs.AutoscalingLimits(
+            minNodes=autoscaling_min_nodes,
+            maxNodes=autoscaling_max_nodes,
+            minProcessingUnits=autoscaling_min_processing_units,
+            maxProcessingUnits=autoscaling_max_processing_units,
+        ),
+        autoscalingTargets=msgs.AutoscalingTargets(
+            highPriorityCpuUtilizationPercent=autoscaling_high_priority_cpu_target,
+            totalCpuUtilizationPercent=autoscaling_total_cpu_target,
+            storageUtilizationPercent=autoscaling_storage_target,
+        ),
+    )
   req = msgs.SpannerProjectsInstancesInstancePartitionsCreateRequest(
       parent=instance_ref.RelativeName(),
       createInstancePartitionRequest=msgs.CreateInstancePartitionRequest(
@@ -93,6 +122,13 @@ def Patch(
     description=None,
     nodes=None,
     processing_units=None,
+    autoscaling_min_nodes=None,
+    autoscaling_max_nodes=None,
+    autoscaling_min_processing_units=None,
+    autoscaling_max_processing_units=None,
+    autoscaling_high_priority_cpu_target=None,
+    autoscaling_total_cpu_target=None,
+    autoscaling_storage_target=None,
 ):
   """Update an instance partition."""
   fields = []
@@ -103,6 +139,36 @@ def Patch(
   if processing_units is not None:
     fields.append('processingUnits')
 
+  if (
+      (autoscaling_min_nodes and autoscaling_max_nodes)
+      or (autoscaling_min_processing_units and autoscaling_max_processing_units)
+  ) and (
+      (autoscaling_high_priority_cpu_target or autoscaling_total_cpu_target)
+      and autoscaling_storage_target
+  ):
+    fields.append('autoscalingConfig')
+  else:
+    if autoscaling_min_nodes:
+      fields.append('autoscalingConfig.autoscalingLimits.minNodes')
+    if autoscaling_max_nodes:
+      fields.append('autoscalingConfig.autoscalingLimits.maxNodes')
+    if autoscaling_min_processing_units:
+      fields.append('autoscalingConfig.autoscalingLimits.minProcessingUnits')
+    if autoscaling_max_processing_units:
+      fields.append('autoscalingConfig.autoscalingLimits.maxProcessingUnits')
+    if autoscaling_high_priority_cpu_target:
+      fields.append(
+          'autoscalingConfig.autoscalingTargets.highPriorityCpuUtilizationPercent'
+      )
+    if autoscaling_total_cpu_target:
+      fields.append(
+          'autoscalingConfig.autoscalingTargets.totalCpuUtilizationPercent'
+      )
+    if autoscaling_storage_target:
+      fields.append(
+          'autoscalingConfig.autoscalingTargets.storageUtilizationPercent'
+      )
+
   client = apis.GetClientInstance(_API_NAME, _API_VERSION)
   msgs = apis.GetMessagesModule(_API_NAME, _API_VERSION)
 
@@ -111,6 +177,28 @@ def Patch(
     instance_partition_obj.processingUnits = processing_units
   elif nodes:
     instance_partition_obj.nodeCount = nodes
+  elif (
+      autoscaling_min_nodes
+      or autoscaling_max_nodes
+      or autoscaling_min_processing_units
+      or autoscaling_max_processing_units
+      or autoscaling_high_priority_cpu_target
+      or autoscaling_total_cpu_target
+      or autoscaling_storage_target
+  ):
+    instance_partition_obj.autoscalingConfig = msgs.AutoscalingConfig(
+        autoscalingLimits=msgs.AutoscalingLimits(
+            minNodes=autoscaling_min_nodes,
+            maxNodes=autoscaling_max_nodes,
+            minProcessingUnits=autoscaling_min_processing_units,
+            maxProcessingUnits=autoscaling_max_processing_units,
+        ),
+        autoscalingTargets=msgs.AutoscalingTargets(
+            highPriorityCpuUtilizationPercent=autoscaling_high_priority_cpu_target,
+            totalCpuUtilizationPercent=autoscaling_total_cpu_target,
+            storageUtilizationPercent=autoscaling_storage_target,
+        ),
+    )
 
   req = msgs.SpannerProjectsInstancesInstancePartitionsPatchRequest(
       name=instance_partition_ref.RelativeName(),

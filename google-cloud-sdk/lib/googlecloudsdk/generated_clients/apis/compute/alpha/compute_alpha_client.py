@@ -60,6 +60,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.globalOperations = self.GlobalOperationsService(self)
     self.globalOrganizationOperations = self.GlobalOrganizationOperationsService(self)
     self.globalPublicDelegatedPrefixes = self.GlobalPublicDelegatedPrefixesService(self)
+    self.globalVmExtensionPolicies = self.GlobalVmExtensionPoliciesService(self)
     self.haControllers = self.HaControllersService(self)
     self.healthChecks = self.HealthChecksService(self)
     self.httpHealthChecks = self.HttpHealthChecksService(self)
@@ -123,6 +124,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.regionMultiMigs = self.RegionMultiMigsService(self)
     self.regionNetworkEndpointGroups = self.RegionNetworkEndpointGroupsService(self)
     self.regionNetworkFirewallPolicies = self.RegionNetworkFirewallPoliciesService(self)
+    self.regionNetworkPolicies = self.RegionNetworkPoliciesService(self)
     self.regionNotificationEndpoints = self.RegionNotificationEndpointsService(self)
     self.regionOperations = self.RegionOperationsService(self)
     self.regionSecurityPolicies = self.RegionSecurityPoliciesService(self)
@@ -4797,6 +4799,172 @@ class ComputeAlpha(base_api.BaseApiClient):
         relative_path='projects/{project}/global/publicDelegatedPrefixes/{publicDelegatedPrefix}',
         request_field='publicDelegatedPrefixResource',
         request_type_name='ComputeGlobalPublicDelegatedPrefixesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class GlobalVmExtensionPoliciesService(base_api.BaseApiService):
+    """Service class for the globalVmExtensionPolicies resource."""
+
+    _NAME = 'globalVmExtensionPolicies'
+
+    def __init__(self, client):
+      super(ComputeAlpha.GlobalVmExtensionPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves the list of all VM Extension Policy resources available to the specified project. To prevent failure, it's recommended that you set the `returnPartialSuccess` parameter to `true`.
+
+      Args:
+        request: (ComputeGlobalVmExtensionPoliciesAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VmExtensionPolicyAggregatedListResponse) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.globalVmExtensionPolicies.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
+        relative_path='projects/{project}/aggregated/vmExtensionPolicies',
+        request_field='',
+        request_type_name='ComputeGlobalVmExtensionPoliciesAggregatedListRequest',
+        response_type_name='VmExtensionPolicyAggregatedListResponse',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Purge scoped resources (zonal policies) from a global VM extension policy, and then delete the global VM extension policy. Purge of the scoped resources is a pre-condition of the global VM extension policy deletion. The deletion of the global VM extension policy happens after the purge rollout is done, so it's not a part of the LRO. It's an automatic process that triggers in the backend.
+
+      Args:
+        request: (ComputeGlobalVmExtensionPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.globalVmExtensionPolicies.delete',
+        ordered_params=['project', 'globalVmExtensionPolicy'],
+        path_params=['globalVmExtensionPolicy', 'project'],
+        query_params=['requestId', 'rolloutInput_conflictBehavior', 'rolloutInput_name', 'rolloutInput_predefinedRolloutPlan', 'rolloutInput_retryUuid'],
+        relative_path='projects/{project}/global/vmExtensionPolicies/{globalVmExtensionPolicy}',
+        request_field='',
+        request_type_name='ComputeGlobalVmExtensionPoliciesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a global VM extension policy.
+
+      Args:
+        request: (ComputeGlobalVmExtensionPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GlobalVmExtensionPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.globalVmExtensionPolicies.get',
+        ordered_params=['project', 'globalVmExtensionPolicy'],
+        path_params=['globalVmExtensionPolicy', 'project'],
+        query_params=[],
+        relative_path='projects/{project}/global/vmExtensionPolicies/{globalVmExtensionPolicy}',
+        request_field='',
+        request_type_name='ComputeGlobalVmExtensionPoliciesGetRequest',
+        response_type_name='GlobalVmExtensionPolicy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a new project level GlobalVmExtensionPolicy.
+
+      Args:
+        request: (ComputeGlobalVmExtensionPoliciesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.globalVmExtensionPolicies.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/vmExtensionPolicies',
+        request_field='globalVmExtensionPolicy',
+        request_type_name='ComputeGlobalVmExtensionPoliciesInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists global VM extension policies.
+
+      Args:
+        request: (ComputeGlobalVmExtensionPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GlobalVmExtensionPolicyList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.globalVmExtensionPolicies.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/global/vmExtensionPolicies',
+        request_field='',
+        request_type_name='ComputeGlobalVmExtensionPoliciesListRequest',
+        response_type_name='GlobalVmExtensionPolicyList',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Updates a global VM extension policy.
+
+      Args:
+        request: (ComputeGlobalVmExtensionPoliciesUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.globalVmExtensionPolicies.update',
+        ordered_params=['project', 'globalVmExtensionPolicy'],
+        path_params=['globalVmExtensionPolicy', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/vmExtensionPolicies/{globalVmExtensionPolicy}',
+        request_field='globalVmExtensionPolicyResource',
+        request_type_name='ComputeGlobalVmExtensionPoliciesUpdateRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -20222,6 +20390,354 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='testPermissionsRequest',
         request_type_name='ComputeRegionNetworkFirewallPoliciesTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class RegionNetworkPoliciesService(base_api.BaseApiService):
+    """Service class for the regionNetworkPolicies resource."""
+
+    _NAME = 'regionNetworkPolicies'
+
+    def __init__(self, client):
+      super(ComputeAlpha.RegionNetworkPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AddAssociation(self, request, global_params=None):
+      r"""Inserts an association for the specified network policy.
+
+      Args:
+        request: (ComputeRegionNetworkPoliciesAddAssociationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddAssociation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddAssociation.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionNetworkPolicies.addAssociation',
+        ordered_params=['project', 'region', 'networkPolicy'],
+        path_params=['networkPolicy', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/networkPolicies/{networkPolicy}/addAssociation',
+        request_field='networkPolicyAssociation',
+        request_type_name='ComputeRegionNetworkPoliciesAddAssociationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def AddTrafficClassificationRule(self, request, global_params=None):
+      r"""Inserts a rule into a network policy.
+
+      Args:
+        request: (ComputeRegionNetworkPoliciesAddTrafficClassificationRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddTrafficClassificationRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddTrafficClassificationRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionNetworkPolicies.addTrafficClassificationRule',
+        ordered_params=['project', 'region', 'networkPolicy'],
+        path_params=['networkPolicy', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/networkPolicies/{networkPolicy}/addTrafficClassificationRule',
+        request_field='networkPolicyTrafficClassificationRule',
+        request_type_name='ComputeRegionNetworkPoliciesAddTrafficClassificationRuleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves an aggregated list of network policies. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+
+      Args:
+        request: (ComputeRegionNetworkPoliciesAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkPolicyAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionNetworkPolicies.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
+        relative_path='projects/{project}/aggregated/networkPolicies',
+        request_field='',
+        request_type_name='ComputeRegionNetworkPoliciesAggregatedListRequest',
+        response_type_name='NetworkPolicyAggregatedList',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified policy.
+
+      Args:
+        request: (ComputeRegionNetworkPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.regionNetworkPolicies.delete',
+        ordered_params=['project', 'region', 'networkPolicy'],
+        path_params=['networkPolicy', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/networkPolicies/{networkPolicy}',
+        request_field='',
+        request_type_name='ComputeRegionNetworkPoliciesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified network policy.
+
+      Args:
+        request: (ComputeRegionNetworkPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionNetworkPolicies.get',
+        ordered_params=['project', 'region', 'networkPolicy'],
+        path_params=['networkPolicy', 'project', 'region'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/networkPolicies/{networkPolicy}',
+        request_field='',
+        request_type_name='ComputeRegionNetworkPoliciesGetRequest',
+        response_type_name='NetworkPolicy',
+        supports_download=False,
+    )
+
+    def GetAssociation(self, request, global_params=None):
+      r"""Gets an association with the specified name.
+
+      Args:
+        request: (ComputeRegionNetworkPoliciesGetAssociationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkPolicyAssociation) The response message.
+      """
+      config = self.GetMethodConfig('GetAssociation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetAssociation.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionNetworkPolicies.getAssociation',
+        ordered_params=['project', 'region', 'networkPolicy'],
+        path_params=['networkPolicy', 'project', 'region'],
+        query_params=['name'],
+        relative_path='projects/{project}/regions/{region}/networkPolicies/{networkPolicy}/getAssociation',
+        request_field='',
+        request_type_name='ComputeRegionNetworkPoliciesGetAssociationRequest',
+        response_type_name='NetworkPolicyAssociation',
+        supports_download=False,
+    )
+
+    def GetTrafficClassificationRule(self, request, global_params=None):
+      r"""Gets a rule of the specified priority.
+
+      Args:
+        request: (ComputeRegionNetworkPoliciesGetTrafficClassificationRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkPolicyTrafficClassificationRule) The response message.
+      """
+      config = self.GetMethodConfig('GetTrafficClassificationRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetTrafficClassificationRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionNetworkPolicies.getTrafficClassificationRule',
+        ordered_params=['project', 'region', 'networkPolicy'],
+        path_params=['networkPolicy', 'project', 'region'],
+        query_params=['priority'],
+        relative_path='projects/{project}/regions/{region}/networkPolicies/{networkPolicy}/getTrafficClassificationRule',
+        request_field='',
+        request_type_name='ComputeRegionNetworkPoliciesGetTrafficClassificationRuleRequest',
+        response_type_name='NetworkPolicyTrafficClassificationRule',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a new policy in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeRegionNetworkPoliciesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionNetworkPolicies.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/networkPolicies',
+        request_field='networkPolicy',
+        request_type_name='ComputeRegionNetworkPoliciesInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all the policies that have been configured for the specified project in the given region.
+
+      Args:
+        request: (ComputeRegionNetworkPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkPolicyList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionNetworkPolicies.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/networkPolicies',
+        request_field='',
+        request_type_name='ComputeRegionNetworkPoliciesListRequest',
+        response_type_name='NetworkPolicyList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patches the specified policy with the data included in the request.
+
+      Args:
+        request: (ComputeRegionNetworkPoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.regionNetworkPolicies.patch',
+        ordered_params=['project', 'region', 'networkPolicy'],
+        path_params=['networkPolicy', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/networkPolicies/{networkPolicy}',
+        request_field='networkPolicyResource',
+        request_type_name='ComputeRegionNetworkPoliciesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def PatchTrafficClassificationRule(self, request, global_params=None):
+      r"""Patches a rule of the specified priority.
+
+      Args:
+        request: (ComputeRegionNetworkPoliciesPatchTrafficClassificationRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PatchTrafficClassificationRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PatchTrafficClassificationRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionNetworkPolicies.patchTrafficClassificationRule',
+        ordered_params=['project', 'region', 'networkPolicy'],
+        path_params=['networkPolicy', 'project', 'region'],
+        query_params=['priority', 'requestId'],
+        relative_path='projects/{project}/regions/{region}/networkPolicies/{networkPolicy}/patchTrafficClassificationRule',
+        request_field='networkPolicyTrafficClassificationRule',
+        request_type_name='ComputeRegionNetworkPoliciesPatchTrafficClassificationRuleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def RemoveAssociation(self, request, global_params=None):
+      r"""Removes an association for the specified network policy.
+
+      Args:
+        request: (ComputeRegionNetworkPoliciesRemoveAssociationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RemoveAssociation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveAssociation.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionNetworkPolicies.removeAssociation',
+        ordered_params=['project', 'region', 'networkPolicy'],
+        path_params=['networkPolicy', 'project', 'region'],
+        query_params=['name', 'requestId'],
+        relative_path='projects/{project}/regions/{region}/networkPolicies/{networkPolicy}/removeAssociation',
+        request_field='',
+        request_type_name='ComputeRegionNetworkPoliciesRemoveAssociationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def RemoveTrafficClassificationRule(self, request, global_params=None):
+      r"""Deletes a rule of the specified priority.
+
+      Args:
+        request: (ComputeRegionNetworkPoliciesRemoveTrafficClassificationRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RemoveTrafficClassificationRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveTrafficClassificationRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionNetworkPolicies.removeTrafficClassificationRule',
+        ordered_params=['project', 'region', 'networkPolicy'],
+        path_params=['networkPolicy', 'project', 'region'],
+        query_params=['priority', 'requestId'],
+        relative_path='projects/{project}/regions/{region}/networkPolicies/{networkPolicy}/removeTrafficClassificationRule',
+        request_field='',
+        request_type_name='ComputeRegionNetworkPoliciesRemoveTrafficClassificationRuleRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

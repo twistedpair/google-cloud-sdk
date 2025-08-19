@@ -138,10 +138,22 @@ def AddUriFlags(parser, collection, api_version=None):
   parser.display_info.AddUriFunc(_GetResourceUri)
 
 
-def GetModelIdArg(required=True):
-  return base.Argument(
-      '--model', help='Id of the uploaded model.', required=required
-  )
+def AddModelIdArg(version=None, parser=None):
+  if version == constants.GA_VERSION:
+    base.Argument(
+        '--model',
+        help='ID of the uploaded model.',
+        required=True,
+    ).AddToParser(parser)
+  else:
+    base.Argument(
+        '--model',
+        help=(
+            'ID of the uploaded model. The alpha and beta tracks also support'
+            ' GDC connected models.'
+        ),
+        required=True,
+    ).AddToParser(parser)
 
 
 def GetDeployedModelId(required=True):

@@ -184,10 +184,40 @@ class AutoscalingConfigOverrides(_messages.Message):
       specified, overrides the autoscaling target
       high_priority_cpu_utilization_percent in the top-level autoscaling
       configuration for the selected replicas.
+    autoscalingTargetTotalCpuUtilizationPercent: Optional. If specified,
+      overrides the autoscaling target `total_cpu_utilization_percent` in the
+      top-level autoscaling configuration for the selected replicas.
+    disableHighPriorityCpuAutoscaling: Optional. If true, disables high
+      priority CPU autoscaling for the selected replicas and ignores
+      high_priority_cpu_utilization_percent in the top-level autoscaling
+      configuration. When setting this field to true, setting
+      autoscaling_target_high_priority_cpu_utilization_percent field to a non-
+      zero value for the same replica is not supported. If false, the
+      autoscaling_target_high_priority_cpu_utilization_percent field in the
+      replica will be used if set to a non-zero value. Otherwise, the
+      high_priority_cpu_utilization_percent field in the top-level autoscaling
+      configuration will be used. Setting both
+      disable_high_priority_cpu_autoscaling and disable_total_cpu_autoscaling
+      to true for the same replica is not supported.
+    disableTotalCpuAutoscaling: Optional. If true, disables total CPU
+      autoscaling for the selected replicas and ignores
+      total_cpu_utilization_percent in the top-level autoscaling
+      configuration. When setting this field to true, setting
+      autoscaling_target_total_cpu_utilization_percent field to a non-zero
+      value for the same replica is not supported. If false, the
+      autoscaling_target_total_cpu_utilization_percent field in the replica
+      will be used if set to a non-zero value. Otherwise, the
+      total_cpu_utilization_percent field in the top-level autoscaling
+      configuration will be used. Setting both
+      disable_high_priority_cpu_autoscaling and disable_total_cpu_autoscaling
+      to true for the same replica is not supported.
   """
 
   autoscalingLimits = _messages.MessageField('AutoscalingLimits', 1)
   autoscalingTargetHighPriorityCpuUtilizationPercent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  autoscalingTargetTotalCpuUtilizationPercent = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  disableHighPriorityCpuAutoscaling = _messages.BooleanField(4)
+  disableTotalCpuAutoscaling = _messages.BooleanField(5)
 
 
 class AutoscalingLimits(_messages.Message):
@@ -227,10 +257,20 @@ class AutoscalingTargets(_messages.Message):
       percentage that the autoscaler should be trying to achieve for the
       instance. This number is on a scale from 0 (no utilization) to 100 (full
       utilization). The valid range is [10, 99] inclusive.
+    totalCpuUtilizationPercent: Optional. The target total CPU utilization
+      percentage that the autoscaler should be trying to achieve for the
+      instance. This number is on a scale from 0 (no utilization) to 100 (full
+      utilization). The valid range is [10, 90] inclusive. If not specified or
+      set to 0, the autoscaler skips scaling based on total CPU utilization.
+      If both `high_priority_cpu_utilization_percent` and
+      `total_cpu_utilization_percent` are specified, the autoscaler provisions
+      the larger of the two required compute capacities to satisfy both
+      targets.
   """
 
   highPriorityCpuUtilizationPercent = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   storageUtilizationPercent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  totalCpuUtilizationPercent = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class Backup(_messages.Message):
@@ -7801,6 +7841,8 @@ class Type(_messages.Message):
         `P[n]Y[n]M[n]DT[n]H[n]M[n[.fraction]]S` where `n` is an integer. For
         example, `P1Y2M3DT4H5M6.5S` represents time duration of 1 year, 2
         months, 3 days, 4 hours, 5 minutes, and 6.5 seconds.
+      UUID: Encoded as `string`, in lower-case hexa-decimal format, as
+        described in RFC 9562, section 4.
     """
     TYPE_CODE_UNSPECIFIED = 0
     BOOL = 1
@@ -7818,6 +7860,7 @@ class Type(_messages.Message):
     PROTO = 13
     ENUM = 14
     INTERVAL = 15
+    UUID = 16
 
   class TypeAnnotationValueValuesEnum(_messages.Enum):
     r"""The TypeAnnotationCode that disambiguates SQL type that Spanner will

@@ -92,7 +92,7 @@ def RouterArgumentForVpnTunnel(required=True):
       plural=False,
       required=required,
       regional_collection='compute.routers',
-      short_help='The Router to use for dynamic routing.',
+      short_help='Router to use for dynamic routing.',
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
   )
 
@@ -109,7 +109,7 @@ def RouterArgumentForOtherResources(required=True, suppress_region=True):
       plural=False,
       required=required,
       regional_collection='compute.routers',
-      short_help='The Google Cloud Router to use for dynamic routing.',
+      short_help='Google Cloud Router to use for dynamic routing.',
       region_explanation=region_explanation,
       region_hidden=suppress_region,
   )
@@ -123,7 +123,7 @@ def RouterArgumentForNat():
       plural=False,
       required=True,
       regional_collection='compute.routers',
-      short_help='The Router to use for NAT.',
+      short_help='Router to use for NAT.',
       region_hidden=True,
   )
 

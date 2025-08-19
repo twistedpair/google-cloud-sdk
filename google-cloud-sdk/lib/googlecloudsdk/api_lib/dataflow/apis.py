@@ -715,12 +715,14 @@ class Templates:
         f'/template/{env["FLEX_TEMPLATE_PYTHON_PY_FILE"]}'
     )
     if 'FLEX_TEMPLATE_PYTHON_EXTRA_PACKAGES' in env:
-      env['FLEX_TEMPLATE_PYTHON_EXTRA_PACKAGES'] = (
-          f'/template/{env["FLEX_TEMPLATE_PYTHON_EXTRA_PACKAGES"]}'
-      )
-      commands.append(
-          f'pip install {env["FLEX_TEMPLATE_PYTHON_EXTRA_PACKAGES"]}'
-      )
+      package_list = env['FLEX_TEMPLATE_PYTHON_EXTRA_PACKAGES'].split(',')
+      if package_list:
+        packages_path = [f'/template/{package}' for package in package_list]
+        env['FLEX_TEMPLATE_PYTHON_EXTRA_PACKAGES'] = ','.join(packages_path)
+        package_arg = ' '.join(packages_path)
+        commands.append(
+            f'pip install {package_arg}'
+        )
     if 'FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE' in env:
       env['FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE'] = (
           f'/template/{env["FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE"]}'

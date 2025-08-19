@@ -238,7 +238,17 @@ def AddAllowUnencryptedBuildFlag(parser):
   """Add the --allow-unencrypted-build flag."""
   parser.add_argument(
       '--allow-unencrypted-build',
-      action=arg_parsers.StoreTrueFalseAction,
+      action=actions.DeprecationAction(
+          '--allow-unencrypted-build',
+          removed=False,
+          warn=(
+              'The flag {flag_name} is deprecated. The CMEK compliance is now'
+              ' available for the build process of source-based deployments.'
+              ' For more details, see'
+              ' https://cloud.google.com/run/docs/securing/using-cmek#source-deploy'
+          ),
+          action=arg_parsers.StoreTrueFalseAction,
+      ),
       help=(
           'Whether to allow customer-managed encryption key (CMEK) deployments'
           ' without encrypting the build process. This means that only the'
@@ -2990,15 +3000,6 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
     )
   if FlagIsExplicitlySet(args, 'preset'):
     changes.append(config_changes.PresetChange(type=args.preset))
-    if (
-        not FlagIsExplicitlySet(args, 'containers')
-        and args.preset in INGRESS_CONTAINER_PRESETS
-    ):
-      container_change = config_changes.ImageChange(
-          image='imageplaceholder',
-          container_name=args.preset,
-      )
-      changes.append(container_change)
 
   return changes
 
@@ -4725,7 +4726,7 @@ def ShouldRetryNoZonalRedundancy(args, error_message):
 
 
 def AddPresetFlag(parser):
-  """Specify a preset to be used for the deployment."""
+  """Add the --preset flag."""
   parser.add_argument(
       '--preset',
       help='Specifies a preset to be used for the deployment.',

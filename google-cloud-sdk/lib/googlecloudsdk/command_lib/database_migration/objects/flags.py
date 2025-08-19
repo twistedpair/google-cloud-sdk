@@ -40,13 +40,13 @@ def AddDatabaseFlag(parser):
 def AddSchemaFlag(parser):
   """Adds a --schema flag to the given parser."""
   help_text = 'The name of the schema to lookup.'
-  parser.add_argument('--schema', help=help_text, hidden=True)
+  parser.add_argument('--schema', help=help_text)
 
 
 def AddTableFlag(parser):
   """Adds a --table flag to the given parser."""
   help_text = 'The name of the table to lookup.'
-  parser.add_argument('--table', help=help_text, hidden=True)
+  parser.add_argument('--table', help=help_text)
 
 
 def AddTypeFlag(parser):
@@ -56,4 +56,4 @@ def AddTypeFlag(parser):
       ' DATABASE.'
   )
   choices = ['DATABASE', 'SCHEMA', 'TABLE']
-  parser.add_argument('--type', help=help_text, choices=choices, hidden=True)
+  parser.add_argument('--type', help=help_text, choices=choices)

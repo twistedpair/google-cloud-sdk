@@ -174,7 +174,32 @@ def ProcessSelectedApplications(selected_applications):
   except ValueError:
     raise exceptions.InvalidArgumentException(
         '--selected-applications',
-        'Selected applications {0} is invalid.'.format(selected_applications))
+        'Selected applications {0} is invalid.'.format(selected_applications),
+    )
+
+
+def ProcessSelectedNamespaceLabels(selected_namespace_labels):
+  """Processes selected-namespace-labels flag."""
+  if not selected_namespace_labels:
+    raise exceptions.InvalidArgumentException(
+        '--selected-namespace-labels',
+        'Input for selected-namespace-labels must not be empty.',
+    )
+  message = api_util.GetMessagesModule()
+
+  rls = message.ResourceLabels()
+  for key_value_pair in selected_namespace_labels.split(','):
+    parts = key_value_pair.split('=')
+    if not parts[0]:
+      raise exceptions.InvalidArgumentException(
+          '--selected-namespace-labels',
+          'Key of namespace label cannot be empty.',
+      )
+    rl = message.Label()
+    rl.key = parts[0]
+    rl.value = '' if len(parts) == 1 else parts[1]
+    rls.resourceLabels.append(rl)
+  return rls
 
 
 def PreprocessUpdateBackupPlan(ref, args, request):

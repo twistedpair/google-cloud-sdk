@@ -9187,15 +9187,18 @@ class Stage(_messages.Message):
   Fields:
     clusterSelector: Optional. Filter members of fleets (above) to a subset of
       clusters. If not specified, all clusters in the fleets are selected.
-    fleets: Required. List of Fleets to select the clusters from. Expected
-      format: projects/{project}/locations/{location}/fleets/{fleet}
+    fleetProjects: Required. List of Fleet projects to select the clusters
+      from. Expected format: projects/{project}
+    fleets: List of Fleets to select the clusters from. Expected format:
+      projects/{project}/locations/{location}/fleets/{fleet}
     soakDuration: Optional. Soak time after upgrading all the clusters in the
       stage.
   """
 
   clusterSelector = _messages.MessageField('ClusterSelector', 1)
-  fleets = _messages.StringField(2, repeated=True)
-  soakDuration = _messages.StringField(3)
+  fleetProjects = _messages.StringField(2, repeated=True)
+  fleets = _messages.StringField(3, repeated=True)
+  soakDuration = _messages.StringField(4)
 
 
 class StandardQueryParameters(_messages.Message):

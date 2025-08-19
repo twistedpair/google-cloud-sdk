@@ -973,6 +973,10 @@ class BulkRestoreObjectsRequest(_messages.Message):
       with the same name, a live version can be written without issue.
     copySourceAcl: If true, copies the source object's ACL; otherwise, uses
       the bucket's default object ACL. The default is false.
+    createdAfterTime: Restores only the objects that were created after this
+      time.
+    createdBeforeTime: Restores only the objects that were created before this
+      time.
     matchGlobs: Restores only the objects matching any of the specified
       glob(s). If this parameter is not specified, all objects will be
       restored within the specified time range.
@@ -984,9 +988,11 @@ class BulkRestoreObjectsRequest(_messages.Message):
 
   allowOverwrite = _messages.BooleanField(1)
   copySourceAcl = _messages.BooleanField(2)
-  matchGlobs = _messages.StringField(3, repeated=True)
-  softDeletedAfterTime = _message_types.DateTimeField(4)
-  softDeletedBeforeTime = _message_types.DateTimeField(5)
+  createdAfterTime = _message_types.DateTimeField(3)
+  createdBeforeTime = _message_types.DateTimeField(4)
+  matchGlobs = _messages.StringField(5, repeated=True)
+  softDeletedAfterTime = _message_types.DateTimeField(6)
+  softDeletedBeforeTime = _message_types.DateTimeField(7)
 
 
 class Channel(_messages.Message):

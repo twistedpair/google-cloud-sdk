@@ -470,6 +470,12 @@ def AddMongodbProfileGroup(parser, required=True):
       help="""Enable Transport Layer Security for the monogodb connection.""",
       action='store_true',
       default=False)
+  ssl_config.add_argument(
+      '--mongodb-ca-certificate',
+      help="""\
+      x509 PEM-encoded certificate of the CA that signed the source database
+      server's certificate. The replica will use this certificate to verify
+      it's connecting to the right host.""")
 
 
 def AddDepthGroup(parser):

@@ -34,6 +34,7 @@ import requests
 
 _CORE_CHECK_NAME = 'Direct Connectivity Call'
 _SUCCESS = 'Success.'
+_NOT_FOUND = '[Not Found]'
 
 
 def _get_ips(dns_path, service_name):
@@ -47,8 +48,8 @@ def _get_ips(dns_path, service_name):
   return res
 
 
-def _get_region_string_or_not_found(s):
-  return '"{}"'.format(s.lower()) if s else '[Not Found]'
+def _get_location_string_or_not_found(s):
+  return '"{}"'.format(s.lower()) if s else _NOT_FOUND
 
 
 def _check_zone_prefix(region, zone):
@@ -264,7 +265,22 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
     """Checks if bucket has problematic region."""
 
     bucket_location = self._bucket_resource.location.lower()
+    vm_zone = _get_location_string_or_not_found(self._vm_zone)
 
+    # Provide a warning if the bucket zone does not match the VM zone.
+    if self._bucket_resource.location_type == 'zone':
+      bucket_zone = _get_location_string_or_not_found(
+          self._bucket_resource.data_locations[0]
+          if self._bucket_resource.data_locations
+          else None
+      )
+      if _NOT_FOUND in (bucket_zone, vm_zone) or bucket_zone != vm_zone:
+        return (
+            f'Rapid storage bucket "{self._bucket_resource}" zone '
+            f'{bucket_zone} does not '
+            f'match VM "{socket.gethostname()}" zone {vm_zone}. '
+            'Transfer performance between the bucket and VM may be degraded.'
+        )
     # Dual-region buckets may have replicas in the same region as the VM. For
     # custom dual-regions, the VM must be in one of the regions covered by the
     # dual-region. For predefined dual-regions, the customer can check manually.
@@ -276,30 +292,30 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
             return _SUCCESS
         return (
             f'Bucket "{self._bucket_resource}" locations'
-            f' {_get_region_string_or_not_found(regions[0])} and'
-            f' {_get_region_string_or_not_found(regions[1])} do not include VM'
-            f' "{socket.gethostname()}" zone'
-            f' {_get_region_string_or_not_found(self._vm_zone)}'
+            f' {_get_location_string_or_not_found(regions[0])} and'
+            f' {_get_location_string_or_not_found(regions[1])} do not include'
+            f' VM "{socket.gethostname()}" zone {vm_zone}'
         )
+      location_string = _get_location_string_or_not_found(
+          self._bucket_resource.location
+      )
       return (
           f'Found bucket "{self._bucket_resource}" is in a dual-region. Ensure '
           f'VM "{socket.gethostname()}" is in one of the regions covered by '
-          'the dual-region by looking up the dual-region '
-          f'{_get_region_string_or_not_found(self._bucket_resource.location)} '
-          'in the following table: '
+          f'the dual-region by looking up the dual-region {location_string} in '
+          'the following table: '
           'https://cloud.google.com/storage/docs/locations#predefined '
-          f'VM zone {_get_region_string_or_not_found(self._vm_zone)} should '
-          'start with one of the regions covered by the dual-region '
-          f'{_get_region_string_or_not_found(self._bucket_resource.location)}.'
+          f'VM zone {vm_zone} should start with one of the regions covered by '
+          f'the dual-region {location_string}.'
       )
     # For other region types, the substring check is sufficient.
     if self._vm_zone and _check_zone_prefix(bucket_location, self._vm_zone):
       return _SUCCESS
     return 'Bucket "{}" location {} does not match VM "{}" zone {}'.format(
         self._bucket_resource,
-        _get_region_string_or_not_found(bucket_location),
+        _get_location_string_or_not_found(bucket_location),
         socket.gethostname(),
-        _get_region_string_or_not_found(self._vm_zone),
+        vm_zone,
     )
 
   def _check_vm_has_service_account(self):

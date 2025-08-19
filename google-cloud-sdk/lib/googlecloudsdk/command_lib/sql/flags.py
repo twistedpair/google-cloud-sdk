@@ -1114,7 +1114,9 @@ def AddClearNetwork(parser, hidden=False):
       required=False,
       action='store_true',
       help=(
-          'Clears the current network configuration.'
+          'Clears the network setting. This is useful to restore a backup to a'
+          ' different project or region where the original network'
+          " configuration isn't available."
       ),
       hidden=hidden,
   )

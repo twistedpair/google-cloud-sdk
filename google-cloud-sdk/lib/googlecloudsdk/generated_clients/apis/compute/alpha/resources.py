@@ -165,6 +165,14 @@ class Collections(enum.Enum):
       ['project', 'publicDelegatedPrefix'],
       True
   )
+  GLOBALVMEXTENSIONPOLICIES = (
+      'globalVmExtensionPolicies',
+      'projects/{project}/global/vmExtensionPolicies/'
+      '{globalVmExtensionPolicy}',
+      {},
+      ['project', 'globalVmExtensionPolicy'],
+      True
+  )
   HACONTROLLERS = (
       'haControllers',
       'projects/{project}/regions/{region}/haControllers/{haController}',
@@ -641,6 +649,13 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}/firewallPolicies/{firewallPolicy}',
       {},
       ['project', 'region', 'firewallPolicy'],
+      True
+  )
+  REGIONNETWORKPOLICIES = (
+      'regionNetworkPolicies',
+      'projects/{project}/regions/{region}/networkPolicies/{networkPolicy}',
+      {},
+      ['project', 'region', 'networkPolicy'],
       True
   )
   REGIONNOTIFICATIONENDPOINTS = (

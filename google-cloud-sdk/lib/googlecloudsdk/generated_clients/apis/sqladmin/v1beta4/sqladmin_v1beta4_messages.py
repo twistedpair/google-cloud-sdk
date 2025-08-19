@@ -928,6 +928,7 @@ class ConnectSettings(_messages.Message):
       `SQLSERVER_2017_WEB`, `SQLSERVER_2019_STANDARD`,
       `SQLSERVER_2019_ENTERPRISE`, `SQLSERVER_2019_EXPRESS`, or
       `SQLSERVER_2019_WEB`.
+    MdxProtocolSupportValueListEntryValuesEnum:
     ServerCaModeValueValuesEnum: Specify what type of CA is used for the
       server certificate.
 
@@ -952,6 +953,12 @@ class ConnectSettings(_messages.Message):
     dnsNames: Output only. The list of DNS names used by this instance.
     ipAddresses: The assigned IP addresses for the instance.
     kind: This is always `sql#connectSettings`.
+    mdxProtocolSupport: Optional. Output only. mdx_protocol_support controls
+      how the client uses metadata exchange when connecting to the instance.
+      The values in the list representing parts of the MDX protocol that are
+      supported by this instance. When the list is empty, the instance does
+      not support MDX, so the client must not send an MDX request. The default
+      is empty.
     nodeCount: The number of read pool nodes in a read pool.
     nodes: Output only. Entries containing information about each read pool
       node of the read pool.
@@ -1118,6 +1125,17 @@ class ConnectSettings(_messages.Message):
     SQLSERVER_2022_EXPRESS = 47
     SQLSERVER_2022_WEB = 48
 
+  class MdxProtocolSupportValueListEntryValuesEnum(_messages.Enum):
+    r"""MdxProtocolSupportValueListEntryValuesEnum enum type.
+
+    Values:
+      MDX_PROTOCOL_SUPPORT_UNSPECIFIED: Not specified.
+      CLIENT_PROTOCOL_TYPE: Client should send the client protocol type in the
+        MDX request.
+    """
+    MDX_PROTOCOL_SUPPORT_UNSPECIFIED = 0
+    CLIENT_PROTOCOL_TYPE = 1
+
   class ServerCaModeValueValuesEnum(_messages.Enum):
     r"""Specify what type of CA is used for the server certificate.
 
@@ -1143,12 +1161,13 @@ class ConnectSettings(_messages.Message):
   dnsNames = _messages.MessageField('DnsNameMapping', 5, repeated=True)
   ipAddresses = _messages.MessageField('IpMapping', 6, repeated=True)
   kind = _messages.StringField(7)
-  nodeCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  nodes = _messages.MessageField('ConnectPoolNodeConfig', 9, repeated=True)
-  pscEnabled = _messages.BooleanField(10)
-  region = _messages.StringField(11)
-  serverCaCert = _messages.MessageField('SslCert', 12)
-  serverCaMode = _messages.EnumField('ServerCaModeValueValuesEnum', 13)
+  mdxProtocolSupport = _messages.EnumField('MdxProtocolSupportValueListEntryValuesEnum', 8, repeated=True)
+  nodeCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  nodes = _messages.MessageField('ConnectPoolNodeConfig', 10, repeated=True)
+  pscEnabled = _messages.BooleanField(11)
+  region = _messages.StringField(12)
+  serverCaCert = _messages.MessageField('SslCert', 13)
+  serverCaMode = _messages.EnumField('ServerCaModeValueValuesEnum', 14)
 
 
 class ConnectionPoolConfig(_messages.Message):
@@ -4555,10 +4574,10 @@ class Settings(_messages.Message):
       instances relevant only for SQL Server.
     authorizedGaeApplications: The App Engine app IDs that can access this
       instance. (Deprecated) Applied to First Generation instances only.
-    autoUpgradeEnabled: Optional. When this parameter is set to true, 
-      auto-upgrade is enabled for MySQL 8.0 minor versions.
-      The MySQL version must be 8.0.35 or higher. Please note auto-upgrade
-      is an opt-in feature and you cannot disable it.
+    autoUpgradeEnabled: Optional. Cloud SQL for MySQL auto-upgrade
+      configuration. When this parameter is set to true, auto-upgrade is
+      enabled for MySQL 8.0 minor versions. The MySQL version must be 8.0.35
+      or higher.
     availabilityType: Availability type. Potential values: * `ZONAL`: The
       instance serves data from only one zone. Outages in that zone affect
       data accessibility. * `REGIONAL`: The instance can serve data from more
@@ -4662,6 +4681,8 @@ class Settings(_messages.Message):
     tier: The tier (or machine type) for this instance, for example `db-
       custom-1-3840`. WARNING: Changing this restarts the instance.
     timeZone: Server timezone, relevant only for Cloud SQL for SQL Server.
+    uncMappings: Optional. The UNC mapping for the instance, used for
+      transactional replication. SQL Server only.
     userLabels: User-provided labels, represented as a dictionary where each
       label is a single key value pair.
   """
@@ -4857,7 +4878,8 @@ class Settings(_messages.Message):
   storageAutoResizeLimit = _messages.IntegerField(44)
   tier = _messages.StringField(45)
   timeZone = _messages.StringField(46)
-  userLabels = _messages.MessageField('UserLabelsValue', 47)
+  uncMappings = _messages.MessageField('UncMapping', 47, repeated=True)
+  userLabels = _messages.MessageField('UserLabelsValue', 48)
 
 
 class SqlActiveDirectoryConfig(_messages.Message):
@@ -5280,6 +5302,13 @@ class SqlExternalSyncSettingError(_messages.Message):
       SELECTED_OBJECTS_REFERENCE_UNSELECTED_OBJECTS: Selected objects
         reference unselected objects. Based on their object type (foreign key
         constraint or view), selected objects will fail during migration.
+      PROMPT_DELETE_EXISTING: The migration will delete existing data in the
+        replica; set replica_overwrite_enabled in the request to acknowledge
+        this. This is an error. MySQL only.
+      WILL_DELETE_EXISTING: The migration will delete existing data in the
+        replica; replica_overwrite_enabled was set in the request
+        acknowledging this. This is a warning rather than an error. MySQL
+        only.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -5337,6 +5366,8 @@ class SqlExternalSyncSettingError(_messages.Message):
     SELECTED_OBJECTS_NOT_EXIST_ON_SOURCE = 53
     PSC_ONLY_INSTANCE_WITH_NO_NETWORK_ATTACHMENT_URI = 54
     SELECTED_OBJECTS_REFERENCE_UNSELECTED_OBJECTS = 55
+    PROMPT_DELETE_EXISTING = 56
+    WILL_DELETE_EXISTING = 57
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)
@@ -5839,13 +5870,32 @@ class SqlInstancesResetReplicaSizeRequest(_messages.Message):
 class SqlInstancesResetSslConfigRequest(_messages.Message):
   r"""A SqlInstancesResetSslConfigRequest object.
 
+  Enums:
+    ModeValueValuesEnum: Optional. Reset SSL mode to use.
+
   Fields:
     instance: Cloud SQL instance ID. This does not include the project ID.
+    mode: Optional. Reset SSL mode to use.
     project: Project ID of the project that contains the instance.
   """
 
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Reset SSL mode to use.
+
+    Values:
+      RESET_SSL_MODE_UNSPECIFIED: Reset SSL mode is not specified.
+      ALL: Refresh all TLS configs. This is the default behaviour.
+      SYNC_FROM_PRIMARY: Refreshes the replication-related TLS configuration
+        settings provided by the primary instance. Not applicable to on-
+        premises replication instances.
+    """
+    RESET_SSL_MODE_UNSPECIFIED = 0
+    ALL = 1
+    SYNC_FROM_PRIMARY = 2
+
   instance = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
+  mode = _messages.EnumField('ModeValueValuesEnum', 2)
+  project = _messages.StringField(3, required=True)
 
 
 class SqlInstancesRestartRequest(_messages.Message):
@@ -6265,6 +6315,11 @@ class SqlProjectsInstancesGetLatestRecoveryTimeRequest(_messages.Message):
   r"""A SqlProjectsInstancesGetLatestRecoveryTimeRequest object.
 
   Fields:
+    datasource: The Backup and Disaster Recovery Datasource URI. Format: proje
+      cts/{project}/locations/{region}/backupVaults/{backupvault}/dataSources/
+      {datasource}. Note: This field is used for Backup and DR managed
+      instance only. If this field is set, users should not set the instance
+      name or source_instance_deletion_time fields.
     instance: Cloud SQL instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance.
     sourceInstanceDeletionTime: The timestamp used to identify the time when
@@ -6272,9 +6327,10 @@ class SqlProjectsInstancesGetLatestRecoveryTimeRequest(_messages.Message):
       must set the timestamp.
   """
 
-  instance = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  sourceInstanceDeletionTime = _messages.StringField(3)
+  datasource = _messages.StringField(1)
+  instance = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
+  sourceInstanceDeletionTime = _messages.StringField(4)
 
 
 class SqlProjectsInstancesPerformDiskShrinkRequest(_messages.Message):
@@ -6582,18 +6638,24 @@ class SqlUsersUpdateRequest(_messages.Message):
   r"""A SqlUsersUpdateRequest object.
 
   Fields:
+    databaseRoles: Optional. List of database roles to grant to the user.
+      body.database_roles will be ignored for update request.
     host: Optional. Host of the user in the instance.
     instance: Database instance ID. This does not include the project ID.
     name: Name of the user in the instance.
     project: Project ID of the project that contains the instance.
+    revokeExistingRoles: Optional. revoke the existing roles granted to the
+      user.
     user: A User resource to be passed as the request body.
   """
 
-  host = _messages.StringField(1)
-  instance = _messages.StringField(2, required=True)
-  name = _messages.StringField(3)
-  project = _messages.StringField(4, required=True)
-  user = _messages.MessageField('User', 5)
+  databaseRoles = _messages.StringField(1, repeated=True)
+  host = _messages.StringField(2)
+  instance = _messages.StringField(3, required=True)
+  name = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  revokeExistingRoles = _messages.BooleanField(6)
+  user = _messages.MessageField('User', 7)
 
 
 class SslCert(_messages.Message):
@@ -6827,6 +6889,35 @@ class TruncateLogContext(_messages.Message):
   logType = _messages.StringField(2)
 
 
+class UncMapping(_messages.Message):
+  r"""Unc mapping proto used for SQL Server.
+
+  Enums:
+    ModeValueValuesEnum: The mode of the UNC mapping.
+
+  Fields:
+    gcsPath: The GCS path, represent the GCS path.
+    mode: The mode of the UNC mapping.
+    uncPath: The UNC path, represent the server name.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""The mode of the UNC mapping.
+
+    Values:
+      UNKNOWN: Unspecified.
+      SNAPSHOT_READ: Snapshot read.
+      SNAPSHOT_WRITE: Snapshot write.
+    """
+    UNKNOWN = 0
+    SNAPSHOT_READ = 1
+    SNAPSHOT_WRITE = 2
+
+  gcsPath = _messages.StringField(1)
+  mode = _messages.EnumField('ModeValueValuesEnum', 2)
+  uncPath = _messages.StringField(3)
+
+
 class User(_messages.Message):
   r"""A Cloud SQL user resource.
 
@@ -6839,6 +6930,7 @@ class User(_messages.Message):
       in user type.
 
   Fields:
+    databaseRoles: Optional. Role memberships of the user
     dualPasswordType: Dual password status for the user.
     etag: This field is deprecated and will be removed from a future version
       of the API.
@@ -6918,19 +7010,20 @@ class User(_messages.Message):
     CLOUD_IAM_GROUP_SERVICE_ACCOUNT = 5
     CLOUD_IAM_WORKFORCE_IDENTITY = 6
 
-  dualPasswordType = _messages.EnumField('DualPasswordTypeValueValuesEnum', 1)
-  etag = _messages.StringField(2)
-  host = _messages.StringField(3)
-  iamEmail = _messages.StringField(4)
-  iamStatus = _messages.EnumField('IamStatusValueValuesEnum', 5)
-  instance = _messages.StringField(6)
-  kind = _messages.StringField(7)
-  name = _messages.StringField(8)
-  password = _messages.StringField(9)
-  passwordPolicy = _messages.MessageField('UserPasswordValidationPolicy', 10)
-  project = _messages.StringField(11)
-  sqlserverUserDetails = _messages.MessageField('SqlServerUserDetails', 12)
-  type = _messages.EnumField('TypeValueValuesEnum', 13)
+  databaseRoles = _messages.StringField(1, repeated=True)
+  dualPasswordType = _messages.EnumField('DualPasswordTypeValueValuesEnum', 2)
+  etag = _messages.StringField(3)
+  host = _messages.StringField(4)
+  iamEmail = _messages.StringField(5)
+  iamStatus = _messages.EnumField('IamStatusValueValuesEnum', 6)
+  instance = _messages.StringField(7)
+  kind = _messages.StringField(8)
+  name = _messages.StringField(9)
+  password = _messages.StringField(10)
+  passwordPolicy = _messages.MessageField('UserPasswordValidationPolicy', 11)
+  project = _messages.StringField(12)
+  sqlserverUserDetails = _messages.MessageField('SqlServerUserDetails', 13)
+  type = _messages.EnumField('TypeValueValuesEnum', 14)
 
 
 class UserPasswordValidationPolicy(_messages.Message):

@@ -1864,33 +1864,6 @@ class NetappV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Restore(self, request, global_params=None):
-      r"""Restore files from a backup to a volume.
-
-      Args:
-        request: (NetappProjectsLocationsVolumesRestoreRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Restore')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Restore.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}:restore',
-        http_method='POST',
-        method_id='netapp.projects.locations.volumes.restore',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}:restore',
-        request_field='restoreBackupFilesRequest',
-        request_type_name='NetappProjectsLocationsVolumesRestoreRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
     def Revert(self, request, global_params=None):
       r"""Revert an existing volume to a specified snapshot. Warning! This operation will permanently revert all changes made after the snapshot was created.
 
@@ -1974,7 +1947,7 @@ class NetappV1(base_api.BaseApiClient):
         method_id='netapp.projects.locations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['extraLocationTypes', 'filter', 'pageSize', 'pageToken'],
         relative_path='v1/{+name}/locations',
         request_field='',
         request_type_name='NetappProjectsLocationsListRequest',

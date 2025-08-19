@@ -91,8 +91,8 @@ def _IsHomebrewInstalled():
 
 def _PromptPythonUpdate(python_install_path):
   return (
-      f'Python {PYTHON_VERSION} installation detected in '
-      f'{python_install_path}, install recommended modules?')
+      f'(Recommended) Python {PYTHON_VERSION} installation detected in '
+      f'{python_install_path}, install required modules (Y/n)?')
 
 
 def _PromptPythonInstall():

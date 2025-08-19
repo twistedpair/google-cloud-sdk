@@ -120,14 +120,9 @@ class AuthzExtension(_messages.Message):
         The backend service for the extension must use HTTP2 or H2C as the
         protocol. All `supported_events` for a client request are sent as part
         of the same gRPC stream.
-      EXT_AUTHZ_GRPC: The extension service uses Envoy's `ext_authz` gRPC API.
-        The backend service for the extension must use HTTP2, or H2C as the
-        protocol. `EXT_AUTHZ_GRPC` is only supported for `AuthzExtension`
-        resources.
     """
     WIRE_FORMAT_UNSPECIFIED = 0
     EXT_PROC_GRPC = 1
-    EXT_AUTHZ_GRPC = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -474,7 +469,7 @@ class ExtensionChainExtension(_messages.Message):
       the HTTP request logs. The name must conform with RFC-1034, is
       restricted to lower-cased letters, numbers and hyphens, and can have a
       maximum length of 63 characters. Additionally, the first character must
-      be a letter and the last a letter or a number.
+      be a letter and the last a letter or a number. This field is required.
     requestBodySendMode: Optional. Configures the send mode for request body
       processing. The field can only be set if `supported_events` includes
       `REQUEST_BODY`. If `supported_events` includes `REQUEST_BODY`, but
@@ -3163,8 +3158,8 @@ class MulticastConsumerAssociation(_messages.Message):
   r"""Multicast consumer association resource.
 
   Enums:
-    ResourceStateValueValuesEnum: Output only. The resource state of the
-      multicast consumer association.
+    ResourceStateValueValuesEnum: Output only. [Deprecated] The resource state
+      of the multicast consumer association. Use the state field instead.
 
   Messages:
     LabelsValue: Optional. Labels as key-value pairs
@@ -3187,8 +3182,9 @@ class MulticastConsumerAssociation(_messages.Message):
       policies-overview] that can be used to place virtual machine (VM)
       instances as multicast consumers close to the multicast infrastructure
       created for this domain, on a best effort basis.
-    resourceState: Output only. The resource state of the multicast consumer
-      association.
+    resourceState: Output only. [Deprecated] The resource state of the
+      multicast consumer association. Use the state field instead.
+    state: Output only. [Output only] The state of the resource.
     uniqueId: Output only. [Output only] The Google-generated UUID for the
       resource. This value is unique across all multicast consumer association
       resources. If a consumer association is deleted and another with the
@@ -3199,7 +3195,8 @@ class MulticastConsumerAssociation(_messages.Message):
   """
 
   class ResourceStateValueValuesEnum(_messages.Enum):
-    r"""Output only. The resource state of the multicast consumer association.
+    r"""Output only. [Deprecated] The resource state of the multicast consumer
+    association. Use the state field instead.
 
     Values:
       CONSUMER_RESOURCE_STATE_UNSPECIFIED: The consumer resource state is not
@@ -3244,8 +3241,9 @@ class MulticastConsumerAssociation(_messages.Message):
   network = _messages.StringField(6)
   placementPolicy = _messages.StringField(7)
   resourceState = _messages.EnumField('ResourceStateValueValuesEnum', 8)
-  uniqueId = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  state = _messages.MessageField('MulticastResourceState', 9)
+  uniqueId = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class MulticastDomain(_messages.Message):
@@ -3269,6 +3267,7 @@ class MulticastDomain(_messages.Message):
       /locations/global/multicastDomainGroups/{multicast_domain_group}`.
     name: Identifier. The resource name of the multicast domain. Use the
       following format: `projects/*/locations/global/multicastDomains/*`
+    state: Output only. [Output only] The state of the resource.
     ullMulticastDomain: Optional. Information for an Ultra-Low-Latency
       multicast domain.
     uniqueId: Output only. [Output only] The Google-generated UUID for the
@@ -3310,9 +3309,10 @@ class MulticastDomain(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   multicastDomainGroup = _messages.StringField(6)
   name = _messages.StringField(7)
-  ullMulticastDomain = _messages.MessageField('UllMulticastDomain', 8)
-  uniqueId = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  state = _messages.MessageField('MulticastResourceState', 8)
+  ullMulticastDomain = _messages.MessageField('UllMulticastDomain', 9)
+  uniqueId = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class MulticastDomainActivation(_messages.Message):
@@ -3337,6 +3337,7 @@ class MulticastDomainActivation(_messages.Message):
     name: Identifier. The resource name of the multicast domain activation.
       Use the following format:
       `projects/*/locations/*/multicastDomainActivations/*`.
+    state: Output only. [Output only] The state of the resource.
     trafficSpec: Optional. The traffic specification for the multicast domain
       activation.
     uniqueId: Output only. [Output only] The Google-generated UUID for the
@@ -3379,9 +3380,10 @@ class MulticastDomainActivation(_messages.Message):
   multicastConsumerAssociations = _messages.StringField(5, repeated=True)
   multicastDomain = _messages.StringField(6)
   name = _messages.StringField(7)
-  trafficSpec = _messages.MessageField('TrafficSpec', 8)
-  uniqueId = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  state = _messages.MessageField('MulticastResourceState', 8)
+  trafficSpec = _messages.MessageField('TrafficSpec', 9)
+  uniqueId = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class MulticastDomainGroup(_messages.Message):
@@ -3400,6 +3402,7 @@ class MulticastDomainGroup(_messages.Message):
       with the group. There can be at most 2 multicast domains in a group.
     name: Identifier. The resource name of the multicast domain group. Use the
       following format: `projects/*/locations/global/multicastDomainGroups/*`
+    state: Output only. [Output only] The state of the resource.
     uniqueId: Output only. [Output only] The Google-generated UUID for the
       resource. This value is unique across all multicast domain group
       resources. If a domain is deleted and another with the same name is
@@ -3437,16 +3440,17 @@ class MulticastDomainGroup(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 3)
   multicastDomains = _messages.StringField(4, repeated=True)
   name = _messages.StringField(5)
-  uniqueId = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  state = _messages.MessageField('MulticastResourceState', 6)
+  uniqueId = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class MulticastGroupConsumerActivation(_messages.Message):
   r"""Multicast group consumer activation resource.
 
   Enums:
-    ResourceStateValueValuesEnum: Output only. The resource state of the
-      multicast group consumer activation.
+    ResourceStateValueValuesEnum: Output only. [Deprecated] The resource state
+      of the multicast group consumer activation. Use the state field instead.
 
   Messages:
     LabelsValue: Optional. Labels as key-value pairs
@@ -3475,8 +3479,9 @@ class MulticastGroupConsumerActivation(_messages.Message):
     name: Identifier. The resource name of the multicast group consumer
       activation. Use the following format:
       `projects/*/locations/*/multicastGroupConsumerActivations/*`.
-    resourceState: Output only. The resource state of the multicast group
-      consumer activation.
+    resourceState: Output only. [Deprecated] The resource state of the
+      multicast group consumer activation. Use the state field instead.
+    state: Output only. [Output only] The state of the resource.
     uniqueId: Output only. [Output only] The Google-generated UUID for the
       resource. This value is unique across all multicast group consumer
       activation resources. If a group consumer activation is deleted and
@@ -3487,8 +3492,8 @@ class MulticastGroupConsumerActivation(_messages.Message):
   """
 
   class ResourceStateValueValuesEnum(_messages.Enum):
-    r"""Output only. The resource state of the multicast group consumer
-    activation.
+    r"""Output only. [Deprecated] The resource state of the multicast group
+    consumer activation. Use the state field instead.
 
     Values:
       CONSUMER_RESOURCE_STATE_UNSPECIFIED: The consumer resource state is not
@@ -3534,8 +3539,9 @@ class MulticastGroupConsumerActivation(_messages.Message):
   multicastGroupRangeActivation = _messages.StringField(7)
   name = _messages.StringField(8)
   resourceState = _messages.EnumField('ResourceStateValueValuesEnum', 9)
-  uniqueId = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  state = _messages.MessageField('MulticastResourceState', 10)
+  uniqueId = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class MulticastGroupProducerActivation(_messages.Message):
@@ -3565,6 +3571,7 @@ class MulticastGroupProducerActivation(_messages.Message):
     name: Identifier. The resource name of the multicast group producer
       activation. Use the following format:
       `projects/*/locations/*/multicastGroupProducerActivations/*`.
+    state: Output only. [Output only] The state of the resource.
     uniqueId: Output only. [Output only] The Google-generated UUID for the
       resource. This value is unique across all multicast group producer
       activation resources. If a group producer activation is deleted and
@@ -3605,8 +3612,9 @@ class MulticastGroupProducerActivation(_messages.Message):
   multicastGroupRangeActivation = _messages.StringField(5)
   multicastProducerAssociation = _messages.StringField(6)
   name = _messages.StringField(7)
-  uniqueId = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  state = _messages.MessageField('MulticastResourceState', 8)
+  uniqueId = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class MulticastGroupRange(_messages.Message):
@@ -3655,6 +3663,7 @@ class MulticastGroupRange(_messages.Message):
       Class D address (224.0.0.0 to 239.255.255.255) and have a prefix length
       >= 23. Use the following format:
       `projects/*/locations/global/internalRanges/*`.
+    state: Output only. [Output only] The state of the resource.
     uniqueId: Output only. [Output only] The Google-generated UUID for the
       resource. This value is unique across all multicast group range
       resources. If a group range is deleted and another with the same name is
@@ -3715,8 +3724,9 @@ class MulticastGroupRange(_messages.Message):
   name = _messages.StringField(9)
   requireExplicitAccept = _messages.BooleanField(10)
   reservedInternalRange = _messages.StringField(11)
-  uniqueId = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  state = _messages.MessageField('MulticastResourceState', 12)
+  uniqueId = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class MulticastGroupRangeActivation(_messages.Message):
@@ -3753,6 +3763,7 @@ class MulticastGroupRangeActivation(_messages.Message):
     name: Identifier. The resource name of the multicast group range
       activation. Use the following format:
       `projects/*/locations/*/multicastGroupRangeActivations/*`.
+    state: Output only. [Output only] The state of the resource.
     uniqueId: Output only. [Output only] The Google-generated UUID for the
       resource. This value is unique across all multicast group resources. If
       a group is deleted and another with the same name is created, the new
@@ -3794,8 +3805,9 @@ class MulticastGroupRangeActivation(_messages.Message):
   multicastGroupConsumerActivations = _messages.StringField(7, repeated=True)
   multicastGroupRange = _messages.StringField(8)
   name = _messages.StringField(9)
-  uniqueId = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  state = _messages.MessageField('MulticastResourceState', 10)
+  uniqueId = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class MulticastLogConfig(_messages.Message):
@@ -3830,6 +3842,7 @@ class MulticastProducerAssociation(_messages.Message):
     network: Required. The resource name of the multicast producer VPC
       network. Use following format:
       `projects/{project}/locations/global/networks/{network}`.
+    state: Output only. [Output only] The state of the resource.
     uniqueId: Output only. [Output only] The Google-generated UUID for the
       resource. This value is unique across all multicast producer association
       resources. If a producer association is deleted and another with the
@@ -3869,8 +3882,13 @@ class MulticastProducerAssociation(_messages.Message):
   multicastDomainActivation = _messages.StringField(4)
   name = _messages.StringField(5)
   network = _messages.StringField(6)
-  uniqueId = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  state = _messages.MessageField('MulticastResourceState', 7)
+  uniqueId = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+
+
+class MulticastResourceState(_messages.Message):
+  r"""The multicast resource's state."""
 
 
 class NetworkservicesProjectsLocationsAuthzExtensionsCreateRequest(_messages.Message):
@@ -7728,16 +7746,25 @@ class WasmPluginVersion(_messages.Message):
   Fields:
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A human-readable description of the resource.
-    imageDigest: Output only. The resolved digest for the image specified in
-      the `image` field. The digest is resolved during the creation of
-      `WasmPluginVersion` resource. This field holds the digest value,
-      regardless of whether a tag or digest was originally specified in the
-      `image` field.
-    imageUri: Optional. URI of the container image containing the plugin,
-      stored in the Artifact Registry. When a new `WasmPluginVersion` resource
-      is created, the digest of the container image is saved in the
-      `image_digest` field. When downloading an image, the digest value is
-      used instead of an image tag.
+    imageDigest: Output only. This field holds the digest (usually checksum)
+      value for the plugin image. The value is calculated based on the
+      `image_uri` field. If the `image_uri` field refers to a container image,
+      the digest value is obtained from the container image. If the
+      `image_uri` field refers to a generic artifact, the digest value is
+      calculated based on the contents of the file.
+    imageUri: Optional. URI of the image containing the Wasm module, stored in
+      Artifact Registry. The URI can refer to one of the following repository
+      formats: * Container images: the `image_uri` must point to a container
+      that contains a single file with the name `plugin.wasm`. When a new
+      `WasmPluginVersion` resource is created, the digest of the image is
+      saved in the `image_digest` field. When pulling a container image from
+      Artifact Registry, the digest value is used instead of an image tag. *
+      Generic artifacts: the `image_uri` must be in this format:
+      `projects/{project}/locations/{location}/repositories/{repository}/
+      genericArtifacts/{package}:{version}`. The specified package and version
+      must contain a file with the name `plugin.wasm`. When a new
+      `WasmPluginVersion` resource is created, the checksum of the contents of
+      the file is saved in the `image_digest` field.
     labels: Optional. Set of labels associated with the `WasmPluginVersion`
       resource.
     name: Identifier. Name of the `WasmPluginVersion` resource in the
@@ -7750,14 +7777,23 @@ class WasmPluginVersion(_messages.Message):
       contents is saved in the `plugin_config_digest` field.
     pluginConfigDigest: Output only. This field holds the digest (usually
       checksum) value for the plugin configuration. The value is calculated
-      based on the contents of `plugin_config_data` or the container image
-      defined by the `plugin_config_uri` field.
+      based on the contents of `plugin_config_data` field or the image defined
+      by the `plugin_config_uri` field.
     pluginConfigUri: URI of the plugin configuration stored in the Artifact
       Registry. The configuration is provided to the plugin at runtime through
-      the `ON_CONFIGURE` callback. The container image must contain only a
-      single file with the name `plugin.config`. When a new
-      `WasmPluginVersion` resource is created, the digest of the container
-      image is saved in the `plugin_config_digest` field.
+      the `ON_CONFIGURE` callback. The URI can refer to one of the following
+      repository formats: * Container images: the `plugin_config_uri` must
+      point to a container that contains a single file with the name
+      `plugin.config`. When a new `WasmPluginVersion` resource is created, the
+      digest of the image is saved in the `plugin_config_digest` field. When
+      pulling a container image from Artifact Registry, the digest value is
+      used instead of an image tag. * Generic artifacts: the
+      `plugin_config_uri` must be in this format:
+      `projects/{project}/locations/{location}/repositories/{repository}/
+      genericArtifacts/{package}:{version}`. The specified package and version
+      must contain a file with the name `plugin.config`. When a new
+      `WasmPluginVersion` resource is created, the checksum of the contents of
+      the file is saved in the `plugin_config_digest` field.
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
@@ -7809,16 +7845,25 @@ class WasmPluginVersionDetails(_messages.Message):
   Fields:
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A human-readable description of the resource.
-    imageDigest: Output only. The resolved digest for the image specified in
-      `image`. The digest is resolved during the creation of a
-      `WasmPluginVersion` resource. This field holds the digest value
-      regardless of whether a tag or digest was originally specified in the
-      `image` field.
-    imageUri: Optional. URI of the container image containing the Wasm module,
-      stored in the Artifact Registry. The container image must contain only a
-      single file with the name `plugin.wasm`. When a new `WasmPluginVersion`
-      resource is created, the URI gets resolved to an image digest and saved
-      in the `image_digest` field.
+    imageDigest: Output only. This field holds the digest (usually checksum)
+      value for the plugin image. The value is calculated based on the
+      `image_uri` field. If the `image_uri` field refers to a container image,
+      the digest value is obtained from the container image. If the
+      `image_uri` field refers to a generic artifact, the digest value is
+      calculated based on the contents of the file.
+    imageUri: Optional. URI of the image containing the Wasm module, stored in
+      Artifact Registry. The URI can refer to one of the following repository
+      formats: * Container images: the `image_uri` must point to a container
+      that contains a single file with the name `plugin.wasm`. When a new
+      `WasmPluginVersion` resource is created, the digest of the image is
+      saved in the `image_digest` field. When pulling a container image from
+      Artifact Registry, the digest value is used instead of an image tag. *
+      Generic artifacts: the `image_uri` must be in this format:
+      `projects/{project}/locations/{location}/repositories/{repository}/
+      genericArtifacts/{package}:{version}`. The specified package and version
+      must contain a file with the name `plugin.wasm`. When a new
+      `WasmPluginVersion` resource is created, the checksum of the contents of
+      the file is saved in the `image_digest` field.
     labels: Optional. Set of labels associated with the `WasmPluginVersion`
       resource.
     pluginConfigData: Configuration for the plugin. The configuration is
@@ -7827,14 +7872,23 @@ class WasmPluginVersionDetails(_messages.Message):
       contents is saved in the `plugin_config_digest` field.
     pluginConfigDigest: Output only. This field holds the digest (usually
       checksum) value for the plugin configuration. The value is calculated
-      based on the contents of the `plugin_config_data` field or the container
-      image defined by the `plugin_config_uri` field.
+      based on the contents of `plugin_config_data` field or the image defined
+      by the `plugin_config_uri` field.
     pluginConfigUri: URI of the plugin configuration stored in the Artifact
       Registry. The configuration is provided to the plugin at runtime through
-      the `ON_CONFIGURE` callback. The container image must contain only a
-      single file with the name `plugin.config`. When a new
-      `WasmPluginVersion` resource is created, the digest of the container
-      image is saved in the `plugin_config_digest` field.
+      the `ON_CONFIGURE` callback. The URI can refer to one of the following
+      repository formats: * Container images: the `plugin_config_uri` must
+      point to a container that contains a single file with the name
+      `plugin.config`. When a new `WasmPluginVersion` resource is created, the
+      digest of the image is saved in the `plugin_config_digest` field. When
+      pulling a container image from Artifact Registry, the digest value is
+      used instead of an image tag. * Generic artifacts: the
+      `plugin_config_uri` must be in this format:
+      `projects/{project}/locations/{location}/repositories/{repository}/
+      genericArtifacts/{package}:{version}`. The specified package and version
+      must contain a file with the name `plugin.config`. When a new
+      `WasmPluginVersion` resource is created, the checksum of the contents of
+      the file is saved in the `plugin_config_digest` field.
     updateTime: Output only. The timestamp when the resource was updated.
   """
 

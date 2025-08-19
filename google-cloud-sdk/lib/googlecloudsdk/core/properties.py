@@ -356,7 +356,6 @@ class PropertyValue(object):
     FLAG = 'flag'
     CALLBACK = 'callback'
     DEFAULT = 'default'
-    FEATURE_FLAG = 'feature flag'
 
   def __init__(self, value, source=PropertySource.UNKNOWN):
     self.value = value
@@ -901,8 +900,7 @@ class _Section(object):
            validator=None,
            choices=None,
            completer=None,
-           default_flag=None,
-           is_feature_flag=None):
+           default_flag=None):
     prop = _Property(
         section=self.__name,
         name=name,
@@ -914,8 +912,7 @@ class _Section(object):
         validator=validator,
         choices=choices,
         completer=completer,
-        default_flag=default_flag,
-        is_feature_flag=is_feature_flag)
+        default_flag=default_flag)
     self.__properties[name] = prop
     return prop
 
@@ -2234,11 +2231,6 @@ class _SectionCore(_Section):
         hidden=True,
         help_text='If True, the parser for gcloud Resource Identifiers will be '
         'enabled when interpreting resource arguments.')
-    self.enable_feature_flags = self._AddBool(
-        'enable_feature_flags',
-        default=True,
-        help_text='If True, remote config-file driven feature flags will be '
-        'enabled.')
     self.resource_completion_style = self._Add(
         'resource_completion_style',
         choices=('flags', 'gri'),
@@ -3924,14 +3916,6 @@ class _SectionTest(_Section):
     self.matrix_status_interval = self._Add(
         'matrix_status_interval', hidden=True)
 
-    self.feature_flag = self._Add(
-        'feature_flag',
-        hidden=True,
-        internal=True,
-        is_feature_flag=True,
-        help_text=('Run `gcloud meta test --feature-flag` to test the value of '
-                   'this feature flag.'))
-
 
 class _SectionTranscoder(_Section):
   """Contains the properties for the 'transcoder' section."""
@@ -4086,9 +4070,6 @@ class _Property(object):
       was invalid.
     choices: [str], The allowable values for this property.  This is included in
       the help text and used in tab completion.
-    is_feature_flag: bool, True to enable feature flags. False to disable
-      feature bool, if True, this property is a feature flag property. See
-      go/cloud-sdk-feature-flags for more information.
   """
 
   def __init__(self,
@@ -4102,8 +4083,7 @@ class _Property(object):
                validator=None,
                choices=None,
                completer=None,
-               default_flag=None,
-               is_feature_flag=None):
+               default_flag=None):
     self.__section = section
     self.__name = name
     self.__help_text = help_text
@@ -4115,7 +4095,6 @@ class _Property(object):
     self.__choices = choices
     self.__completer = completer
     self.__default_flag = default_flag
-    self.__is_feature_flag = is_feature_flag
 
   @property
   def section(self):
@@ -4156,10 +4135,6 @@ class _Property(object):
   @property
   def default_flag(self):
     return self.__default_flag
-
-  @property
-  def is_feature_flag(self):
-    return self.__is_feature_flag
 
   def __hash__(self):
     return hash(self.section) + hash(self.name)
@@ -4566,25 +4541,6 @@ def _GetProperty(prop, properties_file, required):
   return None
 
 
-def GetValueFromFeatureFlag(prop):
-  """Gets the property value from the Feature Flags yaml.
-
-  Args:
-    prop: The property to get
-
-  Returns:
-    str, the value of the property, or None if it is not set.
-  """
-  # pylint: disable=g-import-not-at-top
-  from googlecloudsdk.core.feature_flags import config as feature_flags_config
-  # pylint: enable=g-import-not-at-top
-  ff_config = feature_flags_config.GetFeatureFlagsConfig(
-      VALUES.core.account.Get(), VALUES.core.project.Get())
-  if ff_config:
-    return Stringize(ff_config.Get(prop))
-  return None
-
-
 def _GetPropertyWithoutDefault(prop, properties_file):
   """Gets the given property without using a default.
 
@@ -4613,18 +4569,7 @@ def _GetPropertyWithoutDefault(prop, properties_file):
       return PropertyValue(
           Stringize(value), PropertyValue.PropertySource.CALLBACK)
 
-  # Feature Flag callback
-  if (prop.is_feature_flag and prop != VALUES.core.enable_feature_flags and
-      FeatureFlagEnabled()):
-    return PropertyValue(
-        GetValueFromFeatureFlag(prop),
-        PropertyValue.PropertySource.FEATURE_FLAG)
-
   return None
-
-
-def FeatureFlagEnabled():
-  return VALUES.core.enable_feature_flags.GetBool()
 
 
 def _GetPropertyWithoutCallback(prop, properties_file):

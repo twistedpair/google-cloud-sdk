@@ -624,7 +624,9 @@ class Connection(_messages.Message):
     destinationComponentParameters: Optional. The parameters of the connection
       associated with the destination component.
     destinationComponentUri: Required. The destination component URI used to
-      generate the connection.
+      generate the connection. Format is `projects/$project/locations/$locatio
+      n/spaces/$space/applicationTemplates/$application_template/components/$c
+      omponent`
     name: Identifier. The connection name.
     sourceComponentParameters: Optional. The parameters of the connection
       associated with the source component.

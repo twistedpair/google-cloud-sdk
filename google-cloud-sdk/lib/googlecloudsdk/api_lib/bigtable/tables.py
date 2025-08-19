@@ -304,7 +304,7 @@ def RefreshUpdateMask(unused_ref, args, req):
     req = AddFieldToUpdateMask('automatedBackupPolicy', req)
   if args.automated_backup_retention_period:
     req = AddFieldToUpdateMask('automatedBackupPolicy.retentionPeriod', req)
-  # TODO: b/379182385 - Remove this check once the flag is released in GA.
+  # TODO: b/418228423 - Remove this check once the flag is released in GA.
   #
   # We need this to verify that the flag exists in this release track.
   if hasattr(args, 'clear_tiered_storage_config'):
@@ -539,7 +539,7 @@ def HandleTieredStorageArgs(unused_ref, args, req):
   Returns:
     req: the updateTableRequest with tiered storage config handled.
   """
-  # TODO: b/379182385 - Remove this check once the flag is released in GA.
+  # TODO: b/418228423 - Remove this check once the flag is released in GA.
   #
   # We need this to verify that the flag exists in this release track.
   if not hasattr(args, 'clear_tiered_storage_config'):

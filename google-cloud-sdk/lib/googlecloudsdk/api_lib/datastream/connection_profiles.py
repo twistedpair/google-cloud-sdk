@@ -232,6 +232,8 @@ class ConnectionProfilesClient:
       )
     if args.mongodb_tls:
       profile.sslConfig = {}
+      if args.mongodb_ca_certificate:
+        profile.sslConfig.caCertificate = args.mongodb_ca_certificate
     return profile
 
   def _ParseSslConfig(self, data):

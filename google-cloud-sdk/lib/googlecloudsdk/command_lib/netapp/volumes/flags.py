@@ -112,7 +112,7 @@ Valid component values are:
   )
 
 
-def AddVolumeShareNameArg(parser, required=True):
+def AddVolumeShareNameArg(parser, required=False):
   """Adds the Share name arg to the arg parser."""
   parser.add_argument(
       '--share-name',
@@ -440,6 +440,23 @@ Valid restricted action options are:
   )
 
 
+def GetOsTypeEnumFromArg(choice, messages):
+  """Returns the Choice Enum for OS Type.
+
+  Args:
+    choice: The choice for OS Type input as string.
+    messages: The messages module.
+
+  Returns:
+    the OS Type enum.
+  """
+
+  return arg_utils.ChoiceToEnum(
+      choice=choice,
+      enum_type=messages.BlockDevice.OsTypeValueValuesEnum
+  )
+
+
 def AddVolumeBackupConfigArg(parser):
   """Adds the --backup-config arg to the arg parser."""
   backup_config_arg_spec = {
@@ -492,6 +509,36 @@ def AddVolumeMultipleEndpointsArg(parser):
   )
 
 
+def AddVolumeBlockDevicesArg(parser, messages):
+  """Adds the --block-devices arg to the arg parser."""
+  block_device_arg_spec = {
+      'name': str,
+      'host-groups': arg_parsers.ArgList(
+          min_length=1, element_type=str, custom_delim_char='#'),
+      'os-type': messages.BlockDevice.OsTypeValueValuesEnum,
+      'size-gib': int,
+  }
+  block_devices_help = """\
+    A block device to be created with the volume.
+
+    This flag can be repeated to specify multiple block devices.
+
+    The following keys are available:
+    *name*::: A user-defined name for the block device.
+    *host-groups*::: A comma-separated list of host groups that can mount the block volume.
+    *os-type*::: The OS type of the volume. Allowed values are `OS_TYPE_UNSPECIFIED`, `LINUX`, `WINDOWS`.
+    *size-gib*::: The size of the block device in GiB. Note that this value is ignored during volume creation and is system-managed.
+  """
+  parser.add_argument(
+      '--block-devices',
+      type=arg_parsers.ArgDict(
+          spec=block_device_arg_spec),
+      action='append',
+      help=block_devices_help,
+      hidden=True,
+  )
+
+
 def AddVolumeTieringPolicyArg(parser, messages, release_track):
   """Adds the --tiering-policy arg to the arg parser."""
   if (release_track == calliope_base.ReleaseTrack.BETA or
@@ -533,6 +580,7 @@ def AddVolumeHybridReplicationParametersArg(
     parser, messages, release_track=calliope_base.ReleaseTrack.GA, hidden=False
 ):
   """Adds the --hybrid-replication-parameters arg to the arg parser."""
+  del release_track
   hybrid_replication_parameters_arg_spec = {
       'replication': str,
       'peer-volume-name': str,
@@ -543,24 +591,17 @@ def AddVolumeHybridReplicationParametersArg(
       ),
       'cluster-location': str,
       'description': str,
+      'replication-schedule': (
+          messages.HybridReplicationParameters.ReplicationScheduleValueValuesEnum
+      ),
+      'hybrid-replication-type': (
+          messages.HybridReplicationParameters.HybridReplicationTypeValueValuesEnum
+      ),
+      'large-volume-constituent-count': int,
       'labels': arg_parsers.ArgList(
           min_length=1, element_type=str, custom_delim_char='#'
       ),
   }
-  # TODO(b/425281073): Remove this check once the bidirectional snapmirror
-  # is AGA.
-  if release_track in [
-      calliope_base.ReleaseTrack.BETA, calliope_base.ReleaseTrack.ALPHA,
-  ]:
-    hybrid_replication_parameters_arg_spec['replication-schedule'] = (
-        messages.HybridReplicationParameters.ReplicationScheduleValueValuesEnum
-    )
-    hybrid_replication_parameters_arg_spec['hybrid-replication-type'] = (
-        messages.HybridReplicationParameters.HybridReplicationTypeValueValuesEnum
-    )
-    hybrid_replication_parameters_arg_spec[
-        'large-volume-constituent-count'
-    ] = int
 
   hybrid_replication_parameters_help = """\
   Hybrid Replication Parameters contains hybrid replication parameters on a volume.
@@ -579,12 +620,18 @@ def AddVolumeHybridReplicationParametersArg(
       labels=[KEY1:VALUE1#KEY2:VALUE2#...],
 
   replication is the desired name for the replication of the volume,
-  peer-volume-name is the name of the user's local source volume, peer-cluster-name is the name of the user's local source cluster,
-  peer-svm-name is the name of the user's local source vserver svm, peer-ip-addresses is a ampersand-separated(#) list of ip addresses,
-  cluster-location is the name of the source cluster location, description is the description of the replication,
-  replication-schedule is the schedule of corresponding hybrid replication created, hybrid-replication-type is the hybrid replication type
-  of the corresponding hybrid replication created, large-volume-constituent-count is the number of constituent volumes in the large volume, and
-  labels is an hashtag-separated(#) key value pair of labels with key and value separated by colon(:) for the replication.
+  peer-volume-name is the name of the user's local source volume,
+  peer-cluster-name is the name of the user's local source cluster,
+  peer-svm-name is the name of the user's local source vserver svm,
+  peer-ip-addresses is a ampersand-separated(#) list of ip addresses,
+  cluster-location is the name of the source cluster location,
+  description is the description of the replication,
+  replication-schedule is the schedule of corresponding hybrid replication
+  created, hybrid-replication-type is the hybrid replication type of the
+  corresponding hybrid replication created, large-volume-constituent-count
+  is the number of constituent volumes in the large volume, and labels is an
+  hashtag-separated(#) key value pair of labels with key and value separated
+  by colon(:) for the replication.
       """
   parser.add_argument(
       '--hybrid-replication-parameters',
@@ -710,7 +757,8 @@ def AddVolumeCreateArgs(parser, release_track):
   if release_track in [
       calliope_base.ReleaseTrack.ALPHA, calliope_base.ReleaseTrack.BETA,
   ]:
-    AddVolumeCacheParametersArg(parser, hidden=True)
+    AddVolumeCacheParametersArg(parser)
+    AddVolumeBlockDevicesArg(parser, messages)
   labels_util.AddCreateLabelsFlags(parser)
 
 
@@ -762,7 +810,8 @@ def AddVolumeUpdateArgs(parser, release_track):
   if release_track in [
       calliope_base.ReleaseTrack.ALPHA, calliope_base.ReleaseTrack.BETA,
   ]:
-    AddVolumeCacheParametersArg(parser, hidden=True)
+    AddVolumeCacheParametersArg(parser)
+    AddVolumeBlockDevicesArg(parser, messages)
   labels_util.AddUpdateLabelsFlags(parser)
 
 

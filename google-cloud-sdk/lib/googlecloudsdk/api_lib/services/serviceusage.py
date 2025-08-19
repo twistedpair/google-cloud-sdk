@@ -16,6 +16,7 @@
 import collections
 import copy
 import enum
+import json
 import sys
 from typing import List
 
@@ -745,7 +746,7 @@ def AddEnableRule(
 
 def RemoveEnableRule(
     project: str,
-    service: str,
+    services: List[str],
     consumer_policy_name: str = 'default',
     force: bool = False,
     folder: str = None,
@@ -758,8 +759,8 @@ def RemoveEnableRule(
 
   Args:
     project: The project for which to disable the service.
-    service: The identifier of the service to disable, for example
-      'serviceusage.googleapis.com'.
+    services: The list of identifiers of the services to disable, for example
+      ['serviceusage.googleapis.com', 'apikeys.googleapis.com'].
     consumer_policy_name: Name of consumer policy. The default name is
       "default".
     force: Disable service with usage within last 30 days or disable recently
@@ -795,22 +796,31 @@ def RemoveEnableRule(
   try:
     current_policy = GetConsumerPolicyV2Beta(policy_name)
 
-    service_is_enabled = False
+    services_to_remove = {
+        service
+        for service in services
+        if any(
+            _SERVICE_RESOURCE % service in enable_rule.services
+            for enable_rule in current_policy.enableRules
+        )
+    }
 
-    for enable_rule in current_policy.enableRules:
-      if _SERVICE_RESOURCE % service in enable_rule.services:
-        service_is_enabled = True
-        break
+    services = [
+        service for service in services if service not in services_to_remove
+    ]
 
-    if not service_is_enabled:
+    if not services_to_remove:
       raise exceptions.ConfigError(
-          'The service ' + service + ' is not enabled.'
+          'The services '
+          + ','.join(services)
+          + ' are not enabled in the consumer policy.'
       )
 
     proposed_policy = copy.deepcopy(current_policy)
     for enable_rule in proposed_policy.enableRules:
-      if _SERVICE_RESOURCE % service in enable_rule.services:
-        enable_rule.services.remove(_SERVICE_RESOURCE % service)
+      for service in services_to_remove:
+        if _SERVICE_RESOURCE % service in enable_rule.services:
+          enable_rule.services.remove(_SERVICE_RESOURCE % service)
 
     to_remove = []
 
@@ -822,23 +832,27 @@ def RemoveEnableRule(
 
       analysis_reponse = encoding.MessageToDict(op.response)
 
+      missing_dependency = {}
+
       if 'analysis' in analysis_reponse:
         for analysis in analysis_reponse['analysis']:
           for warning in analysis['analysisResult']['warnings']:
-            ## check if analysis is related to service to be removed.
-            if _SERVICE_RESOURCE % service in warning['detail']:
-              to_remove.append(analysis['service'])
+            for service in services_to_remove:
+              ## check if analysis is related to service to be removed.
+              if _SERVICE_RESOURCE % service in warning['detail']:
+                if service not in missing_dependency:
+                  missing_dependency[service] = []
+                missing_dependency[service].append(analysis['service'])
+                to_remove.append(analysis['service'])
 
       if not disable_dependency_services and to_remove:
-        to_remove = ','.join(to_remove)
+        json_string = json.dumps(missing_dependency)
         raise exceptions.ConfigError(
-            'The service '
-            + service
-            + ' is depended on by the following active service(s) '
-            + to_remove
-            + ' . Provide the --disable-dependency-services flag to disable'
-            ' them, or --bypass-dependency-service-check to ignore this'
-            ' check.'
+            'The services are depended on by the following active service(s) '
+            + json_string
+            + ' . Please remove the active depedndent services or provide the'
+            ' --disable-dependency-services flag to disable them, or'
+            ' --bypass-dependency-service-check to ignore this check.'
         )
 
     to_remove = set(to_remove)

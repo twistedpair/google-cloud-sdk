@@ -543,7 +543,6 @@ def ValidateLocationPolicyArgs(args):
       zone_split = zone.split('-')
       if (
           len(zone_split) != 3
-          or (len(zone_split[2]) != 1 or not zone_split[2].isalpha())
           or not zone_split[1][-1].isdigit()
       ):
         raise exceptions.InvalidArgumentException(

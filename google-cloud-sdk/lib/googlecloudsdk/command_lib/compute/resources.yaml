@@ -66,6 +66,16 @@ commitment:
     attribute_name: commitment
     help: The name of the Google Compute Engine regional commitment.
 
+composite_health_check:
+  name: composite health check
+  collection: compute.regionCompositeHealthChecks
+  attributes:
+  - *project
+  - *region
+  - parameter_name: compositeHealthCheck
+    attribute_name: composite_health_check
+    help: The name of the Google Compute Engine composite health check.
+
 address:
   name: address
   collection: compute.addresses

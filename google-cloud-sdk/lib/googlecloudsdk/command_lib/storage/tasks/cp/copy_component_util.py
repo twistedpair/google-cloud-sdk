@@ -158,7 +158,8 @@ def get_component_count(file_size, target_component_size, max_components):
 
   return min(
       math.ceil(file_size / target_component_size_bytes),
-      max_components if max_components is not None else float('inf'))
+      max_components if max_components is not None and max_components >= 1 else
+      float('inf'))
 
 
 def get_component_offsets_and_lengths(file_size, component_count):

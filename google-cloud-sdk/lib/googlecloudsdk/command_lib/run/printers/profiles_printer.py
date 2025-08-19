@@ -98,6 +98,8 @@ class ProfilePrinter(cp.CustomPrinterBase):
     """Overrides ResourcePrinter.Print to set single=True."""
     super(ProfilePrinter, self).Print(resources, True, intermediate)
 
-  def Transform(self, profiles):
+  def Transform(self, response):
     """Transforms a List[TrafficTargetPair] into a marker class format."""
-    return _transform_profiles(profiles)
+    profiles = [_transform_profiles(response.acceleratorOptions)]
+    profiles.append(response.comments)
+    return cp.Section(profiles, max_column_width=60)

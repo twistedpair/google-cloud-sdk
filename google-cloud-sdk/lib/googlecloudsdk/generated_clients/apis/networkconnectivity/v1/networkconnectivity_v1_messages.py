@@ -1434,9 +1434,11 @@ class InternalRange(_messages.Message):
       other words, with IPv6 this field only works as a redundant parameter.
     targetCidrRange: Optional. Can be set to narrow down or pick a different
       address space while searching for a free range. If not set, defaults to
-      the "10.0.0.0/8" address space. This can be used to search in other
-      rfc-1918 address spaces like "172.16.0.0/12" and "192.168.0.0/16" or
-      non-rfc-1918 address spaces used in the VPC.
+      the ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"] address space (for
+      auto-mode networks, the "10.0.0.0/9" range is used instead of
+      "10.0.0.0/8"). This can be used to target the search in other rfc-1918
+      address spaces like "172.16.0.0/12" and "192.168.0.0/16" or non-rfc-1918
+      address spaces used in the VPC.
     updateTime: Time when the internal range was updated.
     usage: Optional. The type of usage set for this InternalRange.
     users: Output only. The list of resources that refer to this internal
@@ -3086,8 +3088,9 @@ class NetworkconnectivityProjectsLocationsListRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).

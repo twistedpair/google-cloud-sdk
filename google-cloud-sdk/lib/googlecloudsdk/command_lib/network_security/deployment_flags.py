@@ -193,7 +193,6 @@ def AddMirroringDeploymentGroupResource(release_track, parser):
           "Location of the {resource}.",
           parameter_name="locationsId",
           fallthroughs=[
-              deps.ArgFallthrough("--location"),
               deps.FullySpecifiedAnchorFallthrough(
                   [deps.ArgFallthrough(DEPLOYMENT_RESOURCE_COLLECTION)],
                   collection_info,

@@ -112,15 +112,38 @@ def GetDirectoryServiceTypeEnumFromArg(choice, messages):
   )
 
 
-def GetStoragePoolQosTypeArg(messages, hidden=True):
+def GetStoragePoolQosTypeArg(messages):
   """Adds the Qos Type arg to the arg parser."""
   qos_type_arg = arg_utils.ChoiceEnumMapper(
       '--qos-type',
       messages.StoragePool.QosTypeValueValuesEnum,
       help_str="""Quality of service (QoS) type for the Storage Pool.""",
-      hidden=hidden,
   )
   return qos_type_arg
+
+
+def GetStoragePoolTypeEnumFromArg(choice, messages):
+  """Returns the Choice Enum for StoragePoolType."""
+  return arg_utils.ChoiceToEnum(
+      choice=choice,
+      enum_type=messages.StoragePool.TypeValueValuesEnum
+  )
+
+
+def AddStoragePoolTypeArg(parser, messages):
+  """Adds the --type arg to the arg parser for Storage Pools."""
+  type_arg = arg_utils.ChoiceEnumMapper(
+      '--type',
+      messages.StoragePool.TypeValueValuesEnum,
+      help_str='The type of the Storage Pool. `FILE` pools support file-based '
+               'volumes only. `UNIFIED` pools support both file and block '
+               'volumes.',
+      hidden=True,
+      custom_mappings={
+          'FILE': ('file', 'File-based volumes only (default).'),
+          'UNIFIED': ('unified', 'Both file and block volumes.'),
+      })
+  type_arg.choice_arg.AddToParser(parser)
 
 
 def AddStoragePoolServiceLevelArg(
@@ -306,9 +329,9 @@ def AddStoragePoolUnifiedPoolArg(parser):
   )
 
 
-def AddStoragePoolQosTypeArg(parser, messages, hidden=True):
+def AddStoragePoolQosTypeArg(parser, messages):
   GetStoragePoolQosTypeArg(
-      messages, hidden=hidden
+      messages
   ).choice_arg.AddToParser(parser)
 
 ## Helper functions to combine Storage Pools args / flags for gcloud commands ##
@@ -343,6 +366,7 @@ def AddStoragePoolCreateArgs(parser, release_track):
     AddStoragePoolEnableHotTierAutoResizeArg(parser)
     AddStoragePoolUnifiedPoolArg(parser)
     AddStoragePoolQosTypeArg(parser, messages)
+    AddStoragePoolTypeArg(parser, messages)
 
 
 def AddStoragePoolDeleteArgs(parser):

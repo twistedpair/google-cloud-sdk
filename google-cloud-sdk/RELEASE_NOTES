@@ -5,6 +5,114 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 535.0.0 (2025-08-19)
+
+### AI
+
+* Fixed flipped error messages for `--min-replica-count` and
+`--max-replica-count` when used with `--shared-resources`.
+
+### Artifact Registry
+
+* Added flag `--parallelism` to `gcloud artifacts files download` to allow
+  multipart parallel file download.
+* Added flag `--parallelism` to `gcloud artifacts generic download` to allow
+  multipart parallel file download.
+* Added flag `--parallelism` to `gcloud artifacts attachments download` to allow
+  multipart parallel file download.
+
+### Backup For GKE
+
+* Added `--selected-namespace-labels` flag to `gcloud beta container
+backup-restore backup-plans create` to support namespace label scoped backup
+plans.
+* Added `--selected-namespace-labels` flag to `gcloud beta container
+backup-restore backup-plans update` to support namespace label scoped backup
+plans.
+
+### Cloud Bigtable
+
+* `cbt` CLI now supports `sql`.
+* `cbt` CLI now supports `samplerowkeys`.
+* `cbt` CLI now supports `checkandmutate`.
+* `cbt` CLI now supports `readmodifywrite`.
+
+### Cloud Dataflow
+
+* Fixed an issue where the environment variable
+`FLEX_TEMPLATE_PYTHON_EXTRA_PACKAGES` does not install multiple Python
+dependencies in Flex Templates.
+
+### Cloud Firestore
+
+* Promoted Cloud Firestore user-creds `gcloud` CLI changes to GA.
+* Promoted Cloud Firestore connection-string `gcloud` CLI changes to GA.
+
+### Cloud Functions
+
+* Launched `gcloud beta functions upgrade <function>` command. This command
+allows users to upgrade a 1st Gen Cloud Function from Cloud Functions API
+(cloudfunctions.googleapis.com) to a native Cloud Run function managed by Cloud
+Run API(run.googleapis.com).
+
+### Cloud NetApp
+
+* Added `--qos-type` flag to `gcloud beta netapp storagepools create` and `gcloud beta netapp storagepools update` commands.
+* Modified `--share-name` flag of `gcloud netapp volumes create` command to be optional.
+* Added `--cache-parameters` flag to `gcloud alpha|beta netapp volumes create|update` commands.
+* Add support for `replication-schedule`, `hybrid-replication-type`, and
+    `large-volume-constituent-count` fields in `--hybrid-replication-parameters`
+    flag of `gcloud netapp volumes create` and `gcloud netapp volumes update`
+    commands.
+
+### Cloud Run
+
+* Deprecated the flag `--allow-unencrypted-build`. The customer-managed
+  encryption keys (CMEK) compliance is now available for the build process.
+* Added logic to use high-CPU machines for builds of Cloud Run services opting
+  in to use GPUs when using source-deploy. This feature is in Public Preview.
+
+### Cloud SQL
+
+*   Added `clear-network` flag to `gcloud sql backups restore` to clear the network when restoring a backup to a different project or region where the original network configuration isn't available.
+
+### Compute Engine
+
+* Support `--request-valid-for-duration` in alpha for `gcloud compute instances create` command.
+* Deprecated `--router` flag of `gcloud compute vpn-tunnels create` with Classic
+  VPN. Use static routing instead.
+* Deprecated `--router` flag of `gcloud compute vpn-tunnels update` with Classic
+  VPN. Use static routing instead.
+* Added `--ops-agent-version` and `--ops-agent-config` flags to `gcloud
+  compute zone-vm-extension-policies create|update` commands.
+
+### Database Migration
+
+* Added `--type` flag to `gcloud database-migration objects lookup`
+  command to describe the type of the object. The default type is DATABASE.
+* Added `--schema` flag to `gcloud database-migration objects lookup`
+  command to describe the schema of the object.
+* Added `--table` flag to `gcloud database-migration objects lookup`
+  command to describe the table of the object.
+
+### GKE Hub
+
+* Added `describe` to `gcloud beta container fleet|hub config-management`
+  command group.
+
+### Kubernetes Engine
+
+* Added `--enable-default-compute-class` flag to `gcloud container
+clusters create|update` commands to enable the default compute class.
+
+### Parametermanager
+
+* Added KMS key resource spec to support updating and clearing KMS key resource.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 534.0.0 (2025-08-12)
 
 ### Breaking Changes

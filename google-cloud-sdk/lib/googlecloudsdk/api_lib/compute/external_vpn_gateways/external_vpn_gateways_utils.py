@@ -46,8 +46,15 @@ class ExternalVpnGatewayHelper(object):
   def _service(self):
     return self._client.externalVpnGateways
 
-  def GetExternalVpnGatewayForInsert(self, name, description, redundancy_type,
-                                     interfaces):
+  def GetExternalVpnGatewayForInsert(
+      self,
+      name,
+      description,
+      redundancy_type,
+      interfaces,
+      params=None,
+      support_tagging_at_creation=False,
+  ):
     """Returns the VpnGateway message for an insert request.
 
     Args:
@@ -56,16 +63,25 @@ class ExternalVpnGatewayHelper(object):
         resource.
       redundancy_type: Redundancy type of the external VPN gateway.
       interfaces: list of interfaces for the external VPN gateway
+      params: Additional parameters for the external VPN gateway.
+      support_tagging_at_creation: Whether tagging is supported at creation.
 
     Returns:
       The ExternalVpnGateway message object that can be used in an insert
       request.
     """
+
+    external_vpn_gateway_args = {
+        'name': name,
+        'description': description,
+        'redundancyType': redundancy_type,
+        'interfaces': interfaces,
+    }
+    if (support_tagging_at_creation and params is not None):
+      external_vpn_gateway_args['params'] = params
+
     return self._messages.ExternalVpnGateway(
-        name=name,
-        description=description,
-        redundancyType=redundancy_type,
-        interfaces=interfaces)
+        **external_vpn_gateway_args)
 
   def WaitForOperation(self, external_vpn_gateway_ref, operation_ref,
                        wait_message):

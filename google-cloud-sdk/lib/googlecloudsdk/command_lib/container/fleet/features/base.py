@@ -124,14 +124,14 @@ class EnableCommandMixin(FeatureCommand):
 class EnableCommand(EnableCommandMixin, calliope_base.CreateCommand):
   """Base class for the command that enables a Feature."""
 
-  def Run(self, args):
+  def Run(self, _):
     return self.Enable(self.messages.Feature())
 
 
 class DescribeCommand(FeatureCommand, calliope_base.DescribeCommand):
   """Base class for the command that describes the status of a Feature."""
 
-  def Run(self, args):
+  def Run(self, _):
     return self.GetFeature()
 
 
