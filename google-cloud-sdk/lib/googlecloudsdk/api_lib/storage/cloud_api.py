@@ -1271,6 +1271,8 @@ class CloudApi(object):
       object_globs,
       request_config,
       allow_overwrite=False,
+      created_after_time=None,
+      created_before_time=None,
       deleted_after_time=None,
       deleted_before_time=None,
   ):
@@ -1283,6 +1285,10 @@ class CloudApi(object):
       request_config (RequestConfig): Contains preconditions for API requests.
       allow_overwrite (bool): Allow overwriting live objects with soft-deleted
         versions.
+      created_after_time (datetime|None): Restore only objects created after
+        this time.
+      created_before_time (datetime|None): Restore only objects created before
+        this time.
       deleted_after_time (datetime|None): Restore only objects soft-deleted
         after this time.
       deleted_before_time (datetime|None): Restore only objects soft-deleted

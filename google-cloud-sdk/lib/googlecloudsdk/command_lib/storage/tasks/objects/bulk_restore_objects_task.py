@@ -33,6 +33,8 @@ class BulkRestoreObjectsTask(task.Task):
       bucket_url,
       object_globs,
       allow_overwrite=False,
+      created_after_time=None,
+      created_before_time=None,
       deleted_after_time=None,
       deleted_before_time=None,
       user_request_args=None,
@@ -44,16 +46,22 @@ class BulkRestoreObjectsTask(task.Task):
       object_globs (list[str]): Objects in the target bucket matching these glob
         patterns will be restored.
       allow_overwrite (bool): Overwrite existing live objects.
+      created_after_time (datetime): Filter results to objects created after
+        this time.
+      created_before_time (datetime): Filter results to objects created before
+        this time.
       deleted_after_time (datetime): Filter results to objects soft-deleted
-        after this time. Backend will reject if used with `live_at_time`.
+        after this time.
       deleted_before_time (datetime): Filter results to objects soft-deleted
-        before this time. Backend will reject if used with `live_at_time`.
+        before this time.
       user_request_args (UserRequestArgs|None): Contains restore settings.
     """
     super(BulkRestoreObjectsTask, self).__init__()
     self._bucket_url = bucket_url
     self._object_globs = object_globs
     self._allow_overwrite = allow_overwrite
+    self._created_after_time = created_after_time
+    self._created_before_time = created_before_time
     self._deleted_after_time = deleted_after_time
     self._deleted_before_time = deleted_before_time
     self._user_request_args = user_request_args
@@ -77,6 +85,8 @@ class BulkRestoreObjectsTask(task.Task):
         self._object_globs,
         request_config=request_config,
         allow_overwrite=self._allow_overwrite,
+        created_after_time=self._created_after_time,
+        created_before_time=self._created_before_time,
         deleted_after_time=self._deleted_after_time,
         deleted_before_time=self._deleted_before_time,
     )
@@ -92,6 +102,8 @@ class BulkRestoreObjectsTask(task.Task):
         self._bucket_url == other._bucket_url
         and self._object_globs == other._object_globs
         and self._allow_overwrite == other._allow_overwrite
+        and self._created_after_time == other._created_after_time
+        and self._created_before_time == other._created_before_time
         and self._deleted_after_time == other._deleted_after_time
         and self._deleted_before_time == other._deleted_before_time
         and self._user_request_args == other._user_request_args

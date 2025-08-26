@@ -224,6 +224,9 @@ class _UserObjectArgs(_UserResourceArgs):
       content_encoding=None,
       content_language=None,
       content_type=None,
+      custom_contexts_to_set=None,
+      custom_contexts_to_remove=None,
+      custom_contexts_to_update=None,
       custom_fields_to_set=None,
       custom_fields_to_remove=None,
       custom_fields_to_update=None,
@@ -244,6 +247,9 @@ class _UserObjectArgs(_UserResourceArgs):
     self.content_encoding = content_encoding
     self.content_language = content_language
     self.content_type = content_type
+    self.custom_contexts_to_set = custom_contexts_to_set
+    self.custom_contexts_to_remove = custom_contexts_to_remove
+    self.custom_contexts_to_update = custom_contexts_to_update
     self.custom_fields_to_set = custom_fields_to_set
     self.custom_fields_to_remove = custom_fields_to_remove
     self.custom_fields_to_update = custom_fields_to_update
@@ -259,23 +265,28 @@ class _UserObjectArgs(_UserResourceArgs):
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
-    return (super(_UserObjectArgs, self).__eq__(other) and
-            self.cache_control == other.cache_control and
-            self.content_disposition == other.content_disposition and
-            self.content_encoding == other.content_encoding and
-            self.content_language == other.content_language and
-            self.content_type == other.content_type and
-            self.custom_fields_to_set == other.custom_fields_to_set and
-            self.custom_fields_to_remove == other.custom_fields_to_remove and
-            self.custom_fields_to_update == other.custom_fields_to_update and
-            self.custom_time == other.custom_time and
-            self.event_based_hold == other.event_based_hold and
-            self.md5_hash == other.md5_hash and
-            self.preserve_acl == other.preserve_acl and
-            self.retain_until == other.retain_until and
-            self.retention_mode == other.retention_mode and
-            self.storage_class == other.storage_class and
-            self.temporary_hold == other.temporary_hold)
+    return (
+        super(_UserObjectArgs, self).__eq__(other)
+        and self.cache_control == other.cache_control
+        and self.content_disposition == other.content_disposition
+        and self.content_encoding == other.content_encoding
+        and self.content_language == other.content_language
+        and self.content_type == other.content_type
+        and self.custom_contexts_to_set == other.custom_contexts_to_set
+        and self.custom_contexts_to_remove == other.custom_contexts_to_remove
+        and self.custom_contexts_to_update == other.custom_contexts_to_update
+        and self.custom_fields_to_set == other.custom_fields_to_set
+        and self.custom_fields_to_remove == other.custom_fields_to_remove
+        and self.custom_fields_to_update == other.custom_fields_to_update
+        and self.custom_time == other.custom_time
+        and self.event_based_hold == other.event_based_hold
+        and self.md5_hash == other.md5_hash
+        and self.preserve_acl == other.preserve_acl
+        and self.retain_until == other.retain_until
+        and self.retention_mode == other.retention_mode
+        and self.storage_class == other.storage_class
+        and self.temporary_hold == other.temporary_hold
+    )
 
 
 class _UserRequestArgs:
@@ -340,6 +351,21 @@ class _UserRequestArgs:
     return debug_output.generic_repr(self)
 
 
+def _get_value_or_clear_from_flags(
+    args, clear_flag, setter_flags
+):
+  """Returns setter value, or CLEAR value, prioritizing setter values."""
+  for setter_flag in setter_flags:
+    value = getattr(args, setter_flag, None)
+    if value is not None:
+      return value
+  if getattr(args, clear_flag, None):
+    return CLEAR
+  return None
+
+
+# TODO: b/436221393 - Replace all usages of this function with
+# _get_value_or_clear_from_flags.
 def _get_value_or_clear_from_flag(args, clear_flag, setter_flag):
   """Returns setter value or CLEAR value, prioritizing setter values."""
   value = getattr(args, setter_flag, None)
@@ -453,6 +479,11 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
                                                'content_md5')
       content_type = _get_value_or_clear_from_flag(args, 'clear_content_type',
                                                    'content_type')
+      custom_contexts_to_set = _get_value_or_clear_from_flags(
+          args,
+          'clear_custom_contexts',
+          ['custom_contexts', 'custom_contexts_file'],
+      )
       custom_fields_to_set = _get_value_or_clear_from_flag(
           args, 'clear_custom_metadata', 'custom_metadata')
       custom_time = _get_value_or_clear_from_flag(args, 'clear_custom_time',
@@ -482,6 +513,13 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
           content_encoding=content_encoding,
           content_language=content_language,
           content_type=content_type,
+          custom_contexts_to_set=custom_contexts_to_set,
+          custom_contexts_to_update=getattr(
+              args, 'update_custom_contexts', None
+          ),
+          custom_contexts_to_remove=getattr(
+              args, 'remove_custom_contexts', None
+          ),
           custom_fields_to_set=custom_fields_to_set,
           custom_fields_to_remove=getattr(args, 'remove_custom_metadata', None),
           custom_fields_to_update=getattr(args, 'update_custom_metadata', None),

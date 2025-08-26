@@ -31,10 +31,26 @@ from googlecloudsdk.core import log
 
 
 class OrganizationsClient(base.BaseClient):
+  """REST client for Apigee Organizations."""
   _entity_path = ["organization"]
+
+  @classmethod
+  def ProjectMapping(cls, identifiers):
+    """Returns a mapping of GCP projects to Apigee organization."""
+    try:
+      return request.ResponseToApiRequest(
+          identifiers,
+          ["organization"],
+          method=":getProjectMapping",
+          method_override="GET")
+
+    except errors.RequestError as error:
+      # Rewrite error message to better describe what was attempted.
+      raise error.RewrittenError("project mapping", "get")
 
 
 class APIsClient(base.BaseClient):
+  """REST client for Apigee API Proxies."""
   _entity_path = ["organization", "api"]
 
   @classmethod
@@ -146,6 +162,7 @@ class DevelopersClient(base.FieldPagedListClient):
 
 
 class DeploymentsClient(object):
+  """REST client for Apigee deployments."""
 
   @classmethod
   def List(cls, identifiers):

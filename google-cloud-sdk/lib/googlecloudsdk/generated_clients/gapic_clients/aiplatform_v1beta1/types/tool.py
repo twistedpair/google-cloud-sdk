@@ -891,25 +891,7 @@ class GoogleMaps(proto.Message):
     r"""Tool to retrieve public maps data for grounding, powered by
     Google.
 
-    Attributes:
-        api_auth (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.ApiAuth):
-            The authentication config to access the API. Deprecated.
-            Please use auth_config instead.
-        auth_config (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.AuthConfig):
-            The authentication config to access the API.
-            Only API key is supported.
     """
-
-    api_auth: gca_api_auth.ApiAuth = proto.Field(
-        proto.MESSAGE,
-        number=1,
-        message=gca_api_auth.ApiAuth,
-    )
-    auth_config: auth.AuthConfig = proto.Field(
-        proto.MESSAGE,
-        number=2,
-        message=auth.AuthConfig,
-    )
 
 
 class EnterpriseWebSearch(proto.Message):
@@ -1026,11 +1008,15 @@ class FunctionCallingConfig(proto.Message):
                 Model will not predict any function calls.
                 Model behavior is same as when not passing any
                 function declarations.
+            VALIDATED (5):
+                Model is constrained to predict either
+                function calls or natural language response.
         """
         MODE_UNSPECIFIED = 0
         AUTO = 1
         ANY = 2
         NONE = 3
+        VALIDATED = 5
 
     mode: Mode = proto.Field(
         proto.ENUM,

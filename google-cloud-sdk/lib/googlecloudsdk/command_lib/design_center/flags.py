@@ -56,5 +56,49 @@ def GetLocationResourceArg(
   )
 
 
+def SpaceResourceAttributeConfig(arg_name, help_text):
+  """Helper function for constructing ResourceAttributeConfig."""
+
+  return concepts.ResourceParameterAttributeConfig(
+      name=arg_name,
+      help_text=help_text,
+  )
+
+
+def GetSpaceResourceSpec(arg_name='space', help_text=None):
+  """Constructs and returns the Resource specification for Space."""
+
+  return concepts.ResourceSpec(
+      'designcenter.projects.locations.spaces',
+      resource_name='space',
+      spacesId=SpaceResourceAttributeConfig(arg_name, help_text),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+  )
+
+
+def GetSpaceResourceArg(
+    arg_name='space', help_text=None, positional=True, required=True
+):
+  """Constructs and returns the Space ID Resource Argument."""
+
+  help_text = help_text or 'The Space ID.'
+
+  return concept_parsers.ConceptParser.ForResource(
+      '{}{}'.format('' if positional else '--', arg_name),
+      GetSpaceResourceSpec(arg_name, help_text),
+      help_text,
+      required=required,
+  )
+
+
 def AddDescribeLocationFlags(parser):
   GetLocationResourceArg(positional=True).AddToParser(parser)
+
+
+def AddGetIamPolicyFlags(parser):
+  GetSpaceResourceArg().AddToParser(parser)
+
+
+def AddSetIamPolicyFlags(parser):
+  GetSpaceResourceArg().AddToParser(parser)

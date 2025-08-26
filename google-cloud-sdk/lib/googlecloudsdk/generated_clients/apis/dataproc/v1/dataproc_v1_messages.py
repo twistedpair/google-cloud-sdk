@@ -5497,6 +5497,16 @@ class GceClusterConfig(_messages.Message):
       (https://cloud.google.com/dataproc/docs/guides/attach-secure-tags)).
 
   Fields:
+    autoZoneExcludeZoneUris: Optional. An optional list of Compute Engine
+      zones where the Dataproc cluster will not be located when Auto Zone is
+      enabled. Only one of zone_uri or auto_zone_exclude_zone_uris can be set.
+      If both are omitted, the service will pick a zone in the cluster Compute
+      Engine region. If auto_zone_exclude_zone_uris is set and there are at
+      least two zones in the Compute Engine region that are not included in
+      the auto_zone_exclude_zone_uris, the service will pick one of those
+      zones.A full URL, partial URI, or short name are valid. Examples:
+      https://www.googleapis.com/compute/v1/projects/[project_id]/zones/[zone]
+      projects/[project_id]/zones/[zone] [zone]
     confidentialInstanceConfig: Optional. Confidential Instance Config for
       clusters using Confidential VMs
       (https://cloud.google.com/compute/confidential-vm/docs).
@@ -5646,20 +5656,21 @@ class GceClusterConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  confidentialInstanceConfig = _messages.MessageField('ConfidentialInstanceConfig', 1)
-  internalIpOnly = _messages.BooleanField(2)
-  metadata = _messages.MessageField('MetadataValue', 3)
-  networkUri = _messages.StringField(4)
-  nodeGroupAffinity = _messages.MessageField('NodeGroupAffinity', 5)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 6)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 7)
-  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 8)
-  serviceAccount = _messages.StringField(9)
-  serviceAccountScopes = _messages.StringField(10, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 11)
-  subnetworkUri = _messages.StringField(12)
-  tags = _messages.StringField(13, repeated=True)
-  zoneUri = _messages.StringField(14)
+  autoZoneExcludeZoneUris = _messages.StringField(1, repeated=True)
+  confidentialInstanceConfig = _messages.MessageField('ConfidentialInstanceConfig', 2)
+  internalIpOnly = _messages.BooleanField(3)
+  metadata = _messages.MessageField('MetadataValue', 4)
+  networkUri = _messages.StringField(5)
+  nodeGroupAffinity = _messages.MessageField('NodeGroupAffinity', 6)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 7)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 8)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 9)
+  serviceAccount = _messages.StringField(10)
+  serviceAccountScopes = _messages.StringField(11, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 12)
+  subnetworkUri = _messages.StringField(13)
+  tags = _messages.StringField(14, repeated=True)
+  zoneUri = _messages.StringField(15)
 
 
 class GdceClusterConfig(_messages.Message):

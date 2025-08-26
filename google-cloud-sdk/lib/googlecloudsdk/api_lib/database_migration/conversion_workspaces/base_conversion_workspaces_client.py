@@ -15,7 +15,7 @@
 """Database Migration Service conversion workspaces Base Client."""
 
 import abc
-from typing import TYPE_CHECKING
+from typing import Iterable, Optional, TYPE_CHECKING
 
 from googlecloudsdk.api_lib.database_migration import api_util
 from googlecloudsdk.calliope import base
@@ -89,3 +89,33 @@ class BaseConversionWorkspacesClient(abc.ABC):
   ) -> client.DatamigrationV1.ProjectsLocationsService:
     """Returns the location service."""
     return self.client.projects_locations
+
+  def CombineFilters(
+      self,
+      *filter_exprs: Iterable[Optional[str]],
+  ) -> Optional[str]:
+    """Combine filter expression with global filter.
+
+    Args:
+      *filter_exprs: Filter expressions to combine.
+
+    Returns:
+      Combined filter expression (or None if no filter expressions are
+      provided).
+    """
+
+    filter_exprs = tuple(
+        filter(
+            lambda filter_expr: filter_expr and filter_expr != '*',
+            filter_exprs,
+        )
+    )
+
+    if not filter_exprs:
+      return None
+    if len(filter_exprs) == 1:
+      return filter_exprs[0]
+
+    return ' AND '.join(
+        map(lambda filter_expr: f'({filter_expr})', filter_exprs)
+    )

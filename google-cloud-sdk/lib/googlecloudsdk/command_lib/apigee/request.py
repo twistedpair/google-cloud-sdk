@@ -116,7 +116,8 @@ def ResponseToApiRequest(identifiers,
                          query_params=None,
                          accept_mimetype=None,
                          body=None,
-                         body_mimetype="application/json"):
+                         body_mimetype="application/json",
+                         method_override=None):
   """Makes a request to the Apigee API and returns the response.
 
   Args:
@@ -133,6 +134,8 @@ def ResponseToApiRequest(identifiers,
       provided, the response will be parsed as JSON.
     body: data to send in the request body.
     body_mimetype: the mimetype of the body data, if not JSON.
+    method_override: the HTTP method to use for the request, when method starts
+      with a colon.
 
   Returns:
     an object containing the API's response. If accept_mimetype was set, this
@@ -172,6 +175,8 @@ def ResponseToApiRequest(identifiers,
   if method and method[0] == ":":
     url_path += method
     method = "POST"
+    if method_override:
+      method = method_override
   url = urllib.parse.urlunparse((scheme, host, url_path, "", query_string, ""))
 
   status, reason, response = _Communicate(url, method, body, headers)

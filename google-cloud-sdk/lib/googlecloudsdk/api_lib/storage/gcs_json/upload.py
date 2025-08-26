@@ -115,6 +115,17 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
           )
       )
 
+    if (isinstance(self._source_resource, resource_reference.ObjectResource) and
+        self._source_resource.custom_contexts):
+      object_metadata.contexts = (
+          encoding_helper.DictToMessage(
+              metadata_util.get_contexts_dict_from_custom_contexts_dict(
+                  self._source_resource.custom_contexts
+              ),
+              self._messages.Object.ContextsValue,
+          )
+      )
+
     self._copy_acl_from_source_if_source_is_a_cloud_object_and_preserve_acl_is_true(
         object_metadata
     )
@@ -124,6 +135,7 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
         self._request_config,
         attributes_resource=self._source_resource,
         posix_to_set=self._posix_to_set,
+        method_type=metadata_util.MethodType.OBJECT_INSERT,
     )
 
     return self._messages.StorageObjectsInsertRequest(

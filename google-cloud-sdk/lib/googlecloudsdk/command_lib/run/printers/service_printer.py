@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 import json
 
 from googlecloudsdk.api_lib.run import service
+from googlecloudsdk.command_lib.run import threat_detection_util as crtd_util
 from googlecloudsdk.command_lib.run.printers import k8s_object_printer_util as k8s_util
 from googlecloudsdk.command_lib.run.printers import revision_printer
 from googlecloudsdk.command_lib.run.printers import traffic_printer
@@ -99,7 +100,12 @@ class ServicePrinter(cp.CustomPrinterBase):
 
     labels.append(
         cp.Labeled([
-            ('Threat Detection', k8s_util.GetThreatDetectionEnabled(record)),
+            (
+                'Threat Detection',
+                crtd_util.PrintThreatDetectionState(
+                    record.threat_detection_state
+                ),
+            ),
         ])
     )
     return cp.Section(labels)

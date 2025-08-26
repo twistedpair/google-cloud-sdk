@@ -82,9 +82,9 @@ def _transform_profiles(profiles):
         else None,
         p.performanceStats[0].ntpotMilliseconds if p.performanceStats else None,
         p.performanceStats[0].ttftMilliseconds if p.performanceStats else None,
-        p.modelAndModelServerInfo.modelServerName,
-        p.modelAndModelServerInfo.modelServerVersion,
-        p.modelAndModelServerInfo.modelName,
+        p.modelServerInfo.modelServer,
+        p.modelServerInfo.modelServerVersion,
+        p.modelServerInfo.model,
     ]
     rows.append(row)
 

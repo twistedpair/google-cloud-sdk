@@ -55,6 +55,8 @@ class UnknownFieldError(Error):
 
 
 def _GetFullClassName(obj):
+  if isinstance(obj, type):
+    return '{}.{}'.format(obj.__module__, obj.__name__)
   return '{}.{}'.format(type(obj).__module__, type(obj).__name__)
 
 

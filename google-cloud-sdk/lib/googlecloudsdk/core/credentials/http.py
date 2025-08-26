@@ -26,6 +26,7 @@ import google_auth_httplib2
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import http
 from googlecloudsdk.core.credentials import creds as core_creds
+from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.credentials import transport
 import six
 
@@ -74,14 +75,22 @@ def Http(timeout='unset',
   if use_google_auth is None:
     use_google_auth = base.UseGoogleAuth()
   request_wrapper = RequestWrapper()
+  credentials = store.LoadIfEnabled(
+      allow_account_impersonation, use_google_auth
+  )
   http_client = request_wrapper.WrapQuota(
       http_client,
       enable_resource_quota,
       allow_account_impersonation,
-      use_google_auth)
-  http_client = request_wrapper.WrapCredentials(http_client,
-                                                allow_account_impersonation,
-                                                use_google_auth)
+      use_google_auth,
+      credentials=credentials,
+  )
+  http_client = request_wrapper.WrapCredentials(
+      http_client,
+      allow_account_impersonation,
+      use_google_auth,
+      credentials=credentials,
+  )
 
   if hasattr(http_client, '_googlecloudsdk_credentials'):
     creds = http_client._googlecloudsdk_credentials  # pylint: disable=protected-access
@@ -123,15 +132,21 @@ class RequestWrapper(transport.CredentialWrappingMixin,
       http_client = creds.authorize(http_client)
     return http_client
 
-  def WrapQuota(self,
-                http_client,
-                enable_resource_quota,
-                allow_account_impersonation,
-                use_google_auth):
+  def WrapQuota(
+      self,
+      http_client,
+      enable_resource_quota,
+      allow_account_impersonation,
+      use_google_auth,
+      credentials=None,
+  ):
     """Returns an http_client with quota project handling."""
-    quota_project = self.QuotaProject(enable_resource_quota,
-                                      allow_account_impersonation,
-                                      use_google_auth)
+    quota_project = self.QuotaProject(
+        enable_resource_quota,
+        allow_account_impersonation,
+        use_google_auth,
+        credentials=credentials,
+    )
     if not quota_project:
       return http_client
     orig_request = http_client.request

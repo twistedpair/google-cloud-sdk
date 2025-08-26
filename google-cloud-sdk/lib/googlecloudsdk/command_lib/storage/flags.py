@@ -23,6 +23,7 @@ import enum
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -59,6 +60,25 @@ For more information about supported configurations, see
 [Cloud Storage bucket IP filtering configurations](https://cloud.google.com/storage/docs/create-ip-filter#ip-filtering-configurations)
 """
 
+_CUSTOM_CONTEXT_FILE_HELP_TEXT = """
+Path to a local JSON or YAML file containing valid custom contexts one wants to
+set on an object. For example:
+
+1. The following JSON document shows two key value
+pairs, i.e. (key1, value1) and (key2, value2):
+  {
+    "key1": "value1"
+    "key2": "value2"
+  }
+
+2. The following YAML document shows two key value
+pairs, i.e. (key1, value1) and (key2, value2):
+  key1: value1
+  key2: value2
+
+Note that the keys, and values should be string.
+"""
+
 
 class ReplicationStrategy(enum.Enum):
   """Enum class for specifying the replication setting."""
@@ -88,6 +108,73 @@ def get_object_state_from_flags(flag_args):
   if getattr(flag_args, 'all_versions', False):
     return cloud_api.ObjectState.LIVE_AND_NONCURRENT
   return cloud_api.ObjectState.LIVE
+
+
+def add_object_context_setter_flags(parser):
+  """Adds flags that allow users to set object contexts."""
+  parser.add_argument(
+      '--custom-contexts',
+      metavar='CUSTOM_METADATA_KEYS_AND_VALUES',
+      type=arg_parsers.ArgDict(),
+      help=(
+          'Sets custom contexts on objects. The existing custom contexts (if'
+          ' any) would be overwritten.'
+      ),
+  )
+  parser.add_argument(
+      '--custom-contexts-file',
+      type=str,
+      metavar='CUSTOM_CONTEXTS_FILE',
+      help=_CUSTOM_CONTEXT_FILE_HELP_TEXT,
+  )
+
+
+def get_object_context_group(parser):
+  """Returns a group of flags that allow users to handle object contexts."""
+  return parser.add_mutually_exclusive_group(
+      category='OBJECT CONTEXTS',
+      help=(
+          'Flags that allow users to handle object contexts.'
+      ),
+      hidden=True,
+  )
+
+
+def add_object_contexts_flags(parser):
+  """Adds common object context related flags."""
+  context_group = get_object_context_group(parser)
+  add_object_context_setter_flags(context_group)
+  context_group.add_argument(
+      '--clear-custom-contexts',
+      action='store_true',
+      help='Clears all custom contexts on objects.',
+  )
+  context_subgroup = context_group.add_group(
+      help=(
+          'Flags that preserves the existing contexts on the object, and can be'
+          ' specified together. However they cannot be specified with'
+          ' `--clear-custom-contexts`, `--custom-contexts` or'
+          ' `--custom-contexts-file`.'
+      ),
+  )
+  context_subgroup.add_argument(
+      '--update-custom-contexts',
+      metavar='CUSTOM_METADATA_KEYS_AND_VALUES',
+      type=arg_parsers.ArgDict(),
+      help=(
+          'Updates the custom contexts on the object, if an entry is found, it'
+          ' would be overwritten, otherwise the entry would be added.'
+      ),
+  )
+  context_subgroup.add_argument(
+      '--remove-custom-contexts',
+      metavar='CUSTOM_METADATA_KEYS_AND_VALUES',
+      type=arg_parsers.ArgList(),
+      help=(
+          'Removes the custom contexts on the object, if an entry is not found,'
+          ' it would be ignored.'
+      ),
+  )
 
 
 def add_additional_headers_flag(parser):
@@ -242,7 +329,9 @@ def add_precondition_flags(parser):
       ' the requested object.')
 
 
-def add_object_metadata_flags(parser, allow_patch=False):
+def add_object_metadata_flags(
+    parser, allow_patch=False, release_track=base.ReleaseTrack.GA
+):
   """Add flags that allow setting object metadata."""
   metadata_group = parser.add_group(category='OBJECT METADATA')
   metadata_group.add_argument(
@@ -306,6 +395,9 @@ def add_object_metadata_flags(parser, allow_patch=False):
           ' be used with `--update-custom-metadata`. When used with'
           ' `--preserve-posix`, POSIX attributes specified by this flag are not'
           ' preserved.'))
+
+  if release_track == base.ReleaseTrack.ALPHA:
+    add_object_contexts_flags(metadata_group)
 
   if allow_patch:
     metadata_group.add_argument(

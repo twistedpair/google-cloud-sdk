@@ -224,6 +224,15 @@ def AddTargetServiceAndProducerForwardingRuleArgs(parser):
   )
 
 
+def AddTargetServiceArgsForUpdate(parser):
+  """Adds target-service flags for update."""
+  parser.add_argument(
+      '--target-service',
+      required=False,
+      help='URL of the target service that receives forwarded traffic.',
+  )
+
+
 def AddShowNatIpsFlag(parser):
   """Adds the --show-nat-ips flag."""
   parser.add_argument(

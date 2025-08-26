@@ -2219,6 +2219,9 @@ class UpgradeInfo(_messages.Message):
         upgrade state.
       ELIGIBLE_FOR_2ND_GEN_UPGRADE: Functions in this state are eligible for
         1st Gen -> 2nd Gen upgrade.
+      INELIGIBLE_FOR_UPGRADE_UNTIL_REDEPLOYMENT: Functions in this state are
+        ineligible for 1st Gen -> 2nd Gen upgrade until redeployment with
+        newer runtime.
       UPGRADE_OPERATION_IN_PROGRESS: An upgrade related operation is in
         progress.
       SETUP_FUNCTION_UPGRADE_CONFIG_SUCCESSFUL: SetupFunctionUpgradeConfig API
@@ -2240,14 +2243,15 @@ class UpgradeInfo(_messages.Message):
     """
     UPGRADE_STATE_UNSPECIFIED = 0
     ELIGIBLE_FOR_2ND_GEN_UPGRADE = 1
-    UPGRADE_OPERATION_IN_PROGRESS = 2
-    SETUP_FUNCTION_UPGRADE_CONFIG_SUCCESSFUL = 3
-    SETUP_FUNCTION_UPGRADE_CONFIG_ERROR = 4
-    ABORT_FUNCTION_UPGRADE_ERROR = 5
-    REDIRECT_FUNCTION_UPGRADE_TRAFFIC_SUCCESSFUL = 6
-    REDIRECT_FUNCTION_UPGRADE_TRAFFIC_ERROR = 7
-    ROLLBACK_FUNCTION_UPGRADE_TRAFFIC_ERROR = 8
-    COMMIT_FUNCTION_UPGRADE_ERROR = 9
+    INELIGIBLE_FOR_UPGRADE_UNTIL_REDEPLOYMENT = 2
+    UPGRADE_OPERATION_IN_PROGRESS = 3
+    SETUP_FUNCTION_UPGRADE_CONFIG_SUCCESSFUL = 4
+    SETUP_FUNCTION_UPGRADE_CONFIG_ERROR = 5
+    ABORT_FUNCTION_UPGRADE_ERROR = 6
+    REDIRECT_FUNCTION_UPGRADE_TRAFFIC_SUCCESSFUL = 7
+    REDIRECT_FUNCTION_UPGRADE_TRAFFIC_ERROR = 8
+    ROLLBACK_FUNCTION_UPGRADE_TRAFFIC_ERROR = 9
+    COMMIT_FUNCTION_UPGRADE_ERROR = 10
 
   buildConfig = _messages.MessageField('BuildConfig', 1)
   eventTrigger = _messages.MessageField('EventTrigger', 2)

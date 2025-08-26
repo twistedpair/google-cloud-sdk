@@ -608,6 +608,7 @@ class VolumesAdapter(object):
       restore_parameters = None
     volume.restoreParameters = restore_parameters
     volume.restrictedActions = restricted_actions
+    volume.throughputMibps = throughput_mibps
     if backup_config is not None:
       self.ParseBackupConfig(volume, backup_config)
     if large_capacity is not None:
@@ -624,8 +625,6 @@ class VolumesAdapter(object):
         self.release_track == base.ReleaseTrack.ALPHA
         or self.release_track == base.ReleaseTrack.BETA
     ):
-      if throughput_mibps is not None:
-        volume.throughputMibps = throughput_mibps
       if block_devices is not None:
         self.ParseBlockDevices(volume, block_devices)
     if cache_parameters is not None:

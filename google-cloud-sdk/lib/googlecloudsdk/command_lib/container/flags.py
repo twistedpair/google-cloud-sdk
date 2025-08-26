@@ -6409,7 +6409,6 @@ $ {command} --unset-membership-type
               """,
       },
       default=None,
-      hidden=True,
   )
 
   if is_update:
@@ -7190,6 +7189,73 @@ def AddSecretManagerEnableFlagGroup(
   """)
   secret_manager_group.add_argument(
       '--secret-manager-rotation-interval',
+      default=None,
+      help=help_text,
+      hidden=hidden,
+  )
+
+
+def AddSecretSyncFlagGroup(
+    parser: parser_arguments.ArgumentInterceptor, hidden=True, is_update=False
+) -> None:
+  """Adds --enable-secret-sync, --enable-secret-sync-rotation and --secret-sync-rotation-interval flags to the given parser.
+
+  Args:
+    parser: A given parser.
+    hidden: whether the flags are hidden.
+    is_update: Whether the flag is used for an update operation.
+  """
+  secret_sync_group = parser.add_group(
+      mutex=False,
+      help='Flags for Secret Sync configuration:',
+      hidden=hidden,
+  )
+  help_text = """\
+        Enables the Secret Sync component. See
+        https://github.com/kubernetes-sigs/secrets-store-sync-controller
+        https://github.com/GoogleCloudPlatform/secrets-store-csi-driver-provider-gcp
+    """
+  if is_update:
+    secret_sync_group.add_argument(
+        '--enable-secret-sync',
+        action=arg_parsers.StoreTrueFalseAction,
+        help=help_text,
+        hidden=hidden,
+    )
+  else:
+    secret_sync_group.add_argument(
+        '--enable-secret-sync',
+        action='store_true',
+        default=None,
+        help=help_text,
+        hidden=hidden,
+    )
+
+  help_text = textwrap.dedent("""\
+      Enables the rotation of secrets in the Secret Sync component.
+      provider component.
+  """)
+  if is_update:
+    secret_sync_group.add_argument(
+        '--enable-secret-sync-rotation',
+        action=arg_parsers.StoreTrueFalseAction,
+        help=help_text,
+        hidden=hidden,
+    )
+  else:
+    secret_sync_group.add_argument(
+        '--enable-secret-sync-rotation',
+        action='store_true',
+        default=None,
+        help=help_text,
+        hidden=hidden,
+    )
+
+  help_text = textwrap.dedent("""\
+      Set the rotation period for secrets in the Secret Sync component.
+  """)
+  secret_sync_group.add_argument(
+      '--secret-sync-rotation-interval',
       default=None,
       help=help_text,
       hidden=hidden,

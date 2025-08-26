@@ -133,7 +133,10 @@ class ConversionWorkspacesOperationsClient(
         self.messages.DatamigrationProjectsLocationsConversionWorkspacesConvertRequest(
             name=name,
             convertConversionWorkspaceRequest=self.messages.ConvertConversionWorkspaceRequest(
-                filter=filter_expr,
+                filter=self.CombineFilters(
+                    filter_expr,
+                    self.parent_client.crud.GetGlobalFilter(name=name),
+                ),
                 autoCommit=auto_commit,
             ),
         ),

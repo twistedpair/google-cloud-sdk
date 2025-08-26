@@ -319,6 +319,8 @@ class GsutilFullResourceFormatter(base.FullResourceFormatter):
         noncurrent_time=base.FieldDisplayTitleAndDefault(
             title='Noncurrent time', default=None
         ),
+        # Custom contexts are not supported in gsutil.
+        custom_contexts=None,
         custom_fields=base.FieldDisplayTitleAndDefault(
             title='Metadata', default=None
         ),

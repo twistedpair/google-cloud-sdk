@@ -25,6 +25,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import requests
 from googlecloudsdk.core import transport as core_transport
+from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.credentials import transport
 
 REFRESH_STATUS_CODES = [401]
@@ -77,18 +78,32 @@ def GetSession(timeout='unset',
       ca_certs=ca_certs,
       session=session,
       streaming_response_body=streaming_response_body,
-      redact_request_body_reason=redact_request_body_reason)
+      redact_request_body_reason=redact_request_body_reason,
+  )
   request_wrapper = RequestWrapper()
-  session = request_wrapper.WrapQuota(session, enable_resource_quota,
-                                      allow_account_impersonation, True)
-  session = request_wrapper.WrapCredentials(session,
-                                            allow_account_impersonation)
+  use_google_auth = base.UseGoogleAuth()
+  credentials = store.LoadIfEnabled(
+      allow_account_impersonation, use_google_auth
+  )
+  session = request_wrapper.WrapQuota(
+      session,
+      enable_resource_quota,
+      allow_account_impersonation,
+      True,
+      credentials=credentials,
+  )
+  session = request_wrapper.WrapCredentials(
+      session, allow_account_impersonation, credentials=credentials
+  )
 
   return session
 
 
-class RequestWrapper(transport.CredentialWrappingMixin,
-                     transport.QuotaHandlerMixin, requests.RequestWrapper):
+class RequestWrapper(
+    transport.CredentialWrappingMixin,
+    transport.QuotaHandlerMixin,
+    requests.RequestWrapper,
+):
   """Class for wrapping requests.Session requests."""
 
   def AuthorizeClient(self, http_client, creds):
@@ -121,12 +136,21 @@ class RequestWrapper(transport.CredentialWrappingMixin,
     http_client.request = WrappedRequest
     return http_client
 
-  def WrapQuota(self, http_client, enable_resource_quota,
-                allow_account_impersonation, use_google_auth):
+  def WrapQuota(
+      self,
+      http_client,
+      enable_resource_quota,
+      allow_account_impersonation,
+      use_google_auth,
+      credentials=None,
+  ):
     """Returns an http_client with quota project handling."""
-    quota_project = self.QuotaProject(enable_resource_quota,
-                                      allow_account_impersonation,
-                                      use_google_auth)
+    quota_project = self.QuotaProject(
+        enable_resource_quota,
+        allow_account_impersonation,
+        use_google_auth,
+        credentials=credentials,
+    )
     if not quota_project:
       return http_client
     orig_request = http_client.request

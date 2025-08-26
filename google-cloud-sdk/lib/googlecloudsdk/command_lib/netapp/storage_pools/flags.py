@@ -37,6 +37,18 @@ STORAGE_POOLS_LIST_FORMAT = """\
         capacityGib,
         network,
         state,
+        volumeCapacityGib,
+        type
+    )"""
+
+STORAGE_POOLS_LIST_FORMAT_GA = """\
+    table(
+        name.basename():label=STORAGE_POOL_NAME:sort=1,
+        name.segment(3):label=LOCATION,
+        serviceLevel,
+        capacityGib,
+        network,
+        state,
         volumeCapacityGib
     )"""
 
@@ -360,12 +372,12 @@ def AddStoragePoolCreateArgs(parser, release_track):
   AddStoragePoolCustomPerformanceEnabledArg(parser)
   AddStoragePoolTotalThroughputArg(parser)
   AddStoragePoolTotalIopsArg(parser)
+  AddStoragePoolQosTypeArg(parser, messages)
   if (release_track == base.ReleaseTrack.ALPHA or
       release_track == base.ReleaseTrack.BETA):
     AddStoragePoolHotTierSizeArg(parser)
     AddStoragePoolEnableHotTierAutoResizeArg(parser)
     AddStoragePoolUnifiedPoolArg(parser)
-    AddStoragePoolQosTypeArg(parser, messages)
     AddStoragePoolTypeArg(parser, messages)
 
 
@@ -392,12 +404,12 @@ def AddStoragePoolUpdateArgs(parser, release_track):
   AddStoragePoolReplicaZoneArg(parser)
   AddStoragePoolAllowAutoTieringArg(parser)
   AddStoragePoolTotalThroughputArg(parser)
+  AddStoragePoolQosTypeArg(parser, messages)
   AddStoragePoolTotalIopsArg(parser)
   if (release_track == base.ReleaseTrack.ALPHA or
       release_track == base.ReleaseTrack.BETA):
     AddStoragePoolHotTierSizeArg(parser)
     AddStoragePoolEnableHotTierAutoResizeArg(parser)
-    AddStoragePoolQosTypeArg(parser, messages)
 
 
 def AddStoragePoolSwitchArg(parser):

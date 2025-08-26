@@ -23,6 +23,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import copy
 import os
 
 from googlecloudsdk.api_lib.storage import api_factory
@@ -127,6 +128,28 @@ class FileUploadTask(copy_util.ObjectCopyTaskWithExitHandler):
       # Delete original source file.
       os.remove(self._source_resource.storage_url.resource_name)
 
+  def _get_user_request_args_for_composite_upload_chunks(self):
+    """Returns the user args to be used for composite upload chunks."""
+    if not self._user_request_args or not self._user_request_args.resource_args:
+      return self._user_request_args
+
+    user_args = copy.deepcopy(self._user_request_args)
+    resource_args = user_args.resource_args
+
+    # We do not want context to be uploaded for each chunk. Instead we will
+    # set the context once the composite object is finalized.
+    setattr(resource_args, 'custom_contexts_to_set', None)
+    setattr(resource_args, 'custom_contexts_to_remove', None)
+    setattr(resource_args, 'custom_contexts_to_update', None)
+
+    # We also do not want metadata to be uploaded for each chunk.
+    # See b/377305136 for more details.
+    setattr(resource_args, 'custom_fields_to_set', None)
+    setattr(resource_args, 'custom_fields_to_remove', None)
+    setattr(resource_args, 'custom_fields_to_update', None)
+
+    return user_args
+
   def _perform_composite_upload(
       self,
       api_client,
@@ -201,7 +224,7 @@ class FileUploadTask(copy_util.ObjectCopyTaskWithExitHandler):
           length,
           component_number=i,
           total_components=len(component_offsets_and_lengths),
-          user_request_args=self._user_request_args,
+          user_request_args=self._get_user_request_args_for_composite_upload_chunks(),
       )
 
       file_part_upload_tasks.append(upload_task)

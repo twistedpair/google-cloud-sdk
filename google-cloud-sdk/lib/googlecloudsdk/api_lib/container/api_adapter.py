@@ -822,6 +822,9 @@ class CreateClusterOptions(object):
       enable_secret_manager=None,
       enable_secret_manager_rotation=None,
       secret_manager_rotation_interval=None,
+      enable_secret_sync=None,
+      enable_secret_sync_rotation=None,
+      secret_sync_rotation_interval=None,
       enable_cilium_clusterwide_network_policy=None,
       storage_pools=None,
       local_ssd_encryption_mode=None,
@@ -1106,6 +1109,9 @@ class CreateClusterOptions(object):
     self.enable_secret_manager = enable_secret_manager
     self.enable_secret_manager_rotation = enable_secret_manager_rotation
     self.secret_manager_rotation_interval = secret_manager_rotation_interval
+    self.enable_secret_sync = enable_secret_sync
+    self.enable_secret_sync_rotation = enable_secret_sync_rotation
+    self.secret_sync_rotation_interval = secret_sync_rotation_interval
     self.enable_cilium_clusterwide_network_policy = (
         enable_cilium_clusterwide_network_policy
     )
@@ -1295,6 +1301,9 @@ class UpdateClusterOptions(object):
       enable_secret_manager=None,
       enable_secret_manager_rotation=None,
       secret_manager_rotation_interval=None,
+      enable_secret_sync=None,
+      enable_secret_sync_rotation=None,
+      secret_sync_rotation_interval=None,
       enable_cilium_clusterwide_network_policy=None,
       enable_insecure_kubelet_readonly_port=None,
       autoprovisioning_enable_insecure_kubelet_readonly_port=None,
@@ -1502,6 +1511,9 @@ class UpdateClusterOptions(object):
     self.enable_secret_manager = enable_secret_manager
     self.enable_secret_manager_rotation = enable_secret_manager_rotation
     self.secret_manager_rotation_interval = secret_manager_rotation_interval
+    self.enable_secret_sync = enable_secret_sync
+    self.enable_secret_sync_rotation = enable_secret_sync_rotation
+    self.secret_sync_rotation_interval = secret_sync_rotation_interval
     self.enable_cilium_clusterwide_network_policy = (
         enable_cilium_clusterwide_network_policy
     )
@@ -2642,6 +2654,12 @@ class APIAdapter(object):
               enabled=False
           )
 
+      if options.enable_secret_sync:
+        if cluster.secretSyncConfig is None:
+          cluster.secretSyncConfig = self.messages.SecretSyncConfig(
+              enabled=False
+          )
+
       if options.boot_disk_kms_key:
         if cluster.autoscaling is None:
           cluster.autoscaling = self.messages.ClusterAutoscaling()
@@ -3089,6 +3107,31 @@ class APIAdapter(object):
         )
       cluster.secretManagerConfig.rotationConfig.rotationInterval = (
           options.secret_manager_rotation_interval
+      )
+
+    if options.enable_secret_sync is not None:
+      if cluster.secretSyncConfig is None:
+        cluster.secretSyncConfig = self.messages.SecretSyncConfig()
+      cluster.secretSyncConfig.enabled = options.enable_secret_sync
+    if options.enable_secret_sync_rotation is not None:
+      if cluster.secretSyncConfig is None:
+        cluster.secretSyncConfig = self.messages.SecretSyncConfig()
+      if cluster.secretSyncConfig.rotationConfig is None:
+        cluster.secretSyncConfig.rotationConfig = (
+            self.messages.SyncRotationConfig()
+        )
+      cluster.secretSyncConfig.rotationConfig.enabled = (
+          options.enable_secret_sync_rotation
+      )
+    if options.secret_sync_rotation_interval is not None:
+      if cluster.secretSyncConfig is None:
+        cluster.secretSyncConfig = self.messages.SecretSyncConfig()
+      if cluster.secretSyncConfig.rotationConfig is None:
+        cluster.secretSyncConfig.rotationConfig = (
+            self.messages.SyncRotationConfig()
+        )
+      cluster.secretSyncConfig.rotationConfig.rotationInterval = (
+          options.secret_sync_rotation_interval
       )
 
     if options.enable_cilium_clusterwide_network_policy is not None:
@@ -5080,6 +5123,37 @@ class APIAdapter(object):
         )
       update = self.messages.ClusterUpdate(
           desiredSecretManagerConfig=secret_manager_config
+      )
+
+    if (
+        options.enable_secret_sync is not None
+        or options.secret_sync_rotation_interval is not None
+        or options.enable_secret_sync_rotation is not None
+    ):
+      old_cluster = self.GetCluster(cluster_ref)
+      secret_sync_config = old_cluster.secretSyncConfig
+      if options.enable_secret_sync is not None:
+        if secret_sync_config is None:
+          secret_sync_config = self.messages.SecretSyncConfig()
+        secret_sync_config.enabled = options.enable_secret_sync
+      if options.enable_secret_sync_rotation is not None:
+        if secret_sync_config is None:
+          secret_sync_config = self.messages.SecretSyncConfig()
+        if secret_sync_config.rotationConfig is None:
+          secret_sync_config.rotationConfig = self.messages.SyncRotationConfig()
+        secret_sync_config.rotationConfig.enabled = (
+            options.enable_secret_sync_rotation
+        )
+      if options.secret_sync_rotation_interval is not None:
+        if secret_sync_config is None:
+          secret_sync_config = self.messages.SecretSyncConfig()
+        if secret_sync_config.rotationConfig is None:
+          secret_sync_config.rotationConfig = self.messages.RotationConfig()
+        secret_sync_config.rotationConfig.rotationInterval = (
+            options.secret_sync_rotation_interval
+        )
+      update = self.messages.ClusterUpdate(
+          desiredSecretSyncConfig=secret_sync_config
       )
 
     if options.enable_cilium_clusterwide_network_policy is not None:

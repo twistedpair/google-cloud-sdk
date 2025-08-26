@@ -25,6 +25,7 @@ from typing import List
 from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.api_lib.run import traffic
+from googlecloudsdk.command_lib.run import threat_detection_util as crtd_util
 
 DEFAULT_BASE_IMAGE = 'gcr.io/buildpacks/google-22/run'
 ENDPOINT_VISIBILITY = 'networking.knative.dev/visibility'
@@ -89,6 +90,10 @@ class Service(k8s_object.KubernetesObject):
 
   API_CATEGORY = 'serving.knative.dev'
   KIND = 'Service'
+
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self.threat_detection_state = crtd_util.ThreatDetectionState.DISABLED
 
   @property
   def run_functions_annotations(self):

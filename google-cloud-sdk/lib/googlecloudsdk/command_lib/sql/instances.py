@@ -512,6 +512,9 @@ class _BaseInstances(object):
       if not settings.ipConfiguration:
         settings.ipConfiguration = sql_messages.IpConfiguration()
       settings.ipConfiguration.serverCaPool = args.server_ca_pool
+    # Customers can set `--server-ca-pool=''` to explicitly clear the
+    # server_ca_pool field.
+    if args.IsKnownAndSpecified('server_ca_pool') and args.server_ca_pool:
       if (
           settings.ipConfiguration.serverCaMode
           != sql_messages.IpConfiguration.ServerCaModeValueValuesEnum.CUSTOMER_MANAGED_CAS_CA
@@ -919,6 +922,13 @@ class _BaseInstances(object):
       )
       if final_backup_configuration:
         cls.AddFinalBackupConfigToSettings(settings, final_backup_configuration)
+
+      if args.IsKnownAndSpecified('unc_mappings'):
+        settings.uncMappings = reducers.UncMappings(
+            sql_messages,
+            unc_mappings=args.unc_mappings,
+            clear_unc_mappings=args.clear_unc_mappings,
+        )
     return settings
 
   @classmethod

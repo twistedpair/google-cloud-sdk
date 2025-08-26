@@ -299,3 +299,17 @@ class FilePartUploadTask(file_part_task.FilePartTask):
                                            task_status_queue)
 
     return self._get_output(destination_resource)
+
+  def __eq__(self, other):
+    if not isinstance(other, FilePartUploadTask):
+      return NotImplemented
+    return (
+        self._destination_resource == other._destination_resource
+        and self._source_resource == other._source_resource
+        and self._offset == other._offset
+        and self._length == other._length
+        and self._component_number == other._component_number
+        and self._total_components == other._total_components
+        and self._posix_to_set == other._posix_to_set
+        and self._user_request_args == other._user_request_args
+    )

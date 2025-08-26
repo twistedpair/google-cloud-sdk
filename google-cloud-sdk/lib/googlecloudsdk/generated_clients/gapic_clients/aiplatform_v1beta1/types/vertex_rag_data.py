@@ -581,8 +581,10 @@ class RagCorpus(proto.Message):
         corpus_status (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.CorpusStatus):
             Output only. RagCorpus state.
         rag_files_count (int):
-            Output only. Number of RagFiles in the
-            RagCorpus.
+            Output only. Number of RagFiles in the RagCorpus.
+
+            NOTE: This field is not populated in the response of
+            [VertexRagDataService.ListRagCorpora][google.cloud.aiplatform.v1beta1.VertexRagDataService.ListRagCorpora].
         encryption_spec (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.EncryptionSpec):
             Optional. Immutable. The CMEK key name used
             to encrypt at-rest data related to this Corpus.

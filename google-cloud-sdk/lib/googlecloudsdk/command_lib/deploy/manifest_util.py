@@ -474,9 +474,14 @@ def SetLabelsForAlertPolicyCheck(messages, alert_policy_check):
   """
   if alert_policy_check is None:
     return
+
+  labels = alert_policy_check.get(LABELS_FIELD)
+  if labels is None:
+    return
+
   labels_message = getattr(messages, 'AlertPolicyCheck').LabelsValue
   labels_dict = labels_message()
-  for key, value in alert_policy_check.get(LABELS_FIELD).items():
+  for key, value in labels.items():
     labels_dict.additionalProperties.append(
         labels_message.AdditionalProperty(
             key=resource_property.ConvertToSnakeCase(key), value=value

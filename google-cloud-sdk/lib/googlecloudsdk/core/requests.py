@@ -207,12 +207,13 @@ def GetProxyInfo():
 
 
 _GOOGLER_BUNDLED_PYTHON_WARNING = (
-    'Please use the installed gcloud CLI (`apt install google-cloud-sdk`)\n'
-    ' This version of gcloud you are currently using will encounter issues'
-    ' due to\n changes in internal security policy enforcement in the near'
-    ' future.\n\n If this is not possible due to dev requirements, please'
-    ' apply for\n policy exemption at go/gcloud-cba-exemption or reach out'
-    ' to\n go/gcloud-cba-investigation for investigation.\n'
+    'Please use the installed gcloud CLI (`apt install google-cloud-cli`)\n'
+    ' This version of gcloud you are currently using will encounter issues due'
+    ' to\n changes in internal security policy enforcement in the near'
+    ' future.\n\n If this is not possible due to dev requirements, please apply'
+    ' for\n policy exemption at go/gcloud-cba-exemption-internal-version-gcloud'
+    ' using this error message to self-exempt or reach out to\n'
+    ' go/gcloud-cba-investigation for investigation.\n'
 )
 
 

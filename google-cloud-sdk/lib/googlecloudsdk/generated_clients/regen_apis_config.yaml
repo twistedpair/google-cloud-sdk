@@ -924,6 +924,13 @@ apis:
       resources:
         projects.locations.services.nlp:
           path: projects/{projectsId}/locations/{locationsId}/services/nlp
+  hypercomputecluster:
+    v1alpha:
+      discovery_doc: hypercomputecluster_v1alpha.json
+      default: true
+      resources:
+        projects.locations:
+          path: projects/{projectsId}/locations/{locationsId}
   oslogin:
     v1alpha:
       discovery_doc: oslogin_v1alpha.json
@@ -2203,6 +2210,9 @@ canonical_surfaces:
   healthcare:
     name: healthcare
     command: healthcare
+  hypercomputecluster:
+    name: hypercomputecluster
+    command: cluster-director
   iam:
     name: iam
     command: iam

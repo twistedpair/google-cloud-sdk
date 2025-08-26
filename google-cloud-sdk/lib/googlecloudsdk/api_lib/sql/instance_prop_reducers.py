@@ -774,6 +774,46 @@ def PscAutoConnections(
   return updated_psc_auto_connections
 
 
+def UncMappings(sql_messages, unc_mappings=None, clear_unc_mappings=False):
+  """Generates the database flags for the instance.
+
+  Args:
+    sql_messages: module, The messages module that should be used.
+    unc_mappings: input unc mappings from the user.
+    clear_unc_mappings: boolean, True if unc mappings should be cleared.
+
+  Returns:
+    list of sql_messages.UncMapping objects
+  """
+  updated_mappings = []
+  if unc_mappings:
+    for mapping_str in unc_mappings:
+      try:
+        rest, mode_str = mapping_str.rsplit(':', 1)
+        unc_path, gcs_path = rest.split('=', 1)
+        updated_mappings.append(
+            sql_messages.UncMapping(
+                uncPath=unc_path,
+                gcsPath=gcs_path,
+                mode=sql_messages.UncMapping.ModeValueValuesEnum.lookup_by_name(
+                    mode_str.upper()
+                ),
+            )
+        )
+      except ValueError as e:
+        raise ValueError(
+            "Invalid UNC mapping input. Expected 'unc-path=gcs-path:mode'."
+        ) from e
+      except KeyError as e:
+        raise ValueError(
+            "Invalid mode. Expected 'snapshot_read' or 'snapshot_write'."
+        ) from e
+  elif clear_unc_mappings:
+    updated_mappings = []
+
+  return updated_mappings
+
+
 def FinalBackupConfiguration(
     sql_messages,
     instance=None,

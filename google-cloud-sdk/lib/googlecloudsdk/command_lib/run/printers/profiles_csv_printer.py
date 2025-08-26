@@ -80,9 +80,9 @@ def _transform_profiles(profiles):
         row = [
             profile.instanceType,
             profile.acceleratorType,
-            profile.modelAndModelServerInfo.modelName,
-            profile.modelAndModelServerInfo.modelServerName,
-            profile.modelAndModelServerInfo.modelServerVersion,
+            profile.modelServerInfo.model,
+            profile.modelServerInfo.modelServer,
+            profile.modelServerInfo.modelServerVersion,
             stats.outputTokensPerSecond,
             stats.ntpotMilliseconds,
             stats.ttftMilliseconds,

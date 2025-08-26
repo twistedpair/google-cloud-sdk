@@ -29,7 +29,7 @@ def AddSchemaRegistryArgToParser(parser):
       concepts.ResourceSpec.FromYaml(
           schema_registry_data.GetData(), is_positional=True
       ),
-      'The schema registry to create.',
+      'The schema registry resource.',
       required=True,
   ).AddToParser(parser)
 
@@ -42,6 +42,7 @@ def AddSubjectArgToParser(parser):
       concepts.ResourceSpec.FromYaml(
           subject_data.GetData(), is_positional=True
       ),
-      'The subject to create.',
+      'The subject resource.',
       required=True,
+      flag_name_overrides={'schema-registry': '--registry'},
   ).AddToParser(parser)

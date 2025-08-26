@@ -1327,6 +1327,8 @@ class _SectionApiEndpointOverrides(_Section):
     self.gkebackup = self._Add('gkebackup', hidden=True)
     self.gkehub = self._Add('gkehub', hidden=True)
     self.gkerecommender = self._Add('gkerecommender', hidden=True)
+    self.hypercomputecluster = self._Add(
+        'hypercomputecluster', command='gcloud cluster-director')
     self.observability = self._Add(
         'observability', command='gcloud observability')
     self.transcoder = self._Add(
@@ -3525,7 +3527,7 @@ class _SectionStorage(_Section):
         'download_chunk_size',
         default=self.DEFAULT_DOWNLOAD_CHUNK_SIZE,
         validator=_HumanReadableByteAmountValidator,
-        help_text='Chunk size used for downloadinging to clouds.',
+        help_text='Chunk size used for downloading to clouds.',
     )
 
     self.enable_task_graph_debugging = self._AddBool(
@@ -3533,6 +3535,16 @@ class _SectionStorage(_Section):
         default=False,
         hidden=True,
         help_text='Enables task graph debugging for gcloud storage commands.',
+    )
+
+    # TODO(b/437832680): Enable this property once implementation is complete.
+    self.enable_zonal_buckets_bidi_streaming = self._AddBool(
+        'enable_zonal_buckets_bidi_streaming',
+        default=False,
+        hidden=True,
+        help_text=(
+            'Enables zonal buckets bidi streaming for gcloud storage commands.'
+        ),
     )
 
     self.task_graph_debugging_snapshot_duration = self._Add(

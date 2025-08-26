@@ -4885,6 +4885,114 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Creates an Evaluation Item.
+
+      Args:
+        request: (AiplatformProjectsLocationsEvaluationItemsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1EvaluationItem) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/evaluationItems',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.evaluationItems.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/evaluationItems',
+        request_field='googleCloudAiplatformV1beta1EvaluationItem',
+        request_type_name='AiplatformProjectsLocationsEvaluationItemsCreateRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1EvaluationItem',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an Evaluation Item.
+
+      Args:
+        request: (AiplatformProjectsLocationsEvaluationItemsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/evaluationItems/{evaluationItemsId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.evaluationItems.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsEvaluationItemsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an Evaluation Item.
+
+      Args:
+        request: (AiplatformProjectsLocationsEvaluationItemsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1EvaluationItem) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/evaluationItems/{evaluationItemsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.evaluationItems.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsEvaluationItemsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1EvaluationItem',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Evaluation Items.
+
+      Args:
+        request: (AiplatformProjectsLocationsEvaluationItemsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ListEvaluationItemsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/evaluationItems',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.evaluationItems.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/evaluationItems',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsEvaluationItemsListRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ListEvaluationItemsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsEvaluationRunsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_evaluationRuns_operations resource."""
 
@@ -5013,6 +5121,141 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Cancel(self, request, global_params=None):
+      r"""Cancels an Evaluation Run. Attempts to cancel a running Evaluation Run asynchronously. Status of run can be checked via GetEvaluationRun.
+
+      Args:
+        request: (AiplatformProjectsLocationsEvaluationRunsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/evaluationRuns/{evaluationRunsId}:cancel',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.evaluationRuns.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:cancel',
+        request_field='googleCloudAiplatformV1beta1CancelEvaluationRunRequest',
+        request_type_name='AiplatformProjectsLocationsEvaluationRunsCancelRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates an Evaluation Run.
+
+      Args:
+        request: (AiplatformProjectsLocationsEvaluationRunsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1EvaluationRun) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/evaluationRuns',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.evaluationRuns.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/evaluationRuns',
+        request_field='googleCloudAiplatformV1beta1EvaluationRun',
+        request_type_name='AiplatformProjectsLocationsEvaluationRunsCreateRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1EvaluationRun',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an Evaluation Run.
+
+      Args:
+        request: (AiplatformProjectsLocationsEvaluationRunsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/evaluationRuns/{evaluationRunsId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.evaluationRuns.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsEvaluationRunsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an Evaluation Run.
+
+      Args:
+        request: (AiplatformProjectsLocationsEvaluationRunsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1EvaluationRun) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/evaluationRuns/{evaluationRunsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.evaluationRuns.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsEvaluationRunsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1EvaluationRun',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Evaluation Runs.
+
+      Args:
+        request: (AiplatformProjectsLocationsEvaluationRunsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ListEvaluationRunsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/evaluationRuns',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.evaluationRuns.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/evaluationRuns',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsEvaluationRunsListRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ListEvaluationRunsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsEvaluationSetsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_evaluationSets_operations resource."""
 
@@ -5140,6 +5383,141 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       super(AiplatformV1beta1.ProjectsLocationsEvaluationSetsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an Evaluation Set.
+
+      Args:
+        request: (AiplatformProjectsLocationsEvaluationSetsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1EvaluationSet) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/evaluationSets',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.evaluationSets.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/evaluationSets',
+        request_field='googleCloudAiplatformV1beta1EvaluationSet',
+        request_type_name='AiplatformProjectsLocationsEvaluationSetsCreateRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1EvaluationSet',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an Evaluation Set.
+
+      Args:
+        request: (AiplatformProjectsLocationsEvaluationSetsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/evaluationSets/{evaluationSetsId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.evaluationSets.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsEvaluationSetsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an Evaluation Set.
+
+      Args:
+        request: (AiplatformProjectsLocationsEvaluationSetsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1EvaluationSet) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/evaluationSets/{evaluationSetsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.evaluationSets.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsEvaluationSetsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1EvaluationSet',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Evaluation Sets.
+
+      Args:
+        request: (AiplatformProjectsLocationsEvaluationSetsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ListEvaluationSetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/evaluationSets',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.evaluationSets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/evaluationSets',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsEvaluationSetsListRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ListEvaluationSetsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an Evaluation Set.
+
+      Args:
+        request: (AiplatformProjectsLocationsEvaluationSetsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1EvaluationSet) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/evaluationSets/{evaluationSetsId}',
+        http_method='PATCH',
+        method_id='aiplatform.projects.locations.evaluationSets.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='googleCloudAiplatformV1beta1EvaluationSet',
+        request_type_name='AiplatformProjectsLocationsEvaluationSetsPatchRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1EvaluationSet',
+        supports_download=False,
+    )
 
   class ProjectsLocationsEvaluationTasksOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_evaluationTasks_operations resource."""
@@ -16643,7 +17021,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.ragCorpora.ragFiles.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['forceDelete'],
         relative_path='v1beta1/{+name}',
         request_field='',
         request_type_name='AiplatformProjectsLocationsRagCorporaRagFilesDeleteRequest',
@@ -17803,6 +18181,141 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       super(AiplatformV1beta1.ProjectsLocationsReasoningEnginesSandboxEnvironmentsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a SandboxEnvironment in a given reasoning engine.
+
+      Args:
+        request: (AiplatformProjectsLocationsReasoningEnginesSandboxEnvironmentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/reasoningEngines/{reasoningEnginesId}/sandboxEnvironments',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.reasoningEngines.sandboxEnvironments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/sandboxEnvironments',
+        request_field='googleCloudAiplatformV1beta1SandboxEnvironment',
+        request_type_name='AiplatformProjectsLocationsReasoningEnginesSandboxEnvironmentsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specific SandboxEnvironment.
+
+      Args:
+        request: (AiplatformProjectsLocationsReasoningEnginesSandboxEnvironmentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/reasoningEngines/{reasoningEnginesId}/sandboxEnvironments/{sandboxEnvironmentsId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.reasoningEngines.sandboxEnvironments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsReasoningEnginesSandboxEnvironmentsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Execute(self, request, global_params=None):
+      r"""Executes using a sandbox environment.
+
+      Args:
+        request: (AiplatformProjectsLocationsReasoningEnginesSandboxEnvironmentsExecuteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ExecuteSandboxEnvironmentResponse) The response message.
+      """
+      config = self.GetMethodConfig('Execute')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Execute.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/reasoningEngines/{reasoningEnginesId}/sandboxEnvironments/{sandboxEnvironmentsId}:execute',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.reasoningEngines.sandboxEnvironments.execute',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:execute',
+        request_field='googleCloudAiplatformV1beta1ExecuteSandboxEnvironmentRequest',
+        request_type_name='AiplatformProjectsLocationsReasoningEnginesSandboxEnvironmentsExecuteRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ExecuteSandboxEnvironmentResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of the specific SandboxEnvironment.
+
+      Args:
+        request: (AiplatformProjectsLocationsReasoningEnginesSandboxEnvironmentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1SandboxEnvironment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/reasoningEngines/{reasoningEnginesId}/sandboxEnvironments/{sandboxEnvironmentsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.reasoningEngines.sandboxEnvironments.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsReasoningEnginesSandboxEnvironmentsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1SandboxEnvironment',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists SandboxEnvironments in a given reasoning engine.
+
+      Args:
+        request: (AiplatformProjectsLocationsReasoningEnginesSandboxEnvironmentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ListSandboxEnvironmentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/reasoningEngines/{reasoningEnginesId}/sandboxEnvironments',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.reasoningEngines.sandboxEnvironments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/sandboxEnvironments',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsReasoningEnginesSandboxEnvironmentsListRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ListSandboxEnvironmentsResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsReasoningEnginesSessionsEventsService(base_api.BaseApiService):
     """Service class for the projects_locations_reasoningEngines_sessions_events resource."""
@@ -22053,6 +22566,60 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GenerateInstanceRubrics(self, request, global_params=None):
+      r"""Generates rubrics for a given prompt. A rubric represents a single testable criterion for evaluation. One input prompt could have multiple rubrics This RPC allows users to get suggested rubrics based on provided prompt, which can then be reviewed and used for subsequent evaluations.
+
+      Args:
+        request: (AiplatformProjectsLocationsGenerateInstanceRubricsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1GenerateInstanceRubricsResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateInstanceRubrics')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateInstanceRubrics.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}:generateInstanceRubrics',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.generateInstanceRubrics',
+        ordered_params=['location'],
+        path_params=['location'],
+        query_params=[],
+        relative_path='v1beta1/{+location}:generateInstanceRubrics',
+        request_field='googleCloudAiplatformV1beta1GenerateInstanceRubricsRequest',
+        request_type_name='AiplatformProjectsLocationsGenerateInstanceRubricsRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1GenerateInstanceRubricsResponse',
+        supports_download=False,
+    )
+
+    def GenerateSyntheticData(self, request, global_params=None):
+      r"""Generates synthetic data based on the provided configuration.
+
+      Args:
+        request: (AiplatformProjectsLocationsGenerateSyntheticDataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1GenerateSyntheticDataResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateSyntheticData')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateSyntheticData.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}:generateSyntheticData',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.generateSyntheticData',
+        ordered_params=['location'],
+        path_params=['location'],
+        query_params=[],
+        relative_path='v1beta1/{+location}:generateSyntheticData',
+        request_field='googleCloudAiplatformV1beta1GenerateSyntheticDataRequest',
+        request_type_name='AiplatformProjectsLocationsGenerateSyntheticDataRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1GenerateSyntheticDataResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets information about a location.
 
@@ -22131,6 +22698,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AiplatformProjectsLocationsListRequest',
         response_type_name='GoogleCloudLocationListLocationsResponse',
+        supports_download=False,
+    )
+
+    def RecommendSpec(self, request, global_params=None):
+      r"""Gets a Model's spec recommendations. This API is called by UI, SDK, and internal.
+
+      Args:
+        request: (AiplatformProjectsLocationsRecommendSpecRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1RecommendSpecResponse) The response message.
+      """
+      config = self.GetMethodConfig('RecommendSpec')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RecommendSpec.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}:recommendSpec',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.recommendSpec',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}:recommendSpec',
+        request_field='googleCloudAiplatformV1beta1RecommendSpecRequest',
+        request_type_name='AiplatformProjectsLocationsRecommendSpecRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1RecommendSpecResponse',
         supports_download=False,
     )
 

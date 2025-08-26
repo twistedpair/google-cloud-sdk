@@ -47,30 +47,40 @@ USER_PROJECT_ERROR_DOMAIN = 'googleapis.com'
 class QuotaHandlerMixin(object):
   """Mixin for handling quota project."""
 
-  def QuotaProject(self, enable_resource_quota,
-                   allow_account_impersonation, use_google_auth):
+  def QuotaProject(
+      self,
+      enable_resource_quota,
+      allow_account_impersonation,
+      use_google_auth,
+      credentials=None,
+  ):
+    """Returns None or the quota project for credentials."""
     if not enable_resource_quota:
       return None
-    creds = store.LoadIfEnabled(allow_account_impersonation, use_google_auth)
-    return core_creds.GetQuotaProject(creds)
+    if credentials is None:
+      credentials = store.LoadIfEnabled(
+          allow_account_impersonation, use_google_auth
+      )
+    return core_creds.GetQuotaProject(credentials)
 
-  def QuotaWrappedRequest(self,
-                          http_client,
-                          quota_project):
+  def QuotaWrappedRequest(self, http_client, quota_project):
     """Returns a request method which adds the quota project header."""
     handlers = [
         transport.Handler(
-            transport.SetHeader('X-Goog-User-Project', quota_project))
+            transport.SetHeader('X-Goog-User-Project', quota_project)
+        )
     ]
     self.WrapRequest(http_client, handlers)
     return http_client.request
 
   @abc.abstractmethod
-  def WrapQuota(self,
-                http_client,
-                enable_resource_quota,
-                allow_account_impersonation,
-                use_google_auth):
+  def WrapQuota(
+      self,
+      http_client,
+      enable_resource_quota,
+      allow_account_impersonation,
+      use_google_auth,
+  ):
     """Returns a http_client with quota project handling.
 
     Args:
@@ -92,10 +102,13 @@ class QuotaHandlerMixin(object):
 class CredentialWrappingMixin(object):
   """Mixin for wrapping authorized http clients."""
 
-  def WrapCredentials(self,
-                      http_client,
-                      allow_account_impersonation=True,
-                      use_google_auth=None):
+  def WrapCredentials(
+      self,
+      http_client,
+      allow_account_impersonation=True,
+      use_google_auth=None,
+      credentials=None,
+  ):
     """Get an http client for working with Google APIs.
 
     Args:
@@ -107,6 +120,7 @@ class CredentialWrappingMixin(object):
         google-auth library for authentication. If False, authentication will
         fallback to using the oauth2client library. If None, set the value based
         the configuration.
+      credentials: google.auth.credentials.Credentials, The credentials to use.
 
     Returns:
       An authorized http client with exception handling.
@@ -118,17 +132,21 @@ class CredentialWrappingMixin(object):
     # Wrappers for IAM header injection.
     authority_selector = properties.VALUES.auth.authority_selector.Get()
     authorization_token_file = (
-        properties.VALUES.auth.authorization_token_file.Get())
+        properties.VALUES.auth.authorization_token_file.Get()
+    )
     handlers = _GetIAMAuthHandlers(authority_selector, authorization_token_file)
 
     if use_google_auth is None:
       use_google_auth = base.UseGoogleAuth()
-    creds = store.LoadIfEnabled(allow_account_impersonation, use_google_auth)
-    if creds:
-      http_client = self.AuthorizeClient(http_client, creds)
+    if credentials is None:
+      credentials = store.LoadIfEnabled(
+          allow_account_impersonation, use_google_auth
+      )
+    if credentials:
+      http_client = self.AuthorizeClient(http_client, credentials)
       # Set this attribute so we can access it later, even after the http_client
       # request method has been wrapped
-      setattr(http_client, '_googlecloudsdk_credentials', creds)
+      setattr(http_client, '_googlecloudsdk_credentials', credentials)
 
     self.WrapRequest(
         http_client, handlers, _HandleAuthError,

@@ -79,11 +79,6 @@ class WireGroup(object):
     wire_group = messages.WireGroup(
         name=self.ref.Name(),
         description=description,
-        wireGroupProperties=messages.WireGroupProperties(
-            type=messages.WireGroupProperties.TypeValueValuesEnum(
-                wire_group_type
-            ) if wire_group_type else None,
-        ),
         wireProperties=messages.WireProperties(
             bandwidthUnmetered=bandwidth_unmetered,
             faultResponse=messages.WireProperties.FaultResponseValueValuesEnum(
@@ -92,6 +87,13 @@ class WireGroup(object):
         ),
         adminEnabled=admin_enabled,
     )
+
+    if wire_group_type:
+      wire_group.wireGroupProperties = messages.WireGroupProperties(
+          type=messages.WireGroupProperties.TypeValueValuesEnum(
+              wire_group_type
+          )
+      )
 
     # The following attributes are only available in ALPHA.
     if bandwidth_metered:
@@ -161,11 +163,6 @@ class WireGroup(object):
 
     wire_group = messages.WireGroup(
         description=description,
-        wireGroupProperties=messages.WireGroupProperties(
-            type=messages.WireGroupProperties.TypeValueValuesEnum(
-                wire_group_type
-            ) if wire_group_type else None,
-        ),
         wireProperties=messages.WireProperties(
             bandwidthUnmetered=bandwidth_unmetered,
             faultResponse=messages.WireProperties.FaultResponseValueValuesEnum(
@@ -175,6 +172,13 @@ class WireGroup(object):
         adminEnabled=admin_enabled,
         endpoints=endpoints,
     )
+
+    if wire_group_type:
+      wire_group.wireGroupProperties = messages.WireGroupProperties(
+          type=messages.WireGroupProperties.TypeValueValuesEnum(
+              wire_group_type
+          )
+      )
 
     # The following attributes are only available in ALPHA.
     if bandwidth_metered:

@@ -713,6 +713,7 @@ class CommandGroup(CommandCommon):
       except:
         element = None
         if not ignore_load_errors:
+          log.warning('Error loading element %s', name)
           raise
       if element and recursive:
         total += element.LoadAllSubElements(

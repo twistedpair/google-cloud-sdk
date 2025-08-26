@@ -69,6 +69,17 @@ def _SaveCachedDataWithName(data, name):
   files.WriteFileContents(cache_path, yaml.dump(data))
 
 
+def _DeleteCachedDataWithName(name):
+  """Deletes a named cache file."""
+  config_dir = config.Paths().global_config_dir
+  cache_path = os.path.join(config_dir, ".apigee-cached-" + name)
+  if os.path.isfile(cache_path):
+    try:
+      os.remove(cache_path)
+    except OSError:
+      return
+
+
 class Fallthrough(deps.Fallthrough):
   """Base class for Apigee resource argument fallthroughs."""
   _handled_fields = []
@@ -83,35 +94,94 @@ class Fallthrough(deps.Fallthrough):
   def _Call(self, parsed_args):
     raise NotImplementedError(
         "Subclasses of googlecloudsdk.commnand_lib.apigee.Fallthrough must "
-        "actually provide a fallthrough.")
+        "actually provide a fallthrough."
+    )
 
 
-def OrganizationFromGCPProduct():
+def _GetProjectMapping(project):
+  """Returns the project mapping for the given GCP project.
+
+  This function is called using getProjectMapping API. It assumes that the gcp
+  project name is same as the apigee organization name. This wont be true for
+  migration apigee orgs, where the gcp project name can be different from the
+  apigee organization name.
+
+  Args:
+    project: The GCP project name.
+
+  Returns:
+    The project mapping for the given GCP project.
+  """
+
+  project_mappings = _CachedDataWithName("project-mapping-v2") or {}
+
+  if project not in project_mappings:
+    try:
+      project_mapping = apigee.OrganizationsClient.ProjectMapping(
+          {"organizationsId": project}
+      )
+      if "organization" not in project_mapping:
+        return None
+
+      if project_mapping.get("projectId", None) != project:
+        return None
+
+      project_mappings[project] = project_mapping
+      _SaveCachedDataWithName(project_mappings, "project-mapping-v2")
+    except (errors.EntityNotFoundError, errors.UnauthorizedRequestError):
+      return None
+    except errors.RequestError as e:
+      raise e
+
+  return project_mappings[project]
+
+
+def _FindMappingForProject(project):
+  """Returns the Apigee organization for the given GCP project."""
+  project_mapping = _CachedDataWithName("project-mapping-v2") or {}
+
+  if project in project_mapping:
+    organization = project_mapping[project].get("organization", None)
+    return organization
+
+  # Listing organizations is an expensive operation for users with a lot of GCP
+  # projects. Since the GCP project -> Apigee organization mapping is immutable
+  # once created, cache known mappings to avoid the extra API call.
+  for organization in apigee.OrganizationsClient.List()["organizations"]:
+    for matching_project in organization["projectIds"]:
+      project_mapping[matching_project] = {}
+      project_mapping[matching_project] = organization
+  _SaveCachedDataWithName(project_mapping, "project-mapping-v2")
+  _DeleteCachedDataWithName("project-mapping")
+
+  if project not in project_mapping:
+    return None
+
+  return project_mapping[project].get("organization", None)
+
+
+def OrganizationFromGCPProject():
   """Returns the organization associated with the active GCP project."""
   project = properties.VALUES.core.project.Get()
   if project is None:
     log.warning("Neither Apigee organization nor GCP project is known.")
     return None
 
-  # Listing organizations is an expensive operation for users with a lot of GCP
-  # projects. Since the GCP project -> Apigee organization mapping is immutable
-  # once created, cache known mappings to avoid the extra API call.
+  # Use the cached project_mapping_v2 if available. This should handle all the
+  # cases where the project name is same as the organization name when cache
+  # miss happens.
+  project_mapping = _GetProjectMapping(project)
+  if project_mapping:
+    return project_mapping["organization"]
 
-  project_mapping = _CachedDataWithName("project-mapping")
-  if project not in project_mapping:
-    for organization in apigee.OrganizationsClient.List()["organizations"]:
-      organization_name = organization["organization"]
-      for matching_project in organization["projectIds"]:
-        project_mapping[matching_project] = organization_name
-    _SaveCachedDataWithName(project_mapping, "project-mapping")
-
-  if project not in project_mapping:
-    log.warning("No Apigee organization found for GCP project `%s`." % project)
+  # Otherwise, list all organizations and update the project_mapping cache for
+  # all the projects in the response.
+  organization = _FindMappingForProject(project)
+  if organization is None:
+    log.warning("No Apigee organization is known for GCP project %s.", project)
     return None
 
-  chosen_organization = project_mapping[project]
-  log.status.Print("Using Apigee organization `%s`" % chosen_organization)
-  return chosen_organization
+  return organization
 
 
 class GCPProductOrganizationFallthrough(Fallthrough):
@@ -125,7 +195,7 @@ class GCPProductOrganizationFallthrough(Fallthrough):
         "Apigee organization")
 
   def _Call(self, parsed_args):
-    return OrganizationFromGCPProduct()
+    return OrganizationFromGCPProject()
 
 
 class StaticFallthrough(Fallthrough):

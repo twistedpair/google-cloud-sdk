@@ -292,6 +292,20 @@ def get_bucket_resource_from_xml_response(scheme, bucket_dict, bucket_name):
       website_config=_get_error_or_value(bucket_dict.get('Website')))
 
 
+def _parse_object_tags_if_any(
+    object_dict
+):
+  """Parse object tags from object response in format of GCS object contexts."""
+  obj_tags = object_dict.get('TagSet', None)
+  if not obj_tags:
+    return None
+  # It is guaranteed that 'Key' and 'Value' are in tag dict. See format here:
+  # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3/client/get_object_tagging.html
+  return {
+      tag['Key']: {'value': tag['Value']} for tag in obj_tags
+  }
+
+
 def get_object_resource_from_xml_response(scheme,
                                           object_dict,
                                           bucket_name,
@@ -341,6 +355,7 @@ def get_object_resource_from_xml_response(scheme,
       content_language=object_dict.get('ContentLanguage'),
       content_type=object_dict.get('ContentType'),
       creation_time=object_dict.get('LastModified'),
+      custom_contexts=_parse_object_tags_if_any(object_dict),
       custom_fields=object_dict.get('Metadata'),
       encryption_algorithm=encryption_algorithm,
       etag=etag,

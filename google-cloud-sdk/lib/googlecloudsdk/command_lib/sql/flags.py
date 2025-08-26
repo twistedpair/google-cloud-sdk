@@ -3262,11 +3262,12 @@ def AddConnectionPoolingQueryWaitTimeout(parser):
   )
 
 
-def AddServerCaPool(parser):
+def AddServerCaPool(parser, hidden=False):
   """Adds the '--server-ca-pool' flag to the parser.
 
   Args:
     parser: The current argparse parser to add this to.
+    hidden: if the field needs to be hidden.
   """
   help_text = 'Set the server CA pool of the instance.'
   parser.add_argument(
@@ -3274,7 +3275,7 @@ def AddServerCaPool(parser):
       required=False,
       default=None,
       help=help_text,
-      hidden=False,
+      hidden=hidden,
   )
 
 
@@ -3356,4 +3357,32 @@ def AddEnableAcceleratedReplicaMode(parser):
       ),
       action=arg_parsers.StoreTrueFalseAction,
       hidden=True,
+  )
+
+
+def AddUncMappings(parser, hidden=True):
+  """Adds --unc-mappings argument."""
+  parser.add_argument(
+      '--unc-mappings',
+      type=arg_parsers.ArgList(min_length=1),
+      required=False,
+      metavar='SERVER-NAME=GCS-PATH:MODE',
+      help=(
+          'A comma-separated list of UNC mapping to add to the SQL Server'
+          ' instance. The input should be in a format of'
+          ' server-name=gcs-path:mode where mode should be snapshot_read or'
+          ' snapshot_write Example:'
+          ' \\serverA\123456=gs://bucket/folder:snapshot_read'
+      ),
+      hidden=hidden,
+      action=arg_parsers.FlattenAction(),
+  )
+
+
+def AddClearUncMappings(parser, hidden=True):
+  parser.add_argument(
+      '--clear-unc-mappings',
+      action='store_true',
+      hidden=hidden,
+      help="""Clear the UNC mappings for the SQL Server instance.""",
   )

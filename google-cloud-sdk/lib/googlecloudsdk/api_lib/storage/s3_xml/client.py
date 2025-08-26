@@ -620,6 +620,18 @@ class S3XmlClient(cloud_api.CloudApi):
       except botocore.exceptions.ClientError as error:
         object_dict['ACL'] = errors.XmlApiError(error)
 
+    if fields_scope and fields_scope is not cloud_api.FieldsScope.SHORT:
+      try:
+        tags_response = self.client.get_object_tagging(**request)
+        object_dict['TagSet'] = tags_response.get('TagSet', None)
+      except Exception as error:  # pylint: disable=broad-except
+        # TODO: b/436204166 - Remove this once the API supports object tags.
+        # Currently GCS-XML API does not support object tags, and throws
+        # an error when we try to fetch it. We will ignore the error for now and
+        # continue. Users anyway do not interact with XML API from gcloud.
+        log.warning('Failed to get object tags, error: %s', error)
+        pass
+
     return xml_metadata_util.get_object_resource_from_xml_response(
         self.scheme, object_dict, bucket_name, object_name
     )

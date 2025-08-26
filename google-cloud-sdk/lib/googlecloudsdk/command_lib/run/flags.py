@@ -4545,6 +4545,17 @@ def AddDryRunFlag(parser):
   )
 
 
+def AddDevFlag(parser):
+  """Add --dev flag."""
+  parser.add_argument(
+      '--dev',
+      action='store_true',
+      default=False,
+      hidden=True,
+      help='If set to true, will execute the command in development mode.',
+  )
+
+
 def AddDebugFlag(parser):
   """Add --debug or -d flag."""
   parser.add_argument(

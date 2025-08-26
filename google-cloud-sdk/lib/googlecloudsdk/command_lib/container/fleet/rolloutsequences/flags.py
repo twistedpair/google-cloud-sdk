@@ -79,20 +79,20 @@ class RolloutSequenceFlags:
         required=True,
         help="""\
             Path to the YAML file containing the stage configurations. The YAML
-            file should contain a list of stages. Fleets and soak_duration are required.
+            file should contain a list of stages. Fleet projects and soak_duration are required.
             If label_selector is not specified, there is no filtering. Example:
 
             ```yaml
             - stage:
-              fleets:
-              # Expected format: projects/{project}/locations/{location}/fleets/{fleet}
-              - projects/12345678/locations/global/fleets/default
-              - projects/87654321/locations/global/fleets/default
+              fleet-projects:
+              # Expected format: projects/{project}
+              - projects/12345678
+              - projects/87654321
               soak-duration: 1h
               label-selector: key=value
             - stage:
-              fleets:
-              - projects/11111111/locations/global/fleets/default
+              fleet-projects:
+              - projects/11111111
             ```
         """
     )
@@ -185,18 +185,18 @@ class RolloutSequenceFlagParser:
       if not soak_duration:
         raise ValueError('soak-duration is required in the yaml file')
 
-      fleets = stage_data.get('fleets')
-      if not fleets:
-        raise ValueError('fleets is required in the yaml file')
+      fleet_projects = stage_data.get('fleet-projects')
+      if not fleet_projects:
+        raise ValueError('fleet-projects is required in the yaml file')
 
-      if not isinstance(fleets, list):
-        raise ValueError('fleets should be a list in the yaml file')
+      if not isinstance(fleet_projects, list):
+        raise ValueError('fleet-projects should be a list in the yaml file')
 
       cluster_selector = self.TrimEmpty(cluster_selector)
       stage = fleet_messages.Stage(
           clusterSelector=cluster_selector,
           soakDuration=soak_duration,
-          fleets=fleets,
+          fleetProjects=fleet_projects,
       )
       stages.append(stage)
 

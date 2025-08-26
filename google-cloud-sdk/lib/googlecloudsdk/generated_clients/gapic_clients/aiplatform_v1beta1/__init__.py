@@ -37,6 +37,7 @@ from .types.content import GroundingMetadata
 from .types.content import GroundingSupport
 from .types.content import LogprobsResult
 from .types.content import ModalityTokenCount
+from .types.content import ModelArmorConfig
 from .types.content import Part
 from .types.content import PrebuiltVoiceConfig
 from .types.content import ProactivityConfig
@@ -233,6 +234,7 @@ __all__ = (
 'LogprobsResult',
 'Modality',
 'ModalityTokenCount',
+'ModelArmorConfig',
 'ModelExplanation',
 'Neighbor',
 'Part',

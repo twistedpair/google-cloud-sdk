@@ -186,6 +186,14 @@ def AddDumpTypeFlag(parser):
 
 def AddSqlServerHomogeneousMigrationConfigFlag(parser, is_update=False):
   """Adds SQL Server homogeneous migration flag group to the given parser."""
+  sqlserver_homogeneous_migration_config = parser.add_group()
+  AddSqlServerLogShippingConfigFlag(
+      sqlserver_homogeneous_migration_config, is_update
+  )
+
+
+def AddSqlServerLogShippingConfigFlag(parser, is_update=False):
+  """Adds SQL Server homogeneous log shipping migration flag group to the given parser."""
   sqlserver_homogeneous_migration_config = parser.add_group(
       (
           'The SQL Server homogeneous migration config. This is used only for'

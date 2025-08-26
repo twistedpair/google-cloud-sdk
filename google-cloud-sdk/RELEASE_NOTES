@@ -5,6 +5,74 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 536.0.0 (2025-08-26)
+
+### App Engine
+
+* Updated Cloud CLI Python component to new runtimes for php 8.5 and python 3.14.
+
+### Artifact Registry
+
+* Updated `gcloud artifacts files list` to display file hashes as hex strings.
+
+### Cloud Backup DR
+
+* Promoted `gcloud backup-dr backup-plans update` to GA.
+* Promoted `gcloud backup-dr backups restore disk` to GA.
+* Promoted `gcloud backup-dr backup-plan-associations update` to GA.
+
+### Cloud Bigtable
+
+* `cbt sql` has a new (simpler) output table format.
+
+### Cloud Managed Kafka
+
+* Changed the "subject" command group to "subjects".
+* Changed `--schema-registry` flag to `--registry` for subjects command group.
+
+### Cloud NetApp
+
+* Added `--throughput-mibps` flag to `gcloud netapp volumes create` and `gcloud netapp volume update` commands.
+* Added `--qos-type` flag to `gcloud netapp storagepools create` and `gcloud netapp storagepools update` commands.
+
+### Cloud SQL
+
+*   Updated 'cloud-sql-proxy' packaged component to use 2.18.1 of the Cloud SQL Proxy.
+
+### Compute Engine
+
+* Added `--resource-manager-tags` flag to
+  `gcloud compute backend-services create` to allow users to add resource tags
+  to the backend bucket during creation.
+* Added `--resource-manager-tags` flag to
+  `gcloud compute backend-buckets create` to allow users to add resource tags
+  to the backend bucket during creation.
+
+### GKE Hub
+
+* Promoted `disable` and `describe` on
+  `gcloud container fleet|hub config-management` command group to GA.
+
+### Kubernetes Engine
+
+* Added `--membership-type` flag to `gcloud beta container clusters
+  create|update` commands to pass fleet membership type.
+
+* Promoted gcloud container ai profiles to GA.
+
+### Network Services
+
+*   Added `--update-strategy` flag in `gcloud compute networks peerings create` and `gcloud compute networks peerings update` commands.
+*   Added a new command `gcloud compute networks peerings request-delete`.
+
+### Secure Source Manager
+
+* Promoted `gcloud source-manager` to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 535.0.0 (2025-08-19)
 
 ### AI

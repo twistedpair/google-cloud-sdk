@@ -14,7 +14,7 @@
 # limitations under the License.
 """Database Migration Service conversion workspaces CRUD API."""
 
-from typing import Optional, Set, Tuple
+from typing import Any, Mapping, Optional, Set, Tuple
 
 from googlecloudsdk.api_lib.database_migration import api_util
 from googlecloudsdk.api_lib.database_migration.conversion_workspaces import base_conversion_workspaces_client
@@ -99,6 +99,37 @@ class ConversionWorkspacesCRUDClient(
             name=name,
         )
     )
+
+  def GetGlobalFilter(self, name: str) -> str:
+    """Get global filter for a conversion workspace.
+
+    If no global filter is set, '*' will be returned.
+
+    Args:
+      name: The name of the conversion workspace.
+
+    Returns:
+      The global filter for the conversion workspace.
+    """
+    return self._GetAdditionalProperties(name).get('filter', '*')
+
+  def _GetAdditionalProperties(self, name: str) -> Mapping[str, Any]:
+    """Get conversion workspace additional properties.
+
+    Args:
+      name: The name of the conversion workspace.
+
+    Returns:
+      The conversion workspace additional properties.
+    """
+    conversion_workspace = self.Read(name=name)
+    if not conversion_workspace.globalSettings:
+      return {}
+
+    return {
+        additional_property.key: additional_property.value
+        for additional_property in conversion_workspace.globalSettings.additionalProperties
+    }
 
   def Update(
       self,

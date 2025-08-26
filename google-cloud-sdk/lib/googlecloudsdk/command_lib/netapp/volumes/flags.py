@@ -747,11 +747,7 @@ def AddVolumeCreateArgs(parser, release_track):
   ]:
     AddVolumeBackupConfigArg(parser)
     AddVolumeSourceBackupArg(parser)
-  if (
-      release_track == calliope_base.ReleaseTrack.ALPHA
-      or release_track == calliope_base.ReleaseTrack.BETA
-  ):
-    AddVolumeThroughputMibpsArg(parser)
+  AddVolumeThroughputMibpsArg(parser)
   AddVolumeTieringPolicyArg(parser, messages, release_track)
   AddVolumeHybridReplicationParametersArg(parser, messages, release_track)
   if release_track in [
@@ -801,11 +797,7 @@ def AddVolumeUpdateArgs(parser, release_track):
   ]:
     AddVolumeBackupConfigArg(parser)
     AddVolumeSourceBackupArg(parser)
-  if (
-      release_track == calliope_base.ReleaseTrack.ALPHA
-      or release_track == calliope_base.ReleaseTrack.BETA
-  ):
-    AddVolumeThroughputMibpsArg(parser)
+  AddVolumeThroughputMibpsArg(parser)
   AddVolumeTieringPolicyArg(parser, messages, release_track)
   if release_track in [
       calliope_base.ReleaseTrack.ALPHA, calliope_base.ReleaseTrack.BETA,

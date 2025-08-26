@@ -16,7 +16,6 @@
 
 Implements CloudApi for the GCS JSON API. Example functions include listing
 buckets, uploading objects, and setting lifecycle conditions.
-
 """
 
 from __future__ import absolute_import
@@ -832,6 +831,7 @@ class JsonClient(cloud_api.CloudApi):
         request_config,
         attributes_resource=original_source_resource,
         posix_to_set=posix_to_set,
+        method_type=metadata_util.MethodType.OBJECT_COMPOSE,
     )
 
     compose_request_payload = self.messages.ComposeRequest(
@@ -885,7 +885,10 @@ class JsonClient(cloud_api.CloudApi):
           request_config,
           should_deep_copy=should_deep_copy_metadata)
     metadata_util.update_object_metadata_from_request_config(
-        destination_metadata, request_config, posix_to_set=posix_to_set
+        destination_metadata,
+        request_config,
+        posix_to_set=posix_to_set,
+        method_type=metadata_util.MethodType.OBJECT_REWRITE,
     )
 
     if request_config.predefined_acl_string:
@@ -1250,7 +1253,10 @@ class JsonClient(cloud_api.CloudApi):
     )
 
     metadata_util.update_object_metadata_from_request_config(
-        object_metadata, request_config, posix_to_set=posix_to_set
+        object_metadata,
+        request_config,
+        posix_to_set=posix_to_set,
+        method_type=metadata_util.MethodType.OBJECT_PATCH,
     )
     request = self.messages.StorageObjectsPatchRequest(
         bucket=bucket_name,
@@ -1707,6 +1713,8 @@ class JsonClient(cloud_api.CloudApi):
       object_globs,
       request_config,
       allow_overwrite=False,
+      created_after_time=None,
+      created_before_time=None,
       deleted_after_time=None,
       deleted_before_time=None,
   ):
@@ -1725,6 +1733,8 @@ class JsonClient(cloud_api.CloudApi):
               bulkRestoreObjectsRequest=self.messages.BulkRestoreObjectsRequest(
                   allowOverwrite=allow_overwrite,
                   copySourceAcl=preserve_acl,
+                  createdAfterTime=created_after_time,
+                  createdBeforeTime=created_before_time,
                   matchGlobs=object_globs,
                   softDeletedAfterTime=deleted_after_time,
                   softDeletedBeforeTime=deleted_before_time,

@@ -200,6 +200,15 @@ def AddCreateCommonArgs(parser, required=True):
   AddRequestedFeatures(parser)
 
 
+def AddCreateArgs(parser, track, required=True):
+  """Adds flags for create command to the argparse.ArgumentParser."""
+  AddCreateCommonArgs(parser, required)
+  if track == base.ReleaseTrack.GA:
+    AddInterconnectTypeGA(parser, required)
+  else:
+    AddInterconnectTypeBetaAndAlpha(parser)
+
+
 def AddCreateGaArgs(parser, required=True):
   """Adds GA flags for create command to the argparse.ArgumentParser."""
   AddCreateCommonArgs(parser, required)

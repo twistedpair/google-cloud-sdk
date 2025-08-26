@@ -96,11 +96,10 @@ def AddDescription(parser):
   )
 
 
-def AddType(parser, required=True):
+def AddType(parser):
   """Adds type flag to the argparse.ArgumentParser."""
   parser.add_argument(
       '--type',
-      required=required,
       choices=_WIRE_GROUP_TYPE,
       help=textwrap.dedent('The type for the wire group.')
   )

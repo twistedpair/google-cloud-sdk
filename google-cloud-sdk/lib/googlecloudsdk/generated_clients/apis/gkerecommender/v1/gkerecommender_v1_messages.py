@@ -14,11 +14,17 @@ package = 'gkerecommender'
 
 
 class Amount(_messages.Message):
-  r"""A Amount object.
+  r"""Represents an amount of money in a specific currency.
 
   Fields:
-    nanos: A integer attribute.
-    units: A string attribute.
+    nanos: Output only. Number of nano (10^-9) units of the amount. The value
+      must be between -999,999,999 and +999,999,999 inclusive. If `units` is
+      positive, `nanos` must be positive or zero. If `units` is zero, `nanos`
+      can be positive, zero, or negative. If `units` is negative, `nanos` must
+      be negative or zero. For example $-1.75 is represented as `units`=-1 and
+      `nanos`=-750,000,000.
+    units: Output only. The whole units of the amount. For example if
+      `currencyCode` is `"USD"`, then 1 unit is one US dollar.
   """
 
   nanos = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -26,172 +32,302 @@ class Amount(_messages.Message):
 
 
 class Cost(_messages.Message):
-  r"""A Cost object.
+  r"""Cost for running a model deployment on a given instance type.
+
+  Currently, only USD currency code is supported.
 
   Fields:
-    costPerMillionInputTokens: A Amount attribute.
-    costPerMillionOutputTokens: A Amount attribute.
-    outputToInputCostRatio: A number attribute.
-    pricingModel: A string attribute.
+    costPerMillionInputTokens: Optional. The cost per million input tokens.
+      $/input token = ($/output token) / output-to-input-cost-ratio.
+    costPerMillionOutputTokens: Optional. The cost per million output tokens,
+      calculated as: $/output token = GPU $/s / (1/output-to-input-cost-ratio
+      * input tokens/s + output tokens/s)
+    outputInputCostRatio: Optional. The output-to-input cost ratio. This
+      determines how the total GPU cost is split between input and output
+      tokens. If not provided, `4.0` is used, assuming a 4:1 output:input cost
+      ratio.
+    pricingModel: Optional. The pricing model used to calculate the cost. Can
+      be one of: `3-years-cud`, `1-year-cud`, `on-demand`, `spot`. If not
+      provided, `spot` will be used.
   """
 
   costPerMillionInputTokens = _messages.MessageField('Amount', 1)
   costPerMillionOutputTokens = _messages.MessageField('Amount', 2)
-  outputToInputCostRatio = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  outputInputCostRatio = _messages.FloatField(
+      3, variant=_messages.Variant.FLOAT
+  )
   pricingModel = _messages.StringField(4)
 
 
-class GenerateOptimizedManifestResponse(_messages.Message):
-  r"""A GenerateOptimizedManifestResponse object.
+class FetchBenchmarkingDataRequest(_messages.Message):
+  r"""Request message for GkeInferenceQuickstart.FetchBenchmarkingData.
 
   Fields:
-    comments: A string attribute.
-    k8sManifests: A K8SManifest attribute.
-    manifestVersion: A string attribute.
+    instanceType: Optional. The instance type to filter benchmarking data.
+      Instance types are in the format `a2-highgpu-1g`. If not provided, all
+      instance types for the given profile's `model_server_info` will be
+      returned. Use GkeInferenceQuickstart.FetchProfiles to find available
+      instance types.
+    modelServerInfo: Required. The model server configuration to get
+      benchmarking data for. Use GkeInferenceQuickstart.FetchProfiles to find
+      valid configurations.
   """
 
-  comments = _messages.StringField(1, repeated=True)
-  k8sManifests = _messages.MessageField('K8SManifest', 2, repeated=True)
-  manifestVersion = _messages.StringField(3)
+  instanceType = _messages.StringField(1)
+  modelServerInfo = _messages.MessageField('ModelServerInfo', 2)
 
 
-class GetBenchmarkingDataResponse(_messages.Message):
-  r"""A GetBenchmarkingDataResponse object.
+class FetchBenchmarkingDataResponse(_messages.Message):
+  r"""Response message for GkeInferenceQuickstart.FetchBenchmarkingData.
 
   Fields:
-    profile: A Profile attribute.
+    profile: Output only. List of profiles containing their respective
+      benchmarking data.
   """
 
   profile = _messages.MessageField('Profile', 1, repeated=True)
 
 
-class GkerecommenderGetBenchmarkingDataRequest(_messages.Message):
-  r"""A GkerecommenderGetBenchmarkingDataRequest object.
+class FetchModelServerVersionsResponse(_messages.Message):
+  r"""Response message for GkeInferenceQuickstart.FetchModelServerVersions.
 
   Fields:
-    instanceType: A string attribute.
-    modelAndModelServerInfo_modelName: A string attribute.
-    modelAndModelServerInfo_modelServerName: A string attribute.
-    modelAndModelServerInfo_modelServerVersion: A string attribute.
+    modelServerVersions: Output only. A list of available model server
+      versions.
+    nextPageToken: Output only. A token which may be sent as page_token in a
+      subsequent `FetchModelServerVersionsResponse` call to retrieve the next
+      page of results. If this field is omitted or empty, then there are no
+      more results to return.
   """
 
-  instanceType = _messages.StringField(1, default='ANY')
-  modelAndModelServerInfo_modelName = _messages.StringField(2)
-  modelAndModelServerInfo_modelServerName = _messages.StringField(3)
-  modelAndModelServerInfo_modelServerVersion = _messages.StringField(4, default='LATEST')
+  modelServerVersions = _messages.StringField(1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
-class GkerecommenderModelServersListRequest(_messages.Message):
-  r"""A GkerecommenderModelServersListRequest object.
+class FetchModelServersResponse(_messages.Message):
+  r"""Response message for GkeInferenceQuickstart.FetchModelServers.
 
   Fields:
-    modelName: A string attribute.
+    modelServers: Output only. List of available model servers. Open-source
+      model servers use simplified, lowercase names (e.g., `vllm`).
+    nextPageToken: Output only. A token which may be sent as page_token in a
+      subsequent `FetchModelServersResponse` call to retrieve the next page of
+      results. If this field is omitted or empty, then there are no more
+      results to return.
   """
 
-  modelName = _messages.StringField(1)
+  modelServers = _messages.StringField(1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
-class GkerecommenderModelServersVersionsListRequest(_messages.Message):
-  r"""A GkerecommenderModelServersVersionsListRequest object.
+class FetchModelsResponse(_messages.Message):
+  r"""Response message for GkeInferenceQuickstart.FetchModels.
 
   Fields:
-    modelName: A string attribute.
-    modelServerName: A string attribute.
+    models: Output only. List of available models. Open-source models follow
+      the Huggingface Hub `owner/model_name` format.
+    nextPageToken: Output only. A token which may be sent as page_token in a
+      subsequent `FetchModelsResponse` call to retrieve the next page of
+      results. If this field is omitted or empty, then there are no more
+      results to return.
   """
 
-  modelName = _messages.StringField(1)
-  modelServerName = _messages.StringField(2, required=True)
+  models = _messages.StringField(1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
-class GkerecommenderModelsListRequest(_messages.Message):
-  r"""A GkerecommenderModelsListRequest object."""
-
-
-class GkerecommenderOptimizedManifestRequest(_messages.Message):
-  r"""A GkerecommenderOptimizedManifestRequest object.
+class FetchProfilesRequest(_messages.Message):
+  r"""Request message for GkeInferenceQuickstart.FetchProfiles.
 
   Fields:
-    acceleratorType: A string attribute.
-    kubernetesNamespace: A string attribute.
-    modelAndModelServerInfo_modelName: A string attribute.
-    modelAndModelServerInfo_modelServerName: A string attribute.
-    modelAndModelServerInfo_modelServerVersion: A string attribute.
-    performanceRequirements_targetCost_costPerMillionInputTokens_nanos: A
-      integer attribute.
-    performanceRequirements_targetCost_costPerMillionInputTokens_units: A
-      string attribute.
-    performanceRequirements_targetCost_costPerMillionOutputTokens_nanos: A
-      integer attribute.
-    performanceRequirements_targetCost_costPerMillionOutputTokens_units: A
-      string attribute.
-    performanceRequirements_targetCost_outputToInputCostRatio: A number
-      attribute.
-    performanceRequirements_targetCost_pricingModel: A string attribute.
-    performanceRequirements_targetNtpotMilliseconds: A integer attribute.
-    performanceRequirements_targetTtftMilliseconds: A integer attribute.
-    storageConfig_modelBucketUri: A string attribute.
-    storageConfig_xlaCacheBucketUri: A string attribute.
+    model: Optional. The model to filter profiles by. Open-source models
+      follow the Huggingface Hub `owner/model_name` format. If not provided,
+      all models are returned. Use GkeInferenceQuickstart.FetchModels to find
+      available models.
+    modelServer: Optional. The model server to filter profiles by. If not
+      provided, all model servers are returned. Use
+      GkeInferenceQuickstart.FetchModelServers to find available model servers
+      for a given model.
+    modelServerVersion: Optional. The model server version to filter profiles
+      by. If not provided, all model server versions are returned. Use
+      GkeInferenceQuickstart.FetchModelServerVersions to find available
+      versions for a given model and server.
+    pageSize: Optional. The target number of results to return in a single
+      response. If not specified, a default value will be chosen by the
+      service. Note that the response may include a partial list and a caller
+      should only rely on the response's next_page_token to determine if there
+      are more instances left to be queried.
+    pageToken: Optional. The value of next_page_token received from a previous
+      `FetchProfilesRequest` call. Provide this to retrieve the subsequent
+      page in a multi-page list of results. When paginating, all other
+      parameters provided to `FetchProfilesRequest` must match the call that
+      provided the page token.
+    performanceRequirements: Optional. The performance requirements to filter
+      profiles. Profiles that do not meet these requirements are filtered out.
+      If not provided, all profiles are returned.
+  """
+
+  model = _messages.StringField(1)
+  modelServer = _messages.StringField(2)
+  modelServerVersion = _messages.StringField(3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  performanceRequirements = _messages.MessageField('PerformanceRequirements', 6)
+
+
+class FetchProfilesResponse(_messages.Message):
+  r"""Response message for GkeInferenceQuickstart.FetchProfiles.
+
+  Fields:
+    comments: Output only. Additional comments related to the response.
+    nextPageToken: Output only. A token which may be sent as page_token in a
+      subsequent `FetchProfilesResponse` call to retrieve the next page of
+      results. If this field is omitted or empty, then there are no more
+      results to return.
+    performanceRange: Output only. The combined range of performance values
+      observed across all profiles in this response.
+    profile: Output only. List of profiles that match the given model server
+      info and performance requirements (if provided).
+  """
+
+  comments = _messages.StringField(1)
+  nextPageToken = _messages.StringField(2)
+  performanceRange = _messages.MessageField('PerformanceRange', 3)
+  profile = _messages.MessageField('Profile', 4, repeated=True)
+
+
+class GenerateOptimizedManifestRequest(_messages.Message):
+  r"""Request message for GkeInferenceQuickstart.GenerateOptimizedManifest.
+
+  Fields:
+    acceleratorType: Required. The accelerator type. Use
+      GkeInferenceQuickstart.FetchProfiles to find valid accelerators for a
+      given `model_server_info`.
+    kubernetesNamespace: Optional. The kubernetes namespace to deploy the
+      manifests in.
+    modelServerInfo: Required. The model server configuration to generate the
+      manifest for. Use GkeInferenceQuickstart.FetchProfiles to find valid
+      configurations.
+    performanceRequirements: Optional. The performance requirements to use for
+      generating Horizontal Pod Autoscaler (HPA) resources. If provided, the
+      manifest includes HPA resources to adjust the model server replica count
+      to maintain the specified targets (e.g., NTPOT, TTFT) at a P50 latency.
+      Cost targets are not currently supported for HPA generation. If the
+      specified targets are not achievable, the HPA manifest will not be
+      generated.
+    storageConfig: Optional. The storage configuration for the model. If not
+      provided, the model is loaded from Huggingface.
   """
 
   acceleratorType = _messages.StringField(1)
-  kubernetesNamespace = _messages.StringField(2, default='default')
-  modelAndModelServerInfo_modelName = _messages.StringField(3)
-  modelAndModelServerInfo_modelServerName = _messages.StringField(4)
-  modelAndModelServerInfo_modelServerVersion = _messages.StringField(5, default='LATEST')
-  performanceRequirements_targetCost_costPerMillionInputTokens_nanos = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  performanceRequirements_targetCost_costPerMillionInputTokens_units = _messages.IntegerField(7)
-  performanceRequirements_targetCost_costPerMillionOutputTokens_nanos = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  performanceRequirements_targetCost_costPerMillionOutputTokens_units = _messages.IntegerField(9)
-  performanceRequirements_targetCost_outputToInputCostRatio = _messages.FloatField(10, variant=_messages.Variant.FLOAT, default=4)
-  performanceRequirements_targetCost_pricingModel = _messages.StringField(11, default='spot')
-  performanceRequirements_targetNtpotMilliseconds = _messages.IntegerField(12, variant=_messages.Variant.INT32, default=999999)
-  performanceRequirements_targetTtftMilliseconds = _messages.IntegerField(13, variant=_messages.Variant.INT32, default=999999)
-  storageConfig_modelBucketUri = _messages.StringField(14)
-  storageConfig_xlaCacheBucketUri = _messages.StringField(15)
+  kubernetesNamespace = _messages.StringField(2)
+  modelServerInfo = _messages.MessageField('ModelServerInfo', 3)
+  performanceRequirements = _messages.MessageField('PerformanceRequirements', 4)
+  storageConfig = _messages.MessageField('StorageConfig', 5)
 
 
-class GkerecommenderProfilesListRequest(_messages.Message):
-  r"""A GkerecommenderProfilesListRequest object.
+class GenerateOptimizedManifestResponse(_messages.Message):
+  r"""Response message for GkeInferenceQuickstart.GenerateOptimizedManifest.
 
   Fields:
-    modelName: A string attribute.
-    modelServerName: A string attribute.
-    modelServerVersion: A string attribute.
-    performanceRequirements_targetCost_costPerMillionInputTokens_nanos: A
-      integer attribute.
-    performanceRequirements_targetCost_costPerMillionInputTokens_units: A
-      string attribute.
-    performanceRequirements_targetCost_costPerMillionOutputTokens_nanos: A
-      integer attribute.
-    performanceRequirements_targetCost_costPerMillionOutputTokens_units: A
-      string attribute.
-    performanceRequirements_targetCost_outputToInputCostRatio: A number
-      attribute.
-    performanceRequirements_targetCost_pricingModel: A string attribute.
-    performanceRequirements_targetNtpotMilliseconds: A integer attribute.
-    performanceRequirements_targetTtftMilliseconds: A integer attribute.
+    comments: Output only. Comments related to deploying the generated
+      manifests.
+    kubernetesManifests: Output only. A list of generated Kubernetes
+      manifests.
+    manifestVersion: Output only. Additional information about the versioned
+      dependencies used to generate the manifests. See [Run best practice
+      inference with GKE Inference Quickstart
+      recipes](https://cloud.google.com/kubernetes-engine/docs/how-to/machine-
+      learning/inference/inference-quickstart) for details.
   """
 
-  modelName = _messages.StringField(1, default='ANY')
-  modelServerName = _messages.StringField(2, default='ANY')
-  modelServerVersion = _messages.StringField(3, default='LATEST')
-  performanceRequirements_targetCost_costPerMillionInputTokens_nanos = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  performanceRequirements_targetCost_costPerMillionInputTokens_units = _messages.IntegerField(5)
-  performanceRequirements_targetCost_costPerMillionOutputTokens_nanos = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  performanceRequirements_targetCost_costPerMillionOutputTokens_units = _messages.IntegerField(7)
-  performanceRequirements_targetCost_outputToInputCostRatio = _messages.FloatField(8, variant=_messages.Variant.FLOAT, default=4)
-  performanceRequirements_targetCost_pricingModel = _messages.StringField(9, default='spot')
-  performanceRequirements_targetNtpotMilliseconds = _messages.IntegerField(10, variant=_messages.Variant.INT32, default=999999)
-  performanceRequirements_targetTtftMilliseconds = _messages.IntegerField(11, variant=_messages.Variant.INT32, default=999999)
+  comments = _messages.StringField(1, repeated=True)
+  kubernetesManifests = _messages.MessageField(
+      'KubernetesManifest', 2, repeated=True
+  )
+  manifestVersion = _messages.StringField(3)
 
 
-class K8SManifest(_messages.Message):
-  r"""A K8SManifest object.
+class GkerecommenderModelServerVersionsFetchRequest(_messages.Message):
+  r"""A GkerecommenderModelServerVersionsFetchRequest object.
 
   Fields:
-    apiVersion: A string attribute.
-    content: A string attribute.
-    kind: A string attribute.
+    model: Required. The model for which to list model server versions. Open-
+      source models follow the Huggingface Hub `owner/model_name` format. Use
+      GkeInferenceQuickstart.FetchModels to find available models.
+    modelServer: Required. The model server for which to list versions. Open-
+      source model servers use simplified, lowercase names (e.g., `vllm`). Use
+      GkeInferenceQuickstart.FetchModelServers to find available model
+      servers.
+    pageSize: Optional. The target number of results to return in a single
+      response. If not specified, a default value will be chosen by the
+      service. Note that the response may include a partial list and a caller
+      should only rely on the response's next_page_token to determine if there
+      are more instances left to be queried.
+    pageToken: Optional. The value of next_page_token received from a previous
+      `FetchModelServerVersionsRequest` call. Provide this to retrieve the
+      subsequent page in a multi-page list of results. When paginating, all
+      other parameters provided to `FetchModelServerVersionsRequest` must
+      match the call that provided the page token.
+  """
+
+  model = _messages.StringField(1)
+  modelServer = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class GkerecommenderModelServersFetchRequest(_messages.Message):
+  r"""A GkerecommenderModelServersFetchRequest object.
+
+  Fields:
+    model: Required. The model for which to list model servers. Open-source
+      models follow the Huggingface Hub `owner/model_name` format. Use
+      GkeInferenceQuickstart.FetchModels to find available models.
+    pageSize: Optional. The target number of results to return in a single
+      response. If not specified, a default value will be chosen by the
+      service. Note that the response may include a partial list and a caller
+      should only rely on the response's next_page_token to determine if there
+      are more instances left to be queried.
+    pageToken: Optional. The value of next_page_token received from a previous
+      `FetchModelServersRequest` call. Provide this to retrieve the subsequent
+      page in a multi-page list of results. When paginating, all other
+      parameters provided to `FetchModelServersRequest` must match the call
+      that provided the page token.
+  """
+
+  model = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
+class GkerecommenderModelsFetchRequest(_messages.Message):
+  r"""A GkerecommenderModelsFetchRequest object.
+
+  Fields:
+    pageSize: Optional. The target number of results to return in a single
+      response. If not specified, a default value will be chosen by the
+      service. Note that the response may include a partial list and a caller
+      should only rely on the response's next_page_token to determine if there
+      are more instances left to be queried.
+    pageToken: Optional. The value of next_page_token received from a previous
+      `FetchModelsRequest` call. Provide this to retrieve the subsequent page
+      in a multi-page list of results. When paginating, all other parameters
+      provided to `FetchModelsRequest` must match the call that provided the
+      page token.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+
+
+class KubernetesManifest(_messages.Message):
+  r"""A Kubernetes manifest.
+
+  Fields:
+    apiVersion: Output only. Kubernetes API version.
+    content: Output only. YAML content.
+    kind: Output only. Kubernetes resource kind.
   """
 
   apiVersion = _messages.StringField(1)
@@ -199,144 +335,145 @@ class K8SManifest(_messages.Message):
   kind = _messages.StringField(3)
 
 
-class ListCompatibleProfilesResponse(_messages.Message):
-  r"""A ListCompatibleProfilesResponse object.
+class MillisecondRange(_messages.Message):
+  r"""Represents a range of latency values in milliseconds.
 
   Fields:
-    comments: A string attribute.
-    performanceRange: A PerformanceRange attribute.
-    profile: A Profile attribute.
-  """
-
-  comments = _messages.StringField(1)
-  performanceRange = _messages.MessageField('PerformanceRange', 2)
-  profile = _messages.MessageField('Profile', 3, repeated=True)
-
-
-class ListModelServerVersionsResponse(_messages.Message):
-  r"""A ListModelServerVersionsResponse object.
-
-  Fields:
-    modelServerVersions: A string attribute.
-  """
-
-  modelServerVersions = _messages.StringField(1, repeated=True)
-
-
-class ListModelServersResponse(_messages.Message):
-  r"""A ListModelServersResponse object.
-
-  Fields:
-    modelServerNames: A string attribute.
-  """
-
-  modelServerNames = _messages.StringField(1, repeated=True)
-
-
-class ListModelsResponse(_messages.Message):
-  r"""A ListModelsResponse object.
-
-  Fields:
-    modelNames: A string attribute.
-  """
-
-  modelNames = _messages.StringField(1, repeated=True)
-
-
-class ModelAndModelServerInfo(_messages.Message):
-  r"""A ModelAndModelServerInfo object.
-
-  Fields:
-    modelName: A string attribute.
-    modelServerName: A string attribute.
-    modelServerVersion: A string attribute.
-  """
-
-  modelName = _messages.StringField(1)
-  modelServerName = _messages.StringField(2)
-  modelServerVersion = _messages.StringField(3)
-
-
-class PerformanceRange(_messages.Message):
-  r"""A PerformanceRange object.
-
-  Fields:
-    ntpotMilliseconds: A Range attribute.
-    throughputOutputTokensPerSecond: A Range attribute.
-    ttftMilliseconds: A Range attribute.
-  """
-
-  ntpotMilliseconds = _messages.MessageField('Range', 1)
-  throughputOutputTokensPerSecond = _messages.MessageField('Range', 2)
-  ttftMilliseconds = _messages.MessageField('Range', 3)
-
-
-class PerformanceStats(_messages.Message):
-  r"""A PerformanceStats object.
-
-  Fields:
-    cost: A Cost attribute.
-    ntpotMilliseconds: A integer attribute.
-    outputTokensPerSecond: A integer attribute.
-    queriesPerSecond: A integer attribute.
-    ttftMilliseconds: A integer attribute.
-  """
-
-  cost = _messages.MessageField('Cost', 1, repeated=True)
-  ntpotMilliseconds = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  outputTokensPerSecond = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  queriesPerSecond = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  ttftMilliseconds = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-
-
-class Profile(_messages.Message):
-  r"""A Profile object.
-
-  Fields:
-    acceleratorType: A string attribute.
-    instanceType: A string attribute.
-    modelAndModelServerInfo: A ModelAndModelServerInfo attribute.
-    performanceStats: A PerformanceStats attribute.
-    resourcesUsed: A ResourcesUsed attribute.
-    tpuTopology: A string attribute.
-  """
-
-  acceleratorType = _messages.StringField(1)
-  instanceType = _messages.StringField(2)
-  modelAndModelServerInfo = _messages.MessageField('ModelAndModelServerInfo', 3)
-  performanceStats = _messages.MessageField('PerformanceStats', 4, repeated=True)
-  resourcesUsed = _messages.MessageField('ResourcesUsed', 5)
-  tpuTopology = _messages.StringField(6)
-
-
-class Range(_messages.Message):
-  r"""A Range object.
-
-  Fields:
-    max: A integer attribute.
-    min: A integer attribute.
+    max: Output only. The maximum value of the range.
+    min: Output only. The minimum value of the range.
   """
 
   max = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   min = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
-class ResourcesUsed(_messages.Message):
-  r"""A ResourcesUsed object.
+class ModelServerInfo(_messages.Message):
+  r"""Model server information gives.
+
+  Valid model server info combinations can be found using
+  GkeInferenceQuickstart.FetchProfiles.
 
   Fields:
-    acceleratorCount: A integer attribute.
-    cpu: A string attribute.
-    ephemeralStorage: A string attribute.
-    memory: A string attribute.
-    nodeCount: A integer attribute.
+    model: Required. The model. Open-source models follow the Huggingface Hub
+      `owner/model_name` format. Use GkeInferenceQuickstart.FetchModels to
+      find available models.
+    modelServer: Required. The model server. Open-source model servers use
+      simplified, lowercase names (e.g., `vllm`). Use
+      GkeInferenceQuickstart.FetchModelServers to find available servers.
+    modelServerVersion: Optional. The model server version. Use
+      GkeInferenceQuickstart.FetchModelServerVersions to find available
+      versions. If not provided, the latest available version is used.
+  """
+
+  model = _messages.StringField(1)
+  modelServer = _messages.StringField(2)
+  modelServerVersion = _messages.StringField(3)
+
+
+class PerformanceRange(_messages.Message):
+  r"""Performance range for a model deployment.
+
+  Fields:
+    ntpotRange: Output only. The range of NTPOT (Normalized Time Per Output
+      Token) in milliseconds. NTPOT is the request latency normalized by the
+      number of output tokens, measured as request_latency /
+      total_output_tokens.
+    throughputOutputRange: Output only. The range of throughput in output
+      tokens per second. This is measured as
+      total_output_tokens_generated_by_server / elapsed_time_in_seconds.
+    ttftRange: Output only. The range of TTFT (Time To First Token) in
+      milliseconds. TTFT is the time it takes to generate the first token for
+      a request.
+  """
+
+  ntpotRange = _messages.MessageField('MillisecondRange', 1)
+  throughputOutputRange = _messages.MessageField('TokensPerSecondRange', 2)
+  ttftRange = _messages.MessageField('MillisecondRange', 3)
+
+
+class PerformanceRequirements(_messages.Message):
+  r"""Performance requirements for a profile and or model deployment.
+
+  Fields:
+    targetCost: Optional. The target cost for running a profile's model
+      server. If not provided, this requirement will not be enforced.
+    targetNtpotMilliseconds: Optional. The target Normalized Time Per Output
+      Token (NTPOT) in milliseconds. NTPOT is calculated as `request_latency /
+      total_output_tokens`. If not provided, this target will not be enforced.
+    targetTtftMilliseconds: Optional. The target Time To First Token (TTFT) in
+      milliseconds. TTFT is the time it takes to generate the first token for
+      a request. If not provided, this target will not be enforced.
+  """
+
+  targetCost = _messages.MessageField('Cost', 1)
+  targetNtpotMilliseconds = _messages.IntegerField(
+      2, variant=_messages.Variant.INT32
+  )
+  targetTtftMilliseconds = _messages.IntegerField(
+      3, variant=_messages.Variant.INT32
+  )
+
+
+class PerformanceStats(_messages.Message):
+  r"""Performance statistics for a model deployment.
+
+  Fields:
+    cost: Output only. The cost of running the model deployment.
+    ntpotMilliseconds: Output only. The Normalized Time Per Output Token
+      (NTPOT) in milliseconds. This is the request latency normalized by the
+      number of output tokens, measured as request_latency /
+      total_output_tokens.
+    outputTokensPerSecond: Output only. The number of output tokens per
+      second. This is the throughput measured as
+      total_output_tokens_generated_by_server / elapsed_time_in_seconds.
+    queriesPerSecond: Output only. The number of queries per second. Note:
+      This metric can vary widely based on context length and may not be a
+      reliable measure of LLM throughput.
+    ttftMilliseconds: Output only. The Time To First Token (TTFT) in
+      milliseconds. This is the time it takes to generate the first token for
+      a request.
+  """
+
+  cost = _messages.MessageField('Cost', 1, repeated=True)
+  ntpotMilliseconds = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  outputTokensPerSecond = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  queriesPerSecond = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  ttftMilliseconds = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
+class Profile(_messages.Message):
+  r"""A profile containing information about a model deployment.
+
+  Fields:
+    acceleratorType: Output only. The accelerator type. Expected format:
+      `nvidia-h100-80gb`.
+    instanceType: Output only. The instance type. Expected format:
+      `a2-highgpu-1g`.
+    modelServerInfo: Output only. The model server configuration. Use
+      GkeInferenceQuickstart.FetchProfiles to find valid configurations.
+    performanceStats: Output only. The performance statistics for this
+      profile.
+    resourcesUsed: Output only. The resources used by the model deployment.
+    tpuTopology: Output only. The TPU topology (if applicable).
+  """
+
+  acceleratorType = _messages.StringField(1)
+  instanceType = _messages.StringField(2)
+  modelServerInfo = _messages.MessageField('ModelServerInfo', 3)
+  performanceStats = _messages.MessageField('PerformanceStats', 4, repeated=True)
+  resourcesUsed = _messages.MessageField('ResourcesUsed', 5)
+  tpuTopology = _messages.StringField(6)
+
+
+class ResourcesUsed(_messages.Message):
+  r"""Resources used by a model deployment.
+
+  Fields:
+    acceleratorCount: Output only. The number of accelerators (e.g., GPUs or
+      TPUs) used by the model deployment on the Kubernetes node.
   """
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  cpu = _messages.StringField(2)
-  ephemeralStorage = _messages.StringField(3)
-  memory = _messages.StringField(4)
-  nodeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -402,57 +539,39 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class StorageConfig(_messages.Message):
+  r"""Storage configuration for a model deployment.
+
+  Fields:
+    modelBucketUri: Optional. The Google Cloud Storage bucket URI to load the
+      model from. This URI must point to the directory containing the model's
+      config file (`config.json`) and model weights. A tuned GCSFuse setup can
+      improve LLM Pod startup time by more than 7x. Expected format: `gs:///`.
+    xlaCacheBucketUri: Optional. The URI for the GCS bucket containing the XLA
+      compilation cache. If using TPUs, the XLA cache will be written to the
+      same path as `model_bucket_uri`. This can speed up vLLM model
+      preparation for repeated deployments.
+  """
+
+  modelBucketUri = _messages.StringField(1)
+  xlaCacheBucketUri = _messages.StringField(2)
+
+
+class TokensPerSecondRange(_messages.Message):
+  r"""Represents a range of throughput values in tokens per second.
+
+  Fields:
+    max: Output only. The maximum value of the range.
+    min: Output only. The minimum value of the range.
+  """
+
+  max = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  min = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
-encoding.AddCustomJsonFieldMapping(
-    GkerecommenderProfilesListRequest, 'performanceRequirements_targetCost_costPerMillionInputTokens_nanos', 'performanceRequirements.targetCost.costPerMillionInputTokens.nanos')
-encoding.AddCustomJsonFieldMapping(
-    GkerecommenderProfilesListRequest, 'performanceRequirements_targetCost_costPerMillionInputTokens_units', 'performanceRequirements.targetCost.costPerMillionInputTokens.units')
-encoding.AddCustomJsonFieldMapping(
-    GkerecommenderProfilesListRequest, 'performanceRequirements_targetCost_costPerMillionOutputTokens_nanos', 'performanceRequirements.targetCost.costPerMillionOutputTokens.nanos')
-encoding.AddCustomJsonFieldMapping(
-    GkerecommenderProfilesListRequest, 'performanceRequirements_targetCost_costPerMillionOutputTokens_units', 'performanceRequirements.targetCost.costPerMillionOutputTokens.units')
-encoding.AddCustomJsonFieldMapping(
-    GkerecommenderProfilesListRequest, 'performanceRequirements_targetCost_outputToInputCostRatio', 'performanceRequirements.targetCost.outputToInputCostRatio')
-encoding.AddCustomJsonFieldMapping(
-    GkerecommenderProfilesListRequest, 'performanceRequirements_targetCost_pricingModel', 'performanceRequirements.targetCost.pricingModel')
-encoding.AddCustomJsonFieldMapping(
-    GkerecommenderProfilesListRequest, 'performanceRequirements_targetNtpotMilliseconds', 'performanceRequirements.targetNtpotMilliseconds')
-encoding.AddCustomJsonFieldMapping(
-    GkerecommenderProfilesListRequest, 'performanceRequirements_targetTtftMilliseconds', 'performanceRequirements.targetTtftMilliseconds')
-encoding.AddCustomJsonFieldMapping(
-    GkerecommenderGetBenchmarkingDataRequest, 'modelAndModelServerInfo_modelName', 'modelAndModelServerInfo.modelName')
-encoding.AddCustomJsonFieldMapping(
-    GkerecommenderGetBenchmarkingDataRequest, 'modelAndModelServerInfo_modelServerName', 'modelAndModelServerInfo.modelServerName')
-encoding.AddCustomJsonFieldMapping(
-    GkerecommenderGetBenchmarkingDataRequest, 'modelAndModelServerInfo_modelServerVersion', 'modelAndModelServerInfo.modelServerVersion')
-encoding.AddCustomJsonFieldMapping(
-    GkerecommenderOptimizedManifestRequest, 'modelAndModelServerInfo_modelName', 'modelAndModelServerInfo.modelName')
-encoding.AddCustomJsonFieldMapping(
-    GkerecommenderOptimizedManifestRequest, 'modelAndModelServerInfo_modelServerName', 'modelAndModelServerInfo.modelServerName')
-encoding.AddCustomJsonFieldMapping(
-    GkerecommenderOptimizedManifestRequest, 'modelAndModelServerInfo_modelServerVersion', 'modelAndModelServerInfo.modelServerVersion')
-encoding.AddCustomJsonFieldMapping(
-    GkerecommenderOptimizedManifestRequest, 'performanceRequirements_targetCost_costPerMillionInputTokens_nanos', 'performanceRequirements.targetCost.costPerMillionInputTokens.nanos')
-encoding.AddCustomJsonFieldMapping(
-    GkerecommenderOptimizedManifestRequest, 'performanceRequirements_targetCost_costPerMillionInputTokens_units', 'performanceRequirements.targetCost.costPerMillionInputTokens.units')
-encoding.AddCustomJsonFieldMapping(
-    GkerecommenderOptimizedManifestRequest, 'performanceRequirements_targetCost_costPerMillionOutputTokens_nanos', 'performanceRequirements.targetCost.costPerMillionOutputTokens.nanos')
-encoding.AddCustomJsonFieldMapping(
-    GkerecommenderOptimizedManifestRequest, 'performanceRequirements_targetCost_costPerMillionOutputTokens_units', 'performanceRequirements.targetCost.costPerMillionOutputTokens.units')
-encoding.AddCustomJsonFieldMapping(
-    GkerecommenderOptimizedManifestRequest, 'performanceRequirements_targetCost_outputToInputCostRatio', 'performanceRequirements.targetCost.outputToInputCostRatio')
-encoding.AddCustomJsonFieldMapping(
-    GkerecommenderOptimizedManifestRequest, 'performanceRequirements_targetCost_pricingModel', 'performanceRequirements.targetCost.pricingModel')
-encoding.AddCustomJsonFieldMapping(
-    GkerecommenderOptimizedManifestRequest, 'performanceRequirements_targetNtpotMilliseconds', 'performanceRequirements.targetNtpotMilliseconds')
-encoding.AddCustomJsonFieldMapping(
-    GkerecommenderOptimizedManifestRequest, 'performanceRequirements_targetTtftMilliseconds', 'performanceRequirements.targetTtftMilliseconds')
-encoding.AddCustomJsonFieldMapping(
-    GkerecommenderOptimizedManifestRequest, 'storageConfig_modelBucketUri', 'storageConfig.modelBucketUri')
-encoding.AddCustomJsonFieldMapping(
-    GkerecommenderOptimizedManifestRequest, 'storageConfig_xlaCacheBucketUri', 'storageConfig.xlaCacheBucketUri')

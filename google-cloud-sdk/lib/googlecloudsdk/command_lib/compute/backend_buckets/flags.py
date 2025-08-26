@@ -205,16 +205,31 @@ def AddCompressionMode(parser):
   )
 
 
-def AddLoadBalancingScheme(parser):
+def AddLoadBalancingScheme(parser, enable_external_managed=False):
   """Add support for --load-balancing-scheme flag."""
   return parser.add_argument(
       '--load-balancing-scheme',
-      choices=['INTERNAL_MANAGED'],
+      choices=['INTERNAL_MANAGED', 'EXTERNAL_MANAGED']
+      if enable_external_managed
+      else ['INTERNAL_MANAGED'],
       type=arg_utils.ChoiceToEnumName,
       required=False,
       help="""\
       The load balancing scheme of the backend bucket.
       If left blank, the backend bucket will be compatible with Global External
       Application Load Balancer or Classic Application Load Balancer.
+      """,
+  )
+
+
+def AddResourceManagerTags(parser):
+  """Add support for --resource-manager-tags flag."""
+  return parser.add_argument(
+      '--resource-manager-tags',
+      type=arg_parsers.ArgDict(),
+      metavar='KEY=VALUE',
+      help="""\
+      Comma-separated list of Resource Manager tags
+      to apply to the backend bucket.
       """,
   )

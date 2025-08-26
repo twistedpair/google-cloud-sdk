@@ -15,7 +15,7 @@
 """Database Migration Service conversion workspaces Entities APIs."""
 
 import functools
-from typing import Any, Generator, Iterable, Mapping, Optional
+from typing import Any, Generator, Mapping, Optional
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.database_migration.conversion_workspaces import base_conversion_workspaces_client
@@ -183,9 +183,11 @@ class ConversionWorkspacesEntitiesClient(
         tree
         == self.messages.DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntitiesRequest.TreeValueValuesEnum.SOURCE_TREE
     ):
-      filter_expr = self._CombineFilters(
+      filter_expr = self.CombineFilters(
           filter_expr,
-          self._GetGlobalFilter(name=conversion_workspace_ref),
+          self.parent_client.crud.GetGlobalFilter(
+              name=conversion_workspace_ref,
+          ),
       )
 
     return self.messages.DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntitiesRequest(
@@ -286,64 +288,3 @@ class ConversionWorkspacesEntitiesClient(
           entity_obj=entity_obj,
           issue_severities=issue_severities,
       )
-
-  def _GetAdditionalProperties(self, name: str) -> Mapping[str, Any]:
-    """Get conversion workspace additional properties.
-
-    Args:
-      name: The name of the conversion workspace.
-
-    Returns:
-      The conversion workspace additional properties.
-    """
-    conversion_workspace = self.parent_client.crud.Read(name=name)
-    if not conversion_workspace.globalSettings:
-      return {}
-
-    return {
-        additional_property.key: additional_property.value
-        for additional_property in conversion_workspace.globalSettings.additionalProperties
-    }
-
-  def _GetGlobalFilter(self, name: str) -> str:
-    """Get global filter for a conversion workspace.
-
-    If no global filter is set, '*' will be returned.
-
-    Args:
-      name: The name of the conversion workspace.
-
-    Returns:
-      The global filter for the conversion workspace.
-    """
-    return self._GetAdditionalProperties(name).get('filter', '*')
-
-  def _CombineFilters(
-      self,
-      *filter_exprs: Iterable[Optional[str]],
-  ) -> Optional[str]:
-    """Combine filter expression with global filter.
-
-    Args:
-      *filter_exprs: Filter expressions to combine.
-
-    Returns:
-      Combined filter expression (or None if no filter expressions are
-      provided).
-    """
-
-    filter_exprs = tuple(
-        filter(
-            lambda filter_expr: filter_expr and filter_expr != '*',
-            filter_exprs,
-        )
-    )
-
-    if not filter_exprs:
-      return None
-    if len(filter_exprs) == 1:
-      return filter_exprs[0]
-
-    return ' AND '.join(
-        map(lambda filter_expr: f'({filter_expr})', filter_exprs)
-    )

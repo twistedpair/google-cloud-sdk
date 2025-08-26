@@ -2353,6 +2353,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'hypercomputecluster': {
+        'v1alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.hypercomputecluster.v1alpha',
+                    client_classpath='hypercomputecluster_v1alpha_client.HypercomputeclusterV1alpha',
+                    base_url='',
+                    messages_modulepath='hypercomputecluster_v1alpha_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'iam': {
         'v1':
             APIDef(

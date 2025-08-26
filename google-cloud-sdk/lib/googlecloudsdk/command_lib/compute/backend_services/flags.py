@@ -1392,3 +1392,17 @@ def AddAllowMultinetwork(parser):
       default.
       """,
   )
+
+
+def AddResourceManagerTags(parser):
+  """Add support for --resource-manager-tags flag."""
+  return parser.add_argument(
+      '--resource-manager-tags',
+      type=arg_parsers.ArgDict(),
+      metavar='KEY=VALUE',
+      help="""\
+      A comma-separated list of Resource Manager tags
+      to apply to the backend service.
+      """,
+  )
+

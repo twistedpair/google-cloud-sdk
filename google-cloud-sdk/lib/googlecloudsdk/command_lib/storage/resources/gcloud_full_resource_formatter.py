@@ -173,6 +173,9 @@ _OBJECT_DISPLAY_TITLES_AND_DEFAULTS = base.ObjectDisplayTitlesAndDefaults(
     noncurrent_time=base.FieldDisplayTitleAndDefault(
         title='Noncurrent Time', default=None
     ),
+    custom_contexts=base.FieldDisplayTitleAndDefault(
+        title='Custom Contexts', default=None
+    ),
     custom_fields=base.FieldDisplayTitleAndDefault(
         title='Additional Properties', default=None
     ),

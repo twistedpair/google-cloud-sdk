@@ -588,6 +588,7 @@ def _FindAvailableGCSBucket(default_bucket, project_id, location):
       check_ownership=True,
       enable_uniform_level_access=True,
   )
+  # TODO: b/437367532 - Add `goog-managed-by` label to the bucket.
 
   return bucket_name
 

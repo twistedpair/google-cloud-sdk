@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import copy
+import enum
 from typing import List
 
 from apitools.base.py import encoding
@@ -58,6 +59,14 @@ def _message_to_dict(message):
       return None
     return result
   return None
+
+
+class MethodType(enum.Enum):
+  """Configuration for copying metadata."""
+  OBJECT_PATCH = 'object_patch'
+  OBJECT_REWRITE = 'object_rewrite'
+  OBJECT_COMPOSE = 'object_compose'
+  OBJECT_INSERT = 'object_insert'
 
 
 def copy_object_metadata(source_metadata,
@@ -265,6 +274,11 @@ def get_object_resource_from_metadata(metadata):
   else:
     decryption_key_hash_sha256 = encryption_algorithm = None
 
+  if metadata.contexts and metadata.contexts.custom:
+    custom_contexts = _message_to_dict(metadata.contexts.custom)
+  else:
+    custom_contexts = None
+
   return gcs_resource_reference.GcsObjectResource(
       url,
       acl=_message_to_dict(metadata.acl),
@@ -276,6 +290,7 @@ def get_object_resource_from_metadata(metadata):
       content_type=metadata.contentType,
       crc32c_hash=metadata.crc32c,
       creation_time=metadata.timeCreated,
+      custom_contexts=custom_contexts,
       custom_fields=_message_to_dict(metadata.metadata),
       custom_time=metadata.customTime,
       decryption_key_hash_sha256=decryption_key_hash_sha256,
@@ -749,11 +764,189 @@ def process_value_or_clear_flag(metadata, key, value):
     setattr(metadata, key, value)
 
 
+def get_context_value_dict_from_value(value):
+  """Returns the context value dict from the value."""
+  return {'value': value}
+
+
+def get_contexts_dict_from_custom_contexts_dict(custom_contexts_dict):
+  """Returns contexts dict from custom contexts dict."""
+  return {'custom': custom_contexts_dict}
+
+
+def parse_context_from_file(file_path):
+  """Parses custom contexts from a file, and validate it against the message.
+
+  Args:
+    file_path (str): Path to the file containing the custom contexts.
+
+  Returns:
+    A dictionary containing the custom contexts parsed from the file.
+
+  Raises:
+    errors.Error: If the provided file doesn't exist or is not a valid
+      json/yaml file.
+  """
+  try:
+    messages = apis.GetMessagesModule('storage', 'v1')
+    parsed_custom_contexts = metadata_util.cached_read_yaml_json_file(
+        file_path
+    )
+    custom_contexts = {
+        key: get_context_value_dict_from_value(value)
+        for key, value in parsed_custom_contexts.items()
+    }
+    # Validate the parsed content respect the API message.
+    encoding_helper.DictToMessage(
+        custom_contexts, messages.Object.ContextsValue.CustomValue
+    )
+    return parsed_custom_contexts
+  except (errors.InvalidUrlError, AttributeError):
+    raise errors.Error(
+        'Error while parsing the specified contexts file, please ensure that'
+        ' specified file exists and is valid.',
+    )
+
+
+def get_updated_custom_contexts(
+    existing_custom_contexts,
+    request_config,
+    method_type,
+):
+  """Returns a dictionary with updated custom contexts based on a merge strategy.
+
+  Args:
+    existing_custom_contexts (dict): Existing custom contexts for an object.
+    request_config (request_config): May contain custom contexts fields that
+      should be modified.
+    method_type (MethodType): method_type for which the custom contexts are
+      being updated.
+
+  Returns:
+    A dictionary containing the updated custom contexts, or None if no updates
+    are needed.
+  """
+  resource_args = request_config.resource_args
+  if not resource_args or not (
+      resource_args.custom_contexts_to_set
+      or resource_args.custom_contexts_to_remove
+      or resource_args.custom_contexts_to_update
+  ):
+    return (
+        copy.deepcopy(existing_custom_contexts)
+        if method_type != MethodType.OBJECT_PATCH
+        else None
+    )
+
+  if resource_args.custom_contexts_to_set == user_request_args_factory.CLEAR:
+    return {}
+
+  if resource_args.custom_contexts_to_set:
+    if isinstance(resource_args.custom_contexts_to_set, str):
+      # It points to a file, so parse it and update the contexts.
+      parsed_custom_contexts = parse_context_from_file(
+          resource_args.custom_contexts_to_set
+      )
+    else:
+      parsed_custom_contexts = resource_args.custom_contexts_to_set
+
+    if method_type == MethodType.OBJECT_PATCH:
+      # `patch` behavior: Clear existing contexts before setting new ones
+      updated_custom_contexts = {elem: {} for elem in existing_custom_contexts}
+      updated_custom_contexts.update({
+          key: get_context_value_dict_from_value(value)
+          for key, value in parsed_custom_contexts.items()
+      })
+    else:
+      # 'override' behavior: Just return the new set of contexts
+      updated_custom_contexts = {
+          key: get_context_value_dict_from_value(value)
+          for key, value in parsed_custom_contexts.items()
+      }
+    return updated_custom_contexts
+
+  updated_custom_contexts = (
+      copy.deepcopy(existing_custom_contexts)
+      if method_type != MethodType.OBJECT_PATCH
+      else {}
+  )
+
+  if resource_args.custom_contexts_to_remove:
+    for key in resource_args.custom_contexts_to_remove:
+      if method_type == MethodType.OBJECT_PATCH:
+        # patch behavior: Remove the specified contexts from the existing
+        # contexts
+        updated_custom_contexts[key] = {}
+      else:
+        # override behavior: Remove the keys from the updated contexts.
+        updated_custom_contexts.pop(key, None)
+
+  if resource_args.custom_contexts_to_update:
+    for key, value in resource_args.custom_contexts_to_update.items():
+      updated_custom_contexts[key] = get_context_value_dict_from_value(value)
+
+  return updated_custom_contexts
+
+
+def update_custom_contexts_from_request_config(
+    object_metadata,
+    request_config,
+    method_type=None,
+):
+  """Updates custom contexts in object_metadata based on request_config.
+
+  Args:
+    object_metadata (storage_v1_messages.Object): Existing object metadata.
+    request_config (request_config): May contain custom contexts fields that
+      should be modified.
+    method_type (MethodType): Different API methods have different metadata
+      handling. for example, objects.rewrite handles contexts updates in one
+      way, while objects.patch handles contexts updates in another way. This
+      variable is tune the handling of metadata updates based on the API method.
+      If invalid an error will be thrown, if None, the default handling
+      would be used (object.patch behavior)
+
+  Raises:
+    errors.Error: If the method type is not supported.
+  """
+  if not object_metadata.contexts or not object_metadata.contexts.custom:
+    existing_custom_contexts = {}
+  else:
+    existing_custom_contexts = encoding_helper.MessageToDict(
+        object_metadata.contexts.custom
+    )
+
+  if not method_type:
+    method_type = MethodType.OBJECT_PATCH
+  elif not isinstance(method_type, MethodType):
+    raise errors.Error(
+        'Unsupported method type for updating custom contexts: {}.'.format(
+            method_type
+        )
+    )
+
+  messages = apis.GetMessagesModule('storage', 'v1')
+  custom_contexts_dict = get_updated_custom_contexts(
+      existing_custom_contexts, request_config, method_type
+  )
+  if method_type != MethodType.OBJECT_PATCH and not custom_contexts_dict:
+    custom_contexts_dict = None
+
+  if custom_contexts_dict is not None:
+    object_metadata.contexts = encoding_helper.DictToMessage(
+        get_contexts_dict_from_custom_contexts_dict(custom_contexts_dict),
+        messages.Object.ContextsValue,
+    )
+  else:
+    object_metadata.contexts = None
+
+
 def update_object_metadata_from_request_config(
     object_metadata,
     request_config,
     attributes_resource=None,
     posix_to_set=None,
+    method_type=None,
 ):
   """Sets Apitools Object fields based on values in request_config.
 
@@ -768,6 +961,15 @@ def update_object_metadata_from_request_config(
       --preserve_symlink flags. This value is ignored unless it is an instance
       of FileObjectResource.
     posix_to_set (PosixAttributes|None): Set as custom metadata on target.
+    method_type (MethodType|None): Different API methods have different metadata
+      handling, for example, objects.rewrite handles contexts updates in one
+      way, while objects.patch handles contexts updates in another way. This
+      variable is tune the handling of metadata updates based on the API method.
+      If invalid, an error will be thrown. If None, the default handling
+      would be used for each metadata field.
+
+  Raises:
+    errors.Error: If the method type is not supported.
   """
   resource_args = request_config.resource_args
 
@@ -788,6 +990,11 @@ def update_object_metadata_from_request_config(
     messages = apis.GetMessagesModule('storage', 'v1')
     object_metadata.metadata = encoding_helper.DictToMessage(
         custom_fields_dict, messages.Object.MetadataValue)
+
+  # Custom contexts handling.
+  update_custom_contexts_from_request_config(
+      object_metadata, request_config, method_type
+  )
 
   should_gzip_locally = get_should_gzip_locally(
       attributes_resource, request_config)

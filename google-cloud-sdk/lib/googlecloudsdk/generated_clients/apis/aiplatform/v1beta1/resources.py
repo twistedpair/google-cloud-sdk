@@ -355,10 +355,13 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_EVALUATIONITEMS = (
       'projects.locations.evaluationItems',
-      'projects/{projectsId}/locations/{locationsId}/evaluationItems/'
-      '{evaluationItemsId}',
-      {},
-      ['projectsId', 'locationsId', 'evaluationItemsId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/evaluationItems/'
+              '{evaluationItemsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_EVALUATIONITEMS_OPERATIONS = (
@@ -374,10 +377,13 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_EVALUATIONRUNS = (
       'projects.locations.evaluationRuns',
-      'projects/{projectsId}/locations/{locationsId}/evaluationRuns/'
-      '{evaluationRunsId}',
-      {},
-      ['projectsId', 'locationsId', 'evaluationRunsId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/evaluationRuns/'
+              '{evaluationRunsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_EVALUATIONRUNS_OPERATIONS = (
@@ -393,10 +399,13 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_EVALUATIONSETS = (
       'projects.locations.evaluationSets',
-      'projects/{projectsId}/locations/{locationsId}/evaluationSets/'
-      '{evaluationSetsId}',
-      {},
-      ['projectsId', 'locationsId', 'evaluationSetsId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/evaluationSets/'
+              '{evaluationSetsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_EVALUATIONSETS_OPERATIONS = (
@@ -1273,10 +1282,14 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_REASONINGENGINES_SANDBOXENVIRONMENTS = (
       'projects.locations.reasoningEngines.sandboxEnvironments',
-      'projects/{projectsId}/locations/{locationsId}/reasoningEngines/'
-      '{reasoningEnginesId}/sandboxEnvironments/{sandboxEnvironmentsId}',
-      {},
-      ['projectsId', 'locationsId', 'reasoningEnginesId', 'sandboxEnvironmentsId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'reasoningEngines/{reasoningEnginesId}/sandboxEnvironments/'
+              '{sandboxEnvironmentsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_REASONINGENGINES_SANDBOXENVIRONMENTS_OPERATIONS = (

@@ -192,7 +192,7 @@ def GetExecutionCreatedMessage(release_track, execution):
 def _GetExecutionUiLink(execution):
   return (
       'https://console.cloud.google.com/run/jobs/executions/'
-      'details/{region}/{execution_name}/tasks?project={project}'
+      'details/{region}/{execution_name}?project={project}'
   ).format(
       region=execution.region,
       execution_name=execution.name,

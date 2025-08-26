@@ -62,6 +62,16 @@ def GetProjectRef():
   )
 
 
+def GetSpaceRef(args):
+  """Returns a space reference."""
+  space_ref = args.CONCEPTS.space.Parse()
+  if not space_ref.Name():
+    raise exceptions.InvalidArgumentException(
+        'space', 'space id must be non-empty.'
+    )
+  return space_ref
+
+
 def MakeGetUriFunc(collection, release_track=base.ReleaseTrack.ALPHA):
   """Returns a function which turns a resource into a uri."""
 

@@ -39,45 +39,93 @@ class GkerecommenderV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.modelServers_versions = self.ModelServersVersionsService(self)
+    self.benchmarkingData = self.BenchmarkingDataService(self)
+    self.modelServerVersions = self.ModelServerVersionsService(self)
     self.modelServers = self.ModelServersService(self)
     self.models = self.ModelsService(self)
+    self.optimizedManifest = self.OptimizedManifestService(self)
     self.profiles = self.ProfilesService(self)
-    self.v1 = self.V1Service(self)
 
-  class ModelServersVersionsService(base_api.BaseApiService):
-    """Service class for the modelServers_versions resource."""
+  class BenchmarkingDataService(base_api.BaseApiService):
+    """Service class for the benchmarkingData resource."""
 
-    _NAME = 'modelServers_versions'
+    _NAME = 'benchmarkingData'
 
     def __init__(self, client):
-      super(GkerecommenderV1.ModelServersVersionsService, self).__init__(client)
+      super(GkerecommenderV1.BenchmarkingDataService, self).__init__(client)
       self._upload_configs = {
           }
 
-    def List(self, request, global_params=None):
-      r"""List method for the modelServers_versions service.
+    def Fetch(self, request, global_params=None):
+      r"""Fetches all of the benchmarking data available for a profile.
+
+      Benchmarking data returns all of the performance metrics available for a
+      given model server setup on a given instance type.
 
       Args:
-        request: (GkerecommenderModelServersVersionsListRequest) input message
+        request: (FetchBenchmarkingDataRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
+
       Returns:
-        (ListModelServerVersionsResponse) The response message.
+        (FetchBenchmarkingDataResponse) The response message.
       """
-      config = self.GetMethodConfig('List')
+      config = self.GetMethodConfig('Fetch')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    List.method_config = lambda: base_api.ApiMethodInfo(
+    Fetch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='gkerecommender.benchmarkingData.fetch',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v1/benchmarkingData:fetch',
+        request_field='<request>',
+        request_type_name='FetchBenchmarkingDataRequest',
+        response_type_name='FetchBenchmarkingDataResponse',
+        supports_download=False,
+    )
+
+  class ModelServerVersionsService(base_api.BaseApiService):
+    """Service class for the modelServerVersions resource."""
+
+    _NAME = 'modelServerVersions'
+
+    def __init__(self, client):
+      super(GkerecommenderV1.ModelServerVersionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Fetch(self, request, global_params=None):
+      r"""Fetches available model server versions.
+
+      Open-source servers use their own versioning schemas (e.g., `vllm` uses
+      semver like `v1.0.0`). Some model servers have different versioning
+      schemas depending on the accelerator. For example, `vllm` uses semver on
+      GPUs, but returns nightly build tags on TPUs. All available versions will
+      be returned when different schemas are present.
+
+      Args:
+        request: (GkerecommenderModelServerVersionsFetchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+
+      Returns:
+        (FetchModelServerVersionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('Fetch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Fetch.method_config = lambda: base_api.ApiMethodInfo(
         http_method='GET',
-        method_id='gkerecommender.modelServers.versions.list',
-        ordered_params=['modelServerName'],
-        path_params=['modelServerName'],
-        query_params=['modelName'],
-        relative_path='v1/modelServers/{modelServerName}/versions',
+        method_id='gkerecommender.modelServerVersions.fetch',
+        ordered_params=[],
+        path_params=[],
+        query_params=['model', 'modelServer', 'pageSize', 'pageToken'],
+        relative_path='v1/modelServerVersions:fetch',
         request_field='',
-        request_type_name='GkerecommenderModelServersVersionsListRequest',
-        response_type_name='ListModelServerVersionsResponse',
+        request_type_name='GkerecommenderModelServerVersionsFetchRequest',
+        response_type_name='FetchModelServerVersionsResponse',
         supports_download=False,
     )
 
@@ -91,29 +139,32 @@ class GkerecommenderV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def List(self, request, global_params=None):
-      r"""List method for the modelServers service.
+    def Fetch(self, request, global_params=None):
+      r"""Fetches available model servers.
+
+      Open-source model servers use simplified, lowercase names (e.g., `vllm`).
 
       Args:
-        request: (GkerecommenderModelServersListRequest) input message
+        request: (GkerecommenderModelServersFetchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
+
       Returns:
-        (ListModelServersResponse) The response message.
+        (FetchModelServersResponse) The response message.
       """
-      config = self.GetMethodConfig('List')
+      config = self.GetMethodConfig('Fetch')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    List.method_config = lambda: base_api.ApiMethodInfo(
+    Fetch.method_config = lambda: base_api.ApiMethodInfo(
         http_method='GET',
-        method_id='gkerecommender.modelServers.list',
+        method_id='gkerecommender.modelServers.fetch',
         ordered_params=[],
         path_params=[],
-        query_params=['modelName'],
-        relative_path='v1/modelServers',
+        query_params=['model', 'pageSize', 'pageToken'],
+        relative_path='v1/modelServers:fetch',
         request_field='',
-        request_type_name='GkerecommenderModelServersListRequest',
-        response_type_name='ListModelServersResponse',
+        request_type_name='GkerecommenderModelServersFetchRequest',
+        response_type_name='FetchModelServersResponse',
         supports_download=False,
     )
 
@@ -127,29 +178,73 @@ class GkerecommenderV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def List(self, request, global_params=None):
-      r"""List method for the models service.
+    def Fetch(self, request, global_params=None):
+      r"""Fetches available models.
+
+      Open-source models follow the Huggingface Hub `owner/model_name` format.
 
       Args:
-        request: (GkerecommenderModelsListRequest) input message
+        request: (GkerecommenderModelsFetchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
+
       Returns:
-        (ListModelsResponse) The response message.
+        (FetchModelsResponse) The response message.
       """
-      config = self.GetMethodConfig('List')
+      config = self.GetMethodConfig('Fetch')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    List.method_config = lambda: base_api.ApiMethodInfo(
+    Fetch.method_config = lambda: base_api.ApiMethodInfo(
         http_method='GET',
-        method_id='gkerecommender.models.list',
+        method_id='gkerecommender.models.fetch',
+        ordered_params=[],
+        path_params=[],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/models:fetch',
+        request_field='',
+        request_type_name='GkerecommenderModelsFetchRequest',
+        response_type_name='FetchModelsResponse',
+        supports_download=False,
+    )
+
+  class OptimizedManifestService(base_api.BaseApiService):
+    """Service class for the optimizedManifest resource."""
+
+    _NAME = 'optimizedManifest'
+
+    def __init__(self, client):
+      super(GkerecommenderV1.OptimizedManifestService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Generate(self, request, global_params=None):
+      r"""Generates an optimized deployment manifest for a given model and model server, based on the specified accelerator, performance targets, and configurations.
+
+      See [Run best practice inference with GKE Inference Quickstart
+      recipes](https://cloud.google.com/kubernetes-engine/docs/how-to/machine-learning/inference/inference-quickstart)
+      for deployment details.
+
+      Args:
+        request: (GenerateOptimizedManifestRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+
+      Returns:
+        (GenerateOptimizedManifestResponse) The response message.
+      """
+      config = self.GetMethodConfig('Generate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Generate.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='gkerecommender.optimizedManifest.generate',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path='v1/models',
-        request_field='',
-        request_type_name='GkerecommenderModelsListRequest',
-        response_type_name='ListModelsResponse',
+        relative_path='v1/optimizedManifest:generate',
+        request_field='<request>',
+        request_type_name='GenerateOptimizedManifestRequest',
+        response_type_name='GenerateOptimizedManifestResponse',
         supports_download=False,
     )
 
@@ -160,93 +255,40 @@ class GkerecommenderV1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(GkerecommenderV1.ProfilesService, self).__init__(client)
-      self._upload_configs = {
-          }
+      self._upload_configs = {}
 
-    def List(self, request, global_params=None):
-      r"""List method for the profiles service.
+    def Fetch(self, request, global_params=None):
+      r"""Fetches available profiles.
+
+      A profile contains performance metrics and cost information for a specific
+      model server setup. Profiles can be filtered by parameters. If no filters
+      are provided, all profiles are returned. Profiles display a single value
+      per performance metric based on the provided performance requirements. If
+      no requirements are given, the metrics represent the inflection point. See
+      [Run best practice inference with GKE Inference Quickstart
+      recipes](https://cloud.google.com/kubernetes-engine/docs/how-to/machine-learning/inference/inference-quickstart#how)
+      for details.
 
       Args:
-        request: (GkerecommenderProfilesListRequest) input message
+        request: (FetchProfilesRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
+
       Returns:
-        (ListCompatibleProfilesResponse) The response message.
+        (FetchProfilesResponse) The response message.
       """
-      config = self.GetMethodConfig('List')
+      config = self.GetMethodConfig('Fetch')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='gkerecommender.profiles.list',
+    Fetch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='gkerecommender.profiles.fetch',
         ordered_params=[],
         path_params=[],
-        query_params=['modelName', 'modelServerName', 'modelServerVersion', 'performanceRequirements_targetCost_costPerMillionInputTokens_nanos', 'performanceRequirements_targetCost_costPerMillionInputTokens_units', 'performanceRequirements_targetCost_costPerMillionOutputTokens_nanos', 'performanceRequirements_targetCost_costPerMillionOutputTokens_units', 'performanceRequirements_targetCost_outputToInputCostRatio', 'performanceRequirements_targetCost_pricingModel', 'performanceRequirements_targetNtpotMilliseconds', 'performanceRequirements_targetTtftMilliseconds'],
-        relative_path='v1/profiles',
-        request_field='',
-        request_type_name='GkerecommenderProfilesListRequest',
-        response_type_name='ListCompatibleProfilesResponse',
-        supports_download=False,
-    )
-
-  class V1Service(base_api.BaseApiService):
-    """Service class for the v1 resource."""
-
-    _NAME = 'v1'
-
-    def __init__(self, client):
-      super(GkerecommenderV1.V1Service, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def GetBenchmarkingData(self, request, global_params=None):
-      r"""GetBenchmarkingData method for the v1 service.
-
-      Args:
-        request: (GkerecommenderGetBenchmarkingDataRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GetBenchmarkingDataResponse) The response message.
-      """
-      config = self.GetMethodConfig('GetBenchmarkingData')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetBenchmarkingData.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='gkerecommender.getBenchmarkingData',
-        ordered_params=[],
-        path_params=[],
-        query_params=['instanceType', 'modelAndModelServerInfo_modelName', 'modelAndModelServerInfo_modelServerName', 'modelAndModelServerInfo_modelServerVersion'],
-        relative_path='v1/benchmarkingData',
-        request_field='',
-        request_type_name='GkerecommenderGetBenchmarkingDataRequest',
-        response_type_name='GetBenchmarkingDataResponse',
-        supports_download=False,
-    )
-
-    def OptimizedManifest(self, request, global_params=None):
-      r"""OptimizedManifest method for the v1 service.
-
-      Args:
-        request: (GkerecommenderOptimizedManifestRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GenerateOptimizedManifestResponse) The response message.
-      """
-      config = self.GetMethodConfig('OptimizedManifest')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    OptimizedManifest.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='gkerecommender.optimizedManifest',
-        ordered_params=[],
-        path_params=[],
-        query_params=['acceleratorType', 'kubernetesNamespace', 'modelAndModelServerInfo_modelName', 'modelAndModelServerInfo_modelServerName', 'modelAndModelServerInfo_modelServerVersion', 'performanceRequirements_targetCost_costPerMillionInputTokens_nanos', 'performanceRequirements_targetCost_costPerMillionInputTokens_units', 'performanceRequirements_targetCost_costPerMillionOutputTokens_nanos', 'performanceRequirements_targetCost_costPerMillionOutputTokens_units', 'performanceRequirements_targetCost_outputToInputCostRatio', 'performanceRequirements_targetCost_pricingModel', 'performanceRequirements_targetNtpotMilliseconds', 'performanceRequirements_targetTtftMilliseconds', 'storageConfig_modelBucketUri', 'storageConfig_xlaCacheBucketUri'],
-        relative_path='v1/optimizedManifest',
-        request_field='',
-        request_type_name='GkerecommenderOptimizedManifestRequest',
-        response_type_name='GenerateOptimizedManifestResponse',
+        query_params=[],
+        relative_path='v1/profiles:fetch',
+        request_field='<request>',
+        request_type_name='FetchProfilesRequest',
+        response_type_name='FetchProfilesResponse',
         supports_download=False,
     )

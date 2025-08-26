@@ -72,6 +72,11 @@ def EscapeFileNameFromIDs(project_id, location_id, repo_id, file_id):
   )
 
 
+def ConvertFilesHashes(files):
+  """Convert hashes of file list to hex strings."""
+  return [ConvertFileHashes(f, None) for f in files]
+
+
 def ConvertFileHashes(response, unused_args):
   """Convert file hashes to hex strings."""
 
@@ -277,4 +282,4 @@ def ListFiles(args):
       args.filter = None
     if order_by:
       args.sort_by = None
-  return lfiles
+  return ConvertFilesHashes(lfiles)
