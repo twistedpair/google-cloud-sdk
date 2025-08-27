@@ -5,6 +5,17 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 536.0.1 (2025-08-27)
+
+### Kubernetes Engine
+
+* Fixed `gcloud container ai profiles` commands: `benchmarks list`,
+`manifests create`, and `model-server-versions list`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 536.0.0 (2025-08-26)
 
 ### App Engine
