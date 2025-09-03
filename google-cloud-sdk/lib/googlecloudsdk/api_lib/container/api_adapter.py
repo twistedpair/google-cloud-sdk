@@ -1685,6 +1685,7 @@ class CreateNodePoolOptions(object):
       boot_disk_provisioned_iops=None,
       boot_disk_provisioned_throughput=None,
       data_cache_count=None,
+      accelerator_network_profile=None,
   ):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
@@ -1783,6 +1784,7 @@ class CreateNodePoolOptions(object):
     self.local_ssd_encryption_mode = local_ssd_encryption_mode
     self.boot_disk_provisioned_iops = boot_disk_provisioned_iops
     self.boot_disk_provisioned_throughput = boot_disk_provisioned_throughput
+    self.accelerator_network_profile = accelerator_network_profile
 
 
 class UpdateNodePoolOptions(object):
@@ -1930,6 +1932,7 @@ class UpdateNodePoolOptions(object):
         or self.enable_blue_green_upgrade is not None
         or self.node_pool_soak_duration is not None
         or self.standard_rollout_policy is not None
+        or self.autoscaled_rollout_policy is not None
         or self.network_performance_config is not None
         or self.enable_confidential_nodes is not None
         or self.confidential_node_type is not None
@@ -4100,7 +4103,7 @@ class APIAdapter(object):
     return autoscaling
 
   def UpdateUpgradeSettingsForNAP(self, options, max_surge, max_unavailable):
-    """Updates upgrade setting for autoprovisioned node pool."""
+    """Updates upgrade settings for autoprovisioned node pool."""
 
     if (
         options.enable_autoprovisioning_surge_upgrade
@@ -6296,6 +6299,14 @@ class APIAdapter(object):
 
   def UpdateBlueGreenSettings(self, upgrade_settings, options):
     """Update blue green settings field in upgrade_settings."""
+    if (
+        options.standard_rollout_policy is not None
+        and options.autoscaled_rollout_policy is not None
+    ):
+      raise util.Error(
+          'BlueGreenSettings must contain only one of:'
+          ' --standard-rollout-policy, --autoscaled-rollout-policy'
+      )
     blue_green_settings = (
         upgrade_settings.blueGreenSettings or self.messages.BlueGreenSettings()
     )
@@ -6317,9 +6328,8 @@ class APIAdapter(object):
             ' batch-percent'
         )
 
-      standard_rollout_policy.batchPercentage = (
-          standard_rollout_policy.batchNodeCount
-      ) = None
+      standard_rollout_policy.batchNodeCount = None
+      standard_rollout_policy.batchPercentage = None
       if 'batch-node-count' in options.standard_rollout_policy:
         standard_rollout_policy.batchNodeCount = (
             options.standard_rollout_policy['batch-node-count']
@@ -6334,15 +6344,25 @@ class APIAdapter(object):
             options.standard_rollout_policy['batch-soak-duration']
         )
       blue_green_settings.standardRolloutPolicy = standard_rollout_policy
-    # autoscaled rollout policy has no fields yet.
-    if options.autoscaled_rollout_policy:
-      blue_green_settings.autoscaledRolloutPolicy = (
-          self.messages.AutoscaledRolloutPolicy()
+      blue_green_settings.autoscaledRolloutPolicy = None
+    elif options.autoscaled_rollout_policy is not None:
+      autoscaled_rollout_policy = (
+          blue_green_settings.autoscaledRolloutPolicy
+          or self.messages.AutoscaledRolloutPolicy()
       )
+
+      autoscaled_rollout_policy.waitForDrainDuration = None
+      if 'wait-for-drain-duration' in options.autoscaled_rollout_policy:
+        autoscaled_rollout_policy.waitForDrainDuration = (
+            options.autoscaled_rollout_policy['wait-for-drain-duration']
+        )
+      blue_green_settings.autoscaledRolloutPolicy = autoscaled_rollout_policy
+      blue_green_settings.standardRolloutPolicy = None
+
     return blue_green_settings
 
   def UpdateUpgradeSettings(self, node_pool_ref, options, pool=None):
-    """Updates node pool's upgrade setting."""
+    """Updates node pool's upgrade settings."""
     if pool is None:
       pool = self.GetNodePool(node_pool_ref)
 
@@ -6370,11 +6390,8 @@ class APIAdapter(object):
     if (
         options.standard_rollout_policy is not None
         or options.node_pool_soak_duration is not None
+        or options.autoscaled_rollout_policy is not None
     ):
-      upgrade_settings.blueGreenSettings = self.UpdateBlueGreenSettings(
-          upgrade_settings, options
-      )
-    if options.autoscaled_rollout_policy:
       upgrade_settings.blueGreenSettings = self.UpdateBlueGreenSettings(
           upgrade_settings, options
       )
@@ -6419,7 +6436,7 @@ class APIAdapter(object):
         or options.max_unavailable_upgrade is not None
         or options.standard_rollout_policy is not None
         or options.node_pool_soak_duration is not None
-        or options.autoscaled_rollout_policy
+        or options.autoscaled_rollout_policy is not None
     ):
       update_request.upgradeSettings = self.UpdateUpgradeSettings(
           node_pool_ref, options
@@ -6771,6 +6788,7 @@ class APIAdapter(object):
         and options.disable_pod_cidr_overprovision is None
         and options.additional_node_network is None
         and options.additional_pod_network is None
+        and options.accelerator_network_profile is None
     ):
       return None
 
@@ -6823,6 +6841,11 @@ class APIAdapter(object):
         network_config.additionalPodNetworkConfigs.append(
             pod_network_config_msg
         )
+
+    if options.accelerator_network_profile is not None:
+      network_config.acceleratorNetworkProfile = (
+          options.accelerator_network_profile
+      )
 
     return network_config
 

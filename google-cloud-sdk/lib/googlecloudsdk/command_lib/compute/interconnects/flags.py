@@ -68,6 +68,11 @@ REQUESTED_FEATURES_CHOICES = {
     ),
 }
 
+SUBZONE_CHOICES = {
+    'a': 'Subzone a.',
+    'b': 'Subzone b.',
+}
+
 
 @base.UniverseCompatible
 @base.ReleaseTracks(
@@ -189,6 +194,23 @@ def GetRequestedFeature(messages, feature_arg):
   return None
 
 
+def GetSubzoneAlpha(messages, subzone_arg):
+  """Converts the subzone flag to a message enum.
+
+  Args:
+    messages: The API messages holder.
+    subzone_arg: The subzone flag value.
+
+  Returns:
+    An SubzoneValueValuesEnum of the flag value, or None if absent.
+  """
+  if subzone_arg == 'a':
+    return messages.Interconnect.SubzoneValueValuesEnum.SUBZONE_A
+  elif subzone_arg == 'b':
+    return messages.Interconnect.SubzoneValueValuesEnum.SUBZONE_B
+  return None
+
+
 def AddCreateCommonArgs(parser, required=True):
   """Adds shared flags for create command to the argparse.ArgumentParser."""
   AddAdminEnabled(parser)
@@ -207,6 +229,8 @@ def AddCreateArgs(parser, track, required=True):
     AddInterconnectTypeGA(parser, required)
   else:
     AddInterconnectTypeBetaAndAlpha(parser)
+    if track == base.ReleaseTrack.ALPHA:
+      AddSubzone(parser)
 
 
 def AddCreateGaArgs(parser, required=True):
@@ -226,6 +250,17 @@ def AddDescription(parser):
   parser.add_argument(
       '--description',
       help='An optional, textual description for the interconnect.')
+
+
+def AddSubzone(parser):
+  """Adds subzone flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--subzone',
+      choices=SUBZONE_CHOICES,
+      help="""\
+      Subzone in the LOCATION specified by the --location flag.
+      """,
+  )
 
 
 def AddInterconnectTypeGA(parser, required=True):

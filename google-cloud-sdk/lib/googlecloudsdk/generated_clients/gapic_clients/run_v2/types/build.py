@@ -19,6 +19,7 @@ from typing import MutableMapping, MutableSequence
 
 import proto  # type: ignore
 
+from google.api import launch_stage_pb2  # type: ignore
 from google.longrunning import operations_pb2  # type: ignore
 
 
@@ -84,6 +85,9 @@ class SubmitBuildRequest(proto.Message):
             build. If left blank, cloudbuild will use a sensible
             default. Currently only E2_HIGHCPU_8 is supported. If
             worker_pool is set, this field will be ignored.
+        release_track (google.api.launch_stage_pb2.LaunchStage):
+            Optional. The release track of the client
+            that initiated the build request.
     """
 
     class DockerBuild(proto.Message):
@@ -200,6 +204,11 @@ class SubmitBuildRequest(proto.Message):
     machine_type: str = proto.Field(
         proto.STRING,
         number=9,
+    )
+    release_track: launch_stage_pb2.LaunchStage = proto.Field(
+        proto.ENUM,
+        number=10,
+        enum=launch_stage_pb2.LaunchStage,
     )
 
 

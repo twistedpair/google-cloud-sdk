@@ -121,6 +121,7 @@ def _BasicAttributeConfig(attr_name, help_text=''):
       help_text=help_text if help_text else ('Name of the {resource}.'))
 
 
+# Note that the membership_help argument does not work.
 def AddMembershipResourceArg(parser,
                              api_version='v1',
                              positional=False,

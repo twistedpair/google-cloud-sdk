@@ -15,6 +15,7 @@
 """Flags and helpers for the compute interconnects commands."""
 
 import collections
+import copy
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -149,17 +150,21 @@ def AddEnableAdmin(parser):
       """)
 
 
-def AddBandwidth(parser, required):
+def AddBandwidth(parser, required, release_track=base.ReleaseTrack.GA):
   """Adds bandwidth flag to the argparse.ArgumentParser.
 
   Args:
     parser: The argparse parser.
     required: A boolean indicates whether the Bandwidth is required.
+    release_track: Depending on which release track is specified, different
+      bandwidth options will be surfaced to customers.
   """
   help_text = """\
       Provisioned capacity of the attachment.
       """
-  choices = _BANDWIDTH_CHOICES
+  choices = copy.deepcopy(_BANDWIDTH_CHOICES)
+  if release_track == base.ReleaseTrack.ALPHA:
+    choices['400g'] = '400 Gbit/s'
 
   base.ChoiceArgument(
       '--bandwidth',

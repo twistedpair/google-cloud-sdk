@@ -975,3 +975,16 @@ def AddBackupRulesFromFile(parser):
       type=arg_parsers.FileContents(),
       help='Path to a YAML or JSON file containing backup rules.',
   )
+
+
+def AddMaxCustomOnDemandRetentionDays(parser):
+  """Adds a max-custom-on-demand-retention-days argument to parser."""
+  parser.add_argument(
+      '--max-custom-on-demand-retention-days',
+      required=False,
+      type=int,
+      hidden=True,
+      help=("""Configure the maximum retention period for on-demand backups.
+          The value must be greater than or equal to the minimum enforced
+          retention period set on the backup vault."""),
+  )

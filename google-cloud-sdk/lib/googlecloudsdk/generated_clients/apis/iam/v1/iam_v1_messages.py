@@ -6028,6 +6028,12 @@ class WorkforcePoolProvider(_messages.Message):
   r"""A configuration for an external identity provider.
 
   Enums:
+    ScimUsageValueValuesEnum: Optional. Specifies whether the workforce
+      identity pool provider uses SCIM-managed groups instead of the
+      `google.groups` attribute mapping for authorization checks. The
+      `scim_usage` and `extended_attributes_oauth2_client` fields are mutually
+      exclusive. A request that enables both fields on the same workforce
+      identity pool provider will produce an error.
     StateValueValuesEnum: Output only. The state of the provider.
 
   Messages:
@@ -6172,8 +6178,30 @@ class WorkforcePoolProvider(_messages.Message):
       ocation}/workforcePools/{workforce_pool_id}/providers/{provider_id}`
     oidc: An OpenId Connect 1.0 identity provider configuration.
     saml: A SAML identity provider configuration.
+    scimUsage: Optional. Specifies whether the workforce identity pool
+      provider uses SCIM-managed groups instead of the `google.groups`
+      attribute mapping for authorization checks. The `scim_usage` and
+      `extended_attributes_oauth2_client` fields are mutually exclusive. A
+      request that enables both fields on the same workforce identity pool
+      provider will produce an error.
     state: Output only. The state of the provider.
   """
+
+  class ScimUsageValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies whether the workforce identity pool provider uses
+    SCIM-managed groups instead of the `google.groups` attribute mapping for
+    authorization checks. The `scim_usage` and
+    `extended_attributes_oauth2_client` fields are mutually exclusive. A
+    request that enables both fields on the same workforce identity pool
+    provider will produce an error.
+
+    Values:
+      SCIM_USAGE_UNSPECIFIED: Do not use SCIM data.
+      ENABLED: SCIM sync is enabled and SCIM-managed groups are used for
+        authorization checks.
+    """
+    SCIM_USAGE_UNSPECIFIED = 0
+    ENABLED = 1
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of the provider.
@@ -6272,7 +6300,8 @@ class WorkforcePoolProvider(_messages.Message):
   name = _messages.StringField(10)
   oidc = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderOidc', 11)
   saml = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderSaml', 12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
+  scimUsage = _messages.EnumField('ScimUsageValueValuesEnum', 13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
 
 
 class WorkforcePoolProviderKey(_messages.Message):

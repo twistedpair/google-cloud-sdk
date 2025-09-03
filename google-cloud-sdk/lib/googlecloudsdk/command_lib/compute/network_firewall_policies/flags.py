@@ -250,7 +250,7 @@ def AddRulePriority(parser, operation=None):
   """Adds the rule priority argument to the argparse."""
   parser.add_argument(
       'priority',
-      help='Priority of the rule to be {}. Valid in [0, 65535].'.format(
+      help='Priority of the rule to be {}. Valid in [0, 2147483547].'.format(
           operation
       ),
   )

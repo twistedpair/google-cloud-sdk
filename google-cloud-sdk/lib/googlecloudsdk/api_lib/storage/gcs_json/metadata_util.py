@@ -72,7 +72,8 @@ class MethodType(enum.Enum):
 def copy_object_metadata(source_metadata,
                          destination_metadata,
                          request_config,
-                         should_deep_copy=False):
+                         should_deep_copy=False,
+                         method_type=MethodType.OBJECT_REWRITE):
   """Copies specific metadata from source_metadata to destination_metadata.
 
   The API manually generates metadata for destination objects most of the time,
@@ -85,6 +86,8 @@ def copy_object_metadata(source_metadata,
       about the copy operation.
     should_deep_copy (bool): Copy all metadata, removing fields the
       backend must generate and preserving destination address.
+    method_type (MethodType): The type of method being used to copy the object,
+        defaulting to MethodType.OBJECT_REWRITE.
 
   Returns:
     New destination metadata with data copied from source (messages.Object).
@@ -118,6 +121,15 @@ def copy_object_metadata(source_metadata,
     destination_metadata.customTime = source_metadata.customTime
     destination_metadata.md5Hash = source_metadata.md5Hash
     destination_metadata.metadata = copy.deepcopy(source_metadata.metadata)
+    if method_type != MethodType.OBJECT_COMPOSE:
+      # Currently this method is being called for preparing request for
+      # object.compose, and object.rewrite.
+      # The compose method pick up certain attributes from the first object
+      # speicified in the compose request, and ignore the rest,
+      # but we do not want this in case of object contexts, because instead we
+      # want the merged contexts from all the objects present in the compose
+      # request.
+      destination_metadata.contexts = copy.deepcopy(source_metadata.contexts)
 
   return destination_metadata
 
@@ -248,6 +260,33 @@ def get_anywhere_cache_resource_from_metadata(metadata):
   )
 
 
+def _parse_contexts_from_object_metadata(metadata):
+  """Returns parsed contexts from apitools object metadata.
+
+  apitools object metadata separates custom contexts, and google generated
+  contexts (coming in 2026) into separate maps, However CLI along with other
+  clients uses a single map with a type field to distinguish between the two.
+  This method parses the apitools object metadata into the single map format
+  used by CLI and other clients.
+
+  Args:
+    metadata (messages.Object): The object metadata to parse contexts from.
+  """
+  if not (metadata.contexts and metadata.contexts.custom):
+    return None
+
+  custom_contexts = _message_to_dict(metadata.contexts.custom)
+  return {
+      key: {
+          metadata_util.CONTEXT_TYPE_LITERAL: (
+              metadata_util.ContextType.CUSTOM.value
+          ),
+          **value,
+      }
+      for key, value in custom_contexts.items()
+  }
+
+
 def get_object_resource_from_metadata(metadata):
   """Helper method to generate a ObjectResource instance from GCS metadata.
 
@@ -274,11 +313,6 @@ def get_object_resource_from_metadata(metadata):
   else:
     decryption_key_hash_sha256 = encryption_algorithm = None
 
-  if metadata.contexts and metadata.contexts.custom:
-    custom_contexts = _message_to_dict(metadata.contexts.custom)
-  else:
-    custom_contexts = None
-
   return gcs_resource_reference.GcsObjectResource(
       url,
       acl=_message_to_dict(metadata.acl),
@@ -290,7 +324,7 @@ def get_object_resource_from_metadata(metadata):
       content_type=metadata.contentType,
       crc32c_hash=metadata.crc32c,
       creation_time=metadata.timeCreated,
-      custom_contexts=custom_contexts,
+      contexts=_parse_contexts_from_object_metadata(metadata),
       custom_fields=_message_to_dict(metadata.metadata),
       custom_time=metadata.customTime,
       decryption_key_hash_sha256=decryption_key_hash_sha256,
@@ -764,11 +798,6 @@ def process_value_or_clear_flag(metadata, key, value):
     setattr(metadata, key, value)
 
 
-def get_context_value_dict_from_value(value):
-  """Returns the context value dict from the value."""
-  return {'value': value}
-
-
 def get_contexts_dict_from_custom_contexts_dict(custom_contexts_dict):
   """Returns contexts dict from custom contexts dict."""
   return {'custom': custom_contexts_dict}
@@ -793,7 +822,7 @@ def parse_context_from_file(file_path):
         file_path
     )
     custom_contexts = {
-        key: get_context_value_dict_from_value(value)
+        key: metadata_util.get_context_value_dict_from_value(value)
         for key, value in parsed_custom_contexts.items()
     }
     # Validate the parsed content respect the API message.
@@ -854,13 +883,13 @@ def get_updated_custom_contexts(
       # `patch` behavior: Clear existing contexts before setting new ones
       updated_custom_contexts = {elem: {} for elem in existing_custom_contexts}
       updated_custom_contexts.update({
-          key: get_context_value_dict_from_value(value)
+          key: metadata_util.get_context_value_dict_from_value(value)
           for key, value in parsed_custom_contexts.items()
       })
     else:
       # 'override' behavior: Just return the new set of contexts
       updated_custom_contexts = {
-          key: get_context_value_dict_from_value(value)
+          key: metadata_util.get_context_value_dict_from_value(value)
           for key, value in parsed_custom_contexts.items()
       }
     return updated_custom_contexts
@@ -883,7 +912,9 @@ def get_updated_custom_contexts(
 
   if resource_args.custom_contexts_to_update:
     for key, value in resource_args.custom_contexts_to_update.items():
-      updated_custom_contexts[key] = get_context_value_dict_from_value(value)
+      updated_custom_contexts[key] = (
+          metadata_util.get_context_value_dict_from_value(value)
+      )
 
   return updated_custom_contexts
 

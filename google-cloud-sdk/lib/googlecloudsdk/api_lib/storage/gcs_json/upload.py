@@ -25,6 +25,7 @@ import json
 from apitools.base.py import encoding_helper
 from apitools.base.py import transfer
 from googlecloudsdk.api_lib.storage import errors
+from googlecloudsdk.api_lib.storage import metadata_util as common_metadata_util
 from googlecloudsdk.api_lib.storage import retry_util
 from googlecloudsdk.api_lib.storage.gcs_json import metadata_util
 from googlecloudsdk.api_lib.util import apis
@@ -115,15 +116,15 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
           )
       )
 
-    if (isinstance(self._source_resource, resource_reference.ObjectResource) and
-        self._source_resource.custom_contexts):
-      object_metadata.contexts = (
-          encoding_helper.DictToMessage(
-              metadata_util.get_contexts_dict_from_custom_contexts_dict(
-                  self._source_resource.custom_contexts
-              ),
-              self._messages.Object.ContextsValue,
-          )
+    if (
+        isinstance(self._source_resource, resource_reference.ObjectResource)
+        and self._source_resource.contexts
+    ):
+      object_metadata.contexts = encoding_helper.DictToMessage(
+          common_metadata_util.parse_custom_contexts_dict_from_resource_contexts_dict(
+              self._source_resource.contexts
+          ),
+          self._messages.Object.ContextsValue,
       )
 
     self._copy_acl_from_source_if_source_is_a_cloud_object_and_preserve_acl_is_true(

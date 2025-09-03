@@ -102,3 +102,7 @@ def AddGetIamPolicyFlags(parser):
 
 def AddSetIamPolicyFlags(parser):
   GetSpaceResourceArg().AddToParser(parser)
+
+
+def AddTestIamPermissionsFlags(parser):
+  GetSpaceResourceArg().AddToParser(parser)

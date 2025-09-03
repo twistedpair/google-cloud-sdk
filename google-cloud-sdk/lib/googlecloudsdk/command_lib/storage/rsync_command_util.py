@@ -497,9 +497,10 @@ def _get_copy_task(
     )
     return
 
-  if isinstance(source_resource, resource_reference.CloudResource) and (
-      isinstance(destination_container, resource_reference.CloudResource)
-      or isinstance(destination_resource, resource_reference.CloudResource)
+  if (
+      isinstance(source_resource, resource_reference.CloudResource) and (
+          isinstance(copy_destination.storage_url, storage_url.CloudUrl)
+      )
   ):
     if (
         user_request_args.resource_args
@@ -507,7 +508,7 @@ def _get_copy_task(
     ):
       fields_scope = cloud_api.FieldsScope.FULL
     else:
-      fields_scope = cloud_api.FieldsScope.RSYNC
+      fields_scope = cloud_api.FieldsScope.NO_ACL
   else:
     fields_scope = None
 

@@ -1044,8 +1044,9 @@ class CloudExadataInfrastructure(_messages.Message):
     displayName: Optional. User friendly name for this resource.
     entitlementId: Output only. Entitlement ID of the private offer against
       which this infrastructure resource is provisioned.
-    gcpOracleZone: Optional. Google Cloud Platform location where Oracle
-      Exadata is hosted.
+    gcpOracleZone: Optional. The GCP Oracle zone where Oracle Exadata
+      Infrastructure is hosted. Example: us-east4-b-r2. If not specified, the
+      system will pick a zone based on availability.
     labels: Optional. Labels or tags associated with the resource.
     name: Identifier. The name of the Exadata Infrastructure resource with the
       format: projects/{project}/locations/{region}/cloudExadataInfrastructure
@@ -1240,9 +1241,11 @@ class CloudVmCluster(_messages.Message):
       resource on which VM cluster resource is created, in the following
       format: projects/{project}/locations/{region}/cloudExadataInfrastuctures
       /{cloud_extradata_infrastructure}
-    gcpOracleZone: Output only. Google Cloud Platform location where Oracle
-      Exadata is hosted. It is same as Google Cloud Platform Oracle zone of
-      Exadata infrastructure.
+    gcpOracleZone: Output only. The GCP Oracle zone where Oracle
+      CloudVmCluster is hosted. This will be the same as the gcp_oracle_zone
+      of the CloudExadataInfrastructure. Example: us-east4-b-r2.
+    identityConnector: Output only. The identity connector details which will
+      allow OCI to securely access the resources in the customer project.
     labels: Optional. Labels or tags associated with the VM Cluster.
     name: Identifier. The name of the VM Cluster resource with the format:
       projects/{project}/locations/{region}/cloudVmClusters/{cloud_vm_cluster}
@@ -1290,12 +1293,13 @@ class CloudVmCluster(_messages.Message):
   displayName = _messages.StringField(5)
   exadataInfrastructure = _messages.StringField(6)
   gcpOracleZone = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  network = _messages.StringField(10)
-  odbNetwork = _messages.StringField(11)
-  odbSubnet = _messages.StringField(12)
-  properties = _messages.MessageField('CloudVmClusterProperties', 13)
+  identityConnector = _messages.MessageField('IdentityConnector', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  network = _messages.StringField(11)
+  odbNetwork = _messages.StringField(12)
+  odbSubnet = _messages.StringField(13)
+  properties = _messages.MessageField('CloudVmClusterProperties', 14)
 
 
 class CloudVmClusterProperties(_messages.Message):
@@ -1889,6 +1893,44 @@ class GiVersion(_messages.Message):
 
   name = _messages.StringField(1)
   version = _messages.StringField(2)
+
+
+class IdentityConnector(_messages.Message):
+  r"""The identity connector details which will allow OCI to securely access
+  the resources in the customer project.
+
+  Enums:
+    ConnectionStateValueValuesEnum: Output only. The connection state of the
+      identity connector.
+
+  Fields:
+    connectionState: Output only. The connection state of the identity
+      connector.
+    serviceAgentEmail: Output only. A google managed service account on which
+      customers can grant roles to access resources in the customer project.
+      Example: `p176944527254-55-75119d87fd8f@gcp-sa-
+      oci.iam.gserviceaccount.com`
+  """
+
+  class ConnectionStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The connection state of the identity connector.
+
+    Values:
+      CONNECTION_STATE_UNSPECIFIED: Default unspecified value.
+      CONNECTED: The identity pool connection is connected.
+      PARTIALLY_CONNECTED: The identity pool connection is partially
+        connected.
+      DISCONNECTED: The identity pool connection is disconnected.
+      UNKNOWN: The identity pool connection is in an unknown state.
+    """
+    CONNECTION_STATE_UNSPECIFIED = 0
+    CONNECTED = 1
+    PARTIALLY_CONNECTED = 2
+    DISCONNECTED = 3
+    UNKNOWN = 4
+
+  connectionState = _messages.EnumField('ConnectionStateValueValuesEnum', 1)
+  serviceAgentEmail = _messages.StringField(2)
 
 
 class ListAutonomousDatabaseBackupsResponse(_messages.Message):
@@ -3139,8 +3181,9 @@ class OracledatabaseProjectsLocationsListRequest(_messages.Message):
   r"""A OracledatabaseProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).

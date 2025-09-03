@@ -161,7 +161,7 @@ def AddConfigFilesFlag(parser):
   """Adds a --config-files flag to the given parser."""
   parser.add_argument(
       '--config-files',
-      metavar='CONGIF_FILE',
+      metavar='CONFIG_FILE',
       type=arg_parsers.ArgList(min_length=1),
       help="""\
         A list of files to import rules from. Either provide a single file path or if

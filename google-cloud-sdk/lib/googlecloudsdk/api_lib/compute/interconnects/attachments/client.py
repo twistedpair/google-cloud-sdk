@@ -14,6 +14,7 @@
 # limitations under the License.
 """Interconnect Attachment."""
 
+import copy
 import json
 
 from apitools.base.py import encoding
@@ -51,6 +52,12 @@ class InterconnectAttachment(object):
       '50g': 'BPS_50G',
       '100g': 'BPS_100G',
   }
+
+  _BANDWIDTH_CONVERSION_WITH_400G = copy.deepcopy(_BANDWIDTH_CONVERSION)
+  _BANDWIDTH_CONVERSION_WITH_400G.update({
+      'bps-400g': 'BPS_400G',
+      '400g': 'BPS_400G',
+  })
 
   _EDGE_AVAILABILITY_DOMAIN_CONVERSION = {
       'availability-domain-1': 'AVAILABILITY_DOMAIN_1',
@@ -478,18 +485,24 @@ class InterconnectAttachment(object):
       geneve_vni=None,
       default_appliance_ip_address=None,
       tunnel_endpoint_ip_address=None,
+      supports_400g=False,
   ):
     """Create an interconnectAttachment."""
     if edge_availability_domain is not None:
-      edge_availability_domain = (
-          self._messages.InterconnectAttachment
-          .EdgeAvailabilityDomainValueValuesEnum(
-              self
-              ._EDGE_AVAILABILITY_DOMAIN_CONVERSION[edge_availability_domain]))
+      edge_availability_domain = self._messages.InterconnectAttachment.EdgeAvailabilityDomainValueValuesEnum(
+          self._EDGE_AVAILABILITY_DOMAIN_CONVERSION[edge_availability_domain]
+      )
     if bandwidth is not None:
+      bandwidth_options = (
+          self._BANDWIDTH_CONVERSION_WITH_400G
+          if supports_400g
+          else self._BANDWIDTH_CONVERSION
+      )
       bandwidth = (
           self._messages.InterconnectAttachment.BandwidthValueValuesEnum(
-              self._BANDWIDTH_CONVERSION[bandwidth]))
+              bandwidth_options[bandwidth]
+          )
+      )
     if attachment_type is not None:
       attachment_type = (
           self._messages.InterconnectAttachment.TypeValueValuesEnum(
@@ -566,12 +579,20 @@ class InterconnectAttachment(object):
       candidate_customer_router_ipv6_address=None,
       geneve_vni=None,
       default_appliance_ip_address=None,
+      supports_400g=False,
   ):
     """Patch an interconnectAttachment."""
     if bandwidth:
+      bandwidth_options = (
+          self._BANDWIDTH_CONVERSION_WITH_400G
+          if supports_400g
+          else self._BANDWIDTH_CONVERSION
+      )
       bandwidth = (
           self._messages.InterconnectAttachment.BandwidthValueValuesEnum(
-              self._BANDWIDTH_CONVERSION[bandwidth]))
+              bandwidth_options[bandwidth]
+          )
+      )
     if (partner_interconnect is not None or partner_name is not None or
         partner_portal_url is not None):
       partner_metadata = self._messages.InterconnectAttachmentPartnerMetadata(

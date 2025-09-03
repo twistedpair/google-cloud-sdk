@@ -52,18 +52,17 @@ def AddUpdateUserSaMappingFlags(parser):
   Args:
     parser: The argparse parser to add the flags to.
   """
-  secure_multi_tenancy_group = parser.add_group(mutex=True, hidden=True)
-  add_and_remove_user_mapping_group = secure_multi_tenancy_group.add_group(
-      hidden=True
-  )
+  secure_multi_tenancy_group = parser.add_group(mutex=True)
+  add_and_remove_user_mapping_group = secure_multi_tenancy_group.add_group()
   add_and_remove_user_mapping_group.add_argument(
       '--add-user-mappings',
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(),
       action=arg_parsers.UpdateAction,
       help="""\
-                List of user-to-service-account mapping to be added to the cluster. If a mapping exists, its value '
-                'is modified. Otherwise, a new mapping is created.
+                List of user-to-service-account mappings to add to current mappings.
+                If a mapping exists, its value is modified; otherwise, the new
+                mapping is added.
             """,
   )
   add_and_remove_user_mapping_group.add_argument(
@@ -72,21 +71,21 @@ def AddUpdateUserSaMappingFlags(parser):
       type=arg_parsers.ArgList(),
       action=arg_parsers.UpdateAction,
       help="""\
-                List of user-to-service-account mappings to be removed from the cluster. If a mapping does not exist it is
-                silently ignored.
+                List of user-to-service-account mappings to remove from the
+                current mappings. If a mapping does not exist, it is ignored.
         """,
   )
   secure_multi_tenancy_group.add_argument(
       '--identity-config-file',
       help="""\
-                Path to a YAML (or JSON) file containing the configuration for Secure Multi-Tenancy
-                on the cluster. The path can be a Cloud Storage URL (Example: 'gs://path/to/file')
-                or a local file system path. The mappings provided in the file will overwrite existing mappings.
+                Path to a YAML (or JSON) file that contains the configuration for [Secure Multi-Tenancy](/dataproc/docs/concepts/iam/sa-multi-tenancy)
+                on the cluster. The path can be a Cloud Storage URL (example: 'gs://path/to/file')
+                or a local filesystem path. The mappings provided in the file will overwrite existing mappings.
 
                 The YAML file is formatted as follows:
 
                 ```
-                  # Required. The mapping from user accounts to service accounts.
+                  # Mapping header (first line) required.
                   user_service_account_mapping:
                     bob@company.com: service-account-bob@project.iam.gserviceaccount.com
                     alice@company.com: service-account-alice@project.iam.gserviceaccount.com

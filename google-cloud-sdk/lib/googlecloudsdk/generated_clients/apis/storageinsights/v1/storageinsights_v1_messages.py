@@ -131,6 +131,9 @@ class DatasetConfig(_messages.Message):
     LabelsValue: Labels as key value pairs
 
   Fields:
+    activityDataRetentionPeriodDays: Optional. When set, overrides the
+      retention period for activity data. Otherwise, the
+      `retention_period_days` value is used for activity data as well.
     cloudStorageObjectPath: Input only. Cloud Storage object path containing a
       list of project or folder numbers to include in the dataset; it cannot
       contain a mix of project and folders. The object must be a text file
@@ -219,28 +222,29 @@ class DatasetConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  cloudStorageObjectPath = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  datasetConfigState = _messages.EnumField('DatasetConfigStateValueValuesEnum', 3)
-  description = _messages.StringField(4)
-  excludeCloudStorageBuckets = _messages.MessageField('CloudStorageBuckets', 5)
-  excludeCloudStorageLocations = _messages.MessageField('CloudStorageLocations', 6)
-  identity = _messages.MessageField('Identity', 7)
-  includeCloudStorageBuckets = _messages.MessageField('CloudStorageBuckets', 8)
-  includeCloudStorageLocations = _messages.MessageField('CloudStorageLocations', 9)
-  includeNewlyCreatedBuckets = _messages.BooleanField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  link = _messages.MessageField('Link', 12)
-  name = _messages.StringField(13)
-  organizationNumber = _messages.IntegerField(14)
-  organizationScope = _messages.BooleanField(15)
-  retentionPeriodDays = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  skipVerificationAndIngest = _messages.BooleanField(17)
-  sourceFolders = _messages.MessageField('SourceFolders', 18)
-  sourceProjects = _messages.MessageField('SourceProjects', 19)
-  status = _messages.MessageField('Status', 20)
-  uid = _messages.StringField(21)
-  updateTime = _messages.StringField(22)
+  activityDataRetentionPeriodDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  cloudStorageObjectPath = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  datasetConfigState = _messages.EnumField('DatasetConfigStateValueValuesEnum', 4)
+  description = _messages.StringField(5)
+  excludeCloudStorageBuckets = _messages.MessageField('CloudStorageBuckets', 6)
+  excludeCloudStorageLocations = _messages.MessageField('CloudStorageLocations', 7)
+  identity = _messages.MessageField('Identity', 8)
+  includeCloudStorageBuckets = _messages.MessageField('CloudStorageBuckets', 9)
+  includeCloudStorageLocations = _messages.MessageField('CloudStorageLocations', 10)
+  includeNewlyCreatedBuckets = _messages.BooleanField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  link = _messages.MessageField('Link', 13)
+  name = _messages.StringField(14)
+  organizationNumber = _messages.IntegerField(15)
+  organizationScope = _messages.BooleanField(16)
+  retentionPeriodDays = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  skipVerificationAndIngest = _messages.BooleanField(18)
+  sourceFolders = _messages.MessageField('SourceFolders', 19)
+  sourceProjects = _messages.MessageField('SourceProjects', 20)
+  status = _messages.MessageField('Status', 21)
+  uid = _messages.StringField(22)
+  updateTime = _messages.StringField(23)
 
 
 class Date(_messages.Message):
@@ -1203,8 +1207,9 @@ class StorageinsightsProjectsLocationsListRequest(_messages.Message):
   r"""A StorageinsightsProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).

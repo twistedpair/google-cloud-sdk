@@ -579,14 +579,42 @@ class Keys(object):
           log.debug('Failed to create sentinel file: [{}]'.format(e))
 
 
-def CertFileFromInstance(project_id, zone, instance_id):
+def CertFileFromAppEngineInstance(project, service, version, instance):
+  cert_dir = os.path.realpath(files.ExpandHomeDir(CERTIFICATE_DIR))
+  return os.path.join(
+      cert_dir,
+      '{}_{}_{}_{}-cert.pub'.format(project, service, version, instance),
+  )
+
+
+def CertFileFromComputeInstance(project_id, zone, instance_id):
   cert_dir = os.path.realpath(files.ExpandHomeDir(CERTIFICATE_DIR))
   return os.path.join(
       cert_dir, '{}_{}_{}-cert.pub'.format(project_id, zone, instance_id)
   )
 
 
-def WriteCertificate(cert, project_id, zone, instance_id):
+def WriteAppEngineCertificate(cert, project, service, version, instance):
+  """Writes a certificate associated with the key pair for App Engine.
+
+  Args:
+    cert: string, The SSH certificate data.
+    project: string, The project ID of the instance.
+    service: string, The service of the instance.
+    version: string, The version of the instance.
+    instance: string, The instance ID.
+  """
+  cert_dir = os.path.realpath(files.ExpandHomeDir(CERTIFICATE_DIR))
+  files.MakeDir(cert_dir, mode=0o700)
+
+  filepath = CertFileFromAppEngineInstance(project, service, version, instance)
+  try:
+    files.WriteFileContents(filepath, cert)
+  except files.Error as e:
+    log.debug('Failed to update the certificate {}: [{}]'.format(filepath, e))
+
+
+def WriteComputeCertificate(cert, project_id, zone, instance_id):
   """Writes a certificate associated with the key pair.
 
   Args:
@@ -598,7 +626,7 @@ def WriteCertificate(cert, project_id, zone, instance_id):
   cert_dir = os.path.realpath(files.ExpandHomeDir(CERTIFICATE_DIR))
   files.MakeDir(cert_dir, mode=0o700)
 
-  filepath = CertFileFromInstance(project_id, zone, instance_id)
+  filepath = CertFileFromComputeInstance(project_id, zone, instance_id)
   try:
     files.WriteFileContents(filepath, cert)
   except files.Error as e:
@@ -613,13 +641,14 @@ def DeleteCertificateFile(project_id, zone, instance_id):
     zone: string, The zone of the instance.
     instance_id: string, The instance ID.
   """
-  filepath = CertFileFromInstance(project_id, zone, instance_id)
+  filepath = CertFileFromComputeInstance(project_id, zone, instance_id)
   if os.path.exists(filepath):
     os.remove(filepath)
 
 
 def ValidateCertificate(
-    oslogin_state, project_id, zone, instance_id
+    oslogin_state, project_id=None, zone=None, instance_id=None,
+    app_engine_params=None,
 ):
   """Checks if the certificate is currently valid for a given instance.
 
@@ -628,6 +657,8 @@ def ValidateCertificate(
     project_id: string, The project ID of the instance.
     zone: string, The zone of the instance.
     instance_id: string, The instance ID.
+    app_engine_params: dict, values of (appsId, servicesId, versionId,
+        instanceId, serviceAccount, region) for App Engine instances.
   """
   def IsCertValid(cert):
     time_format = '%Y-%m-%dT%H:%M:%S'
@@ -638,7 +669,16 @@ def ValidateCertificate(
     end = datetime.datetime.strptime(match[1], time_format)
     now = datetime.datetime.now()
     oslogin_state.signed_ssh_key = now > start and now < end
-  cert_file = CertFileFromInstance(project_id, zone, instance_id)
+
+  if app_engine_params:
+    cert_file = CertFileFromAppEngineInstance(
+        app_engine_params['appsId'],
+        app_engine_params['servicesId'],
+        app_engine_params['versionsId'],
+        app_engine_params['instancesId'],
+    )
+  else:
+    cert_file = CertFileFromComputeInstance(project_id, zone, instance_id)
   cmd = KeygenCommand(cert_file, print_cert=True)
   try:
     if os.path.exists(cert_file):
@@ -1064,6 +1104,57 @@ def _IsInstanceWindows(instance, messages=None):
   )
 
 
+def _SignAndWriteAppEngineCertificate(
+    oslogin,
+    public_key,
+    project,
+    region,
+    app_engine_params,
+):
+  """Signs and writes a certificate for the given App Engine instance."""
+  sign_response = oslogin.SignSshPublicKeyForInstance(
+      public_key,
+      project.name,
+      region,
+      service_account=app_engine_params['serviceAccount'],
+      app_engine_instance=(
+          f'apps/{app_engine_params["appsId"]}/services/{app_engine_params["servicesId"]}/versions/{app_engine_params["versionsId"]}/instances/{app_engine_params["instancesId"]}'
+      ),
+  )
+  WriteAppEngineCertificate(
+      sign_response.signedSshPublicKey,
+      app_engine_params['appsId'],
+      app_engine_params['servicesId'],
+      app_engine_params['versionsId'],
+      app_engine_params['instancesId'],
+  )
+
+
+def _SignAndWriteComputeCertificate(
+    oslogin,
+    public_key,
+    project,
+    region,
+    zone,
+    instance,
+):
+  """Signs and writes a certificate for the given Compute instance."""
+  sign_response = oslogin.SignSshPublicKeyForInstance(
+      public_key,
+      project.name,
+      region,
+      service_account=instance.serviceAccounts[0].email
+      if instance.serviceAccounts
+      else '',
+      compute_instance=(
+          f'projects/{project.name}/zones/{zone}/instances/{instance.id}'
+      ),
+  )
+  WriteComputeCertificate(
+      sign_response.signedSshPublicKey, project.name, zone, instance.id
+  )
+
+
 def GetOsloginState(
     instance,
     project,
@@ -1071,6 +1162,7 @@ def GetOsloginState(
     public_key,
     expiration_time,
     release_track,
+    app_engine_params=None,
     username_requested=False,
     instance_enable_oslogin=None,
     instance_enable_2fa=None,
@@ -1094,6 +1186,10 @@ def GetOsloginState(
       not be set to expire.  If not None, an existing key may be modified with
       the new expiry.
     release_track: release_track, The object representing the release track.
+    app_engine_params: dict, The fields required to identify an App Engine
+      instance. This should be None for Compute instances. If present, this
+      should contain fields for 'appsId', 'servicesId', 'versionsId',
+      'instancesId', and 'serviceAccount'.
     username_requested: bool, True if the user has passed a specific username in
       the args.
     instance_enable_oslogin: True if the instance's metadata indicates that OS
@@ -1171,57 +1267,48 @@ def GetOsloginState(
       or properties.VALUES.core.account.Get()
   )
 
+  zone = None
+  region = None
   if instance and instance.zone:
     zone = instance.zone.split('/').pop()
     # Inclusively trim suffix from last '-' to convert a zone into a region.
     region = zone[: zone.rindex('-')]
-  else:
-    zone = None
-    region = None
+  elif app_engine_params:
+    region = app_engine_params['region']
 
-  if (
-      release_track
-      in [
-          base.ReleaseTrack.ALPHA,
-          base.ReleaseTrack.BETA,
-      ]
-      and (oslogin_state.third_party_user or oslogin_state.require_certificates)
-  ):
+  if release_track in [
+      base.ReleaseTrack.ALPHA,
+      base.ReleaseTrack.BETA,
+  ] and (oslogin_state.third_party_user or oslogin_state.require_certificates):
     user_email = quote(user_email, safe=':@')
-    ValidateCertificate(oslogin_state, project.name, zone, instance.id)
+    if app_engine_params:
+      ValidateCertificate(oslogin_state, app_engine_params)
+    else:
+      ValidateCertificate(oslogin_state, project.name, zone, instance.id)
     if not oslogin_state.signed_ssh_key:
       try:
-        sign_response = oslogin.SignSshPublicKeyForInstance(
-            public_key,
-            project.name,
-            region,
-            service_account=instance.serviceAccounts[0].email
-            if instance.serviceAccounts
-            else '',
-            compute_instance=(
-                f'projects/{project.name}/zones/{zone}/instances/{instance.id}'
-            ),
-        )
+        if app_engine_params:
+          _SignAndWriteAppEngineCertificate(
+              oslogin, public_key, project, region, app_engine_params
+          )
+        else:
+          _SignAndWriteComputeCertificate(
+              oslogin, public_key, project, region, zone, instance
+          )
       except exceptions.HttpNotFoundError:
         log.status.Print(
             'No OS Login profile found for user [{0}] for project [{1}].'
             ' Creating POSIX account.'.format(user_email, project.name)
         )
         oslogin.ProvisionPosixAccount(user_email, project.name, region)
-        sign_response = oslogin.SignSshPublicKeyForInstance(
-            public_key,
-            project.name,
-            region,
-            service_account=instance.serviceAccounts[0].email
-            if instance.serviceAccounts
-            else '',
-            compute_instance=(
-                f'projects/{project.name}/zones/{zone}/instances/{instance.id}'
-            ),
-        )
-      WriteCertificate(
-          sign_response.signedSshPublicKey, project.name, zone, instance.id
-      )
+        if app_engine_params:
+          _SignAndWriteAppEngineCertificate(
+              oslogin, public_key, project, region, app_engine_params
+          )
+        else:
+          _SignAndWriteComputeCertificate(
+              oslogin, public_key, project, region, zone, instance
+          )
     login_profile = oslogin.GetLoginProfile(
         user_email,
         project.name,

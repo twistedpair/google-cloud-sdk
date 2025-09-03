@@ -77,7 +77,7 @@ projects_locations_odb_networks:
     parameter_name: odbNetworksId
     attribute_name: odb_network
     help: The odbNetwork id of the {resource} resource.
-  disable_auto_completers: true
+  disable_auto_completers: false
 projects_none_networks:
   name: network
   plural_name: networks

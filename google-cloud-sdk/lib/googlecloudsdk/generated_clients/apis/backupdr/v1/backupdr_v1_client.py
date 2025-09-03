@@ -50,6 +50,7 @@ class BackupdrV1(base_api.BaseApiClient):
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_resourceBackupConfigs = self.ProjectsLocationsResourceBackupConfigsService(self)
     self.projects_locations_serviceConfig = self.ProjectsLocationsServiceConfigService(self)
+    self.projects_locations_trial = self.ProjectsLocationsTrialService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -495,6 +496,33 @@ class BackupdrV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsDeleteRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def FetchForResourceType(self, request, global_params=None):
+      r"""Fetch Backups for a given resource type.
+
+      Args:
+        request: (BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsFetchForResourceTypeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FetchBackupsForResourceTypeResponse) The response message.
+      """
+      config = self.GetMethodConfig('FetchForResourceType')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchForResourceType.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupVaults/{backupVaultsId}/dataSources/{dataSourcesId}/backups:fetchForResourceType',
+        http_method='GET',
+        method_id='backupdr.projects.locations.backupVaults.dataSources.backups.fetchForResourceType',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'resourceType', 'view'],
+        relative_path='v1/{+parent}/backups:fetchForResourceType',
+        request_field='',
+        request_type_name='BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsFetchForResourceTypeRequest',
+        response_type_name='FetchBackupsForResourceTypeResponse',
         supports_download=False,
     )
 
@@ -1540,6 +1568,43 @@ class BackupdrV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsTrialService(base_api.BaseApiService):
+    """Service class for the projects_locations_trial resource."""
+
+    _NAME = 'projects_locations_trial'
+
+    def __init__(self, client):
+      super(BackupdrV1.ProjectsLocationsTrialService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Subscribe(self, request, global_params=None):
+      r"""Subscribes to a trial for a project.
+
+      Args:
+        request: (BackupdrProjectsLocationsTrialSubscribeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Trial) The response message.
+      """
+      config = self.GetMethodConfig('Subscribe')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Subscribe.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/trial:subscribe',
+        http_method='POST',
+        method_id='backupdr.projects.locations.trial.subscribe',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/trial:subscribe',
+        request_field='subscribeTrialRequest',
+        request_type_name='BackupdrProjectsLocationsTrialSubscribeRequest',
+        response_type_name='Trial',
+        supports_download=False,
+    )
+
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
@@ -1574,6 +1639,33 @@ class BackupdrV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='BackupdrProjectsLocationsGetRequest',
         response_type_name='Location',
+        supports_download=False,
+    )
+
+    def GetTrial(self, request, global_params=None):
+      r"""Gets the Trial state for a given project.
+
+      Args:
+        request: (BackupdrProjectsLocationsGetTrialRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Trial) The response message.
+      """
+      config = self.GetMethodConfig('GetTrial')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetTrial.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/trial',
+        http_method='GET',
+        method_id='backupdr.projects.locations.getTrial',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='BackupdrProjectsLocationsGetTrialRequest',
+        response_type_name='Trial',
         supports_download=False,
     )
 

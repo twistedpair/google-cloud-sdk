@@ -159,7 +159,7 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
         remote.user = oslogin_state.user
 
       if (oslogin_state.third_party_user or oslogin_state.require_certificates):
-        cert_file = ssh.CertFileFromInstance(
+        cert_file = ssh.CertFileFromComputeInstance(
             project.name, instance_ref.zone, instance.id
         )
 

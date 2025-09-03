@@ -25,6 +25,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.edge_cloud.container import admin_users
 from googlecloudsdk.command_lib.edge_cloud.container import fleet
 from googlecloudsdk.command_lib.edge_cloud.container import resource_args
+from googlecloudsdk.command_lib.edge_cloud.container import robin
 from googlecloudsdk.command_lib.run import flags
 from googlecloudsdk.core import resources
 
@@ -206,6 +207,8 @@ def PopulateClusterAlphaMessage(req, args):
   resource_args.SetExternalLoadBalancerAddressPoolsConfig(args, req)
   EnableClusterIsolationConfig(req, args)
   EnableRemoteBackupConfig(req, args)
+  if flags.FlagIsExplicitlySet(args, 'enable_robin_cns'):
+    robin.EnableRobinCNSInRequest(req, args)
 
 
 def IsLCPCluster(args):

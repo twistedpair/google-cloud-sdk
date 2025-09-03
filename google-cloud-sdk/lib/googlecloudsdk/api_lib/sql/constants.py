@@ -62,3 +62,7 @@ DEFAULT_PROXY_PORT_NUMBER = 9470
 PROXY_ADDRESS_IN_USE_ERROR = 'bind: address already in use'
 
 PROXY_READY_FOR_CONNECTIONS_MSG = 'Ready for new connections'
+
+PROXY_V2_READY_FOR_CONNECTIONS_MSG = (
+    'The proxy has started successfully and is ready for new connections!'
+)

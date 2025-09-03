@@ -26,7 +26,7 @@ _RESOURCE_BUNDLE_LOCATION_SEGMENT = 3
 
 ROLLOUTS_DESCRIBE_ROLLING_TRUNCATED_MESSAGES_FORMAT = """table(info.rolloutStrategyInfo.rollingStrategyInfo.clusters.membership.basename():label=CLUSTER,
                     info.rolloutStrategyInfo.rollingStrategyInfo.clusters.current.version:label=CURRENT_VERSION,
-                    info.rolloutStrategyInfo.rollingStrategyInfo.clusters.current.syncState:label=CURRENT_STATE,
+                    info.rolloutStrategyInfo.rollingStrategyInfo.clusters.current.syncState:label=SYNC_STATE,
                     info.rolloutStrategyInfo.rollingStrategyInfo.clusters.desired.version:label=DESIRED_VERSION,
                     info.rolloutStrategyInfo.rollingStrategyInfo.clusters.startTime:label=START_TIME,
                     info.rolloutStrategyInfo.rollingStrategyInfo.clusters.endTime:label=END_TIME,
@@ -35,7 +35,7 @@ ROLLOUTS_DESCRIBE_ROLLING_TRUNCATED_MESSAGES_FORMAT = """table(info.rolloutStrat
 
 ROLLOUTS_DESCRIBE_ALLATONCE_TRUNCATED_MESSAGES_FORMAT = """table(info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.membership.basename():label=CLUSTER,
                     info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.current.version:label=CURRENT_VERSION,
-                    info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.current.syncState:label=CURRENT_STATE,
+                    info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.current.syncState:label=SYNC_STATE,
                     info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.desired.version:label=DESIRED_VERSION,
                     info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.startTime:label=START_TIME,
                     info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.endTime:label=END_TIME,
@@ -44,7 +44,7 @@ ROLLOUTS_DESCRIBE_ALLATONCE_TRUNCATED_MESSAGES_FORMAT = """table(info.rolloutStr
 
 ROLLOUTS_DESCRIBE_ROLLING_FULL_MESSAGES_FORMAT = """table(info.rolloutStrategyInfo.rollingStrategyInfo.clusters.membership.basename():label=CLUSTER,
                     info.rolloutStrategyInfo.rollingStrategyInfo.clusters.current.version:label=CURRENT_VERSION,
-                    info.rolloutStrategyInfo.rollingStrategyInfo.clusters.current.syncState:label=CURRENT_STATE,
+                    info.rolloutStrategyInfo.rollingStrategyInfo.clusters.current.syncState:label=SYNC_STATE,
                     info.rolloutStrategyInfo.rollingStrategyInfo.clusters.desired.version:label=DESIRED_VERSION,
                     info.rolloutStrategyInfo.rollingStrategyInfo.clusters.startTime:label=START_TIME,
                     info.rolloutStrategyInfo.rollingStrategyInfo.clusters.endTime:label=END_TIME,
@@ -53,7 +53,7 @@ ROLLOUTS_DESCRIBE_ROLLING_FULL_MESSAGES_FORMAT = """table(info.rolloutStrategyIn
 
 ROLLOUTS_DESCRIBE_ALLATONCE_FULL_MESSAGES_FORMAT = """table(info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.membership.basename():label=CLUSTER,
                     info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.current.version:label=CURRENT_VERSION,
-                    info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.current.syncState:label=CURRENT_STATE,
+                    info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.current.syncState:label=SYNC_STATE,
                     info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.desired.version:label=DESIRED_VERSION,
                     info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.startTime:label=START_TIME,
                     info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.endTime:label=END_TIME,

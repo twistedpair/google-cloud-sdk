@@ -778,26 +778,29 @@ class AuthzPolicyTarget(_messages.Message):
   Enums:
     LoadBalancingSchemeValueValuesEnum: Required. All gateways and forwarding
       rules referenced by this policy and extensions must share the same load
-      balancing scheme. Supported values: `INTERNAL_MANAGED` and
-      `EXTERNAL_MANAGED`. For more information, refer to [Backend services
-      overview](https://cloud.google.com/load-balancing/docs/backend-service).
+      balancing scheme. Supported values: `INTERNAL_MANAGED`,
+      `INTERNAL_SELF_MANAGED`, and `EXTERNAL_MANAGED`. For more information,
+      refer to [Backend services overview](https://cloud.google.com/load-
+      balancing/docs/backend-service).
 
   Fields:
     loadBalancingScheme: Required. All gateways and forwarding rules
       referenced by this policy and extensions must share the same load
-      balancing scheme. Supported values: `INTERNAL_MANAGED` and
-      `EXTERNAL_MANAGED`. For more information, refer to [Backend services
-      overview](https://cloud.google.com/load-balancing/docs/backend-service).
+      balancing scheme. Supported values: `INTERNAL_MANAGED`,
+      `INTERNAL_SELF_MANAGED`, and `EXTERNAL_MANAGED`. For more information,
+      refer to [Backend services overview](https://cloud.google.com/load-
+      balancing/docs/backend-service).
     resources: Required. A list of references to the Forwarding Rules on which
-      this policy will be applied.
+      this policy will be applied. For policies created for Cloudrun, this
+      field will reference the Cloud Run services.
   """
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
     r"""Required. All gateways and forwarding rules referenced by this policy
     and extensions must share the same load balancing scheme. Supported
-    values: `INTERNAL_MANAGED` and `EXTERNAL_MANAGED`. For more information,
-    refer to [Backend services overview](https://cloud.google.com/load-
-    balancing/docs/backend-service).
+    values: `INTERNAL_MANAGED`, `INTERNAL_SELF_MANAGED`, and
+    `EXTERNAL_MANAGED`. For more information, refer to [Backend services
+    overview](https://cloud.google.com/load-balancing/docs/backend-service).
 
     Values:
       LOAD_BALANCING_SCHEME_UNSPECIFIED: Default value. Do not use.
@@ -1302,6 +1305,7 @@ class FirewallEndpoint(_messages.Message):
     createTime: Output only. Create time stamp.
     description: Optional. Description of the firewall endpoint. Max length
       2048 characters.
+    endpointSettings: Optional. Settings for the endpoint.
     firstPartyEndpointSettings: Optional. Firewall endpoint settings for first
       party firewall endpoints.
     jumboFramesEnabled: Optional. Immutable. Indicates whether Jumbo Frames
@@ -1317,7 +1321,7 @@ class FirewallEndpoint(_messages.Message):
       party firewall endpoints.
     type: Optional. Endpoint type.
     updateTime: Output only. Update time stamp
-    wildfireSettings: Optional. Settings for Wildfire analysis.
+    wildfireSettings: Optional. Settings for WildFire analysis.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1377,18 +1381,19 @@ class FirewallEndpoint(_messages.Message):
   billingProjectId = _messages.StringField(3)
   createTime = _messages.StringField(4)
   description = _messages.StringField(5)
-  firstPartyEndpointSettings = _messages.MessageField('FirstPartyEndpointSettings', 6)
-  jumboFramesEnabled = _messages.BooleanField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  reconciling = _messages.BooleanField(10)
-  satisfiesPzi = _messages.BooleanField(11)
-  satisfiesPzs = _messages.BooleanField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  thirdPartyEndpointSettings = _messages.MessageField('ThirdPartyEndpointSettings', 14)
-  type = _messages.EnumField('TypeValueValuesEnum', 15)
-  updateTime = _messages.StringField(16)
-  wildfireSettings = _messages.MessageField('FirewallEndpointWildfireSettings', 17)
+  endpointSettings = _messages.MessageField('FirewallEndpointEndpointSettings', 6)
+  firstPartyEndpointSettings = _messages.MessageField('FirstPartyEndpointSettings', 7)
+  jumboFramesEnabled = _messages.BooleanField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  reconciling = _messages.BooleanField(11)
+  satisfiesPzi = _messages.BooleanField(12)
+  satisfiesPzs = _messages.BooleanField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  thirdPartyEndpointSettings = _messages.MessageField('ThirdPartyEndpointSettings', 15)
+  type = _messages.EnumField('TypeValueValuesEnum', 16)
+  updateTime = _messages.StringField(17)
+  wildfireSettings = _messages.MessageField('FirewallEndpointWildfireSettings', 18)
 
 
 class FirewallEndpointAssociation(_messages.Message):
@@ -1487,29 +1492,119 @@ class FirewallEndpointAssociationReference(_messages.Message):
   network = _messages.StringField(2)
 
 
+class FirewallEndpointEndpointSettings(_messages.Message):
+  r"""Settings for the endpoint.
+
+  Enums:
+    ContentCloudRegionValueValuesEnum: Optional. The content cloud region of
+      the endpoint.
+
+  Fields:
+    contentCloudRegion: Optional. The content cloud region of the endpoint.
+    httpPartialResponseBlocked: Optional. Whether to block HTTP partial
+      responses for the endpoint. When this is true, resumption of blocked
+      malicious HTTP file downloads will be blocked by the firewall. False
+      provides maximum availability, true provides maximum security.
+    jumboFramesEnabled: Optional. Immutable. Indicates whether Jumbo Frames
+      are enabled. Default value is false.
+  """
+
+  class ContentCloudRegionValueValuesEnum(_messages.Enum):
+    r"""Optional. The content cloud region of the endpoint.
+
+    Values:
+      CONTENT_CLOUD_REGION_UNSPECIFIED: PAN content cloud region not
+        specified.
+      DEFAULT: This default automatically resolves to the closest PAN cloud
+        region. Default content cloud portal: hawkeye.services-
+        edge.paloaltonetworks.com
+      US_CENTRAL: us.hawkeye.services-edge.paloaltonetworks.com
+      EUROPE: Europe content cloud portal: eu.hawkeye.services-
+        edge.paloaltonetworks.com
+      APAC: APAC content cloud portal: apac.hawkeye.services-
+        edge.paloaltonetworks.com
+      INDIA: India content cloud portal: in.hawkeye.services-
+        edge.paloaltonetworks.com
+      UK: UK content cloud portal: uk.hawkeye.services-
+        edge.paloaltonetworks.com
+      FRANCE: France content cloud portal: fr.hawkeye.services-
+        edge.paloaltonetworks.com
+      JAPAN: Japan content cloud portal: jp.hawkeye.services-
+        edge.paloaltonetworks.com
+      AUSTRALIA: Australia content cloud portal: au.hawkeye.services-
+        edge.paloaltonetworks.com
+      CANADA: Canada content cloud portal: ca.hawkeye.services-
+        edge.paloaltonetworks.com
+      SWITZERLAND: Switzerland content cloud portal: ch.hawkeye.services-
+        edge.paloaltonetworks.com
+      NETHERLANDS: Netherlands content cloud portal: nl.hawkeye.services-
+        edge.paloaltonetworks.com
+      INDONESIA: Indonesia content cloud portal: id.hawkeye.services-
+        edge.paloaltonetworks.com
+      QATAR: Qatar content cloud portal: qa.hawkeye.services-
+        edge.paloaltonetworks.com
+      TAIWAN: Taiwan content cloud portal: tw.hawkeye.services-
+        edge.paloaltonetworks.com
+      POLAND: Poland content cloud portal: pl.hawkeye.services-
+        edge.paloaltonetworks.com
+      SOUTH_KOREA: South Korea content cloud portal: kr.hawkeye.services-
+        edge.paloaltonetworks.com
+      SAUDI_ARABIA: Saudi Arabia content cloud portal: sa.hawkeye.services-
+        edge.paloaltonetworks.com
+      ITALY: Italy content cloud portal: it.hawkeye.services-
+        edge.paloaltonetworks.com
+    """
+    CONTENT_CLOUD_REGION_UNSPECIFIED = 0
+    DEFAULT = 1
+    US_CENTRAL = 2
+    EUROPE = 3
+    APAC = 4
+    INDIA = 5
+    UK = 6
+    FRANCE = 7
+    JAPAN = 8
+    AUSTRALIA = 9
+    CANADA = 10
+    SWITZERLAND = 11
+    NETHERLANDS = 12
+    INDONESIA = 13
+    QATAR = 14
+    TAIWAN = 15
+    POLAND = 16
+    SOUTH_KOREA = 17
+    SAUDI_ARABIA = 18
+    ITALY = 19
+
+  contentCloudRegion = _messages.EnumField('ContentCloudRegionValueValuesEnum', 1)
+  httpPartialResponseBlocked = _messages.BooleanField(2)
+  jumboFramesEnabled = _messages.BooleanField(3)
+
+
 class FirewallEndpointWildfireSettings(_messages.Message):
-  r"""Settings for Wildfire analysis.
+  r"""Settings for WildFire analysis.
 
   Enums:
     WildfireRealtimeLookupTimeoutActionValueValuesEnum: Optional. Action to
-      take on Wildfire real time signature lookup timeout. Default value is
+      take on WildFire real time signature lookup timeout. Default value is
       ALLOW.
-    WildfireRegionValueValuesEnum: Optional. The region where Wildfire
+    WildfireRegionValueValuesEnum: Optional. The region where WildFire
       analysis will be performed. PAN supports regions:
       https://docs.paloaltonetworks.com/advanced-
       wildfire/administration/advanced-wildfire-overview/advanced-wildfire-
       deployments/advanced-wildfire-global-cloud
 
   Fields:
-    enabled: Optional. Indicates whether Wildfire analysis is enabled. Default
+    enabled: Optional. Indicates whether WildFire analysis is enabled. Default
       value is false.
+    wildfireInlineCloudAnalysisSettings: Optional. Settings for WildFire
+      inline cloud analysis.
     wildfireRealtimeLookupDuration: Optional. Duration in milliseconds on a
-      file being held while the Wildfire real time signature cloud performs a
+      file being held while the WildFire real time signature cloud performs a
       signature lookup. Value between 1 to 5000 is valid. Default value is
       1000.
-    wildfireRealtimeLookupTimeoutAction: Optional. Action to take on Wildfire
+    wildfireRealtimeLookupTimeoutAction: Optional. Action to take on WildFire
       real time signature lookup timeout. Default value is ALLOW.
-    wildfireRegion: Optional. The region where Wildfire analysis will be
+    wildfireRegion: Optional. The region where WildFire analysis will be
       performed. PAN supports regions:
       https://docs.paloaltonetworks.com/advanced-
       wildfire/administration/advanced-wildfire-overview/advanced-wildfire-
@@ -1517,11 +1612,11 @@ class FirewallEndpointWildfireSettings(_messages.Message):
   """
 
   class WildfireRealtimeLookupTimeoutActionValueValuesEnum(_messages.Enum):
-    r"""Optional. Action to take on Wildfire real time signature lookup
+    r"""Optional. Action to take on WildFire real time signature lookup
     timeout. Default value is ALLOW.
 
     Values:
-      WILDFIRE_REALTIME_SIGNATURE_LOOKUP_TIMEOUT_ACTION_UNSPECIFIED: Wildfire
+      WILDFIRE_REALTIME_SIGNATURE_LOOKUP_TIMEOUT_ACTION_UNSPECIFIED: WildFire
         real time signature lookup timeout action not specified.
       ALLOW: The files that timed out in the signature lookup will be allowed
         to transmit.
@@ -1533,48 +1628,34 @@ class FirewallEndpointWildfireSettings(_messages.Message):
     DENY = 2
 
   class WildfireRegionValueValuesEnum(_messages.Enum):
-    r"""Optional. The region where Wildfire analysis will be performed. PAN
+    r"""Optional. The region where WildFire analysis will be performed. PAN
     supports regions: https://docs.paloaltonetworks.com/advanced-
     wildfire/administration/advanced-wildfire-overview/advanced-wildfire-
     deployments/advanced-wildfire-global-cloud
 
     Values:
-      WILDFIRE_REGION_UNSPECIFIED: Wildfire region not specified.
-      CANADA: Wildfire region Canada. Canada cloud portal:
-        ca.wildfire.paloaltonetworks.com
-      UNITED_STATES: Wildfire region United States.
-      JAPAN: Wildfire region Japan. Japan cloud portal:
-        jp.wildfire.paloaltonetworks.com
-      SINGAPORE: Wildfire region Singapore. Singapore cloud portal:
-        sg.wildfire.paloaltonetworks.com
-      UNITED_KINGDOM: Wildfire region United Kingdom. United Kingdom cloud
-        portal: uk.wildfire.paloaltonetworks.com
-      AUSTRALIA: Wildfire region Australia. Australia cloud portal:
-        au.wildfire.paloaltonetworks.com
-      GERMANY: Wildfire region Germany. Germany cloud portal:
-        de.wildfire.paloaltonetworks.com
-      INDIA: Wildfire region India. India cloud portal:
-        in.wildfire.paloaltonetworks.com
-      SWITZERLAND: Wildfire region Switzerland. Switzerland cloud portal:
-        ch.wildfire.paloaltonetworks.com
-      POLAND: Wildfire region Poland. Poland cloud portal:
-        pl.wildfire.paloaltonetworks.com
-      INDONESIA: Wildfire region Indonesia. Indonesia cloud portal:
-        id.wildfire.paloaltonetworks.com
-      TAIWAN: Wildfire region Taiwan. Taiwan cloud portal:
-        tw.wildfire.paloaltonetworks.com
-      FRANCE: Wildfire region France. France cloud portal:
-        fr.wildfire.paloaltonetworks.com
-      QATAR: Wildfire region Qatar. Qatar cloud portal:
-        qatar.wildfire.paloaltonetworks.com
-      SOUTH_KOREA: Wildfire region South Korea. South Korea cloud portal:
-        kr.wildfire.paloaltonetworks.com
-      ISRAEL: Wildfire region Israel. Israel cloud portal:
-        il.wildfire.paloaltonetworks.com
-      SAUDI_ARABIA: Wildfire region Saudi Arabia. Saudi Arabia cloud portal:
+      WILDFIRE_REGION_UNSPECIFIED: WildFire region not specified.
+      CANADA: Canada cloud portal: ca.wildfire.paloaltonetworks.com
+      UNITED_STATES: United States cloud portal: us-
+        native.wildfire.paloaltonetworks.com
+      JAPAN: Japan cloud portal: jp.wildfire.paloaltonetworks.com
+      SINGAPORE: Singapore cloud portal: sg.wildfire.paloaltonetworks.com
+      UNITED_KINGDOM: United Kingdom cloud portal:
+        uk.wildfire.paloaltonetworks.com
+      AUSTRALIA: Australia cloud portal: au.wildfire.paloaltonetworks.com
+      GERMANY: Germany cloud portal: de.wildfire.paloaltonetworks.com
+      INDIA: India cloud portal: in.wildfire.paloaltonetworks.com
+      SWITZERLAND: Switzerland cloud portal: ch.wildfire.paloaltonetworks.com
+      POLAND: Poland cloud portal: pl.wildfire.paloaltonetworks.com
+      INDONESIA: Indonesia cloud portal: id.wildfire.paloaltonetworks.com
+      TAIWAN: Taiwan cloud portal: tw.wildfire.paloaltonetworks.com
+      FRANCE: France cloud portal: fr.wildfire.paloaltonetworks.com
+      QATAR: Qatar cloud portal: qatar.wildfire.paloaltonetworks.com
+      SOUTH_KOREA: South Korea cloud portal: kr.wildfire.paloaltonetworks.com
+      ISRAEL: Israel cloud portal: il.wildfire.paloaltonetworks.com
+      SAUDI_ARABIA: Saudi Arabia cloud portal:
         sa.wildfire.paloaltonetworks.com
-      SPAIN: Wildfire region Spain. Spain cloud portal:
-        es.wildfire.paloaltonetworks.com
+      SPAIN: Spain cloud portal: es.wildfire.paloaltonetworks.com
     """
     WILDFIRE_REGION_UNSPECIFIED = 0
     CANADA = 1
@@ -1597,9 +1678,47 @@ class FirewallEndpointWildfireSettings(_messages.Message):
     SPAIN = 18
 
   enabled = _messages.BooleanField(1)
-  wildfireRealtimeLookupDuration = _messages.StringField(2)
-  wildfireRealtimeLookupTimeoutAction = _messages.EnumField('WildfireRealtimeLookupTimeoutActionValueValuesEnum', 3)
-  wildfireRegion = _messages.EnumField('WildfireRegionValueValuesEnum', 4)
+  wildfireInlineCloudAnalysisSettings = _messages.MessageField('FirewallEndpointWildfireSettingsWildfireInlineCloudAnalysisSettings', 2)
+  wildfireRealtimeLookupDuration = _messages.StringField(3)
+  wildfireRealtimeLookupTimeoutAction = _messages.EnumField('WildfireRealtimeLookupTimeoutActionValueValuesEnum', 4)
+  wildfireRegion = _messages.EnumField('WildfireRegionValueValuesEnum', 5)
+
+
+class FirewallEndpointWildfireSettingsWildfireInlineCloudAnalysisSettings(_messages.Message):
+  r"""Settings for WildFire inline cloud analysis.
+
+  Enums:
+    TimeoutActionValueValuesEnum: Optional. Action to take when WildFire
+      inline cloud analysis times out. Default value is ALLOW.
+
+  Fields:
+    maxAnalysisDuration: Optional. Timeout in milliseconds on a file being
+      held while WildFire inline cloud analysis is performed. Value between 1
+      to 240000 is valid. Default value is 30000.
+    submissionTimeoutLoggingDisabled: Optional. Whether to disable WildFire
+      submission log generation for files that timeout during WildFire inline
+      cloud analysis.
+    timeoutAction: Optional. Action to take when WildFire inline cloud
+      analysis times out. Default value is ALLOW.
+  """
+
+  class TimeoutActionValueValuesEnum(_messages.Enum):
+    r"""Optional. Action to take when WildFire inline cloud analysis times
+    out. Default value is ALLOW.
+
+    Values:
+      WILDFIRE_INLINE_CLOUD_ANALYSIS_TIMEOUT_ACTION_UNSPECIFIED: WildFire
+        inline cloud analysis timeout action not specified.
+      ALLOW: The files that timed out will be allowed to transmit.
+      DENY: The files that timed out will be denied to transmit.
+    """
+    WILDFIRE_INLINE_CLOUD_ANALYSIS_TIMEOUT_ACTION_UNSPECIFIED = 0
+    ALLOW = 1
+    DENY = 2
+
+  maxAnalysisDuration = _messages.StringField(1)
+  submissionTimeoutLoggingDisabled = _messages.BooleanField(2)
+  timeoutAction = _messages.EnumField('TimeoutActionValueValuesEnum', 3)
 
 
 class FirstPartyEndpointSettings(_messages.Message):
@@ -6386,8 +6505,9 @@ class NetworksecurityProjectsLocationsListRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).

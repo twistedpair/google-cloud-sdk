@@ -90,6 +90,66 @@ def ValidateAutoscalingMetricSpecs(specs):
       )
 
 
+def ValidateScaleToZeroArgs(
+    min_replica_count=None,
+    initial_replica_count=None,
+    max_replica_count=None,
+    min_scaleup_period=None,
+    idle_scaledown_period=None,
+):
+  """Value validation for scale-to-zero args."""
+  # Validation for initial replica count.
+  if initial_replica_count is not None:
+    if min_replica_count is None:
+      raise exceptions.InvalidArgumentException(
+          '--initial-replica-count',
+          """Cannot set initial-replica-count without explicitly setting
+          min-replica-count to 0 to enable scale-to-zero.""",
+      )
+    if min_replica_count > 0:
+      raise exceptions.InvalidArgumentException(
+          '--initial-replica-count',
+          """Cannot set initial-replica-count when min-replica-count > 0 as
+          scale-to-zero will not be enabled.""",
+      )
+    if (
+        max_replica_count is not None
+        and max_replica_count < initial_replica_count
+    ):
+      raise exceptions.InvalidArgumentException(
+          '--initial-replica-count',
+          """Initial-replica-count must be smaller than max replica count.""",
+      )
+
+  # Validation for STZConfig args with min replica count > 0.
+  if min_scaleup_period is not None:
+    if min_replica_count is None:
+      raise exceptions.InvalidArgumentException(
+          '--min-scaleup-period',
+          """Cannot set min-scaleup-period without explicitly setting
+          min-replica-count to 0 to enable scale-to-zero.""",
+      )
+    if min_replica_count > 0:
+      raise exceptions.InvalidArgumentException(
+          '--min-scaleup-period',
+          """Cannot set min-scaleup-period when min-replica-count > 0 as
+          scale-to-zero will not be enabled.""",
+      )
+  if idle_scaledown_period is not None:
+    if min_replica_count is None:
+      raise exceptions.InvalidArgumentException(
+          '--idle-scaledown-period',
+          """Cannot set idle-scaledown-period without explicitly setting
+          min-replica-count to 0 to enable scale-to-zero.""",
+      )
+    if min_replica_count > 0:
+      raise exceptions.InvalidArgumentException(
+          '--idle-scaledown-period',
+          """Cannot set idle-scaledown-period when min-replica-count > 0 as
+          scale-to-zero will not be enabled.""",
+      )
+
+
 def ValidateSharedResourceArgs(
     shared_resources_ref=None,
     machine_type=None,

@@ -1,0 +1,54 @@
+# TODO(b/414798340): Modify this when PresetMetadata design is finalized.
+# TODO(b/436350694): Add boolean for presets with ingress container.
+presets:
+- name: ai-inference
+  category: CATEGORY_QUICKSTART
+  description: Create a service for running inference on AI models.
+  supported_resources:
+  - RESOURCE_SERVICE
+  config_values:
+    CPU: 4 vCPUs
+    Memory: 16 GiB
+    GPU: 1 NVIDIA L4
+- name: ollama
+  version: 0.0.1 (latest)
+  category: CATEGORY_QUICKSTART
+  description: Inference server for open LLMs, using GPUs and Cloud Storage. Deploys the latest Ollama container configured for Cloud Run with L4 GPUs and a Cloud Storage bucket for model storage.
+  supported_resources:
+  - RESOURCE_SERVICE
+  parameters:
+  - name: bucket
+    label: GCS Bucket Name
+    description: (Optional) Name of the GCS bucket that will be mounted for model storage.
+    type: GCS_BUCKET
+    data_type: DATA_TYPE_STRING
+  - name: network
+    label: VPC Network Name
+    description: (Optional) VPC network to optimize network performance to Cloud Storage.
+    type: NETWORK
+    data_type: DATA_TYPE_STRING
+  - name: subnetwork
+    label: VPC Subnetwork Name
+    description: (Optional) VPC network subnet, used to optimize network performance to Cloud Storage.
+    type: NETWORK
+    data_type: DATA_TYPE_STRING
+  config_values:
+    Container Image: ollama/ollama:latest
+    CPU: 4 vCPUs
+    Memory: 16 GiB
+    GPU: 1 NVIDIA L4
+    Instance-based billing: enabled
+  example_gcloud_usage: TBD
+- name: private-service
+  category: CATEGORY_QUICKSTART
+  description: Create a private, internal service secured by Identity-Aware Proxy (IAP), with access control enforced based on identity and IAM roles.
+  supported_resources:
+  config_values:
+    Ingress: internal
+- name: single-concurrency
+  category: CATEGORY_QUICKSTART
+  description: Create a service where requests are handled strictly one at a time.
+  supported_resources:
+  - RESOURCE_SERVICE
+  config_values:
+    Container Concurrency: 1

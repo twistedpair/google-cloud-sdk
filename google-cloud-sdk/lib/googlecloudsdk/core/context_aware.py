@@ -53,13 +53,14 @@ CONTEXT_AWARE_ACCESS_HELP_MSG = (
     ' may need to wait for a few minutes before retrying.'
 )
 CONTEXT_AWARE_ACCESS_HELP_MSG_GOOGLER = (
-    'Access was blocked by Context Aware Access. Possible solutions:\n\n 1. If'
-    ' you are using gcloud on Cloudtop or other remote machines via SSH and'
-    ' your organization requires gcloud from a company managed device, please'
-    ' first CRD (Chrome Remote Desktop) or RDP (Remote Desktop Protocol) into'
-    ' your remote machine and log into Chrome using your credentials to'
+    'Access was blocked by Context Aware Access. Possible solutions:\n\n 1.'
+    " Please restart your terminal if you haven't already and try again. \n\n"
+    ' 2. If you are using gcloud on Cloudtop or other remote machines via SSH'
+    ' and your organization requires gcloud from a company managed device,'
+    ' please first CRD (Chrome Remote Desktop) or RDP (Remote Desktop Protocol)'
+    ' into your remote machine and log into Chrome using your credentials to'
     ' register your remote machine. After that, you may need to wait for a few'
-    ' minutes before retrying. \n\n 2. Please do not use gcloud in Cloud Shell'
+    ' minutes before retrying. \n\n 3. Please do not use gcloud in Cloud Shell'
     ' as it is not a Google managed device. Choose corp machines instead, for'
     ' example, gMac, gLinux, gWindows, or Cloudtop.\n\n If you are not able to'
     ' do any of the above, please apply for policy exemption via'

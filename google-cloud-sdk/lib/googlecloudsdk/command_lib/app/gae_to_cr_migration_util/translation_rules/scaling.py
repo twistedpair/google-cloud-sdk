@@ -128,19 +128,19 @@ def _get_output_flags_by_scaling_type(
   Returns:
     A list of strings representing the flags for Cloud Run.
   """
-  if input_value < range_limited_feature.range.min:
+  if input_value < range_limited_feature.range['min']:
     logging.warning(
         'Warning: %s has a negagive value of %s, minimum value is %s.',
         feature_key,
         input_value,
-        range_limited_feature.range.min,
+        range_limited_feature.range['min'],
     )
     return []
 
   target_value = (
       input_value
       if range_limited_feature.validate(input_value)
-      else range_limited_feature.range.max
+      else range_limited_feature.range['max']
   )
   return util.generate_output_flags(range_limited_feature.flags, target_value)
 

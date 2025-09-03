@@ -362,13 +362,16 @@ def AddDescription(parser):
       '--description', help='An optional, textual description for the rule.')
 
 
-def AddPreview(parser, default):
+def AddPreview(parser, for_update=False):
   """Adds the preview argument to the argparse."""
+  if for_update:
+    kwargs = {'action': arg_parsers.StoreTrueFalseAction}
+  else:
+    kwargs = {'action': 'store_true', 'default': None}
   parser.add_argument(
       '--preview',
-      action='store_true',
-      default=default,
-      help='If specified, the action will not be enforced.')
+      help='If specified, the action will not be enforced.',
+      **kwargs)
 
 
 def AddRedirectOptions(parser):

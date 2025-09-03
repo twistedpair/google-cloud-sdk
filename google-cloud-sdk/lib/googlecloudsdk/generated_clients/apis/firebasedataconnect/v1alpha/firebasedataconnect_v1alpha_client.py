@@ -309,6 +309,60 @@ class FirebasedataconnectV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ImpersonateMutation(self, request, global_params=None):
+      r"""Impersonate a mutation defined on a Firebase Data Connect connector. It grants the admin SDK access to mutations defined in the given connector. The caller can choose to impersonate a particular Firebase Auth user, or skip @auth completely.
+
+      Args:
+        request: (FirebasedataconnectProjectsLocationsServicesConnectorsImpersonateMutationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GraphqlResponse) The response message.
+      """
+      config = self.GetMethodConfig('ImpersonateMutation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ImpersonateMutation.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/connectors/{connectorsId}:impersonateMutation',
+        http_method='POST',
+        method_id='firebasedataconnect.projects.locations.services.connectors.impersonateMutation',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:impersonateMutation',
+        request_field='impersonateRequest',
+        request_type_name='FirebasedataconnectProjectsLocationsServicesConnectorsImpersonateMutationRequest',
+        response_type_name='GraphqlResponse',
+        supports_download=False,
+    )
+
+    def ImpersonateQuery(self, request, global_params=None):
+      r"""Impersonate a query defined on a Firebase Data Connect connector. It grants the admin SDK access to queries defined in the given connector. The caller can choose to impersonate a particular Firebase Auth user, or skip @auth completely.
+
+      Args:
+        request: (FirebasedataconnectProjectsLocationsServicesConnectorsImpersonateQueryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GraphqlResponse) The response message.
+      """
+      config = self.GetMethodConfig('ImpersonateQuery')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ImpersonateQuery.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/connectors/{connectorsId}:impersonateQuery',
+        http_method='POST',
+        method_id='firebasedataconnect.projects.locations.services.connectors.impersonateQuery',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:impersonateQuery',
+        request_field='impersonateRequest',
+        request_type_name='FirebasedataconnectProjectsLocationsServicesConnectorsImpersonateQueryRequest',
+        response_type_name='GraphqlResponse',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists Connectors in a given project and location.
 
@@ -650,6 +704,33 @@ class FirebasedataconnectV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='FirebasedataconnectProjectsLocationsServicesGetRequest',
         response_type_name='Service',
+        supports_download=False,
+    )
+
+    def IntrospectGraphql(self, request, global_params=None):
+      r"""Execute introspection query against the Firebase Data Connect's generated GraphQL schema. GraphQL introspection query provides metadata such as what tables the schema have, what queries and mutations can be performed on the schema, and so on. Read more at https://graphql.org/learn/introspection. IntrospectGraphql can read schema metadata but cannot read rows from Cloud SQL instance, which can be done via ExecuteGraphqlRead.
+
+      Args:
+        request: (FirebasedataconnectProjectsLocationsServicesIntrospectGraphqlRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GraphqlResponse) The response message.
+      """
+      config = self.GetMethodConfig('IntrospectGraphql')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    IntrospectGraphql.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/services/{servicesId}:introspectGraphql',
+        http_method='POST',
+        method_id='firebasedataconnect.projects.locations.services.introspectGraphql',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:introspectGraphql',
+        request_field='graphqlRequest',
+        request_type_name='FirebasedataconnectProjectsLocationsServicesIntrospectGraphqlRequest',
+        response_type_name='GraphqlResponse',
         supports_download=False,
     )
 

@@ -271,7 +271,7 @@ class ObjectResource(CloudResource):
       because generic daisy chain logic uses the field.
     crc32c_hash (str|None): Base64-encoded digest of crc32c hash.
     creation_time (datetime|None): Time the object was created.
-    custom_contexts (dict|None): Custom contexts for the object.
+    contexts (dict|None): Custom contexts for the object.
     custom_fields (dict|None): Custom key-value pairs set by users.
     decryption_key_hash_sha256 (str|None): Digest of a customer-supplied
       encryption key.
@@ -304,7 +304,7 @@ class ObjectResource(CloudResource):
                content_type=None,
                crc32c_hash=None,
                creation_time=None,
-               custom_contexts=None,
+               contexts=None,
                custom_fields=None,
                custom_time=None,
                decryption_key_hash_sha256=None,
@@ -332,7 +332,7 @@ class ObjectResource(CloudResource):
     self.content_type = content_type
     self.crc32c_hash = crc32c_hash
     self.creation_time = creation_time
-    self.custom_contexts = custom_contexts
+    self.contexts = contexts
     self.custom_fields = custom_fields
     self.custom_time = custom_time
     self.decryption_key_hash_sha256 = decryption_key_hash_sha256
@@ -385,7 +385,7 @@ class ObjectResource(CloudResource):
         self.content_type == other.content_type and
         self.crc32c_hash == other.crc32c_hash and
         self.creation_time == other.creation_time and
-        self.custom_contexts == other.custom_contexts and
+        self.contexts == other.contexts and
         self.custom_fields == other.custom_fields and
         self.custom_time == other.custom_time and
         self.decryption_key_hash_sha256 == other.decryption_key_hash_sha256 and

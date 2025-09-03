@@ -421,23 +421,77 @@ def AddTrafficSplitGroupArgs(parser):
   )
 
 
-def AddPredictionResourcesArgs(parser, version):
-  """Add arguments for prediction resources."""
-  base.Argument(
-      '--min-replica-count',
-      type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
-      help=("""\
-Minimum number of machine replicas for the deployment resources the model will be
-deployed on. If specified, the value must be equal to or larger than 1.
+def AddScaleToZeroArgs(parser, version):
+  """Add arguments for scale to zero."""
+  if version == constants.BETA_VERSION:
+    base.Argument(
+        '--min-scaleup-period',
+        type=arg_parsers.Duration(lower_bound='300s', upper_bound='28800s'),
+        hidden=True,
+        help="""\
+Duration (in seconds) before a deployment is enrolled in scale to zero
+evaluation after scaling up. Defaults to 1 hour if min replica count is 0.
+""",
+    ).AddToParser(parser)
 
-If not specified and the uploaded models use dedicated resources, the default
-value is 1.
-"""),
-  ).AddToParser(parser)
+    base.Argument(
+        '--idle-scaledown-period',
+        type=arg_parsers.Duration(lower_bound='300s', upper_bound='28800s'),
+        hidden=True,
+        help="""\
+Duration (in seconds) without traffic before a deployment is scaled down to
+zero replicas. Defaults to 1 hour if min replica count is 0.
+""",
+    ).AddToParser(parser)
+
+    base.Argument(
+        '--initial-replica-count',
+        type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
+        hidden=True,
+        help="""\
+Initial number of replicas for the deployment resources the model will be
+scaled up to. Cannot be smaller than min replica count or larger than max
+replica count.
+""",
+    ).AddToParser(parser)
+
+
+def AddPredictionResourcesArgs(parser, version, drp=False):
+  """Add arguments for prediction resources."""
+  # Since DRP does not support scale-to-zero, we only allow min-replica-count
+  # to be set to 1 for non-DRP deployments.
+  if drp:
+    base.Argument(
+        '--min-replica-count',
+        type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
+        help=("""\
+  Minimum number of machine replicas for the deployment resources the
+  model will be deployed on. If specified, the value must be equal to or
+  larger than 1.
+
+  If not specified and the uploaded models use dedicated resources, the
+  default value is 1.
+  """),
+    ).AddToParser(parser)
+  else:
+    base.Argument(
+        '--min-replica-count',
+        type=arg_parsers.BoundedInt(0, sys.maxsize, unlimited=True),
+        help=("""\
+  Minimum number of machine replicas for the deployment resources the model will be
+  deployed on. For normal deployments, the value must be equal to or larger than 1.
+  If the value is 0, the deployment will be enrolled in the scale-to-zero feature.
+  If not specified and the uploaded models use dedicated resources, the default
+  value is 1.
+
+  NOTE: DeploymentResourcePools (model-cohosting) is currently not supported for
+  scale-to-zero deployments.
+  """),
+    ).AddToParser(parser)
 
   base.Argument(
       '--max-replica-count',
-      type=int,
+      type=arg_parsers.BoundedInt(1, upper_bound=4096),
       help=("""\
 Maximum number of machine replicas for the deployment resources the model will be
 deployed on.

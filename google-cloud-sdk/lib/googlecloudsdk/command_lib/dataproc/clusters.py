@@ -79,7 +79,7 @@ def ArgsForClusterRef(
   labels_util.AddCreateLabelsFlags(parser)
   # 30m is backend timeout + 5m for safety buffer.
   flags.AddTimeoutFlag(parser, default='35m')
-  flags.AddZoneFlag(parser, short_flags=include_deprecated)
+  flags.AddZoneAndExcludedZonesFlags(parser, short_flags=include_deprecated)
   flags.AddComponentFlag(parser)
 
   platform_group = parser.add_argument_group(mutex=True)
@@ -1396,6 +1396,7 @@ def GetClusterConfig(
       serviceAccount=args.service_account,
       serviceAccountScopes=expanded_scopes,
       zoneUri=properties.VALUES.compute.zone.GetOrFail(),
+      autoZoneExcludeZoneUris=args.auto_zone_exclude_zones,
   )
 
   if args.public_ip_address:

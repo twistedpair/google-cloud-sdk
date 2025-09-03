@@ -1854,12 +1854,11 @@ class ServerlessOperations(object):
     try:
       with metrics.RecordDuration(metric_names.GET_JOB):
         job_response = self._client.namespaces_jobs.Get(get_request)
+        return job.Job(job_response, messages)
     except api_exceptions.InvalidDataFromServerError as e:
       serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
     except api_exceptions.HttpNotFoundError:
       return None
-
-    return job.Job(job_response, messages)
 
   def GetTask(self, task_ref):
     """Return the relevant Task from the server, or None if 404."""
@@ -1871,12 +1870,11 @@ class ServerlessOperations(object):
     try:
       with metrics.RecordDuration(metric_names.GET_TASK):
         task_response = self._client.namespaces_tasks.Get(get_request)
+        return task.Task(task_response, messages)
     except api_exceptions.InvalidDataFromServerError as e:
       serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
     except api_exceptions.HttpNotFoundError:
       return None
-
-    return task.Task(task_response, messages)
 
   def GetExecution(self, execution_ref):
     """Return the relevant Execution from the server, or None if 404."""
@@ -1888,12 +1886,11 @@ class ServerlessOperations(object):
     try:
       with metrics.RecordDuration(metric_names.GET_EXECUTION):
         execution_response = self._client.namespaces_executions.Get(get_request)
+        return execution.Execution(execution_response, messages)
     except api_exceptions.InvalidDataFromServerError as e:
       serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
     except api_exceptions.HttpNotFoundError:
       return None
-
-    return execution.Execution(execution_response, messages)
 
   def ListJobs(self, namespace_ref):
     """Returns all jobs in the namespace."""
@@ -1904,10 +1901,9 @@ class ServerlessOperations(object):
     try:
       with metrics.RecordDuration(metric_names.LIST_JOBS):
         response = self._client.namespaces_jobs.List(request)
+        return [job.Job(item, messages) for item in response.items]
     except api_exceptions.InvalidDataFromServerError as e:
       serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
-
-    return [job.Job(item, messages) for item in response.items]
 
   def DeleteJob(self, job_ref):
     """Delete the provided Job.

@@ -102,7 +102,7 @@ class S3ObjectResource(resource_reference.ObjectResource):
       # indicate we just don't support the field for S3.
       crc32c_hash=resource_reference.NOT_SUPPORTED_DO_NOT_DISPLAY,
       creation_time=None,
-      custom_contexts=None,
+      contexts=None,
       custom_fields=None,
       custom_time=None,
       decryption_key_hash_sha256=None,
@@ -131,7 +131,7 @@ class S3ObjectResource(resource_reference.ObjectResource):
         content_type,
         crc32c_hash,
         creation_time,
-        custom_contexts,
+        contexts,
         custom_fields,
         custom_time,
         decryption_key_hash_sha256,

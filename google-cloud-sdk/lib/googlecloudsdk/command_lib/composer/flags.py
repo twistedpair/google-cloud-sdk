@@ -170,6 +170,14 @@ _ENVIRONMENT_SIZE_MAPPING = {
     'ENVIRONMENT_SIZE_LARGE': 'large'
 }
 
+_ENVIRONMENT_SIZE_MAPPING_ALPHA = {
+    'ENVIRONMENT_SIZE_UNSPECIFIED': 'unspecified',
+    'ENVIRONMENT_SIZE_SMALL': 'small',
+    'ENVIRONMENT_SIZE_MEDIUM': 'medium',
+    'ENVIRONMENT_SIZE_LARGE': 'large',
+    'ENVIRONMENT_SIZE_EXTRA_LARGE': 'extra-large'
+}
+
 AIRFLOW_CONFIGS_FLAG_GROUP_DESCRIPTION = (
     'Group of arguments for modifying the Airflow configuration.')
 
@@ -956,7 +964,7 @@ ENVIRONMENT_SIZE_ALPHA = arg_utils.ChoiceEnumMapper(
     message_enum=api_util.GetMessagesModule(
         release_track=base.ReleaseTrack.ALPHA).EnvironmentConfig
     .EnvironmentSizeValueValuesEnum,
-    custom_mappings=_ENVIRONMENT_SIZE_MAPPING)
+    custom_mappings=_ENVIRONMENT_SIZE_MAPPING_ALPHA)
 
 AIRFLOW_DATABASE_RETENTION_DAYS = base.Argument(
     '--airflow-database-retention-days',

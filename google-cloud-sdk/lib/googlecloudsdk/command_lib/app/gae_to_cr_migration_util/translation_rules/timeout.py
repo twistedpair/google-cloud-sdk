@@ -34,7 +34,7 @@ def translate_timeout_features(input_data: Mapping[str, any]) -> Sequence[str]:
   if len(scaling_features_used) == 1:
     scaling_feature = scaling_features_used[0]
     if scaling_feature in _SCALING_METHOD_W_10_MIN_TIMEOUT:
-      return ['--timeout=10m']
+      return ['--timeout=600']
     if scaling_feature in _SCALING_METHOD_W_60_MIN_TIMEOUT:
-      return ['--timeout=60m']
+      return ['--timeout=3600']
   return []

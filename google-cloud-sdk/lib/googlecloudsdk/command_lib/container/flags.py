@@ -5134,23 +5134,33 @@ The duration between batches is specified by batch-soak-duration.
   )
 
 
-def AddAutoscaleRolloutPolicyFlag(parser, for_node_pool=True, hidden=True):
+def AddAutoscaledRolloutPolicyFlag(parser, hidden=True):
   """Adds --autoscaled-rollout-policy flag to the parser."""
 
   autoscaled_rollout_policy_help = """\
 Autoscaled rollout policy options for blue-green upgrade.
+
+*wait-for-drain-duration*::: (Optional) Time in seconds to wait after cordoning
+the blue pool before draining the nodes.
+
+Examples:
+
+$ {command} node-pool-1 --cluster=example-cluster --autoscaled-rollout-policy
+
+$ {command} node-pool-1 --cluster=example-cluster\
+  --autoscaled-rollout-policy=wait-for-drain-duration=7200s
 """
-  if for_node_pool:
-    autoscaled_rollout_policy_help += """\
-  $ {command} node-pool-1 --cluster=example-cluster\
-  --autoscaled-rollout-policy
-"""
+
+  spec = {
+      'wait-for-drain-duration': str,
+  }
 
   parser.add_argument(
       '--autoscaled-rollout-policy',
       help=autoscaled_rollout_policy_help,
       hidden=hidden,
-      action='store_true',
+      type=arg_parsers.ArgDict(spec=spec),
+      default=None,
   )
 
 
@@ -7139,59 +7149,63 @@ the Autopilot conversion during or after workload migration.
 
 
 def AddSecretManagerEnableFlagGroup(
-    parser: parser_arguments.ArgumentInterceptor, hidden=False
+    parser: parser_arguments.ArgumentInterceptor, is_update=False
 ) -> None:
   """Adds --enable-secret-manager, --enable-secret-manager-rotation, and --secret-manager-rotation-interval flags to the given parser.
 
   Args:
     parser: A given parser.
-    hidden: whether the flags are hidden.
+    is_update: Whether the flag is used for an update operation.
   """
   secret_manager_group = parser.add_group(
       mutex=False,
       help='Flags for Secret Manager configuration:',
-      hidden=False,
   )
   help_text = """\
         Enables the Secret Manager CSI driver provider component. See
         https://secrets-store-csi-driver.sigs.k8s.io/introduction
         https://github.com/GoogleCloudPlatform/secrets-store-csi-driver-provider-gcp
-
-        To disable in an existing cluster, explicitly set flag to
-        --no-enable-secret-manager
     """
-  secret_manager_group.add_argument(
-      '--enable-secret-manager',
-      action='store_true',
-      default=None,
-      help=help_text,
-      hidden=False,
-  )
+  if is_update:
+    secret_manager_group.add_argument(
+        '--enable-secret-manager',
+        action=arg_parsers.StoreTrueFalseAction,
+        help=help_text,
+    )
+  else:
+    secret_manager_group.add_argument(
+        '--enable-secret-manager',
+        action='store_true',
+        default=None,
+        help=help_text,
+    )
 
   help_text = textwrap.dedent("""\
       Enables the rotation of secrets in the Secret Manager CSI driver
       provider component.
-
-      To disable in an existing cluster, explicitly set flag to
-      --no-enable-secret-manager-rotation
   """)
-  secret_manager_group.add_argument(
-      '--enable-secret-manager-rotation',
-      action='store_true',
-      default=None,
-      help=help_text,
-      hidden=hidden,
-  )
+  if is_update:
+    secret_manager_group.add_argument(
+        '--enable-secret-manager-rotation',
+        action=arg_parsers.StoreTrueFalseAction,
+        help=help_text,
+    )
+  else:
+    secret_manager_group.add_argument(
+        '--enable-secret-manager-rotation',
+        action='store_true',
+        default=None,
+        help=help_text,
+    )
 
   help_text = textwrap.dedent("""\
       Set the rotation period for secrets in the Secret Manager CSI driver
-      provider component.
+      provider component. If you don't specify a time interval for the rotation, it will default to a rotation period of two minutes.
   """)
   secret_manager_group.add_argument(
       '--secret-manager-rotation-interval',
       default=None,
       help=help_text,
-      hidden=hidden,
   )
 
 
@@ -7809,3 +7823,17 @@ def AddNetworkTierFlag(parser):
       choices=['premium', 'standard', 'network-default'],
       help=help_text,
   )
+
+
+def AddAcceleratorNetworkProfileFlag(parser, hidden=True):
+  parser.add_argument(
+      '--accelerator-network-profile',
+      help="""\
+      Accelerator Network Profile that will be used by the node pool.
+
+      Currently only the `auto` value is supported. A compatible Accelerator machine type needs to be specified with the `--machine-type` flag.
+      An Accelerator Network Profiles will be created if it does not exist.
+      """,
+      default=None,
+      choices=['auto'],
+      hidden=hidden)

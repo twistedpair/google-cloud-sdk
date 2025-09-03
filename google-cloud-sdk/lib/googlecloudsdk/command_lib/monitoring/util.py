@@ -565,6 +565,15 @@ def ParseSnooze(snooze_name, project=None):
   )
 
 
+def ParseAlert(alert_name, project=None):
+  project = project or properties.VALUES.core.project.Get(required=True)
+  return resources.REGISTRY.Parse(
+      alert_name,
+      params={'projectsId': project},
+      collection='monitoring.projects.alerts',
+  )
+
+
 def GetBaseSnoozeMessageFromArgs(args, snooze_class, update=False):
   """Returns the base snooze from args."""
   if args.IsSpecified('snooze_from_file'):

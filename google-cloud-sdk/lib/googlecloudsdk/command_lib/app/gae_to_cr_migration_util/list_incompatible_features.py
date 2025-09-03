@@ -44,7 +44,7 @@ def check_for_urlmap_conditions(
   for url_map in url_maps:
     if (
         input_type == feature_helper.InputType.ADMIN_API
-        and url_map.urlRegex == '.*'
+        and (url_map.urlRegex == '.*' or url_map.urlRegex == '/.*')
         and url_map.script.scriptPath == 'auto'
     ):
       continue
@@ -57,6 +57,18 @@ def check_for_urlmap_conditions(
     else:
       return False
   return True
+
+
+def get_length(val: any) -> int:
+  """Returns the length of the given value."""
+  if isinstance(val, list):
+    return len(val)
+  elif isinstance(val, str):
+    return len(val)
+  elif isinstance(val, bytes):
+    return len(val)
+  else:
+    return 0
 
 
 def list_incompatible_features(
@@ -109,20 +121,34 @@ def _check_for_incompatibility(
   input_key_value_pairs = util.flatten_keys(input_data, '')
   for key, val in input_key_value_pairs.items():
     # Check for unsupported features.
+    if key.startswith('build_env_variables'):
+      incompatible_list.append(unsupported_features['build_env_variables'])
+      continue
+    if key.startswith('buildEnvVariables'):
+      incompatible_list.append(unsupported_features['buildEnvVariables'])
+      continue
     if key in unsupported_features:
       if (
           key.startswith('inboundServices')
           or key.startswith('inbound_services')
-          and val
-      ):
+      ) and get_length(val) > 0:
         incompatible_list.append(unsupported_features[key])
+        continue
       if (
-          key.startswith('errorHandlers')
-          or key.startswith('error_handlers')
-          and val
-      ):
+          key.startswith('errorHandlers') or key.startswith('error_handlers')
+      ) and get_length(val) > 0:
         incompatible_list.append(unsupported_features[key])
+        continue
       if key == 'handlers' and not check_for_urlmap_conditions(val, input_type):
+        incompatible_list.append(unsupported_features[key])
+        continue
+      if key not in [
+          'handlers',
+          'inbound_services',
+          'error_handlers',
+          'inboundServices',
+          'errorHandlers',
+      ]:
         incompatible_list.append(unsupported_features[key])
     # Check for range_limited features.
     if key in range_limited_features:
@@ -130,7 +156,7 @@ def _check_for_incompatibility(
         incompatible_list.append(range_limited_features[key])
     # Check for value_restricted features.
     if key in value_restricted_features:
-      if not value_restricted_features[key].validate(val):
+      if not value_restricted_features[key].validate(key, val):
         incompatible_list.append(value_restricted_features[key])
   return incompatible_list
 
@@ -144,8 +170,8 @@ def _generate_output(
   print(f'List incompatible features output for {input_name}:\n')
   logging.info('list-incompatible-features output for %s:\n', input_name)
   if not incompatible_features:
-    print('No incompatibilities found.')
-    logging.info('No incompatibilities found.')
+    print('No incompatibilities found.\n')
+    logging.info('No incompatibilities found.\n')
     return
   major_features = []
   minor_features = []
@@ -156,12 +182,12 @@ def _generate_output(
       minor_features.append(feature)
   if minor_features:
     print(
-        'Summary:\n  minor: %s\nincompatible_features\n%s',
+        'Summary:\nminor: %s\nincompatible_features\n%s',
         len(minor_features),
         yaml.dump(_get_display_features(minor_features, input_type)),
     )
     logging.info(
-        'Summary:\n  minor: %s\nincompatible_features\n%s',
+        'Summary:\nminor: %s\nincompatible_features\n%s',
         len(minor_features),
         yaml.dump(_get_display_features(minor_features, input_type)),
     )
@@ -170,7 +196,7 @@ def _generate_output(
         _get_display_features(major_features, input_type)
     )
     error_message = (
-        f'Summary:\n  major: {len(major_features)}\n'
+        f'Summary:\nmajor: {len(major_features)}\n'
         f'incompatible_features\n{display_major_features}\n '
     )
     raise IncompatibleFeaturesFoundError(
@@ -181,14 +207,13 @@ def _generate_output(
 def _get_display_features(
     features: List[feature_helper.UnsupportedFeature],
     input_type: feature_helper.InputType
-) -> List[Dict[str, str]]:
+) -> Sequence[Dict[str, str]]:
   """Convert a List List[Tuple] to List[Object] in order to print desired out format."""
   features_display = []
   for feature in features:
     features_display.append({
-        'path': feature.path[input_type.value],
-        'severity': feature.severity,
         'message': feature.reason,
+        'category': feature.path[input_type.value],
+        'severity': feature.severity,
     })
   return features_display
-

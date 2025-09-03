@@ -55,6 +55,7 @@ class InstancesClient(object):
       is_private,
       ca_pool,
       enable_workforce_identity_federation,
+      psc_allowed_projects,
   ):
     """Create a new Secure Source Manager instance.
 
@@ -66,6 +67,8 @@ class InstancesClient(object):
       ca_pool: path of ca pool for private instance.
       enable_workforce_identity_federation: boolean indicator for workforce
         identity federation.
+      psc_allowed_projects: list of projects allowed to connect to the instance
+        via Private Service Connect.
 
     Returns:
       Created instance.
@@ -73,7 +76,9 @@ class InstancesClient(object):
     private_config = None
     if is_private:
       private_config = self.messages.PrivateConfig(
-          isPrivate=is_private, caPool=ca_pool
+          isPrivate=is_private,
+          caPool=ca_pool,
+          pscAllowedProjects=psc_allowed_projects,
       )
     workforce_identity_federation_config = None
     if enable_workforce_identity_federation:
@@ -91,7 +96,8 @@ class InstancesClient(object):
     create_req = self.messages.SecuresourcemanagerProjectsLocationsInstancesCreateRequest(
         instance=instance,
         instanceId=instance_ref.instancesId,
-        parent=instance_ref.Parent().RelativeName())
+        parent=instance_ref.Parent().RelativeName(),
+    )
     return self._service.Create(create_req)
 
   def Delete(self, instance_ref):
@@ -105,19 +111,23 @@ class InstancesClient(object):
       None
     """
     delete_req = self.messages.SecuresourcemanagerProjectsLocationsInstancesDeleteRequest(
-        name=instance_ref.RelativeName())
+        name=instance_ref.RelativeName()
+    )
     return self._service.Delete(delete_req)
 
   def GetOperationRef(self, operation):
     """Converts an operation to a resource that can be used with `waiter.WaitFor`."""
     return self._resource_parser.ParseRelativeName(
-        operation.name, 'securesourcemanager.projects.locations.operations')
+        operation.name, 'securesourcemanager.projects.locations.operations'
+    )
 
-  def WaitForOperation(self,
-                       operation_ref,
-                       message,
-                       has_result=True,
-                       max_wait=datetime.timedelta(seconds=600)):
+  def WaitForOperation(
+      self,
+      operation_ref,
+      message,
+      has_result=True,
+      max_wait=datetime.timedelta(seconds=600),
+  ):
     """Waits for a Secure Source Manager operation to complete.
 
       Polls the Secure Source Manager Operation service until the operation
@@ -127,11 +137,10 @@ class InstancesClient(object):
       operation_ref: a resource reference created by GetOperationRef describing
         the operation.
       message: a message to display to the user while they wait.
-      has_result: If True, the function will return the target of the
-        operation (i.e. the Secure Source Manager instance) when it completes.
-        If False, nothing will be returned (useful for Delete operations).
-      max_wait: The time to wait for the operation to complete before
-        returning.
+      has_result: If True, the function will return the target of the operation
+        (i.e. the Secure Source Manager instance) when it completes. If False,
+        nothing will be returned (useful for Delete operations).
+      max_wait: The time to wait for the operation to complete before returning.
 
     Returns:
       A Secure Source Manager resource or None

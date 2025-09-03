@@ -232,7 +232,7 @@ _TRANSFORMS = {
 }
 
 
-_TRANSFORMS_ALPHA = {
+_TRANSFORMS_BETA = {
     'trigger': _TransformTrigger,
     'state': _TransformState,
     'generation': _TransformGeneration,
@@ -246,5 +246,5 @@ def GetTransforms():
   return _TRANSFORMS
 
 
-def GetTransformsAlpha():
-  return _TRANSFORMS_ALPHA
+def GetTransformsBeta():
+  return _TRANSFORMS_BETA

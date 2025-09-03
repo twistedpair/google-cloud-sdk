@@ -60,7 +60,7 @@ def get_copy_task(
     fetch_source_fields_scope (FieldsScope|None): If present, refetch
       source_resource, populated with metadata determined by this FieldsScope.
       Useful for lazy or parallelized GET calls. Currently only implemented for
-      intra-cloud copies.
+      intra-cloud copies and daisy chain copies.
     force_daisy_chain (bool): If True, yields daisy chain copy tasks in place of
       intra-cloud copy tasks.
     posix_to_set (PosixAttributes|None): Triggers setting POSIX on result of
@@ -205,6 +205,7 @@ def get_copy_task(
           print_source_version=print_source_version,
           user_request_args=user_request_args,
           verbose=verbose,
+          fetch_source_fields_scope=fetch_source_fields_scope,
       )
     return intra_cloud_copy_task.IntraCloudCopyTask(
         source_resource,

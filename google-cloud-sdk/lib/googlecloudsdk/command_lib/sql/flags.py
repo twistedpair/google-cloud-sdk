@@ -375,12 +375,12 @@ def AddEnableFinalBackup(parser):
   )
 
 
-def AddFinalBackup(parser):
+def AddFinalBackup(parser, hidden=False):
   parser.add_argument(
       '--final-backup',
       required=False,
       action=arg_parsers.StoreTrueFalseAction,
-      hidden=True,
+      hidden=hidden,
       help=(
           'Enables the final backup to be taken at the time of instance'
           ' deletion.'
@@ -2750,14 +2750,14 @@ def AddUpgradeSqlNetworkArchitecture(parser):
   )
 
 
-def AddForceSqlNetworkArchitecture(parser):
+def AddForceSqlNetworkArchitecture(parser, hidden=False):
   """Adds --enforce-new-sql-network-architecture flag."""
   kwargs = _GetKwargsForBoolFlag(False)
   parser.add_argument(
       '--enforce-new-sql-network-architecture',
       required=False,
       help="""Force the instance to use the new network architecture.""",
-      hidden=True,
+      hidden=hidden,
       **kwargs
   )
 
@@ -3090,9 +3090,12 @@ def AddConnectionPoolFlags(parser, update=False):
   help_ = (
       'Comma-separated list of connection pool flags to set on the instance'
       ' connection pool. Use an equals sign to separate flag name and value.'
-      ' View the Instance Resource API for allowed flags. (e.g.,'
-      ' `--connection-pool-flags'
-      ' max_pool_size=1000,max_client_connections=2000`)'
+      ' More information on available flags can be found here:'
+      ' https://cloud.google.com/sql/docs/mysql/managed-connection-pooling#configuration-options'
+      ' for MySQL and'
+      ' https://cloud.google.com/sql/docs/postgres/managed-connection-pooling#configuration-options'
+      ' for PostgreSQL. (e.g.,'
+      ' `--connection-pool-flags max_pool_size=1000,max_client_connections=20`)'
   )
   if update:
     help_ += (

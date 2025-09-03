@@ -707,6 +707,28 @@ class _BaseInstances(object):
       settings.ipConfiguration.pscConfig.pscAutoConnections = (
           reducers.PscAutoConnections(sql_messages, args.psc_auto_connections)
       )
+    final_backup_configuration = reducers.FinalBackupConfiguration(
+        sql_messages,
+        instance,
+        final_backup_enabled=args.final_backup,
+        final_backup_retention_days=args.final_backup_retention_days,
+    )
+    if final_backup_configuration:
+      cls.AddFinalBackupConfigToSettings(settings, final_backup_configuration)
+
+    # MCP settings.
+    if args.IsKnownAndSpecified(
+        'enable_connection_pooling'
+    ) or args.IsKnownAndSpecified('connection_pool_flags'):
+      mcp_config = reducers.ConnectionPoolConfig(
+          sql_messages,
+          enable_connection_pooling=args.enable_connection_pooling,
+          connection_pool_flags=args.connection_pool_flags,
+          clear_connection_pool_flags=None,
+          current_config=None,
+      )
+      if mcp_config is not None:
+        settings.connectionPoolConfig = mcp_config
 
     # BETA args.
     if IsBetaOrNewer(release_track):
@@ -719,32 +741,12 @@ class _BaseInstances(object):
           settings.ipConfiguration = sql_messages.IpConfiguration()
         settings.ipConfiguration.allocatedIpRange = args.allocated_ip_range_name
 
-      # MCP settings.
-      mcp_config = reducers.ConnectionPoolConfig(
-          sql_messages,
-          enable_connection_pooling=args.enable_connection_pooling,
-          connection_pool_flags=args.connection_pool_flags,
-          clear_connection_pool_flags=None,
-          current_config=None,
-      )
-      if mcp_config is not None:
-        settings.connectionPoolConfig = mcp_config
-
       db_aligned_atomic_writes_config = reducers.DbAlignedAtomicWritesConfig(
           sql_messages,
           db_aligned_atomic_writes=args.enable_db_aligned_atomic_writes,
       )
       if db_aligned_atomic_writes_config is not None:
         settings.dbAlignedAtomicWritesConfig = db_aligned_atomic_writes_config
-
-      final_backup_configuration = reducers.FinalBackupConfiguration(
-          sql_messages,
-          instance,
-          final_backup_enabled=args.final_backup,
-          final_backup_retention_days=args.final_backup_retention_days,
-      )
-      if final_backup_configuration:
-        cls.AddFinalBackupConfigToSettings(settings, final_backup_configuration)
 
     # ALPHA args.
     if _IsAlpha(release_track):
@@ -870,6 +872,26 @@ class _BaseInstances(object):
     if args.time_zone is not None:
       settings.timeZone = args.time_zone
 
+    final_backup_configuration = reducers.FinalBackupConfiguration(
+        sql_messages,
+        instance,
+        final_backup_enabled=args.final_backup,
+        final_backup_retention_days=args.final_backup_retention_days,
+    )
+    if final_backup_configuration:
+      cls.AddFinalBackupConfigToSettings(settings, final_backup_configuration)
+
+    # MCP settings.
+    updated_config = reducers.ConnectionPoolConfig(
+        sql_messages,
+        enable_connection_pooling=args.enable_connection_pooling,
+        connection_pool_flags=args.connection_pool_flags,
+        clear_connection_pool_flags=args.clear_connection_pool_flags,
+        current_config=original_settings.connectionPoolConfig,
+    )
+    if updated_config is not None:
+      settings.connectionPoolConfig = updated_config
+
     # BETA args.
     if IsBetaOrNewer(release_track):
       labels_diff = labels_util.ExplicitNullificationDiff.FromUpdateArgs(args)
@@ -902,26 +924,6 @@ class _BaseInstances(object):
         if not settings.ipConfiguration.pscConfig:
           settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
         settings.ipConfiguration.pscConfig.pscAutoConnections = []
-
-      # MCP settings.
-      updated_config = reducers.ConnectionPoolConfig(
-          sql_messages,
-          enable_connection_pooling=args.enable_connection_pooling,
-          connection_pool_flags=args.connection_pool_flags,
-          clear_connection_pool_flags=args.clear_connection_pool_flags,
-          current_config=original_settings.connectionPoolConfig,
-      )
-      if updated_config is not None:
-        settings.connectionPoolConfig = updated_config
-
-      final_backup_configuration = reducers.FinalBackupConfiguration(
-          sql_messages,
-          instance,
-          final_backup_enabled=args.final_backup,
-          final_backup_retention_days=args.final_backup_retention_days,
-      )
-      if final_backup_configuration:
-        cls.AddFinalBackupConfigToSettings(settings, final_backup_configuration)
 
       if args.IsKnownAndSpecified('unc_mappings'):
         settings.uncMappings = reducers.UncMappings(

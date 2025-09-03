@@ -302,7 +302,13 @@ def _parse_object_tags_if_any(
   # It is guaranteed that 'Key' and 'Value' are in tag dict. See format here:
   # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3/client/get_object_tagging.html
   return {
-      tag['Key']: {'value': tag['Value']} for tag in obj_tags
+      tag['Key']: {
+          metadata_util.CONTEXT_TYPE_LITERAL: (
+              metadata_util.ContextType.CUSTOM.value
+          ),
+          metadata_util.CONTEXT_VALUE_LITERAL: tag['Value'],
+      }
+      for tag in obj_tags
   }
 
 
@@ -355,7 +361,7 @@ def get_object_resource_from_xml_response(scheme,
       content_language=object_dict.get('ContentLanguage'),
       content_type=object_dict.get('ContentType'),
       creation_time=object_dict.get('LastModified'),
-      custom_contexts=_parse_object_tags_if_any(object_dict),
+      contexts=_parse_object_tags_if_any(object_dict),
       custom_fields=object_dict.get('Metadata'),
       encryption_algorithm=encryption_algorithm,
       etag=etag,

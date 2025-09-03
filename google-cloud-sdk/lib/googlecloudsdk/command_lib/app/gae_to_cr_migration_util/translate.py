@@ -45,7 +45,16 @@ def translate(appyaml: str, service: str, version: str, entrypoint_command: str)
   flags: Sequence[str] = _get_cloud_run_flags(
       input_data, input_flatten_as_appyaml, input_type, entrypoint_command
   )
-  return _generate_output(target_service, flags)
+  if input_type == feature_helper.InputType.APP_YAML:
+    source_path = appyaml.rsplit('/app.yaml', 1)[0] if appyaml else ''
+    if not source_path:
+      source_path = '.'
+  else:
+    source_path = input(
+        'Is the source code located in the current directory? If not, please'
+        ' provide its path relative to the current directory: '
+    )
+  return _generate_output(target_service, flags, source_path)
 
 
 def _convert_admin_api_input_to_app_yaml(
@@ -126,7 +135,7 @@ def _get_cloud_run_flags(
           supported_features_app_yaml,
           entrypoint_command,
       )
-      + required_flags.translate_add_required_flags()
+      + required_flags.translate_add_required_flags(input_data)
   )
 
 
@@ -139,12 +148,10 @@ def _get_service_name(input_data: Mapping[str, any]) -> str:
   return 'default'
 
 
-def _generate_output(service_name: str, flags: Sequence[str]) -> Sequence[str]:
+def _generate_output(
+    service_name: str, flags: Sequence[str], source_path: str
+) -> Sequence[str]:
   """Generates the output for the Cloud Run deploy command."""
-  source_path = input(
-      'Is the source code located in the current directory? If not, please'
-      ' provide its path relative to the current directory: '
-  )
   output = [
       'gcloud',
       'run',

@@ -52,6 +52,9 @@ S3_RESOURCE_ERROR_FIELDS = {
     'recovery_point_objective': 'Setting Recovery Point Objective',
     'retention_period': 'Setting Retention Period',
     'retention_period_to_be_locked': 'Locking Retention Period',
+    'custom_contexts_to_set': 'Setting Custom Contexts',
+    'custom_contexts_to_remove': 'Removing Custom Contexts',
+    'custom_contexts_to_update': 'Updating Custom Contexts',
 }
 S3_RESOURCE_WARNING_FIELDS = {
     'custom_time': 'Setting Custom Time',

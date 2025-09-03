@@ -4,27 +4,27 @@ unsupported:
     admin_api: inboundServices
     app_yaml: inbound_services
   severity: major
-  reason: Cloud Run does not support GAE bundled services.
+  reason: Cloud Run does not support GAE Inbound Services.
 - path:
     admin_api: handlers
     app_yaml: handlers
   severity: major
-  reason: No support for routing based on url patterns.
+  reason: Cloud Run does not support GAE Handlers.
 - path:
     admin_api: errorHandlers
     app_yaml: error_handlers
   severity: major
-  reason: No support for routing based on url patterns.
+  reason: Cloud Run does not support GAE Error Handlers.
 - path:
     admin_api: appEngineApis
     app_yaml: app_engine_apis
   severity: major
-  reason: No support for App Engine bundled services.
+  reason: Cloud Run does not support GAE Bundled Services.
 - path:
     admin_api: buildEnvVariables
     app_yaml: build_env_variables
   severity: major
-  reason: No support for passing environment vars to buildpacks at the time of building.
+  reason: No support for passing environment vars to configure buildpacks.
 range_limited:
 - path:
     admin_api: resources.cpu
@@ -118,7 +118,7 @@ value_limited:
   allowed_values:
   - 3
   severity: major
-  reason: Cloud Run supports Python 3 runtime only.
+  reason: Cloud Run only supports second generation App Engine runtimes. Older runtimes are not compatible.
 - path:
     admin_api: runtime
     app_yaml: runtime
@@ -129,10 +129,12 @@ value_limited:
   - java11
   - java17
   - java21
+  - python27
   - python39
   - python310
   - python311
   - python312
+  - python313
   - php55
   - php72
   - php73
@@ -176,10 +178,12 @@ value_limited:
   - java11
   - java17
   - java21
+  - python37
   - python39
   - python310
   - python311
   - python312
+  - python313
   - php72
   - php73
   - php74
@@ -195,7 +199,6 @@ value_limited:
   - ruby32
   - ruby33
   - ruby34
-  - go111
   - go112
   - go113
   - go114
@@ -217,7 +220,7 @@ value_limited:
   - nodejs20
   - nodejs22
   severity: major
-  reason: Cloud Run supports App Engine standard Gen2 runtimes. Older runtimes are not compatible.
+  reason: Cloud Run only supports second generation App Engine runtimes. Older runtimes are not compatible.
 supported:
 - path:
     admin_api: entrypoint.shell

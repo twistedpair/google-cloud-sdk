@@ -1036,6 +1036,13 @@ class CLI(object):
     Raises:
       exc or a core.exceptions variant that does not produce a stack trace.
     """
+    if (
+        'CLOUDSDK_CORE_DRY_RUN' in os.environ
+        and os.environ['CLOUDSDK_CORE_DRY_RUN'] == '1'
+    ):
+      # in dry run mode, we want to raise exception to get reason of failure
+      raise exc
+
     error_extra_info = {'error_code': getattr(exc, 'exit_code', 1)}
 
     # Returns exc.payload.status if available. Otherwise, None.

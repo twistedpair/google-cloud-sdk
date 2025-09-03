@@ -527,6 +527,22 @@ def AddZoneStorageKMSKey(parser):
   )
 
 
+def AddEnableRobinCNS(parser):
+  parser.add_argument(
+      '--enable-robin-cns',
+      action='store_true',
+      hidden=True,
+      help="""
+      If set, Robin CNS will be enabled on the cluster.
+
+      WARNING:
+      Enabling Robin CNS is irreversible. Once enabled, it cannot be disabled.
+      Enabling Robin CNS will take over all unused local Persistent Volumes (PVs)
+      in the cluster. Any data on these PVs will be permanently lost.
+      """,
+  )
+
+
 def AddContainerDefaultRuntimeClass(parser):
   parser.add_argument(
       '--container-default-runtime-class',

@@ -424,8 +424,9 @@ class AppengineAppsLocationsListRequest(_messages.Message):
   r"""A AppengineAppsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like "displayName=tokyo", and is
       documented in more detail in AIP-160 (https://google.aip.dev/160).
@@ -1157,8 +1158,9 @@ class AppengineProjectsLocationsListRequest(_messages.Message):
   r"""A AppengineProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like "displayName=tokyo", and is
       documented in more detail in AIP-160 (https://google.aip.dev/160).
@@ -1888,40 +1890,6 @@ class Deployment(_messages.Message):
   container = _messages.MessageField('ContainerInfo', 3)
   files = _messages.MessageField('FilesValue', 4)
   zip = _messages.MessageField('ZipInfo', 5)
-
-
-class DirectVpcConfig(_messages.Message):
-  r"""Direct VPC configuration.
-
-  Enums:
-    EgressSettingValueValuesEnum: The egress setting for the subnetwork,
-      controlling what traffic is diverted through it.
-
-  Fields:
-    egressSetting: The egress setting for the subnetwork, controlling what
-      traffic is diverted through it.
-    subnetworkKey: The subnetwork key.
-    tags: The network tags to apply to the instance.
-  """
-
-  class EgressSettingValueValuesEnum(_messages.Enum):
-    r"""The egress setting for the subnetwork, controlling what traffic is
-    diverted through it.
-
-    Values:
-      EGRESS_SETTING_UNSPECIFIED: No value set; apply default behavior
-      ALL_TRAFFIC: Force all traffic to egress through the NetworkInterface
-        (and configured VPC Network)
-      PRIVATE_IP_RANGES: Force all Private IP Space traffic to egress through
-        NetworkInterface (and configured VPC Network)
-    """
-    EGRESS_SETTING_UNSPECIFIED = 0
-    ALL_TRAFFIC = 1
-    PRIVATE_IP_RANGES = 2
-
-  egressSetting = _messages.EnumField('EgressSettingValueValuesEnum', 1)
-  subnetworkKey = _messages.MessageField('SubnetworkKey', 2)
-  tags = _messages.MessageField('VpcNetworkTag', 3, repeated=True)
 
 
 class DiskUtilization(_messages.Message):
@@ -3970,12 +3938,12 @@ class SubnetworkKey(_messages.Message):
   Fields:
     hostProjectId: Project id (name not number) of the project that hosts the
       network
-    subnetworkName: Short name of the subnetwork. e.g. SUBNET instead of
+    subnet: Short name of the subnetwork. e.g. SUBNET instead of
       projects/{PROJECT_NAME}/regions/{REGION}/subnetworks/{SUBNET}
   """
 
   hostProjectId = _messages.StringField(1)
-  subnetworkName = _messages.StringField(2)
+  subnet = _messages.StringField(2)
 
 
 class TestIamPermissionsRequest(_messages.Message):
@@ -4286,7 +4254,6 @@ class Version(_messages.Message):
       if view=FULL is set.
     deployment: Code and application artifacts that make up this version.Only
       returned in GET requests if view=FULL is set.
-    directVpcConfig: Enables Direct VPC connectivity for standard apps.
     diskUsageBytes: Output only. Total size in bytes of all the files that are
       included in this version and currently hosted on the App Engine
       disk.@OutputOnly
@@ -4361,6 +4328,7 @@ class Version(_messages.Message):
       "https://myversion-dot-myservice-dot-myapp.appspot.com"@OutputOnly
     vm: Whether to deploy this version in a container on a virtual machine.
     vpcAccessConnector: Enables VPC connectivity for standard apps.
+    vpcEgress: Enables VPC egress connectivity for standard apps.
     zones: The Google Compute Engine zones that are supported by this version
       in the App Engine flexible environment. Deprecated.
   """
@@ -4579,40 +4547,40 @@ class Version(_messages.Message):
   createdBy = _messages.StringField(9)
   defaultExpiration = _messages.StringField(10)
   deployment = _messages.MessageField('Deployment', 11)
-  directVpcConfig = _messages.MessageField('DirectVpcConfig', 12)
-  diskUsageBytes = _messages.IntegerField(13)
-  endpointsApiService = _messages.MessageField('EndpointsApiService', 14)
-  entrypoint = _messages.MessageField('Entrypoint', 15)
-  env = _messages.StringField(16)
-  envVariables = _messages.MessageField('EnvVariablesValue', 17)
-  errorHandlers = _messages.MessageField('ErrorHandler', 18, repeated=True)
-  flexibleRuntimeSettings = _messages.MessageField('FlexibleRuntimeSettings', 19)
-  generatedCustomerMetadata = _messages.MessageField('GeneratedCustomerMetadataValue', 20)
-  handlers = _messages.MessageField('UrlMap', 21, repeated=True)
-  healthCheck = _messages.MessageField('HealthCheck', 22)
-  id = _messages.StringField(23)
-  inboundServices = _messages.EnumField('InboundServicesValueListEntryValuesEnum', 24, repeated=True)
-  instanceClass = _messages.StringField(25)
-  instanceStats = _messages.MessageField('InstanceStats', 26)
-  libraries = _messages.MessageField('Library', 27, repeated=True)
-  lifecycle = _messages.EnumField('LifecycleValueValuesEnum', 28)
-  livenessCheck = _messages.MessageField('LivenessCheck', 29)
-  manualScaling = _messages.MessageField('ManualScaling', 30)
-  name = _messages.StringField(31)
-  network = _messages.MessageField('Network', 32)
-  nobuildFilesRegex = _messages.StringField(33)
-  readinessCheck = _messages.MessageField('ReadinessCheck', 34)
-  resources = _messages.MessageField('Resources', 35)
-  runtime = _messages.StringField(36)
-  runtimeApiVersion = _messages.StringField(37)
-  runtimeChannel = _messages.StringField(38)
-  runtimeMainExecutablePath = _messages.StringField(39)
-  serviceAccount = _messages.StringField(40)
-  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 41)
-  threadsafe = _messages.BooleanField(42)
-  versionUrl = _messages.StringField(43)
-  vm = _messages.BooleanField(44)
-  vpcAccessConnector = _messages.MessageField('VpcAccessConnector', 45)
+  diskUsageBytes = _messages.IntegerField(12)
+  endpointsApiService = _messages.MessageField('EndpointsApiService', 13)
+  entrypoint = _messages.MessageField('Entrypoint', 14)
+  env = _messages.StringField(15)
+  envVariables = _messages.MessageField('EnvVariablesValue', 16)
+  errorHandlers = _messages.MessageField('ErrorHandler', 17, repeated=True)
+  flexibleRuntimeSettings = _messages.MessageField('FlexibleRuntimeSettings', 18)
+  generatedCustomerMetadata = _messages.MessageField('GeneratedCustomerMetadataValue', 19)
+  handlers = _messages.MessageField('UrlMap', 20, repeated=True)
+  healthCheck = _messages.MessageField('HealthCheck', 21)
+  id = _messages.StringField(22)
+  inboundServices = _messages.EnumField('InboundServicesValueListEntryValuesEnum', 23, repeated=True)
+  instanceClass = _messages.StringField(24)
+  instanceStats = _messages.MessageField('InstanceStats', 25)
+  libraries = _messages.MessageField('Library', 26, repeated=True)
+  lifecycle = _messages.EnumField('LifecycleValueValuesEnum', 27)
+  livenessCheck = _messages.MessageField('LivenessCheck', 28)
+  manualScaling = _messages.MessageField('ManualScaling', 29)
+  name = _messages.StringField(30)
+  network = _messages.MessageField('Network', 31)
+  nobuildFilesRegex = _messages.StringField(32)
+  readinessCheck = _messages.MessageField('ReadinessCheck', 33)
+  resources = _messages.MessageField('Resources', 34)
+  runtime = _messages.StringField(35)
+  runtimeApiVersion = _messages.StringField(36)
+  runtimeChannel = _messages.StringField(37)
+  runtimeMainExecutablePath = _messages.StringField(38)
+  serviceAccount = _messages.StringField(39)
+  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 40)
+  threadsafe = _messages.BooleanField(41)
+  versionUrl = _messages.StringField(42)
+  vm = _messages.BooleanField(43)
+  vpcAccessConnector = _messages.MessageField('VpcAccessConnector', 44)
+  vpcEgress = _messages.MessageField('VpcEgress', 45)
   zones = _messages.StringField(46, repeated=True)
 
 
@@ -4662,6 +4630,40 @@ class VpcAccessConnector(_messages.Message):
 
   egressSetting = _messages.EnumField('EgressSettingValueValuesEnum', 1)
   name = _messages.StringField(2)
+
+
+class VpcEgress(_messages.Message):
+  r"""Vpc Egress configuration.
+
+  Enums:
+    EgressSettingValueValuesEnum: The egress setting for the subnetwork,
+      controlling what traffic is diverted through it.
+
+  Fields:
+    egressSetting: The egress setting for the subnetwork, controlling what
+      traffic is diverted through it.
+    networkTags: The network tags to apply to the instance.
+    subnetworkKey: The subnetwork key.
+  """
+
+  class EgressSettingValueValuesEnum(_messages.Enum):
+    r"""The egress setting for the subnetwork, controlling what traffic is
+    diverted through it.
+
+    Values:
+      EGRESS_SETTING_UNSPECIFIED: No value set; apply default behavior
+      ALL_TRAFFIC: Force all traffic to egress through the NetworkInterface
+        (and configured VPC Network)
+      PRIVATE_IP_RANGES: Force all Private IP Space traffic to egress through
+        NetworkInterface (and configured VPC Network)
+    """
+    EGRESS_SETTING_UNSPECIFIED = 0
+    ALL_TRAFFIC = 1
+    PRIVATE_IP_RANGES = 2
+
+  egressSetting = _messages.EnumField('EgressSettingValueValuesEnum', 1)
+  networkTags = _messages.MessageField('VpcNetworkTag', 2, repeated=True)
+  subnetworkKey = _messages.MessageField('SubnetworkKey', 3)
 
 
 class VpcNetworkTag(_messages.Message):

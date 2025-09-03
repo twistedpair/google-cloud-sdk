@@ -1159,11 +1159,7 @@ class Registry(object):
     if line:
       if line.startswith('https://') or line.startswith('http://'):
         try:
-          ref = self.ParseURL(
-              line,
-              # Propagate API version identifier for interface-based versioned
-              # clients (where it can't be inferred from the URL).
-              api_version if _IsInterfaceBasedVersion(api_version) else None)
+          ref = self.ParseURL(line, api_version)
         except InvalidResourceException as e:
           bucket = None
 
@@ -1317,20 +1313,3 @@ def _GetApiBaseUrl(base_url, api_name, api_version):
       api_base_url += api_version + '/'
     api_base_url = apis_internal.UniversifyAddress(api_base_url)
   return api_base_url
-
-
-def _IsInterfaceBasedVersion(api_version):
-  """Returns whether the version represents an interface-based versioned API.
-
-  By convention, we expect interface-based versioned API clients to be
-  configured such that their version identifiers begin with 'v_' e.g.
-  'v_20240101_preview'. Anything else (e.g. 'v1', 'alpha', etc.) is assumed to
-  be a traditional channel-based version.
-
-  Args:
-    api_version: str, API version identifier.
-
-  Returns:
-    bool, True for interface-based versions; False for channel-based versions.
-  """
-  return api_version and api_version.startswith('v_')

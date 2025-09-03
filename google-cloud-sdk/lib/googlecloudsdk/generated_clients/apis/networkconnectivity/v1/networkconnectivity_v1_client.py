@@ -1193,7 +1193,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a Destination in a given project and location.
+      r"""Creates a `Destination` resource in a specified project and location.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsDestinationsCreateRequest) input message
@@ -1220,7 +1220,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Destination.
+      r"""Deletes a `Destination` resource.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsDestinationsDeleteRequest) input message
@@ -1247,7 +1247,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Destination.
+      r"""Gets the details of a `Destination` resource.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsDestinationsGetRequest) input message
@@ -1274,7 +1274,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Destinations in a given project and location.
+      r"""Lists the `Destination` resources in a specified project and location.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsDestinationsListRequest) input message
@@ -1301,7 +1301,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a Destination in a given project and location.
+      r"""Updates a `Destination` resource in a specified project and location.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsDestinationsPatchRequest) input message
@@ -1338,7 +1338,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a MulticloudDataTransferConfig in a given project and location.
+      r"""Creates a `MulticloudDataTransferConfig` resource in a specified project and location.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsCreateRequest) input message
@@ -1365,7 +1365,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single MulticloudDataTransferConfig.
+      r"""Deletes a `MulticloudDataTransferConfig` resource.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsDeleteRequest) input message
@@ -1392,7 +1392,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single MulticloudDataTransferConfig.
+      r"""Gets the details of a `MulticloudDataTransferConfig` resource.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsGetRequest) input message
@@ -1419,7 +1419,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists MulticloudDataTransferConfigs in a given project and location.
+      r"""Lists the `MulticloudDataTransferConfig` resources in a specified project and location.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsListRequest) input message
@@ -1446,7 +1446,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a MulticloudDataTransferConfig in a given project and location.
+      r"""Updates a `MulticloudDataTransferConfig` resource in a specified project and location.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsPatchRequest) input message
@@ -1483,7 +1483,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single MulticloudDataTransferSupportedServices.
+      r"""Gets the details of a service that is supported for Data Transfer Essentials.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsMulticloudDataTransferSupportedServicesGetRequest) input message
@@ -1510,7 +1510,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the supported services for Multicloud Data Transfer. This is a passthrough method.
+      r"""Lists the services in the project for a region that are supported for Data Transfer Essentials.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsMulticloudDataTransferSupportedServicesListRequest) input message

@@ -39,7 +39,7 @@ def AddCpDetailsFlag(parser):
   """Adds the source and destination parameters to the given parser."""
   cp_params_group = parser.add_group(required=False, mutex=True)
   AddHomogeneousSourceDetailsFlag(cp_params_group)
-  AddDestinationOrHeterogeneousSourceDetailsFlag(cp_params_group)
+  AddHeterogeneousSourceOrDagDetailsFlag(cp_params_group)
 
 
 def AddCloudSqlInstanceFlags(parser):
@@ -60,8 +60,8 @@ def AddCloudSqlInstanceFlags(parser):
   cp_flags.AddPasswordFlagGroup(cp_params_group, required=True)
 
 
-def AddDestinationOrHeterogeneousSourceDetailsFlag(parser):
-  """Adds the destination connection profile parameters to the given parser."""
+def AddHeterogeneousSourceOrDagDetailsFlag(parser):
+  """Adds heterogeneous source or DAG HMM source/destination parameters to the given parser."""
   hetero_cp_params_group = parser.add_group()
   cp_flags.AddHostFlag(hetero_cp_params_group, required=True)
   cp_flags.AddPortFlag(hetero_cp_params_group, required=True)

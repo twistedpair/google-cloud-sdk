@@ -823,7 +823,7 @@ class JsonClient(cloud_api.CloudApi):
     if getattr(source_resources[0], 'metadata', None):
       final_destination_metadata = metadata_util.copy_object_metadata(
           source_resources[0].metadata, base_destination_metadata,
-          request_config)
+          request_config, method_type=metadata_util.MethodType.OBJECT_COMPOSE)
     else:
       final_destination_metadata = base_destination_metadata
     metadata_util.update_object_metadata_from_request_config(

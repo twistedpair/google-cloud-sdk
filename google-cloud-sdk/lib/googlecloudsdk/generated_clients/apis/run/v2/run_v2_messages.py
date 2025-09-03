@@ -2285,10 +2285,10 @@ class GoogleCloudRunV2SecretVolumeSource(_messages.Message):
       affect the file mode, like fsGroup, and as a result, other mode bits
       could be set.
     items: If unspecified, the volume will expose a file whose name is the
-      secret, relative to VolumeMount.mount_path. If specified, the key will
-      be used as the version to fetch from Cloud Secret Manager and the path
-      will be the name of the file exposed in the volume. When items are
-      defined, they must specify a path and a version.
+      secret, relative to VolumeMount.mount_path + VolumeMount.sub_path. If
+      specified, the key will be used as the version to fetch from Cloud
+      Secret Manager and the path will be the name of the file exposed in the
+      volume. When items are defined, they must specify a path and a version.
     secret: Required. The name of the secret in Cloud Secret Manager. Format:
       {secret} if the secret is in the same project.
       projects/{project}/secrets/{secret} if the secret is in a different
@@ -2720,6 +2720,10 @@ class GoogleCloudRunV2StorageSource(_messages.Message):
 class GoogleCloudRunV2SubmitBuildRequest(_messages.Message):
   r"""Request message for submitting a Build.
 
+  Enums:
+    ReleaseTrackValueValuesEnum: Optional. The release track of the client
+      that initiated the build request.
+
   Fields:
     buildpackBuild: Build the source using Buildpacks.
     dockerBuild: Build the source using Docker. This means the source has a
@@ -2729,6 +2733,8 @@ class GoogleCloudRunV2SubmitBuildRequest(_messages.Message):
       build. If left blank, cloudbuild will use a sensible default. Currently
       only E2_HIGHCPU_8 is supported. If worker_pool is set, this field will
       be ignored.
+    releaseTrack: Optional. The release track of the client that initiated the
+      build request.
     serviceAccount: Optional. The service account to use for the build. If not
       set, the default Cloud Build service account for the project will be
       used.
@@ -2742,14 +2748,60 @@ class GoogleCloudRunV2SubmitBuildRequest(_messages.Message):
       the worker pool.
   """
 
+  class ReleaseTrackValueValuesEnum(_messages.Enum):
+    r"""Optional. The release track of the client that initiated the build
+    request.
+
+    Values:
+      LAUNCH_STAGE_UNSPECIFIED: Do not use this default value.
+      UNIMPLEMENTED: The feature is not yet implemented. Users can not use it.
+      PRELAUNCH: Prelaunch features are hidden from users and are only visible
+        internally.
+      EARLY_ACCESS: Early Access features are limited to a closed group of
+        testers. To use these features, you must sign up in advance and sign a
+        Trusted Tester agreement (which includes confidentiality provisions).
+        These features may be unstable, changed in backward-incompatible ways,
+        and are not guaranteed to be released.
+      ALPHA: Alpha is a limited availability test for releases before they are
+        cleared for widespread use. By Alpha, all significant design issues
+        are resolved and we are in the process of verifying functionality.
+        Alpha customers need to apply for access, agree to applicable terms,
+        and have their projects allowlisted. Alpha releases don't have to be
+        feature complete, no SLAs are provided, and there are no technical
+        support obligations, but they will be far enough along that customers
+        can actually use them in test environments or for limited-use tests --
+        just like they would in normal production cases.
+      BETA: Beta is the point at which we are ready to open a release for any
+        customer to use. There are no SLA or technical support obligations in
+        a Beta release. Products will be complete from a feature perspective,
+        but may have some open outstanding issues. Beta releases are suitable
+        for limited production use cases.
+      GA: GA features are open to all developers and are considered stable and
+        fully qualified for production use.
+      DEPRECATED: Deprecated features are scheduled to be shut down and
+        removed. For more information, see the "Deprecation Policy" section of
+        our [Terms of Service](https://cloud.google.com/terms/) and the
+        [Google Cloud Platform Subject to the Deprecation
+        Policy](https://cloud.google.com/terms/deprecation) documentation.
+    """
+    LAUNCH_STAGE_UNSPECIFIED = 0
+    UNIMPLEMENTED = 1
+    PRELAUNCH = 2
+    EARLY_ACCESS = 3
+    ALPHA = 4
+    BETA = 5
+    GA = 6
+    DEPRECATED = 7
+
   buildpackBuild = _messages.MessageField('GoogleCloudRunV2BuildpacksBuild', 1)
   dockerBuild = _messages.MessageField('GoogleCloudRunV2DockerBuild', 2)
   imageUri = _messages.StringField(3)
   machineType = _messages.StringField(4)
-  serviceAccount = _messages.StringField(5)
-  storageSource = _messages.MessageField('GoogleCloudRunV2StorageSource', 6)
-  tags = _messages.StringField(7, repeated=True)
-  workerPool = _messages.StringField(8)
+  releaseTrack = _messages.EnumField('ReleaseTrackValueValuesEnum', 5)
+  serviceAccount = _messages.StringField(6)
+  storageSource = _messages.MessageField('GoogleCloudRunV2StorageSource', 7)
+  tags = _messages.StringField(8, repeated=True)
+  workerPool = _messages.StringField(9)
 
 
 class GoogleCloudRunV2SubmitBuildResponse(_messages.Message):
@@ -3197,10 +3249,13 @@ class GoogleCloudRunV2VolumeMount(_messages.Message):
       on Cloud SQL volumes, visit
       https://cloud.google.com/sql/docs/mysql/connect-run
     name: Required. This must match the Name of a Volume.
+    subPath: Optional. Path within the volume from which the container's
+      volume should be mounted. Defaults to "" (volume's root).
   """
 
   mountPath = _messages.StringField(1)
   name = _messages.StringField(2)
+  subPath = _messages.StringField(3)
 
 
 class GoogleCloudRunV2VpcAccess(_messages.Message):
@@ -3948,6 +4003,7 @@ class GoogleDevtoolsCloudbuildV1Build(_messages.Message):
     queueTtl: TTL in queue for this build. If provided and the build is
       enqueued longer than this value, the build will expire and the build
       status will be `EXPIRED`. The TTL starts ticking from create_time.
+    remoteConfig: Optional. Remote config for the build.
     results: Output only. Results of the build.
     secrets: Secrets to decrypt using Cloud Key Management Service. Note:
       Secret Manager is the recommended technique for managing sensitive data
@@ -4079,20 +4135,21 @@ class GoogleDevtoolsCloudbuildV1Build(_messages.Message):
   options = _messages.MessageField('GoogleDevtoolsCloudbuildV1BuildOptions', 15)
   projectId = _messages.StringField(16)
   queueTtl = _messages.StringField(17)
-  results = _messages.MessageField('GoogleDevtoolsCloudbuildV1Results', 18)
-  secrets = _messages.MessageField('GoogleDevtoolsCloudbuildV1Secret', 19, repeated=True)
-  serviceAccount = _messages.StringField(20)
-  source = _messages.MessageField('GoogleDevtoolsCloudbuildV1Source', 21)
-  sourceProvenance = _messages.MessageField('GoogleDevtoolsCloudbuildV1SourceProvenance', 22)
-  startTime = _messages.StringField(23)
-  status = _messages.EnumField('StatusValueValuesEnum', 24)
-  statusDetail = _messages.StringField(25)
-  steps = _messages.MessageField('GoogleDevtoolsCloudbuildV1BuildStep', 26, repeated=True)
-  substitutions = _messages.MessageField('SubstitutionsValue', 27)
-  tags = _messages.StringField(28, repeated=True)
-  timeout = _messages.StringField(29)
-  timing = _messages.MessageField('TimingValue', 30)
-  warnings = _messages.MessageField('GoogleDevtoolsCloudbuildV1Warning', 31, repeated=True)
+  remoteConfig = _messages.StringField(18)
+  results = _messages.MessageField('GoogleDevtoolsCloudbuildV1Results', 19)
+  secrets = _messages.MessageField('GoogleDevtoolsCloudbuildV1Secret', 20, repeated=True)
+  serviceAccount = _messages.StringField(21)
+  source = _messages.MessageField('GoogleDevtoolsCloudbuildV1Source', 22)
+  sourceProvenance = _messages.MessageField('GoogleDevtoolsCloudbuildV1SourceProvenance', 23)
+  startTime = _messages.StringField(24)
+  status = _messages.EnumField('StatusValueValuesEnum', 25)
+  statusDetail = _messages.StringField(26)
+  steps = _messages.MessageField('GoogleDevtoolsCloudbuildV1BuildStep', 27, repeated=True)
+  substitutions = _messages.MessageField('SubstitutionsValue', 28)
+  tags = _messages.StringField(29, repeated=True)
+  timeout = _messages.StringField(30)
+  timing = _messages.MessageField('TimingValue', 31)
+  warnings = _messages.MessageField('GoogleDevtoolsCloudbuildV1Warning', 32, repeated=True)
 
 
 class GoogleDevtoolsCloudbuildV1BuildApproval(_messages.Message):
@@ -4399,6 +4456,7 @@ class GoogleDevtoolsCloudbuildV1BuildStep(_messages.Message):
       to use as the name for a later build step.
     pullTiming: Output only. Stores timing information for pulling this build
       step's builder image only.
+    remoteConfig: Optional. Remote config to be used for this build step.
     results: Declaration of results for this build step.
     script: A shell script to be executed in the step. When script is
       provided, the user cannot specify the entrypoint or args.
@@ -4465,14 +4523,15 @@ class GoogleDevtoolsCloudbuildV1BuildStep(_messages.Message):
   id = _messages.StringField(9)
   name = _messages.StringField(10)
   pullTiming = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 11)
-  results = _messages.MessageField('GoogleDevtoolsCloudbuildV1StepResult', 12, repeated=True)
-  script = _messages.StringField(13)
-  secretEnv = _messages.StringField(14, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 15)
-  timeout = _messages.StringField(16)
-  timing = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 17)
-  volumes = _messages.MessageField('GoogleDevtoolsCloudbuildV1Volume', 18, repeated=True)
-  waitFor = _messages.StringField(19, repeated=True)
+  remoteConfig = _messages.StringField(12)
+  results = _messages.MessageField('GoogleDevtoolsCloudbuildV1StepResult', 13, repeated=True)
+  script = _messages.StringField(14)
+  secretEnv = _messages.StringField(15, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 16)
+  timeout = _messages.StringField(17)
+  timing = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 18)
+  volumes = _messages.MessageField('GoogleDevtoolsCloudbuildV1Volume', 19, repeated=True)
+  waitFor = _messages.StringField(20, repeated=True)
 
 
 class GoogleDevtoolsCloudbuildV1BuiltImage(_messages.Message):

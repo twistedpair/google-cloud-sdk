@@ -41,6 +41,8 @@ class RunComposeWrapper(binary_operations.StreamingBinaryBackedOperation):
         custom_errors={'MISSING_EXEC': MISSING_BINARY},
         install_if_missing=True,
         std_err_func=StreamErrHandler,
+        std_out_func=StreamOutHandler,
+        capture_output=True,
         **kwargs
     )
 
@@ -53,6 +55,7 @@ class RunComposeWrapper(binary_operations.StreamingBinaryBackedOperation):
       repo=None,
       debug=False,
       dry_run=False,
+      resources_config=None,
       **kwargs
   ):
     del kwargs
@@ -68,7 +71,23 @@ class RunComposeWrapper(binary_operations.StreamingBinaryBackedOperation):
         exec_args.append('--debug')
       if dry_run:
         exec_args.append('--dry-run')
+    if command == 'translate':
+      exec_args += ['--resources-config', resources_config]
     return exec_args
+
+
+def StreamOutHandler(result_holder, capture_output=False):
+  """Processing for streaming stdout from subprocess."""
+
+  def HandleStdOut(line):
+    if line:
+      line.rstrip()
+    if capture_output:
+      if not result_holder.stdout:
+        result_holder.stdout = []
+      result_holder.stdout.append(line)
+
+  return HandleStdOut
 
 
 def StreamErrHandler(result_holder, capture_output=False):

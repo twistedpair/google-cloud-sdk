@@ -150,6 +150,17 @@ def AddPrivateConfigGroup(parser, help_text="Private instance configuration."):
       required=False,
       help="CA Pool path for private instance.",
   )
+  group.add_argument(
+      "--psc-allowed-projects",
+      dest="psc_allowed_projects",
+      required=False,
+      metavar="PROJECTS",
+      type=arg_parsers.ArgList(),
+      help=(
+          "List of additional projects allowed to connect to the instance via"
+          " private service connect."
+      ),
+  )
 
 
 def AddEnableWorkforceIdentityFederation(

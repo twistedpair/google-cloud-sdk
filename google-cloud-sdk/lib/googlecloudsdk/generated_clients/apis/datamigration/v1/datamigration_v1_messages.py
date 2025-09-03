@@ -2246,8 +2246,9 @@ class DatamigrationProjectsLocationsListRequest(_messages.Message):
   r"""A DatamigrationProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -3534,6 +3535,16 @@ class GoogleCloudClouddmsV1OperationMetadata(_messages.Message):
   verb = _messages.StringField(8)
 
 
+class HeterogeneousMetadata(_messages.Message):
+  r"""Metadata for heterogeneous migration jobs objects.
+
+  Fields:
+    unsupportedEventsCount: The number of unsupported events.
+  """
+
+  unsupportedEventsCount = _messages.IntegerField(1)
+
+
 class ImportMappingRulesRequest(_messages.Message):
   r"""Request message for 'ImportMappingRules' request.
 
@@ -4372,6 +4383,8 @@ class MigrationJobObject(_messages.Message):
   Fields:
     createTime: Output only. The creation time of the migration job object.
     error: Output only. The error details in case of failure.
+    heterogeneousMetadata: Output only. Metadata for heterogeneous migration
+      jobs objects.
     name: The object's name.
     phase: Output only. The phase of the migration job object.
     sourceObject: The object identifier in the data source.
@@ -4429,11 +4442,12 @@ class MigrationJobObject(_messages.Message):
 
   createTime = _messages.StringField(1)
   error = _messages.MessageField('Status', 2)
-  name = _messages.StringField(3)
-  phase = _messages.EnumField('PhaseValueValuesEnum', 4)
-  sourceObject = _messages.MessageField('SourceObjectIdentifier', 5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
+  heterogeneousMetadata = _messages.MessageField('HeterogeneousMetadata', 3)
+  name = _messages.StringField(4)
+  phase = _messages.EnumField('PhaseValueValuesEnum', 5)
+  sourceObject = _messages.MessageField('SourceObjectIdentifier', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class MigrationJobObjectsConfig(_messages.Message):
@@ -5989,6 +6003,8 @@ class SqlServerConnectionProfile(_messages.Message):
     cloudSqlProjectId: Optional. The project id of the Cloud SQL instance. If
       not provided, the project id of the connection profile will be used.
     database: Required. The name of the specific database within the host.
+    dbmPort: Optional. The Database Mirroring (DBM) port of the source SQL
+      Server instance.
     forwardSshConnectivity: Forward SSH tunnel connectivity.
     host: Required. The IP or hostname of the source SQL Server database.
     password: Required. Input only. The password for the user that Database
@@ -6013,16 +6029,32 @@ class SqlServerConnectionProfile(_messages.Message):
   cloudSqlId = _messages.StringField(2)
   cloudSqlProjectId = _messages.StringField(3)
   database = _messages.StringField(4)
-  forwardSshConnectivity = _messages.MessageField('ForwardSshTunnelConnectivity', 5)
-  host = _messages.StringField(6)
-  password = _messages.StringField(7)
-  passwordSet = _messages.BooleanField(8)
-  port = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  privateConnectivity = _messages.MessageField('PrivateConnectivity', 10)
-  privateServiceConnectConnectivity = _messages.MessageField('PrivateServiceConnectConnectivity', 11)
-  ssl = _messages.MessageField('SslConfig', 12)
-  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 13)
-  username = _messages.StringField(14)
+  dbmPort = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  forwardSshConnectivity = _messages.MessageField('ForwardSshTunnelConnectivity', 6)
+  host = _messages.StringField(7)
+  password = _messages.StringField(8)
+  passwordSet = _messages.BooleanField(9)
+  port = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  privateConnectivity = _messages.MessageField('PrivateConnectivity', 11)
+  privateServiceConnectConnectivity = _messages.MessageField('PrivateServiceConnectConnectivity', 12)
+  ssl = _messages.MessageField('SslConfig', 13)
+  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 14)
+  username = _messages.StringField(15)
+
+
+class SqlServerDagConfig(_messages.Message):
+  r"""Configuration for distributed availability group (DAG) for the SQL
+  Server homogeneous migration.
+
+  Fields:
+    linkedServer: Required. The name of the linked server that points to the
+      source SQL Server instance. Only used by DAG migrations.
+    sourceAg: Required. The name of the source availability group. Only used
+      by DAG migrations.
+  """
+
+  linkedServer = _messages.StringField(1)
+  sourceAg = _messages.StringField(2)
 
 
 class SqlServerDatabaseBackup(_messages.Message):
@@ -6102,6 +6134,8 @@ class SqlServerHomogeneousMigrationJobConfig(_messages.Message):
       Capture group set #2 timestamp - unix timestamp Example: For backup file
       TestDB.1691448254.trn, use pattern: (?.*)\.(?\d*).trn or
       (?.*)\.(?\d*).trn
+    dagConfig: Optional. Configuration for distributed availability group
+      (DAG) for the SQL Server homogeneous migration.
     databaseBackups: Required. Backup details per database in Cloud Storage.
     databaseDetails: Optional. Backup details per database in Cloud Storage.
     promoteWhenReady: Optional. Promote databases when ready.
@@ -6134,10 +6168,11 @@ class SqlServerHomogeneousMigrationJobConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   backupFilePattern = _messages.StringField(1)
-  databaseBackups = _messages.MessageField('SqlServerDatabaseBackup', 2, repeated=True)
-  databaseDetails = _messages.MessageField('DatabaseDetailsValue', 3)
-  promoteWhenReady = _messages.BooleanField(4)
-  useDiffBackup = _messages.BooleanField(5)
+  dagConfig = _messages.MessageField('SqlServerDagConfig', 2)
+  databaseBackups = _messages.MessageField('SqlServerDatabaseBackup', 3, repeated=True)
+  databaseDetails = _messages.MessageField('DatabaseDetailsValue', 4)
+  promoteWhenReady = _messages.BooleanField(5)
+  useDiffBackup = _messages.BooleanField(6)
 
 
 class SqlServerSourceConfig(_messages.Message):

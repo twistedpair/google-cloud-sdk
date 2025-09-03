@@ -627,8 +627,9 @@ class EdgecontainerOrganizationsLocationsListRequest(_messages.Message):
   r"""A EdgecontainerOrganizationsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1016,8 +1017,9 @@ class EdgecontainerProjectsLocationsListRequest(_messages.Message):
   r"""A EdgecontainerProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -2465,9 +2467,11 @@ class OperationMetadata(_messages.Message):
     Values:
       STATUS_REASON_UNSPECIFIED: Reason unknown.
       UPGRADE_PAUSED: The cluster upgrade is currently paused.
+      RETRYABLE_ERROR: The request has errored, but the error is retryable.
     """
     STATUS_REASON_UNSPECIFIED = 0
     UPGRADE_PAUSED = 1
+    RETRYABLE_ERROR = 2
 
   apiVersion = _messages.StringField(1)
   createTime = _messages.StringField(2)
@@ -2525,6 +2529,16 @@ class Remote(_messages.Message):
   r"""Configuration specific to clusters with a control plane hosted remotely.
   """
 
+
+
+class RobinCloudNativeStorage(_messages.Message):
+  r"""Defines configurations for Robin Cloud Native Storage.
+
+  Fields:
+    enable: Optional. If true, enable Robin CNS in this cluster.
+  """
+
+  enable = _messages.BooleanField(1)
 
 
 class SdsOperator(_messages.Message):
@@ -2775,15 +2789,18 @@ class SystemAddonsConfig(_messages.Message):
 
   Fields:
     ingress: Optional. Config for Ingress.
+    robinCloudNativeStorage: Optional. Configurations for Robin Cloud Native
+      Storage.
     sdsOperator: Optional. Config for SDS Operator.
     unmanagedKafkaConfig: Optional. Config for unmanaged Kafka.
     vmServiceConfig: Optional. Config for VM Service.
   """
 
   ingress = _messages.MessageField('Ingress', 1)
-  sdsOperator = _messages.MessageField('SdsOperator', 2)
-  unmanagedKafkaConfig = _messages.MessageField('UnmanagedKafkaConfig', 3)
-  vmServiceConfig = _messages.MessageField('VMServiceConfig', 4)
+  robinCloudNativeStorage = _messages.MessageField('RobinCloudNativeStorage', 2)
+  sdsOperator = _messages.MessageField('SdsOperator', 3)
+  unmanagedKafkaConfig = _messages.MessageField('UnmanagedKafkaConfig', 4)
+  vmServiceConfig = _messages.MessageField('VMServiceConfig', 5)
 
 
 class TimeWindow(_messages.Message):
@@ -3042,7 +3059,8 @@ class ZonalService(_messages.Message):
   r"""Service enabled on the project.
 
   Enums:
-    ServiceSelectorValueValuesEnum: Required. The service to enable/disable.
+    ServiceSelectorValueValuesEnum: Optional. The service to enable/disable.
+      Only one of service_selector or service_name must be specified.
     StateValueValuesEnum: Output only. The state of the service.
 
   Messages:
@@ -3054,7 +3072,12 @@ class ZonalService(_messages.Message):
     createTime: Output only. The time when the service was enabled.
     labels: Optional. Labels associated with this resource.
     name: Identifier. The resource name of the service.
-    serviceSelector: Required. The service to enable/disable.
+    serviceName: Optional. The full service name, e.g.:
+      alloydb.googleapis.com. Only one of service_selector or service_name
+      must be specified. It will be used to enable/disable the service on the
+      project.
+    serviceSelector: Optional. The service to enable/disable. Only one of
+      service_selector or service_name must be specified.
     state: Output only. The state of the service.
     updateTime: Output only. The time when the service was last updated.
     zone: The zone id of the zone on which the service has to be
@@ -3062,7 +3085,8 @@ class ZonalService(_messages.Message):
   """
 
   class ServiceSelectorValueValuesEnum(_messages.Enum):
-    r"""Required. The service to enable/disable.
+    r"""Optional. The service to enable/disable. Only one of service_selector
+    or service_name must be specified.
 
     Values:
       SERVICE_SELECTOR_UNSPECIFIED: Unspecified.
@@ -3123,10 +3147,11 @@ class ZonalService(_messages.Message):
   createTime = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
-  serviceSelector = _messages.EnumField('ServiceSelectorValueValuesEnum', 5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
-  zone = _messages.StringField(8)
+  serviceName = _messages.StringField(5)
+  serviceSelector = _messages.EnumField('ServiceSelectorValueValuesEnum', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
+  zone = _messages.StringField(9)
 
 
 class Zone(_messages.Message):

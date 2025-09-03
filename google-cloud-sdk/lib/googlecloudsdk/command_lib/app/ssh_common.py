@@ -73,7 +73,7 @@ class ConnectionDetails(object):
     return 'ConnectionDetails(**{})'.format(self.__dict__)
 
 
-def _GetComputeProject(release_track):
+def GetComputeProject(release_track):
   holder = compute_base_classes.ComputeApiHolder(release_track)
   client = holder.client
 
@@ -113,8 +113,15 @@ def _ContainsPort22(allowed_ports):
   return False
 
 
-def PopulatePublicKey(api_client, service_id, version_id, instance_id,
-                      public_key, release_track):
+def PopulatePublicKey(
+    api_client,
+    service_id,
+    version_id,
+    instance_id,
+    public_key,
+    oslogin_state_user,
+    oslogin_state_enabled
+):
   """Enable debug mode on and send SSH keys to a flex instance.
 
   Common method for SSH-like commands, does the following:
@@ -129,7 +136,8 @@ def PopulatePublicKey(api_client, service_id, version_id, instance_id,
     version_id: str, The version ID.
     instance_id: str, The instance ID.
     public_key: ssh.Keys.PublicKey, Public key to send.
-    release_track: calliope.base.ReleaseTrack, The current release track.
+    oslogin_state_user: str, The user to connect as.
+    oslogin_state_enabled: bool, Whether OS Login is enabled.
 
   Raises:
     InvalidInstanceTypeError: The instance is not supported for SSH.
@@ -175,18 +183,7 @@ def PopulatePublicKey(api_client, service_id, version_id, instance_id,
   if not instance.vmDebugEnabled:
     log.warning(_ENABLE_DEBUG_WARNING)
     console_io.PromptContinue(cancel_on_no=True, throw_if_unattended=True)
-  user = ssh.GetDefaultSshUsername()
-  project = _GetComputeProject(release_track)
-  oslogin_state = ssh.GetOsloginState(
-      None,
-      project,
-      user,
-      public_key.ToEntry(),
-      None,
-      release_track,
-      messages=compute_base_classes.ComputeApiHolder(
-          release_track).client.messages)
-  user = oslogin_state.user
+  user = oslogin_state_user
   instance_ip_mode_enum = (
       api_client.messages.Network.InstanceIpModeValueValuesEnum)
   host = (
@@ -194,7 +191,7 @@ def PopulatePublicKey(api_client, service_id, version_id, instance_id,
       version.version.network.instanceIpMode is instance_ip_mode_enum.INTERNAL
       else instance.vmIp)
   remote = ssh.Remote(host=host, user=user)
-  if not oslogin_state.oslogin_enabled:
+  if not oslogin_state_enabled:
     ssh_key = '{user}:{key} {user}'.format(user=user, key=public_key.ToEntry())
     log.status.Print('Sending public key to instance [{}].'.format(rel_name))
     api_client.DebugInstance(res, ssh_key)

@@ -186,6 +186,15 @@ multikey:
     index with MONGODB_COMPATIBLE_API ApiScope.
   action: store_true
 
+unique:
+  api_field: googleFirestoreAdminV1Index.unique
+  arg_name: unique
+  required: false
+  help_text: |
+    Optional. Whether it is an unique index. Unique index ensures all values for
+    the indexed field(s) are unique across documents.
+  action: store_true
+
 clear_exemption:
   arg_name: clear-exemption
   help_text: |

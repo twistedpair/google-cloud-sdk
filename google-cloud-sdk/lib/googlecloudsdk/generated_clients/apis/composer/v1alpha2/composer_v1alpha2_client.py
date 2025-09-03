@@ -1023,6 +1023,33 @@ class ComposerV1alpha2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Migrate(self, request, global_params=None):
+      r"""Migrates an environment to a new major version.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsMigrateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Migrate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Migrate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:migrate',
+        http_method='POST',
+        method_id='composer.projects.locations.environments.migrate',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha2/{+name}:migrate',
+        request_field='migrateEnvironmentRequest',
+        request_type_name='ComposerProjectsLocationsEnvironmentsMigrateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Update an environment.
 

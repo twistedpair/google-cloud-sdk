@@ -564,6 +564,11 @@ def _ConstructClusterAndMaskForPatchRequestBeta(alloydb_messages, args):
             cluster.continuousBackupConfig, args
         )
     )
+  if args.maintenance_version:
+    cluster.maintenanceVersionSelectionPolicy = (
+        flags.GetValidatedMaintenanceVersion(args, alloydb_messages)
+    )
+    update_masks.append('maintenance_version_selection_policy')
 
   return cluster, update_masks
 

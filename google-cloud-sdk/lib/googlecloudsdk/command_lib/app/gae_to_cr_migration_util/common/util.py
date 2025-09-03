@@ -17,9 +17,16 @@
 import logging
 from typing import Mapping, Sequence, Tuple
 from googlecloudsdk.api_lib.app import appengine_api_client
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.app.gae_to_cr_migration_util.config import feature_helper
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import files
+
+
+class InvalidAppYamlPathError(exceptions.Error):
+  """An error that is raised when invalid app.yaml path is provided."""
+
 # Entrypoint for these runtimes must be specified in a Procfile
 # instead of via the `--command` flag at the gcloud run deploy
 # command.
@@ -168,11 +175,39 @@ def get_input_data_by_input_type(
   """Retrieve the input_data (from yaml to python objects) by a given input_type."""
   # deployed version is input type
   if input_type == feature_helper.InputType.ADMIN_API:
-    api_client = appengine_api_client.GetApiClientForTrack('v1')
+    api_client = appengine_api_client.GetApiClientForTrack(base.ReleaseTrack.GA)
     gcloud_output = api_client.GetVersionResource(
         service=service, version=version
     )
-    return yaml.load(gcloud_output)
+    if gcloud_output is None:
+      logging.error('gcloud_output is empty.')
+      return None
+
+    version_data = {
+        'automaticScaling': gcloud_output.automaticScaling,
+        'createTime': gcloud_output.createTime,
+        'createdBy': gcloud_output.createdBy,
+        'deployment': gcloud_output.deployment,
+        'diskUsageBytes': gcloud_output.diskUsageBytes,
+        'env': gcloud_output.env,
+        'errorHandlers': gcloud_output.errorHandlers,
+        'handlers': gcloud_output.handlers,
+        'id': gcloud_output.id,
+        'inboundServices': gcloud_output.inboundServices,
+        'instanceClass': gcloud_output.instanceClass,
+        'libraries': gcloud_output.libraries,
+        'name': gcloud_output.name,
+        'network': gcloud_output.network,
+        'runtime': gcloud_output.runtime,
+        'runtimeChannel': gcloud_output.runtimeChannel,
+        'serviceAccount': gcloud_output.serviceAccount,
+        'servingStatus': gcloud_output.servingStatus,
+        'threadsafe': gcloud_output.threadsafe,
+        'versionUrl': gcloud_output.versionUrl,
+        'zones': gcloud_output.zones,
+    }
+    return version_data
+
   # appyaml is input type
   try:
     with files.FileReader(appyaml) as file:
@@ -181,8 +216,8 @@ def get_input_data_by_input_type(
         logging.error('%s is empty.', file.name)
       return appyaml_data
   except files.MissingFileError:
-    logging.error(
-        'app.yaml does not exist in current directory, please use'
-        ' --appyaml flag to specify the app.yaml location.'
+    raise InvalidAppYamlPathError(
+        'app.yaml does not exist in the provided directory, please use'
+        ' --appyaml flag to specify the correct app.yaml location.'
     )
   return None

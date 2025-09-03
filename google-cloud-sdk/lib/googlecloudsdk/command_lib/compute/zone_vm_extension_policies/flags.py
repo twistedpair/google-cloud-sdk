@@ -24,7 +24,7 @@ from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.util.args import labels_util
 
 # The list of extensions that can be added to the policy.
-EXTENSIONS = ('filestore', 'ops-agent')
+EXTENSIONS = ('filestore', 'ops-agent', 'sap-extension')
 
 
 def AddPolicyDescription(parser):

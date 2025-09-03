@@ -53,15 +53,13 @@ location:
 
 projzone:
   name: zone
-  plural_name: zones
-  resources:
-  - name: zone
-    collection: edgecontainer.projects.locations.zones
-    request_id_field: zoneId
-    attributes:
-    - *project
-    - *location
-    - &projzone
-      parameter_name: zonesId
-      attribute_name: zone
-      help: The name of the Google Distributed Cloud Edge zone.
+  collection: edgecontainer.projects.locations.zones
+  request_id_field: zoneId
+  attributes:
+  - *project
+  - *location
+  - &projzone_attr
+    parameter_name: zonesId
+    attribute_name: zone
+    help: The name of the Google Distributed Cloud Edge zone.
+  disable_auto_completers: false

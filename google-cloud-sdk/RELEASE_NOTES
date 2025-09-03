@@ -5,6 +5,112 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 537.0.0 (2025-09-03)
+
+### AI
+
+* Added `--min-scaleup-period`, `--idle-scaledown-period`, and
+`--initial-replica-count` flags to `gcloud beta ai endpoints create` for
+scale-to-zero feature. Only configurable when `--min-replica-count` is set to 0.
+
+### AlloyDB
+
+* Added support for `POSTGRES_17` as a version in `alloydb clusters create` for GA track.
+* Added support for `POSTGRES_17` as a version in `alloydb clusters migrate-cloud-sql` for GA track.
+* Added support for `POSTGRES_17` as a target version using `alloydb clusters upgrade` for GA track.
+
+### Cloud Backup DR
+
+* Promoted `gcloud backup-dr backup-plan-revisions list` and `gcloud backup-dr backup-plan-revisions describe` to GA.
+
+* Added `gcloud backup-dr backup-plan-associations fetch-for-resource-type` command group to GA track.
+
+### Cloud Dataproc
+
+*   Added `--identity-config-file`, `--add-user-mappings`, and `--remove-user-mappings` flags to `gcloud dataproc clusters update` to allow updating the user to service account mapping.
+
+### Cloud Firestore
+
+* Added `--unique` flag to `gcloud firestore indexes composite create` command for supporting unique index creation.
+
+### Cloud Functions
+
+* Modified `gcloud beta functions list` to list upgrade state.
+
+### Cloud Infrastructure Manager
+
+*   Added `gcloud infra-manager resource-changes list` and `gcloud infra-manager
+    resource-changes describe` commands to list and describe resource changes
+    within an Infrastructure Manager deployment preview.
+*   Added `gcloud infra-manager resource-drifts list` and `gcloud infra-manager
+    resource-drifts describe` commands to list and describe resource drifts
+    within an Infrastructure Manager deployment revision.
+
+### Cloud Interconnect
+
+* Promoted `gcloud compute interconnects application-awareness get-config` to GA.
+* Promoted `gcloud compute interconnects application-awareness update` to GA.
+* Promoted `gcloud compute interconnects application-awareness delete` to GA.
+* Promoted `gcloud compute interconnects application-awareness configure-bandwidth-percentage-policy` to GA.
+* Promoted `gcloud compute interconnects application-awareness configure-shaper-average-percentage` to GA.
+* Promoted `gcloud compute interconnects application-awareness configure-strict-priority-policy` to GA.
+
+### Cloud Managed Kafka
+
+* Changed `--connect_cluster` flag to `--connect-cluster` for `connector` commands in alpha.
+
+### Cloud Run
+
+* Added `--[no-]gpu-zonal-redundancy`, `--gpu` and `--gpu-type` flags to
+`gcloud beta run worker-pools` command group.
+
+### Cloud SQL
+
+*   Added `--[no-]final-backup` flag and `--final-backup-retention-days` to
+    `gcloud sql instances create`, `gcloud sql instances patch`
+    and `gcloud sql backups restore` to support setting final backup config in
+    Cloud SQL instance setting.
+*   Added `--enforce-new-sql-network-architecture` flag to
+    `gcloud sql instances create`, `gcloud sql instances patch` to explicitly
+    create or update instances in the new network architecture.
+*   Promoted `--[no-]enable-connection-pooling` and
+    `--[clear-]connection-pool-flags` flags to GA for Managed Connection Pooling
+    GA launch.
+
+### Compute Engine
+
+*  Added `--resolve-subnet-mask` flag for alpha and beta to
+  `gcloud compute networks subnets create` to allow users to enable resolve
+  subnet mask feature on the subnetwork resource during creation.
+* Added `--sap-extension-version` and `--sap-extension-config` flags to `gcloud
+  compute zone-vm-extension-policies create|update` commands.
+
+### Kubernetes Engine
+
+*   Promoted the Secret Manager CSI driver flags (
+    `--enable-secret-manager-rotation` and `--secret-manager-rotation-interval`)
+    to enable rotation feature in secret manager add on to GA.
+* Updated default kubectl from 1.32.4 to 1.33.4.
+* Additional kubectl versions:
+  * kubectl.1.28 (1.28.15)
+  * kubectl.1.29 (1.29.14)
+  * kubectl.1.30 (1.30.14)
+  * kubectl.1.31 (1.31.12)
+  * kubectl.1.32 (1.32.8)
+  * kubectl.1.33 (1.33.4)
+
+### Secure Source Manager
+
+* Added `--psc-allowed-projects` argument to `gcloud source-manager instances create` command.
+
+### Vmware Engine
+
+* Added `gcloud vmware private-clouds delete-now` which permanently deletes a Google Cloud VMware Engine private cloud currently in soft-deleted state.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 536.0.1 (2025-08-27)
 
 ### Kubernetes Engine

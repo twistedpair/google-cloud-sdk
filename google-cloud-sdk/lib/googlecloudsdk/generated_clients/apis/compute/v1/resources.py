@@ -59,6 +59,13 @@ class Collections(enum.Enum):
       ['project', 'backendService'],
       True
   )
+  DISKSETTINGS = (
+      'diskSettings',
+      'projects/{project}/zones/{zone}/diskSettings',
+      {},
+      ['project', 'zone'],
+      True
+  )
   DISKTYPES = (
       'diskTypes',
       'projects/{project}/zones/{zone}/diskTypes/{diskType}',
@@ -427,6 +434,13 @@ class Collections(enum.Enum):
       ['project', 'region', 'commitment'],
       True
   )
+  REGIONDISKSETTINGS = (
+      'regionDiskSettings',
+      'projects/{project}/regions/{region}/diskSettings',
+      {},
+      ['project', 'region'],
+      True
+  )
   REGIONDISKTYPES = (
       'regionDiskTypes',
       'projects/{project}/regions/{region}/diskTypes/{diskType}',
@@ -529,6 +543,13 @@ class Collections(enum.Enum):
       'securityPolicyRules/{securityPolicyRule}',
       {},
       ['project', 'region', 'securityPolicy', 'securityPolicyRule'],
+      True
+  )
+  REGIONSNAPSHOTSETTINGS = (
+      'regionSnapshotSettings',
+      'projects/{project}/regions/{region}/snapshotSettings',
+      {},
+      ['project', 'region'],
       True
   )
   REGIONSSLCERTIFICATES = (

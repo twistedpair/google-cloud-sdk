@@ -455,8 +455,8 @@ def AsymmetricAutoscalingOptionFlag(
   if include_total_cpu_target:
     spec['total_cpu_target'] = int
   if include_disable_autoscaling_args:
-    spec['disable_high_priority_cpu_autoscaling'] = bool
-    spec['disable_total_cpu_autoscaling'] = bool
+    spec['disable_high_priority_cpu_autoscaling'] = arg_parsers.ArgBoolean()
+    spec['disable_total_cpu_autoscaling'] = arg_parsers.ArgBoolean()
 
   return base.Argument(
       '--asymmetric-autoscaling-option',

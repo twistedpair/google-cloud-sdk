@@ -353,6 +353,10 @@ class VolumeMount(proto.Message):
             available as ``/cloudsql/[instance]``. For more information
             on Cloud SQL volumes, visit
             https://cloud.google.com/sql/docs/mysql/connect-run
+        sub_path (str):
+            Optional. Path within the volume from which
+            the container's volume should be mounted.
+            Defaults to "" (volume's root).
     """
 
     name: str = proto.Field(
@@ -362,6 +366,10 @@ class VolumeMount(proto.Message):
     mount_path: str = proto.Field(
         proto.STRING,
         number=3,
+    )
+    sub_path: str = proto.Field(
+        proto.STRING,
+        number=4,
     )
 
 
@@ -457,11 +465,11 @@ class SecretVolumeSource(proto.Message):
             secret is in a different project.
         items (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.run_v2.types.VersionToPath]):
             If unspecified, the volume will expose a file whose name is
-            the secret, relative to VolumeMount.mount_path. If
-            specified, the key will be used as the version to fetch from
-            Cloud Secret Manager and the path will be the name of the
-            file exposed in the volume. When items are defined, they
-            must specify a path and a version.
+            the secret, relative to VolumeMount.mount_path +
+            VolumeMount.sub_path. If specified, the key will be used as
+            the version to fetch from Cloud Secret Manager and the path
+            will be the name of the file exposed in the volume. When
+            items are defined, they must specify a path and a version.
         default_mode (int):
             Integer representation of mode bits to use on created files
             by default. Must be a value between 0000 and 0777 (octal),

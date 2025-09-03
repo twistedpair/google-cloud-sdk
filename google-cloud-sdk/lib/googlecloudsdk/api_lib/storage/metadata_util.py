@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import enum
 import json
 import os
 
@@ -30,6 +31,74 @@ from googlecloudsdk.core import yaml
 from googlecloudsdk.core.cache import function_result_cache
 from googlecloudsdk.core.util import files
 import six
+
+
+CONTEXT_TYPE_LITERAL = 'type'
+CONTEXT_VALUE_LITERAL = 'value'
+
+
+class ContextType(enum.Enum):
+  """Used to distinguish between custom and google generated contexts."""
+  CUSTOM = 'custom'
+
+
+def get_context_value_dict_from_value(value):
+  """Returns the context value dict based on the value.
+
+  Args:
+    value (str): The value to be parsed.
+  """
+  return {CONTEXT_VALUE_LITERAL: value}
+
+
+def parse_custom_contexts_dict_from_resource_contexts_dict(
+    resource_contexts_dict,
+):
+  """Parses custom contexts from resource contexts for request purposes.
+
+  Examples:
+    resource_contexts_dict={
+        'key': {
+            'value': 'value',
+            'createTime': '2025-01-01T00:00:00Z',
+            'updateTime': '2025-01-01T00:00:00Z',
+            'type': 'custom'
+        }
+        'key2': {
+            'value': 'value2',
+            'createTime': '2025-01-01T00:00:00Z',
+            'updateTime': '2025-01-01T00:00:00Z',
+            'type': 'generated'
+        }
+    } would return the following dictionary:
+    {
+        'custom': {
+          'key': {
+              'value': 'value',
+          }
+        }
+    }
+
+  Note: the method intentionally drops all other fields other than the context
+  value, as they are internal only fields, or not meant to be sent to the API.
+
+  Args:
+    resource_contexts_dict (dict): The resource contexts dict to parse.
+
+  Returns:
+    a dictionary of contexts in apitools format for request purposes.
+  """
+  if resource_contexts_dict is None:
+    return resource_contexts_dict
+  custom_contexts_dict = {}
+  for key, value in resource_contexts_dict.items():
+    context_type = value.get(CONTEXT_TYPE_LITERAL, None)
+    context_value = value.get(CONTEXT_VALUE_LITERAL, None)
+    if context_type == ContextType.CUSTOM.value:
+      custom_contexts_dict[key] = get_context_value_dict_from_value(
+          context_value
+      )
+  return {ContextType.CUSTOM.value: custom_contexts_dict}
 
 
 def read_yaml_json_from_string(string, source_path=None):

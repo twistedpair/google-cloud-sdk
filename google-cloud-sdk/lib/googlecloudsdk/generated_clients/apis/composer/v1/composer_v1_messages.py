@@ -1673,6 +1673,7 @@ class OperationMetadata(_messages.Message):
       LOAD_SNAPSHOT: Loads snapshot of the resource operation.
       DATABASE_FAILOVER: Triggers failover of environment's Cloud SQL instance
         (only for highly resilient environments).
+      MIGRATE: Migrates resource to a new major version.
     """
     TYPE_UNSPECIFIED = 0
     CREATE = 1
@@ -1682,6 +1683,7 @@ class OperationMetadata(_messages.Message):
     SAVE_SNAPSHOT = 5
     LOAD_SNAPSHOT = 6
     DATABASE_FAILOVER = 7
+    MIGRATE = 8
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current operation state.

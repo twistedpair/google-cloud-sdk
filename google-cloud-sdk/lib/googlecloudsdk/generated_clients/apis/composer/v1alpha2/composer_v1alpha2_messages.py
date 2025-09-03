@@ -531,6 +531,21 @@ class ComposerProjectsLocationsEnvironmentsLoadSnapshotRequest(_messages.Message
   loadSnapshotRequest = _messages.MessageField('LoadSnapshotRequest', 2)
 
 
+class ComposerProjectsLocationsEnvironmentsMigrateRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsMigrateRequest object.
+
+  Fields:
+    migrateEnvironmentRequest: A MigrateEnvironmentRequest resource to be
+      passed as the request body.
+    name: Required. The resource name of the environment to migrate, in the
+      form: "projects/{projectId}/locations/{locationId}/environments/{environ
+      mentId}"
+  """
+
+  migrateEnvironmentRequest = _messages.MessageField('MigrateEnvironmentRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
   r"""A ComposerProjectsLocationsEnvironmentsPatchRequest object.
 
@@ -1140,6 +1155,8 @@ class DagRun(_messages.Message):
     name: The resource name of the DAG, in the form: "projects/{projectId}/loc
       ations/{locationId}/environments/{environmentId}/dags/{dagId}/dagRuns/{d
       agRunId}".
+    runAfter: Timestamp when the DAG run was scheduled to start. Added in
+      Airflow 3.
     startDate: Timestamp when the DAG run started.
     state: DAG run state.
     type: DAG run type (how it got created/executed).
@@ -1184,9 +1201,10 @@ class DagRun(_messages.Message):
   endDate = _messages.StringField(5)
   executionDate = _messages.StringField(6)
   name = _messages.StringField(7)
-  startDate = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  type = _messages.EnumField('TypeValueValuesEnum', 10)
+  runAfter = _messages.StringField(8)
+  startDate = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  type = _messages.EnumField('TypeValueValuesEnum', 11)
 
 
 class DagStats(_messages.Message):
@@ -1519,11 +1537,13 @@ class EnvironmentConfig(_messages.Message):
       ENVIRONMENT_SIZE_SMALL: The environment size is small.
       ENVIRONMENT_SIZE_MEDIUM: The environment size is medium.
       ENVIRONMENT_SIZE_LARGE: The environment size is large.
+      ENVIRONMENT_SIZE_EXTRA_LARGE: The environment size is extra large.
     """
     ENVIRONMENT_SIZE_UNSPECIFIED = 0
     ENVIRONMENT_SIZE_SMALL = 1
     ENVIRONMENT_SIZE_MEDIUM = 2
     ENVIRONMENT_SIZE_LARGE = 3
+    ENVIRONMENT_SIZE_EXTRA_LARGE = 4
 
   class ResilienceModeValueValuesEnum(_messages.Enum):
     r"""Optional. Resilience mode of the Cloud Composer Environment. This
@@ -1949,6 +1969,59 @@ class MasterAuthorizedNetworksConfig(_messages.Message):
   enabled = _messages.BooleanField(2)
 
 
+class MigrateEnvironmentRequest(_messages.Message):
+  r"""Request to migrate a Composer 2 environment to Composer 3 in place.
+
+  Enums:
+    GkeClusterRetentionPolicyValueValuesEnum: Required. The retention policy
+      for the GKE cluster associated with the Cloud Composer 2 environment.
+      The cluster can be retained or deleted after the migration.
+
+  Fields:
+    gkeClusterRetentionPolicy: Required. The retention policy for the GKE
+      cluster associated with the Cloud Composer 2 environment. The cluster
+      can be retained or deleted after the migration.
+    imageVersion: Required. Target image version to which the environment will
+      be migrated. This has to be a Composer 3 version with a specific Airflow
+      version and build in format `composer-3-airflow-x.y.z-build.t`, or one
+      of the version aliases: `composer-3-airflow-x`, `composer-3-airflow-x.y`
+      or `composer-3-airflow-x.y.z`. Only migration to Composer 3 version is
+      supported. See also [version list](/composer/docs/composer-versions) and
+      [versioning overview](/composer/docs/composer-versioning-overview).
+    maintenanceWindow: Optional. The configuration settings for Cloud Composer
+      maintenance window. This configuration is applied to the migrated
+      environment. The following example: ``` {
+      "startTime":"2019-08-01T01:00:00Z" "endTime":"2019-08-01T07:00:00Z"
+      "recurrence":"FREQ=WEEKLY;BYDAY=TU,WE" } ``` would define a maintenance
+      window between 01 and 07 hours UTC during each Tuesday and Wednesday.
+    workloadsConfig: Optional. The workloads configuration settings for the
+      Cloud Composer environment. It will be applied to the migrated
+      environment. The workloads include Airflow scheduler, web server,
+      triggerer, dag processor and workers.
+  """
+
+  class GkeClusterRetentionPolicyValueValuesEnum(_messages.Enum):
+    r"""Required. The retention policy for the GKE cluster associated with the
+    Cloud Composer 2 environment. The cluster can be retained or deleted after
+    the migration.
+
+    Values:
+      GKE_CLUSTER_RETENTION_POLICY_UNSPECIFIED: Default value.
+      DELETE_GKE_CLUSTER: GKE cluster will be deleted after environment
+        migration.
+      RETAIN_GKE_CLUSTER: GKE cluster will be retained after environment
+        migration.
+    """
+    GKE_CLUSTER_RETENTION_POLICY_UNSPECIFIED = 0
+    DELETE_GKE_CLUSTER = 1
+    RETAIN_GKE_CLUSTER = 2
+
+  gkeClusterRetentionPolicy = _messages.EnumField('GkeClusterRetentionPolicyValueValuesEnum', 1)
+  imageVersion = _messages.StringField(2)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 3)
+  workloadsConfig = _messages.MessageField('WorkloadsConfig', 4)
+
+
 class NetworkingConfig(_messages.Message):
   r"""Configuration options for networking connections in the Composer 2
   environment.
@@ -2247,6 +2320,7 @@ class OperationMetadata(_messages.Message):
       LOAD_SNAPSHOT: Loads snapshot of the resource operation.
       DATABASE_FAILOVER: Triggers failover of environment's Cloud SQL instance
         (only for highly resilient environments).
+      MIGRATE: Migrates resource to a new major version.
     """
     TYPE_UNSPECIFIED = 0
     CREATE = 1
@@ -2256,6 +2330,7 @@ class OperationMetadata(_messages.Message):
     SAVE_SNAPSHOT = 5
     LOAD_SNAPSHOT = 6
     DATABASE_FAILOVER = 7
+    MIGRATE = 8
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current operation state.
@@ -2902,16 +2977,9 @@ class StorageConfig(_messages.Message):
   Fields:
     bucket: Optional. The name of the Cloud Storage bucket used by the
       environment. No `gs://` prefix.
-    filestoreDirectory: Optional. The path to the Filestore directory used by
-      the environment considering the share name as a root
-    filestoreInstance: Optional. The Filestore instance uri used by the
-      environment.
-      projects/{project}/locations/{location}/instances/{instance}
   """
 
   bucket = _messages.StringField(1)
-  filestoreDirectory = _messages.StringField(2)
-  filestoreInstance = _messages.StringField(3)
 
 
 class Task(_messages.Message):

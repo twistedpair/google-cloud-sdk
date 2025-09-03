@@ -59,6 +59,7 @@ class SpannerCliWrapper(binary_operations.BinaryBackedOperation):
       database_role=None,
       host=None,
       port=None,
+      api_endpoint=None,
       idle_transaction_timeout=None,
       skip_column_names=False,
       skip_system_command=False,
@@ -90,6 +91,8 @@ class SpannerCliWrapper(binary_operations.BinaryBackedOperation):
       formatted_arguments += (f"--role={database_role}",)
     if port and host:
       formatted_arguments += (f"--deployment_endpoint={host}:{port}",)
+    elif api_endpoint:
+      formatted_arguments += (f"--deployment_endpoint={api_endpoint}",)
     if idle_transaction_timeout:
       formatted_arguments += (
           f"--idle_transaction_timeout={idle_transaction_timeout}",

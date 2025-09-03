@@ -20,6 +20,8 @@ from __future__ import unicode_literals
 
 import dataclasses
 
+from googlecloudsdk.command_lib.compute.interconnects import flags
+
 
 class Interconnect(object):
   """Abstracts Interconnect resource."""
@@ -36,6 +38,7 @@ class Interconnect(object):
       self,
       description,
       location,
+      subzone,
       interconnect_type,
       requested_link_count,
       link_type,
@@ -49,40 +52,51 @@ class Interconnect(object):
 
     Args:
       description: String that represents the description of the Cloud
-      Interconnect resource.
+        Interconnect resource.
       location: String that represents the URL of the location resource for
-      Cloud Interconnect that Cloud Interconnect should be connected to.
+        Cloud Interconnect that Cloud Interconnect should be connected to.
+      subzone: String that represents the subzone of the location resource that
+        Cloud Interconnect should be connected to.
       interconnect_type: InterconnectTypeValueValuesEnum that represents the
-      type of Cloud Interconnect.
+        type of Cloud Interconnect.
       requested_link_count: Number of the requested links.
-      link_type: LinkTypeValueValuesEnum that represents Cloud Interconnect
-      link type.
-      admin_enabled: Boolean that represents administrative status of
-      Cloud Interconnect.
+      link_type: LinkTypeValueValuesEnum that represents Cloud Interconnect link
+        type.
+      admin_enabled: Boolean that represents administrative status of Cloud
+        Interconnect.
       noc_contact_email: String that represents the customer's email address.
       customer_name: String that represents the customer's name.
       remote_location: String that represents the Cloud Interconnect remote
-      location URL that should be connected to Cloud Interconnect.
+        location URL that should be connected to Cloud Interconnect.
       requested_features: List of features requested for this interconnect.
 
     Returns:
     Insert interconnect tuple that can be used in a request.
     """
-    return (self._client.interconnects, 'Insert',
-            self._messages.ComputeInterconnectsInsertRequest(
-                project=self.ref.project,
-                interconnect=self._messages.Interconnect(
-                    name=self.ref.Name(),
-                    description=description,
-                    interconnectType=interconnect_type,
-                    linkType=link_type,
-                    nocContactEmail=noc_contact_email,
-                    requestedLinkCount=requested_link_count,
-                    location=location,
-                    adminEnabled=admin_enabled,
-                    customerName=customer_name,
-                    remoteLocation=remote_location,
-                    requestedFeatures=requested_features)))
+    kwargs = {}
+    if subzone is not None:
+      kwargs['subzone'] = flags.GetSubzoneAlpha(self._messages, subzone)
+    return (
+        self._client.interconnects,
+        'Insert',
+        self._messages.ComputeInterconnectsInsertRequest(
+            project=self.ref.project,
+            interconnect=self._messages.Interconnect(
+                name=self.ref.Name(),
+                description=description,
+                interconnectType=interconnect_type,
+                linkType=link_type,
+                nocContactEmail=noc_contact_email,
+                requestedLinkCount=requested_link_count,
+                location=location,
+                adminEnabled=admin_enabled,
+                customerName=customer_name,
+                remoteLocation=remote_location,
+                requestedFeatures=requested_features,
+                **kwargs
+            ),
+        ),
+    )
 
   def _MakePatchRequestTuple(
       self,
@@ -160,6 +174,7 @@ class Interconnect(object):
       self,
       description='',
       location=None,
+      subzone=None,
       interconnect_type=None,
       requested_link_count=None,
       link_type=None,
@@ -175,6 +190,7 @@ class Interconnect(object):
         self._MakeCreateRequestTuple(
             description,
             location,
+            subzone,
             interconnect_type,
             requested_link_count,
             link_type,

@@ -113,7 +113,7 @@ class RangeLimitFeature(UnsupportedFeature):
 
   def validate(self, val: int) -> bool:
     """Check if the given value is within range limit."""
-    return self.range.min <= val <= self.range.max
+    return self.range["min"] <= val <= self.range["max"]
 
 
 @dataclasses.dataclass
@@ -125,14 +125,20 @@ class ValueLimitFeature(UnsupportedFeature):
   valid_format: str = None
   flags: Sequence[str] = None
 
-  def validate(self, val: str) -> bool:
+  def _check_runtime_value(self, val: str):
+    """Check if the given value is a valid runtime value."""
+    if self.known_values is not None and val not in self.known_values:
+      reason = f"'{val}' is not a valid runtime value."
+      self.reason = reason
+      return False
+    return True
+
+  def validate(self, key: str, val: str) -> bool:
     """Check if the given value is valid, either by regex or set of known/allowed values."""
     if self.valid_format is not None:
       # validate by regex only when valid_format is present.
       return re.search(self.valid_format, val) is not None
-    if self.known_values is not None and val not in self.known_values:
-      reason = f"'{val}' is not a known value."
-      self.reason = reason
+    if key.startswith("runtime") and not self._check_runtime_value(val):
       return False
     return self.allowed_values is not None and val in self.allowed_values
 

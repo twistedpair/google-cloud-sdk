@@ -1753,23 +1753,19 @@ def AddRequireConnectors(parser):
   )
 
 
-def AddDatabaseVersion(parser, alloydb_messages, release_track):
+def AddDatabaseVersion(parser, alloydb_messages):
   """Adds Database Version flag.
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
     alloydb_messages: Message module.
-    release_track: The command version being used - GA/BETA/ALPHA.
   """
   choices = [
       alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_14,
       alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_15,
       alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_16,
+      alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_17,
   ]
-  if release_track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA):
-    choices.append(
-        alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_17
-    )
   parser.add_argument(
       '--database-version',
       required=False,
@@ -1779,23 +1775,19 @@ def AddDatabaseVersion(parser, alloydb_messages, release_track):
   )
 
 
-def AddVersion(parser, alloydb_messages, release_track):
+def AddVersion(parser, alloydb_messages):
   """Adds Version flag.
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
     alloydb_messages: Message module.
-    release_track: The command version being used - GA/BETA/ALPHA.
   """
   choices = [
       alloydb_messages.UpgradeClusterRequest.VersionValueValuesEnum.POSTGRES_14,
       alloydb_messages.UpgradeClusterRequest.VersionValueValuesEnum.POSTGRES_15,
       alloydb_messages.UpgradeClusterRequest.VersionValueValuesEnum.POSTGRES_16,
+      alloydb_messages.UpgradeClusterRequest.VersionValueValuesEnum.POSTGRES_17,
   ]
-  if release_track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA):
-    choices.append(
-        alloydb_messages.UpgradeClusterRequest.VersionValueValuesEnum.POSTGRES_17
-    )
   parser.add_argument(
       '--version',
       required=True,
@@ -1912,6 +1904,37 @@ def AddAuthorizedExternalNetworks(parser):
           '1.2.3.4/30). This flag is only allowed to be set for instances with '
           'public IP enabled.'
       ),
+  )
+
+
+def AddMaintenanceVersion(parser):
+  """Adds a `--maintenance-version` flag to parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+  """
+  parser.add_argument(
+      '--maintenance-version',
+      required=False,
+      type=str,
+      hidden=True,
+      help=(
+          'Maintenance version to update the cluster to. Use `latest` to'
+          ' apply the latest available maintenance version.'
+      ),
+  )
+
+
+def GetValidatedMaintenanceVersion(args, alloydb_messages):
+  """Returns the maintenance version from the args."""
+  if args.maintenance_version.lower() == 'latest':
+    return (
+        alloydb_messages.Cluster.MaintenanceVersionSelectionPolicyValueValuesEnum.MAINTENANCE_VERSION_SELECTION_POLICY_LATEST
+    )
+  raise exceptions.InvalidArgumentException(
+      '--maintenance-version',
+      'Invalid maintenance version: {}. Use `latest` to apply the latest'
+      ' available maintenance version.'.format(args.maintenance_version)
   )
 
 

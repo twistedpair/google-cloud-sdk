@@ -620,39 +620,40 @@ class DeactivateSpokeRequest(_messages.Message):
 
 
 class Destination(_messages.Message):
-  r"""The Destination resource.
+  r"""The `Destination` resource. It specifies the IP prefix and the
+  associated autonomous system numbers (ASN) that you want to include in a
+  `MulticloudDataTransferConfig` resource.
 
   Messages:
     LabelsValue: Optional. User-defined labels.
 
   Fields:
-    createTime: Output only. Time when the Destination was created.
-    description: Optional. An optional field to provide a description of this
-      resource.
-    endpoints: Required. Unordered list. The list of Endpoints configured for
-      the IP Prefix.
-    etag: The etag is computed by the server, and may be sent on update and
-      delete requests to ensure the client has an up-to-date value before
+    createTime: Output only. Time when the `Destination` resource was created.
+    description: Optional. A description of this resource.
+    endpoints: Required. Unordered list. The list of `DestinationEndpoint`
+      resources configured for the IP prefix.
+    etag: The etag is computed by the server, and might be sent with update
+      and delete requests so that the client has an up-to-date value before
       proceeding.
-    ipPrefix: Required. Immutable. Remote IP Prefix in the remote CSP, where
-      the customer's workload is located
+    ipPrefix: Required. Immutable. The IP prefix that represents your workload
+      on another CSP.
     labels: Optional. User-defined labels.
-    name: Identifier. The name of the Destination resource. Format: `projects/
-      {project}/locations/{location}/multicloudDataTransferConfigs/{multicloud
-      _data_transfer_config}/destinations/{destination}`.
-    stateTimeline: Output only. The timeline of the expected Destination
+    name: Identifier. The name of the `Destination` resource. Format: `project
+      s/{project}/locations/{location}/multicloudDataTransferConfigs/{multiclo
+      ud_data_transfer_config}/destinations/{destination}`.
+    stateTimeline: Output only. The timeline of the expected `Destination`
       states or the current rest state. If a state change is expected, the
-      value will be the list of ADDING, DELETING or SUSPENDING statesdepending
-      on the actions taken. Example: "state_timeline": { "states": [ {
-      "state": "ADDING", // The time when the Destination will be activated.
-      "effective_time": "2024-12-01T08:00:00Z" }, { "state": "SUSPENDING", //
-      The time when the Destination will be suspended. "effective_time":
-      "2024-12-01T20:00:00Z" } ] }
-    uid: Output only. The Google-generated UUID for the destination. This
-      value is unique across all destination resources. If a destination is
-      deleted and another with the same name is created, the new destination
-      is assigned a different uid.
-    updateTime: Output only. Time when the Destination was updated.
+      value is `ADDING`, `DELETING` or `SUSPENDING`, depending on the action
+      specified. Example: "state_timeline": { "states": [ { // The time when
+      the `Destination` resource will be activated. "effectiveTime":
+      "2024-12-01T08:00:00Z", "state": "ADDING" }, { // The time when the
+      `Destination` resource will be suspended. "effectiveTime":
+      "2024-12-01T20:00:00Z", "state": "SUSPENDING" } ] }
+    uid: Output only. The Google-generated unique ID for the `Destination`
+      resource. This value is unique across all `Destination` resources. If a
+      resource is deleted and another with the same name is created, the new
+      resource is assigned a different and unique ID.
+    updateTime: Output only. Time when the `Destination` resource was updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -692,25 +693,27 @@ class Destination(_messages.Message):
 
 
 class DestinationEndpoint(_messages.Message):
-  r"""The metadata for a DestinationEndpoint.
+  r"""The metadata for a `DestinationEndpoint` resource.
 
   Enums:
-    StateValueValuesEnum: Output only. The state of the Endpoint.
+    StateValueValuesEnum: Output only. The state of the `DestinationEndpoint`
+      resource.
 
   Fields:
-    asn: Required. The ASN of the remote IP Prefix.
-    csp: Required. The name of the CSP of the remote IP Prefix.
-    state: Output only. The state of the Endpoint.
-    updateTime: Output only. Time when the DestinationEndpoint was updated.
+    asn: Required. The ASN of the remote IP prefix.
+    csp: Required. The CSP of the remote IP prefix.
+    state: Output only. The state of the `DestinationEndpoint` resource.
+    updateTime: Output only. Time when the `DestinationEndpoint` resource was
+      updated.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The state of the Endpoint.
+    r"""Output only. The state of the `DestinationEndpoint` resource.
 
     Values:
-      STATE_UNSPECIFIED: An invalid state as the default case.
-      VALID: The Endpoint is valid.
-      INVALID: The Endpoint is invalid.
+      STATE_UNSPECIFIED: An invalid state, which is the default case.
+      VALID: The `DestinationEndpoint` resource is valid.
+      INVALID: The `DestinationEndpoint` resource is invalid.
     """
     STATE_UNSPECIFIED = 0
     VALID = 1
@@ -1722,10 +1725,10 @@ class LinkedVpnTunnels(_messages.Message):
 
 
 class ListDestinationsResponse(_messages.Message):
-  r"""Response message for ListDestinations.
+  r"""Response message to list `Destination` resources.
 
   Fields:
-    destinations: Destinations to be returned.
+    destinations: The list of `Destination` resources to be listed.
     nextPageToken: The next page token.
     unreachable: Locations that could not be reached.
   """
@@ -1814,11 +1817,11 @@ class ListLocationsResponse(_messages.Message):
 
 
 class ListMulticloudDataTransferConfigsResponse(_messages.Message):
-  r"""Response message for ListMulticloudDataTransferConfigs.
+  r"""Response message to list `MulticloudDataTransferConfig` resources.
 
   Fields:
-    multicloudDataTransferConfigs: MulticloudDataTransferConfigs to be
-      returned.
+    multicloudDataTransferConfigs: The list of `MulticloudDataTransferConfig`
+      resources to be listed.
     nextPageToken: The next page token.
     unreachable: Locations that could not be reached.
   """
@@ -1829,7 +1832,8 @@ class ListMulticloudDataTransferConfigsResponse(_messages.Message):
 
 
 class ListMulticloudDataTransferSupportedServicesResponse(_messages.Message):
-  r"""Response message for ListMulticloudDataTransferSupportedServices.
+  r"""Response message to list the services in your project in regions that
+  are eligible for Data Transfer Essentials configuration.
 
   Fields:
     multicloudDataTransferSupportedServices: The list of supported services.
@@ -2112,50 +2116,48 @@ class Migration(_messages.Message):
 
 
 class MulticloudDataTransferConfig(_messages.Message):
-  r"""The MulticloudDataTransferConfig resource. This lists the services for
-  which customer is opting in for Multicloud Data Transfer.
+  r"""The `MulticloudDataTransferConfig` resource. It lists the services that
+  you configure for Data Transfer Essentials billing and metering.
 
   Messages:
     LabelsValue: Optional. User-defined labels.
-    ServicesValue: Optional. This map services to either their current or
-      planned states. Service names are keys, and the associated values
-      describe the service's state. If a state change is expected, the value
-      will be the list of ADDING or DELETING states depending on the actions
-      taken. Example: "services": { "big-query": { "states": [ { "state":
-      "ADDING", "effective_time": "2024-12-12T08:00:00Z" }, ] }, "cloud-
-      storage": { "states": [ { "state": "ACTIVE", } ] } }
+    ServicesValue: Optional. Maps services to their current or planned states.
+      Service names are keys, and the associated values describe the state of
+      the service. If a state change is expected, the value is either `ADDING`
+      or `DELETING`, depending on the actions taken. Sample output:
+      "services": { "big-query": { "states": [ { "effectiveTime":
+      "2024-12-12T08:00:00Z" "state": "ADDING", }, ] }, "cloud-storage": {
+      "states": [ { "state": "ACTIVE", } ] } }
 
   Fields:
-    createTime: Output only. Time when the MulticloudDataTransferConfig was
-      created.
-    description: Optional. An optional field to provide a description of this
-      resource.
-    destinationsActiveCount: Output only. The number of Destinations in use
-      under the MulticloudDataTransferConfig resource.
-    destinationsCount: Output only. The number of Destinations configured
-      under the MulticloudDataTransferConfig resource.
-    etag: The etag is computed by the server, and may be sent on update and
-      delete requests to ensure the client has an up-to-date value before
+    createTime: Output only. Time when the `MulticloudDataTransferConfig`
+      resource was created.
+    description: Optional. A description of this resource.
+    destinationsActiveCount: Output only. The number of `Destination`
+      resources in use with the `MulticloudDataTransferConfig` resource.
+    destinationsCount: Output only. The number of `Destination` resources
+      configured for the `MulticloudDataTransferConfig` resource.
+    etag: The etag is computed by the server, and might be sent with update
+      and delete requests so that the client has an up-to-date value before
       proceeding.
     labels: Optional. User-defined labels.
-    name: Identifier. The name of the MulticloudDataTransferConfig resource.
+    name: Identifier. The name of the `MulticloudDataTransferConfig` resource.
       Format: `projects/{project}/locations/{location}/multicloudDataTransferC
       onfigs/{multicloud_data_transfer_config}`.
-    services: Optional. This map services to either their current or planned
-      states. Service names are keys, and the associated values describe the
-      service's state. If a state change is expected, the value will be the
-      list of ADDING or DELETING states depending on the actions taken.
-      Example: "services": { "big-query": { "states": [ { "state": "ADDING",
-      "effective_time": "2024-12-12T08:00:00Z" }, ] }, "cloud-storage": {
+    services: Optional. Maps services to their current or planned states.
+      Service names are keys, and the associated values describe the state of
+      the service. If a state change is expected, the value is either `ADDING`
+      or `DELETING`, depending on the actions taken. Sample output:
+      "services": { "big-query": { "states": [ { "effectiveTime":
+      "2024-12-12T08:00:00Z" "state": "ADDING", }, ] }, "cloud-storage": {
       "states": [ { "state": "ACTIVE", } ] } }
-    uid: Output only. The Google-generated UUID for the
-      MulticloudDataTransferConfig. This value is unique across all
-      MulticloudDataTransferConfig resources. If a
-      MulticloudDataTransferConfig is deleted and another with the same name
-      is created, the new MulticloudDataTransferConfig is assigned a different
-      uid.
-    updateTime: Output only. Time when the MulticloudDataTransferConfig was
-      updated.
+    uid: Output only. The Google-generated unique ID for the
+      `MulticloudDataTransferConfig` resource. This value is unique across all
+      `MulticloudDataTransferConfig` resources. If a resource is deleted and
+      another with the same name is created, the new resource is assigned a
+      different and unique ID.
+    updateTime: Output only. Time when the `MulticloudDataTransferConfig`
+      resource was updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -2184,12 +2186,12 @@ class MulticloudDataTransferConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ServicesValue(_messages.Message):
-    r"""Optional. This map services to either their current or planned states.
-    Service names are keys, and the associated values describe the service's
-    state. If a state change is expected, the value will be the list of ADDING
-    or DELETING states depending on the actions taken. Example: "services": {
-    "big-query": { "states": [ { "state": "ADDING", "effective_time":
-    "2024-12-12T08:00:00Z" }, ] }, "cloud-storage": { "states": [ { "state":
+    r"""Optional. Maps services to their current or planned states. Service
+    names are keys, and the associated values describe the state of the
+    service. If a state change is expected, the value is either `ADDING` or
+    `DELETING`, depending on the actions taken. Sample output: "services": {
+    "big-query": { "states": [ { "effectiveTime": "2024-12-12T08:00:00Z"
+    "state": "ADDING", }, ] }, "cloud-storage": { "states": [ { "state":
     "ACTIVE", } ] } }
 
     Messages:
@@ -2225,12 +2227,13 @@ class MulticloudDataTransferConfig(_messages.Message):
 
 
 class MulticloudDataTransferSupportedService(_messages.Message):
-  r"""The supported service for Multicloud Data Transfer.
+  r"""A service in your project in a region that is eligible for Data Transfer
+  Essentials configuration.
 
   Fields:
     name: Identifier. The name of the service.
-    serviceConfigs: Output only. The network service tiers supported for the
-      service.
+    serviceConfigs: Output only. The network service tier or regional endpoint
+      supported for the service.
   """
 
   name = _messages.StringField(1)
@@ -3116,21 +3119,20 @@ class NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsCreateReq
     multicloudDataTransferConfig: A MulticloudDataTransferConfig resource to
       be passed as the request body.
     multicloudDataTransferConfigId: Required. The ID to use for the
-      MulticloudDataTransferConfig, which will become the final component of
-      the MulticloudDataTransferConfig's resource name.
-    parent: Required. The parent resource's name
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate
-      MulticloudDataTransferConfigs. The request ID must be a valid UUID with
-      the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
+      `MulticloudDataTransferConfig` resource, which becomes the final
+      component of the `MulticloudDataTransferConfig` resource name.
+    parent: Required. The name of the parent resource.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server can ignore
+      the request if it has already been completed. The server waits for at
+      least 60 minutes since the first request. For example, consider a
+      situation where you make an initial request and the request times out.
+      If you make the request again with the same request ID, the server can
+      check if original operation with the same request ID was received, and
+      if so, can ignore the second request. This prevents clients from
+      accidentally creating duplicate `MulticloudDataTransferConfig`
+      resources. The request ID must be a valid UUID with the exception that
+      zero UUID (00000000-0000-0000-0000-000000000000) isn't supported.
   """
 
   multicloudDataTransferConfig = _messages.MessageField('MulticloudDataTransferConfig', 1)
@@ -3144,23 +3146,22 @@ class NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsDeleteReq
   eRequest object.
 
   Fields:
-    etag: Optional. The etag is computed by the server, and may be sent on
-      update and delete requests to ensure the client has an up-to-date value
+    etag: Optional. The etag is computed by the server, and might be sent with
+      update and delete requests so that the client has an up-to-date value
       before proceeding.
-    name: Required. The name of the MulticloudDataTransferConfig resource to
+    name: Required. The name of the `MulticloudDataTransferConfig` resource to
       delete.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate
-      MulticloudDataTransferConfigs. The request ID must be a valid UUID with
-      the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server can ignore
+      the request if it has already been completed. The server waits for at
+      least 60 minutes since the first request. For example, consider a
+      situation where you make an initial request and the request times out.
+      If you make the request again with the same request ID, the server can
+      check if original operation with the same request ID was received, and
+      if so, can ignore the second request. This prevents clients from
+      accidentally creating duplicate `MulticloudDataTransferConfig`
+      resources. The request ID must be a valid UUID with the exception that
+      zero UUID (00000000-0000-0000-0000-000000000000) isn't supported.
   """
 
   etag = _messages.StringField(1)
@@ -3174,20 +3175,20 @@ class NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsDestinati
 
   Fields:
     destination: A Destination resource to be passed as the request body.
-    destinationId: Required. The ID to use for the Destination, which will
-      become the final component of the Destination's resource name.
-    parent: Required. The parent resource's name
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate Destinations.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+    destinationId: Required. The ID to use for the `Destination` resource,
+      which becomes the final component of the `Destination` resource name.
+    parent: Required. The name of the parent resource.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server can ignore
+      the request if it has already been completed. The server waits for at
+      least 60 minutes since the first request. For example, consider a
+      situation where you make an initial request and the request times out.
+      If you make the request again with the same request ID, the server can
+      check if original operation with the same request ID was received, and
+      if so, can ignore the second request. This prevents clients from
+      accidentally creating duplicate `Destination` resources. The request ID
+      must be a valid UUID with the exception that zero UUID
+      (00000000-0000-0000-0000-000000000000) isn't supported.
   """
 
   destination = _messages.MessageField('Destination', 1)
@@ -3201,20 +3202,20 @@ class NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsDestinati
   nationsDeleteRequest object.
 
   Fields:
-    etag: Optional. The etag is computed by the server, and may be sent on
-      update and delete requests to ensure the client has an up-to-date value
+    etag: Optional. The etag is computed by the server, and might be sent with
+      update and delete requests so that the client has an up-to-date value
       before proceeding.
-    name: Required. The name of the Destination resource to delete.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+    name: Required. The name of the `Destination` resource to delete.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server can ignore
+      the request if it has already been completed. The server waits for at
+      least 60 minutes since the first request. For example, consider a
+      situation where you make an initial request and the request times out.
+      If you make the request again with the same request ID, the server can
+      check if original operation with the same request ID was received, and
+      if so, can ignore the second request. The request ID must be a valid
+      UUID with the exception that zero UUID
+      (00000000-0000-0000-0000-000000000000) isn't supported.
   """
 
   etag = _messages.StringField(1)
@@ -3227,7 +3228,7 @@ class NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsDestinati
   nationsGetRequest object.
 
   Fields:
-    name: Required. Name of the Destination to get.
+    name: Required. The name of the `Destination` resource to get.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3238,15 +3239,14 @@ class NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsDestinati
   nationsListRequest object.
 
   Fields:
-    filter: Optional. A filter expression that filters the results listed in
-      the response.
-    orderBy: Optional. Sort the results by a certain order.
-    pageSize: Optional. The maximum number of results per page that should be
-      returned.
+    filter: Optional. An expression that filters the results listed in the
+      response.
+    orderBy: Optional. The sort order of the results.
+    pageSize: Optional. The maximum number of results listed per page.
     pageToken: Optional. The page token.
-    parent: Required. The parent resource's name
-    returnPartialSuccess: Optional. If true, allow partial responses for
-      multi-regional Aggregated List requests.
+    parent: Required. The name of the parent resource.
+    returnPartialSuccess: Optional. If `true`, allow partial responses for
+      multi-regional aggregated list requests.
   """
 
   filter = _messages.StringField(1)
@@ -3263,24 +3263,24 @@ class NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsDestinati
 
   Fields:
     destination: A Destination resource to be passed as the request body.
-    name: Identifier. The name of the Destination resource. Format: `projects/
-      {project}/locations/{location}/multicloudDataTransferConfigs/{multicloud
-      _data_transfer_config}/destinations/{destination}`.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the Destination resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
+    name: Identifier. The name of the `Destination` resource. Format: `project
+      s/{project}/locations/{location}/multicloudDataTransferConfigs/{multiclo
+      ud_data_transfer_config}/destinations/{destination}`.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server can ignore
+      the request if it has already been completed. The server waits for at
+      least 60 minutes since the first request. For example, consider a
+      situation where you make an initial request and the request times out.
+      If you make the request again with the same request ID, the server can
+      check if original operation with the same request ID was received, and
+      if so, can ignore the second request. The request ID must be a valid
+      UUID with the exception that zero UUID
+      (00000000-0000-0000-0000-000000000000) isn't supported.
+    updateMask: Optional. `FieldMask is used to specify the fields to be
+      overwritten in the `Destination` resource by the update. The fields
+      specified in `update_mask` are relative to the resource, not the full
+      request. A field is overwritten if it is in the mask. If you don't
+      specify a mask, all fields are overwritten.
   """
 
   destination = _messages.MessageField('Destination', 1)
@@ -3295,7 +3295,8 @@ class NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsGetReques
   object.
 
   Fields:
-    name: Required. Name of the MulticloudDataTransferConfig to get.
+    name: Required. The name of the `MulticloudDataTransferConfig` resource to
+      get.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3307,15 +3308,14 @@ class NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsListReque
   object.
 
   Fields:
-    filter: Optional. A filter expression that filters the results listed in
-      the response.
-    orderBy: Optional. Sort the results by a certain order.
-    pageSize: Optional. The maximum number of results per page that should be
-      returned.
+    filter: Optional. An expression that filters the results listed in the
+      response.
+    orderBy: Optional. The sort order of the results.
+    pageSize: Optional. The maximum number of results listed per page.
     pageToken: Optional. The page token.
-    parent: Required. The parent resource's name
-    returnPartialSuccess: Optional. If true, allow partial responses for
-      multi-regional Aggregated List requests.
+    parent: Required. The name of the parent resource.
+    returnPartialSuccess: Optional. If `true`, allows partial responses for
+      multi-regional aggregated list requests.
   """
 
   filter = _messages.StringField(1)
@@ -3333,26 +3333,25 @@ class NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsPatchRequ
   Fields:
     multicloudDataTransferConfig: A MulticloudDataTransferConfig resource to
       be passed as the request body.
-    name: Identifier. The name of the MulticloudDataTransferConfig resource.
+    name: Identifier. The name of the `MulticloudDataTransferConfig` resource.
       Format: `projects/{project}/locations/{location}/multicloudDataTransferC
       onfigs/{multicloud_data_transfer_config}`.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate
-      MulticloudDataTransferConfigs. The request ID must be a valid UUID with
-      the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-    updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the MulticloudDataTransferConfig resource by the update.
-      The fields specified in the update_mask are relative to the resource,
-      not the full request. A field will be overwritten if it is in the mask.
-      If the user does not provide a mask then all fields will be overwritten.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server can ignore
+      the request if it has already been completed. The server waits for at
+      least 60 minutes since the first request. For example, consider a
+      situation where you make an initial request and the request times out.
+      If you make the request again with the same request ID, the server can
+      check if original operation with the same request ID was received, and
+      if so, can ignore the second request. This prevents clients from
+      accidentally creating duplicate `MulticloudDataTransferConfig`
+      resources. The request ID must be a valid UUID with the exception that
+      zero UUID (00000000-0000-0000-0000-000000000000) isn't supported.
+    updateMask: Optional. `FieldMask` is used to specify the fields in the
+      `MulticloudDataTransferConfig` resource to be overwritten by the update.
+      The fields specified in `update_mask` are relative to the resource, not
+      the full request. A field is overwritten if it is in the mask. If you
+      don't specify a mask, all fields are overwritten.
   """
 
   multicloudDataTransferConfig = _messages.MessageField('MulticloudDataTransferConfig', 1)
@@ -3377,10 +3376,9 @@ class NetworkconnectivityProjectsLocationsMulticloudDataTransferSupportedService
   vicesListRequest object.
 
   Fields:
-    pageSize: Optional. The maximum number of results per page that should be
-      returned.
+    pageSize: Optional. The maximum number of results listed per page.
     pageToken: Optional. The page token.
-    parent: Required. The parent resource's name
+    parent: Required. The name of the parent resource.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -5447,38 +5445,31 @@ class ServiceClass(_messages.Message):
 
 
 class ServiceConfig(_messages.Message):
-  r"""Specifies the Multicloud Data Transfer supported services configuration.
-  This includes either the network tier or the request endpoint. If end of
-  support for multicloud data transfer is planned for a service's network tier
-  or request endpoint, the end time will be provided.
+  r"""Specifies eligibility information for the service.
 
   Enums:
     EligibilityCriteriaValueValuesEnum: Output only. The eligibility criteria
-      for the service. The user has to meet the eligibility criteria specified
-      here for the service to qualify for multicloud data transfer.
+      for the service.
 
   Fields:
     eligibilityCriteria: Output only. The eligibility criteria for the
-      service. The user has to meet the eligibility criteria specified here
-      for the service to qualify for multicloud data transfer.
-    supportEndTime: Output only. The eligibility criteria support end time. If
-      the end time is not specified, no planned end time is available.
+      service.
+    supportEndTime: Output only. The end time for eligibility criteria
+      support. If not specified, no planned end time is set.
   """
 
   class EligibilityCriteriaValueValuesEnum(_messages.Enum):
-    r"""Output only. The eligibility criteria for the service. The user has to
-    meet the eligibility criteria specified here for the service to qualify
-    for multicloud data transfer.
+    r"""Output only. The eligibility criteria for the service.
 
     Values:
-      ELIGIBILITY_CRITERIA_UNSPECIFIED: An invalid eligibility criteria as the
-        default case.
-      NETWORK_SERVICE_TIER_PREMIUM_ONLY: The service is eligible for
-        multicloud data transfer only for the premium network tier.
-      NETWORK_SERVICE_TIER_STANDARD_ONLY: The service is eligible for
-        multicloud data transfer only for the standard network tier.
+      ELIGIBILITY_CRITERIA_UNSPECIFIED: The service is not eligible for Data
+        Transfer Essentials configuration. This is the default case.
+      NETWORK_SERVICE_TIER_PREMIUM_ONLY: The service is eligible for Data
+        Transfer Essentials configuration only for Premium Tier.
+      NETWORK_SERVICE_TIER_STANDARD_ONLY: The service is eligible for Data
+        Transfer Essentials configuration only for Standard Tier.
       REQUEST_ENDPOINT_REGIONAL_ENDPOINT_ONLY: The service is eligible for
-        multicloud data transfer only for the regional endpoint.
+        Data Transfer Essentials configuration only for the regional endpoint.
     """
     ELIGIBILITY_CRITERIA_UNSPECIFIED = 0
     NETWORK_SERVICE_TIER_PREMIUM_ONLY = 1
@@ -6112,12 +6103,11 @@ class StateMetadata(_messages.Message):
     StateValueValuesEnum: Output only. The state of the resource.
 
   Fields:
-    effectiveTime: Output only. This field will be accompanied only with
-      transient states (PENDING_ADD, PENDING_DELETE, PENDING_SUSPENSION) and
-      denotes the time when the transient state of the resource will be
-      effective. For instance, if the state is "ADDING," this field will show
-      the time the resource transitions to "ACTIVE." Similarly, if the state
-      is "PENDING_DELETE," it will show the deletion time.
+    effectiveTime: Output only. Accompanies only the transient states, which
+      include `ADDING`, `DELETING`, and `SUSPENDING`, to denote the time until
+      which the transient state of the resource will be effective. For
+      instance, if the state is `ADDING`, this field shows the time when the
+      resource state transitions to `ACTIVE`.
     state: Output only. The state of the resource.
   """
 
@@ -6125,12 +6115,12 @@ class StateMetadata(_messages.Message):
     r"""Output only. The state of the resource.
 
     Values:
-      STATE_UNSPECIFIED: An invalid state as the default case.
+      STATE_UNSPECIFIED: An invalid state, which is the default case.
       ADDING: The resource is being added.
       ACTIVE: The resource is in use.
       DELETING: The resource is being deleted.
       SUSPENDING: The resource is being suspended.
-      SUSPENDED: The resource is not in use for billing and is suspended.
+      SUSPENDED: The resource is suspended and not in use.
     """
     STATE_UNSPECIFIED = 0
     ADDING = 1
@@ -6187,7 +6177,7 @@ class StateReason(_messages.Message):
 
 
 class StateTimeline(_messages.Message):
-  r"""The timeline of pending states for a resource.
+  r"""The timeline of the pending states for a resource.
 
   Fields:
     states: Output only. The state and activation time details of the resource

@@ -93,6 +93,7 @@ class BackupPlansClient(util.BackupDrClientBase):
       log_retention_days,
       description,
       labels,
+      max_custom_on_demand_retention_days,
   ):
     """Creates a Backup Plan.
 
@@ -104,6 +105,8 @@ class BackupPlansClient(util.BackupDrClientBase):
       log_retention_days: The log retention days of the Backup Plan.
       description: The description of the Backup Plan.
       labels: The labels of the Backup Plan.
+      max_custom_on_demand_retention_days: The custom on demand retention days
+        limit of the Backup Plan.
 
     Returns:
       The created Backup Plan.
@@ -128,6 +131,10 @@ class BackupPlansClient(util.BackupDrClientBase):
     backup_plan.backupRules = self._ParseBackupRules(backup_rules)
     if log_retention_days is not None:
       backup_plan.logRetentionDays = log_retention_days
+    if max_custom_on_demand_retention_days is not None:
+      backup_plan.maxCustomOnDemandRetentionDays = (
+          int(max_custom_on_demand_retention_days)
+      )
     request = self.messages.BackupdrProjectsLocationsBackupPlansCreateRequest(
         parent=parent,
         backupPlan=backup_plan,

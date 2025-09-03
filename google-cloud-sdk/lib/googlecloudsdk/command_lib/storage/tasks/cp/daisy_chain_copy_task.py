@@ -24,6 +24,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+import copy
 import io
 import os
 import threading
@@ -356,11 +357,43 @@ class BufferController:
     self._download_thread = None
     self.exception_raised = None
 
+  def _get_source_user_request_args_for_download(self):
+    """Returns a modified copy of user_request_args for the download request.
+
+    When performing a daisy-chain copy (e.g., S3 to GCS, or GCS to S3,
+    or GCS to GCS), certain flags like custom contexts are intended for the
+    destination and are unsupported by the source.
+
+    For example, object contexts are supported by GCS, but not by S3, so while
+    performing a daisy-chain copy from S3 to GCS, the object contexts specified
+    in the user_request_args (intended for the destination) should not be
+    passed to create the request config for the source, as it would result in an
+    error.
+
+    This method creates a copy of the user_request_args and
+    removes such destination-intended specific flags before initiating
+    the download from the source.
+    """
+    if not self._user_request_args or not self._user_request_args.resource_args:
+      return self._user_request_args
+
+    user_args = copy.deepcopy(self._user_request_args)
+    resource_args = user_args.resource_args
+
+    # While doing daisy chain, these arguments are specified for the destination
+    # resource, and not for the source resource. So, we need to set them to
+    # None for S3.
+    setattr(resource_args, 'custom_contexts_to_set', None)
+    setattr(resource_args, 'custom_contexts_to_remove', None)
+    setattr(resource_args, 'custom_contexts_to_update', None)
+
+    return user_args
+
   def _run_download(self, start_byte):
     """Performs the download operation."""
     request_config = request_config_factory.get_request_config(
         self._source_resource.storage_url,
-        user_request_args=self._user_request_args)
+        user_request_args=self._get_source_user_request_args_for_download())
 
     client = api_factory.get_api(self._source_resource.storage_url.scheme)
     try:
@@ -433,6 +466,7 @@ class DaisyChainCopyTask(copy_util.ObjectCopyTaskWithExitHandler):
       source_resource,
       destination_resource,
       delete_source=False,
+      fetch_source_fields_scope=None,
       posix_to_set=None,
       print_created_message=False,
       print_source_version=False,
@@ -449,6 +483,8 @@ class DaisyChainCopyTask(copy_util.ObjectCopyTaskWithExitHandler):
         this location will be overwritten. Directories will not be accepted.
       delete_source (bool): If copy completes successfully, delete the source
         object afterwards.
+      fetch_source_fields_scope (FieldsScope|None): If present, then refetch
+        source_resource with metadata determined by this FieldsScope.
       posix_to_set (PosixAttributes|None): See parent class.
       print_created_message (bool): See parent class.
       print_source_version (bool): See parent class.
@@ -471,6 +507,7 @@ class DaisyChainCopyTask(copy_util.ObjectCopyTaskWithExitHandler):
           'DaisyChainCopyTask is for copies between cloud providers.'
       )
 
+    self._fetch_source_fields_scope = fetch_source_fields_scope
     self._delete_source = delete_source
 
     self.parallel_processing_key = (
@@ -482,7 +519,7 @@ class DaisyChainCopyTask(copy_util.ObjectCopyTaskWithExitHandler):
         properties.CheckHashes.NEVER.value):
       return None
 
-    if self._source_resource.md5_hash is None:
+    if self._enriched_source_resource.md5_hash is None:
       # For composite uploads, MD5 hash might be missing.
       # TODO(b/191975989) Add support for crc32c once -D option is implemented.
       # Composite uploads will have crc32c information, which we should
@@ -490,8 +527,8 @@ class DaisyChainCopyTask(copy_util.ObjectCopyTaskWithExitHandler):
       log.warning(
           'Found no hashes to validate object downloaded from %s and'
           ' uploaded to %s. Integrity cannot be assured without hashes.',
-          self._source_resource, self._destination_resource)
-    return self._source_resource.md5_hash
+          self._enriched_source_resource, self._destination_resource)
+    return self._enriched_source_resource.md5_hash
 
   def _gapfill_request_config_field(self, resource_args,
                                     request_config_field_name,
@@ -499,8 +536,13 @@ class DaisyChainCopyTask(copy_util.ObjectCopyTaskWithExitHandler):
     request_config_value = getattr(resource_args, request_config_field_name,
                                    None)
     if request_config_value is None:
-      setattr(resource_args, request_config_field_name,
-              getattr(self._source_resource, source_resource_field_name))
+      setattr(
+          resource_args,
+          request_config_field_name,
+          getattr(
+              self._enriched_source_resource, source_resource_field_name
+          ),
+      )
 
   def _populate_request_config_with_resource_values(self, request_config):
     resource_args = request_config.resource_args
@@ -526,6 +568,31 @@ class DaisyChainCopyTask(copy_util.ObjectCopyTaskWithExitHandler):
   def execute(self, task_status_queue=None):
     """Copies file by downloading and uploading in parallel."""
     # TODO (b/168712813): Add option to use the Data Transfer component.
+
+    # We only preserve metadata for S3 to GCS syncs, and not for GCS to S3.
+    # Note that GCS to GCS, and S3 to S3 rsync only follows intra-cloud metadata
+    # preservation logic, and not daisy chain logic. Rsync does not support
+    # --daisy-chain flag, so we don't need to worry about it here.
+    # Additionally cp, mv doesn't require re-fetching source metadata, as this
+    # is only required for rsync usecases due to lost attributes during
+    # comparison alogrithm, so we don't need to worry about it here too.
+    if self._fetch_source_fields_scope and (
+        self._source_resource.storage_url.scheme
+        is storage_url.ProviderPrefix.S3
+    ):
+      # Update source_resource with metadata if fetch_source_fields_scope.
+      source_client = api_factory.get_api(
+          self._source_resource.storage_url.scheme
+      )
+      self._enriched_source_resource = source_client.get_object_metadata(
+          self._source_resource.bucket,
+          self._source_resource.name,
+          generation=self._source_resource.generation,
+          fields_scope=self._fetch_source_fields_scope,
+      )
+    else:
+      self._enriched_source_resource = self._source_resource
+
     destination_client = api_factory.get_api(
         self._destination_resource.storage_url.scheme)
     if copy_util.check_for_cloud_clobber(self._user_request_args,
@@ -536,7 +603,7 @@ class DaisyChainCopyTask(copy_util.ObjectCopyTaskWithExitHandler):
               self._destination_resource.storage_url))
       if self._send_manifest_messages:
         manifest_util.send_skip_message(
-            task_status_queue, self._source_resource,
+            task_status_queue, self._enriched_source_resource,
             self._destination_resource,
             copy_util.get_no_clobber_message(
                 self._destination_resource.storage_url))
@@ -545,8 +612,8 @@ class DaisyChainCopyTask(copy_util.ObjectCopyTaskWithExitHandler):
     progress_callback = progress_callbacks.FilesAndBytesProgressCallback(
         status_queue=task_status_queue,
         offset=0,
-        length=self._source_resource.size,
-        source_url=self._source_resource.storage_url,
+        length=self._enriched_source_resource.size,
+        source_url=self._enriched_source_resource.storage_url,
         destination_url=self._destination_resource.storage_url,
         operation_name=task_status.OperationName.DAISY_CHAIN_COPYING,
         process_id=os.getpid(),
@@ -554,7 +621,7 @@ class DaisyChainCopyTask(copy_util.ObjectCopyTaskWithExitHandler):
     )
 
     buffer_controller = BufferController(
-        self._source_resource,
+        self._enriched_source_resource,
         self._destination_resource.storage_url.scheme,
         self._user_request_args,
         progress_callback)
@@ -564,14 +631,14 @@ class DaisyChainCopyTask(copy_util.ObjectCopyTaskWithExitHandler):
     buffer_controller.start_download_thread()
 
     content_type = (
-        self._source_resource.content_type or
+        self._enriched_source_resource.content_type or
         request_config_factory.DEFAULT_CONTENT_TYPE)
 
     request_config = request_config_factory.get_request_config(
         self._destination_resource.storage_url,
         content_type=content_type,
         md5_hash=self._get_md5_hash(),
-        size=self._source_resource.size,
+        size=self._enriched_source_resource.size,
         user_request_args=self._user_request_args)
     # Request configs are designed to translate between providers.
     self._populate_request_config_with_resource_values(request_config)
@@ -580,13 +647,13 @@ class DaisyChainCopyTask(copy_util.ObjectCopyTaskWithExitHandler):
     try:
       upload_strategy = upload_util.get_upload_strategy(
           api=destination_client,
-          object_length=self._source_resource.size)
+          object_length=self._enriched_source_resource.size)
       result_resource = destination_client.upload_object(
           buffer_controller.readable_stream,
           self._destination_resource,
           request_config,
           posix_to_set=self._posix_to_set,
-          source_resource=self._source_resource,
+          source_resource=self._enriched_source_resource,
           upload_strategy=upload_strategy,
       )
     except _AbruptShutdownError:
@@ -609,14 +676,16 @@ class DaisyChainCopyTask(copy_util.ObjectCopyTaskWithExitHandler):
       if self._send_manifest_messages:
         manifest_util.send_success_message(
             task_status_queue,
-            self._source_resource,
+            self._enriched_source_resource,
             self._destination_resource,
             md5_hash=result_resource.md5_hash)
 
     if self._delete_source:
       return task.Output(
-          additional_task_iterators=[
-              [delete_task.DeleteObjectTask(self._source_resource.storage_url)]
-          ],
+          additional_task_iterators=[[
+              delete_task.DeleteObjectTask(
+                  self._enriched_source_resource.storage_url
+              )
+          ]],
           messages=None,
       )

@@ -114,7 +114,8 @@ _HUMAN_FRIENDLY_OPERATION_TYPE_SUFFIXES = {
 # format:
 # reservations/<reservation-name>/<reservation-block-name>/<reservation-subblock-name>.
 _MULTI_NESTED_RESOURCE_OPERATION_TYPES = [
-    'ReservationSubBlocks.performMaintenance'
+    'ReservationSubBlocks.performMaintenance',
+    'ReservationSubBlocks.reportFaulty',
 ]
 
 

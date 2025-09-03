@@ -331,8 +331,9 @@ class FirebasedataconnectProjectsLocationsListRequest(_messages.Message):
   r"""A FirebasedataconnectProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -515,6 +516,38 @@ class FirebasedataconnectProjectsLocationsServicesConnectorsGetRequest(_messages
   name = _messages.StringField(1, required=True)
 
 
+class FirebasedataconnectProjectsLocationsServicesConnectorsImpersonateMutationRequest(_messages.Message):
+  r"""A FirebasedataconnectProjectsLocationsServicesConnectorsImpersonateMutat
+  ionRequest object.
+
+  Fields:
+    impersonateRequest: A ImpersonateRequest resource to be passed as the
+      request body.
+    name: Required. The resource name of the connector to find the predefined
+      query/mutation, in the format: ``` projects/{project}/locations/{locatio
+      n}/services/{service}/connectors/{connector} ```
+  """
+
+  impersonateRequest = _messages.MessageField('ImpersonateRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class FirebasedataconnectProjectsLocationsServicesConnectorsImpersonateQueryRequest(_messages.Message):
+  r"""A FirebasedataconnectProjectsLocationsServicesConnectorsImpersonateQuery
+  Request object.
+
+  Fields:
+    impersonateRequest: A ImpersonateRequest resource to be passed as the
+      request body.
+    name: Required. The resource name of the connector to find the predefined
+      query/mutation, in the format: ``` projects/{project}/locations/{locatio
+      n}/services/{service}/connectors/{connector} ```
+  """
+
+  impersonateRequest = _messages.MessageField('ImpersonateRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class FirebasedataconnectProjectsLocationsServicesConnectorsListRequest(_messages.Message):
   r"""A FirebasedataconnectProjectsLocationsServicesConnectorsListRequest
   object.
@@ -685,6 +718,22 @@ class FirebasedataconnectProjectsLocationsServicesGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class FirebasedataconnectProjectsLocationsServicesIntrospectGraphqlRequest(_messages.Message):
+  r"""A FirebasedataconnectProjectsLocationsServicesIntrospectGraphqlRequest
+  object.
+
+  Fields:
+    graphqlRequest: A GraphqlRequest resource to be passed as the request
+      body.
+    name: Required. The relative resource name of Firebase Data Connect
+      service, in the format: ```
+      projects/{project}/locations/{location}/services/{service} ```
+  """
+
+  graphqlRequest = _messages.MessageField('GraphqlRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class FirebasedataconnectProjectsLocationsServicesListRequest(_messages.Message):
@@ -1188,6 +1237,51 @@ class GraphqlResponse(_messages.Message):
   errors = _messages.MessageField('GraphqlError', 2, repeated=True)
 
 
+class ImpersonateRequest(_messages.Message):
+  r"""The Impersonate request to Firebase Data Connect.
+
+  Messages:
+    VariablesValue: Optional. Values for GraphQL variables provided in this
+      request.
+
+  Fields:
+    extensions: Optional. Additional GraphQL request information.
+    operationName: Required. The name of the GraphQL operation name. Required
+      because all Connector operations must be named. See
+      https://graphql.org/learn/queries/#operation-name.
+    variables: Optional. Values for GraphQL variables provided in this
+      request.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class VariablesValue(_messages.Message):
+    r"""Optional. Values for GraphQL variables provided in this request.
+
+    Messages:
+      AdditionalProperty: An additional property for a VariablesValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a VariablesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  extensions = _messages.MessageField('GraphqlRequestExtensions', 1)
+  operationName = _messages.StringField(2)
+  variables = _messages.MessageField('VariablesValue', 3)
+
+
 class Impersonation(_messages.Message):
   r"""Impersonation configures the Firebase Auth context to impersonate.
 
@@ -1551,6 +1645,17 @@ class PostgreSql(_messages.Message):
   Fields:
     cloudSql: Cloud SQL configurations.
     database: Required. Name of the PostgreSQL database.
+    ephemeral: Output only. Ephemeral is true if this data connect service is
+      served from temporary in-memory emulation of Postgres. While Cloud SQL
+      is being provisioned, the data connect service provides the ephemeral
+      service to help developers get started. Once the Cloud SQL is
+      provisioned, Data Connect service will transfer its data on a best-
+      effort basis to the Cloud SQL instance. WARNING: Ephemeral data sources
+      will expire after 24 hour. The data will be lost if they aren't
+      transferred to the Cloud SQL instance. WARNING: When `ephemeral=true`,
+      mutations to the database are not guaranteed to be durably persisted,
+      even if an OK status code is returned. All or parts of the data may be
+      lost or reverted to earlier versions.
     schemaMigration: Optional. Configure how to perform Postgresql schema
       migration.
     schemaValidation: Optional. Configure how much Postgresql schema
@@ -1602,9 +1707,10 @@ class PostgreSql(_messages.Message):
 
   cloudSql = _messages.MessageField('CloudSqlInstance', 1)
   database = _messages.StringField(2)
-  schemaMigration = _messages.EnumField('SchemaMigrationValueValuesEnum', 3)
-  schemaValidation = _messages.EnumField('SchemaValidationValueValuesEnum', 4)
-  unlinked = _messages.BooleanField(5)
+  ephemeral = _messages.BooleanField(3)
+  schemaMigration = _messages.EnumField('SchemaMigrationValueValuesEnum', 4)
+  schemaValidation = _messages.EnumField('SchemaValidationValueValuesEnum', 5)
+  unlinked = _messages.BooleanField(6)
 
 
 class Schema(_messages.Message):

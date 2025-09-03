@@ -34,10 +34,6 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core.credentials import requests
 from six.moves import http_client
 
-GDC_GGS_MODEL_IDS = frozenset(
-    {'gemini-2.0-flash-001'}
-)
-
 
 def _ParseModel(model_id, location_id):
   """Parses a model ID into a model resource object."""
@@ -120,6 +116,18 @@ def _DoStreamHttpPost(url, headers, body):
   ) as resp:
     for line in resp.iter_lines():
       yield line
+
+
+def _CheckIsGdcGgsModel(self, endpoint_ref):
+  """GDC GGS model is only supported for GDC endpoints."""
+  endpoint = self.Get(endpoint_ref)
+  endpoint_resource = encoding.MessageToPyValue(endpoint)
+  return (
+      endpoint_resource is not None
+      and 'gdcConfig' in endpoint_resource
+      and 'zone' in endpoint_resource['gdcConfig']
+      and endpoint_resource['gdcConfig']['zone']
+  )
 
 
 class EndpointsClient(object):
@@ -890,6 +898,9 @@ class EndpointsClient(object):
       traffic_split=None,
       deployed_model_id=None,
       shared_resources_ref=None,
+      min_scaleup_period=None,
+      idle_scaledown_period=None,
+      initial_replica_count=None,
   ):
     """Deploys a model to an existing endpoint using v1beta1 API.
 
@@ -923,14 +934,20 @@ class EndpointsClient(object):
       deployed_model_id: str or None, id of the deployed model.
       shared_resources_ref: str or None, the shared deployment resource pool the
         model should use
+      min_scaleup_period: str or None, the duration after which the deployment
+        is enrolled in scale to zero evaluation after scaling up. This only
+        applies to deployments enrolled in scale-to-zero.
+      idle_scaledown_period: str or None, the duration after which the
+        deployment is scaled down if no traffic is received. This only applies
+        to deployments enrolled in scale-to-zero.
+      initial_replica_count: int or None, the initial number of replicas the
+        deployment will be scaled up to. This only applies to deployments
+        enrolled in scale-to-zero.
 
     Returns:
       A long-running operation for DeployModel.
     """
-    # TODO: b/418831862 - This is a temporary solution to unblock the
-    # gdc ggs model deployment. Will remove this check once the gdc ggs model
-    # name validation API is ready.
-    is_gdc_ggs_model = model in GDC_GGS_MODEL_IDS
+    is_gdc_ggs_model = _CheckIsGdcGgsModel(self, endpoint_ref)
     if is_gdc_ggs_model:
       # send psudo dedicated resources for gdc ggs model.
       machine_spec = self.messages.GoogleCloudAiplatformV1beta1MachineSpec(
@@ -976,11 +993,26 @@ class EndpointsClient(object):
                 machineSpec=machine_spec, spot=spot
             )
         )
-        # min-replica-count is required and must be >= 1 if models use dedicated
-        # resources. Default to 1 if not specified.
-        dedicated.minReplicaCount = min_replica_count or 1
-        if max_replica_count is not None:
-          dedicated.maxReplicaCount = max_replica_count
+        # min-replica-count is required and must be >= 0 if models use dedicated
+        # resources. If value is 0, the deployment will be enrolled in the
+        # scale-to-zero feature. Default to 1 if not specified.
+        dedicated.minReplicaCount = (
+            1 if min_replica_count is None else min_replica_count
+        )
+
+        # if not specified and min-replica-count is 0, default to 1.
+        if max_replica_count is None and dedicated.minReplicaCount == 0:
+          dedicated.maxReplicaCount = 1
+        else:
+          if max_replica_count is not None:
+            dedicated.maxReplicaCount = max_replica_count
+
+        # if not specified and min-replica-count is 0, default to 1.
+        if initial_replica_count is None and dedicated.minReplicaCount == 0:
+          dedicated.initialReplicaCount = 1
+        else:
+          if initial_replica_count is not None:
+            dedicated.initialReplicaCount = initial_replica_count
 
         if autoscaling_metric_specs is not None:
           autoscaling_metric_specs_list = []
@@ -994,6 +1026,20 @@ class EndpointsClient(object):
                 )
             )
           dedicated.autoscalingMetricSpecs = autoscaling_metric_specs_list
+
+        stz_spec = (
+            self.messages.GoogleCloudAiplatformV1beta1DedicatedResourcesScaleToZeroSpec()
+        )
+        stz_spec_modified = False
+        if min_scaleup_period is not None:
+          stz_spec.minScaleupPeriod = '{}s'.format(min_scaleup_period)
+          stz_spec_modified = True
+        if idle_scaledown_period is not None:
+          stz_spec.idleScaledownPeriod = '{}s'.format(idle_scaledown_period)
+          stz_spec_modified = True
+
+        if stz_spec_modified:
+          dedicated.scaleToZeroSpec = stz_spec
 
         deployed_model = (
             self.messages.GoogleCloudAiplatformV1beta1DeployedModel(

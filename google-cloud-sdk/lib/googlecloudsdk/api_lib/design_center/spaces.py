@@ -72,3 +72,22 @@ class SpacesClient(object):
                 policy=policy,),
         ))
     return self._spaces_client.SetIamPolicy(set_req)
+
+  def TestIamPermissions(self, space_id, permissions):
+    """Tests the IAM permissions for the specified space.
+
+    Args:
+      space_id: str, the space id.
+      permissions: list of str, the permissions to test.
+
+    Returns:
+      The TestIamPermissionsResponse.
+    """
+    test_iam_perm_req = self.messages.TestIamPermissionsRequest(
+        permissions=permissions)
+    test_req = (
+        self.messages.DesigncenterProjectsLocationsSpacesTestIamPermissionsRequest(
+            resource=space_id,
+            testIamPermissionsRequest=test_iam_perm_req,
+        ))
+    return self._spaces_client.TestIamPermissions(test_req)

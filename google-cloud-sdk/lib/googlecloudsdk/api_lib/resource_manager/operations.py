@@ -25,8 +25,11 @@ from apitools.base.py import exceptions
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import resources
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import progress_tracker as tracker
 from googlecloudsdk.core.util import retry
+import ruamel.yaml
+
 
 OPERATIONS_API_V1 = 'v1'
 OPERATIONS_API_V3 = 'v3'
@@ -157,6 +160,7 @@ class OperationPoller(object):
 
 
 class OperationFailedException(core_exceptions.Error):
+  """Exception for failed operations."""
 
   def __init__(self, operation_with_error):
     op_id = OperationNameToId(operation_with_error.name)
@@ -164,6 +168,15 @@ class OperationFailedException(core_exceptions.Error):
     error_message = operation_with_error.error.message
     message = 'Operation [{0}] failed: {1}: {2}'.format(op_id, error_code,
                                                         error_message)
+    try:
+      # Convert the proto message to a Python dict to safely access details
+      error_py_value = encoding.MessageToPyValue(operation_with_error.error)
+      details = error_py_value.get('details', [])
+      if details:
+        message += '\n' + yaml.dump(details)
+    except (TypeError, AttributeError, ruamel.yaml.YAMLError) as e:
+      # If formatting fails for any reason, fall back to the base message.
+      message += f'\n(Failed to parse or format error details: {e})'
     super(OperationFailedException, self).__init__(message)
 
 
@@ -175,3 +188,20 @@ def GetUri(resource):
       params={'operationsId': operation_id},
       collection='cloudresourcemanager.operations')
   return operation_ref.SelfLink()
+
+
+def GetFailedOperation(operation_name, messages, error_details, error_code,
+                       error_message):
+  """Returns a failed operation with error details."""
+  details_messages = []
+  for item in error_details:
+    # Each item in the details list is an 'Any' proto,
+    # represented by DetailsValueListEntry
+    details_messages.append(
+        encoding.DictToMessage(item, messages.Status.DetailsValueListEntry))
+
+  return messages.Operation(
+      name='operations/' + operation_name,
+      done=True,
+      error=messages.Status(
+          code=error_code, message=error_message, details=details_messages))

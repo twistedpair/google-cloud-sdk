@@ -15,21 +15,25 @@
 
 """Add required flags to output gcloud run deploy command."""
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 
 
-def translate_add_required_flags() -> Sequence[str]:
+def translate_add_required_flags(
+    input_data: Mapping[str, any],
+) -> Sequence[str]:
   """Add required flags to gcloud run deploy command."""
   return [
       '--allow-unauthenticated',
       f'--labels={_get_labels()}',
+      f'--base-image={input_data["runtime"]}'
+      if 'runtime' in input_data
+      else '',
   ]
 
 
 def _get_labels() -> str:
   """Get labels for gcloud run deploy command."""
   return ','.join([
-      'migrated-from=app-engine',
-      'migration-tool=gae2cr-py',
-      'gae2cr-version=1',
+      'migrated-from',
+      'gcloud-gae2cr-version=1',
   ])

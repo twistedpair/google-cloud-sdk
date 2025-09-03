@@ -18,6 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
+
 
 def AddDescribeFlags(parser):
   """Adds flags to the parser for the describe command."""
@@ -43,3 +46,44 @@ def AddListFlags(parser):
       type=str,
       required=True,
       help='The name of the reservation block.')
+
+
+def GetDisruptionScheduleFlag():
+  """Gets the --disruption-schedule flag."""
+  return base.Argument(
+      '--disruption-schedule',
+      choices={
+          'IMMEDIATE': 'All VMs will be disrupted immediately.',
+      },
+      help='The disruption schedule for the sub-block.',
+      required=True)
+
+
+def GetFaultReasonsFlag():
+  """Gets the --fault-reasons flag."""
+  return base.Argument(
+      '--fault-reasons',
+      type=arg_parsers.ArgDict(
+          spec={'behavior': str, 'description': str},
+      ),
+      action='append',
+      help=(
+          'The reasons for the fault experienced with the sub-block. This flag'
+          ' can be repeated. Each instance should specify a "behavior" and an'
+          ' optional "description". The possible values for "behavior" are:'
+          ' PERFORMANCE, SWITCH_FAILURE, GPU_ERROR.'
+      ),
+      required=True,
+  )
+
+
+def GetFailureComponentFlag():
+  """Gets the --failure-component flag."""
+  return base.Argument(
+      '--failure-component',
+      choices={
+          'NVLINK_SWITCH': 'The NVLink switch experienced the fault.',
+          'MULTIPLE_FAULTY_HOSTS': 'Multiple hosts experienced the fault.',
+      },
+      help='The component that experienced the fault.',
+      required=True)
