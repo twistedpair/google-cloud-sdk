@@ -583,7 +583,7 @@ class BuildSignature(_messages.Message):
 
 
 class BuildStep(_messages.Message):
-  r"""A step in the build pipeline. Next ID: 22
+  r"""A step in the build pipeline. Next ID: 23
 
   Enums:
     StatusValueValuesEnum: Output only. Status of the build step. At this
@@ -638,6 +638,7 @@ class BuildStep(_messages.Message):
       to use as the name for a later build step.
     pullTiming: Output only. Stores timing information for pulling this build
       step's builder image only.
+    remoteConfig: Remote configuration for the build step.
     results: A StepResult attribute.
     script: A shell script to be executed in the step. When script is
       provided, the user cannot specify the entrypoint or args.
@@ -706,14 +707,15 @@ class BuildStep(_messages.Message):
   id = _messages.StringField(9)
   name = _messages.StringField(10)
   pullTiming = _messages.MessageField('TimeSpan', 11)
-  results = _messages.MessageField('StepResult', 12, repeated=True)
-  script = _messages.StringField(13)
-  secretEnv = _messages.StringField(14, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 15)
-  timeout = _messages.StringField(16)
-  timing = _messages.MessageField('TimeSpan', 17)
-  volumes = _messages.MessageField('Volume', 18, repeated=True)
-  waitFor = _messages.StringField(19, repeated=True)
+  remoteConfig = _messages.StringField(12)
+  results = _messages.MessageField('StepResult', 13, repeated=True)
+  script = _messages.StringField(14)
+  secretEnv = _messages.StringField(15, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 16)
+  timeout = _messages.StringField(17)
+  timing = _messages.MessageField('TimeSpan', 18)
+  volumes = _messages.MessageField('Volume', 19, repeated=True)
+  waitFor = _messages.StringField(20, repeated=True)
 
 
 class ByProducts(_messages.Message):
@@ -1316,7 +1318,9 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1ArtifactsNpmPackage(_messages.M
   all build steps.
 
   Fields:
-    packagePath: Path to the package.json. e.g. workspace/path/to/package
+    packagePath: Optional. Path to the package.json. e.g.
+      workspace/path/to/package Only one of `archive` or `package_path` can be
+      specified.
     repository: Artifact Registry repository, in the form "https://$REGION-
       npm.pkg.dev/$PROJECT/$REPOSITORY" Npm package in the workspace specified
       by path will be zipped and uploaded to Artifact Registry with this
@@ -4837,7 +4841,7 @@ class ListNotesResponse(_messages.Message):
     notes: The notes requested.
     unreachable: Unordered list. Unreachable regions. Populated for requests
       from the global region when `return_partial_success` is set. Format:
-      projects//locations/
+      `projects/[PROJECT_ID]/locations/[LOCATION]`
   """
 
   nextPageToken = _messages.StringField(1)
@@ -4855,7 +4859,7 @@ class ListOccurrencesResponse(_messages.Message):
     occurrences: The occurrences requested.
     unreachable: Unordered list. Unreachable regions. Populated for requests
       from the global region when `return_partial_success` is set. Format:
-      projects//locations/
+      `projects/[PROJECT_ID]/locations/[LOCATION]`
   """
 
   nextPageToken = _messages.StringField(1)
@@ -6773,7 +6777,7 @@ class VulnerabilityOccurrencesSummary(_messages.Message):
       vulnerabilities.
     unreachable: Unordered list. Unreachable regions. Populated for requests
       from the global region when `return_partial_success` is set. Format:
-      projects//locations/
+      `projects/[PROJECT_ID]/locations/[LOCATION]`
   """
 
   counts = _messages.MessageField('FixableTotalByDigest', 1, repeated=True)

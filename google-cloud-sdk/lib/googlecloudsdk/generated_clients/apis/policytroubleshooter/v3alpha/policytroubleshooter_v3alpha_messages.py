@@ -2074,9 +2074,13 @@ class GoogleCloudPolicytroubleshooterIamV3alphaTroubleshootIamPolicyRequest(_mes
   Fields:
     accessTuple: The information to use for checking whether a principal has a
       permission for a resource.
+    resolveUnknowns: Optional. When true, the troubleshooter will use
+      internal-only mechanisms to resolve an 'UNKNOWN' access state to a more
+      definitive 'CAN_ACCESS' or 'CANNOT_ACCESS' state.
   """
 
   accessTuple = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaAccessTuple', 1)
+  resolveUnknowns = _messages.BooleanField(2)
 
 
 class GoogleCloudPolicytroubleshooterIamV3alphaTroubleshootIamPolicyResponse(_messages.Message):
@@ -2635,6 +2639,103 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaIngressPolicyExplana
   resourceEvalStates = _messages.EnumField('ResourceEvalStatesValueListEntryValuesEnum', 6, repeated=True)
 
 
+class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaRemediation(_messages.Message):
+  r"""Remediation details for one service perimeter. Customers are expected to
+  select one [Option[google.cloud.policytroubleshooter.serviceperimeter.v3main
+  .Remediation.Option] and apply all of its remediations. NextTAG: 3
+
+  Fields:
+    options: A list of remediation options for the service perimeter.
+      Customers are expected to pick one Option and apply all of its
+      remediations, including the ingress policy remediations, egress policy
+      remediations, and access levels.
+    servicePerimeter: The name of the service perimeter. Format:
+      `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}`
+  """
+
+  options = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaRemediationOption', 1, repeated=True)
+  servicePerimeter = _messages.StringField(2)
+
+
+class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaRemediationEgressPolicyRemediation(_messages.Message):
+  r"""The details of a single egress policy remediation.
+
+  Enums:
+    EgressPolicyRemediationTypeValueValuesEnum: The remediation type of the
+      egress policy.
+
+  Fields:
+    egressPolicy: The proposed egress policy. This represents a single egress
+      policy.
+    egressPolicyIndex: The index of the egress policy in the service perimeter
+      config in the range of [0, R), where R = number of egress policies in
+      the service perimeter config if the policy remediation is a modification
+      and -1 if it is an addition.
+    egressPolicyRemediationType: The remediation type of the egress policy.
+  """
+
+  class EgressPolicyRemediationTypeValueValuesEnum(_messages.Enum):
+    r"""The remediation type of the egress policy.
+
+    Values:
+      POLICY_REMEDIATION_TYPE_UNSPECIFIED: Not used
+      ADDITION: Add a new policy.
+    """
+    POLICY_REMEDIATION_TYPE_UNSPECIFIED = 0
+    ADDITION = 1
+
+  egressPolicy = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressPolicy', 1)
+  egressPolicyIndex = _messages.IntegerField(2)
+  egressPolicyRemediationType = _messages.EnumField('EgressPolicyRemediationTypeValueValuesEnum', 3)
+
+
+class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaRemediationIngressPolicyRemediation(_messages.Message):
+  r"""The details of a single ingress policy remediation.
+
+  Enums:
+    IngressPolicyRemediationTypeValueValuesEnum: The remediation type of the
+      ingress policy.
+
+  Fields:
+    ingressPolicy: The proposed ingress policy. This represents a single
+      ingress policy.
+    ingressPolicyIndex: The index of the ingress policy in the service
+      perimeter config in the range of [0, R), where R = number of ingress
+      policies in the service perimeter config if the policy remediation is a
+      modification and -1 if it is an addition.
+    ingressPolicyRemediationType: The remediation type of the ingress policy.
+  """
+
+  class IngressPolicyRemediationTypeValueValuesEnum(_messages.Enum):
+    r"""The remediation type of the ingress policy.
+
+    Values:
+      POLICY_REMEDIATION_TYPE_UNSPECIFIED: Not used
+      ADDITION: Add a new policy.
+    """
+    POLICY_REMEDIATION_TYPE_UNSPECIFIED = 0
+    ADDITION = 1
+
+  ingressPolicy = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigIngressPolicy', 1)
+  ingressPolicyIndex = _messages.IntegerField(2)
+  ingressPolicyRemediationType = _messages.EnumField('IngressPolicyRemediationTypeValueValuesEnum', 3)
+
+
+class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaRemediationOption(_messages.Message):
+  r"""Represents a single remediation option. This includes the proposed
+  ingress and egress policy remediations and new access levels. NextTAG: 4
+
+  Fields:
+    containsRedaction: Whether the remediation option contains redaction.
+    egressPolicyRemediations: The proposed egress policy remediations.
+    ingressPolicyRemediations: The proposed ingress policy remediations.
+  """
+
+  containsRedaction = _messages.BooleanField(1)
+  egressPolicyRemediations = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaRemediationEgressPolicyRemediation', 2, repeated=True)
+  ingressPolicyRemediations = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaRemediationIngressPolicyRemediation', 3, repeated=True)
+
+
 class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResolvedResource(_messages.Message):
   r"""The details of a resolved resource. NextTAG: 13
 
@@ -2892,7 +2993,7 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaTroubleshootServiceP
 
 
 class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaTroubleshootServicePerimeterResponse(_messages.Message):
-  r"""Response to troubleshoot service perimeters NextTAG: 14
+  r"""Response to troubleshoot service perimeters NextTAG: 15
 
   Enums:
     AccessStateValueValuesEnum: The access state of the active service
@@ -2912,6 +3013,8 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaTroubleshootServiceP
       token.
     principalIpRegion: The region code of the principal ip address from
       troubleshoot token.
+    remediation: Details about the remediations for each Service Perimeter
+      involved in the violation.
     requestTime: The request_time from troubleshooting token. It captures when
       the request generating the token was made. The violation time when token
       is logged because of the VPC SC violation.
@@ -2961,10 +3064,11 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaTroubleshootServiceP
   principal = _messages.StringField(6)
   principalIp = _messages.StringField(7)
   principalIpRegion = _messages.StringField(8)
-  requestTime = _messages.StringField(9)
-  resolvedResources = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResolvedResource', 10, repeated=True)
-  service = _messages.StringField(11)
-  supportedService = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1SupportedService', 12)
+  remediation = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaRemediation', 9, repeated=True)
+  requestTime = _messages.StringField(10)
+  resolvedResources = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResolvedResource', 11, repeated=True)
+  service = _messages.StringField(12)
+  supportedService = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1SupportedService', 13)
 
 
 class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaVpcAccessibleServicesExplanation(_messages.Message):

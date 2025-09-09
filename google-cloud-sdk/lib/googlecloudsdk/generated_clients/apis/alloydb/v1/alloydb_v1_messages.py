@@ -848,8 +848,9 @@ class AlloydbProjectsLocationsListRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -3846,6 +3847,27 @@ class StorageDatabasecenterPartnerapiV1mainBackupDRConfiguration(_messages.Messa
   backupdrManaged = _messages.BooleanField(1)
 
 
+class StorageDatabasecenterPartnerapiV1mainBackupDRMetadata(_messages.Message):
+  r"""BackupDRMetadata contains information about the backup and disaster
+  recovery metadata of a database resource.
+
+  Fields:
+    backupConfiguration: Backup configuration for this instance.
+    backupRun: Latest backup run information for this instance.
+    backupdrConfiguration: BackupDR configuration for this instance.
+    fullResourceName: Required. Full resource name of this instance.
+    lastRefreshTime: Required. Last time backup configuration was refreshed.
+    resourceId: Required. Database resource id.
+  """
+
+  backupConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupConfiguration', 1)
+  backupRun = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupRun', 2)
+  backupdrConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupDRConfiguration', 3)
+  fullResourceName = _messages.StringField(4)
+  lastRefreshTime = _messages.StringField(5)
+  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 6)
+
+
 class StorageDatabasecenterPartnerapiV1mainBackupRun(_messages.Message):
   r"""A backup run.
 
@@ -3954,12 +3976,14 @@ class StorageDatabasecenterPartnerapiV1mainCustomMetadataData(_messages.Message)
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Message):
   r"""DatabaseResourceFeed is the top level proto to be used to ingest
-  different database resource level events into Condor platform. Next ID: 9
+  different database resource level events into Condor platform. Next ID: 11
 
   Enums:
     FeedTypeValueValuesEnum: Required. Type feed to be ingested into condor
 
   Fields:
+    backupdrMetadata: BackupDR metadata is used to ingest metadata from
+      BackupDR.
     configBasedSignalData: Config based signal data is used to ingest signals
       that are generated based on the configuration of the database resource.
     feedTimestamp: Required. Timestamp when feed is generated.
@@ -3975,6 +3999,11 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
       available in individual feed level as well.
     resourceMetadata: A
       StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata attribute.
+    skipIngestion: Optional. If true, the feed won't be ingested by DB Center.
+      This indicates that the feed is intentionally skipped. For example,
+      BackupDR feeds are only needed for resources integrated with DB Center
+      (e.g., CloudSQL, AlloyDB). Feeds for non-integrated resources (e.g.,
+      Compute Engine, Persistent Disk) can be skipped.
   """
 
   class FeedTypeValueValuesEnum(_messages.Enum):
@@ -3987,6 +4016,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
       SECURITY_FINDING_DATA: Database resource security health signal data
       RECOMMENDATION_SIGNAL_DATA: Database resource recommendation signal data
       CONFIG_BASED_SIGNAL_DATA: Database config based signal data
+      BACKUPDR_METADATA: Database resource metadata from BackupDR
     """
     FEEDTYPE_UNSPECIFIED = 0
     RESOURCE_METADATA = 1
@@ -3994,15 +4024,18 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
     SECURITY_FINDING_DATA = 3
     RECOMMENDATION_SIGNAL_DATA = 4
     CONFIG_BASED_SIGNAL_DATA = 5
+    BACKUPDR_METADATA = 6
 
-  configBasedSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainConfigBasedSignalData', 1)
-  feedTimestamp = _messages.StringField(2)
-  feedType = _messages.EnumField('FeedTypeValueValuesEnum', 3)
-  observabilityMetricData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainObservabilityMetricData', 4)
-  recommendationSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData', 5)
-  resourceHealthSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData', 6)
-  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 7)
-  resourceMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata', 8)
+  backupdrMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupDRMetadata', 1)
+  configBasedSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainConfigBasedSignalData', 2)
+  feedTimestamp = _messages.StringField(3)
+  feedType = _messages.EnumField('FeedTypeValueValuesEnum', 4)
+  observabilityMetricData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainObservabilityMetricData', 5)
+  recommendationSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData', 6)
+  resourceHealthSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData', 7)
+  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 8)
+  resourceMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata', 9)
+  skipIngestion = _messages.BooleanField(10)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_messages.Message):
@@ -4355,6 +4388,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
       SIGNAL_TYPE_MANY_IDLE_CONNECTIONS: High number of idle connections.
       SIGNAL_TYPE_REPLICATION_LAG: Replication delay.
       SIGNAL_TYPE_OUTDATED_VERSION: Outdated version.
+      SIGNAL_TYPE_OUTDATED_CLIENT: Outdated client.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -4457,6 +4491,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
     SIGNAL_TYPE_MANY_IDLE_CONNECTIONS = 98
     SIGNAL_TYPE_REPLICATION_LAG = 99
     SIGNAL_TYPE_OUTDATED_VERSION = 100
+    SIGNAL_TYPE_OUTDATED_CLIENT = 101
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -5058,6 +5093,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
       SIGNAL_TYPE_MANY_IDLE_CONNECTIONS: High number of idle connections.
       SIGNAL_TYPE_REPLICATION_LAG: Replication delay.
       SIGNAL_TYPE_OUTDATED_VERSION: Outdated version.
+      SIGNAL_TYPE_OUTDATED_CLIENT: Outdated client.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -5160,6 +5196,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
     SIGNAL_TYPE_MANY_IDLE_CONNECTIONS = 98
     SIGNAL_TYPE_REPLICATION_LAG = 99
     SIGNAL_TYPE_OUTDATED_VERSION = 100
+    SIGNAL_TYPE_OUTDATED_CLIENT = 101
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):

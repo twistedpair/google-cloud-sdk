@@ -107,7 +107,7 @@ projects_locations_spaces_application_templates_components:
     parameter_name: componentsId
     attribute_name: component
     help: The component id of the {resource} resource.
-  disable_auto_completers: true
+  disable_auto_completers: false
 projects_locations_spaces_application_templates_revisions:
   name: revision
   plural_name: revisions

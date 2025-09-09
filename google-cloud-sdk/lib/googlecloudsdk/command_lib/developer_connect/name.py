@@ -50,12 +50,6 @@ class Project:
   def resource_name(self):
     return f"projects/{self.project_id}"
 
-  def project_id(self):
-    return self.project_id
-
-  def project_number(self):
-    return self.project_number
-
 
 def extract_project(uri):
   """Extracts the project from a resource URI."""
@@ -185,11 +179,15 @@ class AppHubApplication:
     self.application_id = application_id
 
   def resource_name(self):
-    return f"projects/{self.project}/locations/{self.location_id}/applications/{self.application_id}"
+    return f"projects/{self.project.project_id}/locations/{self.location_id}/applications/{self.application_id}"
 
   def project_id(self):
     """Returns the project ID of the app hub application."""
-    return self.project
+    return self.project.project_id
+
+  def project_number(self):
+    """Returns the project number of the app hub application."""
+    return self.project.project_number
 
 
 def parse_app_hub_application_uri(uri):
@@ -201,10 +199,17 @@ def parse_app_hub_application_uri(uri):
         " //apphub.googleapis.com/projects/{project}/locations/{location}/applications/{application}:"
         f" {uri}"
     )
+  project = Project(match.group(1))
+  if not project:
+    raise ValueError(
+        "app_hub_application must be in the format"
+        " //apphub.googleapis.com/projects/{project}/locations/{location}/applications/{application}:"
+        f" {uri}"
+    )
+  location = match.group(2)
+  application_id = match.group(3)
   return AppHubApplication(
-      match.group(1),
-      match.group(2),
-      match.group(3),
+      project, location, application_id
   )
 
 

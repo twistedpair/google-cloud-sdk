@@ -466,6 +466,7 @@ class Build(_messages.Message):
     queueTtl: TTL in queue for this build. If provided and the build is
       enqueued longer than this value, the build will expire and the build
       status will be `EXPIRED`. The TTL starts ticking from create_time.
+    remoteConfig: Optional. Remote config for the build.
     results: Output only. Results of the build.
     secrets: Secrets to decrypt using Cloud Key Management Service. Note:
       Secret Manager is the recommended technique for managing sensitive data
@@ -597,20 +598,21 @@ class Build(_messages.Message):
   options = _messages.MessageField('BuildOptions', 15)
   projectId = _messages.StringField(16)
   queueTtl = _messages.StringField(17)
-  results = _messages.MessageField('Results', 18)
-  secrets = _messages.MessageField('Secret', 19, repeated=True)
-  serviceAccount = _messages.StringField(20)
-  source = _messages.MessageField('Source', 21)
-  sourceProvenance = _messages.MessageField('SourceProvenance', 22)
-  startTime = _messages.StringField(23)
-  status = _messages.EnumField('StatusValueValuesEnum', 24)
-  statusDetail = _messages.StringField(25)
-  steps = _messages.MessageField('BuildStep', 26, repeated=True)
-  substitutions = _messages.MessageField('SubstitutionsValue', 27)
-  tags = _messages.StringField(28, repeated=True)
-  timeout = _messages.StringField(29)
-  timing = _messages.MessageField('TimingValue', 30)
-  warnings = _messages.MessageField('Warning', 31, repeated=True)
+  remoteConfig = _messages.StringField(18)
+  results = _messages.MessageField('Results', 19)
+  secrets = _messages.MessageField('Secret', 20, repeated=True)
+  serviceAccount = _messages.StringField(21)
+  source = _messages.MessageField('Source', 22)
+  sourceProvenance = _messages.MessageField('SourceProvenance', 23)
+  startTime = _messages.StringField(24)
+  status = _messages.EnumField('StatusValueValuesEnum', 25)
+  statusDetail = _messages.StringField(26)
+  steps = _messages.MessageField('BuildStep', 27, repeated=True)
+  substitutions = _messages.MessageField('SubstitutionsValue', 28)
+  tags = _messages.StringField(29, repeated=True)
+  timeout = _messages.StringField(30)
+  timing = _messages.MessageField('TimingValue', 31)
+  warnings = _messages.MessageField('Warning', 32, repeated=True)
 
 
 class BuildApproval(_messages.Message):
@@ -948,6 +950,7 @@ class BuildStep(_messages.Message):
       to use as the name for a later build step.
     pullTiming: Output only. Stores timing information for pulling this build
       step's builder image only.
+    remoteConfig: Optional. Remote config to be used for this build step.
     results: Declaration of results for this build step.
     script: A shell script to be executed in the step. When script is
       provided, the user cannot specify the entrypoint or args.
@@ -1014,14 +1017,15 @@ class BuildStep(_messages.Message):
   id = _messages.StringField(9)
   name = _messages.StringField(10)
   pullTiming = _messages.MessageField('TimeSpan', 11)
-  results = _messages.MessageField('StepResult', 12, repeated=True)
-  script = _messages.StringField(13)
-  secretEnv = _messages.StringField(14, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 15)
-  timeout = _messages.StringField(16)
-  timing = _messages.MessageField('TimeSpan', 17)
-  volumes = _messages.MessageField('Volume', 18, repeated=True)
-  waitFor = _messages.StringField(19, repeated=True)
+  remoteConfig = _messages.StringField(12)
+  results = _messages.MessageField('StepResult', 13, repeated=True)
+  script = _messages.StringField(14)
+  secretEnv = _messages.StringField(15, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 16)
+  timeout = _messages.StringField(17)
+  timing = _messages.MessageField('TimeSpan', 18)
+  volumes = _messages.MessageField('Volume', 19, repeated=True)
+  waitFor = _messages.StringField(20, repeated=True)
 
 
 class BuildTrigger(_messages.Message):
@@ -4088,7 +4092,9 @@ class NpmPackage(_messages.Message):
   all build steps.
 
   Fields:
-    packagePath: Path to the package.json. e.g. workspace/path/to/package
+    packagePath: Optional. Path to the package.json. e.g.
+      workspace/path/to/package Only one of `archive` or `package_path` can be
+      specified.
     repository: Artifact Registry repository, in the form "https://$REGION-
       npm.pkg.dev/$PROJECT/$REPOSITORY" Npm package in the workspace specified
       by path will be zipped and uploaded to Artifact Registry with this

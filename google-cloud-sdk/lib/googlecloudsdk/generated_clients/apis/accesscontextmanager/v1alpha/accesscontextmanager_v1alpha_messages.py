@@ -2012,14 +2012,22 @@ class Principal(_messages.Message):
   ID: 5
 
   Fields:
+    federatedPrincipal: Immutable. IAM federated principal name to assign
+      policies to workforce/workload federated identities. Can be principal
+      set or single principal, here are some examples: Single principal: princ
+      ipal://iam.googleapis.com/projects/{project_number}/locations/global/wor
+      kloadIdentityPools/{pool_id}/subject/{subject_attribute_value}
+      PrincipalSet: principalSet://iam.googleapis.com/projects/{project_number
+      }/locations/global/workloadIdentityPools/{pool_id}/*
     serviceAccount: Immutable. Service account email used to assign policies
       to a single 1p service account.
     serviceAccountProjectNumber: Immutable. Project number used to assign
       policies to all service accounts in a Google Cloud project.
   """
 
-  serviceAccount = _messages.StringField(1)
-  serviceAccountProjectNumber = _messages.StringField(2)
+  federatedPrincipal = _messages.StringField(1)
+  serviceAccount = _messages.StringField(2)
+  serviceAccountProjectNumber = _messages.StringField(3)
 
 
 class ReplaceAccessLevelsRequest(_messages.Message):

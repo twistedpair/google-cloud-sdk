@@ -352,7 +352,6 @@ class GcsObjectResource(resource_reference.ObjectResource):
         content_type,
         crc32c_hash,
         creation_time,
-        contexts,
         custom_fields,
         custom_time,
         decryption_key_hash_sha256,
@@ -370,6 +369,7 @@ class GcsObjectResource(resource_reference.ObjectResource):
         temporary_hold,
         update_time,
     )
+    self.contexts = contexts
     self.hard_delete_time = hard_delete_time
     self.retention_settings = retention_settings
     self.soft_delete_time = soft_delete_time
@@ -378,6 +378,7 @@ class GcsObjectResource(resource_reference.ObjectResource):
   def __eq__(self, other):
     return (
         super(GcsObjectResource, self).__eq__(other)
+        and self.contexts == other.contexts
         and self.hard_delete_time == other.hard_delete_time
         and self.retention_settings == other.retention_settings
         and self.soft_delete_time == other.soft_delete_time

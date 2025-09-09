@@ -5,6 +5,64 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 538.0.0 (2025-09-09)
+
+### AI
+
+*   Updated `gcloud ai` commands to ensure correct endpoint resolution in non-default Google Cloud universes.
+
+### App Auth
+
+* Fixed an issue where `gcloud auth login` would potentially fail with external
+  accounts with X.509 federation due to missing client certificates during
+  token introspection.
+  The `gcloud` CLI will now correctly include client certificates when provided
+  by the credential.
+
+### BigQuery
+
+* Added support for Python user-defined functions in `bq show --routine`.
+* Added support for users to create dataset with `bq mk --source`.
+* Fixed the bug where users authenticating with Google Auth using a user-managed service account were unable to query external tables on Google Drive.
+* Added support for managing migration workflows with `--migration_workflow` in `bq mk`, `bq show`, `bq rm`, `bq ls`.
+* Removed `reservation_max_slots` from `--alpha` flag, and customers can now use the reservation max slots feature without specifying `--alpha=reservation_max_slots`.
+
+### Cloud Run
+
+* Promoted `gcloud run deploy` multi-region support to GA.
+* Promoted `gcloud run multi-region-services` to GA.
+
+### Cloud Storage
+
+* `gcloud storage rsync`:
+  * Fixed issue where `--delete-unmatched-destination-objects` was deleting
+    destination files even when skipped with (`--no-clobber` or
+    `--skip-unsupported` or `--skip-if-dest-has-newer-mtime`) flags.
+    Now such objects will be retained.
+    The updated behaviour is also gsutil behaviour.
+    This issue can be tracked at <https://issuetracker.google.com/406939800>.
+  * The fix is done through a config property
+    `storage/use_gsutil_rsync_delete_unmatched_destination_objects_behavior`,
+     which now defaults to `True`. Set it to `False` to restore the previous
+     behavior if needed.
+
+### Compute Engine
+
+* Promoted `--show-nat-ips` flag for `gcloud compute service-attachments describe` to GA.
+
+### Dataproc Metastore
+
+* Fixed issue where `gcloud metastore services query-metadata` would attempt to
+  read the incorrect results path.
+
+### Kubernetes Engine
+
+* Updated `--max-nodes-per-pool` flag upper bound to be 2048.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 537.0.0 (2025-09-03)
 
 ### AI

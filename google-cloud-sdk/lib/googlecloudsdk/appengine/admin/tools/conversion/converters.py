@@ -99,17 +99,23 @@ _STANDARD_SCHEDULER_SETTINGS = (
     'targetThroughputUtilization',
 )
 
+_SUBNETWORK_KEY_FIELDS = ('hostProjectId', 'subnet')
+
+
 # Maps VPC egress setting as specified in app.yaml to their proto enum values.
 _VPC_EGRESS_SETTING_MAP = {
     'all-traffic': 'ALL_TRAFFIC',
-    'private-ranges-only': 'PRIVATE_IP_RANGES'
+    'private-ranges-only': 'PRIVATE_IP_RANGES',
 }
+
 
 def ToVpcEgressSettingEnum(value):
   """Converts a string to a VPC egress setting."""
   if str(value) not in _VPC_EGRESS_SETTING_MAP:
-    raise ValueError('egress_setting must be one of: [%s]' %
-                     ','.join(_VPC_EGRESS_SETTING_MAP.keys()))
+    raise ValueError(
+        'egress_setting must be one of: [%s]'
+        % ','.join(_VPC_EGRESS_SETTING_MAP.keys())
+    )
   return _VPC_EGRESS_SETTING_MAP[str(value)]
 
 
@@ -483,3 +489,62 @@ def ConvertEntrypoint(entrypoint):
   if entrypoint.startswith('exec '):
     entrypoint = entrypoint[len('exec '):]
   return {'shell': entrypoint}
+
+
+def ConvertVpcEgressSubnetworkKey(vpc_egress):
+  """Converts the subnetwork key to a nested value.
+
+  For example:
+  Input {
+    hostProjectId: "my-project",
+    subnet: "my-subnet"
+  }
+  Output {
+    subnetworkKey: {
+      hostProjectId: "my-project",
+      subnet: "my-subnet"
+    }
+  }
+
+  Args:
+    vpc_egress: Result of converting vpc_egress according to schema.
+
+  Returns:
+    VpcEgress which has moved subnetwork key fields to a submessage.
+  """
+
+  def MoveFieldsTo(field_names, target_field_name):
+    target = {}
+    for field_name in field_names:
+      if field_name in vpc_egress:
+        target[field_name] = vpc_egress[field_name]
+        del vpc_egress[field_name]
+    if target:
+      vpc_egress[target_field_name] = target
+
+  MoveFieldsTo(_SUBNETWORK_KEY_FIELDS, 'subnetworkKey')
+  return vpc_egress
+
+
+def ToVpcNetworkTags(network_tags_str):
+  """Converts a comma-separated string of network tags to a list of VpcNetworkTag dicts.
+
+  Args:
+    network_tags_str: A string containing one or more network tags,
+      separated by commas.
+
+  Returns:
+    A list of dictionaries, where each dictionary has a 'value' key
+    representing a network tag.
+  """
+  if not network_tags_str:
+    return []
+  tags = network_tags_str.split(',')
+  vpc_network_tags = []
+  for tag in tags:
+    # Remove any whitespace from the tag.
+    tag = tag.strip()
+    if not tag:
+      raise ValueError('Network tags cannot be empty.')
+    vpc_network_tags.append({'value': tag})
+  return vpc_network_tags

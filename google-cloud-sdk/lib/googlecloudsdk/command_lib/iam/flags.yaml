@@ -876,6 +876,20 @@ workforce_pool_provider:
     help_text: |-
       Clear the extra attributes configuration
 
+  scim_usage:
+    arg_name: scim-usage
+    api_field: workforcePoolProvider.scimUsage
+    help_text: |-
+      Specifies whether the workforce identity pool provider uses SCIM-managed
+      groups instead of the `google.groups` attribute mapping for authorization checks.
+
+      The `scim_usage` and `extended_attributes_oauth2_client` fields are
+      mutually exclusive. A request that enables both fields on the same
+      workforce identity pool provider will produce an error.
+
+      Use `enabled` to enable SCIM-managed groups.
+      Use `scim-usage-unspecified` to disable SCIM-managed groups.
+
 workforce_pool_provider_key:
   use:
     api_field: workforcePoolProviderKey.use

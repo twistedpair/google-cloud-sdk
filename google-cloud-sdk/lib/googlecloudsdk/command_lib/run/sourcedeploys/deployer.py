@@ -22,6 +22,7 @@ from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.command_lib.builds import submit_util
 from googlecloudsdk.command_lib.run import artifact_registry
 from googlecloudsdk.command_lib.run import exceptions
@@ -96,6 +97,7 @@ def CreateImage(
       build_machine_type,
       build_env_vars,
       enable_automatic_updates,
+      release_track,
   )
   try:
     response_dict, build_log_url, base_image_from_build = _SubmitBuild(
@@ -340,6 +342,7 @@ def _PrepareSubmitBuildRequest(
     build_machine_type,
     build_env_vars,
     enable_automatic_updates,
+    release_track,
 ):
   """Upload the provided build source and prepare submit build request."""
   messages = apis.GetMessagesModule(global_methods.SERVERLESS_API_NAME, 'v2')
@@ -385,6 +388,7 @@ def _PrepareSubmitBuildRequest(
             serviceAccount=service_account,
             workerPool=build_worker_pool,
             machineType=build_machine_type,
+            releaseTrack=_MapToReleaseTrackEnum(release_track, messages),
         ),
     )
 
@@ -400,6 +404,7 @@ def _PrepareSubmitBuildRequest(
           serviceAccount=service_account,
           workerPool=build_worker_pool,
           machineType=build_machine_type,
+          releaseTrack=_MapToReleaseTrackEnum(release_track, messages),
       ),
   )
 
@@ -475,3 +480,14 @@ def _GetBuildRegion(build_name):
 def _IsDefaultImageRepository(image_repository: str) -> bool:
   """Checks if the image repository is the default one."""
   return _DEFAULT_IMAGE_REPOSITORY_NAME in image_repository
+
+
+def _MapToReleaseTrackEnum(release_track, messages):
+  """Returns the enum value for the release track."""
+  release_track_enum_value = None
+  if release_track and release_track != calliope_base.ReleaseTrack.GA:
+    release_track_enum_cls = (
+        messages.GoogleCloudRunV2SubmitBuildRequest.ReleaseTrackValueValuesEnum
+    )
+    release_track_enum_value = release_track_enum_cls(release_track.name)
+  return release_track_enum_value

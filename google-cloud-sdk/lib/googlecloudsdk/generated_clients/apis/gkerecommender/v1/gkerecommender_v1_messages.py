@@ -32,9 +32,8 @@ class Amount(_messages.Message):
 
 
 class Cost(_messages.Message):
-  r"""Cost for running a model deployment on a given instance type.
-
-  Currently, only USD currency code is supported.
+  r"""Cost for running a model deployment on a given instance type. Currently,
+  only USD currency code is supported.
 
   Fields:
     costPerMillionInputTokens: Optional. The cost per million input tokens.
@@ -53,9 +52,7 @@ class Cost(_messages.Message):
 
   costPerMillionInputTokens = _messages.MessageField('Amount', 1)
   costPerMillionOutputTokens = _messages.MessageField('Amount', 2)
-  outputInputCostRatio = _messages.FloatField(
-      3, variant=_messages.Variant.FLOAT
-  )
+  outputInputCostRatio = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
   pricingModel = _messages.StringField(4)
 
 
@@ -71,10 +68,13 @@ class FetchBenchmarkingDataRequest(_messages.Message):
     modelServerInfo: Required. The model server configuration to get
       benchmarking data for. Use GkeInferenceQuickstart.FetchProfiles to find
       valid configurations.
+    pricingModel: Optional. The pricing model to use for the benchmarking
+      data. Defaults to `spot`.
   """
 
   instanceType = _messages.StringField(1)
   modelServerInfo = _messages.MessageField('ModelServerInfo', 2)
+  pricingModel = _messages.StringField(3)
 
 
 class FetchBenchmarkingDataResponse(_messages.Message):
@@ -242,9 +242,7 @@ class GenerateOptimizedManifestResponse(_messages.Message):
   """
 
   comments = _messages.StringField(1, repeated=True)
-  kubernetesManifests = _messages.MessageField(
-      'KubernetesManifest', 2, repeated=True
-  )
+  kubernetesManifests = _messages.MessageField('KubernetesManifest', 2, repeated=True)
   manifestVersion = _messages.StringField(3)
 
 
@@ -348,10 +346,8 @@ class MillisecondRange(_messages.Message):
 
 
 class ModelServerInfo(_messages.Message):
-  r"""Model server information gives.
-
-  Valid model server info combinations can be found using
-  GkeInferenceQuickstart.FetchProfiles.
+  r"""Model server information gives. Valid model server info combinations can
+  be found using GkeInferenceQuickstart.FetchProfiles.
 
   Fields:
     model: Required. The model. Open-source models follow the Huggingface Hub
@@ -406,12 +402,8 @@ class PerformanceRequirements(_messages.Message):
   """
 
   targetCost = _messages.MessageField('Cost', 1)
-  targetNtpotMilliseconds = _messages.IntegerField(
-      2, variant=_messages.Variant.INT32
-  )
-  targetTtftMilliseconds = _messages.IntegerField(
-      3, variant=_messages.Variant.INT32
-  )
+  targetNtpotMilliseconds = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  targetTtftMilliseconds = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class PerformanceStats(_messages.Message):

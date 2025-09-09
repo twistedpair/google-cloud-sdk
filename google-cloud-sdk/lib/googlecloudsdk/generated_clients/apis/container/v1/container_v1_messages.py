@@ -886,7 +886,8 @@ class Cluster(_messages.Message):
       The endpoint can be accessed from the internet at
       `https://username:password@endpoint/`. See the `masterAuth` property of
       this resource for username and password information.
-    enterpriseConfig: GKE Enterprise Configuration.
+    enterpriseConfig: GKE Enterprise Configuration. Deprecated: GKE Enterprise
+      features are now available without an Enterprise tier.
     etag: This checksum is computed by the server based on the value of
       cluster fields, and may be sent on update requests to ensure the client
       has an up-to-date value before proceeding.
@@ -1018,6 +1019,8 @@ class Cluster(_messages.Message):
       related Google Compute Engine resources.
     resourceUsageExportConfig: Configuration for exporting resource usages.
       Resource usage export is disabled when this config is unspecified.
+    rollbackSafeUpgrade: The rollback safe upgrade information of the cluster.
+      This field is used when user manually triggers a rollback safe upgrade.
     runtimeVulnerabilityInsightConfig: Enable/Disable RVI features for the
       cluster.
     satisfiesPzi: Output only. Reserved for future use.
@@ -1207,25 +1210,26 @@ class Cluster(_messages.Message):
   releaseChannel = _messages.MessageField('ReleaseChannel', 66)
   resourceLabels = _messages.MessageField('ResourceLabelsValue', 67)
   resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 68)
-  runtimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 69)
-  satisfiesPzi = _messages.BooleanField(70)
-  satisfiesPzs = _messages.BooleanField(71)
-  scheduleUpgradeConfig = _messages.MessageField('ScheduleUpgradeConfig', 72)
-  secretManagerConfig = _messages.MessageField('SecretManagerConfig', 73)
-  secretSyncConfig = _messages.MessageField('SecretSyncConfig', 74)
-  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 75)
-  selfLink = _messages.StringField(76)
-  servicesIpv4Cidr = _messages.StringField(77)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 78)
-  status = _messages.EnumField('StatusValueValuesEnum', 79)
-  statusMessage = _messages.StringField(80)
-  subnetwork = _messages.StringField(81)
-  tags = _messages.MessageField('TagsValue', 82)
-  tpuIpv4CidrBlock = _messages.StringField(83)
-  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 84)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 85)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 86)
-  zone = _messages.StringField(87)
+  rollbackSafeUpgrade = _messages.MessageField('RollbackSafeUpgrade', 69)
+  runtimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 70)
+  satisfiesPzi = _messages.BooleanField(71)
+  satisfiesPzs = _messages.BooleanField(72)
+  scheduleUpgradeConfig = _messages.MessageField('ScheduleUpgradeConfig', 73)
+  secretManagerConfig = _messages.MessageField('SecretManagerConfig', 74)
+  secretSyncConfig = _messages.MessageField('SecretSyncConfig', 75)
+  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 76)
+  selfLink = _messages.StringField(77)
+  servicesIpv4Cidr = _messages.StringField(78)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 79)
+  status = _messages.EnumField('StatusValueValuesEnum', 80)
+  statusMessage = _messages.StringField(81)
+  subnetwork = _messages.StringField(82)
+  tags = _messages.MessageField('TagsValue', 83)
+  tpuIpv4CidrBlock = _messages.StringField(84)
+  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 85)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 86)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 87)
+  zone = _messages.StringField(88)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -1367,7 +1371,8 @@ class ClusterUpdate(_messages.Message):
       of enable_public_endpoint is reversed: if enable_private_endpoint is
       false, then enable_public_endpoint will be true.
     desiredEnterpriseConfig: The desired enterprise configuration for the
-      cluster.
+      cluster. Deprecated: GKE Enterprise features are now available without
+      an Enterprise tier.
     desiredFleet: The desired fleet configuration for the cluster.
     desiredGatewayApiConfig: The desired config of Gateway API on this
       cluster.
@@ -1481,6 +1486,8 @@ class ClusterUpdate(_messages.Message):
     desiredReleaseChannel: The desired release channel configuration.
     desiredResourceUsageExportConfig: The desired configuration for exporting
       resource usage.
+    desiredRollbackSafeUpgrade: The desired rollback safe upgrade
+      configuration.
     desiredRuntimeVulnerabilityInsightConfig: Enable/Disable RVI features for
       the cluster.
     desiredScheduleUpgradeConfig: The desired schedule upgrade configuration
@@ -1650,22 +1657,23 @@ class ClusterUpdate(_messages.Message):
   desiredRbacBindingConfig = _messages.MessageField('RBACBindingConfig', 66)
   desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 67)
   desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 68)
-  desiredRuntimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 69)
-  desiredScheduleUpgradeConfig = _messages.MessageField('ScheduleUpgradeConfig', 70)
-  desiredSecretManagerConfig = _messages.MessageField('SecretManagerConfig', 71)
-  desiredSecretSyncConfig = _messages.MessageField('SecretSyncConfig', 72)
-  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 73)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 74)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 75)
-  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 76)
-  desiredUserManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 77)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 78)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 79)
-  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 80)
-  etag = _messages.StringField(81)
-  gkeAutoUpgradeConfig = _messages.MessageField('GkeAutoUpgradeConfig', 82)
-  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 83)
-  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 84)
+  desiredRollbackSafeUpgrade = _messages.MessageField('RollbackSafeUpgrade', 69)
+  desiredRuntimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 70)
+  desiredScheduleUpgradeConfig = _messages.MessageField('ScheduleUpgradeConfig', 71)
+  desiredSecretManagerConfig = _messages.MessageField('SecretManagerConfig', 72)
+  desiredSecretSyncConfig = _messages.MessageField('SecretSyncConfig', 73)
+  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 74)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 75)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 76)
+  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 77)
+  desiredUserManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 78)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 79)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 80)
+  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 81)
+  etag = _messages.StringField(82)
+  gkeAutoUpgradeConfig = _messages.MessageField('GkeAutoUpgradeConfig', 83)
+  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 84)
+  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 85)
 
 
 class ClusterUpgradeInfo(_messages.Message):
@@ -2663,6 +2671,16 @@ class CustomImageConfig(_messages.Message):
   imageProject = _messages.StringField(3)
 
 
+class CustomNodeInit(_messages.Message):
+  r"""Support for running custom init code while bootstrapping nodes.
+
+  Fields:
+    initScript: Optional. The init script to be executed on the node.
+  """
+
+  initScript = _messages.MessageField('InitScript', 1)
+
+
 class DNSAlias(_messages.Message):
   r"""DNSAlias describes an alternate hostname for a cluster.
 
@@ -2901,7 +2919,8 @@ class DesiredAdditionalIPRangesConfig(_messages.Message):
 
 class DesiredEnterpriseConfig(_messages.Message):
   r"""DesiredEnterpriseConfig is a wrapper used for updating
-  enterprise_config.
+  enterprise_config. Deprecated: GKE Enterprise features are now available
+  without an Enterprise tier.
 
   Enums:
     DesiredTierValueValuesEnum: desired_tier specifies the desired tier of the
@@ -2947,7 +2966,8 @@ class Empty(_messages.Message):
 
 
 class EnterpriseConfig(_messages.Message):
-  r"""EnterpriseConfig is the cluster enterprise configuration.
+  r"""EnterpriseConfig is the cluster enterprise configuration. Deprecated:
+  GKE Enterprise features are now available without an Enterprise tier.
 
   Enums:
     ClusterTierValueValuesEnum: Output only. cluster_tier indicates the
@@ -3016,6 +3036,18 @@ class EphemeralStorageLocalSsdConfig(_messages.Message):
 
   dataCacheCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   localSsdCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class EtcHostsEntry(_messages.Message):
+  r"""Additional entries to be added to /etc/hosts.
+
+  Fields:
+    host: The hostname of the host.
+    ip: The IPv4 or IPv6 address of the host.
+  """
+
+  host = _messages.StringField(1)
+  ip = _messages.StringField(2)
 
 
 class EvictionGracePeriod(_messages.Message):
@@ -3776,6 +3808,27 @@ class IdentityServiceConfig(_messages.Message):
   enabled = _messages.BooleanField(1)
 
 
+class InitScript(_messages.Message):
+  r"""InitScript provide a simply bash script to be executed on the node.
+
+  Fields:
+    args: Optional. The optional arguments line to be passed to the init
+      script.
+    gcsGeneration: The generation of the init script stored in Gloud Storage.
+      This is the required field to identify the version of the init script.
+      User can get the genetaion from `gcloud storage objects describe
+      gs://BUCKET_NAME/OBJECT_NAME --format="value(generation)"` or from the
+      "Version history" tab of the object in the Cloud Console UI.
+    gcsUri: The Cloud Storage URI for storing the init script. Format:
+      gs://BUCKET_NAME/OBJECT_NAME The service account on the nodepool must
+      have read access to the object.
+  """
+
+  args = _messages.StringField(1, repeated=True)
+  gcsGeneration = _messages.IntegerField(2)
+  gcsUri = _messages.StringField(3)
+
+
 class IntraNodeVisibilityConfig(_messages.Message):
   r"""IntraNodeVisibilityConfig contains the desired config of the intra-node
   visibility on this cluster.
@@ -3953,7 +4006,15 @@ class LinuxNodeConfig(_messages.Message):
       vm.min_free_kbytes
 
   Fields:
+    additionalEtcHosts: Optional. Additional entries to be added to
+      /etc/hosts.
+    additionalEtcResolvConf: Optional. Additional entries to be added to
+      /etc/resolv.conf.
+    additionalEtcSystemdResolvedConf: Optional. Additional entries to be added
+      to /etc/systemd/resolved.conf.
     cgroupMode: cgroup_mode specifies the cgroup mode to be used on the node.
+    customNodeInit: Optional. Allow users to run arbitrary bash script or
+      container on the node.
     hugepages: Optional. Amounts for 2M and 1G hugepages
     kernelOverrides: Optional. Defines the kernel overrides to be applied to
       the nodes. Note: sysctl changes are defined separately in the sysctls
@@ -3976,6 +4037,7 @@ class LinuxNodeConfig(_messages.Message):
       vm.max_map_count vm.overcommit_memory vm.overcommit_ratio
       vm.vfs_cache_pressure vm.swappiness vm.watermark_scale_factor
       vm.min_free_kbytes
+    timeZone: Optional. Configures the timezone of the node.
     transparentHugepageDefrag: Optional. Defines the transparent hugepage
       defrag configuration on the node. VM hugepage allocation can be managed
       by either limiting defragmentation for delayed allocation or skipping it
@@ -4103,12 +4165,17 @@ class LinuxNodeConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  cgroupMode = _messages.EnumField('CgroupModeValueValuesEnum', 1)
-  hugepages = _messages.MessageField('HugepagesConfig', 2)
-  kernelOverrides = _messages.MessageField('KernelOverrides', 3)
-  sysctls = _messages.MessageField('SysctlsValue', 4)
-  transparentHugepageDefrag = _messages.EnumField('TransparentHugepageDefragValueValuesEnum', 5)
-  transparentHugepageEnabled = _messages.EnumField('TransparentHugepageEnabledValueValuesEnum', 6)
+  additionalEtcHosts = _messages.MessageField('EtcHostsEntry', 1, repeated=True)
+  additionalEtcResolvConf = _messages.MessageField('ResolvedConfEntry', 2, repeated=True)
+  additionalEtcSystemdResolvedConf = _messages.MessageField('ResolvedConfEntry', 3, repeated=True)
+  cgroupMode = _messages.EnumField('CgroupModeValueValuesEnum', 4)
+  customNodeInit = _messages.MessageField('CustomNodeInit', 5)
+  hugepages = _messages.MessageField('HugepagesConfig', 6)
+  kernelOverrides = _messages.MessageField('KernelOverrides', 7)
+  sysctls = _messages.MessageField('SysctlsValue', 8)
+  timeZone = _messages.StringField(9)
+  transparentHugepageDefrag = _messages.EnumField('TransparentHugepageDefragValueValuesEnum', 10)
+  transparentHugepageEnabled = _messages.EnumField('TransparentHugepageEnabledValueValuesEnum', 11)
 
 
 class ListClustersResponse(_messages.Message):
@@ -4288,13 +4355,30 @@ class MaintenanceExclusionOptions(_messages.Message):
   r"""Represents the Maintenance exclusion option.
 
   Enums:
+    EndTimeBehaviorValueValuesEnum: EndTimeBehavior specifies the behavior of
+      the exclusion end time.
     ScopeValueValuesEnum: Scope specifies the upgrade scope which upgrades are
       blocked by the exclusion.
 
   Fields:
+    endTimeBehavior: EndTimeBehavior specifies the behavior of the exclusion
+      end time.
     scope: Scope specifies the upgrade scope which upgrades are blocked by the
       exclusion.
   """
+
+  class EndTimeBehaviorValueValuesEnum(_messages.Enum):
+    r"""EndTimeBehavior specifies the behavior of the exclusion end time.
+
+    Values:
+      END_TIME_BEHAVIOR_UNSPECIFIED: END_TIME_BEHAVIOR_UNSPECIFIED is the
+        default behavior, which is fixed end time.
+      UNTIL_END_OF_SUPPORT: UNTIL_END_OF_SUPPORT means the exclusion will be
+        in effect until the end of the support of the cluster's current
+        version.
+    """
+    END_TIME_BEHAVIOR_UNSPECIFIED = 0
+    UNTIL_END_OF_SUPPORT = 1
 
   class ScopeValueValuesEnum(_messages.Enum):
     r"""Scope specifies the upgrade scope which upgrades are blocked by the
@@ -4314,7 +4398,8 @@ class MaintenanceExclusionOptions(_messages.Message):
     NO_MINOR_UPGRADES = 1
     NO_MINOR_OR_NODE_UPGRADES = 2
 
-  scope = _messages.EnumField('ScopeValueValuesEnum', 1)
+  endTimeBehavior = _messages.EnumField('EndTimeBehaviorValueValuesEnum', 1)
+  scope = _messages.EnumField('ScopeValueValuesEnum', 2)
 
 
 class MaintenancePolicy(_messages.Message):
@@ -6691,6 +6776,18 @@ class ReservationAffinity(_messages.Message):
   values = _messages.StringField(3, repeated=True)
 
 
+class ResolvedConfEntry(_messages.Message):
+  r"""Additional entries to be added to resolved.conf.
+
+  Fields:
+    key: The key of resolved.conf
+    value: Optional. The value of resolved.conf
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2, repeated=True)
+
+
 class ResourceLabels(_messages.Message):
   r"""Collection of [Resource Manager
   labels](https://{$universe.dns_names.final_documentation_domain}/resource-
@@ -6845,6 +6942,17 @@ class RollbackNodePoolUpgradeRequest(_messages.Message):
   projectId = _messages.StringField(4)
   respectPdb = _messages.BooleanField(5)
   zone = _messages.StringField(6)
+
+
+class RollbackSafeUpgrade(_messages.Message):
+  r"""RollbackSafeUpgrade is the configuration for the rollback safe upgrade.
+
+  Fields:
+    controlPlaneSoakDuration: A user-defined period for the cluster remains in
+      the rollbackable state. ex: {seconds: 21600}.
+  """
+
+  controlPlaneSoakDuration = _messages.StringField(1)
 
 
 class RollbackSafeUpgradeStatus(_messages.Message):

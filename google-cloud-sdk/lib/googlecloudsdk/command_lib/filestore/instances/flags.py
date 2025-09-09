@@ -302,6 +302,34 @@ def GetProtocolArg(messages):
   return protocol_arg
 
 
+def GetBackendTypeArg(messages):
+  """Creates a --backendType flag spec for the arg parser.
+
+  Args:
+    messages: The messages module.
+
+  Returns:
+    The chosen backendType arg.
+  """
+  backend_type_arg = (
+      arg_utils.ChoiceEnumMapper(
+          '--backend-type',
+          messages.Instance.BackendTypeValueValuesEnum,
+          help_str='The service backend type for the Cloud Filestore instance.',
+          custom_mappings={
+              'COMPUTE_BASED_BACKEND':
+                  ('compute-based-backend',
+                   'Compute based backend.'),
+              'FILESTORE_BACKEND':
+                  ('filestore-backend',
+                   'Filestore backend.'),
+          },
+          default='COMPUTE_BASED_BACKEND',
+          # This flag stays hidden in v1beta1 throughout its whole lifecycle.
+          hidden=True))
+  return backend_type_arg
+
+
 def AddConnectManagedActiveDirectoryArg(parser):
   """Adds a --managed-ad flag to the parser.
 
@@ -805,6 +833,10 @@ def AddInstanceCreateArgs(parser, api_version):
   ]:
     GetProtocolArg(messages).choice_arg.AddToParser(parser)
     AddDirectoryServicesArg(parser, api_version)
+  if api_version in [
+      filestore_client.BETA_API_VERSION,
+  ]:
+    GetBackendTypeArg(messages).choice_arg.AddToParser(parser)
   AddFileShareArg(
       parser,
       api_version,

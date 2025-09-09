@@ -3285,7 +3285,13 @@ class VulnerabilityReport(_messages.Message):
   reports](https://cloud.google.com/compute/docs/instances/os-inventory-
   management#vulnerability-reports).
 
+  Enums:
+    HighestUpgradableCveSeverityValueValuesEnum: Output only. Highest level of
+      severity among all the upgradable vulnerabilities with CVEs attached.
+
   Fields:
+    highestUpgradableCveSeverity: Output only. Highest level of severity among
+      all the upgradable vulnerabilities with CVEs attached.
     name: Output only. The `vulnerabilityReport` API resource name. Format: `p
       rojects/{project_number}/locations/{location}/instances/{instance_id}/vu
       lnerabilityReport`
@@ -3294,9 +3300,37 @@ class VulnerabilityReport(_messages.Message):
     vulnerabilities: Output only. List of vulnerabilities affecting the VM.
   """
 
-  name = _messages.StringField(1)
-  updateTime = _messages.StringField(2)
-  vulnerabilities = _messages.MessageField('VulnerabilityReportVulnerability', 3, repeated=True)
+  class HighestUpgradableCveSeverityValueValuesEnum(_messages.Enum):
+    r"""Output only. Highest level of severity among all the upgradable
+    vulnerabilities with CVEs attached.
+
+    Values:
+      VULNERABILITY_SEVERITY_LEVEL_UNSPECIFIED: Default SeverityLevel. This
+        value is unused.
+      NONE: Vulnerability has no severity level.
+      MINIMAL: Vulnerability severity level is minimal. This is level below
+        the low severity level.
+      LOW: Vulnerability severity level is low. This is level below the medium
+        severity level.
+      MEDIUM: Vulnerability severity level is medium. This is level below the
+        high severity level.
+      HIGH: Vulnerability severity level is high. This is level below the
+        critical severity level.
+      CRITICAL: Vulnerability severity level is critical. This is the highest
+        severity level.
+    """
+    VULNERABILITY_SEVERITY_LEVEL_UNSPECIFIED = 0
+    NONE = 1
+    MINIMAL = 2
+    LOW = 3
+    MEDIUM = 4
+    HIGH = 5
+    CRITICAL = 6
+
+  highestUpgradableCveSeverity = _messages.EnumField('HighestUpgradableCveSeverityValueValuesEnum', 1)
+  name = _messages.StringField(2)
+  updateTime = _messages.StringField(3)
+  vulnerabilities = _messages.MessageField('VulnerabilityReportVulnerability', 4, repeated=True)
 
 
 class VulnerabilityReportVulnerability(_messages.Message):

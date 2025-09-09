@@ -3803,8 +3803,7 @@ class _SectionStorage(_Section):
 
     self.use_gsutil_rsync_delete_unmatched_destination_objects_behavior = self._AddBool(
         'use_gsutil_rsync_delete_unmatched_destination_objects_behavior',
-        hidden=True,
-        default=False,
+        default=True,
         help_text=(
             'If True, rsync will preserve unmatched destination objects while'
             ' using --delete-unmatched-destination-objects flag along with'

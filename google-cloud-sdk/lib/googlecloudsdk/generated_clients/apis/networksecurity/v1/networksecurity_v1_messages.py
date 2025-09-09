@@ -431,16 +431,23 @@ class AuthzPolicyAuthzRuleFromRequestSource(_messages.Message):
 
   Fields:
     ipBlocks: Optional. A list of IP addresses or IP address ranges to match
-      against the source IP address of the request. Limited to 5 ip_blocks.
+      against the source IP address of the request. Limited to 10 ip_blocks
+      per Authorization Policy
     principals: Optional. A list of identities derived from the client's
       certificate. This field will not match on a request unless frontend
       mutual TLS is enabled for the forwarding rule or Gateway and the client
       certificate has been successfully validated by mTLS. Each identity is a
       string whose value is matched against a list of URI SANs, DNS Name SANs,
       or the common name in the client's certificate. A match happens when any
-      principal matches with the rule. Limited to 5 principals.
+      principal matches with the rule. Limited to 50 principals per
+      Authorization Policy for Regional Internal Application Load Balancer,
+      Regional External Application Load Balancer, Cross-region Internal
+      Application Load Balancer, and Cloud Service Mesh. Limited to 25
+      principals per Authorization Policy for Global External Application Load
+      Balancer.
     resources: Optional. A list of resources to match against the resource of
-      the source VM of a request. Limited to 5 resources.
+      the source VM of a request. Limited to 10 resources per Authorization
+      Policy.
   """
 
   ipBlocks = _messages.MessageField('AuthzPolicyAuthzRuleIpBlock', 1, repeated=True)
@@ -504,7 +511,10 @@ class AuthzPolicyAuthzRulePrincipal(_messages.Message):
         selector.
       CLIENT_CERT_DNS_NAME_SAN: The principal rule is matched against a list
         of DNS Name SANs in the validated client's certificate. A match
-        happens when there is any exact DNS Name SAN value match.
+        happens when there is any exact DNS Name SAN value match. This is only
+        applicable for Application Load Balancers except for classic Global
+        External Application load balancer. CLIENT_CERT_DNS_NAME_SAN is not
+        supported for INTERNAL_SELF_MANAGED load balancing scheme.
       CLIENT_CERT_COMMON_NAME: The principal rule is matched against the
         common name in the client's certificate. Authorization against
         multiple common names in the client certificate is not supported.
@@ -548,7 +558,7 @@ class AuthzPolicyAuthzRuleRequestResourceTagValueIdSet(_messages.Message):
     ids: Required. A list of resource tag value permanent IDs to match against
       the resource manager tags value associated with the source VM of a
       request. The match follows AND semantics which means all the ids must
-      match. Limited to 5 matches.
+      match. Limited to 5 ids in the Tag value id set.
   """
 
   ids = _messages.IntegerField(1, repeated=True)
@@ -609,17 +619,18 @@ class AuthzPolicyAuthzRuleToRequestOperation(_messages.Message):
     headerSet: Optional. A list of headers to match against in http header.
     hosts: Optional. A list of HTTP Hosts to match against. The match can be
       one of exact, prefix, suffix, or contains (substring match). Matches are
-      always case sensitive unless the ignoreCase is set. Limited to 5
-      matches.
+      always case sensitive unless the ignoreCase is set. Limited to 10 hosts
+      per Authorization Policy.
     methods: Optional. A list of HTTP methods to match against. Each entry
       must be a valid HTTP method name (GET, PUT, POST, HEAD, PATCH, DELETE,
       OPTIONS). It only allows exact match and is always case sensitive.
+      Limited to 10 methods per Authorization Policy.
     paths: Optional. A list of paths to match against. The match can be one of
       exact, prefix, suffix, or contains (substring match). Matches are always
-      case sensitive unless the ignoreCase is set. Limited to 5 matches. Note
-      that this path match includes the query parameters. For gRPC services,
-      this should be a fully-qualified name of the form
-      /package.service/method.
+      case sensitive unless the ignoreCase is set. Limited to 10 paths per
+      Authorization Policy. Note that this path match includes the query
+      parameters. For gRPC services, this should be a fully-qualified name of
+      the form /package.service/method.
   """
 
   headerSet = _messages.MessageField('AuthzPolicyAuthzRuleToRequestOperationHeaderSet', 1)
@@ -636,7 +647,7 @@ class AuthzPolicyAuthzRuleToRequestOperationHeaderSet(_messages.Message):
       match can be one of exact, prefix, suffix, or contains (substring
       match). The match follows AND semantics which means all the headers must
       match. Matches are always case sensitive unless the ignoreCase is set.
-      Limited to 5 matches.
+      Limited to 10 headers per Authorization Policy.
   """
 
   headers = _messages.MessageField('AuthzPolicyAuthzRuleHeaderMatch', 1, repeated=True)
@@ -692,26 +703,29 @@ class AuthzPolicyTarget(_messages.Message):
   Enums:
     LoadBalancingSchemeValueValuesEnum: Required. All gateways and forwarding
       rules referenced by this policy and extensions must share the same load
-      balancing scheme. Supported values: `INTERNAL_MANAGED` and
-      `EXTERNAL_MANAGED`. For more information, refer to [Backend services
-      overview](https://cloud.google.com/load-balancing/docs/backend-service).
+      balancing scheme. Supported values: `INTERNAL_MANAGED`,
+      `INTERNAL_SELF_MANAGED`, and `EXTERNAL_MANAGED`. For more information,
+      refer to [Backend services overview](https://cloud.google.com/load-
+      balancing/docs/backend-service).
 
   Fields:
     loadBalancingScheme: Required. All gateways and forwarding rules
       referenced by this policy and extensions must share the same load
-      balancing scheme. Supported values: `INTERNAL_MANAGED` and
-      `EXTERNAL_MANAGED`. For more information, refer to [Backend services
-      overview](https://cloud.google.com/load-balancing/docs/backend-service).
+      balancing scheme. Supported values: `INTERNAL_MANAGED`,
+      `INTERNAL_SELF_MANAGED`, and `EXTERNAL_MANAGED`. For more information,
+      refer to [Backend services overview](https://cloud.google.com/load-
+      balancing/docs/backend-service).
     resources: Required. A list of references to the Forwarding Rules on which
-      this policy will be applied.
+      this policy will be applied. For policies created for Cloudrun, this
+      field will reference the Cloud Run services.
   """
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
     r"""Required. All gateways and forwarding rules referenced by this policy
     and extensions must share the same load balancing scheme. Supported
-    values: `INTERNAL_MANAGED` and `EXTERNAL_MANAGED`. For more information,
-    refer to [Backend services overview](https://cloud.google.com/load-
-    balancing/docs/backend-service).
+    values: `INTERNAL_MANAGED`, `INTERNAL_SELF_MANAGED`, and
+    `EXTERNAL_MANAGED`. For more information, refer to [Backend services
+    overview](https://cloud.google.com/load-balancing/docs/backend-service).
 
     Values:
       LOAD_BALANCING_SCHEME_UNSPECIFIED: Default value. Do not use.
@@ -868,8 +882,8 @@ class ClientTlsPolicy(_messages.Message):
     description: Optional. Free-text description of the resource.
     labels: Optional. Set of label tags associated with the resource.
     name: Required. Name of the ClientTlsPolicy resource. It matches the
-      pattern
-      `projects/*/locations/{location}/clientTlsPolicies/{client_tls_policy}`
+      pattern `projects/{project}/locations/{location}/clientTlsPolicies/{clie
+      nt_tls_policy}`
     serverValidationCa: Optional. Defines the mechanism to obtain the
       Certificate Authority certificate to validate the server certificate. If
       empty, client does not validate the server certificate.
@@ -1033,7 +1047,7 @@ class Expr(_messages.Message):
 
 
 class FirewallEndpoint(_messages.Message):
-  r"""Message describing Endpoint object
+  r"""Message describing Endpoint object.
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the endpoint.
@@ -1051,11 +1065,12 @@ class FirewallEndpoint(_messages.Message):
       associated to this endpoint. An association will only appear in this
       list after traffic routing is fully configured.
     billingProjectId: Required. Project to bill on endpoint uptime usage.
-    createTime: Output only. Create time stamp
+    createTime: Output only. Create time stamp.
     description: Optional. Description of the firewall endpoint. Max length
       2048 characters.
+    endpointSettings: Optional. Settings for the endpoint.
     labels: Optional. Labels as key value pairs
-    name: Immutable. Identifier. name of resource
+    name: Immutable. Identifier. Name of resource.
     reconciling: Output only. Whether reconciling is in progress, recommended
       per https://google.aip.dev/128.
     satisfiesPzi: Output only. [Output Only] Reserved for future use.
@@ -1109,13 +1124,14 @@ class FirewallEndpoint(_messages.Message):
   billingProjectId = _messages.StringField(3)
   createTime = _messages.StringField(4)
   description = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  reconciling = _messages.BooleanField(8)
-  satisfiesPzi = _messages.BooleanField(9)
-  satisfiesPzs = _messages.BooleanField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
+  endpointSettings = _messages.MessageField('FirewallEndpointEndpointSettings', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  reconciling = _messages.BooleanField(9)
+  satisfiesPzi = _messages.BooleanField(10)
+  satisfiesPzs = _messages.BooleanField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  updateTime = _messages.StringField(13)
 
 
 class FirewallEndpointAssociation(_messages.Message):
@@ -1212,6 +1228,10 @@ class FirewallEndpointAssociationReference(_messages.Message):
 
   name = _messages.StringField(1)
   network = _messages.StringField(2)
+
+
+class FirewallEndpointEndpointSettings(_messages.Message):
+  r"""Settings for the endpoint."""
 
 
 class GatewaySecurityPolicy(_messages.Message):
@@ -3652,7 +3672,7 @@ class NetworksecurityOrganizationsLocationsFirewallEndpointsPatchRequest(_messag
   Fields:
     firewallEndpoint: A FirewallEndpoint resource to be passed as the request
       body.
-    name: Immutable. Identifier. name of resource
+    name: Immutable. Identifier. Name of resource.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -4675,8 +4695,8 @@ class NetworksecurityProjectsLocationsClientTlsPoliciesPatchRequest(_messages.Me
     clientTlsPolicy: A ClientTlsPolicy resource to be passed as the request
       body.
     name: Required. Name of the ClientTlsPolicy resource. It matches the
-      pattern
-      `projects/*/locations/{location}/clientTlsPolicies/{client_tls_policy}`
+      pattern `projects/{project}/locations/{location}/clientTlsPolicies/{clie
+      nt_tls_policy}`
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the ClientTlsPolicy resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
@@ -5466,8 +5486,9 @@ class NetworksecurityProjectsLocationsListRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).

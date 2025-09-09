@@ -17,11 +17,23 @@ class Artifacts(_messages.Message):
   r"""Represents information about the artifacts of the Machine Learning Run.
 
   Fields:
-    gcsPath: Optional. The Cloud Storage path where the artifacts of the run
+    gcsPath: Required. The Cloud Storage path where the artifacts of the run
       are stored. Example: `gs://my-bucket/my-run-directory`.
   """
 
   gcsPath = _messages.StringField(1)
+
+
+class AtmTag(_messages.Message):
+  r"""Message describing ATM Tag object
+
+  Fields:
+    key: Required. Key of the ATM tag
+    value: Required. Value of the ATM tag
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 class BucketReference(_messages.Message):
@@ -42,6 +54,8 @@ class Cluster(_messages.Message):
   r"""Message describing Cluster object
 
   Messages:
+    ComputeResourcesValue: Optional. Compute resources. where key is string ID
+      of the compute resource.
     LabelsValue: Optional. Labels as key value pairs
     NetworkResourcesValue: Optional. Network resources. where key is string ID
       of the network resource.
@@ -50,6 +64,8 @@ class Cluster(_messages.Message):
 
   Fields:
     compute: Optional. Compute Engine instances
+    computeResources: Optional. Compute resources. where key is string ID of
+      the compute resource.
     createTime: Output only. Creation time of the cluster
     description: Optional. Description of the cluster
     labels: Optional. Labels as key value pairs
@@ -64,6 +80,33 @@ class Cluster(_messages.Message):
     storages: Optional. List of storages
     updateTime: Output only. Update time of the cluster
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ComputeResourcesValue(_messages.Message):
+    r"""Optional. Compute resources. where key is string ID of the compute
+    resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a ComputeResourcesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ComputeResourcesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ComputeResourcesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ComputeResource attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ComputeResource', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -144,27 +187,30 @@ class Cluster(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   compute = _messages.MessageField('Compute', 1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  networkResources = _messages.MessageField('NetworkResourcesValue', 6)
-  networks = _messages.MessageField('Network', 7, repeated=True)
-  orchestrator = _messages.MessageField('Orchestrator', 8)
-  reconciling = _messages.BooleanField(9)
-  storageResources = _messages.MessageField('StorageResourcesValue', 10)
-  storages = _messages.MessageField('Storage', 11, repeated=True)
-  updateTime = _messages.StringField(12)
+  computeResources = _messages.MessageField('ComputeResourcesValue', 2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  networkResources = _messages.MessageField('NetworkResourcesValue', 7)
+  networks = _messages.MessageField('Network', 8, repeated=True)
+  orchestrator = _messages.MessageField('Orchestrator', 9)
+  reconciling = _messages.BooleanField(10)
+  storageResources = _messages.MessageField('StorageResourcesValue', 11)
+  storages = _messages.MessageField('Storage', 12, repeated=True)
+  updateTime = _messages.StringField(13)
 
 
 class Compute(_messages.Message):
   r"""Message describing Compute object
 
   Fields:
+    atmTags: Optional. ATM Tags to attach to compute VM instances
     resourceRequests: Required. Source of compute resource
   """
 
-  resourceRequests = _messages.MessageField('ResourceRequest', 1, repeated=True)
+  atmTags = _messages.MessageField('AtmTag', 1, repeated=True)
+  resourceRequests = _messages.MessageField('ResourceRequest', 2, repeated=True)
 
 
 class ComputeInstance(_messages.Message):
@@ -175,6 +221,45 @@ class ComputeInstance(_messages.Message):
   """
 
   instance = _messages.StringField(1)
+
+
+class ComputeInstanceSlurmNodeSet(_messages.Message):
+  r"""Message describing Compute Instance Slurm NodeSet object
+
+  Messages:
+    LabelsValue: Optional. Labels for the nodeset
+
+  Fields:
+    labels: Optional. Labels for the nodeset
+    startupScript: Optional. Startup script for the nodeset
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels for the nodeset
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+  startupScript = _messages.StringField(2)
 
 
 class ComputeNetworkReference(_messages.Message):
@@ -188,6 +273,22 @@ class ComputeNetworkReference(_messages.Message):
 
   network = _messages.StringField(1)
   subnetwork = _messages.StringField(2)
+
+
+class ComputeResource(_messages.Message):
+  r"""ComputeResource represents a compute resource of a cluster.
+
+  Fields:
+    newDwsFlexInstances: New dws flex instance config
+    newOnDemandInstances: New on demand instance config
+    newReservedInstances: New reserved instance config
+    newSpotInstances: New spot instance config
+  """
+
+  newDwsFlexInstances = _messages.MessageField('NewDWSFlexInstancesConfig', 1)
+  newOnDemandInstances = _messages.MessageField('NewOnDemandInstancesConfig', 2)
+  newReservedInstances = _messages.MessageField('NewReservedInstancesConfig', 3)
+  newSpotInstances = _messages.MessageField('NewSpotInstancesConfig', 4)
 
 
 class Configs(_messages.Message):
@@ -284,6 +385,10 @@ class Configs(_messages.Message):
   userConfigs = _messages.MessageField('UserConfigsValue', 3)
 
 
+class ContainerNodePoolSlurmNodeSet(_messages.Message):
+  r"""Message describing Container NodePool Slurm NodeSet object"""
+
+
 class Disk(_messages.Message):
   r"""Message describing Disk object
 
@@ -351,6 +456,19 @@ class ExistingLustreConfig(_messages.Message):
   """
 
   lustre = _messages.StringField(1)
+
+
+class ExistingNetworkConfig(_messages.Message):
+  r"""ExistingNetworkConfig represents the configuration of an existing
+  network which will be used by the cluster.
+
+  Fields:
+    network: Immutable. The name of the network.
+    subnetwork: Immutable. Subnetwork of the network.
+  """
+
+  network = _messages.StringField(1)
+  subnetwork = _messages.StringField(2)
 
 
 class FileShareConfig(_messages.Message):
@@ -743,12 +861,46 @@ class HypercomputeclusterProjectsLocationsMachineLearningRunsPatchRequest(_messa
     machineLearningRun: A MachineLearningRun resource to be passed as the
       request body.
     name: Identifier. The name of the Machine Learning run.
-    updateMask: Optional. Used to identify fields to be updated
+    updateMask: Optional. Used to identify fields to be updated. Allowed
+      fields is *, we don't support partial updates.
   """
 
   machineLearningRun = _messages.MessageField('MachineLearningRun', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class HypercomputeclusterProjectsLocationsMachineLearningRunsProfileSessionsGetRequest(_messages.Message):
+  r"""A HypercomputeclusterProjectsLocationsMachineLearningRunsProfileSessions
+  GetRequest object.
+
+  Fields:
+    name: Required. projects/{project}/locations/{location}/machineLearningRun
+      s/{machineLearningRun}/profileSessions/{profileSession}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class HypercomputeclusterProjectsLocationsMachineLearningRunsProfileSessionsListRequest(_messages.Message):
+  r"""A HypercomputeclusterProjectsLocationsMachineLearningRunsProfileSessions
+  ListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of Profile Sessions to return. The
+      service may return fewer than this value. If unspecified, at most 50
+      Profile Sessions will be returned. The maximum value is 1000; values
+      above 1000 will be coerced to 1000.
+    pageToken: Optional. A page token, received from a previous
+      `ListProfileSessions` call. Provide this to retrieve the subsequent
+      page.
+    parent: Required. Parent format: projects/{project}/locations/{location}/m
+      achineLearningRuns/{machineLearningRun}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class HypercomputeclusterProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -852,6 +1004,19 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListProfileSessionsResponse(_messages.Message):
+  r"""Response message for MachineLearningRuns.ListProfileSessions.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    profileSessions: A list of profile sessions.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  profileSessions = _messages.MessageField('ProfileSession', 2, repeated=True)
 
 
 class Location(_messages.Message):
@@ -964,6 +1129,7 @@ class MachineLearningRun(_messages.Message):
   r"""A Machine Learning run.
 
   Enums:
+    OrchestratorValueValuesEnum: Required. The orchestrator used for the run.
     StateValueValuesEnum: Output only. State of the run.
 
   Messages:
@@ -982,12 +1148,27 @@ class MachineLearningRun(_messages.Message):
       type:simulation etc.
     metrics: Optional. Metrics for the run.
     name: Identifier. The name of the Machine Learning run.
+    orchestrator: Required. The orchestrator used for the run.
     runSet: Required. Allows grouping of similar runs. * Helps improving UI
       rendering performance. * Allows comparing similar runs via fast filters.
     state: Output only. State of the run.
     tools: Required. List of tools enabled for this run example: XProf, NSys
     updateTime: Output only. Time when the run was last updated.
   """
+
+  class OrchestratorValueValuesEnum(_messages.Enum):
+    r"""Required. The orchestrator used for the run.
+
+    Values:
+      ORCHESTRATOR_UNSPECIFIED: Orchestrator type is not specified.
+      GCE: Google Compute Engine orchestrator.
+      GKE: Google Kubernetes Engine orchestrator.
+      SLURM: Slurm cluster orchestrator.
+    """
+    ORCHESTRATOR_UNSPECIFIED = 0
+    GCE = 1
+    GKE = 2
+    SLURM = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of the run.
@@ -1036,10 +1217,11 @@ class MachineLearningRun(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 6)
   metrics = _messages.MessageField('Metrics', 7)
   name = _messages.StringField(8)
-  runSet = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  tools = _messages.MessageField('Tool', 11, repeated=True)
-  updateTime = _messages.StringField(12)
+  orchestrator = _messages.EnumField('OrchestratorValueValuesEnum', 9)
+  runSet = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  tools = _messages.MessageField('Tool', 12, repeated=True)
+  updateTime = _messages.StringField(13)
 
 
 class Metrics(_messages.Message):
@@ -1106,12 +1288,18 @@ class NetworkResourceConfig(_messages.Message):
     existingComputeNetwork: Immutable. ExistingComputeNetworkConfig represents
       the configuration of an existing compute network which will be used by
       the cluster.
+    existingNetwork: Immutable. ExistingNetworkConfig represents the
+      configuration of an existing network which will be used by the cluster.
     newComputeNetwork: Immutable. NewComputeNetworkConfig represents the
       configuration to create a new compute network for the cluster.
+    newNetwork: Immutable. NewNetworkConfig represents the configuration to
+      create a new network for the cluster.
   """
 
   existingComputeNetwork = _messages.MessageField('ExistingComputeNetworkConfig', 1)
-  newComputeNetwork = _messages.MessageField('NewComputeNetworkConfig', 2)
+  existingNetwork = _messages.MessageField('ExistingNetworkConfig', 2)
+  newComputeNetwork = _messages.MessageField('NewComputeNetworkConfig', 3)
+  newNetwork = _messages.MessageField('NewNetworkConfig', 4)
 
 
 class NetworkSource(_messages.Message):
@@ -1174,6 +1362,50 @@ class NewComputeNetworkConfig(_messages.Message):
 
   description = _messages.StringField(1)
   network = _messages.StringField(2)
+
+
+class NewDWSFlexInstancesConfig(_messages.Message):
+  r"""NewDWSFlexInstancesConfig describes the config to create new dws flex
+  instances.
+
+  Messages:
+    AtmTagsValue: Immutable. Map atm tags to attach to the instance
+
+  Fields:
+    atmTags: Immutable. Map atm tags to attach to the instance
+    machineType: Immutable. Machine type of the instance
+    maxDuration: Immutable. Max duration of the instance
+    zone: Immutable. Zone of the instance
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AtmTagsValue(_messages.Message):
+    r"""Immutable. Map atm tags to attach to the instance
+
+    Messages:
+      AdditionalProperty: An additional property for a AtmTagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type AtmTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AtmTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  atmTags = _messages.MessageField('AtmTagsValue', 1)
+  machineType = _messages.StringField(2)
+  maxDuration = _messages.StringField(3)
+  zone = _messages.StringField(4)
 
 
 class NewFilestoreConfig(_messages.Message):
@@ -1246,6 +1478,143 @@ class NewLustreConfig(_messages.Message):
   description = _messages.StringField(2)
   filesystem = _messages.StringField(3)
   lustre = _messages.StringField(4)
+
+
+class NewNetworkConfig(_messages.Message):
+  r"""NewNetworkConfig represents the configuration to create a new network
+  for the cluster.
+
+  Fields:
+    description: Immutable. Description of the network.
+    network: Immutable. The name of the network.
+  """
+
+  description = _messages.StringField(1)
+  network = _messages.StringField(2)
+
+
+class NewOnDemandInstancesConfig(_messages.Message):
+  r"""NewOnDemandInstancesConfig describes the config to create new on demand
+  instances.
+
+  Messages:
+    AtmTagsValue: Immutable. Map atm tags to attach to the instance
+
+  Fields:
+    atmTags: Immutable. Map atm tags to attach to the instance
+    machineType: Immutable. Machine type of the instance
+    zone: Immutable. Zone of the instance
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AtmTagsValue(_messages.Message):
+    r"""Immutable. Map atm tags to attach to the instance
+
+    Messages:
+      AdditionalProperty: An additional property for a AtmTagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type AtmTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AtmTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  atmTags = _messages.MessageField('AtmTagsValue', 1)
+  machineType = _messages.StringField(2)
+  zone = _messages.StringField(3)
+
+
+class NewReservedInstancesConfig(_messages.Message):
+  r"""NewReservedInstancesConfig describes the config to create new reserved
+  instances.
+
+  Messages:
+    AtmTagsValue: Immutable. Map atm tags to attach to the instance
+
+  Fields:
+    atmTags: Immutable. Map atm tags to attach to the instance
+    reservation: Immutable. Reservation name of the instance
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AtmTagsValue(_messages.Message):
+    r"""Immutable. Map atm tags to attach to the instance
+
+    Messages:
+      AdditionalProperty: An additional property for a AtmTagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type AtmTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AtmTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  atmTags = _messages.MessageField('AtmTagsValue', 1)
+  reservation = _messages.StringField(2)
+
+
+class NewSpotInstancesConfig(_messages.Message):
+  r"""NewSpotInstancesConfig describes the config to create new spot
+  instances.
+
+  Messages:
+    AtmTagsValue: Immutable. Map atm tags to attach to the instance
+
+  Fields:
+    atmTags: Immutable. Map atm tags to attach to the instance
+    machineType: Immutable. Machine type of the instance
+    zone: Immutable. Zone of the instance
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AtmTagsValue(_messages.Message):
+    r"""Immutable. Map atm tags to attach to the instance
+
+    Messages:
+      AdditionalProperty: An additional property for a AtmTagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type AtmTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AtmTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  atmTags = _messages.MessageField('AtmTagsValue', 1)
+  machineType = _messages.StringField(2)
+  zone = _messages.StringField(3)
 
 
 class Operation(_messages.Message):
@@ -1390,6 +1759,23 @@ class Orchestrator(_messages.Message):
   slurm = _messages.MessageField('SlurmOrchestrator', 1)
 
 
+class ProfileSession(_messages.Message):
+  r"""Represents a single profiling session.
+
+  Fields:
+    createTime: Output only. The creation time of the session.
+    gcsPath: Output only. The cloud storage path of the session. Example:
+      `gs://my-bucket/my-run-directory/session-1`.
+    name: Identifier. The name of the profile session. Format: projects/{proje
+      ct}/locations/{location}/machineLearningRuns/{machine_learning_run}/prof
+      ileSessions/{profile_session}
+  """
+
+  createTime = _messages.StringField(1)
+  gcsPath = _messages.StringField(2)
+  name = _messages.StringField(3)
+
+
 class ReservationAffinity(_messages.Message):
   r"""Message describing ReservationAffinity object
 
@@ -1505,9 +1891,43 @@ class SlurmConfig(_messages.Message):
   found in https://slurm.schedmd.com/slurm.conf.html.
 
   Enums:
+    AccountingStorageEnforceFlagsValueListEntryValuesEnum:
+    PreemptModeValueListEntryValuesEnum:
+    PreemptTypeValueValuesEnum: Optional. Specifies the plugin used to
+      identify which jobs can be preempted in order to start a pending job.
+    PriorityTypeValueValuesEnum: Optional. Specifies the plugin to be used in
+      establishing a job's scheduling priority. Set this value to
+      "priority/multifactor" to enable the Multifactor Job Priority Plugin.
     PrologFlagsValueListEntryValuesEnum:
 
   Fields:
+    accountingStorageEnforceFlags: Optional. Flags to control the level of
+      association-based enforcement to impose on job submissions. By default
+      no flags are set. Corresponds to AccountingStorageEnforce.
+    preemptExemptTime: Optional. Specifies minimum run time of jobs before
+      they are considered for preemption.
+    preemptMode: Optional. Specifies the mechanism used to preempt jobs or
+      enable gang scheduling.
+    preemptType: Optional. Specifies the plugin used to identify which jobs
+      can be preempted in order to start a pending job.
+    priorityType: Optional. Specifies the plugin to be used in establishing a
+      job's scheduling priority. Set this value to "priority/multifactor" to
+      enable the Multifactor Job Priority Plugin.
+    priorityWeightAge: Optional. An unsigned integer that scales the
+      contribution of the age factor.
+    priorityWeightAssoc: Optional. An unsigned integer that scales the
+      contribution of the association factor.
+    priorityWeightFairshare: Optional. An unsigned integer that scales the
+      contribution of the fair-share factor.
+    priorityWeightJobSize: Optional. An unsigned integer that scales the
+      contribution of the job size factor.
+    priorityWeightPartition: Optional. An unsigned integer that scales the
+      contribution of the partition factor.
+    priorityWeightQos: Optional. An unsigned integer that scales the
+      contribution of the quality of service factor.
+    priorityWeightTres: Optional. A comma-separated list of TRES Types and
+      weights that sets the degree that each TRES Type contributes to the
+      job's priority.
     prologEpilogTimeout: Optional. The interval Slurm waits for Prolog and
       Epilog before terminating them. Default is 65534 seconds. Corresponds to
       PrologEpilogTimeout.
@@ -1521,6 +1941,104 @@ class SlurmConfig(_messages.Message):
       released manually by the user. Default is empty. Corresponds to
       RequeueExitHold.
   """
+
+  class AccountingStorageEnforceFlagsValueListEntryValuesEnum(_messages.Enum):
+    r"""AccountingStorageEnforceFlagsValueListEntryValuesEnum enum type.
+
+    Values:
+      ACCOUNTING_STORAGE_ENFORCE_FLAG_UNSPECIFIED: Unspecified accounting
+        storage enforce flag.
+      ALL: Implies all other available options except nojobs and nosteps.
+      ASSOCIATIONS: No new job will be allowed to run unless a corresponding
+        association exists in the system.
+      LIMITS: Users will be limited by association to whatever job size or run
+        time limits are defined. Implies associations.
+      NOJOBS: Slurm will not account for any jobs or steps on the system.
+        Implies nosteps.
+      NOSTEPS: Slurm will not account for any steps that have run.
+      QOS: Jobs will not be scheduled unless a valid qos is specified. Implies
+        associations.
+      SAFE: A job will only be launched against an association or qos that has
+        a TRES-minutes limit set if the job will be able to run to completion.
+        Without this option set, jobs will be launched as long as their usage
+        hasn't reached the TRES-minutes limit. This can lead to jobs being
+        launched but then killed when the limit is reached. With this option,
+        a job won't be killed due to limits, even if the limits are changed
+        after the job was started and the association or qos violates the
+        updated limits. Implies limits and associations.
+      WCKEYS: Jobs will not be scheduled unless a valid workload
+        characterization key is specified. Implies associations and TrackWCKey
+        (a separate configuration option).
+    """
+    ACCOUNTING_STORAGE_ENFORCE_FLAG_UNSPECIFIED = 0
+    ALL = 1
+    ASSOCIATIONS = 2
+    LIMITS = 3
+    NOJOBS = 4
+    NOSTEPS = 5
+    QOS = 6
+    SAFE = 7
+    WCKEYS = 8
+
+  class PreemptModeValueListEntryValuesEnum(_messages.Enum):
+    r"""PreemptModeValueListEntryValuesEnum enum type.
+
+    Values:
+      PREEMPT_MODE_UNSPECIFIED: Unspecified preempt mode.
+      OFF: Is the default value and disables job preemption and gang
+        scheduling.
+      CANCEL: The preempted job will be cancelled
+      GANG: Enables gang scheduling (time slicing) of jobs in the same
+        partition, and allows the resuming of suspended jobs.
+      REQUEUE: Preempts jobs by requeuing them (if possible) or canceling
+        them.
+      SUSPEND: The preempted jobs will be suspended, and later the Gang
+        scheduler will resume them.
+      PRIORITY: Allow preemption only if the preemptor's job priority is
+        higher than the preemptee's job priority.
+      WITHIN: Allow jobs within the same qos to preempt one another.
+    """
+    PREEMPT_MODE_UNSPECIFIED = 0
+    OFF = 1
+    CANCEL = 2
+    GANG = 3
+    REQUEUE = 4
+    SUSPEND = 5
+    PRIORITY = 6
+    WITHIN = 7
+
+  class PreemptTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the plugin used to identify which jobs can be
+    preempted in order to start a pending job.
+
+    Values:
+      PREEMPT_TYPE_UNSPECIFIED: Unspecified preempt type.
+      PREEMPT_NONE: Job preemption is disabled (default).
+      PREEMPT_PARTITION_PRIO: Job preemption is based upon partition
+        PriorityTier.
+      PREEMPT_QOS: Job preemption rules are specified by Quality Of Service
+        (QOS) specifications in the Slurm database.
+    """
+    PREEMPT_TYPE_UNSPECIFIED = 0
+    PREEMPT_NONE = 1
+    PREEMPT_PARTITION_PRIO = 2
+    PREEMPT_QOS = 3
+
+  class PriorityTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the plugin to be used in establishing a job's
+    scheduling priority. Set this value to "priority/multifactor" to enable
+    the Multifactor Job Priority Plugin.
+
+    Values:
+      PRIORITY_TYPE_UNSPECIFIED: Unspecified priority type.
+      PRIORITY_BASIC: Jobs are evaluated in a First In, First Out (FIFO)
+        manner.
+      PRIORITY_MULTIFACTOR: Jobs are assigned a priority based upon a variety
+        of factors that include size, age, Fairshare, etc.
+    """
+    PRIORITY_TYPE_UNSPECIFIED = 0
+    PRIORITY_BASIC = 1
+    PRIORITY_MULTIFACTOR = 2
 
   class PrologFlagsValueListEntryValuesEnum(_messages.Enum):
     r"""PrologFlagsValueListEntryValuesEnum enum type.
@@ -1557,10 +2075,22 @@ class SlurmConfig(_messages.Message):
     SERIAL = 7
     X11 = 8
 
-  prologEpilogTimeout = _messages.StringField(1)
-  prologFlags = _messages.EnumField('PrologFlagsValueListEntryValuesEnum', 2, repeated=True)
-  requeueExitCodes = _messages.IntegerField(3, repeated=True)
-  requeueHoldExitCodes = _messages.IntegerField(4, repeated=True)
+  accountingStorageEnforceFlags = _messages.EnumField('AccountingStorageEnforceFlagsValueListEntryValuesEnum', 1, repeated=True)
+  preemptExemptTime = _messages.StringField(2)
+  preemptMode = _messages.EnumField('PreemptModeValueListEntryValuesEnum', 3, repeated=True)
+  preemptType = _messages.EnumField('PreemptTypeValueValuesEnum', 4)
+  priorityType = _messages.EnumField('PriorityTypeValueValuesEnum', 5)
+  priorityWeightAge = _messages.IntegerField(6)
+  priorityWeightAssoc = _messages.IntegerField(7)
+  priorityWeightFairshare = _messages.IntegerField(8)
+  priorityWeightJobSize = _messages.IntegerField(9)
+  priorityWeightPartition = _messages.IntegerField(10)
+  priorityWeightQos = _messages.IntegerField(11)
+  priorityWeightTres = _messages.StringField(12)
+  prologEpilogTimeout = _messages.StringField(13)
+  prologFlags = _messages.EnumField('PrologFlagsValueListEntryValuesEnum', 14, repeated=True)
+  requeueExitCodes = _messages.IntegerField(15, repeated=True)
+  requeueHoldExitCodes = _messages.IntegerField(16, repeated=True)
 
 
 class SlurmLoginNodes(_messages.Message):
@@ -1628,14 +2158,18 @@ class SlurmNodeSet(_messages.Message):
     LabelsValue: Optional. Labels for the nodeset
 
   Fields:
+    bootDisk: Optional. Boot disk for the nodeset
     canIpForward: Optional. Whether login node can forward IP packets
+    computeId: Optional. Compute id of the nodeset
+    computeInstance: Optional. Compute instance details of the nodes.
+    containerNodePool: Optional. Container node pool details of the nodes.
     enableOsLogin: Optional. Whether to enable OS login for the nodeset
     enablePublicIps: Optional. Whether to enable public IPs for the nodeset
     id: Required. Id of the nodeset
     labels: Optional. Labels for the nodeset
     maxDynamicNodeCount: Optional. Maximum number of auto-scaling nodes
       allowed in the nodeset
-    resourceRequestId: Required. Resource request id for the nodeset
+    resourceRequestId: Optional. Resource request id for the nodeset
     serviceAccount: Optional. Service account to be used by the nodes in the
       nodeset.
     startupScript: Optional. Startup script for the nodeset
@@ -1667,17 +2201,21 @@ class SlurmNodeSet(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  canIpForward = _messages.BooleanField(1)
-  enableOsLogin = _messages.BooleanField(2)
-  enablePublicIps = _messages.BooleanField(3)
-  id = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  maxDynamicNodeCount = _messages.IntegerField(6)
-  resourceRequestId = _messages.StringField(7)
-  serviceAccount = _messages.MessageField('ServiceAccount', 8)
-  startupScript = _messages.StringField(9)
-  staticNodeCount = _messages.IntegerField(10)
-  storageConfigs = _messages.MessageField('StorageConfig', 11, repeated=True)
+  bootDisk = _messages.MessageField('Disk', 1)
+  canIpForward = _messages.BooleanField(2)
+  computeId = _messages.StringField(3)
+  computeInstance = _messages.MessageField('ComputeInstanceSlurmNodeSet', 4)
+  containerNodePool = _messages.MessageField('ContainerNodePoolSlurmNodeSet', 5)
+  enableOsLogin = _messages.BooleanField(6)
+  enablePublicIps = _messages.BooleanField(7)
+  id = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  maxDynamicNodeCount = _messages.IntegerField(10)
+  resourceRequestId = _messages.StringField(11)
+  serviceAccount = _messages.MessageField('ServiceAccount', 12)
+  startupScript = _messages.StringField(13)
+  staticNodeCount = _messages.IntegerField(14)
+  storageConfigs = _messages.MessageField('StorageConfig', 15, repeated=True)
 
 
 class SlurmOrchestrator(_messages.Message):

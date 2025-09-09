@@ -2527,6 +2527,102 @@ def AddActiveDirectoryDomain(parser, hidden=False):
   )
 
 
+def AddActiveDirectorySecretManagerKey(parser, hidden=False):
+  """Adds the '--active-directory-secret-manager-key' flag to the parser.
+
+  Args:
+    parser: The current argparse parser to add this to.
+    hidden: if the field needs to be hidden.
+  """
+  help_text = (
+      'The secret manager key storing administrator credentials. Only available'
+      ' for SQL Server instances.'
+  )
+  parser.add_argument(
+      '--active-directory-secret-manager-key',
+      help=help_text,
+      hidden=hidden,
+  )
+
+
+def ClearActiveDirectoryDNSServers(parser, hidden=False):
+  kwargs = _GetKwargsForBoolFlag(False)
+  parser.add_argument(
+      '--clear-active-directory-dns-servers',
+      required=False,
+      help=(
+          'This will clear the DNS servers usedfor the Active Directory.'
+      ),
+      hidden=hidden,
+      **kwargs
+  )
+
+
+def AddActiveDirectoryMode(parser, hidden=False):
+  """Adds the '--active-directory-mode' flag to the parser.
+
+  Args:
+    parser: The current argparse parser to add this to.
+    hidden: if the field needs to be hidden.
+  """
+  choices = [
+      messages.SqlActiveDirectoryConfig.ModeValueValuesEnum.MANAGED_ACTIVE_DIRECTORY.name,
+      messages.SqlActiveDirectoryConfig.ModeValueValuesEnum.SELF_MANAGED_ACTIVE_DIRECTORY.name,
+  ]
+  help_text = (
+      'Defines the Active Directory mode. Only available for SQL Server'
+      ' instances.'
+  )
+  parser.add_argument(
+      '--active-directory-mode',
+      choices=choices,
+      required=False,
+      help=help_text,
+      hidden=hidden,
+  )
+
+
+def AddActiveDirectoryDNSServers(parser, hidden=False):
+  """Adds the '--active-directory-dns-servers' flag to the parser.
+
+  Args:
+    parser: The current argparse parser to add this to.
+    hidden: if the field needs to be hidden.
+  """
+  help_text = (
+      'A comma-separated list of the DNS servers to be used for Active'
+      ' Directory. Only available for SQL Server instances.'
+  )
+
+  parser.add_argument(
+      '--active-directory-dns-servers',
+      type=arg_parsers.ArgList(),
+      metavar='DNS_SERVER_IP_ADDRESS',
+      help=help_text,
+      hidden=hidden,
+      action=arg_parsers.FlattenAction(),
+  )
+
+
+def AddActiveDirectoryOrganizationalUnit(parser, hidden=False):
+  """Adds the '--active-directory-organizational-unit' flag to the parser.
+
+  Args:
+    parser: The current argparse parser to add this to.
+    hidden: if the field needs to be hidden.
+  """
+  help_text = (
+      'Defines the organizational unit to be used for Active Directory. Only '
+      'available for SQL Server instances.'
+  )
+
+  parser.add_argument(
+      '--active-directory-organizational-unit',
+      help=help_text,
+      hidden=hidden,
+  )
+
+
 def AddDeletionProtection(parser, hidden=False):
   """Adds the '--deletion-protection' flag to the parser for instances patch action.
 
@@ -2820,6 +2916,50 @@ def AddEnableAutoUpgrade(parser):
           ' must be 8.0.35 or higher.'
       ),
       hidden=True,
+  )
+
+
+def AddReadPoolAutoScaleConfig(parser, hidden=False):
+  """Adds flags for read pool auto-scale config."""
+  read_pool_auto_scale_group = parser.add_group(
+      help='Options for configuring read pool auto-scale.', hidden=hidden
+  )
+  read_pool_auto_scale_group.add_argument(
+      '--auto-scale-enabled',
+      action=arg_parsers.StoreTrueFalseAction,
+      help='Enable read pool auto-scaling.',
+  )
+  read_pool_auto_scale_group.add_argument(
+      '--auto-scale-min-node-count',
+      type=arg_parsers.BoundedInt(lower_bound=1, unlimited=True),
+      help='Minimum number of read pool nodes to be maintained.',
+  )
+  read_pool_auto_scale_group.add_argument(
+      '--auto-scale-max-node-count',
+      type=arg_parsers.BoundedInt(lower_bound=1, unlimited=True),
+      help='Maximum number of read pool nodes to be maintained.',
+  )
+  read_pool_auto_scale_group.add_argument(
+      '--auto-scale-target-metrics',
+      type=arg_parsers.ArgDict(
+          spec={
+              'AVERAGE_CPU_UTILIZATION': float,
+          }
+      ),
+      metavar='METRIC=VALUE',
+      help=(
+          'Target metrics for read pool auto-scaling. '
+          'Example: --auto-scale-target-metrics=AVERAGE_CPU_UTILIZATION=0.8'
+      ),
+  )
+  read_pool_auto_scale_group.add_argument(
+      '--auto-scale-disable-scale-in',
+      action=arg_parsers.StoreTrueFalseAction,
+      help=(
+          'Disable automatic read pool scale-in. Auto scale will only add nodes'
+          ' to the read pool. Automatic read pool scale-in is enabled by'
+          ' default.'
+      ),
   )
 
 

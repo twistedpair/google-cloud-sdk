@@ -2086,15 +2086,37 @@ class DataTransformerRecommendation(_messages.Message):
 class DataTransformerRequest(_messages.Message):
   r"""Request message for Data Transformer Task using Gemini.
 
+  Enums:
+    GenerationModeValueValuesEnum: Required. The generation mode for the
+      DataTransformer task.
+
   Fields:
+    generationMode: Required. The generation mode for the DataTransformer
+      task.
     integrationVersion: Required. The integration version which contains all
       the integration parameters, all triggers and tasks including the
       DataTransformer task.
+    previousResponse: Optional. The previously present diagramMetadata either
+      for regeneration or edit.
     taskId: Required. The task id of the DataTransformer task.
   """
 
-  integrationVersion = _messages.MessageField('IntegrationVersion', 1)
-  taskId = _messages.StringField(2)
+  class GenerationModeValueValuesEnum(_messages.Enum):
+    r"""Required. The generation mode for the DataTransformer task.
+
+    Values:
+      CREATE: Create a new transformation.
+      REGENERATE: Regenerate the generated transformation.
+      EDIT: Edit an existing transformation.
+    """
+    CREATE = 0
+    REGENERATE = 1
+    EDIT = 2
+
+  generationMode = _messages.EnumField('GenerationModeValueValuesEnum', 1)
+  integrationVersion = _messages.MessageField('IntegrationVersion', 2)
+  previousResponse = _messages.StringField(3)
+  taskId = _messages.StringField(4)
 
 
 class DataTransformerResponse(_messages.Message):
@@ -3444,11 +3466,13 @@ class SettingBinding(_messages.Message):
       GEMINI_CLOUD_ASSIST: Gemini Cloud Assist.
       GEMINI_CODE_ASSIST: Gemini Code Assist.
       GEMINI_IN_BIGQUERY: Gemini in BigQuery.
+      GEMINI_IN_LOOKER: Gemini in Looker.
     """
     PRODUCT_UNSPECIFIED = 0
     GEMINI_CLOUD_ASSIST = 1
     GEMINI_CODE_ASSIST = 2
     GEMINI_IN_BIGQUERY = 3
+    GEMINI_IN_LOOKER = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

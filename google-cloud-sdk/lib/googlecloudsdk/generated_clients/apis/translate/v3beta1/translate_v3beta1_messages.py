@@ -135,12 +135,16 @@ class BatchTranslateDocumentRequest(_messages.Message):
     outputConfig: Required. Output configuration. If 2 input configs match to
       the same file (that is, same input path), we don't generate output for
       duplicate inputs.
+    pdfNativeOnly: Optional. If true, only native pdf pages will be
+      translated.
     sourceLanguageCode: Required. The BCP-47 language code of the input
       document if known, for example, "en-US" or "sr-Latn". Supported language
       codes are listed in [Language
       Support](https://cloud.google.com/translate/docs/languages).
     targetLanguageCodes: Required. The BCP-47 language code to use for
       translation of the input document. Specify up to 10 language codes here.
+      Supported language codes are listed in [Language
+      Support](https://cloud.google.com/translate/docs/languages).
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -238,8 +242,9 @@ class BatchTranslateDocumentRequest(_messages.Message):
   inputConfigs = _messages.MessageField('BatchDocumentInputConfig', 6, repeated=True)
   models = _messages.MessageField('ModelsValue', 7)
   outputConfig = _messages.MessageField('BatchDocumentOutputConfig', 8)
-  sourceLanguageCode = _messages.StringField(9)
-  targetLanguageCodes = _messages.StringField(10, repeated=True)
+  pdfNativeOnly = _messages.BooleanField(9)
+  sourceLanguageCode = _messages.StringField(10)
+  targetLanguageCodes = _messages.StringField(11, repeated=True)
 
 
 class BatchTranslateTextRequest(_messages.Message):
@@ -286,8 +291,12 @@ class BatchTranslateTextRequest(_messages.Message):
     outputConfig: Required. Output configuration. If 2 input configs match to
       the same file (that is, same input path), we don't generate output for
       duplicate inputs.
-    sourceLanguageCode: Required. Source language code.
+    sourceLanguageCode: Required. Source language code. Supported language
+      codes are listed in [Language
+      Support](https://cloud.google.com/translate/docs/languages).
     targetLanguageCodes: Required. Specify up to 10 language codes here.
+      Supported language codes are listed in [Language
+      Support](https://cloud.google.com/translate/docs/languages).
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1185,14 +1194,16 @@ class TranslateDocumentRequest(_messages.Message):
       default Google model (NMT) will be used for translation.
     sourceLanguageCode: Optional. The BCP-47 language code of the input
       document if known, for example, "en-US" or "sr-Latn". Supported language
-      codes are listed in Language Support. If the source language isn't
-      specified, the API attempts to identify the source language
-      automatically and returns the source language within the response.
-      Source language must be specified if the request contains a glossary or
-      a custom model.
+      codes are listed in [Language
+      Support](https://cloud.google.com/translate/docs/languages). If the
+      source language isn't specified, the API attempts to identify the source
+      language automatically and returns the source language within the
+      response. Source language must be specified if the request contains a
+      glossary or a custom model.
     targetLanguageCode: Required. The BCP-47 language code to use for
       translation of the input document, set to one of the language codes
-      listed in Language Support.
+      listed in [Language
+      Support](https://cloud.google.com/translate/docs/languages).
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1474,8 +1485,9 @@ class TranslateProjectsLocationsListRequest(_messages.Message):
   r"""A TranslateProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1615,9 +1627,8 @@ class TranslateProjectsTranslateTextRequest(_messages.Message):
 
 
 class TranslateTextGlossaryConfig(_messages.Message):
-  r"""------------------------------------------------------------------------
-  ----- Configures which glossary should be used for a specific target
-  language, and defines options for applying that glossary.
+  r"""Configures which glossary should be used for a specific target language,
+  and defines options for applying that glossary.
 
   Fields:
     contextualTranslationEnabled: Optional. If set to true, the glossary will
@@ -1670,12 +1681,15 @@ class TranslateTextRequest(_messages.Message):
       If not provided, the default Google model (NMT) will be used
     sourceLanguageCode: Optional. The BCP-47 language code of the input text
       if known, for example, "en-US" or "sr-Latn". Supported language codes
-      are listed in Language Support. If the source language isn't specified,
-      the API attempts to identify the source language automatically and
-      returns the source language within the response.
+      are listed in [Language
+      Support](https://cloud.google.com/translate/docs/languages). If the
+      source language isn't specified, the API attempts to identify the source
+      language automatically and returns the source language within the
+      response.
     targetLanguageCode: Required. The BCP-47 language code to use for
       translation of the input text, set to one of the language codes listed
-      in Language Support.
+      in [Language
+      Support](https://cloud.google.com/translate/docs/languages).
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')

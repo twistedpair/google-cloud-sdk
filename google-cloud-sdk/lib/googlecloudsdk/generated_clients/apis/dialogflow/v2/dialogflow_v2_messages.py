@@ -4376,8 +4376,9 @@ class DialogflowProjectsLocationsListRequest(_messages.Message):
   r"""A DialogflowProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -10808,11 +10809,13 @@ class GoogleCloudDialogflowV2AgentAssistantRecord(_messages.Message):
     articleSuggestionAnswer: Output only. The article suggestion answer.
     dialogflowAssistAnswer: Output only. Dialogflow assist answer.
     faqAnswer: Output only. The FAQ answer.
+    generatorSuggestion: Output only. The generator suggestion.
   """
 
   articleSuggestionAnswer = _messages.MessageField('GoogleCloudDialogflowV2ArticleAnswer', 1)
   dialogflowAssistAnswer = _messages.MessageField('GoogleCloudDialogflowV2DialogflowAssistAnswer', 2)
   faqAnswer = _messages.MessageField('GoogleCloudDialogflowV2FaqAnswer', 3)
+  generatorSuggestion = _messages.MessageField('GoogleCloudDialogflowV2GeneratorSuggestion', 4)
 
 
 class GoogleCloudDialogflowV2AnalyzeContentRequest(_messages.Message):

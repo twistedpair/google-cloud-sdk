@@ -1040,7 +1040,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
           }
 
     def BatchCreate(self, request, global_params=None):
-      r"""Batch creates pull request comments.
+      r"""Batch creates pull request comments. This function is used to create multiple PullRequestComments for code review. There needs to be exactly one PullRequestComment of type Review, and at most 100 PullRequestComments of type Code per request. The Position of the code comments must be unique within the request.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsBatchCreateRequest) input message
@@ -1067,7 +1067,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a pull request comment.
+      r"""Creates a pull request comment. This function is used to create a single PullRequestComment of type Comment, or a single PullRequestComment of type Code that's replying to another PullRequestComment of type Code. Use BatchCreatePullRequestComments to create multiple PullRequestComments for code reviews.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsCreateRequest) input message
@@ -1202,7 +1202,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
     )
 
     def Resolve(self, request, global_params=None):
-      r"""Resolves pull request comments.
+      r"""Resolves pull request comments. A list of PullRequestComment names must be provided. The PullRequestComment names must be in the same conversation thread. If auto_fill is set, all comments in the conversation thread will be resolved.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsResolveRequest) input message
@@ -1229,7 +1229,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
     )
 
     def Unresolve(self, request, global_params=None):
-      r"""Unresolves pull request comment.
+      r"""Unresolves pull request comments. A list of PullRequestComment names must be provided. The PullRequestComment names must be in the same conversation thread. If auto_fill is set, all comments in the conversation thread will be unresolved.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsUnresolveRequest) input message

@@ -2611,10 +2611,13 @@ class FhirStore(_messages.Message):
       versions can be fetched through the history APIs, but cannot be updated.
       If set to true, no historical versions are kept. The server sends errors
       for attempts to read the historical versions. Defaults to false.
-    enableHistoryModifications: Optional. Whether to allow ExecuteBundle to
-      accept history bundles, and directly insert and overwrite historical
-      resource versions into the FHIR store. If set to false, using history
-      bundles fails with an error. Defaults to false.
+    enableHistoryModifications: Optional. Whether to allow the
+      [ImportResourcesHistory] and [ExecuteBundle] APIs to accept history
+      bundles, and directly insert and overwrite historical resource versions
+      into the FHIR store. Changing resource histories creates resource
+      interactions that have occurred in the past which clients might not
+      allow. If set to false, [ImportResourcesHistory] and [ExecuteBundle]
+      requests will return errors.
     enableUpdateCreate: Whether this FHIR store has the [updateCreate
       capability](https://www.hl7.org/fhir/capabilitystatement-
       definitions.html#CapabilityStatement.rest.resource.updateCreate). This
@@ -4782,6 +4785,25 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesInstancesRetrie
   viewport = _messages.StringField(3)
 
 
+class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesInstancesUpdateMetadataRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesInstancesUp
+  dateMetadataRequest object.
+
+  Fields:
+    dicomWebPath: Required. The path of the UpdateInstanceMetadata request
+      (for example,
+      `studies/{study_uid}/series/{series_uid}/instances/{instance_uid}`).
+    httpBody: A HttpBody resource to be passed as the request body.
+    parent: Required. The name of the DICOM store that is being accessed (for
+      example, `projects/{project_id}/locations/{location_id}/datasets/{datase
+      t_id}/dicomStores/{dicom_store_id}`).
+  """
+
+  dicomWebPath = _messages.StringField(1, required=True)
+  httpBody = _messages.MessageField('HttpBody', 2)
+  parent = _messages.StringField(3, required=True)
+
+
 class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesRetrieveMetadataRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesRetrieveMet
   adataRequest object.
@@ -4832,6 +4854,24 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesSearchForInstan
   parent = _messages.StringField(2, required=True)
 
 
+class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesUpdateMetadataRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesUpdateMetad
+  ataRequest object.
+
+  Fields:
+    dicomWebPath: Required. The path of the UpdateSeriesMetadata request (for
+      example, `studies/{study_uid}/series/{series_uid}`).
+    httpBody: A HttpBody resource to be passed as the request body.
+    parent: Required. The name of the DICOM store that is being accessed (for
+      example, `projects/{project_id}/locations/{location_id}/datasets/{datase
+      t_id}/dicomStores/{dicom_store_id}`).
+  """
+
+  dicomWebPath = _messages.StringField(1, required=True)
+  httpBody = _messages.MessageField('HttpBody', 2)
+  parent = _messages.StringField(3, required=True)
+
+
 class HealthcareProjectsLocationsDatasetsDicomStoresStudiesStoreInstancesRequest(_messages.Message):
   r"""A
   HealthcareProjectsLocationsDatasetsDicomStoresStudiesStoreInstancesRequest
@@ -4845,6 +4885,45 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStudiesStoreInstancesRequest
     parent: Required. The name of the DICOM store that is being accessed. For
       example, `projects/{project_id}/locations/{location_id}/datasets/{datase
       t_id}/dicomStores/{dicom_store_id}`.
+  """
+
+  dicomWebPath = _messages.StringField(1, required=True)
+  httpBody = _messages.MessageField('HttpBody', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsDicomStoresStudiesUpdateInstancesRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsDicomStoresStudiesUpdateInstancesRequest
+  object.
+
+  Fields:
+    dicomWebPath: Required. The path of the UpdateInstances DICOMweb request.
+      For example, `studies/[{study_uid}]`. Note that the `study_uid` is
+      optional.
+    httpBody: A HttpBody resource to be passed as the request body.
+    parent: Required. The name of the DICOM store that is being accessed. For
+      example, `projects/{project_id}/locations/{location_id}/datasets/{datase
+      t_id}/dicomStores/{dicom_store_id}`.
+  """
+
+  dicomWebPath = _messages.StringField(1, required=True)
+  httpBody = _messages.MessageField('HttpBody', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsDicomStoresStudiesUpdateMetadataRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsDicomStoresStudiesUpdateMetadataRequest
+  object.
+
+  Fields:
+    dicomWebPath: Required. The path of the UpdateStudyMetadata request (for
+      example, `studies/{study_uid}`).
+    httpBody: A HttpBody resource to be passed as the request body.
+    parent: Required. The name of the DICOM store that is being accessed (for
+      example, `projects/{project_id}/locations/{location_id}/datasets/{datase
+      t_id}/dicomStores/{dicom_store_id}`).
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -4868,6 +4947,25 @@ class HealthcareProjectsLocationsDatasetsDicomStoresTestIamPermissionsRequest(_m
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class HealthcareProjectsLocationsDatasetsDicomStoresUpdateInstancesRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsDicomStoresUpdateInstancesRequest
+  object.
+
+  Fields:
+    dicomWebPath: Required. The path of the UpdateInstances DICOMweb request.
+      For example, `studies/[{study_uid}]`. Note that the `study_uid` is
+      optional.
+    httpBody: A HttpBody resource to be passed as the request body.
+    parent: Required. The name of the DICOM store that is being accessed. For
+      example, `projects/{project_id}/locations/{location_id}/datasets/{datase
+      t_id}/dicomStores/{dicom_store_id}`.
+  """
+
+  dicomWebPath = _messages.StringField(1, required=True)
+  httpBody = _messages.MessageField('HttpBody', 2)
+  parent = _messages.StringField(3, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsFhirStoresApplyAdminConsentsRequest(_messages.Message):
@@ -6422,8 +6520,9 @@ class HealthcareProjectsLocationsListRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -9008,6 +9107,19 @@ class Type(_messages.Message):
   fields = _messages.MessageField('Field', 1, repeated=True)
   name = _messages.StringField(2)
   primitive = _messages.EnumField('PrimitiveValueValuesEnum', 3)
+
+
+class UpdateSeriesMetadataResponse(_messages.Message):
+  r"""UpdateSeriesMetadataResponse is the LRO response for
+  UpdateSeriesMetadata.
+  """
+
+
+
+class UpdateStudyMetadataResponse(_messages.Message):
+  r"""UpdateStudyMetadataResponse is the LRO response for UpdateStudyMetadata.
+  """
+
 
 
 class UserDataMapping(_messages.Message):

@@ -145,11 +145,12 @@ def AddStackTypeArg(parser):
           'IPV4_IPV6': (
               'The network interface can have both IPv4 and IPv6 addresses.'
           ),
+          'IPV6_ONLY': 'The network interface will be assigned IPv6 addresses.',
       },
       type=arg_utils.ChoiceToEnumName,
       help=(
-          'The stack type for the default network interface. Determines if '
-          'IPv6 is enabled on the default network interface.'
+          'The stack type for the network interface. Determines if IPv6 is'
+          ' enabled on the network interface.'
       ),
   )
 

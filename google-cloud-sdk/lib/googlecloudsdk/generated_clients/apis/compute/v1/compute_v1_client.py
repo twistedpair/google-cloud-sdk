@@ -44,7 +44,6 @@ class ComputeV1(base_api.BaseApiClient):
     self.autoscalers = self.AutoscalersService(self)
     self.backendBuckets = self.BackendBucketsService(self)
     self.backendServices = self.BackendServicesService(self)
-    self.diskSettings = self.DiskSettingsService(self)
     self.diskTypes = self.DiskTypesService(self)
     self.disks = self.DisksService(self)
     self.externalVpnGateways = self.ExternalVpnGatewaysService(self)
@@ -95,7 +94,6 @@ class ComputeV1(base_api.BaseApiClient):
     self.regionAutoscalers = self.RegionAutoscalersService(self)
     self.regionBackendServices = self.RegionBackendServicesService(self)
     self.regionCommitments = self.RegionCommitmentsService(self)
-    self.regionDiskSettings = self.RegionDiskSettingsService(self)
     self.regionDiskTypes = self.RegionDiskTypesService(self)
     self.regionDisks = self.RegionDisksService(self)
     self.regionHealthCheckServices = self.RegionHealthCheckServicesService(self)
@@ -110,7 +108,6 @@ class ComputeV1(base_api.BaseApiClient):
     self.regionNotificationEndpoints = self.RegionNotificationEndpointsService(self)
     self.regionOperations = self.RegionOperationsService(self)
     self.regionSecurityPolicies = self.RegionSecurityPoliciesService(self)
-    self.regionSnapshotSettings = self.RegionSnapshotSettingsService(self)
     self.regionSslCertificates = self.RegionSslCertificatesService(self)
     self.regionSslPolicies = self.RegionSslPoliciesService(self)
     self.regionTargetHttpProxies = self.RegionTargetHttpProxiesService(self)
@@ -1390,68 +1387,6 @@ class ComputeV1(base_api.BaseApiClient):
         relative_path='projects/{project}/global/backendServices/{backendService}',
         request_field='backendServiceResource',
         request_type_name='ComputeBackendServicesUpdateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-  class DiskSettingsService(base_api.BaseApiService):
-    """Service class for the diskSettings resource."""
-
-    _NAME = 'diskSettings'
-
-    def __init__(self, client):
-      super(ComputeV1.DiskSettingsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Get Zonal Disk Settings.
-
-      Args:
-        request: (ComputeDiskSettingsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (DiskSettings) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='compute.diskSettings.get',
-        ordered_params=['project', 'zone'],
-        path_params=['project', 'zone'],
-        query_params=[],
-        relative_path='projects/{project}/zones/{zone}/diskSettings',
-        request_field='',
-        request_type_name='ComputeDiskSettingsGetRequest',
-        response_type_name='DiskSettings',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Patch Zonal Disk Settings.
-
-      Args:
-        request: (ComputeDiskSettingsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='PATCH',
-        method_id='compute.diskSettings.patch',
-        ordered_params=['project', 'zone'],
-        path_params=['project', 'zone'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='projects/{project}/zones/{zone}/diskSettings',
-        request_field='diskSettings',
-        request_type_name='ComputeDiskSettingsPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -5894,6 +5829,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeInstanceGroupsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instanceGroups.testIamPermissions',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/instanceGroups/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeInstanceGroupsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
   class InstanceSettingsService(base_api.BaseApiService):
     """Service class for the instanceSettings resource."""
 
@@ -6210,6 +6171,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def AddNetworkInterface(self, request, global_params=None):
+      r"""Adds one dynamic network interface to an active instance.
+
+      Args:
+        request: (ComputeInstancesAddNetworkInterfaceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddNetworkInterface')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddNetworkInterface.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instances.addNetworkInterface',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/addNetworkInterface',
+        request_field='networkInterface',
+        request_type_name='ComputeInstancesAddNetworkInterfaceRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def AddResourcePolicies(self, request, global_params=None):
       r"""Adds existing resource policies to an instance. You can only add one policy right now which will be applied to this instance for scheduling live migrations.
 
@@ -6362,6 +6349,32 @@ class ComputeV1(base_api.BaseApiClient):
         relative_path='projects/{project}/zones/{zone}/instances/{instance}/deleteAccessConfig',
         request_field='',
         request_type_name='ComputeInstancesDeleteAccessConfigRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def DeleteNetworkInterface(self, request, global_params=None):
+      r"""Deletes one dynamic network interface from an active instance. InstancesDeleteNetworkInterfaceRequest indicates: - instance from which to delete, using project+zone+resource_id fields; - dynamic network interface to be deleted, using network_interface_name field;.
+
+      Args:
+        request: (ComputeInstancesDeleteNetworkInterfaceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DeleteNetworkInterface')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteNetworkInterface.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instances.deleteNetworkInterface',
+        ordered_params=['project', 'zone', 'instance', 'networkInterfaceName'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['networkInterfaceName', 'requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/deleteNetworkInterface',
+        request_field='',
+        request_type_name='ComputeInstancesDeleteNetworkInterfaceRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -13214,68 +13227,6 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class RegionDiskSettingsService(base_api.BaseApiService):
-    """Service class for the regionDiskSettings resource."""
-
-    _NAME = 'regionDiskSettings'
-
-    def __init__(self, client):
-      super(ComputeV1.RegionDiskSettingsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Get Regional Disk Settings.
-
-      Args:
-        request: (ComputeRegionDiskSettingsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (DiskSettings) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='compute.regionDiskSettings.get',
-        ordered_params=['project', 'region'],
-        path_params=['project', 'region'],
-        query_params=[],
-        relative_path='projects/{project}/regions/{region}/diskSettings',
-        request_field='',
-        request_type_name='ComputeRegionDiskSettingsGetRequest',
-        response_type_name='DiskSettings',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Patch Regional Disk Settings.
-
-      Args:
-        request: (ComputeRegionDiskSettingsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='PATCH',
-        method_id='compute.regionDiskSettings.patch',
-        ordered_params=['project', 'region'],
-        path_params=['project', 'region'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='projects/{project}/regions/{region}/diskSettings',
-        request_field='diskSettings',
-        request_type_name='ComputeRegionDiskSettingsPatchRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
   class RegionDiskTypesService(base_api.BaseApiService):
     """Service class for the regionDiskTypes resource."""
 
@@ -14818,6 +14769,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRegionInstanceGroupsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstanceGroups.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/instanceGroups/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeRegionInstanceGroupsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
   class RegionInstanceTemplatesService(base_api.BaseApiService):
     """Service class for the regionInstanceTemplates resource."""
 
@@ -16324,68 +16301,6 @@ class ComputeV1(base_api.BaseApiClient):
         relative_path='projects/{project}/regions/{region}/securityPolicies/{resource}/setLabels',
         request_field='regionSetLabelsRequest',
         request_type_name='ComputeRegionSecurityPoliciesSetLabelsRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-  class RegionSnapshotSettingsService(base_api.BaseApiService):
-    """Service class for the regionSnapshotSettings resource."""
-
-    _NAME = 'regionSnapshotSettings'
-
-    def __init__(self, client):
-      super(ComputeV1.RegionSnapshotSettingsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Get region snapshot settings.
-
-      Args:
-        request: (ComputeRegionSnapshotSettingsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (SnapshotSettings) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='compute.regionSnapshotSettings.get',
-        ordered_params=['project', 'region'],
-        path_params=['project', 'region'],
-        query_params=[],
-        relative_path='projects/{project}/regions/{region}/snapshotSettings',
-        request_field='',
-        request_type_name='ComputeRegionSnapshotSettingsGetRequest',
-        response_type_name='SnapshotSettings',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Patch region snapshot settings.
-
-      Args:
-        request: (ComputeRegionSnapshotSettingsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='PATCH',
-        method_id='compute.regionSnapshotSettings.patch',
-        ordered_params=['project', 'region'],
-        path_params=['project', 'region'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='projects/{project}/regions/{region}/snapshotSettings',
-        request_field='snapshotSettings',
-        request_type_name='ComputeRegionSnapshotSettingsPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -19090,7 +19005,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.serviceAttachments.get',
         ordered_params=['project', 'region', 'serviceAttachment'],
         path_params=['project', 'region', 'serviceAttachment'],
-        query_params=[],
+        query_params=['showNatIps'],
         relative_path='projects/{project}/regions/{region}/serviceAttachments/{serviceAttachment}',
         request_field='',
         request_type_name='ComputeServiceAttachmentsGetRequest',

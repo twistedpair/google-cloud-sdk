@@ -1043,14 +1043,15 @@ class Resource(_messages.Message):
       service can meet the data availability and management requirements. *
       Talk to iam-conditions-eng@ about your use case.
     locations: The locations of the resource. This field is used to determine
-      whether the request is compliant with Trust Boundaries. Usage: - If
-      unset or empty, the location of authorization is used as the target
-      location. - For global resources: use a single value of "global". - For
-      regional/multi-regional resources: use name of the GCP region(s) where
-      the resource exists (e.g., ["us-east1", "us-west1"]). For multi-regional
-      resources specify the name of each GCP region in the resource's multi-
-      region. NOTE: Only GCP cloud region names are supported - go/cloud-
-      region-names.
+      whether the request is compliant with Trust Boundaries. Usage: - Must
+      not be empty for services in-scope for Trust Boundaries. Once Trust
+      Boundaries is GA, empty values will cause the request to be rejected if
+      customers enforce Trust Boundaries on the parent CRM nodes. - For global
+      resources: use a single value of "global". - For regional/multi-regional
+      resources: use name of the GCP region(s) where the resource exists
+      (e.g., ["us-east1", "us-west1"]). For multi-regional resources specify
+      the name of each GCP region in the resource's multi-region. NOTE: Only
+      GCP cloud region names are supported - go/cloud-region-names.
     name: The **relative** name of the resource, which is the URI path of the
       resource without the leading "/". See
       https://cloud.google.com/iam/docs/conditions-resource-

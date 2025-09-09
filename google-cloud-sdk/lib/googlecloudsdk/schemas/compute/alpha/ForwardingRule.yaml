@@ -79,10 +79,6 @@ properties:
       This is used in PSC consumer ForwardingRule to control whether the PSC
       endpoint can be accessed from another region.
     type: boolean
-  trafficDisabled:
-    description: |-
-      This is used in PSC consumer ForwardingRule to control the traffic.
-    type: boolean
   allowPscPacketInjection:
     description: |-
       This is used in PSC consumer ForwardingRule to control whether the

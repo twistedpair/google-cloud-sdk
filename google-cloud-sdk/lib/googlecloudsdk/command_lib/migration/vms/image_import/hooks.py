@@ -95,7 +95,7 @@ def FixCreateDiskImageImportRequest(ref, args, req):
   if args.rootfs_uuid:
     adaptation_modifiers.append(
         hooks.GetMessageClass('AdaptationModifier')(
-            name='rootfs-uuid', value=args.rootfs_uuid
+            modifier='rootfs-uuid', value=args.rootfs_uuid
         )
     )
   if adaptation_modifiers:
@@ -163,7 +163,7 @@ def FixCreateMachineImageImportRequest(ref, args, req):
   if args.rootfs_uuid:
     adaptation_modifiers.append(
         hooks.GetMessageClass('AdaptationModifier')(
-            name='rootfs-uuid', value=args.rootfs_uuid
+            modifier='rootfs-uuid', value=args.rootfs_uuid
         )
     )
   if adaptation_modifiers:
@@ -180,8 +180,8 @@ def FixCreateMachineImageImportRequest(ref, args, req):
 # convert the gcloud flags to the api format#
 # i.e. --adaptation-modifiers=flag1,flag2=value2
 # will be converted to:
-# [AdaptationModifier{'name': 'flag1'},
-# AdaptationModifier{'name': 'flag2', 'value': 'value2'}]
+# [AdaptationModifier{'modifier': 'flag1'},
+# AdaptationModifier{'modifier': 'flag2', 'value': 'value2'}]
 def ProcessAdaptationModifiers(adaptation_modifiers):
   """Processes the adaptation modifiers to match the API format.
 
@@ -210,12 +210,12 @@ def ProcessAdaptationModifiers(adaptation_modifiers):
       continue
     if '=' not in flag:
       adaptation_flag_message = hooks.GetMessageClass('AdaptationModifier')(
-          name=flag.strip()
+          modifier=flag.strip()
       )
     else:
       key, value = flag.split('=', 1)
       adaptation_flag_message = hooks.GetMessageClass('AdaptationModifier')(
-          name=key.strip(), value=value.strip()
+          modifier=key.strip(), value=value.strip()
       )
     result.append(adaptation_flag_message)
   return result

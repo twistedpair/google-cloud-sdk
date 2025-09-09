@@ -1150,7 +1150,7 @@ class GlobalSetPolicyRequest(_messages.Message):
       size of the policy is limited to a few 10s of KB. An empty policy is in
       general a valid policy but certain services (like Projects) might reject
       them.
-    updateMask: A string attribute.
+    updateMask: Update mask for the policy.
   """
 
   bindings = _messages.MessageField('Binding', 1, repeated=True)
@@ -2355,11 +2355,42 @@ class ResourcesListResponse(_messages.Message):
 class SetAutoscalerLinkOperationMetadata(_messages.Message):
   r"""A SetAutoscalerLinkOperationMetadata object.
 
+  Messages:
+    ZoneToIgmIdsValue: Map of zone to an ID of the zonal IGM belonging to the
+      RMIG.
+
   Fields:
     zonalIgmIds: List of zonal IGM IDs part of the RMIG.
+    zoneToIgmIds: Map of zone to an ID of the zonal IGM belonging to the RMIG.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ZoneToIgmIdsValue(_messages.Message):
+    r"""Map of zone to an ID of the zonal IGM belonging to the RMIG.
+
+    Messages:
+      AdditionalProperty: An additional property for a ZoneToIgmIdsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ZoneToIgmIdsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ZoneToIgmIdsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.IntegerField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   zonalIgmIds = _messages.IntegerField(1, repeated=True)
+  zoneToIgmIds = _messages.MessageField('ZoneToIgmIdsValue', 2)
 
 
 class SetCommonInstanceMetadataOperationMetadata(_messages.Message):

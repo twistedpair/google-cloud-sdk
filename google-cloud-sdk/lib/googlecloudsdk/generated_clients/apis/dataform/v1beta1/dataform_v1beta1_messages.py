@@ -200,6 +200,10 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class CancelOperationRequest(_messages.Message):
+  r"""The request message for Operations.CancelOperation."""
+
+
 class CancelWorkflowInvocationRequest(_messages.Message):
   r"""`CancelWorkflowInvocation` request message."""
 
@@ -598,6 +602,64 @@ class DataPreparationAction(_messages.Message):
   jobId = _messages.StringField(4)
 
 
+class DataformProjectsLocationsFoldersGetIamPolicyRequest(_messages.Message):
+  r"""A DataformProjectsLocationsFoldersGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataformProjectsLocationsFoldersSetIamPolicyRequest(_messages.Message):
+  r"""A DataformProjectsLocationsFoldersSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class DataformProjectsLocationsFoldersTestIamPermissionsRequest(_messages.Message):
+  r"""A DataformProjectsLocationsFoldersTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class DataformProjectsLocationsGetConfigRequest(_messages.Message):
   r"""A DataformProjectsLocationsGetConfigRequest object.
 
@@ -622,8 +684,9 @@ class DataformProjectsLocationsListRequest(_messages.Message):
   r"""A DataformProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -639,6 +702,55 @@ class DataformProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(3, required=True)
   pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(5)
+
+
+class DataformProjectsLocationsOperationsCancelRequest(_messages.Message):
+  r"""A DataformProjectsLocationsOperationsCancelRequest object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class DataformProjectsLocationsOperationsDeleteRequest(_messages.Message):
+  r"""A DataformProjectsLocationsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataformProjectsLocationsOperationsGetRequest(_messages.Message):
+  r"""A DataformProjectsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataformProjectsLocationsOperationsListRequest(_messages.Message):
+  r"""A DataformProjectsLocationsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class DataformProjectsLocationsRepositoriesCommitRequest(_messages.Message):
@@ -1597,6 +1709,64 @@ class DataformProjectsLocationsRepositoriesWorkspacesWriteFileRequest(_messages.
   writeFileRequest = _messages.MessageField('WriteFileRequest', 2)
 
 
+class DataformProjectsLocationsTeamFoldersGetIamPolicyRequest(_messages.Message):
+  r"""A DataformProjectsLocationsTeamFoldersGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataformProjectsLocationsTeamFoldersSetIamPolicyRequest(_messages.Message):
+  r"""A DataformProjectsLocationsTeamFoldersSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class DataformProjectsLocationsTeamFoldersTestIamPermissionsRequest(_messages.Message):
+  r"""A DataformProjectsLocationsTeamFoldersTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class DataformProjectsLocationsUpdateConfigRequest(_messages.Message):
   r"""A DataformProjectsLocationsUpdateConfigRequest object.
 
@@ -1972,6 +2142,19 @@ class ListLocationsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListOperationsResponse(_messages.Message):
+  r"""The response message for Operations.ListOperations.
+
+  Fields:
+    nextPageToken: The standard List next-page token.
+    operations: A list of operations that matches the specified filter in the
+      request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
 class ListReleaseConfigsResponse(_messages.Message):
   r"""`ListReleaseConfigs` response message.
 
@@ -2240,6 +2423,114 @@ class NotebookRuntimeOptions(_messages.Message):
 
   aiPlatformNotebookRuntimeTemplate = _messages.StringField(1)
   gcsOutputBucket = _messages.StringField(2)
+
+
+class Operation(_messages.Message):
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
+
+  Messages:
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
+      that returns a long-running operation should document the metadata type,
+      if any.
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
+      methods, the response should have the type `XxxResponse`, where `Xxx` is
+      the original method name. For example, if the original method name is
+      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+
+  Fields:
+    done: If the value is `false`, it means the operation is still in
+      progress. If `true`, the operation is completed, and either `error` or
+      `response` is available.
+    error: The error result of the operation in case of failure or
+      cancellation.
+    metadata: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
+      that returns a long-running operation should document the metadata type,
+      if any.
+    name: The server-assigned name, which is only unique within the same
+      service that originally returns it. If you use the default HTTP mapping,
+      the `name` should be a resource name ending with
+      `operations/{unique_id}`.
+    response: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
+      methods, the response should have the type `XxxResponse`, where `Xxx` is
+      the original method name. For example, if the original method name is
+      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Service-specific metadata associated with the operation. It typically
+    contains progress information and common metadata such as create time.
+    Some services might not provide such metadata. Any method that returns a
+    long-running operation should document the metadata type, if any.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResponseValue(_messages.Message):
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
+    methods, the response should have the type `XxxResponse`, where `Xxx` is
+    the original method name. For example, if the original method name is
+    `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResponseValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResponseValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  done = _messages.BooleanField(1)
+  error = _messages.MessageField('Status', 2)
+  metadata = _messages.MessageField('MetadataValue', 3)
+  name = _messages.StringField(4)
+  response = _messages.MessageField('ResponseValue', 5)
 
 
 class OperationMetadata(_messages.Message):
@@ -3349,6 +3640,10 @@ encoding.AddCustomJsonEnumMapping(
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
 encoding.AddCustomJsonFieldMapping(
+    DataformProjectsLocationsFoldersGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
     DataformProjectsLocationsRepositoriesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     DataformProjectsLocationsRepositoriesWorkspacesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    DataformProjectsLocationsTeamFoldersGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')

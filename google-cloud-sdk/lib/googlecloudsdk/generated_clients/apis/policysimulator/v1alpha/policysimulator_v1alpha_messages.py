@@ -329,8 +329,8 @@ class GoogleCloudOrgpolicyV2PolicySpecPolicyRule(_messages.Message):
     ParametersValue: Optional. Required for managed constraints if parameters
       are defined. Passes parameter values when policy enforcement is enabled.
       Ensure that parameter value types match those defined in the constraint
-      definition. For example: { "allowedLocations" : ["us-east1", "us-
-      west1"], "allowAll" : true }
+      definition. For example: ``` { "allowedLocations" : ["us-east1", "us-
+      west1"], "allowAll" : true } ```
 
   Fields:
     allowAll: Setting this to true means that all values are allowed. This
@@ -348,13 +348,13 @@ class GoogleCloudOrgpolicyV2PolicySpecPolicyRule(_messages.Message):
     denyAll: Setting this to true means that all values are denied. This field
       can be set only in policies for list constraints.
     enforce: If `true`, then the policy is enforced. If `false`, then any
-      configuration is acceptable. This field can be set only in policies for
-      boolean constraints.
+      configuration is acceptable. This field can be set in policies for
+      boolean constraints, custom constraints and managed constraints.
     parameters: Optional. Required for managed constraints if parameters are
       defined. Passes parameter values when policy enforcement is enabled.
       Ensure that parameter value types match those defined in the constraint
-      definition. For example: { "allowedLocations" : ["us-east1", "us-
-      west1"], "allowAll" : true }
+      definition. For example: ``` { "allowedLocations" : ["us-east1", "us-
+      west1"], "allowAll" : true } ```
     resourceTypes: Optional. The resource types policies can support, only
       used for managed constraints. Method type is `GOVERN_TAGS`.
     values: List of values to be used for this policy rule. This field can be
@@ -366,8 +366,8 @@ class GoogleCloudOrgpolicyV2PolicySpecPolicyRule(_messages.Message):
     r"""Optional. Required for managed constraints if parameters are defined.
     Passes parameter values when policy enforcement is enabled. Ensure that
     parameter value types match those defined in the constraint definition.
-    For example: { "allowedLocations" : ["us-east1", "us-west1"], "allowAll" :
-    true }
+    For example: ``` { "allowedLocations" : ["us-east1", "us-west1"],
+    "allowAll" : true } ```
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.
@@ -399,15 +399,14 @@ class GoogleCloudOrgpolicyV2PolicySpecPolicyRule(_messages.Message):
 
 
 class GoogleCloudOrgpolicyV2PolicySpecPolicyRuleResourceTypes(_messages.Message):
-  r"""Set multiple resource types for one policy. For example: resourceTypes:
-  included: - compute.googleapis.com/Instance - compute.googleapis.com/Disk
-  Constraint definition contains an empty resource type in order to support
-  multiple resource types in the policy. Only supports managed constraints.
-  Method type is `GOVERN_TAGS`.
+  r"""Set multiple resource types for one policy. For example: ```
+  resourceTypes: included: - compute.googleapis.com/Instance -
+  compute.googleapis.com/Disk ``` Constraint definition contains an empty
+  resource type in order to support multiple resource types in the policy.
+  Only supports managed constraints. Method type is `GOVERN_TAGS`.
 
   Fields:
     included: Optional. The resource types we currently support.
-      cloud/orgpolicy/customconstraintconfig/prod/resource_types.prototext
   """
 
   included = _messages.StringField(1, repeated=True)
@@ -598,26 +597,44 @@ class GoogleCloudPolicysimulatorV1alphaAccessActivity(_messages.Message):
   r"""Describes an access activity.
 
   Fields:
+    permission: The permission that will be added or removed.
     permissionFqdn: The FQDN of the permission needed for the access.
+      Deprecated: Use the `permission` field instead.
     principal: The principal that will lose or gain access.
     resource: The resource the principal will lose or gain access to.
   """
 
-  permissionFqdn = _messages.StringField(1)
-  principal = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaAccessActivityPrincipal', 2)
-  resource = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaAccessActivityResource', 3)
+  permission = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaAccessActivityPermission', 1)
+  permissionFqdn = _messages.StringField(2)
+  principal = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaAccessActivityPrincipal', 3)
+  resource = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaAccessActivityResource', 4)
+
+
+class GoogleCloudPolicysimulatorV1alphaAccessActivityPermission(_messages.Message):
+  r"""The permission of the access activity.
+
+  Fields:
+    fqdn: The FQDN of the permission. This is in the `v2` format. For a list
+      of IAM permissions in the `v2` format, see
+      https://cloud.google.com/iam/help/deny/supported-permissions.
+    name: The name of the permission in the `v1` format. For a complete list
+      of IAM permissions in the `v1` format, see
+      https://cloud.google.com/iam/help/permissions/reference.
+  """
+
+  fqdn = _messages.StringField(1)
+  name = _messages.StringField(2)
 
 
 class GoogleCloudPolicysimulatorV1alphaAccessActivityPrincipal(_messages.Message):
   r"""The principal of the resource.
 
   Fields:
-    subject: TODO(user) : Add few examples. The subject of the principal.
-      For 1st party users, this is the email address. For 3rd party users,
-      this is the 3P subject.
+    subject: The subject of the principal. For 1st party users, this is the
+      email address. For 3rd party users, this is the 3P subject.
     type: The type of the principal. Supported principal types are Workspace,
-      Workforce Pool, Workload Pool and Service Account. Allowed string must
-      be one of: - iam.googleapis.com/WorkspaceIdentity -
+      Workforce Pool, Workload Pool and Service Account. String will be one
+      of: - iam.googleapis.com/WorkspaceIdentity -
       iam.googleapis.com/WorkforcePoolIdentity -
       iam.googleapis.com/WorkloadPoolIdentity -
       iam.googleapis.com/ServiceAccount
@@ -632,11 +649,14 @@ class GoogleCloudPolicysimulatorV1alphaAccessActivityResource(_messages.Message)
 
   Fields:
     fullResourceName: The full resource name of the resource.
+    service: The service that the resource belongs to. Example:
+      "compute.googleapis.com"
     type: The resource type.
   """
 
   fullResourceName = _messages.StringField(1)
-  type = _messages.StringField(2)
+  service = _messages.StringField(2)
+  type = _messages.StringField(3)
 
 
 class GoogleCloudPolicysimulatorV1alphaAccessChange(_messages.Message):
@@ -673,10 +693,12 @@ class GoogleCloudPolicysimulatorV1alphaAccessChange(_messages.Message):
       DECISION_UNSPECIFIED: Default value. This value is unused.
       GRANTED: <no description>
       NOT_GRANTED: The access is not allowed.
+      ERROR: There is an error evaluating the access.
     """
     DECISION_UNSPECIFIED = 0
     GRANTED = 1
     NOT_GRANTED = 2
+    ERROR = 3
 
   class PostChangeDecisionValueValuesEnum(_messages.Enum):
     r"""The decision of the access under evaluation with the policy overlay
@@ -686,10 +708,12 @@ class GoogleCloudPolicysimulatorV1alphaAccessChange(_messages.Message):
       DECISION_UNSPECIFIED: Default value. This value is unused.
       GRANTED: <no description>
       NOT_GRANTED: The access is not allowed.
+      ERROR: There is an error evaluating the access.
     """
     DECISION_UNSPECIFIED = 0
     GRANTED = 1
     NOT_GRANTED = 2
+    ERROR = 3
 
   class PreChangeDecisionValueValuesEnum(_messages.Enum):
     r"""The decision of the access under evaluation without the policy overlay
@@ -699,10 +723,12 @@ class GoogleCloudPolicysimulatorV1alphaAccessChange(_messages.Message):
       DECISION_UNSPECIFIED: Default value. This value is unused.
       GRANTED: <no description>
       NOT_GRANTED: The access is not allowed.
+      ERROR: There is an error evaluating the access.
     """
     DECISION_UNSPECIFIED = 0
     GRANTED = 1
     NOT_GRANTED = 2
+    ERROR = 3
 
   accessActivity = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaAccessActivity', 1)
   daysAccessedCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
@@ -768,6 +794,8 @@ class GoogleCloudPolicysimulatorV1alphaAccessPolicySimulationAccessChangeSummary
   r"""Summary of the access changes detected during the simulation.
 
   Fields:
+    evaluationErrorCount: Output only. Number of accesses had errors in
+      evaluation during for the simulation.
     impactedPrincipalsCount: Output only. Principals for which at least one
       access changed from allow to deny.
     impactedResourcesCount: Output only. Resources for which at least one
@@ -778,10 +806,11 @@ class GoogleCloudPolicysimulatorV1alphaAccessPolicySimulationAccessChangeSummary
       between baseline and simulated policies.
   """
 
-  impactedPrincipalsCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  impactedResourcesCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  newlyDeniedCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  totalDiffCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  evaluationErrorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  impactedPrincipalsCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  impactedResourcesCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  newlyDeniedCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  totalDiffCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudPolicysimulatorV1alphaAccessPolicySimulationAccessPolicySimulationSummary(_messages.Message):
@@ -921,6 +950,183 @@ class GoogleCloudPolicysimulatorV1alphaAccessTuple(_messages.Message):
   fullResourceName = _messages.StringField(1)
   permission = _messages.StringField(2)
   principal = _messages.StringField(3)
+
+
+class GoogleCloudPolicysimulatorV1alphaActivityBacktest(_messages.Message):
+  r"""ActivityBacktest resource.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the ActivityBacktest.
+      Output only.
+
+  Fields:
+    createTime: Output only. The time when the ActivityBacktest was created.
+      Output only.
+    name: Output only. Identifier. The resource name of the ActivityBacktest.
+      Output only. `projects/{project}/locations/{location}/activityBacktests/
+      {activity_backtest_id}` `folders/{folder}/locations/{location}/activityB
+      acktests/{activity_backtest_id}` `organizations/{organization}/locations
+      /{location}/activityBacktests/{activity_backtest_id}`
+    observationPeriod: Output only. The observation period for access requests
+      evaluated during the activity backtest. Will only be at a day
+      granunlarity.
+    proposedChanges: Required. Immutable. The proposed changes we are
+      evaluating. Only a single change is currently supported.
+    runTimeInterval: Output only. The time when the ActivityBacktest started
+      and ended. Output only.
+    state: Output only. The state of the ActivityBacktest. Output only.
+    summary: Output only. Summary of activity backtest results. Output only.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the ActivityBacktest. Output only.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      PENDING: The `ActivityBacktest` has not started yet.
+      RUNNING: The `ActivityBacktest` is currently running.
+      SUCCEEDED: The `ActivityBacktest` has successfully completed.
+      FAILED: The `ActivityBacktest` has finished with an error.
+      CANCELLED: The `ActivityBacktest` has been cancelled.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    RUNNING = 2
+    SUCCEEDED = 3
+    FAILED = 4
+    CANCELLED = 5
+
+  createTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  observationPeriod = _messages.MessageField('GoogleTypeInterval', 3)
+  proposedChanges = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaProposedChange', 4, repeated=True)
+  runTimeInterval = _messages.MessageField('GoogleTypeInterval', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  summary = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaActivityBacktestActivityBacktestSummary', 7)
+
+
+class GoogleCloudPolicysimulatorV1alphaActivityBacktestAccessDecisionChangeSummary(_messages.Message):
+  r"""Summary of the access changes detected during the activity backtest.
+
+  Fields:
+    impactedPrincipalsCount: Output only. Principals for which at least one
+      access changed.
+    impactedResourcesCount: Output only. Resources for which at least one
+      access changed.
+    newlyDeniedCount: Output only. Number of access that changed from allow to
+      deny.
+  """
+
+  impactedPrincipalsCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  impactedResourcesCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  newlyDeniedCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudPolicysimulatorV1alphaActivityBacktestActivityBacktestSummary(_messages.Message):
+  r"""Summary statistics about the simulated policies.
+
+  Fields:
+    accessDecisionChangeSummary: Output only. Summary of the access changes
+      detected during the activity backtest.
+    evaluationSummary: Output only. Summary of the access requests evaluated
+      during the activity backtest.
+  """
+
+  accessDecisionChangeSummary = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaActivityBacktestAccessDecisionChangeSummary', 1)
+  evaluationSummary = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaActivityBacktestEvaluationSummary', 2)
+
+
+class GoogleCloudPolicysimulatorV1alphaActivityBacktestEvaluationSummary(_messages.Message):
+  r"""Summary of the access requests evaluated during the activity backtest.
+
+  Fields:
+    evaluatedAccessesCount: Output only. Number of accesses evaluated for the
+      activity backtest. If this number is 0, there were no access activities
+      found that could have potentially been impacted by the change.
+    evaluatedPrincipalsCount: Output only. Number of unique principals
+      evaluated for the activity backtest.
+    evaluatedResourcesCount: Output only. Number of unique resources evaluated
+      for the activity backtest.
+  """
+
+  evaluatedAccessesCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  evaluatedPrincipalsCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  evaluatedResourcesCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudPolicysimulatorV1alphaActivityBacktestResult(_messages.Message):
+  r"""Result for a given activity backtest.
+
+  Enums:
+    LastRecordedDecisionValueValuesEnum: The most recently recorded decision
+      of the access under evaluation.
+    PostChangeDecisionValueValuesEnum: The decision of the access under
+      evaluation with the policy overlay (using proposed policies).
+
+  Fields:
+    accessActivity: Output only. The access activity which was evaluated for
+      the activity backtest.
+    activityBacktest: Output only. The resource name of the `ActivityBacktest`
+      that generated this result. Expected format: `projects/{project}/locatio
+      ns/global/activityBacktests/{activity_backtest_id}` `folders/{folder}/lo
+      cations/global/activityBacktests/{activity_backtest_id}` `organizations/
+      {organization}/locations/global/activityBacktests/{activity_backtest_id}
+      `
+    daysAccessedCount: The number of days this access happened in the
+      observation period.
+    lastAccessDate: The date when the resource was last accessed.
+    lastRecordedDecision: The most recently recorded decision of the access
+      under evaluation.
+    name: Identifier. The resource name of the `ActivityBacktestResult` that
+      owns the ActivityBacketest. Expected format: `projects/{project}/locatio
+      ns/global/activityBacktestResults/{activity_backtest_result_id}` `folder
+      s/{folder}/locations/global/activityBacktestResults/{activity_backtest_r
+      esult_id}` `organizations/{organization}/locations/global/activityBackte
+      stResults/{activity_backtest_result_id}`
+    postChangeDecision: The decision of the access under evaluation with the
+      policy overlay (using proposed policies).
+  """
+
+  class LastRecordedDecisionValueValuesEnum(_messages.Enum):
+    r"""The most recently recorded decision of the access under evaluation.
+
+    Values:
+      DECISION_UNSPECIFIED: Default value. This value is unused.
+      ALLOWED: The access is allowed.
+      DENIED: The access is denied. We do not currently differentiate between
+        explicit denies (denied by a deny rule) and implicit denies (denied
+        due to lack of allow rules)
+      FAILED: It is not possible to determine the access decision.
+    """
+    DECISION_UNSPECIFIED = 0
+    ALLOWED = 1
+    DENIED = 2
+    FAILED = 3
+
+  class PostChangeDecisionValueValuesEnum(_messages.Enum):
+    r"""The decision of the access under evaluation with the policy overlay
+    (using proposed policies).
+
+    Values:
+      DECISION_UNSPECIFIED: Default value. This value is unused.
+      ALLOWED: The access is allowed.
+      DENIED: The access is denied. We do not currently differentiate between
+        explicit denies (denied by a deny rule) and implicit denies (denied
+        due to lack of allow rules)
+      FAILED: It is not possible to determine the access decision.
+    """
+    DECISION_UNSPECIFIED = 0
+    ALLOWED = 1
+    DENIED = 2
+    FAILED = 3
+
+  accessActivity = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaAccessActivity', 1)
+  activityBacktest = _messages.StringField(2)
+  daysAccessedCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  lastAccessDate = _messages.MessageField('GoogleTypeDate', 4)
+  lastRecordedDecision = _messages.EnumField('LastRecordedDecisionValueValuesEnum', 5)
+  name = _messages.StringField(6)
+  postChangeDecision = _messages.EnumField('PostChangeDecisionValueValuesEnum', 7)
 
 
 class GoogleCloudPolicysimulatorV1alphaBindingExplanation(_messages.Message):
@@ -1180,6 +1386,57 @@ class GoogleCloudPolicysimulatorV1alphaChangeOverlay(_messages.Message):
   mutations = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaMutation', 1, repeated=True)
 
 
+class GoogleCloudPolicysimulatorV1alphaCreateIamV2Policy(_messages.Message):
+  r"""Test a change that creates an IamV2Policy using the
+  google.iam.v2.CreatePolicyRequest.
+
+  Fields:
+    parent: Required. The resource that the policy is attached to, along with
+      the kind of policy to create. Format:
+      `policies/{attachment_point}/denypolicies` The attachment point is
+      identified by its URL-encoded full resource name, which means that the
+      forward-slash character, `/`, must be written as `%2F`. For example,
+      `policies/cloudresourcemanager.googleapis.com%2Fprojects%2Fmy-
+      project/denypolicies`. For organizations and folders, use the numeric ID
+      in the full resource name. For projects, you can use the alphanumeric or
+      the numeric ID.
+    policy: Required. The policy to create.
+    policyId: The ID to use for this policy, which will become the final
+      component of the policy's resource name. The ID must contain 3 to 63
+      characters. It can contain lowercase letters and numbers, as well as
+      dashes (`-`) and periods (`.`). The first character must be a lowercase
+      letter.
+  """
+
+  parent = _messages.StringField(1)
+  policy = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaIamV2Policy', 2)
+  policyId = _messages.StringField(3)
+
+
+class GoogleCloudPolicysimulatorV1alphaCreateIamV3PolicyBinding(_messages.Message):
+  r"""Test a change that creates an IamV3PolicyBinding using the
+  google.iam.v3.CreatePolicyBindingRequest.
+
+  Fields:
+    parent: Required. The parent resource where this policy binding will be
+      created. The binding parent is the closest Resource Manager resource
+      (project, folder or organization) to the binding target. Format: *
+      `projects/{project_id}/locations/{location}` *
+      `projects/{project_number}/locations/{location}` *
+      `folders/{folder_id}/locations/{location}` *
+      `organizations/{organization_id}/locations/{location}`
+    policyBinding: Required. The policy binding to create.
+    policyBindingId: Required. The ID to use for the policy binding, which
+      will become the final component of the policy binding's resource name.
+      This value must start with a lowercase letter followed by up to 62
+      lowercase letters, numbers, hyphens, or dots. Pattern, /a-z{2,62}/.
+  """
+
+  parent = _messages.StringField(1)
+  policyBinding = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaIamV3PolicyBinding', 2)
+  policyBindingId = _messages.StringField(3)
+
+
 class GoogleCloudPolicysimulatorV1alphaCreateOrgPolicyViolationsPreviewOperationMetadata(_messages.Message):
   r"""CreateOrgPolicyViolationsPreviewOperationMetadata is metadata about an
   OrgPolicyViolationsPreview generations operation.
@@ -1224,6 +1481,67 @@ class GoogleCloudPolicysimulatorV1alphaCreateOrgPolicyViolationsPreviewOperation
   resourcesScanned = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   startTime = _messages.StringField(5)
   state = _messages.EnumField('StateValueValuesEnum', 6)
+
+
+class GoogleCloudPolicysimulatorV1alphaDeleteIamV2Policy(_messages.Message):
+  r"""Test a change that deletes an IamV2Policy using the
+  google.iam.v2.DeletePolicyRequest.
+
+  Fields:
+    etag: Optional. The expected `etag` of the policy to delete. If the value
+      does not match the value that is stored in IAM, the request fails with a
+      `409` error code and `ABORTED` status. If you omit this field, the
+      policy is deleted regardless of its current `etag`.
+    name: Required. The resource name of the policy to delete. Format:
+      `policies/{attachment_point}/denypolicies/{policy_id}` Use the URL-
+      encoded full resource name, which means that the forward-slash
+      character, `/`, must be written as `%2F`. For example,
+      `policies/cloudresourcemanager.googleapis.com%2Fprojects%2Fmy-
+      project/denypolicies/my-policy`. For organizations and folders, use the
+      numeric ID in the full resource name. For projects, you can use the
+      alphanumeric or the numeric ID.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
+class GoogleCloudPolicysimulatorV1alphaDeleteIamV3PolicyBinding(_messages.Message):
+  r"""Test a change that deletes an IamV3PolicyBinding using the
+  google.iam.v3.DeletePolicyBindingRequest.
+
+  Fields:
+    etag: Optional. The etag of the policy binding. If this is provided, it
+      must match the server's etag.
+    name: Required. The name of the policy binding to delete. Format: * `proje
+      cts/{project_id}/locations/{location}/policyBindings/{policy_binding_id}
+      ` * `projects/{project_number}/locations/{location}/policyBindings/{poli
+      cy_binding_id}` * `folders/{folder_id}/locations/{location}/policyBindin
+      gs/{policy_binding_id}` * `organizations/{organization_id}/locations/{lo
+      cation}/policyBindings/{policy_binding_id}`
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
+class GoogleCloudPolicysimulatorV1alphaDeleteIamV3PrincipalAccessBoundaryPolicy(_messages.Message):
+  r"""Test a change that deletes an IamV3PrincipalAccessBoundaryPolicy using
+  the google.iam.v3.DeletePrincipalAccessBoundaryPolicyRequest.
+
+  Fields:
+    etag: Optional. The etag of the principal access boundary policy. If this
+      is provided, it must match the server's etag.
+    force: Optional. If set to true, the request will force the deletion of
+      the policy even if the policy is referenced in policy bindings.
+    name: Required. The name of the principal access boundary policy to
+      delete. Format: `organizations/{organization_id}/locations/{location}/pr
+      incipalAccessBoundaryPolicies/{principal_access_boundary_policy_id}`
+  """
+
+  etag = _messages.StringField(1)
+  force = _messages.BooleanField(2)
+  name = _messages.StringField(3)
 
 
 class GoogleCloudPolicysimulatorV1alphaDenyPolicy(_messages.Message):
@@ -1618,6 +1936,392 @@ class GoogleCloudPolicysimulatorV1alphaGenerateOrgPolicyViolationsPreviewOperati
   state = _messages.EnumField('StateValueValuesEnum', 6)
 
 
+class GoogleCloudPolicysimulatorV1alphaIamV2DenyRule(_messages.Message):
+  r"""The google.iam.v2.DenyRule being simulated. See the original proto for
+  documentation.
+
+  Fields:
+    denialCondition: The condition that determines whether this deny rule
+      applies to a request. If the condition expression evaluates to `true`,
+      then the deny rule is applied; otherwise, the deny rule is not applied.
+      Each deny rule is evaluated independently. If this deny rule does not
+      apply to a request, other deny rules might still apply. The condition
+      can use CEL functions that evaluate [resource
+      tags](https://cloud.google.com/iam/help/conditions/resource-tags). Other
+      functions and operators are not supported.
+    deniedPermissions: The permissions that are explicitly denied by this
+      rule. Each permission uses the format
+      `{service_fqdn}/{resource}.{verb}`, where `{service_fqdn}` is the fully
+      qualified domain name for the service. For example,
+      `iam.googleapis.com/roles.list`.
+    deniedPrincipals: The identities that are prevented from using one or more
+      permissions on Google Cloud resources. The possible values are
+      documented at google.iam.v2.DenyRule.denied_principals. Simulation
+      currently supports all first party principals except gmail users and
+      service agents. Third party principals are not yet supported.
+    exceptionPermissions: Specifies the permissions that this rule excludes
+      from the set of denied permissions given by `denied_permissions`. If a
+      permission appears in `denied_permissions` _and_ in
+      `exception_permissions` then it will _not_ be denied. The excluded
+      permissions can be specified using the same syntax as
+      `denied_permissions`.
+    exceptionPrincipals: The identities that are excluded from the deny rule,
+      even if they are listed in the `denied_principals`. For example, you
+      could add a Google group to the `denied_principals`, then exclude
+      specific users who belong to that group. This field can contain the same
+      values as the `denied_principals` field, excluding
+      `principalSet://goog/public:all`, which represents all users on the
+      internet.
+    exemptedCredentialLevels: A list of credential levels that are excluded
+      from this rule. If a request contains _any_ of the
+      exempted_credential_levels, it will _not_ be denied.
+  """
+
+  denialCondition = _messages.MessageField('GoogleTypeExpr', 1)
+  deniedPermissions = _messages.StringField(2, repeated=True)
+  deniedPrincipals = _messages.StringField(3, repeated=True)
+  exceptionPermissions = _messages.StringField(4, repeated=True)
+  exceptionPrincipals = _messages.StringField(5, repeated=True)
+  exemptedCredentialLevels = _messages.StringField(6, repeated=True)
+
+
+class GoogleCloudPolicysimulatorV1alphaIamV2Policy(_messages.Message):
+  r"""The google.iam.v2.Policy being simulated. See the original proto for
+  detailed documentation.
+
+  Messages:
+    AnnotationsValue: A key-value map to store arbitrary metadata for the
+      `Policy`. Keys can be up to 63 characters. Values can be up to 255
+      characters.
+
+  Fields:
+    annotations: A key-value map to store arbitrary metadata for the `Policy`.
+      Keys can be up to 63 characters. Values can be up to 255 characters.
+    displayName: A user-specified description of the `Policy`. This value can
+      be up to 63 characters.
+    etag: An opaque tag that identifies the current version of the `Policy`.
+      This field is ignored when simulating policy creation. When simulating
+      policy updates, this field helps ensure that there have been no
+      additional updates since the simulation was created.
+    name: Immutable. The resource name of the `Policy` to simulate. If the
+      policy already exists, we will simulate replacing it. Format:
+      `policies/{attachment_point}/denypolicies/{policy_id}` The attachment
+      point is identified by its URL-encoded full resource name, which means
+      that the forward-slash character, `/`, must be written as `%2F`. For
+      example, `policies/cloudresourcemanager.googleapis.com%2Fprojects%2Fmy-
+      project/denypolicies/my-deny-policy`. For organizations and folders, use
+      the numeric ID in the full resource name. For projects, requests can use
+      the alphanumeric or the numeric ID. Responses always contain the numeric
+      ID.
+    rules: A list of rules that specify the behavior of the `Policy`. All of
+      the rules must be of the same `kind`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""A key-value map to store arbitrary metadata for the `Policy`. Keys can
+    be up to 63 characters. Values can be up to 255 characters.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  displayName = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  name = _messages.StringField(4)
+  rules = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaIamV2PolicyRule', 5, repeated=True)
+
+
+class GoogleCloudPolicysimulatorV1alphaIamV2PolicyRule(_messages.Message):
+  r"""A copy of google.iam.v2main.PolicyRule. See the original proto for
+  documentation.
+
+  Fields:
+    denyRule: A rule for a deny policy.
+    description: The description of the policy rule. Must be less than or
+      equal to 256 characters.
+  """
+
+  denyRule = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaIamV2DenyRule', 1)
+  description = _messages.StringField(2)
+
+
+class GoogleCloudPolicysimulatorV1alphaIamV3PolicyBinding(_messages.Message):
+  r"""The google.iam.v3.PolicyBinding being simulated. See the original proto
+  for documentation.
+
+  Enums:
+    PolicyKindValueValuesEnum: Immutable. The kind of the policy to attach in
+      this binding. This field must be one of the following: - Left empty
+      (will be automatically set to the policy kind) - The input policy kind
+
+  Messages:
+    AnnotationsValue: Optional. User-defined annotations. See
+      https://google.aip.dev/148#annotations for more details such as format
+      and size limitations
+
+  Fields:
+    annotations: Optional. User-defined annotations. See
+      https://google.aip.dev/148#annotations for more details such as format
+      and size limitations
+    condition: Optional. The condition to apply to the policy binding. When
+      set, the `expression` field in the `Expr` must include from 1 to 10
+      subexpressions, joined by the "||"(Logical OR), "&&"(Logical AND) or
+      "!"(Logical NOT) operators and cannot contain more than 250 characters.
+      The condition is currently only supported when bound to policies of kind
+      principal access boundary. When the bound policy is a principal access
+      boundary policy, the only supported attributes in any subexpression are
+      `principal.type` and `principal.subject`. An example expression is:
+      "principal.type == 'iam.googleapis.com/ServiceAccount'" or
+      "principal.subject == 'bob@example.com'". Allowed operations for
+      `principal.subject`: - `principal.subject == ` - `principal.subject != `
+      - `principal.subject in []` - `principal.subject.startsWith()` -
+      `principal.subject.endsWith()` Allowed operations for `principal.type`:
+      - `principal.type == ` - `principal.type != ` - `principal.type in []`
+      Supported principal types are Workspace, Workforce Pool, Workload Pool
+      and Service Account. Allowed string must be one of: -
+      iam.googleapis.com/WorkspaceIdentity -
+      iam.googleapis.com/WorkforcePoolIdentity -
+      iam.googleapis.com/WorkloadPoolIdentity -
+      iam.googleapis.com/ServiceAccount
+    displayName: Optional. The description of the policy binding. Must be less
+      than or equal to 63 characters.
+    etag: Optional. The etag for the policy binding. If this is provided on
+      update, it must match the server's etag.
+    name: Identifier. The name of the policy binding, in the format
+      `{binding_parent/locations/{location}/policyBindings/{policy_binding_id}
+      `. The binding parent is the closest Resource Manager resource (project,
+      folder, or organization) to the binding target. Format: * `projects/{pro
+      ject_id}/locations/{location}/policyBindings/{policy_binding_id}` * `pro
+      jects/{project_number}/locations/{location}/policyBindings/{policy_bindi
+      ng_id}` * `folders/{folder_id}/locations/{location}/policyBindings/{poli
+      cy_binding_id}` * `organizations/{organization_id}/locations/{location}/
+      policyBindings/{policy_binding_id}`
+    policy: Required. Immutable. The resource name of the policy to be bound.
+      The binding parent and policy must belong to the same organization.
+    policyKind: Immutable. The kind of the policy to attach in this binding.
+      This field must be one of the following: - Left empty (will be
+      automatically set to the policy kind) - The input policy kind
+    target: Required. Immutable. Target is the full resource name of the
+      resource to which the policy will be bound. Immutable once set.
+  """
+
+  class PolicyKindValueValuesEnum(_messages.Enum):
+    r"""Immutable. The kind of the policy to attach in this binding. This
+    field must be one of the following: - Left empty (will be automatically
+    set to the policy kind) - The input policy kind
+
+    Values:
+      POLICY_KIND_UNSPECIFIED: Unspecified policy kind; Not a valid state
+      PRINCIPAL_ACCESS_BOUNDARY: Principal access boundary policy kind
+    """
+    POLICY_KIND_UNSPECIFIED = 0
+    PRINCIPAL_ACCESS_BOUNDARY = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. User-defined annotations. See
+    https://google.aip.dev/148#annotations for more details such as format and
+    size limitations
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  condition = _messages.MessageField('GoogleTypeExpr', 2)
+  displayName = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  name = _messages.StringField(5)
+  policy = _messages.StringField(6)
+  policyKind = _messages.EnumField('PolicyKindValueValuesEnum', 7)
+  target = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaIamV3PolicyBindingTarget', 8)
+
+
+class GoogleCloudPolicysimulatorV1alphaIamV3PolicyBindingTarget(_messages.Message):
+  r"""Target is the full resource name of the resource to which the policy
+  will be bound. Immutable once set.
+
+  Fields:
+    principalSet: Immutable. Full Resource Name used for principal access
+      boundary policy bindings. The principal set must be directly parented by
+      the policy binding's parent or same as the parent if the target is a
+      project/folder/organization. Examples: * For binding's parented by an
+      organization: * Organization:
+      `//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID` *
+      Workforce Identity:
+      `//iam.googleapis.com/locations/global/workforcePools/WORKFORCE_POOL_ID`
+      * Workspace Identity:
+      `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID` * For
+      binding's parented by a folder: * Folder:
+      `//cloudresourcemanager.googleapis.com/folders/FOLDER_ID` * For
+      binding's parented by a project: * Project: *
+      `//cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER` *
+      `//cloudresourcemanager.googleapis.com/projects/PROJECT_ID` * Workload
+      Identity Pool: `//iam.googleapis.com/projects/PROJECT_NUMBER/locations/L
+      OCATION/workloadIdentityPools/WORKLOAD_POOL_ID`
+    resource: Immutable. Full Resource Name used for access policy bindings
+      Examples: * Organization:
+      `//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID` *
+      Folder: `//cloudresourcemanager.googleapis.com/folders/FOLDER_ID` *
+      Project: *
+      `//cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER` *
+      `//cloudresourcemanager.googleapis.com/projects/PROJECT_ID`
+  """
+
+  principalSet = _messages.StringField(1)
+  resource = _messages.StringField(2)
+
+
+class GoogleCloudPolicysimulatorV1alphaIamV3PrincipalAccessBoundaryPolicy(_messages.Message):
+  r"""The google.iam.v3.PrincipalAccessBoundaryPolicy being simulated. See the
+  original proto for documentation.
+
+  Messages:
+    AnnotationsValue: Optional. User defined annotations. See
+      https://google.aip.dev/148#annotations for more details such as format
+      and size limitations
+
+  Fields:
+    annotations: Optional. User defined annotations. See
+      https://google.aip.dev/148#annotations for more details such as format
+      and size limitations
+    details: Optional. The details for the principal access boundary policy.
+    displayName: Optional. The description of the principal access boundary
+      policy. Must be less than or equal to 63 characters.
+    etag: Optional. The etag for the principal access boundary. If this is
+      provided on update, it must match the server's etag.
+    name: Identifier. The resource name of the principal access boundary
+      policy. The following format is supported: `organizations/{organization_
+      id}/locations/{location}/principalAccessBoundaryPolicies/{policy_id}`
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. User defined annotations. See
+    https://google.aip.dev/148#annotations for more details such as format and
+    size limitations
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  details = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaIamV3PrincipalAccessBoundaryPolicyDetails', 2)
+  displayName = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  name = _messages.StringField(5)
+
+
+class GoogleCloudPolicysimulatorV1alphaIamV3PrincipalAccessBoundaryPolicyDetails(_messages.Message):
+  r"""The google.iam.v3.PrincipalAccessBoundaryPolicyDetails being simulated.
+  See the original proto for documentation.
+
+  Fields:
+    enforcementVersion: Optional. The version number (for example, `1` or
+      `latest`) that indicates which permissions are able to be blocked by the
+      policy. If empty, the PAB policy version will be set to the most recent
+      version number at the time of the policy's creation.
+    rules: Required. A list of principal access boundary policy rules. The
+      number of rules in a policy is limited to 500.
+  """
+
+  enforcementVersion = _messages.StringField(1)
+  rules = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaIamV3PrincipalAccessBoundaryPolicyRule', 2, repeated=True)
+
+
+class GoogleCloudPolicysimulatorV1alphaIamV3PrincipalAccessBoundaryPolicyRule(_messages.Message):
+  r"""A copy of google.iam.v3.PrincipalAccessBoundaryPolicyRule. See the
+  original proto for documentation.
+
+  Enums:
+    EffectValueValuesEnum: Required. The access relationship of principals to
+      the resources in this rule.
+
+  Fields:
+    description: Optional. The description of the principal access boundary
+      policy rule. Must be less than or equal to 256 characters.
+    effect: Required. The access relationship of principals to the resources
+      in this rule.
+    resources: Required. A list of Resource Manager resources. If a resource
+      is listed in the rule, then the rule applies for that resource and its
+      descendants. The number of resources in a policy is limited to 500
+      across all rules in the policy. The following resource types are
+      supported: * Organizations, such as
+      `//cloudresourcemanager.googleapis.com/organizations/123`. * Folders,
+      such as `//cloudresourcemanager.googleapis.com/folders/123`. * Projects,
+      such as `//cloudresourcemanager.googleapis.com/projects/123` or
+      `//cloudresourcemanager.googleapis.com/projects/my-project-id`.
+  """
+
+  class EffectValueValuesEnum(_messages.Enum):
+    r"""Required. The access relationship of principals to the resources in
+    this rule.
+
+    Values:
+      EFFECT_UNSPECIFIED: Effect unspecified.
+      ALLOW: Allows access to the resources in this rule.
+    """
+    EFFECT_UNSPECIFIED = 0
+    ALLOW = 1
+
+  description = _messages.StringField(1)
+  effect = _messages.EnumField('EffectValueValuesEnum', 2)
+  resources = _messages.StringField(3, repeated=True)
+
+
 class GoogleCloudPolicysimulatorV1alphaListAccessPolicySimulationResultsResponse(_messages.Message):
   r"""Response message for ListAccessPolicySimulationResults.
 
@@ -1643,6 +2347,38 @@ class GoogleCloudPolicysimulatorV1alphaListAccessPolicySimulationsResponse(_mess
   """
 
   accessPolicySimulations = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaAccessPolicySimulation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudPolicysimulatorV1alphaListActivityBacktestResultsResponse(_messages.Message):
+  r"""Response message for ListActivityBacktestResults.
+
+  Fields:
+    activityBacktestResults: The results of the simulation.
+    nextPageToken: Optional. A token that you can use to retrieve the next
+      page of ActivityBacktestResult objects. If this field is omitted, there
+      are no subsequent pages.
+  """
+
+  activityBacktestResults = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaActivityBacktestResult', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudPolicysimulatorV1alphaListActivityBacktestsResponse(_messages.Message):
+  r"""Response message for ListActivityBacktestResults.
+
+  Fields:
+    activityBacktests: The list of backtests. For security reasons, we do not
+      return all fields in the ActivityBacktest, such as the change_overlay
+      field. To view an omitted field, call GetActivityBacktest. The
+      ActivityBacktest fields included in the list response are: - name -
+      state - create_time - run_time - observation_period
+    nextPageToken: Optional. A token that you can use to retrieve the next
+      page of ActivityBacktest objects. If this field is omitted, there are no
+      subsequent pages.
+  """
+
+  activityBacktests = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaActivityBacktest', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -2405,6 +3141,32 @@ class GoogleCloudPolicysimulatorV1alphaPrincipalAccessBoundaryPolicyRule(_messag
   resources = _messages.StringField(3, repeated=True)
 
 
+class GoogleCloudPolicysimulatorV1alphaProposedChange(_messages.Message):
+  r"""Mutation describing a single policy change.
+
+  Fields:
+    createIamV2Policy: Test a create to an IamV2Policy.
+    createIamV3PolicyBinding: Test a create to an IamV3PolicyBinding.
+    deleteIamV2Policy: Test a delete to an IamV2Policy.
+    deleteIamV3PolicyBinding: Test a delete to an IamV3PolicyBinding.
+    deleteIamV3PrincipalAccessBoundaryPolicy: Test a delete to an
+      IamV3PrincipalAccessBoundaryPolicy.
+    updateIamV2Policy: Test an update to an IamV2Policy.
+    updateIamV3PolicyBinding: Test an update to an IamV3PolicyBinding.
+    updateIamV3PrincipalAccessBoundaryPolicy: Test an update to an
+      IamV3PrincipalAccessBoundaryPolicy.
+  """
+
+  createIamV2Policy = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaCreateIamV2Policy', 1)
+  createIamV3PolicyBinding = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaCreateIamV3PolicyBinding', 2)
+  deleteIamV2Policy = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaDeleteIamV2Policy', 3)
+  deleteIamV3PolicyBinding = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaDeleteIamV3PolicyBinding', 4)
+  deleteIamV3PrincipalAccessBoundaryPolicy = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaDeleteIamV3PrincipalAccessBoundaryPolicy', 5)
+  updateIamV2Policy = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaUpdateIamV2Policy', 6)
+  updateIamV3PolicyBinding = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaUpdateIamV3PolicyBinding', 7)
+  updateIamV3PrincipalAccessBoundaryPolicy = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaUpdateIamV3PrincipalAccessBoundaryPolicy', 8)
+
+
 class GoogleCloudPolicysimulatorV1alphaReplay(_messages.Message):
   r"""A resource describing a `Replay`, or simulation.
 
@@ -2627,6 +3389,94 @@ class GoogleCloudPolicysimulatorV1alphaResourceContext(_messages.Message):
   ancestors = _messages.StringField(1, repeated=True)
   assetType = _messages.StringField(2)
   resource = _messages.StringField(3)
+
+
+class GoogleCloudPolicysimulatorV1alphaSearchActivityBacktestResultsResponse(_messages.Message):
+  r"""Response message for SearchActivityBacktestResults.
+
+  Fields:
+    nextPageToken: Optional. A token that you can use to retrieve the next
+      page of ActivityBacktestResult objects. If this field is omitted, there
+      are no subsequent pages.
+    searchResults: The results of the search.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  searchResults = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaSearchActivityBacktestResultsResponseSearchActivityBacktestResult', 2, repeated=True)
+
+
+class GoogleCloudPolicysimulatorV1alphaSearchActivityBacktestResultsResponseInacessibleResults(_messages.Message):
+  r"""It represents the result of a search in case of inacessible results.
+  This could be the resource that owns a collection of results that was
+  inaccessible.
+
+  Fields:
+    error: Optional. Output only. The error that was returned when the
+      resource was inaccessible.
+    resource: Optional. Output only. The resource that was inaccessible. In
+      the format: - organizations/{organization-id}/locations/{location} -
+      folders/{folder-id}/locations/{location} - projects/{project-
+      id}/locations/{location}
+  """
+
+  error = _messages.MessageField('GoogleRpcStatus', 1)
+  resource = _messages.StringField(2)
+
+
+class GoogleCloudPolicysimulatorV1alphaSearchActivityBacktestResultsResponseSearchActivityBacktestResult(_messages.Message):
+  r"""The result of a search.
+
+  Fields:
+    activityBacktestResult: The activity backtest result.
+    inaccessibleResults: The result of a search in case of inacessible
+      results.
+  """
+
+  activityBacktestResult = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaActivityBacktestResult', 1)
+  inaccessibleResults = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaSearchActivityBacktestResultsResponseInacessibleResults', 2)
+
+
+class GoogleCloudPolicysimulatorV1alphaUpdateIamV2Policy(_messages.Message):
+  r"""Test a change that updates an IamV2Policy using the
+  google.iam.v2.UpdatePolicyRequest.
+
+  Fields:
+    policy: Required. The policy to update. To prevent conflicting updates,
+      the `etag` value must match the value that is stored in IAM. If the
+      `etag` values do not match, the request fails with a `409` error code
+      and `ABORTED` status.
+  """
+
+  policy = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaIamV2Policy', 1)
+
+
+class GoogleCloudPolicysimulatorV1alphaUpdateIamV3PolicyBinding(_messages.Message):
+  r"""Test a change that updates an IamV3PolicyBinding using the
+  google.iam.v3.UpdatePolicyBindingRequest.
+
+  Fields:
+    policyBinding: Required. The policy binding to update. The policy
+      binding's `name` field is used to identify the policy binding to update.
+    updateMask: Optional. The list of fields to update
+  """
+
+  policyBinding = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaIamV3PolicyBinding', 1)
+  updateMask = _messages.StringField(2)
+
+
+class GoogleCloudPolicysimulatorV1alphaUpdateIamV3PrincipalAccessBoundaryPolicy(_messages.Message):
+  r"""Test a change that updates an IamV3PrincipalAccessBoundaryPolicy using
+  the google.iam.v3.UpdatePrincipalAccessBoundaryPolicyRequest.
+
+  Fields:
+    principalAccessBoundaryPolicy: Required. The principal access boundary
+      policy to update. The principal access boundary policy's `name` field is
+      used to identify the policy to update.
+    updateMask: Optional. The list of fields to update
+  """
+
+  principalAccessBoundaryPolicy = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaIamV3PrincipalAccessBoundaryPolicy', 1)
+  updateMask = _messages.StringField(2)
 
 
 class GoogleCloudPolicysimulatorV1betaCreateOrgPolicyViolationsPreviewOperationMetadata(_messages.Message):
@@ -3662,6 +4512,24 @@ class GoogleTypeExpr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class GoogleTypeInterval(_messages.Message):
+  r"""Represents a time interval, encoded as a Timestamp start (inclusive) and
+  a Timestamp end (exclusive). The start must be less than or equal to the
+  end. When the start equals the end, the interval is empty (matches no time).
+  When both start and end are unspecified, the interval matches any time.
+
+  Fields:
+    endTime: Optional. Exclusive end of the interval. If specified, a
+      Timestamp matching this interval will have to be before the end.
+    startTime: Optional. Inclusive start of the interval. If specified, a
+      Timestamp matching this interval will have to be the same or after the
+      start.
+  """
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
+
+
 class PolicysimulatorFoldersLocationsAccessPolicySimulationsCreateRequest(_messages.Message):
   r"""A PolicysimulatorFoldersLocationsAccessPolicySimulationsCreateRequest
   object.
@@ -3718,6 +4586,18 @@ class PolicysimulatorFoldersLocationsAccessPolicySimulationsListRequest(_message
   parent = _messages.StringField(3, required=True)
 
 
+class PolicysimulatorFoldersLocationsAccessPolicySimulationsOperationsGetRequest(_messages.Message):
+  r"""A
+  PolicysimulatorFoldersLocationsAccessPolicySimulationsOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class PolicysimulatorFoldersLocationsAccessPolicySimulationsResultsGetRequest(_messages.Message):
   r"""A
   PolicysimulatorFoldersLocationsAccessPolicySimulationsResultsGetRequest
@@ -3754,6 +4634,152 @@ class PolicysimulatorFoldersLocationsAccessPolicySimulationsResultsListRequest(_
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class PolicysimulatorFoldersLocationsActivityBacktestResultsGetRequest(_messages.Message):
+  r"""A PolicysimulatorFoldersLocationsActivityBacktestResultsGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the activity backtest result resource
+      in the format: - ## `projects/{project}/locations/global/activityBacktes
+      tResults/{activity_backtest_result_id}` ## `folders/{folder}/locations/g
+      lobal/activityBacktestResults/{activity_backtest_result_id}` `organizati
+      ons/{organization}/locations/global/activityBacktestResults/{activity_ba
+      cktest_result_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class PolicysimulatorFoldersLocationsActivityBacktestResultsListRequest(_messages.Message):
+  r"""A PolicysimulatorFoldersLocationsActivityBacktestResultsListRequest
+  object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the
+      ActivityBacktestResults to return. The only supported filter is
+      `activity_backtest='{backtest_name}'`, which returns only
+      ActivityBacktestResults for the specified ActivityBacktest. Operators,
+      fields and other expressions are not supported.
+    pageSize: Optional. The maximum number of ActivityBacktestResult objects
+      to return. Defaults to 1000. Maximum value is 1000. Values above the
+      maximum are reduced to the maximum value.
+    pageToken: Optional. A page token, received from a previous
+      ListActivityBacktestResults call. Provide this token to retrieve the
+      next page of results. When paginating, all other parameters provided to
+      ListActivityBacktestResults must match the call that provided the page
+      token.
+    parent: Required. The parent node of the activity backtest results, which
+      is the nearest Cloud Resource Manager (CRM) node of the access activity
+      contained in the result. In the format:
+      `projects/{project}/locations/global`
+      `folders/{folder}/locations/global`
+      `organizations/{organization}/locations/global`
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class PolicysimulatorFoldersLocationsActivityBacktestsCreateRequest(_messages.Message):
+  r"""A PolicysimulatorFoldersLocationsActivityBacktestsCreateRequest object.
+
+  Fields:
+    activityBacktestId: Optional. An optional user-specified ID for the
+      ActivityBacktest. If provided, it must be unique within the parent
+      resource and should limit to only letters, numbers, hyphens, and
+      underscores, and should start with a letter. (regex :
+      `[a-zA-Z]+[a-zA-Z0-9-_]*]`) If not provided, a random ID will be
+      generated. Do not put PII or other sensitive information into this ID.
+      This ID will be visible to everyone with permission to call
+      ListActivityBacktest on `parent`.
+    googleCloudPolicysimulatorV1alphaActivityBacktest: A
+      GoogleCloudPolicysimulatorV1alphaActivityBacktest resource to be passed
+      as the request body.
+    parent: Required. The resource name of the simulation parent in the
+      format: - organizations/{organization-id}/locations/{location} -
+      folders/{folder-id}/locations/{location} - projects/{project-
+      id}/locations/{location}
+  """
+
+  activityBacktestId = _messages.StringField(1)
+  googleCloudPolicysimulatorV1alphaActivityBacktest = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaActivityBacktest', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class PolicysimulatorFoldersLocationsActivityBacktestsGetRequest(_messages.Message):
+  r"""A PolicysimulatorFoldersLocationsActivityBacktestsGetRequest object.
+
+  Fields:
+    name: Required. ## The resource name of the activity backtest resource in
+      the format: ## organizations/{organization-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id} ##
+      folders/{folder-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id}
+      projects/{project-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class PolicysimulatorFoldersLocationsActivityBacktestsListRequest(_messages.Message):
+  r"""A PolicysimulatorFoldersLocationsActivityBacktestsListRequest object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the ActivityBacktests
+      to return. The only supported filter is `CreatedByMe()`, which returns
+      only ActivityBacktests that were created by the authenticated user
+      making this API call. Example: `filter="CreatedByMe()"`. Operators,
+      fields and other expressions are not supported.
+    pageSize: Optional. The maximum number of ActivityBacktest objects to
+      return. Defaults to 100. Maximum value is 100. Values above the maximum
+      are reduced to the maximum value.
+    pageToken: Optional. A page token, received from
+      [ListActivityBacktestsResponse.next_page_token]. Provide this token to
+      retrieve the next page of results. When paginating, all other parameters
+      (except page_size) provided to ListActivityBacktests must match the call
+      that provided the page token.
+    parent: Required. The parent node of the simulation resources in the
+      format: - organizations/{organization-id}/locations/{location} -
+      folders/{folder-id}/locations/{location} - projects/{project-
+      id}/locations/{location}
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class PolicysimulatorFoldersLocationsActivityBacktestsSearchResultsRequest(_messages.Message):
+  r"""A PolicysimulatorFoldersLocationsActivityBacktestsSearchResultsRequest
+  object.
+
+  Fields:
+    name: Required. ## The activity backtest for which to return the results.
+      ## organizations/{organization-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id} ##
+      folders/{folder-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id}
+      projects/{project-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id}
+    pageSize: Optional. The maximum number of ActivityBacktestResult objects
+      to return. Defaults to 1000. Maximum value is 1000. Values above the
+      maximum are reduced to the maximum value.
+    pageToken: Optional. A page token, received from a previous
+      SearchActivityBacktestResults call. Provide this token to retrieve the
+      next page of results. When paginating, all other parameters provided to
+      SearchActivityBacktestResults must match the call that provided the page
+      token.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
 
 
 class PolicysimulatorFoldersLocationsOrgPolicyViolationsPreviewsOperationsGetRequest(_messages.Message):
@@ -3956,6 +4982,17 @@ class PolicysimulatorOrganizationsLocationsAccessPolicySimulationsListRequest(_m
   parent = _messages.StringField(3, required=True)
 
 
+class PolicysimulatorOrganizationsLocationsAccessPolicySimulationsOperationsGetRequest(_messages.Message):
+  r"""A PolicysimulatorOrganizationsLocationsAccessPolicySimulationsOperations
+  GetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class PolicysimulatorOrganizationsLocationsAccessPolicySimulationsResultsGetRequest(_messages.Message):
   r"""A PolicysimulatorOrganizationsLocationsAccessPolicySimulationsResultsGet
   Request object.
@@ -3990,6 +5027,157 @@ class PolicysimulatorOrganizationsLocationsAccessPolicySimulationsResultsListReq
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class PolicysimulatorOrganizationsLocationsActivityBacktestResultsGetRequest(_messages.Message):
+  r"""A PolicysimulatorOrganizationsLocationsActivityBacktestResultsGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the activity backtest result resource
+      in the format: - ## `projects/{project}/locations/global/activityBacktes
+      tResults/{activity_backtest_result_id}` ## `folders/{folder}/locations/g
+      lobal/activityBacktestResults/{activity_backtest_result_id}` `organizati
+      ons/{organization}/locations/global/activityBacktestResults/{activity_ba
+      cktest_result_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class PolicysimulatorOrganizationsLocationsActivityBacktestResultsListRequest(_messages.Message):
+  r"""A
+  PolicysimulatorOrganizationsLocationsActivityBacktestResultsListRequest
+  object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the
+      ActivityBacktestResults to return. The only supported filter is
+      `activity_backtest='{backtest_name}'`, which returns only
+      ActivityBacktestResults for the specified ActivityBacktest. Operators,
+      fields and other expressions are not supported.
+    pageSize: Optional. The maximum number of ActivityBacktestResult objects
+      to return. Defaults to 1000. Maximum value is 1000. Values above the
+      maximum are reduced to the maximum value.
+    pageToken: Optional. A page token, received from a previous
+      ListActivityBacktestResults call. Provide this token to retrieve the
+      next page of results. When paginating, all other parameters provided to
+      ListActivityBacktestResults must match the call that provided the page
+      token.
+    parent: Required. The parent node of the activity backtest results, which
+      is the nearest Cloud Resource Manager (CRM) node of the access activity
+      contained in the result. In the format:
+      `projects/{project}/locations/global`
+      `folders/{folder}/locations/global`
+      `organizations/{organization}/locations/global`
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class PolicysimulatorOrganizationsLocationsActivityBacktestsCreateRequest(_messages.Message):
+  r"""A PolicysimulatorOrganizationsLocationsActivityBacktestsCreateRequest
+  object.
+
+  Fields:
+    activityBacktestId: Optional. An optional user-specified ID for the
+      ActivityBacktest. If provided, it must be unique within the parent
+      resource and should limit to only letters, numbers, hyphens, and
+      underscores, and should start with a letter. (regex :
+      `[a-zA-Z]+[a-zA-Z0-9-_]*]`) If not provided, a random ID will be
+      generated. Do not put PII or other sensitive information into this ID.
+      This ID will be visible to everyone with permission to call
+      ListActivityBacktest on `parent`.
+    googleCloudPolicysimulatorV1alphaActivityBacktest: A
+      GoogleCloudPolicysimulatorV1alphaActivityBacktest resource to be passed
+      as the request body.
+    parent: Required. The resource name of the simulation parent in the
+      format: - organizations/{organization-id}/locations/{location} -
+      folders/{folder-id}/locations/{location} - projects/{project-
+      id}/locations/{location}
+  """
+
+  activityBacktestId = _messages.StringField(1)
+  googleCloudPolicysimulatorV1alphaActivityBacktest = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaActivityBacktest', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class PolicysimulatorOrganizationsLocationsActivityBacktestsGetRequest(_messages.Message):
+  r"""A PolicysimulatorOrganizationsLocationsActivityBacktestsGetRequest
+  object.
+
+  Fields:
+    name: Required. ## The resource name of the activity backtest resource in
+      the format: ## organizations/{organization-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id} ##
+      folders/{folder-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id}
+      projects/{project-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class PolicysimulatorOrganizationsLocationsActivityBacktestsListRequest(_messages.Message):
+  r"""A PolicysimulatorOrganizationsLocationsActivityBacktestsListRequest
+  object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the ActivityBacktests
+      to return. The only supported filter is `CreatedByMe()`, which returns
+      only ActivityBacktests that were created by the authenticated user
+      making this API call. Example: `filter="CreatedByMe()"`. Operators,
+      fields and other expressions are not supported.
+    pageSize: Optional. The maximum number of ActivityBacktest objects to
+      return. Defaults to 100. Maximum value is 100. Values above the maximum
+      are reduced to the maximum value.
+    pageToken: Optional. A page token, received from
+      [ListActivityBacktestsResponse.next_page_token]. Provide this token to
+      retrieve the next page of results. When paginating, all other parameters
+      (except page_size) provided to ListActivityBacktests must match the call
+      that provided the page token.
+    parent: Required. The parent node of the simulation resources in the
+      format: - organizations/{organization-id}/locations/{location} -
+      folders/{folder-id}/locations/{location} - projects/{project-
+      id}/locations/{location}
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class PolicysimulatorOrganizationsLocationsActivityBacktestsSearchResultsRequest(_messages.Message):
+  r"""A
+  PolicysimulatorOrganizationsLocationsActivityBacktestsSearchResultsRequest
+  object.
+
+  Fields:
+    name: Required. ## The activity backtest for which to return the results.
+      ## organizations/{organization-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id} ##
+      folders/{folder-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id}
+      projects/{project-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id}
+    pageSize: Optional. The maximum number of ActivityBacktestResult objects
+      to return. Defaults to 1000. Maximum value is 1000. Values above the
+      maximum are reduced to the maximum value.
+    pageToken: Optional. A page token, received from a previous
+      SearchActivityBacktestResults call. Provide this token to retrieve the
+      next page of results. When paginating, all other parameters provided to
+      SearchActivityBacktestResults must match the call that provided the page
+      token.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
 
 
 class PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsCreateRequest(_messages.Message):
@@ -4093,7 +5281,7 @@ class PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsOrgPolicyV
 
   Fields:
     pageSize: Optional. The maximum number of items to return. The service may
-      return fewer than this value. If unspecified, at most 50 items will be
+      return fewer than this value. If unspecified, at most 1000 items will be
       returned. The maximum value is 1000; values above 1000 will be coerced
       to 1000.
     pageToken: Optional. A page token, received from a previous call. Provide
@@ -4314,6 +5502,18 @@ class PolicysimulatorProjectsLocationsAccessPolicySimulationsListRequest(_messag
   parent = _messages.StringField(3, required=True)
 
 
+class PolicysimulatorProjectsLocationsAccessPolicySimulationsOperationsGetRequest(_messages.Message):
+  r"""A
+  PolicysimulatorProjectsLocationsAccessPolicySimulationsOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class PolicysimulatorProjectsLocationsAccessPolicySimulationsResultsGetRequest(_messages.Message):
   r"""A
   PolicysimulatorProjectsLocationsAccessPolicySimulationsResultsGetRequest
@@ -4350,6 +5550,152 @@ class PolicysimulatorProjectsLocationsAccessPolicySimulationsResultsListRequest(
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class PolicysimulatorProjectsLocationsActivityBacktestResultsGetRequest(_messages.Message):
+  r"""A PolicysimulatorProjectsLocationsActivityBacktestResultsGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the activity backtest result resource
+      in the format: - ## `projects/{project}/locations/global/activityBacktes
+      tResults/{activity_backtest_result_id}` ## `folders/{folder}/locations/g
+      lobal/activityBacktestResults/{activity_backtest_result_id}` `organizati
+      ons/{organization}/locations/global/activityBacktestResults/{activity_ba
+      cktest_result_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class PolicysimulatorProjectsLocationsActivityBacktestResultsListRequest(_messages.Message):
+  r"""A PolicysimulatorProjectsLocationsActivityBacktestResultsListRequest
+  object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the
+      ActivityBacktestResults to return. The only supported filter is
+      `activity_backtest='{backtest_name}'`, which returns only
+      ActivityBacktestResults for the specified ActivityBacktest. Operators,
+      fields and other expressions are not supported.
+    pageSize: Optional. The maximum number of ActivityBacktestResult objects
+      to return. Defaults to 1000. Maximum value is 1000. Values above the
+      maximum are reduced to the maximum value.
+    pageToken: Optional. A page token, received from a previous
+      ListActivityBacktestResults call. Provide this token to retrieve the
+      next page of results. When paginating, all other parameters provided to
+      ListActivityBacktestResults must match the call that provided the page
+      token.
+    parent: Required. The parent node of the activity backtest results, which
+      is the nearest Cloud Resource Manager (CRM) node of the access activity
+      contained in the result. In the format:
+      `projects/{project}/locations/global`
+      `folders/{folder}/locations/global`
+      `organizations/{organization}/locations/global`
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class PolicysimulatorProjectsLocationsActivityBacktestsCreateRequest(_messages.Message):
+  r"""A PolicysimulatorProjectsLocationsActivityBacktestsCreateRequest object.
+
+  Fields:
+    activityBacktestId: Optional. An optional user-specified ID for the
+      ActivityBacktest. If provided, it must be unique within the parent
+      resource and should limit to only letters, numbers, hyphens, and
+      underscores, and should start with a letter. (regex :
+      `[a-zA-Z]+[a-zA-Z0-9-_]*]`) If not provided, a random ID will be
+      generated. Do not put PII or other sensitive information into this ID.
+      This ID will be visible to everyone with permission to call
+      ListActivityBacktest on `parent`.
+    googleCloudPolicysimulatorV1alphaActivityBacktest: A
+      GoogleCloudPolicysimulatorV1alphaActivityBacktest resource to be passed
+      as the request body.
+    parent: Required. The resource name of the simulation parent in the
+      format: - organizations/{organization-id}/locations/{location} -
+      folders/{folder-id}/locations/{location} - projects/{project-
+      id}/locations/{location}
+  """
+
+  activityBacktestId = _messages.StringField(1)
+  googleCloudPolicysimulatorV1alphaActivityBacktest = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaActivityBacktest', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class PolicysimulatorProjectsLocationsActivityBacktestsGetRequest(_messages.Message):
+  r"""A PolicysimulatorProjectsLocationsActivityBacktestsGetRequest object.
+
+  Fields:
+    name: Required. ## The resource name of the activity backtest resource in
+      the format: ## organizations/{organization-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id} ##
+      folders/{folder-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id}
+      projects/{project-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class PolicysimulatorProjectsLocationsActivityBacktestsListRequest(_messages.Message):
+  r"""A PolicysimulatorProjectsLocationsActivityBacktestsListRequest object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the ActivityBacktests
+      to return. The only supported filter is `CreatedByMe()`, which returns
+      only ActivityBacktests that were created by the authenticated user
+      making this API call. Example: `filter="CreatedByMe()"`. Operators,
+      fields and other expressions are not supported.
+    pageSize: Optional. The maximum number of ActivityBacktest objects to
+      return. Defaults to 100. Maximum value is 100. Values above the maximum
+      are reduced to the maximum value.
+    pageToken: Optional. A page token, received from
+      [ListActivityBacktestsResponse.next_page_token]. Provide this token to
+      retrieve the next page of results. When paginating, all other parameters
+      (except page_size) provided to ListActivityBacktests must match the call
+      that provided the page token.
+    parent: Required. The parent node of the simulation resources in the
+      format: - organizations/{organization-id}/locations/{location} -
+      folders/{folder-id}/locations/{location} - projects/{project-
+      id}/locations/{location}
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class PolicysimulatorProjectsLocationsActivityBacktestsSearchResultsRequest(_messages.Message):
+  r"""A PolicysimulatorProjectsLocationsActivityBacktestsSearchResultsRequest
+  object.
+
+  Fields:
+    name: Required. ## The activity backtest for which to return the results.
+      ## organizations/{organization-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id} ##
+      folders/{folder-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id}
+      projects/{project-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id}
+    pageSize: Optional. The maximum number of ActivityBacktestResult objects
+      to return. Defaults to 1000. Maximum value is 1000. Values above the
+      maximum are reduced to the maximum value.
+    pageToken: Optional. A page token, received from a previous
+      SearchActivityBacktestResults call. Provide this token to retrieve the
+      next page of results. When paginating, all other parameters provided to
+      SearchActivityBacktestResults must match the call that provided the page
+      token.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
 
 
 class PolicysimulatorProjectsLocationsOrgPolicyViolationsPreviewsOperationsGetRequest(_messages.Message):

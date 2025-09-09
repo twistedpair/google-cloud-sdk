@@ -766,8 +766,9 @@ class LookerProjectsLocationsListRequest(_messages.Message):
   r"""A LookerProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1074,6 +1075,9 @@ class ServiceAttachment(_messages.Message):
 
   Fields:
     connectionStatus: Output only. Connection status.
+    failureReason: Output only. Reason the service attachment creation failed.
+      This value will only be populated if the service attachment encounters
+      an issue during provisioning.
     localFqdn: Optional. Fully qualified domain name that will be used in the
       private DNS record created for the service attachment.
     localFqdns: Optional. List of fully qualified domain names that will be
@@ -1106,9 +1110,10 @@ class ServiceAttachment(_messages.Message):
     CLOSED = 5
 
   connectionStatus = _messages.EnumField('ConnectionStatusValueValuesEnum', 1)
-  localFqdn = _messages.StringField(2)
-  localFqdns = _messages.StringField(3, repeated=True)
-  targetServiceAttachmentUri = _messages.StringField(4)
+  failureReason = _messages.StringField(2)
+  localFqdn = _messages.StringField(3)
+  localFqdns = _messages.StringField(4, repeated=True)
+  targetServiceAttachmentUri = _messages.StringField(5)
 
 
 class StandardQueryParameters(_messages.Message):

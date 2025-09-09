@@ -628,6 +628,9 @@ class CreateSnapshotRequest(_messages.Message):
   Messages:
     LabelsValue: Optional. See [Creating and managing
       labels](https://cloud.google.com/pubsub/docs/labels).
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
 
   Fields:
     labels: Optional. See [Creating and managing
@@ -640,6 +643,9 @@ class CreateSnapshotRequest(_messages.Message):
       request; as well as: (b) Any messages published to the subscription's
       topic following the successful completion of the CreateSnapshot request.
       Format is `projects/{project}/subscriptions/{sub}`.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -667,8 +673,35 @@ class CreateSnapshotRequest(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   labels = _messages.MessageField('LabelsValue', 1)
   subscription = _messages.StringField(2)
+  tags = _messages.MessageField('TagsValue', 3)
 
 
 class DeadLetterPolicy(_messages.Message):
@@ -2389,6 +2422,11 @@ class Schema(_messages.Message):
   Enums:
     TypeValueValuesEnum: The type of the schema definition.
 
+  Messages:
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
+
   Fields:
     definition: The definition of the schema. This should contain a string
       representing the full definition of the schema that is a valid schema
@@ -2398,6 +2436,9 @@ class Schema(_messages.Message):
     revisionCreateTime: Output only. The timestamp that the revision was
       created.
     revisionId: Output only. Immutable. The revision ID of the schema.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
     type: The type of the schema definition.
   """
 
@@ -2413,11 +2454,38 @@ class Schema(_messages.Message):
     PROTOCOL_BUFFER = 1
     AVRO = 2
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   definition = _messages.StringField(1)
   name = _messages.StringField(2)
   revisionCreateTime = _messages.StringField(3)
   revisionId = _messages.StringField(4)
-  type = _messages.EnumField('TypeValueValuesEnum', 5)
+  tags = _messages.MessageField('TagsValue', 5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
 
 
 class SchemaEncoding(_messages.Message):
@@ -2752,6 +2820,9 @@ class Subscription(_messages.Message):
   Messages:
     LabelsValue: Optional. See [Creating and managing
       labels](https://cloud.google.com/pubsub/docs/labels).
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
 
   Fields:
     ackDeadlineSeconds: Optional. The approximate amount of time (on a best-
@@ -2851,6 +2922,9 @@ class Subscription(_messages.Message):
       or acknowledgment deadline exceeded events for a given message.
     state: Output only. An output-only field indicating whether or not the
       subscription can receive messages.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
     topic: Required. The name of the topic from which this subscription is
       receiving messages. Format is `projects/{project}/topics/{topic}`. The
       value of this field will be `_deleted-topic_` if the topic has been
@@ -2904,6 +2978,32 @@ class Subscription(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   ackDeadlineSeconds = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   analyticsHubSubscriptionInfo = _messages.MessageField('AnalyticsHubSubscriptionInfo', 2)
   bigqueryConfig = _messages.MessageField('BigQueryConfig', 3)
@@ -2924,8 +3024,9 @@ class Subscription(_messages.Message):
   retainAckedMessages = _messages.BooleanField(18)
   retryPolicy = _messages.MessageField('RetryPolicy', 19)
   state = _messages.EnumField('StateValueValuesEnum', 20)
-  topic = _messages.StringField(21)
-  topicMessageRetentionDuration = _messages.StringField(22)
+  tags = _messages.MessageField('TagsValue', 21)
+  topic = _messages.StringField(22)
+  topicMessageRetentionDuration = _messages.StringField(23)
 
 
 class TestIamPermissionsRequest(_messages.Message):
@@ -3013,6 +3114,9 @@ class Topic(_messages.Message):
   Messages:
     LabelsValue: Optional. See [Creating and managing labels]
       (https://cloud.google.com/pubsub/docs/labels).
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
 
   Fields:
     ingestionDataSourceSettings: Optional. Settings for ingestion from a data
@@ -3053,6 +3157,9 @@ class Topic(_messages.Message):
       against a schema.
     state: Output only. An output-only field indicating the state of the
       topic.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -3094,6 +3201,32 @@ class Topic(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   ingestionDataSourceSettings = _messages.MessageField('IngestionDataSourceSettings', 1)
   kmsKeyName = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
@@ -3105,6 +3238,7 @@ class Topic(_messages.Message):
   satisfiesPzs = _messages.BooleanField(9)
   schemaSettings = _messages.MessageField('SchemaSettings', 10)
   state = _messages.EnumField('StateValueValuesEnum', 11)
+  tags = _messages.MessageField('TagsValue', 12)
 
 
 class TransformedMessage(_messages.Message):

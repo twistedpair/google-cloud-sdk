@@ -3973,8 +3973,9 @@ class GkeonpremProjectsLocationsListRequest(_messages.Message):
   r"""A GkeonpremProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -6111,6 +6112,7 @@ class VmwareAdminCluster(_messages.Message):
       configuration. It should always be enabled by the Central API, instead
       of letting users set it.
     privateRegistryConfig: Configuration for registry.
+    proxy: Configuration for proxy.
     reconciling: Output only. If set, there are currently changes in flight to
       the VMware admin cluster.
     state: Output only. The current state of VMware admin cluster.
@@ -6202,13 +6204,14 @@ class VmwareAdminCluster(_messages.Message):
   platformConfig = _messages.MessageField('VmwarePlatformConfig', 20)
   preparedSecrets = _messages.MessageField('VmwareAdminPreparedSecretsConfig', 21)
   privateRegistryConfig = _messages.MessageField('VmwareAdminPrivateRegistryConfig', 22)
-  reconciling = _messages.BooleanField(23)
-  state = _messages.EnumField('StateValueValuesEnum', 24)
-  status = _messages.MessageField('ResourceStatus', 25)
-  uid = _messages.StringField(26)
-  updateTime = _messages.StringField(27)
-  validationCheck = _messages.MessageField('ValidationCheck', 28)
-  vcenter = _messages.MessageField('VmwareAdminVCenterConfig', 29)
+  proxy = _messages.MessageField('VmwareAdminProxy', 23)
+  reconciling = _messages.BooleanField(24)
+  state = _messages.EnumField('StateValueValuesEnum', 25)
+  status = _messages.MessageField('ResourceStatus', 26)
+  uid = _messages.StringField(27)
+  updateTime = _messages.StringField(28)
+  validationCheck = _messages.MessageField('ValidationCheck', 29)
+  vcenter = _messages.MessageField('VmwareAdminVCenterConfig', 30)
 
 
 class VmwareAdminControlPlaneNodeConfig(_messages.Message):
@@ -6366,6 +6369,21 @@ class VmwareAdminPrivateRegistryConfig(_messages.Message):
 
   address = _messages.StringField(1)
   caCert = _messages.StringField(2)
+
+
+class VmwareAdminProxy(_messages.Message):
+  r"""VmwareAdminProxy represents configuration for admin cluster proxy.
+
+  Fields:
+    noProxy: A comma-separated list of IP addresses, IP address ranges, host
+      names, and domain names that should not go through the proxy server.
+      When Google Distributed Cloud sends a request to one of these addresses,
+      hosts, or domains, the request is sent directly.
+    url: The HTTP address of proxy server.
+  """
+
+  noProxy = _messages.StringField(1)
+  url = _messages.StringField(2)
 
 
 class VmwareAdminSeesawConfig(_messages.Message):

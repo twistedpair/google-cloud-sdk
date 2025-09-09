@@ -13,6 +13,133 @@ from apitools.base.py import extra_types
 package = 'lustre'
 
 
+class AccessRule(_messages.Message):
+  r"""AccessRule defines a single policy group with IP-based access rules for
+  the Lustre instance.
+
+  Enums:
+    AccessModeValueValuesEnum: Optional. The access mode for the access rule
+      nodemap. Default is READ_WRITE.
+    SquashModeValueValuesEnum: Required. Squash mode for the access rule.
+
+  Fields:
+    accessMode: Optional. The access mode for the access rule nodemap. Default
+      is READ_WRITE.
+    ipRanges: Optional. The IP ranges and addresses that are allowed to access
+      the instance. This can be in the form of a CIDR range (ex:
+      192.168.1.0/24) or a single IP address (ex: 192.168.1.0). This field is
+      OPTIONAL for default, but REQUIRED for all other access rules.
+    mountableSubdirectories: Optional. The list of non-root directories that
+      can be mounted from clients in this NID range subset. Currently, there
+      can be only a single directory at most. If no directory is mentioned,
+      then the root directory will be accessible.
+    name: Required. The name of the access rule policy group. Access rule name
+      has a mamximum length of 16 characters that must be alphanumeric or '_'.
+    squashGid: Optional. Squash GID for the access rule. If specified to a
+      non-zero value, the root user will be squashed to this GID. Defaults to
+      0 (no root squash).
+    squashMode: Required. Squash mode for the access rule.
+    squashUid: Optional. Squash UID for the access rule. If specified to a
+      non-zero value, the root user will be squashed to this UID. Defaults to
+      0 (no root squash).
+  """
+
+  class AccessModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The access mode for the access rule nodemap. Default is
+    READ_WRITE.
+
+    Values:
+      ACCESS_MODE_UNSPECIFIED: Unspecified access mode.
+      READ_ONLY: Read-only access mode.
+      READ_WRITE: Read-write access mode.
+    """
+    ACCESS_MODE_UNSPECIFIED = 0
+    READ_ONLY = 1
+    READ_WRITE = 2
+
+  class SquashModeValueValuesEnum(_messages.Enum):
+    r"""Required. Squash mode for the access rule.
+
+    Values:
+      SQUASH_MODE_UNSPECIFIED: Unspecified squash mode.
+      NO_SQUASH: No squash done to the squash_uid and squash_gid for the
+        access rule. If this is for the default_squash_mode, then the
+        default_squash_uid and default_squash_gid will not be squashed.
+      ROOT_SQUASH: Root user squashed to the squash_uid and squash_gid for the
+        access rule. If this is for the default_squash_mode, then the
+        default_squash_uid and default_squash_gid will be squashed.
+      ALL_USERS_SQUASH: All users squashed to the squash_uid and squash_gid
+        for the access rule. If this is for the default_squash_mode, then the
+        default_squash_uid and default_squash_gid will be squashed.
+    """
+    SQUASH_MODE_UNSPECIFIED = 0
+    NO_SQUASH = 1
+    ROOT_SQUASH = 2
+    ALL_USERS_SQUASH = 3
+
+  accessMode = _messages.EnumField('AccessModeValueValuesEnum', 1)
+  ipRanges = _messages.StringField(2, repeated=True)
+  mountableSubdirectories = _messages.StringField(3, repeated=True)
+  name = _messages.StringField(4)
+  squashGid = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  squashMode = _messages.EnumField('SquashModeValueValuesEnum', 6)
+  squashUid = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+
+
+class AccessRulesOptions(_messages.Message):
+  r"""Client NID-based Access Rules Options for the Lustre instance. These
+  options are used to determine which clients are able to access certain
+  subdirectories (filesets) of the Lustre instance, and the root user squash
+  configurations for those clients.
+
+  Enums:
+    DefaultSquashModeValueValuesEnum: Required. The squash mode for the
+      default access rule.
+
+  Fields:
+    accessRules: Optional. The access rules for the instance.
+    defaultMountableSubdirectories: Optional. The list of non-root directories
+      that can be mounted from clients in the default access rule. Currently,
+      there can be only a single directory at most. If no directory is
+      mentioned, then the root directory will be accessible.
+    defaultSquashGid: Optional. The user squash mode for the default access
+      rule. This user squash GID will apply to all clients that are not
+      matched by any of the access rules. If not set, the default is 0 (no GID
+      squash).
+    defaultSquashMode: Required. The squash mode for the default access rule.
+    defaultSquashUid: Optional. The user squash UID for the default access
+      rule. This user squash UID will apply to all clients that are not
+      matched by any of the access rules. If not set, the default is 0 (no UID
+      squash).
+  """
+
+  class DefaultSquashModeValueValuesEnum(_messages.Enum):
+    r"""Required. The squash mode for the default access rule.
+
+    Values:
+      SQUASH_MODE_UNSPECIFIED: Unspecified squash mode.
+      NO_SQUASH: No squash done to the squash_uid and squash_gid for the
+        access rule. If this is for the default_squash_mode, then the
+        default_squash_uid and default_squash_gid will not be squashed.
+      ROOT_SQUASH: Root user squashed to the squash_uid and squash_gid for the
+        access rule. If this is for the default_squash_mode, then the
+        default_squash_uid and default_squash_gid will be squashed.
+      ALL_USERS_SQUASH: All users squashed to the squash_uid and squash_gid
+        for the access rule. If this is for the default_squash_mode, then the
+        default_squash_uid and default_squash_gid will be squashed.
+    """
+    SQUASH_MODE_UNSPECIFIED = 0
+    NO_SQUASH = 1
+    ROOT_SQUASH = 2
+    ALL_USERS_SQUASH = 3
+
+  accessRules = _messages.MessageField('AccessRule', 1, repeated=True)
+  defaultMountableSubdirectories = _messages.StringField(2, repeated=True)
+  defaultSquashGid = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  defaultSquashMode = _messages.EnumField('DefaultSquashModeValueValuesEnum', 4)
+  defaultSquashUid = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -89,6 +216,7 @@ class Instance(_messages.Message):
     LabelsValue: Optional. Labels as key value pairs.
 
   Fields:
+    accessRulesOptions: Optional. The access rules options for the instance.
     capacityGib: Required. The storage capacity of the instance in gibibytes
       (GiB). Allowed values are from `18000` to `7632000`, depending on the
       `perUnitStorageThroughput`. See [Performance tiers and maximum storage
@@ -167,20 +295,21 @@ class Instance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  capacityGib = _messages.IntegerField(1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  filesystem = _messages.StringField(4)
-  gkeSupportEnabled = _messages.BooleanField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  mountPoint = _messages.StringField(7)
-  name = _messages.StringField(8)
-  network = _messages.StringField(9)
-  perUnitStorageThroughput = _messages.IntegerField(10)
-  satisfiesPzi = _messages.BooleanField(11)
-  satisfiesPzs = _messages.BooleanField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  updateTime = _messages.StringField(14)
+  accessRulesOptions = _messages.MessageField('AccessRulesOptions', 1)
+  capacityGib = _messages.IntegerField(2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  filesystem = _messages.StringField(5)
+  gkeSupportEnabled = _messages.BooleanField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  mountPoint = _messages.StringField(8)
+  name = _messages.StringField(9)
+  network = _messages.StringField(10)
+  perUnitStorageThroughput = _messages.IntegerField(11)
+  satisfiesPzi = _messages.BooleanField(12)
+  satisfiesPzs = _messages.BooleanField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  updateTime = _messages.StringField(15)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -478,8 +607,9 @@ class LustreProjectsLocationsListRequest(_messages.Message):
   r"""A LustreProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).

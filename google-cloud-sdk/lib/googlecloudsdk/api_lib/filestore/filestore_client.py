@@ -293,6 +293,7 @@ class FilestoreClient(object):
       source_instance=None,
       deletion_protection_enabled=None,
       deletion_protection_reason=None,
+      backend_type=None,
   ):
     """Parses the command line arguments for Create into a config.
 
@@ -313,6 +314,7 @@ class FilestoreClient(object):
       source_instance: The replication source of the instance.
       deletion_protection_enabled: bool, whether to enable deletion protection.
       deletion_protection_reason: The reason for enabling deletion protection.
+      backend_type: The backend type of the instance (Compute or Filestore).
 
     Returns:
       The configuration that will be used as the request body for creating a
@@ -328,6 +330,10 @@ class FilestoreClient(object):
     # In case of Beta API, protocol is never 'None' (the default is 'NFS_V3').
     if protocol:
       instance.protocol = protocol
+    # 'instance.backendType' is a member of 'instance' structure only in
+    # Beta API.
+    if backend_type:
+      instance.backendType = backend_type
     # 'instance.directoryServices' is a member of 'instance' structure only in
     # Beta API.
     if managed_ad:

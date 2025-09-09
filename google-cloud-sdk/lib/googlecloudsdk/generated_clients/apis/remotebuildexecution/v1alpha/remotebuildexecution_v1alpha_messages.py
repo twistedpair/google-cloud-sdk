@@ -1235,6 +1235,7 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
         network activity log.
       NETWORK_PROXY_UPLOAD_NETWORK_ACTIVITY_LOG_ERROR: The bot failed to
         upload the network activity log.
+      NPROC_EXCEEDED: Failed to start a process because NPROC is too low.
     """
     OK = 0
     INVALID_ARGUMENT = 1
@@ -1294,6 +1295,7 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
     INVALID_FILENAME = 55
     NETWORK_PROXY_GET_NETWORK_ACTIVITY_LOG_ERROR = 56
     NETWORK_PROXY_UPLOAD_NETWORK_ACTIVITY_LOG_ERROR = 57
+    NPROC_EXCEEDED = 58
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)
@@ -1624,6 +1626,86 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateKokoroInstanceRequest(
   instanceId = _messages.StringField(4)
   parent = _messages.StringField(5)
   tcaRestrictions = _messages.EnumField('TcaRestrictionsValueValuesEnum', 6)
+
+
+class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateTbiInstanceRequest(_messages.Message):
+  r"""The request used for `CreateTbiInstance`.
+
+  Enums:
+    AdminOpsRestrictionsValueValuesEnum: Optional. If AdminOpsRestrictions is
+      ADMIN_OPS_RESTRICTIONS_RESTRICTED then only predefined safe fields are
+      allowed to set through internal APIs through toolproxy.
+      AdminOpsRestrictions can be set to ADMIN_OPS_RESTRICTIONS_RESTRICTED
+      only if ACTION_ISOLATION is enforced.
+    TcaRestrictionsValueValuesEnum: Optional. If tca_restrictions is ENABLED
+      then the instance will have restrictions needed for building Trusted
+      Core Access (TCA) compliant builds. DO NOT USE: In-Development feature.
+
+  Fields:
+    adminOpsRestrictions: Optional. If AdminOpsRestrictions is
+      ADMIN_OPS_RESTRICTIONS_RESTRICTED then only predefined safe fields are
+      allowed to set through internal APIs through toolproxy.
+      AdminOpsRestrictions can be set to ADMIN_OPS_RESTRICTIONS_RESTRICTED
+      only if ACTION_ISOLATION is enforced.
+    immutableMetapolicy: Required. Enforces meta policy immutability if set to
+      true. This field is required. We use 'optional' here to track field
+      presence so that we may catch (and error on) the case where this field
+      is unset.
+    instance: Required. Specifies the instance to create. The name in the
+      instance, if specified in the instance, is ignored.
+    instanceId: Required. ID of the created instance. A valid `instance_id`
+      must: be 6-50 characters long, contain only lowercase letters, digits,
+      hyphens and underscores, start with a lowercase letter, and end with a
+      lowercase letter or a digit.
+    tcaRestrictions: Optional. If tca_restrictions is ENABLED then the
+      instance will have restrictions needed for building Trusted Core Access
+      (TCA) compliant builds. DO NOT USE: In-Development feature.
+  """
+
+  class AdminOpsRestrictionsValueValuesEnum(_messages.Enum):
+    r"""Optional. If AdminOpsRestrictions is ADMIN_OPS_RESTRICTIONS_RESTRICTED
+    then only predefined safe fields are allowed to set through internal APIs
+    through toolproxy. AdminOpsRestrictions can be set to
+    ADMIN_OPS_RESTRICTIONS_RESTRICTED only if ACTION_ISOLATION is enforced.
+
+    Values:
+      RESTRICTIONS_UNSPECIFIED: Default value; interpreted as
+        RESTRICTIONS_ALLOWED.
+      RESTRICTIONS_ALLOWED: Admin operations are allowed normally.
+      RESTRICTIONS_RESTRICTED: Admin operations are restricted to known safe
+        operations that do not affect build integrity.
+    """
+    RESTRICTIONS_UNSPECIFIED = 0
+    RESTRICTIONS_ALLOWED = 1
+    RESTRICTIONS_RESTRICTED = 2
+
+  class TcaRestrictionsValueValuesEnum(_messages.Enum):
+    r"""Optional. If tca_restrictions is ENABLED then the instance will have
+    restrictions needed for building Trusted Core Access (TCA) compliant
+    builds. DO NOT USE: In-Development feature.
+
+    Values:
+      RESTRICTIONS_UNSPECIFIED: TCA restrictions are not specified, defaulting
+        to RESTRICTIONS_DISABLED.
+      RESTRICTIONS_DISABLED: TCA restrictions are disabled for the instance.
+      RESTRICTIONS_ENABLED_V1: V1 version of TCA restrictions are enabled for
+        the instance. These include: 1. ActionHermeticity to be BEST_EFFORT or
+        ENFORCED and ActionIsolation to be ENFORCED. 2. ImmutableMetaPolicy to
+        be true. 3. AdminOpsRestrictions to be RESTRICTED. 4. Using Shielded,
+        Confidential and Software Trusted VMs as RBE workers, which use custom
+        RBE TCA COS VM images and go through TPM attestation verification for
+        various boot parameters. 5. Inputs and outputs of the actions on these
+        VMs requires TPM attestation verification.
+    """
+    RESTRICTIONS_UNSPECIFIED = 0
+    RESTRICTIONS_DISABLED = 1
+    RESTRICTIONS_ENABLED_V1 = 2
+
+  adminOpsRestrictions = _messages.EnumField('AdminOpsRestrictionsValueValuesEnum', 1)
+  immutableMetapolicy = _messages.BooleanField(2)
+  instance = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance', 3)
+  instanceId = _messages.StringField(4)
+  tcaRestrictions = _messages.EnumField('TcaRestrictionsValueValuesEnum', 5)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateWorkerPoolRequest(_messages.Message):
@@ -3002,6 +3084,21 @@ class RemotebuildexecutionProjectsInstancesCreateBackendIAMBindingRequest(_messa
   """
 
   googleDevtoolsRemotebuildexecutionAdminV1alphaCreateBackendIAMBindingRequest = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateBackendIAMBindingRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class RemotebuildexecutionProjectsInstancesCreateTBIRequest(_messages.Message):
+  r"""A RemotebuildexecutionProjectsInstancesCreateTBIRequest object.
+
+  Fields:
+    googleDevtoolsRemotebuildexecutionAdminV1alphaCreateTbiInstanceRequest: A
+      GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateTbiInstanceRequest
+      resource to be passed as the request body.
+    parent: Required. Resource name of the project containing the instance.
+      Format: `projects/[PROJECT_ID]`.
+  """
+
+  googleDevtoolsRemotebuildexecutionAdminV1alphaCreateTbiInstanceRequest = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateTbiInstanceRequest', 1)
   parent = _messages.StringField(2, required=True)
 
 

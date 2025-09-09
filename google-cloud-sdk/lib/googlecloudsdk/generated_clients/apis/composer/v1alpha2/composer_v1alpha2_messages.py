@@ -1643,6 +1643,22 @@ class FetchDatabasePropertiesResponse(_messages.Message):
   secondaryGceZone = _messages.StringField(3)
 
 
+class FilestoreConfig(_messages.Message):
+  r"""The configuration for data storage in the environment using Filestore.
+
+  Fields:
+    instance: Required. The resource name of the Filestore instance, in the
+      format
+      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`.
+    path: Required. Path within the Filestore instance that will be mounted in
+      the Airflow components. Starts with the volume share. For example, given
+      the instance 10.10.10.10:/vol1 the mount path can be "/vol1/some/path".
+  """
+
+  instance = _messages.StringField(1)
+  path = _messages.StringField(2)
+
+
 class IPAllocationPolicy(_messages.Message):
   r"""Configuration for controlling how IPs are allocated in the GKE cluster
   running the Apache Airflow software.
@@ -2977,9 +2993,12 @@ class StorageConfig(_messages.Message):
   Fields:
     bucket: Optional. The name of the Cloud Storage bucket used by the
       environment. No `gs://` prefix.
+    filestoreConfig: Optional. The configuration for data storage in the
+      environment using Filestore.
   """
 
   bucket = _messages.StringField(1)
+  filestoreConfig = _messages.MessageField('FilestoreConfig', 2)
 
 
 class Task(_messages.Message):

@@ -72,6 +72,62 @@ class CreateReferenceRequest(_messages.Message):
   requestId = _messages.StringField(4)
 
 
+class DataResidencyAugmentedView(_messages.Message):
+  r"""Next tag: 9
+
+  Enums:
+    ResourceStateValueValuesEnum: The state of the current augmented view,
+      which can be used to determine whether this resource should be monitored
+      by DRZ or not.
+
+  Fields:
+    crGopoGuris: Cloud resource to Google owned production object mapping in
+      the form of GURIs. The GURIs should be available in DG KB storage/cns
+      tables. This is the preferred way of providing cloud resource mappings.
+      For further details please read go/cloud-resource-monitoring_sig
+    crGopoPrefixes: Cloud resource to Google owned production object mapping
+      in the form of prefixes. These should be available in DG KB storage/cns
+      tables. The entity type, which is the part of the string before the
+      first colon in the GURI, must be completely specified in prefix. For
+      details about GURI please read go/guri. For further details about the
+      field please read go/cloud-resource-monitoring_sig.
+    mstDebugInfo: Extra debug information (which does not contain any customer
+      data) used for better understanding of the DRZ violations (for MST
+      pipeline specifically). See more details from b/376318043.
+    resourceState: The state of the current augmented view, which can be used
+      to determine whether this resource should be monitored by DRZ or not.
+    serviceData: Service-specific data. Only required for pre-determined
+      services. Generally used to bind a Cloud Resource to some a TI container
+      that uniquely specifies a customer. See milestone 2 of DRZ KR8 SIG for
+      more information.
+    tpIds: The list of project_id's of the tenant projects in the 'google.com'
+      org which serve the Cloud Resource. See go/drz-mst-sig for more details.
+  """
+
+  class ResourceStateValueValuesEnum(_messages.Enum):
+    r"""The state of the current augmented view, which can be used to
+    determine whether this resource should be monitored by DRZ or not.
+
+    Values:
+      RESOURCE_STATE_UNSPECIFIED: The resource state is unspecified.
+      MONITORABLE: The resource is in a state that is ready to be monitored by
+        DRZ.
+      EXEMPTED: The resource is in a state that is exempted from DRZ
+        monitoring due to reasons such as the cloud resource is in a non-ready
+        state.
+    """
+    RESOURCE_STATE_UNSPECIFIED = 0
+    MONITORABLE = 1
+    EXEMPTED = 2
+
+  crGopoGuris = _messages.StringField(1, repeated=True)
+  crGopoPrefixes = _messages.StringField(2, repeated=True)
+  mstDebugInfo = _messages.MessageField('MstDebugInfo', 3)
+  resourceState = _messages.EnumField('ResourceStateValueValuesEnum', 4)
+  serviceData = _messages.MessageField('ServiceData', 5)
+  tpIds = _messages.StringField(6, repeated=True)
+
+
 class DeleteReferenceRequest(_messages.Message):
   r"""The DeleteReferenceRequest request.
 
@@ -703,8 +759,9 @@ class MessagestreamsProjectsLocationsListRequest(_messages.Message):
   r"""A MessagestreamsProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1006,6 +1063,32 @@ class MetricsConfig(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 1)
 
 
+class MstDebugInfo(_messages.Message):
+  r"""Per request from b/376318043, this message captures the metadata of
+  cloud resources that are created by CCFE and CLH (which then triggers the
+  creation of the multi-single tenant project that is of interest to DRZ).
+  Specifically, it contains the canonical name of the cloud resource as well
+  as several related creation/update timestamps, which can help service teams
+  to better understand the cause of DRZ violations. Next tag: 5
+
+  Fields:
+    canonicalCloudResourceName: Canonical resource name: projects/{consumer-
+      project-number}/locations/{location-name}[/{collection}/{resource-
+      name}]+ e.g. 'projects/12345/locations/us-central1/fooBars/foo-bar-1'
+    ccfePublicUpdateTime: Time when the cloud resource was last updated by the
+      CCFE.
+    clhDataUpdateTime: Time when the cloud resource was last updated by the
+      Control Logic Handler (CLH).
+    cloudResourceCreationTime: Time when the cloud resource was created in
+      CCFE.
+  """
+
+  canonicalCloudResourceName = _messages.StringField(1)
+  ccfePublicUpdateTime = _messages.StringField(2)
+  clhDataUpdateTime = _messages.StringField(3)
+  cloudResourceCreationTime = _messages.StringField(4)
+
+
 class MutualTlsAuthConfig(_messages.Message):
   r"""Mutual TLS authentication mechanism configuration.
 
@@ -1183,6 +1266,34 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class PersistentDiskData(_messages.Message):
+  r"""Persistent Disk service-specific Data. Contains information that may not
+  be appropriate for the generic DRZ Augmented View. This currently includes
+  LSV Colossus Roots and GCS Buckets.
+
+  Fields:
+    cfsRoots: Path to Colossus root for an LSV. NOTE: Unlike `cr_ti_guris` and
+      `cr_ti_prefixes`, the field `cfs_roots` below does not need to be a GUri
+      or GUri prefix. It can simply be any valid CFS or CFS2 Path. The DRZ KR8
+      SIG has more details overall, but generally the `cfs_roots` provided
+      here should be scoped to an individual Persistent Disk. An example for a
+      PD Disk with a disk ID 3277719120423414466, follows: * `cr_ti_guris`
+      could be '/cfs2/pj/pd-cloud-prod' as this is a valid GUri present in the
+      DG KB and contains enough information to perform location monitoring and
+      scope ownership of the Production Object. * `cfs_roots` would be:
+      '/cfs2/pj/pd-cloud-staging/lsv000001234@/
+      lsv/projects~773365403387~zones~2700~disks~3277719120423414466 ~bank-
+      blue-careful-3526-lsv00054DB1B7254BA3/' as this allows us to enumerate
+      the files on CFS2 that belong to an individual Disk.
+    gcsBucketNames: The GCS Buckets that back this snapshot or image. This is
+      required as `cr_ti_prefixes` and `cr_ti_guris` only accept TI resources.
+      This should be the globally unique bucket name.
+  """
+
+  cfsRoots = _messages.StringField(1, repeated=True)
+  gcsBucketNames = _messages.StringField(2, repeated=True)
+
+
 class ProtobufFormat(_messages.Message):
   r"""The format of a Protobuf message payload.
 
@@ -1308,6 +1419,19 @@ class SaslAuthConfig(_messages.Message):
   passwordSecret = _messages.StringField(2)
   username = _messages.StringField(3)
   usernameSecret = _messages.StringField(4)
+
+
+class ServiceData(_messages.Message):
+  r"""This message defines service-specific data that certain service teams
+  must provide as part of the Data Residency Augmented View for a resource.
+  Next ID: 2
+
+  Fields:
+    pd: Auxiliary data for the persistent disk pipeline provided to provide
+      the LSV Colossus Roots and GCS Buckets.
+  """
+
+  pd = _messages.MessageField('PersistentDiskData', 1)
 
 
 class Source(_messages.Message):
@@ -1455,6 +1579,9 @@ class Stream(_messages.Message):
       https://google.aip.dev/128#annotations
     createTime: Output only. [Output only] Create time stamp
     displayName: Optional. Display name of resource.
+    errorMessageBus: Optional. The resource name of the Message Bus to send
+      error messages to. This field enables dead-letter/persistent error
+      handling. See go/eaa-dlq-edd for details.
     etag: Output only. This checksum is computed by the server based on the
       value of other fields, and might be sent only on create requests to
       ensure that the client has an up-to-date value before proceeding.
@@ -1580,22 +1707,23 @@ class Stream(_messages.Message):
   annotations = _messages.MessageField('AnnotationsValue', 1)
   createTime = _messages.StringField(2)
   displayName = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  eventarcTransformationType = _messages.EnumField('EventarcTransformationTypeValueValuesEnum', 5)
-  inputPayloadFormat = _messages.MessageField('MessagePayloadFormat', 6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  loggingConfig = _messages.MessageField('LoggingConfig', 8)
-  mediations = _messages.MessageField('Mediation', 9, repeated=True)
-  metricsConfig = _messages.MessageField('MetricsConfig', 10)
-  name = _messages.StringField(11)
-  replyBus = _messages.StringField(12)
-  retryPolicy = _messages.MessageField('InlineRetryPolicy', 13)
-  source = _messages.MessageField('Source', 14)
-  streamAction = _messages.MessageField('StreamAction', 15)
-  streamIdentityOverride = _messages.StringField(16)
-  uid = _messages.StringField(17)
-  updateTime = _messages.StringField(18)
-  useSharedPool = _messages.BooleanField(19)
+  errorMessageBus = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  eventarcTransformationType = _messages.EnumField('EventarcTransformationTypeValueValuesEnum', 6)
+  inputPayloadFormat = _messages.MessageField('MessagePayloadFormat', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  loggingConfig = _messages.MessageField('LoggingConfig', 9)
+  mediations = _messages.MessageField('Mediation', 10, repeated=True)
+  metricsConfig = _messages.MessageField('MetricsConfig', 11)
+  name = _messages.StringField(12)
+  replyBus = _messages.StringField(13)
+  retryPolicy = _messages.MessageField('InlineRetryPolicy', 14)
+  source = _messages.MessageField('Source', 15)
+  streamAction = _messages.MessageField('StreamAction', 16)
+  streamIdentityOverride = _messages.StringField(17)
+  uid = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
+  useSharedPool = _messages.BooleanField(20)
 
 
 class StreamAction(_messages.Message):

@@ -52,6 +52,21 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListTraceScopesResponse(_messages.Message):
+  r"""Response for listing TraceScopes.
+
+  Fields:
+    nextPageToken: Optional. If there might be more results than appear in
+      this response, then `next_page_token` is included. To get the next set
+      of results, call the same method again using the value of
+      `next_page_token` as `page_token`.
+    traceScopes: Optional. A list of trace scopes.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  traceScopes = _messages.MessageField('TraceScope', 2, repeated=True)
+
+
 class Location(_messages.Message):
   r"""A resource that represents a Google Cloud location.
 
@@ -146,8 +161,9 @@ class ObservabilityProjectsLocationsListRequest(_messages.Message):
   r"""A ObservabilityProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -245,6 +261,85 @@ class ObservabilityProjectsLocationsScopesPatchRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   scope = _messages.MessageField('Scope', 2)
+  updateMask = _messages.StringField(3)
+
+
+class ObservabilityProjectsLocationsTraceScopesCreateRequest(_messages.Message):
+  r"""A ObservabilityProjectsLocationsTraceScopesCreateRequest object.
+
+  Fields:
+    parent: Required. The full resource name of the location where the trace
+      scope should be created projects/[PROJECT_ID]/locations/[LOCATION_ID]
+      For example: projects/my-project/locations/global
+    traceScope: A TraceScope resource to be passed as the request body.
+    traceScopeId: Required. A client-assigned identifier for the trace scope.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  traceScope = _messages.MessageField('TraceScope', 2)
+  traceScopeId = _messages.StringField(3)
+
+
+class ObservabilityProjectsLocationsTraceScopesDeleteRequest(_messages.Message):
+  r"""A ObservabilityProjectsLocationsTraceScopesDeleteRequest object.
+
+  Fields:
+    name: Required. The full resource name of the trace scope to delete:
+      projects/[PROJECT_ID]/locations/[LOCATION_ID]/traceScopes/[TRACE_SCOPE_I
+      D] For example: projects/my-project/locations/global/traceScopes/my-
+      trace-scope
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ObservabilityProjectsLocationsTraceScopesGetRequest(_messages.Message):
+  r"""A ObservabilityProjectsLocationsTraceScopesGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the trace scope:
+      projects/[PROJECT_ID]/locations/[LOCATION_ID]/traceScopes/[TRACE_SCOPE_I
+      D] For example: projects/my-project/locations/global/traceScopes/my-
+      trace-scope
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ObservabilityProjectsLocationsTraceScopesListRequest(_messages.Message):
+  r"""A ObservabilityProjectsLocationsTraceScopesListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of
+      `next_page_token` in the response indicates that more results might be
+      available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. `page_token` must be the value
+      of `next_page_token` from the previous response. The values of other
+      method parameters should be identical to those in the previous call.
+    parent: Required. The full resource name of the location to look for trace
+      scopes: projects/[PROJECT_ID]/locations/[LOCATION_ID] For example:
+      projects/my-project/locations/global
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ObservabilityProjectsLocationsTraceScopesPatchRequest(_messages.Message):
+  r"""A ObservabilityProjectsLocationsTraceScopesPatchRequest object.
+
+  Fields:
+    name: Identifier. The resource name of the trace scope. For example:
+      projects/my-project/locations/global/traceScopes/my-trace-scope
+    traceScope: A TraceScope resource to be passed as the request body.
+    updateMask: Optional. The list of fields to update.
+  """
+
+  name = _messages.StringField(1, required=True)
+  traceScope = _messages.MessageField('TraceScope', 2)
   updateMask = _messages.StringField(3)
 
 
@@ -394,13 +489,16 @@ class Scope(_messages.Message):
       projects/{project}/locations/{location}/scopes/{scope} The `{location}`
       field must be set to `global`. The `{scope}` field must be set to
       `_Default`.
+    traceScope: Required. The resource name of the `TraceScope`. For example:
+      projects/myproject/locations/global/traceScopes/my-trace-scope
     updateTime: Output only. Update timestamp. Note: The Update timestamp for
       the default scope is initially unset.
   """
 
   logScope = _messages.StringField(1)
   name = _messages.StringField(2)
-  updateTime = _messages.StringField(3)
+  traceScope = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -515,6 +613,29 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class TraceScope(_messages.Message):
+  r"""A trace scope is a collection of resources whose traces are queried
+  together.
+
+  Fields:
+    createTime: Output only. The creation timestamp of the trace scope.
+    description: Optional. Describes this trace scope. The maximum length of
+      the description is 8000 characters.
+    name: Identifier. The resource name of the trace scope. For example:
+      projects/my-project/locations/global/traceScopes/my-trace-scope
+    resourceNames: Required. Names of the projects that are included in this
+      trace scope. * `projects/[PROJECT_ID]` A trace scope can include a
+      maximum of 20 projects.
+    updateTime: Output only. The last update timestamp of the trace scope.
+  """
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  name = _messages.StringField(3)
+  resourceNames = _messages.StringField(4, repeated=True)
+  updateTime = _messages.StringField(5)
 
 
 encoding.AddCustomJsonFieldMapping(

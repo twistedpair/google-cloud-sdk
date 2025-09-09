@@ -256,6 +256,7 @@ LIVENESS_CHECK = 'liveness_check'
 READINESS_CHECK = 'readiness_check'
 NETWORK = 'network'
 VPC_ACCESS_CONNECTOR = 'vpc_access_connector'
+VPC_EGRESS = 'vpc_egress'
 VERSION = 'version'
 MAJOR_VERSION = 'major_version'
 MINOR_VERSION = 'minor_version'
@@ -415,6 +416,15 @@ VPC_ACCESS_CONNECTOR_NAME = 'name'
 VPC_ACCESS_CONNECTOR_EGRESS_SETTING = 'egress_setting'
 VPC_ACCESS_CONNECTOR_EGRESS_SETTING_ALL_TRAFFIC = 'all-traffic'
 VPC_ACCESS_CONNECTOR_EGRESS_SETTING_PRIVATE_RANGES_ONLY = 'private-ranges-only'
+
+# Attributes for `VpcEgress`.
+VPC_EGRESS_HOST_PROJECT_ID = 'host_project_id'
+VPC_EGRESS_SUBNET = 'subnet'
+VPC_EGRESS_NETWORK_TAGS = 'network_tags'
+VPC_EGRESS_NETWORK_TAG_VALUE = 'value'
+VPC_EGRESS_SETTING = 'egress_setting'
+VPC_EGRESS_SETTING_ALL_TRAFFIC = 'all-traffic'
+VPC_EGRESS_SETTING_PRIVATE_RANGES_ONLY = 'private-ranges-only'
 
 # Attributes for FlexibleRuntimeSettings.
 OPERATING_SYSTEM = 'operating_system'
@@ -2064,6 +2074,30 @@ class VpcAccessConnector(validation.Validated):
   }
 
 
+class VpcEgressNetworkTag(validation.Validated):
+  """Class representing the Direct VPC network tag."""
+
+  ATTRIBUTES = {
+      VPC_EGRESS_NETWORK_TAG_VALUE: validation.TYPE_STR,
+  }
+
+
+class VpcEgress(validation.Validated):
+  """Class representing the Direct VPC configuration."""
+
+  ATTRIBUTES = {
+      VPC_EGRESS_HOST_PROJECT_ID: validation.Regex(GCE_RESOURCE_NAME_REGEX),
+      VPC_EGRESS_SUBNET: validation.Regex(GCE_RESOURCE_NAME_REGEX),
+      VPC_EGRESS_NETWORK_TAGS: validation.Optional(validation.TYPE_STR),
+      VPC_EGRESS_SETTING: validation.Optional(
+          validation.Options(
+              VPC_EGRESS_SETTING_ALL_TRAFFIC,
+              VPC_EGRESS_SETTING_PRIVATE_RANGES_ONLY,
+          )
+      ),
+  }
+
+
 class AppInclude(validation.Validated):
   """Class representing the contents of an included `app.yaml` file.
 
@@ -2342,6 +2376,7 @@ class AppInfoExternal(validation.Validated):
       READINESS_CHECK: validation.Optional(ReadinessCheck),
       NETWORK: validation.Optional(Network),
       VPC_ACCESS_CONNECTOR: validation.Optional(VpcAccessConnector),
+      VPC_EGRESS: validation.Optional(VpcEgress),
       ZONES: validation.Optional(validation.Repeated(validation.TYPE_STR)),
       BUILTINS: validation.Optional(validation.Repeated(BuiltinHandler)),
       INCLUDES: validation.Optional(validation.Type(list)),

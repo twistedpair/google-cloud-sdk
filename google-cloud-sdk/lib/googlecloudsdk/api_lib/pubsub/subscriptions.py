@@ -138,6 +138,7 @@ class SubscriptionsClient(object):
       pubsub_export_topic=None,
       pubsub_export_topic_region=None,
       message_transforms_file=None,
+      tags=None,
   ):
     """Creates a Subscription.
 
@@ -202,6 +203,7 @@ class SubscriptionsClient(object):
         messages.
       message_transforms_file (str): The file path to the JSON or YAML file
         containing the message transforms.
+      tags (TagsValue): The tags Keys/Values to be bound to the subscription.
 
     Returns:
       Subscription: the created subscription
@@ -261,6 +263,9 @@ class SubscriptionsClient(object):
       ) as e:
         e.args = (utils.GetErrorMessage(e),)
         raise
+
+    if tags:
+      subscription.tags = tags
 
     return self._service.Create(subscription)
 

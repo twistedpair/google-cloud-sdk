@@ -33,17 +33,44 @@ from googlecloudsdk.core.util import files
 import six
 
 
-def ActiveDirectoryConfig(sql_messages, domain=None):
+def ActiveDirectoryConfig(
+    sql_messages,
+    domain=None,
+    mode=None,
+    dns_servers=None,
+    admin_credential_secret_key=None,
+    organizational_unit=None
+):
   """Generates the Active Directory configuration for the instance.
 
   Args:
     sql_messages: module, The messages module that should be used.
     domain: string, the Active Directory domain value.
-
+    mode: string, the Active Directory mode value.
+    dns_servers: list of strings, the list of dns servers.
+    admin_credential_secret_key: string, the name of the admin credential secret
+      manager key.
+    organizational_unit: string, the organizational unit value.
   Returns:
     sql_messages.SqlActiveDirectoryConfig object.
   """
-  config = sql_messages.SqlActiveDirectoryConfig(domain=domain)
+  config = sql_messages.SqlActiveDirectoryConfig(
+      domain=domain,
+  )
+  if not domain:
+    config.mode = (
+        sql_messages.SqlActiveDirectoryConfig.ModeValueValuesEnum.ACTIVE_DIRECTORY_MODE_UNSPECIFIED
+    )
+  if admin_credential_secret_key is not None:
+    config.adminCredentialSecretName = admin_credential_secret_key
+  if mode is not None:
+    config.mode = sql_messages.SqlActiveDirectoryConfig.ModeValueValuesEnum.lookup_by_name(
+        mode.upper()
+    )
+  if dns_servers:
+    config.dnsServers = dns_servers
+  if organizational_unit is not None:
+    config.organizationalUnit = organizational_unit
   return config
 
 
@@ -488,6 +515,54 @@ def ConnectionPoolConfig(
     connection_pool_config.flags = []
 
   return connection_pool_config
+
+
+def ReadPoolAutoScaleConfig(
+    sql_messages,
+    auto_scale_enabled=None,
+    auto_scale_min_node_count=None,
+    auto_scale_max_node_count=None,
+    auto_scale_target_metrics=None,
+    auto_scale_disable_scale_in=None,
+    current_config=None,
+):
+  """Generates the read pool auto-scale config for the instance."""
+  if all([
+      auto_scale_enabled is None,
+      auto_scale_min_node_count is None,
+      auto_scale_max_node_count is None,
+      auto_scale_target_metrics is None,
+      auto_scale_disable_scale_in is None,
+  ]):
+    return None
+  read_pool_auto_scale_config = (
+      current_config or sql_messages.ReadPoolAutoScaleConfig()
+  )
+  if auto_scale_enabled is not None:
+    if auto_scale_enabled:
+      read_pool_auto_scale_config.enabled = True
+    else:
+      # If auto-scale is disabled, clear the config.
+      return sql_messages.ReadPoolAutoScaleConfig(enabled=False)
+  if auto_scale_min_node_count is not None:
+    read_pool_auto_scale_config.minNodeCount = auto_scale_min_node_count
+  if auto_scale_max_node_count is not None:
+    read_pool_auto_scale_config.maxNodeCount = auto_scale_max_node_count
+  if auto_scale_target_metrics is not None:
+    read_pool_auto_scale_config.targetMetrics = []
+    for (
+        metric,
+        value,
+    ) in auto_scale_target_metrics.items():
+      read_pool_auto_scale_config.targetMetrics.append(
+          sql_messages.TargetMetric(
+              metric=metric,
+              targetValue=value,
+          )
+      )
+  if auto_scale_disable_scale_in is not None:
+    read_pool_auto_scale_config.disableScaleIn = auto_scale_disable_scale_in
+  return read_pool_auto_scale_config
 
 
 def _CustomMachineTypeString(cpu, memory_mib):

@@ -1824,9 +1824,13 @@ class GoogleCloudPolicytroubleshooterIamV3betaTroubleshootIamPolicyRequest(_mess
   Fields:
     accessTuple: The information to use for checking whether a principal has a
       permission for a resource.
+    resolveUnknowns: Optional. When true, the troubleshooter will use
+      internal-only mechanisms to resolve an 'UNKNOWN' access state to a more
+      definitive 'CAN_ACCESS' or 'CANNOT_ACCESS' state.
   """
 
   accessTuple = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3betaAccessTuple', 1)
+  resolveUnknowns = _messages.BooleanField(2)
 
 
 class GoogleCloudPolicytroubleshooterIamV3betaTroubleshootIamPolicyResponse(_messages.Message):

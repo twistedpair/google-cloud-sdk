@@ -135,7 +135,7 @@ class GoogleCloudVideointelligenceV1DetectedLandmark(_messages.Message):
     confidence: The confidence score of the detected landmark. Range [0, 1].
     name: The name of this landmark, for example, left_hand, right_shoulder.
     point: The 2D point of the detected landmark using the normalized image
-      coordindate system. The normalized coordinates have the range from 0 to
+      coordinate system. The normalized coordinates have the range from 0 to
       1.
   """
 
@@ -460,8 +460,8 @@ class GoogleCloudVideointelligenceV1NormalizedBoundingPoly(_messages.Message):
   is horizontal it might look like: 0----1 | | 3----2 When it's clockwise
   rotated 180 degrees around the top-left corner it becomes: 2----3 | | 1----0
   and the vertex order will still be (0, 1, 2, 3). Note that values can be
-  less than 0, or greater than 1 due to trignometric calculations for location
-  of the box.
+  less than 0, or greater than 1 due to trigonometric calculations for
+  location of the box.
 
   Fields:
     vertices: Normalized vertices of the bounding polygon.
@@ -1040,7 +1040,7 @@ class GoogleCloudVideointelligenceV1beta2DetectedLandmark(_messages.Message):
     confidence: The confidence score of the detected landmark. Range [0, 1].
     name: The name of this landmark, for example, left_hand, right_shoulder.
     point: The 2D point of the detected landmark using the normalized image
-      coordindate system. The normalized coordinates have the range from 0 to
+      coordinate system. The normalized coordinates have the range from 0 to
       1.
   """
 
@@ -1282,8 +1282,8 @@ class GoogleCloudVideointelligenceV1beta2NormalizedBoundingPoly(_messages.Messag
   is horizontal it might look like: 0----1 | | 3----2 When it's clockwise
   rotated 180 degrees around the top-left corner it becomes: 2----3 | | 1----0
   and the vertex order will still be (0, 1, 2, 3). Note that values can be
-  less than 0, or greater than 1 due to trignometric calculations for location
-  of the box.
+  less than 0, or greater than 1 due to trigonometric calculations for
+  location of the box.
 
   Fields:
     vertices: Normalized vertices of the bounding polygon.
@@ -1703,7 +1703,7 @@ class GoogleCloudVideointelligenceV1p1beta1DetectedLandmark(_messages.Message):
     confidence: The confidence score of the detected landmark. Range [0, 1].
     name: The name of this landmark, for example, left_hand, right_shoulder.
     point: The 2D point of the detected landmark using the normalized image
-      coordindate system. The normalized coordinates have the range from 0 to
+      coordinate system. The normalized coordinates have the range from 0 to
       1.
   """
 
@@ -1945,8 +1945,8 @@ class GoogleCloudVideointelligenceV1p1beta1NormalizedBoundingPoly(_messages.Mess
   is horizontal it might look like: 0----1 | | 3----2 When it's clockwise
   rotated 180 degrees around the top-left corner it becomes: 2----3 | | 1----0
   and the vertex order will still be (0, 1, 2, 3). Note that values can be
-  less than 0, or greater than 1 due to trignometric calculations for location
-  of the box.
+  less than 0, or greater than 1 due to trigonometric calculations for
+  location of the box.
 
   Fields:
     vertices: Normalized vertices of the bounding polygon.
@@ -2366,7 +2366,7 @@ class GoogleCloudVideointelligenceV1p2beta1DetectedLandmark(_messages.Message):
     confidence: The confidence score of the detected landmark. Range [0, 1].
     name: The name of this landmark, for example, left_hand, right_shoulder.
     point: The 2D point of the detected landmark using the normalized image
-      coordindate system. The normalized coordinates have the range from 0 to
+      coordinate system. The normalized coordinates have the range from 0 to
       1.
   """
 
@@ -2608,8 +2608,8 @@ class GoogleCloudVideointelligenceV1p2beta1NormalizedBoundingPoly(_messages.Mess
   is horizontal it might look like: 0----1 | | 3----2 When it's clockwise
   rotated 180 degrees around the top-left corner it becomes: 2----3 | | 1----0
   and the vertex order will still be (0, 1, 2, 3). Note that values can be
-  less than 0, or greater than 1 due to trignometric calculations for location
-  of the box.
+  less than 0, or greater than 1 due to trigonometric calculations for
+  location of the box.
 
   Fields:
     vertices: Normalized vertices of the bounding polygon.
@@ -3074,7 +3074,7 @@ class GoogleCloudVideointelligenceV1p3beta1DetectedLandmark(_messages.Message):
     confidence: The confidence score of the detected landmark. Range [0, 1].
     name: The name of this landmark, for example, left_hand, right_shoulder.
     point: The 2D point of the detected landmark using the normalized image
-      coordindate system. The normalized coordinates have the range from 0 to
+      coordinate system. The normalized coordinates have the range from 0 to
       1.
   """
 
@@ -3316,8 +3316,8 @@ class GoogleCloudVideointelligenceV1p3beta1NormalizedBoundingPoly(_messages.Mess
   is horizontal it might look like: 0----1 | | 3----2 When it's clockwise
   rotated 180 degrees around the top-left corner it becomes: 2----3 | | 1----0
   and the vertex order will still be (0, 1, 2, 3). Note that values can be
-  less than 0, or greater than 1 due to trignometric calculations for location
-  of the box.
+  less than 0, or greater than 1 due to trigonometric calculations for
+  location of the box.
 
   Fields:
     vertices: Normalized vertices of the bounding polygon.

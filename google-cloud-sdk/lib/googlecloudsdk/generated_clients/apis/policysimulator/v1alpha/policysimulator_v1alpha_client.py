@@ -39,8 +39,11 @@ class PolicysimulatorV1alpha(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.folders_locations_accessPolicySimulations_operations = self.FoldersLocationsAccessPolicySimulationsOperationsService(self)
     self.folders_locations_accessPolicySimulations_results = self.FoldersLocationsAccessPolicySimulationsResultsService(self)
     self.folders_locations_accessPolicySimulations = self.FoldersLocationsAccessPolicySimulationsService(self)
+    self.folders_locations_activityBacktestResults = self.FoldersLocationsActivityBacktestResultsService(self)
+    self.folders_locations_activityBacktests = self.FoldersLocationsActivityBacktestsService(self)
     self.folders_locations_orgPolicyViolationsPreviews_operations = self.FoldersLocationsOrgPolicyViolationsPreviewsOperationsService(self)
     self.folders_locations_orgPolicyViolationsPreviews = self.FoldersLocationsOrgPolicyViolationsPreviewsService(self)
     self.folders_locations_replays_operations = self.FoldersLocationsReplaysOperationsService(self)
@@ -49,8 +52,11 @@ class PolicysimulatorV1alpha(base_api.BaseApiClient):
     self.folders_locations = self.FoldersLocationsService(self)
     self.folders = self.FoldersService(self)
     self.operations = self.OperationsService(self)
+    self.organizations_locations_accessPolicySimulations_operations = self.OrganizationsLocationsAccessPolicySimulationsOperationsService(self)
     self.organizations_locations_accessPolicySimulations_results = self.OrganizationsLocationsAccessPolicySimulationsResultsService(self)
     self.organizations_locations_accessPolicySimulations = self.OrganizationsLocationsAccessPolicySimulationsService(self)
+    self.organizations_locations_activityBacktestResults = self.OrganizationsLocationsActivityBacktestResultsService(self)
+    self.organizations_locations_activityBacktests = self.OrganizationsLocationsActivityBacktestsService(self)
     self.organizations_locations_orgPolicyViolationsPreviews_operations = self.OrganizationsLocationsOrgPolicyViolationsPreviewsOperationsService(self)
     self.organizations_locations_orgPolicyViolationsPreviews_orgPolicyViolations = self.OrganizationsLocationsOrgPolicyViolationsPreviewsOrgPolicyViolationsService(self)
     self.organizations_locations_orgPolicyViolationsPreviews = self.OrganizationsLocationsOrgPolicyViolationsPreviewsService(self)
@@ -61,8 +67,11 @@ class PolicysimulatorV1alpha(base_api.BaseApiClient):
     self.organizations_locations_replays = self.OrganizationsLocationsReplaysService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations = self.OrganizationsService(self)
+    self.projects_locations_accessPolicySimulations_operations = self.ProjectsLocationsAccessPolicySimulationsOperationsService(self)
     self.projects_locations_accessPolicySimulations_results = self.ProjectsLocationsAccessPolicySimulationsResultsService(self)
     self.projects_locations_accessPolicySimulations = self.ProjectsLocationsAccessPolicySimulationsService(self)
+    self.projects_locations_activityBacktestResults = self.ProjectsLocationsActivityBacktestResultsService(self)
+    self.projects_locations_activityBacktests = self.ProjectsLocationsActivityBacktestsService(self)
     self.projects_locations_orgPolicyViolationsPreviews_operations = self.ProjectsLocationsOrgPolicyViolationsPreviewsOperationsService(self)
     self.projects_locations_orgPolicyViolationsPreviews = self.ProjectsLocationsOrgPolicyViolationsPreviewsService(self)
     self.projects_locations_replays_operations = self.ProjectsLocationsReplaysOperationsService(self)
@@ -70,6 +79,43 @@ class PolicysimulatorV1alpha(base_api.BaseApiClient):
     self.projects_locations_replays = self.ProjectsLocationsReplaysService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class FoldersLocationsAccessPolicySimulationsOperationsService(base_api.BaseApiService):
+    """Service class for the folders_locations_accessPolicySimulations_operations resource."""
+
+    _NAME = 'folders_locations_accessPolicySimulations_operations'
+
+    def __init__(self, client):
+      super(PolicysimulatorV1alpha.FoldersLocationsAccessPolicySimulationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (PolicysimulatorFoldersLocationsAccessPolicySimulationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/accessPolicySimulations/{accessPolicySimulationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='policysimulator.folders.locations.accessPolicySimulations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='PolicysimulatorFoldersLocationsAccessPolicySimulationsOperationsGetRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
 
   class FoldersLocationsAccessPolicySimulationsResultsService(base_api.BaseApiService):
     """Service class for the folders_locations_accessPolicySimulations_results resource."""
@@ -223,6 +269,188 @@ class PolicysimulatorV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='PolicysimulatorFoldersLocationsAccessPolicySimulationsListRequest',
         response_type_name='GoogleCloudPolicysimulatorV1alphaListAccessPolicySimulationsResponse',
+        supports_download=False,
+    )
+
+  class FoldersLocationsActivityBacktestResultsService(base_api.BaseApiService):
+    """Service class for the folders_locations_activityBacktestResults resource."""
+
+    _NAME = 'folders_locations_activityBacktestResults'
+
+    def __init__(self, client):
+      super(PolicysimulatorV1alpha.FoldersLocationsActivityBacktestResultsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets a policy simulation result.
+
+      Args:
+        request: (PolicysimulatorFoldersLocationsActivityBacktestResultsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1alphaActivityBacktestResult) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/activityBacktestResults/{activityBacktestResultsId}',
+        http_method='GET',
+        method_id='policysimulator.folders.locations.activityBacktestResults.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='PolicysimulatorFoldersLocationsActivityBacktestResultsGetRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1alphaActivityBacktestResult',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the results for a policy simulation.
+
+      Args:
+        request: (PolicysimulatorFoldersLocationsActivityBacktestResultsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1alphaListActivityBacktestResultsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/activityBacktestResults',
+        http_method='GET',
+        method_id='policysimulator.folders.locations.activityBacktestResults.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/activityBacktestResults',
+        request_field='',
+        request_type_name='PolicysimulatorFoldersLocationsActivityBacktestResultsListRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1alphaListActivityBacktestResultsResponse',
+        supports_download=False,
+    )
+
+  class FoldersLocationsActivityBacktestsService(base_api.BaseApiService):
+    """Service class for the folders_locations_activityBacktests resource."""
+
+    _NAME = 'folders_locations_activityBacktests'
+
+    def __init__(self, client):
+      super(PolicysimulatorV1alpha.FoldersLocationsActivityBacktestsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates and starts an ActivityBacktest simulation.
+
+      Args:
+        request: (PolicysimulatorFoldersLocationsActivityBacktestsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/activityBacktests',
+        http_method='POST',
+        method_id='policysimulator.folders.locations.activityBacktests.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['activityBacktestId'],
+        relative_path='v1alpha/{+parent}/activityBacktests',
+        request_field='googleCloudPolicysimulatorV1alphaActivityBacktest',
+        request_type_name='PolicysimulatorFoldersLocationsActivityBacktestsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a policy simulation.
+
+      Args:
+        request: (PolicysimulatorFoldersLocationsActivityBacktestsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1alphaActivityBacktest) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/activityBacktests/{activityBacktestsId}',
+        http_method='GET',
+        method_id='policysimulator.folders.locations.activityBacktests.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='PolicysimulatorFoldersLocationsActivityBacktestsGetRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1alphaActivityBacktest',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the simulations for a given parent resource.
+
+      Args:
+        request: (PolicysimulatorFoldersLocationsActivityBacktestsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1alphaListActivityBacktestsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/activityBacktests',
+        http_method='GET',
+        method_id='policysimulator.folders.locations.activityBacktests.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/activityBacktests',
+        request_field='',
+        request_type_name='PolicysimulatorFoldersLocationsActivityBacktestsListRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1alphaListActivityBacktestsResponse',
+        supports_download=False,
+    )
+
+    def SearchResults(self, request, global_params=None):
+      r"""Searches all the results for an activity backtest.
+
+      Args:
+        request: (PolicysimulatorFoldersLocationsActivityBacktestsSearchResultsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1alphaSearchActivityBacktestResultsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchResults')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchResults.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/activityBacktests/{activityBacktestsId}:searchResults',
+        http_method='GET',
+        method_id='policysimulator.folders.locations.activityBacktests.searchResults',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+name}:searchResults',
+        request_field='',
+        request_type_name='PolicysimulatorFoldersLocationsActivityBacktestsSearchResultsRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1alphaSearchActivityBacktestResultsResponse',
         supports_download=False,
     )
 
@@ -549,6 +777,43 @@ class PolicysimulatorV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class OrganizationsLocationsAccessPolicySimulationsOperationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_accessPolicySimulations_operations resource."""
+
+    _NAME = 'organizations_locations_accessPolicySimulations_operations'
+
+    def __init__(self, client):
+      super(PolicysimulatorV1alpha.OrganizationsLocationsAccessPolicySimulationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (PolicysimulatorOrganizationsLocationsAccessPolicySimulationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/accessPolicySimulations/{accessPolicySimulationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='policysimulator.organizations.locations.accessPolicySimulations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='PolicysimulatorOrganizationsLocationsAccessPolicySimulationsOperationsGetRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
   class OrganizationsLocationsAccessPolicySimulationsResultsService(base_api.BaseApiService):
     """Service class for the organizations_locations_accessPolicySimulations_results resource."""
 
@@ -701,6 +966,188 @@ class PolicysimulatorV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='PolicysimulatorOrganizationsLocationsAccessPolicySimulationsListRequest',
         response_type_name='GoogleCloudPolicysimulatorV1alphaListAccessPolicySimulationsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsActivityBacktestResultsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_activityBacktestResults resource."""
+
+    _NAME = 'organizations_locations_activityBacktestResults'
+
+    def __init__(self, client):
+      super(PolicysimulatorV1alpha.OrganizationsLocationsActivityBacktestResultsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets a policy simulation result.
+
+      Args:
+        request: (PolicysimulatorOrganizationsLocationsActivityBacktestResultsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1alphaActivityBacktestResult) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/activityBacktestResults/{activityBacktestResultsId}',
+        http_method='GET',
+        method_id='policysimulator.organizations.locations.activityBacktestResults.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='PolicysimulatorOrganizationsLocationsActivityBacktestResultsGetRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1alphaActivityBacktestResult',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the results for a policy simulation.
+
+      Args:
+        request: (PolicysimulatorOrganizationsLocationsActivityBacktestResultsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1alphaListActivityBacktestResultsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/activityBacktestResults',
+        http_method='GET',
+        method_id='policysimulator.organizations.locations.activityBacktestResults.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/activityBacktestResults',
+        request_field='',
+        request_type_name='PolicysimulatorOrganizationsLocationsActivityBacktestResultsListRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1alphaListActivityBacktestResultsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsActivityBacktestsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_activityBacktests resource."""
+
+    _NAME = 'organizations_locations_activityBacktests'
+
+    def __init__(self, client):
+      super(PolicysimulatorV1alpha.OrganizationsLocationsActivityBacktestsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates and starts an ActivityBacktest simulation.
+
+      Args:
+        request: (PolicysimulatorOrganizationsLocationsActivityBacktestsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/activityBacktests',
+        http_method='POST',
+        method_id='policysimulator.organizations.locations.activityBacktests.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['activityBacktestId'],
+        relative_path='v1alpha/{+parent}/activityBacktests',
+        request_field='googleCloudPolicysimulatorV1alphaActivityBacktest',
+        request_type_name='PolicysimulatorOrganizationsLocationsActivityBacktestsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a policy simulation.
+
+      Args:
+        request: (PolicysimulatorOrganizationsLocationsActivityBacktestsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1alphaActivityBacktest) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/activityBacktests/{activityBacktestsId}',
+        http_method='GET',
+        method_id='policysimulator.organizations.locations.activityBacktests.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='PolicysimulatorOrganizationsLocationsActivityBacktestsGetRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1alphaActivityBacktest',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the simulations for a given parent resource.
+
+      Args:
+        request: (PolicysimulatorOrganizationsLocationsActivityBacktestsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1alphaListActivityBacktestsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/activityBacktests',
+        http_method='GET',
+        method_id='policysimulator.organizations.locations.activityBacktests.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/activityBacktests',
+        request_field='',
+        request_type_name='PolicysimulatorOrganizationsLocationsActivityBacktestsListRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1alphaListActivityBacktestsResponse',
+        supports_download=False,
+    )
+
+    def SearchResults(self, request, global_params=None):
+      r"""Searches all the results for an activity backtest.
+
+      Args:
+        request: (PolicysimulatorOrganizationsLocationsActivityBacktestsSearchResultsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1alphaSearchActivityBacktestResultsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchResults')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchResults.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/activityBacktests/{activityBacktestsId}:searchResults',
+        http_method='GET',
+        method_id='policysimulator.organizations.locations.activityBacktests.searchResults',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+name}:searchResults',
+        request_field='',
+        request_type_name='PolicysimulatorOrganizationsLocationsActivityBacktestsSearchResultsRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1alphaSearchActivityBacktestResultsResponse',
         supports_download=False,
     )
 
@@ -1209,6 +1656,43 @@ class PolicysimulatorV1alpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+  class ProjectsLocationsAccessPolicySimulationsOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_accessPolicySimulations_operations resource."""
+
+    _NAME = 'projects_locations_accessPolicySimulations_operations'
+
+    def __init__(self, client):
+      super(PolicysimulatorV1alpha.ProjectsLocationsAccessPolicySimulationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (PolicysimulatorProjectsLocationsAccessPolicySimulationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/accessPolicySimulations/{accessPolicySimulationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='policysimulator.projects.locations.accessPolicySimulations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='PolicysimulatorProjectsLocationsAccessPolicySimulationsOperationsGetRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsAccessPolicySimulationsResultsService(base_api.BaseApiService):
     """Service class for the projects_locations_accessPolicySimulations_results resource."""
 
@@ -1361,6 +1845,188 @@ class PolicysimulatorV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='PolicysimulatorProjectsLocationsAccessPolicySimulationsListRequest',
         response_type_name='GoogleCloudPolicysimulatorV1alphaListAccessPolicySimulationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsActivityBacktestResultsService(base_api.BaseApiService):
+    """Service class for the projects_locations_activityBacktestResults resource."""
+
+    _NAME = 'projects_locations_activityBacktestResults'
+
+    def __init__(self, client):
+      super(PolicysimulatorV1alpha.ProjectsLocationsActivityBacktestResultsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets a policy simulation result.
+
+      Args:
+        request: (PolicysimulatorProjectsLocationsActivityBacktestResultsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1alphaActivityBacktestResult) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/activityBacktestResults/{activityBacktestResultsId}',
+        http_method='GET',
+        method_id='policysimulator.projects.locations.activityBacktestResults.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='PolicysimulatorProjectsLocationsActivityBacktestResultsGetRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1alphaActivityBacktestResult',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the results for a policy simulation.
+
+      Args:
+        request: (PolicysimulatorProjectsLocationsActivityBacktestResultsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1alphaListActivityBacktestResultsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/activityBacktestResults',
+        http_method='GET',
+        method_id='policysimulator.projects.locations.activityBacktestResults.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/activityBacktestResults',
+        request_field='',
+        request_type_name='PolicysimulatorProjectsLocationsActivityBacktestResultsListRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1alphaListActivityBacktestResultsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsActivityBacktestsService(base_api.BaseApiService):
+    """Service class for the projects_locations_activityBacktests resource."""
+
+    _NAME = 'projects_locations_activityBacktests'
+
+    def __init__(self, client):
+      super(PolicysimulatorV1alpha.ProjectsLocationsActivityBacktestsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates and starts an ActivityBacktest simulation.
+
+      Args:
+        request: (PolicysimulatorProjectsLocationsActivityBacktestsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/activityBacktests',
+        http_method='POST',
+        method_id='policysimulator.projects.locations.activityBacktests.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['activityBacktestId'],
+        relative_path='v1alpha/{+parent}/activityBacktests',
+        request_field='googleCloudPolicysimulatorV1alphaActivityBacktest',
+        request_type_name='PolicysimulatorProjectsLocationsActivityBacktestsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a policy simulation.
+
+      Args:
+        request: (PolicysimulatorProjectsLocationsActivityBacktestsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1alphaActivityBacktest) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/activityBacktests/{activityBacktestsId}',
+        http_method='GET',
+        method_id='policysimulator.projects.locations.activityBacktests.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='PolicysimulatorProjectsLocationsActivityBacktestsGetRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1alphaActivityBacktest',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the simulations for a given parent resource.
+
+      Args:
+        request: (PolicysimulatorProjectsLocationsActivityBacktestsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1alphaListActivityBacktestsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/activityBacktests',
+        http_method='GET',
+        method_id='policysimulator.projects.locations.activityBacktests.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/activityBacktests',
+        request_field='',
+        request_type_name='PolicysimulatorProjectsLocationsActivityBacktestsListRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1alphaListActivityBacktestsResponse',
+        supports_download=False,
+    )
+
+    def SearchResults(self, request, global_params=None):
+      r"""Searches all the results for an activity backtest.
+
+      Args:
+        request: (PolicysimulatorProjectsLocationsActivityBacktestsSearchResultsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1alphaSearchActivityBacktestResultsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchResults')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchResults.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/activityBacktests/{activityBacktestsId}:searchResults',
+        http_method='GET',
+        method_id='policysimulator.projects.locations.activityBacktests.searchResults',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+name}:searchResults',
+        request_field='',
+        request_type_name='PolicysimulatorProjectsLocationsActivityBacktestsSearchResultsRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1alphaSearchActivityBacktestResultsResponse',
         supports_download=False,
     )
 

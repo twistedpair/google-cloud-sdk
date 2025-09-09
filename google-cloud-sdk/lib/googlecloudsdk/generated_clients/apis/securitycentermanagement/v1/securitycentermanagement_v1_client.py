@@ -49,6 +49,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     self.organizations_locations_effectiveEventThreatDetectionCustomModules = self.OrganizationsLocationsEffectiveEventThreatDetectionCustomModulesService(self)
     self.organizations_locations_effectiveSecurityHealthAnalyticsCustomModules = self.OrganizationsLocationsEffectiveSecurityHealthAnalyticsCustomModulesService(self)
     self.organizations_locations_eventThreatDetectionCustomModules = self.OrganizationsLocationsEventThreatDetectionCustomModulesService(self)
+    self.organizations_locations_operations = self.OrganizationsLocationsOperationsService(self)
     self.organizations_locations_securityCenterServices = self.OrganizationsLocationsSecurityCenterServicesService(self)
     self.organizations_locations_securityHealthAnalyticsCustomModules = self.OrganizationsLocationsSecurityHealthAnalyticsCustomModulesService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
@@ -56,6 +57,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     self.projects_locations_effectiveEventThreatDetectionCustomModules = self.ProjectsLocationsEffectiveEventThreatDetectionCustomModulesService(self)
     self.projects_locations_effectiveSecurityHealthAnalyticsCustomModules = self.ProjectsLocationsEffectiveSecurityHealthAnalyticsCustomModulesService(self)
     self.projects_locations_eventThreatDetectionCustomModules = self.ProjectsLocationsEventThreatDetectionCustomModulesService(self)
+    self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_securityCenterServices = self.ProjectsLocationsSecurityCenterServicesService(self)
     self.projects_locations_securityHealthAnalyticsCustomModules = self.ProjectsLocationsSecurityHealthAnalyticsCustomModulesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -1025,6 +1027,124 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class OrganizationsLocationsOperationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_operations resource."""
+
+    _NAME = 'organizations_locations_operations'
+
+    def __init__(self, client):
+      super(SecuritycentermanagementV1.OrganizationsLocationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of `1`, corresponding to `Code.CANCELLED`.
+
+      Args:
+        request: (SecuritycentermanagementOrganizationsLocationsOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='securitycentermanagement.organizations.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='SecuritycentermanagementOrganizationsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
+
+      Args:
+        request: (SecuritycentermanagementOrganizationsLocationsOperationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='securitycentermanagement.organizations.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycentermanagementOrganizationsLocationsOperationsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (SecuritycentermanagementOrganizationsLocationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='securitycentermanagement.organizations.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycentermanagementOrganizationsLocationsOperationsGetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
+
+      Args:
+        request: (SecuritycentermanagementOrganizationsLocationsOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='securitycentermanagement.organizations.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}/operations',
+        request_field='',
+        request_type_name='SecuritycentermanagementOrganizationsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
   class OrganizationsLocationsSecurityCenterServicesService(base_api.BaseApiService):
     """Service class for the organizations_locations_securityCenterServices resource."""
 
@@ -1686,6 +1806,124 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
         request_field='validateEventThreatDetectionCustomModuleRequest',
         request_type_name='SecuritycentermanagementProjectsLocationsEventThreatDetectionCustomModulesValidateRequest',
         response_type_name='ValidateEventThreatDetectionCustomModuleResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_operations resource."""
+
+    _NAME = 'projects_locations_operations'
+
+    def __init__(self, client):
+      super(SecuritycentermanagementV1.ProjectsLocationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of `1`, corresponding to `Code.CANCELLED`.
+
+      Args:
+        request: (SecuritycentermanagementProjectsLocationsOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='securitycentermanagement.projects.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='SecuritycentermanagementProjectsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
+
+      Args:
+        request: (SecuritycentermanagementProjectsLocationsOperationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='securitycentermanagement.projects.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycentermanagementProjectsLocationsOperationsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (SecuritycentermanagementProjectsLocationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='securitycentermanagement.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycentermanagementProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
+
+      Args:
+        request: (SecuritycentermanagementProjectsLocationsOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='securitycentermanagement.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}/operations',
+        request_field='',
+        request_type_name='SecuritycentermanagementProjectsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 

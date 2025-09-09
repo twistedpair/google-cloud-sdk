@@ -23,6 +23,12 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
 
+def AlertAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='alert', help_text='Name of the alert.'
+  )
+
+
 def AlertPolicyAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='policy',
@@ -51,6 +57,15 @@ def UptimeCheckAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='check_id',
       help_text='Name of the uptime check or synthetic monitor.')
+
+
+def GetAlertResourceSpec():
+  return concepts.ResourceSpec(
+      'monitoring.projects.alerts',
+      resource_name='Alert',
+      alertsId=AlertAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
 
 
 def GetAlertPolicyResourceSpec():
@@ -175,3 +190,29 @@ def AddResourceArgs(parser, resources):
     resources: a list of resource args to add.
   """
   concept_parsers.ConceptParser(resources).AddToParser(parser)
+
+
+def GetAlertResourceUriFunc():
+  return lambda x: GetAlertResourceSpec().CreateResourceURI(x)
+
+
+def AddProjectResourceArg(parser, help_text, required=True):
+  """Add a resource argument for a Google Cloud Platform Console project.
+
+  Args:
+    parser: argparse.ArgumentParser, the parser for the command.
+    help_text: str, the help text for the arg.
+    required: bool, if the arg is required.
+  """
+  concept_parsers.ConceptParser([
+      presentation_specs.ResourcePresentationSpec(
+          '--project',
+          concepts.ResourceSpec(
+              'cloudresourcemanager.projects',
+              resource_name='project',
+              projectId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+          ),
+          'Project ' + help_text,
+          required=required,
+      )
+  ]).AddToParser(parser)

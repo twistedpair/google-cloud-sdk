@@ -3314,8 +3314,9 @@ class LoggingBillingAccountsLocationsListRequest(_messages.Message):
   r"""A LoggingBillingAccountsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like "displayName=tokyo", and is
       documented in more detail in AIP-160 (https://google.aip.dev/160).
@@ -4404,8 +4405,9 @@ class LoggingFoldersLocationsListRequest(_messages.Message):
   r"""A LoggingFoldersLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like "displayName=tokyo", and is
       documented in more detail in AIP-160 (https://google.aip.dev/160).
@@ -5388,8 +5390,9 @@ class LoggingLocationsListRequest(_messages.Message):
   r"""A LoggingLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like "displayName=tokyo", and is
       documented in more detail in AIP-160 (https://google.aip.dev/160).
@@ -6062,8 +6065,9 @@ class LoggingOrganizationsLocationsListRequest(_messages.Message):
   r"""A LoggingOrganizationsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like "displayName=tokyo", and is
       documented in more detail in AIP-160 (https://google.aip.dev/160).
@@ -7193,8 +7197,9 @@ class LoggingProjectsLocationsListRequest(_messages.Message):
   r"""A LoggingProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like "displayName=tokyo", and is
       documented in more detail in AIP-160 (https://google.aip.dev/160).
@@ -9307,15 +9312,20 @@ class QueryRestrictionConflict(_messages.Message):
 
 
 class QueryResults(_messages.Message):
-  r"""Results of a SQL query over logs. Next ID: 14
+  r"""Results of a SQL query over logs. Next ID: 18
 
   Enums:
+    BillingModelValueValuesEnum: Output only. The billing model used for this
+      query.
     IndexUsageValueValuesEnum: The type of search index usage in the query.
 
   Messages:
     RowsValueListEntry: A RowsValueListEntry object.
 
   Fields:
+    billingModel: Output only. The billing model used for this query.
+    endTime: Output only. The end time of the query execution. Not set on
+      validate queries.
     executionDuration: The total execution duration of the query.
     indexUsage: The type of search index usage in the query.
     jobLocation: The location where the query was executed.
@@ -9325,6 +9335,11 @@ class QueryResults(_messages.Message):
       the rows, total_rows, and execution_time fields will not be populated.
       The client needs to poll on ReadQueryResults specifying the
       result_reference and wait for results.
+    reservation: Output only. The resource name of the BigQuery reservation
+      that this query was billed to, (or when validating, would be billed to).
+      Only set when the billing model is USER_PROJECT_RESERVATION.When set,
+      the reservation name follows the standard resource name format: projects
+      /[PROJECT_ID]/locations/[LOCATION_ID]/reservations/[RESERVATION_ID]
     resourceNames: The resources that were used while serving the request,
       e.g. projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/v
       iews/[VIEW_ID] for any Views read or projects/[PROJECT_ID]/locations/[LO
@@ -9345,6 +9360,8 @@ class QueryResults(_messages.Message):
       objects for indicating fields and values.
     schema: The schema of the results. It shows the columns present in the
       output table. Present only when the query completes successfully.
+    startTime: Output only. The start time of the query execution. Not set on
+      validate queries.
     totalBytesProcessed: The total number of bytes processed for this query.
       If this query was a validate_only query, this is the number of bytes
       that would be processed if the query were run.
@@ -9354,6 +9371,26 @@ class QueryResults(_messages.Message):
     totalSlotMs: The total slot-milliseconds consumed by this query. Populated
       only on a call to ReadQueryResults.
   """
+
+  class BillingModelValueValuesEnum(_messages.Enum):
+    r"""Output only. The billing model used for this query.
+
+    Values:
+      BILLING_MODEL_UNSPECIFIED: The billing model is not specified.
+      SYSTEM_BILLED: The query was billed to the system.
+      USER_PROJECT_RESERVATION: The query was billed to the user's project
+        using a reservation.
+      USER_PROJECT_ON_DEMAND: The query was billed to the user's project using
+        on-demand billing.
+      USER_PROJECT_UNKNOWN_BILLING_MODEL: The query was to be billed to the
+        user's project but the billing model could not be determined. This can
+        happen when the query cannot be executed (or dry run) successfully.
+    """
+    BILLING_MODEL_UNSPECIFIED = 0
+    SYSTEM_BILLED = 1
+    USER_PROJECT_RESERVATION = 2
+    USER_PROJECT_ON_DEMAND = 3
+    USER_PROJECT_UNKNOWN_BILLING_MODEL = 4
 
   class IndexUsageValueValuesEnum(_messages.Enum):
     r"""The type of search index usage in the query.
@@ -9394,19 +9431,23 @@ class QueryResults(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  executionDuration = _messages.StringField(1)
-  indexUsage = _messages.EnumField('IndexUsageValueValuesEnum', 2)
-  jobLocation = _messages.StringField(3)
-  nextPageToken = _messages.StringField(4)
-  queryComplete = _messages.BooleanField(5)
-  resourceNames = _messages.StringField(6, repeated=True)
-  restrictionConflicts = _messages.MessageField('QueryRestrictionConflict', 7, repeated=True)
-  resultReference = _messages.StringField(8)
-  rows = _messages.MessageField('RowsValueListEntry', 9, repeated=True)
-  schema = _messages.MessageField('TableSchema', 10)
-  totalBytesProcessed = _messages.IntegerField(11)
-  totalRows = _messages.IntegerField(12)
-  totalSlotMs = _messages.IntegerField(13)
+  billingModel = _messages.EnumField('BillingModelValueValuesEnum', 1)
+  endTime = _messages.StringField(2)
+  executionDuration = _messages.StringField(3)
+  indexUsage = _messages.EnumField('IndexUsageValueValuesEnum', 4)
+  jobLocation = _messages.StringField(5)
+  nextPageToken = _messages.StringField(6)
+  queryComplete = _messages.BooleanField(7)
+  reservation = _messages.StringField(8)
+  resourceNames = _messages.StringField(9, repeated=True)
+  restrictionConflicts = _messages.MessageField('QueryRestrictionConflict', 10, repeated=True)
+  resultReference = _messages.StringField(11)
+  rows = _messages.MessageField('RowsValueListEntry', 12, repeated=True)
+  schema = _messages.MessageField('TableSchema', 13)
+  startTime = _messages.StringField(14)
+  totalBytesProcessed = _messages.IntegerField(15)
+  totalRows = _messages.IntegerField(16)
+  totalSlotMs = _messages.IntegerField(17)
 
 
 class QueryStep(_messages.Message):

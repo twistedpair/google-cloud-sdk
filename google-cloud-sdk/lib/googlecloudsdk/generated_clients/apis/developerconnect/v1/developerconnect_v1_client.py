@@ -43,6 +43,7 @@ class DeveloperconnectV1(base_api.BaseApiClient):
     self.projects_locations_accountConnectors = self.ProjectsLocationsAccountConnectorsService(self)
     self.projects_locations_connections_gitRepositoryLinks = self.ProjectsLocationsConnectionsGitRepositoryLinksService(self)
     self.projects_locations_connections = self.ProjectsLocationsConnectionsService(self)
+    self.projects_locations_insightsConfigs_deploymentEvents = self.ProjectsLocationsInsightsConfigsDeploymentEventsService(self)
     self.projects_locations_insightsConfigs = self.ProjectsLocationsInsightsConfigsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -868,6 +869,70 @@ class DeveloperconnectV1(base_api.BaseApiClient):
         request_field='processGitHubEnterpriseWebhookRequest',
         request_type_name='DeveloperconnectProjectsLocationsConnectionsProcessGitHubEnterpriseWebhookRequest',
         response_type_name='Empty',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsInsightsConfigsDeploymentEventsService(base_api.BaseApiService):
+    """Service class for the projects_locations_insightsConfigs_deploymentEvents resource."""
+
+    _NAME = 'projects_locations_insightsConfigs_deploymentEvents'
+
+    def __init__(self, client):
+      super(DeveloperconnectV1.ProjectsLocationsInsightsConfigsDeploymentEventsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets a single Deployment Event.
+
+      Args:
+        request: (DeveloperconnectProjectsLocationsInsightsConfigsDeploymentEventsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DeploymentEvent) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/insightsConfigs/{insightsConfigsId}/deploymentEvents/{deploymentEventsId}',
+        http_method='GET',
+        method_id='developerconnect.projects.locations.insightsConfigs.deploymentEvents.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DeveloperconnectProjectsLocationsInsightsConfigsDeploymentEventsGetRequest',
+        response_type_name='DeploymentEvent',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Deployment Events in a given insights config.
+
+      Args:
+        request: (DeveloperconnectProjectsLocationsInsightsConfigsDeploymentEventsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDeploymentEventsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/insightsConfigs/{insightsConfigsId}/deploymentEvents',
+        http_method='GET',
+        method_id='developerconnect.projects.locations.insightsConfigs.deploymentEvents.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/deploymentEvents',
+        request_field='',
+        request_type_name='DeveloperconnectProjectsLocationsInsightsConfigsDeploymentEventsListRequest',
+        response_type_name='ListDeploymentEventsResponse',
         supports_download=False,
     )
 

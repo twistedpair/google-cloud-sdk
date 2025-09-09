@@ -92,6 +92,16 @@ class BatchCreatePullRequestCommentsRequest(_messages.Message):
   requests = _messages.MessageField('CreatePullRequestCommentRequest', 1, repeated=True)
 
 
+class BatchCreatePullRequestCommentsResponse(_messages.Message):
+  r"""The response to batch create pull request comments.
+
+  Fields:
+    pullRequestComments: The list of pull request comments created.
+  """
+
+  pullRequestComments = _messages.MessageField('PullRequestComment', 1, repeated=True)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -1485,6 +1495,16 @@ class ResolvePullRequestCommentsRequest(_messages.Message):
   names = _messages.StringField(2, repeated=True)
 
 
+class ResolvePullRequestCommentsResponse(_messages.Message):
+  r"""The response to resolve multiple pull request comments.
+
+  Fields:
+    pullRequestComments: The list of pull request comments resolved.
+  """
+
+  pullRequestComments = _messages.MessageField('PullRequestComment', 1, repeated=True)
+
+
 class Review(_messages.Message):
   r"""The review summary comment.
 
@@ -1683,8 +1703,9 @@ class SecuresourcemanagerProjectsLocationsListRequest(_messages.Message):
   r"""A SecuresourcemanagerProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -2846,6 +2867,16 @@ class UnresolvePullRequestCommentsRequest(_messages.Message):
 
   autoFill = _messages.BooleanField(1)
   names = _messages.StringField(2, repeated=True)
+
+
+class UnresolvePullRequestCommentsResponse(_messages.Message):
+  r"""The response to unresolve multiple pull request comments.
+
+  Fields:
+    pullRequestComments: The list of pull request comments unresolved.
+  """
+
+  pullRequestComments = _messages.MessageField('PullRequestComment', 1, repeated=True)
 
 
 class WorkforceIdentityFederationConfig(_messages.Message):

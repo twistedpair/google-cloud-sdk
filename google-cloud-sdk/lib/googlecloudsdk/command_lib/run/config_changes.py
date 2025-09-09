@@ -611,6 +611,14 @@ class RegionsChangeAnnotationChange(NonTemplateConfigChanger):
   to_remove: str
 
   def Adjust(self, resource):
+    final_list = self.GetFinalList(resource)
+    resource.annotations[k8s_object.MULTI_REGION_REGIONS_ANNOTATION] = ','.join(
+        final_list
+    )
+    return resource
+
+  def GetFinalList(self, resource):
+    """Returns the final list of regions after applying the changes."""
     annotation = (
         resource.annotations.get(k8s_object.MULTI_REGION_REGIONS_ANNOTATION)
         or None
@@ -620,10 +628,7 @@ class RegionsChangeAnnotationChange(NonTemplateConfigChanger):
     to_remove = self.to_remove.split(',') if self.to_remove else []
     final_list = [x for x in existing if x not in to_remove]
     final_list.extend([x for x in to_add if x not in existing])
-    resource.annotations[k8s_object.MULTI_REGION_REGIONS_ANNOTATION] = ','.join(
-        final_list
-    )
-    return resource
+    return final_list
 
 
 @dataclasses.dataclass(frozen=True)

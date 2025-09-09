@@ -94,7 +94,7 @@ class PrivilegedaccessmanagerV1(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new grant in a given project/folder/organization and location.
+      r"""Creates a new grant in a given project, folder, or organization and location.
 
       Args:
         request: (PrivilegedaccessmanagerFoldersLocationsEntitlementsGrantsCreateRequest) input message
@@ -266,7 +266,7 @@ class PrivilegedaccessmanagerV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new entitlement in a given project/folder/organization and location.
+      r"""Creates a new entitlement in a given project, folder, organization, and in a given location.
 
       Args:
         request: (PrivilegedaccessmanagerFoldersLocationsEntitlementsCreateRequest) input message
@@ -347,7 +347,7 @@ class PrivilegedaccessmanagerV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists entitlements in a given project/folder/organization and location.
+      r"""Lists the entitlements in a given project, folder, organization, and in a given location.
 
       Args:
         request: (PrivilegedaccessmanagerFoldersLocationsEntitlementsListRequest) input message
@@ -529,7 +529,7 @@ class PrivilegedaccessmanagerV1(base_api.BaseApiClient):
           }
 
     def CheckOnboardingStatus(self, request, global_params=None):
-      r"""`CheckOnboardingStatus` reports the onboarding status for a project/folder/organization. Any findings reported by this API need to be fixed before PAM can be used on the resource.
+      r"""`CheckOnboardingStatus` reports the onboarding status for a project, folder, or organization. Any findings reported by this API need to be fixed before PAM can be used on the resource.
 
       Args:
         request: (PrivilegedaccessmanagerFoldersLocationsCheckOnboardingStatusRequest) input message
@@ -694,7 +694,7 @@ class PrivilegedaccessmanagerV1(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new grant in a given project/folder/organization and location.
+      r"""Creates a new grant in a given project, folder, or organization and location.
 
       Args:
         request: (PrivilegedaccessmanagerOrganizationsLocationsEntitlementsGrantsCreateRequest) input message
@@ -866,7 +866,7 @@ class PrivilegedaccessmanagerV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new entitlement in a given project/folder/organization and location.
+      r"""Creates a new entitlement in a given project, folder, organization, and in a given location.
 
       Args:
         request: (PrivilegedaccessmanagerOrganizationsLocationsEntitlementsCreateRequest) input message
@@ -947,7 +947,7 @@ class PrivilegedaccessmanagerV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists entitlements in a given project/folder/organization and location.
+      r"""Lists the entitlements in a given project, folder, organization, and in a given location.
 
       Args:
         request: (PrivilegedaccessmanagerOrganizationsLocationsEntitlementsListRequest) input message
@@ -1129,7 +1129,7 @@ class PrivilegedaccessmanagerV1(base_api.BaseApiClient):
           }
 
     def CheckOnboardingStatus(self, request, global_params=None):
-      r"""`CheckOnboardingStatus` reports the onboarding status for a project/folder/organization. Any findings reported by this API need to be fixed before PAM can be used on the resource.
+      r"""`CheckOnboardingStatus` reports the onboarding status for a project, folder, or organization. Any findings reported by this API need to be fixed before PAM can be used on the resource.
 
       Args:
         request: (PrivilegedaccessmanagerOrganizationsLocationsCheckOnboardingStatusRequest) input message
@@ -1257,7 +1257,7 @@ class PrivilegedaccessmanagerV1(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new grant in a given project/folder/organization and location.
+      r"""Creates a new grant in a given project, folder, or organization and location.
 
       Args:
         request: (PrivilegedaccessmanagerProjectsLocationsEntitlementsGrantsCreateRequest) input message
@@ -1429,7 +1429,7 @@ class PrivilegedaccessmanagerV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new entitlement in a given project/folder/organization and location.
+      r"""Creates a new entitlement in a given project, folder, organization, and in a given location.
 
       Args:
         request: (PrivilegedaccessmanagerProjectsLocationsEntitlementsCreateRequest) input message
@@ -1510,7 +1510,7 @@ class PrivilegedaccessmanagerV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists entitlements in a given project/folder/organization and location.
+      r"""Lists the entitlements in a given project, folder, organization, and in a given location.
 
       Args:
         request: (PrivilegedaccessmanagerProjectsLocationsEntitlementsListRequest) input message
@@ -1692,7 +1692,7 @@ class PrivilegedaccessmanagerV1(base_api.BaseApiClient):
           }
 
     def CheckOnboardingStatus(self, request, global_params=None):
-      r"""`CheckOnboardingStatus` reports the onboarding status for a project/folder/organization. Any findings reported by this API need to be fixed before PAM can be used on the resource.
+      r"""`CheckOnboardingStatus` reports the onboarding status for a project, folder, or organization. Any findings reported by this API need to be fixed before PAM can be used on the resource.
 
       Args:
         request: (PrivilegedaccessmanagerProjectsLocationsCheckOnboardingStatusRequest) input message

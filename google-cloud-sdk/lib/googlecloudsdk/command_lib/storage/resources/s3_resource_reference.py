@@ -102,7 +102,7 @@ class S3ObjectResource(resource_reference.ObjectResource):
       # indicate we just don't support the field for S3.
       crc32c_hash=resource_reference.NOT_SUPPORTED_DO_NOT_DISPLAY,
       creation_time=None,
-      contexts=None,
+      tags=None,
       custom_fields=None,
       custom_time=None,
       decryption_key_hash_sha256=None,
@@ -131,7 +131,6 @@ class S3ObjectResource(resource_reference.ObjectResource):
         content_type,
         crc32c_hash,
         creation_time,
-        contexts,
         custom_fields,
         custom_time,
         decryption_key_hash_sha256,
@@ -149,8 +148,17 @@ class S3ObjectResource(resource_reference.ObjectResource):
         temporary_hold,
         update_time,
     )
+    self.tags = tags
 
   # pylint:enable=useless-super-delegation
 
   def get_json_dump(self):
     return _get_json_dump(self)
+
+  def __eq__(self, other):
+    if not isinstance(other, self.__class__):
+      return NotImplemented
+    return (
+        super(S3ObjectResource, self).__eq__(other)
+        and self.tags == other.tags
+    )

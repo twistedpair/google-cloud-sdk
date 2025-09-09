@@ -774,7 +774,7 @@ class BatchCreateResourceValueConfigsResponse(_messages.Message):
 
 
 class BigQueryDestination(_messages.Message):
-  r"""The destination big query dataset to export findings to.
+  r"""The destination BigQuery dataset to export findings to.
 
   Fields:
     dataset: Required. The relative resource name of the destination dataset,
@@ -992,6 +992,37 @@ class CloudArmor(_messages.Message):
   threatVector = _messages.StringField(6)
 
 
+class CloudControl(_messages.Message):
+  r"""CloudControl associated with the finding.
+
+  Enums:
+    TypeValueValuesEnum: Type of cloud control.
+
+  Fields:
+    cloudControlName: Name of the CloudControl associated with the finding.
+    policyType: Policy type of the CloudControl
+    type: Type of cloud control.
+    version: Version of the Cloud Control
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of cloud control.
+
+    Values:
+      CLOUD_CONTROL_TYPE_UNSPECIFIED: Unspecified.
+      BUILT_IN: Built in Cloud Control.
+      CUSTOM: Custom Cloud Control.
+    """
+    CLOUD_CONTROL_TYPE_UNSPECIFIED = 0
+    BUILT_IN = 1
+    CUSTOM = 2
+
+  cloudControlName = _messages.StringField(1)
+  policyType = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
 class CloudDlpDataProfile(_messages.Message):
   r"""The [data profile](https://cloud.google.com/dlp/docs/data-profiles)
   associated with the finding.
@@ -1083,6 +1114,22 @@ class Compliance(_messages.Message):
   version = _messages.StringField(3)
 
 
+class ComplianceDetails(_messages.Message):
+  r"""Compliance Details associated with the finding.
+
+  Fields:
+    cloudControl: CloudControl associated with the finding
+    cloudControlDeploymentNames: Cloud Control Deployments associated with the
+      finding. For example, organizations/123/locations/global/cloudControlDep
+      loyments/deploymentIdentifier
+    frameworks: Details of Frameworks associated with the finding
+  """
+
+  cloudControl = _messages.MessageField('CloudControl', 1)
+  cloudControlDeploymentNames = _messages.StringField(2, repeated=True)
+  frameworks = _messages.MessageField('Framework', 3, repeated=True)
+
+
 class Connection(_messages.Message):
   r"""Contains information about the IP connection associated with the
   finding.
@@ -1165,6 +1212,18 @@ class Container(_messages.Message):
   labels = _messages.MessageField('Label', 3, repeated=True)
   name = _messages.StringField(4)
   uri = _messages.StringField(5)
+
+
+class Control(_messages.Message):
+  r"""Compliance control associated with the finding.
+
+  Fields:
+    controlName: Name of the Control
+    displayName: Display name of the control. For example, AU-02.
+  """
+
+  controlName = _messages.StringField(1)
+  displayName = _messages.StringField(2)
 
 
 class CreateResourceValueConfigRequest(_messages.Message):
@@ -1691,7 +1750,7 @@ class Dataset(_messages.Message):
 
   Fields:
     displayName: The user defined display name of dataset, e.g. plants-dataset
-    name: Resource name of dataset, e.g.
+    name: Resource name of the dataset, e.g.
       projects/{project}/locations/{location}/datasets/2094040236064505856
     source: Data source, such as BigQuery source URI, e.g. bq://scc-nexus-
       test.AIPPtest.gsod
@@ -1807,7 +1866,7 @@ class EffectiveEventThreatDetectionCustomModule(_messages.Message):
 
     Values:
       CLOUD_PROVIDER_UNSPECIFIED: Unspecified cloud provider.
-      GOOGLE_CLOUD_PLATFORM: Google Cloud Platform.
+      GOOGLE_CLOUD_PLATFORM: Google Cloud.
       AMAZON_WEB_SERVICES: Amazon Web Services.
       MICROSOFT_AZURE: Microsoft Azure.
     """
@@ -2033,7 +2092,7 @@ class ExportFindingsMetadata(_messages.Message):
   r"""The LRO metadata for a ExportFindings request.
 
   Fields:
-    bigQueryDestination: Required. The destination big query dataset to export
+    bigQueryDestination: Required. The destination BigQuery dataset to export
       findings to.
     exportStartTime: Optional. Timestamp at which export was started
   """
@@ -2205,6 +2264,8 @@ class Finding(_messages.Message):
       finding.
     cloudDlpInspection: Cloud Data Loss Prevention (Cloud DLP) inspection
       results that are associated with the finding.
+    complianceDetails: Details about the compliance implications of the
+      finding.
     compliances: Contains compliance information for security standards
       associated to the finding.
     connections: Contains information about the IP connection associated with
@@ -2535,56 +2596,57 @@ class Finding(_messages.Message):
   cloudArmor = _messages.MessageField('CloudArmor', 10)
   cloudDlpDataProfile = _messages.MessageField('CloudDlpDataProfile', 11)
   cloudDlpInspection = _messages.MessageField('CloudDlpInspection', 12)
-  compliances = _messages.MessageField('Compliance', 13, repeated=True)
-  connections = _messages.MessageField('Connection', 14, repeated=True)
-  contacts = _messages.MessageField('ContactsValue', 15)
-  containers = _messages.MessageField('Container', 16, repeated=True)
-  createTime = _messages.StringField(17)
-  dataAccessEvents = _messages.MessageField('DataAccessEvent', 18, repeated=True)
-  dataFlowEvents = _messages.MessageField('DataFlowEvent', 19, repeated=True)
-  dataRetentionDeletionEvents = _messages.MessageField('DataRetentionDeletionEvent', 20, repeated=True)
-  database = _messages.MessageField('Database', 21)
-  description = _messages.StringField(22)
-  disk = _messages.MessageField('Disk', 23)
-  eventTime = _messages.StringField(24)
-  exfiltration = _messages.MessageField('Exfiltration', 25)
-  externalSystems = _messages.MessageField('ExternalSystemsValue', 26)
-  externalUri = _messages.StringField(27)
-  files = _messages.MessageField('File', 28, repeated=True)
-  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 29)
-  groupMemberships = _messages.MessageField('GroupMembership', 30, repeated=True)
-  iamBindings = _messages.MessageField('IamBinding', 31, repeated=True)
-  indicator = _messages.MessageField('Indicator', 32)
-  ipRules = _messages.MessageField('IpRules', 33)
-  job = _messages.MessageField('Job', 34)
-  kernelRootkit = _messages.MessageField('KernelRootkit', 35)
-  kubernetes = _messages.MessageField('Kubernetes', 36)
-  loadBalancers = _messages.MessageField('LoadBalancer', 37, repeated=True)
-  logEntries = _messages.MessageField('LogEntry', 38, repeated=True)
-  mitreAttack = _messages.MessageField('MitreAttack', 39)
-  moduleName = _messages.StringField(40)
-  mute = _messages.EnumField('MuteValueValuesEnum', 41)
-  muteAnnotation = _messages.StringField(42)
-  muteInfo = _messages.MessageField('MuteInfo', 43)
-  muteInitiator = _messages.StringField(44)
-  muteUpdateTime = _messages.StringField(45)
-  name = _messages.StringField(46)
-  networks = _messages.MessageField('Network', 47, repeated=True)
-  nextSteps = _messages.StringField(48)
-  notebook = _messages.MessageField('Notebook', 49)
-  orgPolicies = _messages.MessageField('OrgPolicy', 50, repeated=True)
-  parent = _messages.StringField(51)
-  parentDisplayName = _messages.StringField(52)
-  processes = _messages.MessageField('Process', 53, repeated=True)
-  resourceName = _messages.StringField(54)
-  securityMarks = _messages.MessageField('SecurityMarks', 55)
-  securityPosture = _messages.MessageField('SecurityPosture', 56)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 57)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 58)
-  state = _messages.EnumField('StateValueValuesEnum', 59)
-  toxicCombination = _messages.MessageField('ToxicCombination', 60)
-  vertexAi = _messages.MessageField('VertexAi', 61)
-  vulnerability = _messages.MessageField('Vulnerability', 62)
+  complianceDetails = _messages.MessageField('ComplianceDetails', 13)
+  compliances = _messages.MessageField('Compliance', 14, repeated=True)
+  connections = _messages.MessageField('Connection', 15, repeated=True)
+  contacts = _messages.MessageField('ContactsValue', 16)
+  containers = _messages.MessageField('Container', 17, repeated=True)
+  createTime = _messages.StringField(18)
+  dataAccessEvents = _messages.MessageField('DataAccessEvent', 19, repeated=True)
+  dataFlowEvents = _messages.MessageField('DataFlowEvent', 20, repeated=True)
+  dataRetentionDeletionEvents = _messages.MessageField('DataRetentionDeletionEvent', 21, repeated=True)
+  database = _messages.MessageField('Database', 22)
+  description = _messages.StringField(23)
+  disk = _messages.MessageField('Disk', 24)
+  eventTime = _messages.StringField(25)
+  exfiltration = _messages.MessageField('Exfiltration', 26)
+  externalSystems = _messages.MessageField('ExternalSystemsValue', 27)
+  externalUri = _messages.StringField(28)
+  files = _messages.MessageField('File', 29, repeated=True)
+  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 30)
+  groupMemberships = _messages.MessageField('GroupMembership', 31, repeated=True)
+  iamBindings = _messages.MessageField('IamBinding', 32, repeated=True)
+  indicator = _messages.MessageField('Indicator', 33)
+  ipRules = _messages.MessageField('IpRules', 34)
+  job = _messages.MessageField('Job', 35)
+  kernelRootkit = _messages.MessageField('KernelRootkit', 36)
+  kubernetes = _messages.MessageField('Kubernetes', 37)
+  loadBalancers = _messages.MessageField('LoadBalancer', 38, repeated=True)
+  logEntries = _messages.MessageField('LogEntry', 39, repeated=True)
+  mitreAttack = _messages.MessageField('MitreAttack', 40)
+  moduleName = _messages.StringField(41)
+  mute = _messages.EnumField('MuteValueValuesEnum', 42)
+  muteAnnotation = _messages.StringField(43)
+  muteInfo = _messages.MessageField('MuteInfo', 44)
+  muteInitiator = _messages.StringField(45)
+  muteUpdateTime = _messages.StringField(46)
+  name = _messages.StringField(47)
+  networks = _messages.MessageField('Network', 48, repeated=True)
+  nextSteps = _messages.StringField(49)
+  notebook = _messages.MessageField('Notebook', 50)
+  orgPolicies = _messages.MessageField('OrgPolicy', 51, repeated=True)
+  parent = _messages.StringField(52)
+  parentDisplayName = _messages.StringField(53)
+  processes = _messages.MessageField('Process', 54, repeated=True)
+  resourceName = _messages.StringField(55)
+  securityMarks = _messages.MessageField('SecurityMarks', 56)
+  securityPosture = _messages.MessageField('SecurityPosture', 57)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 58)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 59)
+  state = _messages.EnumField('StateValueValuesEnum', 60)
+  toxicCombination = _messages.MessageField('ToxicCombination', 61)
+  vertexAi = _messages.MessageField('VertexAi', 62)
+  vulnerability = _messages.MessageField('Vulnerability', 63)
 
 
 class Folder(_messages.Message):
@@ -2601,9 +2663,72 @@ class Folder(_messages.Message):
   resourceFolderDisplayName = _messages.StringField(2)
 
 
+class Framework(_messages.Message):
+  r"""Compliance framework associated with the finding.
+
+  Enums:
+    CategoryValueListEntryValuesEnum:
+    TypeValueValuesEnum: Type of the framework associated with the finding, to
+      specify whether the framework is built-in (pre-defined and immutable) or
+      a custom framework defined by the customer (equivalent to security
+      posture)
+
+  Fields:
+    category: Category of the framework associated with the finding. E.g.
+      Security Benchmark, or Assured Workloads
+    controls: The controls associated with the framework.
+    displayName: Display name of the framework. For a standard framework, this
+      will look like e.g. PCI DSS 3.2.1, whereas for a custom framework it can
+      be a user defined string like MyFramework
+    name: Name of the framework associated with the finding
+    type: Type of the framework associated with the finding, to specify
+      whether the framework is built-in (pre-defined and immutable) or a
+      custom framework defined by the customer (equivalent to security
+      posture)
+  """
+
+  class CategoryValueListEntryValuesEnum(_messages.Enum):
+    r"""CategoryValueListEntryValuesEnum enum type.
+
+    Values:
+      FRAMEWORK_CATEGORY_UNSPECIFIED: Default value. This value is unused.
+      SECURITY_BENCHMARKS: Security Benchmarks framework
+      ASSURED_WORKLOADS: Assured Workloads framework
+      DATA_SECURITY: Data Security framework
+      GOOGLE_BEST_PRACTICES: Google Best Practices framework
+    """
+    FRAMEWORK_CATEGORY_UNSPECIFIED = 0
+    SECURITY_BENCHMARKS = 1
+    ASSURED_WORKLOADS = 2
+    DATA_SECURITY = 3
+    GOOGLE_BEST_PRACTICES = 4
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of the framework associated with the finding, to specify whether
+    the framework is built-in (pre-defined and immutable) or a custom
+    framework defined by the customer (equivalent to security posture)
+
+    Values:
+      FRAMEWORK_TYPE_UNSPECIFIED: Default value. This value is unused.
+      FRAMEWORK_TYPE_BUILT_IN: The framework is a built-in framework if it is
+        created and managed by GCP.
+      FRAMEWORK_TYPE_CUSTOM: The framework is a custom framework if it is
+        created and managed by the user.
+    """
+    FRAMEWORK_TYPE_UNSPECIFIED = 0
+    FRAMEWORK_TYPE_BUILT_IN = 1
+    FRAMEWORK_TYPE_CUSTOM = 2
+
+  category = _messages.EnumField('CategoryValueListEntryValuesEnum', 1, repeated=True)
+  controls = _messages.MessageField('Control', 2, repeated=True)
+  displayName = _messages.StringField(3)
+  name = _messages.StringField(4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
+
+
 class GcpMetadata(_messages.Message):
-  r"""GCP metadata associated with the resource, only applicable if the
-  finding's cloud provider is Google Cloud Platform.
+  r"""Google Cloud metadata associated with the resource. Only applicable if
+  the finding's cloud provider is Google Cloud.
 
   Fields:
     folders: Output only. Contains a Folder message for each folder in the
@@ -2840,7 +2965,7 @@ class GoogleCloudSecuritycenterV1EffectiveSecurityHealthAnalyticsCustomModule(_m
 
     Values:
       CLOUD_PROVIDER_UNSPECIFIED: Unspecified cloud provider.
-      GOOGLE_CLOUD_PLATFORM: Google Cloud Platform.
+      GOOGLE_CLOUD_PLATFORM: Google Cloud.
       AMAZON_WEB_SERVICES: Amazon Web Services.
       MICROSOFT_AZURE: Microsoft Azure.
     """
@@ -3070,7 +3195,7 @@ class GoogleCloudSecuritycenterV1Resource(_messages.Message):
 
     Values:
       CLOUD_PROVIDER_UNSPECIFIED: The cloud provider is unspecified.
-      GOOGLE_CLOUD_PLATFORM: The cloud provider is Google Cloud Platform.
+      GOOGLE_CLOUD_PLATFORM: The cloud provider is Google Cloud.
       AMAZON_WEB_SERVICES: The cloud provider is Amazon Web Services.
       MICROSOFT_AZURE: The cloud provider is Microsoft Azure.
     """
@@ -3161,7 +3286,7 @@ class GoogleCloudSecuritycenterV1ResourceValueConfig(_messages.Message):
 
     Values:
       CLOUD_PROVIDER_UNSPECIFIED: The cloud provider is unspecified.
-      GOOGLE_CLOUD_PLATFORM: The cloud provider is Google Cloud Platform.
+      GOOGLE_CLOUD_PLATFORM: The cloud provider is Google Cloud.
       AMAZON_WEB_SERVICES: The cloud provider is Amazon Web Services.
       MICROSOFT_AZURE: The cloud provider is Microsoft Azure.
     """
@@ -4171,6 +4296,9 @@ class GoogleCloudSecuritycenterV2BigQueryExport(_messages.Message):
     createTime: Output only. The time at which the BigQuery export was
       created. This field is set by the server and will be ignored if provided
       on export on creation.
+    cryptoKeyName: Output only. The resource name of the Cloud KMS `CryptoKey`
+      used to protect this configuration's data, if configured during Security
+      Command Center activation.
     dataset: The dataset to write findings' updates to. Its format is
       "projects/[project_id]/datasets/[bigquery_dataset_id]". BigQuery dataset
       unique ID must contain only letters (a-z, A-Z), numbers (0-9), or
@@ -4206,13 +4334,14 @@ class GoogleCloudSecuritycenterV2BigQueryExport(_messages.Message):
   """
 
   createTime = _messages.StringField(1)
-  dataset = _messages.StringField(2)
-  description = _messages.StringField(3)
-  filter = _messages.StringField(4)
-  mostRecentEditor = _messages.StringField(5)
-  name = _messages.StringField(6)
-  principal = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  cryptoKeyName = _messages.StringField(2)
+  dataset = _messages.StringField(3)
+  description = _messages.StringField(4)
+  filter = _messages.StringField(5)
+  mostRecentEditor = _messages.StringField(6)
+  name = _messages.StringField(7)
+  principal = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class GoogleCloudSecuritycenterV2Binding(_messages.Message):
@@ -4279,6 +4408,37 @@ class GoogleCloudSecuritycenterV2CloudArmor(_messages.Message):
   requests = _messages.MessageField('GoogleCloudSecuritycenterV2Requests', 4)
   securityPolicy = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityPolicy', 5)
   threatVector = _messages.StringField(6)
+
+
+class GoogleCloudSecuritycenterV2CloudControl(_messages.Message):
+  r"""CloudControl associated with the finding.
+
+  Enums:
+    TypeValueValuesEnum: Type of cloud control.
+
+  Fields:
+    cloudControlName: Name of the CloudControl associated with the finding.
+    policyType: Policy type of the CloudControl
+    type: Type of cloud control.
+    version: Version of the Cloud Control
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of cloud control.
+
+    Values:
+      CLOUD_CONTROL_TYPE_UNSPECIFIED: Unspecified.
+      BUILT_IN: Built in Cloud Control.
+      CUSTOM: Custom Cloud Control.
+    """
+    CLOUD_CONTROL_TYPE_UNSPECIFIED = 0
+    BUILT_IN = 1
+    CUSTOM = 2
+
+  cloudControlName = _messages.StringField(1)
+  policyType = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudSecuritycenterV2CloudDlpDataProfile(_messages.Message):
@@ -4372,6 +4532,22 @@ class GoogleCloudSecuritycenterV2Compliance(_messages.Message):
   version = _messages.StringField(3)
 
 
+class GoogleCloudSecuritycenterV2ComplianceDetails(_messages.Message):
+  r"""Compliance Details associated with the finding.
+
+  Fields:
+    cloudControl: CloudControl associated with the finding
+    cloudControlDeploymentNames: Cloud Control Deployments associated with the
+      finding. For example, organizations/123/locations/global/cloudControlDep
+      loyments/deploymentIdentifier
+    frameworks: Details of Frameworks associated with the finding
+  """
+
+  cloudControl = _messages.MessageField('GoogleCloudSecuritycenterV2CloudControl', 1)
+  cloudControlDeploymentNames = _messages.StringField(2, repeated=True)
+  frameworks = _messages.MessageField('GoogleCloudSecuritycenterV2Framework', 3, repeated=True)
+
+
 class GoogleCloudSecuritycenterV2Connection(_messages.Message):
   r"""Contains information about the IP connection associated with the
   finding.
@@ -4454,6 +4630,18 @@ class GoogleCloudSecuritycenterV2Container(_messages.Message):
   labels = _messages.MessageField('GoogleCloudSecuritycenterV2Label', 3, repeated=True)
   name = _messages.StringField(4)
   uri = _messages.StringField(5)
+
+
+class GoogleCloudSecuritycenterV2Control(_messages.Message):
+  r"""Compliance control associated with the finding.
+
+  Fields:
+    controlName: Name of the Control
+    displayName: Display name of the control. For example, AU-02.
+  """
+
+  controlName = _messages.StringField(1)
+  displayName = _messages.StringField(2)
 
 
 class GoogleCloudSecuritycenterV2Cve(_messages.Message):
@@ -4933,9 +5121,9 @@ class GoogleCloudSecuritycenterV2Dataset(_messages.Message):
 
   Fields:
     displayName: The user defined display name of dataset, e.g. plants-dataset
-    name: Resource name of dataset, e.g.
+    name: Resource name of the dataset, e.g.
       projects/{project}/locations/{location}/datasets/2094040236064505856
-    source: Data source, such as BigQuery source URI, e.g. bq://scc-nexus-
+    source: Data source, such as a BigQuery source URI, e.g. bq://scc-nexus-
       test.AIPPtest.gsod
   """
 
@@ -5234,6 +5422,8 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
       finding.
     cloudDlpInspection: Cloud Data Loss Prevention (Cloud DLP) inspection
       results that are associated with the finding.
+    complianceDetails: Details about the compliance implications of the
+      finding.
     compliances: Contains compliance information for security standards
       associated to the finding.
     connections: Contains information about the IP connection associated with
@@ -5249,6 +5439,8 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
       information for both Kubernetes and non-Kubernetes containers.
     createTime: Output only. The time at which the finding was created in
       Security Command Center.
+    cryptoKeyName: Output only. The name of the Cloud KMS key used to encrypt
+      this finding, if any.
     dataAccessEvents: Data access events associated with the finding.
     dataFlowEvents: Data flow events associated with the finding.
     dataRetentionDeletionEvents: Data retention deletion events associated
@@ -5569,55 +5761,57 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
   cloudArmor = _messages.MessageField('GoogleCloudSecuritycenterV2CloudArmor', 10)
   cloudDlpDataProfile = _messages.MessageField('GoogleCloudSecuritycenterV2CloudDlpDataProfile', 11)
   cloudDlpInspection = _messages.MessageField('GoogleCloudSecuritycenterV2CloudDlpInspection', 12)
-  compliances = _messages.MessageField('GoogleCloudSecuritycenterV2Compliance', 13, repeated=True)
-  connections = _messages.MessageField('GoogleCloudSecuritycenterV2Connection', 14, repeated=True)
-  contacts = _messages.MessageField('ContactsValue', 15)
-  containers = _messages.MessageField('GoogleCloudSecuritycenterV2Container', 16, repeated=True)
-  createTime = _messages.StringField(17)
-  dataAccessEvents = _messages.MessageField('GoogleCloudSecuritycenterV2DataAccessEvent', 18, repeated=True)
-  dataFlowEvents = _messages.MessageField('GoogleCloudSecuritycenterV2DataFlowEvent', 19, repeated=True)
-  dataRetentionDeletionEvents = _messages.MessageField('GoogleCloudSecuritycenterV2DataRetentionDeletionEvent', 20, repeated=True)
-  database = _messages.MessageField('GoogleCloudSecuritycenterV2Database', 21)
-  description = _messages.StringField(22)
-  disk = _messages.MessageField('GoogleCloudSecuritycenterV2Disk', 23)
-  eventTime = _messages.StringField(24)
-  exfiltration = _messages.MessageField('GoogleCloudSecuritycenterV2Exfiltration', 25)
-  externalSystems = _messages.MessageField('ExternalSystemsValue', 26)
-  externalUri = _messages.StringField(27)
-  files = _messages.MessageField('GoogleCloudSecuritycenterV2File', 28, repeated=True)
-  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 29)
-  groupMemberships = _messages.MessageField('GoogleCloudSecuritycenterV2GroupMembership', 30, repeated=True)
-  iamBindings = _messages.MessageField('GoogleCloudSecuritycenterV2IamBinding', 31, repeated=True)
-  indicator = _messages.MessageField('GoogleCloudSecuritycenterV2Indicator', 32)
-  ipRules = _messages.MessageField('GoogleCloudSecuritycenterV2IpRules', 33)
-  job = _messages.MessageField('GoogleCloudSecuritycenterV2Job', 34)
-  kernelRootkit = _messages.MessageField('GoogleCloudSecuritycenterV2KernelRootkit', 35)
-  kubernetes = _messages.MessageField('GoogleCloudSecuritycenterV2Kubernetes', 36)
-  loadBalancers = _messages.MessageField('GoogleCloudSecuritycenterV2LoadBalancer', 37, repeated=True)
-  logEntries = _messages.MessageField('GoogleCloudSecuritycenterV2LogEntry', 38, repeated=True)
-  mitreAttack = _messages.MessageField('GoogleCloudSecuritycenterV2MitreAttack', 39)
-  moduleName = _messages.StringField(40)
-  mute = _messages.EnumField('MuteValueValuesEnum', 41)
-  muteInfo = _messages.MessageField('GoogleCloudSecuritycenterV2MuteInfo', 42)
-  muteInitiator = _messages.StringField(43)
-  muteUpdateTime = _messages.StringField(44)
-  name = _messages.StringField(45)
-  networks = _messages.MessageField('GoogleCloudSecuritycenterV2Network', 46, repeated=True)
-  nextSteps = _messages.StringField(47)
-  notebook = _messages.MessageField('GoogleCloudSecuritycenterV2Notebook', 48)
-  orgPolicies = _messages.MessageField('GoogleCloudSecuritycenterV2OrgPolicy', 49, repeated=True)
-  parent = _messages.StringField(50)
-  parentDisplayName = _messages.StringField(51)
-  processes = _messages.MessageField('GoogleCloudSecuritycenterV2Process', 52, repeated=True)
-  resourceName = _messages.StringField(53)
-  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityMarks', 54)
-  securityPosture = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityPosture', 55)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 56)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 57)
-  state = _messages.EnumField('StateValueValuesEnum', 58)
-  toxicCombination = _messages.MessageField('GoogleCloudSecuritycenterV2ToxicCombination', 59)
-  vertexAi = _messages.MessageField('GoogleCloudSecuritycenterV2VertexAi', 60)
-  vulnerability = _messages.MessageField('GoogleCloudSecuritycenterV2Vulnerability', 61)
+  complianceDetails = _messages.MessageField('GoogleCloudSecuritycenterV2ComplianceDetails', 13)
+  compliances = _messages.MessageField('GoogleCloudSecuritycenterV2Compliance', 14, repeated=True)
+  connections = _messages.MessageField('GoogleCloudSecuritycenterV2Connection', 15, repeated=True)
+  contacts = _messages.MessageField('ContactsValue', 16)
+  containers = _messages.MessageField('GoogleCloudSecuritycenterV2Container', 17, repeated=True)
+  createTime = _messages.StringField(18)
+  cryptoKeyName = _messages.StringField(19)
+  dataAccessEvents = _messages.MessageField('GoogleCloudSecuritycenterV2DataAccessEvent', 20, repeated=True)
+  dataFlowEvents = _messages.MessageField('GoogleCloudSecuritycenterV2DataFlowEvent', 21, repeated=True)
+  dataRetentionDeletionEvents = _messages.MessageField('GoogleCloudSecuritycenterV2DataRetentionDeletionEvent', 22, repeated=True)
+  database = _messages.MessageField('GoogleCloudSecuritycenterV2Database', 23)
+  description = _messages.StringField(24)
+  disk = _messages.MessageField('GoogleCloudSecuritycenterV2Disk', 25)
+  eventTime = _messages.StringField(26)
+  exfiltration = _messages.MessageField('GoogleCloudSecuritycenterV2Exfiltration', 27)
+  externalSystems = _messages.MessageField('ExternalSystemsValue', 28)
+  externalUri = _messages.StringField(29)
+  files = _messages.MessageField('GoogleCloudSecuritycenterV2File', 30, repeated=True)
+  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 31)
+  groupMemberships = _messages.MessageField('GoogleCloudSecuritycenterV2GroupMembership', 32, repeated=True)
+  iamBindings = _messages.MessageField('GoogleCloudSecuritycenterV2IamBinding', 33, repeated=True)
+  indicator = _messages.MessageField('GoogleCloudSecuritycenterV2Indicator', 34)
+  ipRules = _messages.MessageField('GoogleCloudSecuritycenterV2IpRules', 35)
+  job = _messages.MessageField('GoogleCloudSecuritycenterV2Job', 36)
+  kernelRootkit = _messages.MessageField('GoogleCloudSecuritycenterV2KernelRootkit', 37)
+  kubernetes = _messages.MessageField('GoogleCloudSecuritycenterV2Kubernetes', 38)
+  loadBalancers = _messages.MessageField('GoogleCloudSecuritycenterV2LoadBalancer', 39, repeated=True)
+  logEntries = _messages.MessageField('GoogleCloudSecuritycenterV2LogEntry', 40, repeated=True)
+  mitreAttack = _messages.MessageField('GoogleCloudSecuritycenterV2MitreAttack', 41)
+  moduleName = _messages.StringField(42)
+  mute = _messages.EnumField('MuteValueValuesEnum', 43)
+  muteInfo = _messages.MessageField('GoogleCloudSecuritycenterV2MuteInfo', 44)
+  muteInitiator = _messages.StringField(45)
+  muteUpdateTime = _messages.StringField(46)
+  name = _messages.StringField(47)
+  networks = _messages.MessageField('GoogleCloudSecuritycenterV2Network', 48, repeated=True)
+  nextSteps = _messages.StringField(49)
+  notebook = _messages.MessageField('GoogleCloudSecuritycenterV2Notebook', 50)
+  orgPolicies = _messages.MessageField('GoogleCloudSecuritycenterV2OrgPolicy', 51, repeated=True)
+  parent = _messages.StringField(52)
+  parentDisplayName = _messages.StringField(53)
+  processes = _messages.MessageField('GoogleCloudSecuritycenterV2Process', 54, repeated=True)
+  resourceName = _messages.StringField(55)
+  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityMarks', 56)
+  securityPosture = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityPosture', 57)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 58)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 59)
+  state = _messages.EnumField('StateValueValuesEnum', 60)
+  toxicCombination = _messages.MessageField('GoogleCloudSecuritycenterV2ToxicCombination', 61)
+  vertexAi = _messages.MessageField('GoogleCloudSecuritycenterV2VertexAi', 62)
+  vulnerability = _messages.MessageField('GoogleCloudSecuritycenterV2Vulnerability', 63)
 
 
 class GoogleCloudSecuritycenterV2Folder(_messages.Message):
@@ -5632,6 +5826,69 @@ class GoogleCloudSecuritycenterV2Folder(_messages.Message):
 
   resourceFolder = _messages.StringField(1)
   resourceFolderDisplayName = _messages.StringField(2)
+
+
+class GoogleCloudSecuritycenterV2Framework(_messages.Message):
+  r"""Compliance framework associated with the finding.
+
+  Enums:
+    CategoryValueListEntryValuesEnum:
+    TypeValueValuesEnum: Type of the framework associated with the finding, to
+      specify whether the framework is built-in (pre-defined and immutable) or
+      a custom framework defined by the customer (equivalent to security
+      posture)
+
+  Fields:
+    category: Category of the framework associated with the finding. E.g.
+      Security Benchmark, or Assured Workloads
+    controls: The controls associated with the framework.
+    displayName: Display name of the framework. For a standard framework, this
+      will look like e.g. PCI DSS 3.2.1, whereas for a custom framework it can
+      be a user defined string like MyFramework
+    name: Name of the framework associated with the finding
+    type: Type of the framework associated with the finding, to specify
+      whether the framework is built-in (pre-defined and immutable) or a
+      custom framework defined by the customer (equivalent to security
+      posture)
+  """
+
+  class CategoryValueListEntryValuesEnum(_messages.Enum):
+    r"""CategoryValueListEntryValuesEnum enum type.
+
+    Values:
+      FRAMEWORK_CATEGORY_UNSPECIFIED: Default value. This value is unused.
+      SECURITY_BENCHMARKS: Security Benchmarks framework
+      ASSURED_WORKLOADS: Assured Workloads framework
+      DATA_SECURITY: Data Security framework
+      GOOGLE_BEST_PRACTICES: Google Best Practices framework
+    """
+    FRAMEWORK_CATEGORY_UNSPECIFIED = 0
+    SECURITY_BENCHMARKS = 1
+    ASSURED_WORKLOADS = 2
+    DATA_SECURITY = 3
+    GOOGLE_BEST_PRACTICES = 4
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of the framework associated with the finding, to specify whether
+    the framework is built-in (pre-defined and immutable) or a custom
+    framework defined by the customer (equivalent to security posture)
+
+    Values:
+      FRAMEWORK_TYPE_UNSPECIFIED: Default value. This value is unused.
+      FRAMEWORK_TYPE_BUILT_IN: The framework is a built-in framework if it is
+        created and managed by GCP.
+      FRAMEWORK_TYPE_CUSTOM: The framework is a custom framework if it is
+        created and managed by the user.
+    """
+    FRAMEWORK_TYPE_UNSPECIFIED = 0
+    FRAMEWORK_TYPE_BUILT_IN = 1
+    FRAMEWORK_TYPE_CUSTOM = 2
+
+  category = _messages.EnumField('CategoryValueListEntryValuesEnum', 1, repeated=True)
+  controls = _messages.MessageField('GoogleCloudSecuritycenterV2Control', 2, repeated=True)
+  displayName = _messages.StringField(3)
+  name = _messages.StringField(4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
 
 
 class GoogleCloudSecuritycenterV2Geolocation(_messages.Message):
@@ -6451,6 +6708,7 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
       CREDENTIALS_FROM_PASSWORD_STORES: T1555
       MODIFY_AUTHENTICATION_PROCESS: T1556
       PLUGGABLE_AUTHENTICATION_MODULES: T1556.003
+      MULTI_FACTOR_AUTHENTICATION: T1556.006
       IMPAIR_DEFENSES: T1562
       DISABLE_OR_MODIFY_TOOLS: T1562.001
       INDICATOR_BLOCKING: T1562.006
@@ -6589,38 +6847,39 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
     CREDENTIALS_FROM_PASSWORD_STORES = 102
     MODIFY_AUTHENTICATION_PROCESS = 103
     PLUGGABLE_AUTHENTICATION_MODULES = 104
-    IMPAIR_DEFENSES = 105
-    DISABLE_OR_MODIFY_TOOLS = 106
-    INDICATOR_BLOCKING = 107
-    DISABLE_OR_MODIFY_LINUX_AUDIT_SYSTEM = 108
-    HIDE_ARTIFACTS = 109
-    HIDDEN_FILES_AND_DIRECTORIES = 110
-    HIDDEN_USERS = 111
-    EXFILTRATION_OVER_WEB_SERVICE = 112
-    EXFILTRATION_TO_CLOUD_STORAGE = 113
-    DYNAMIC_RESOLUTION = 114
-    LATERAL_TOOL_TRANSFER = 115
-    HIJACK_EXECUTION_FLOW = 116
-    HIJACK_EXECUTION_FLOW_DYNAMIC_LINKER_HIJACKING = 117
-    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 118
-    CREATE_SNAPSHOT = 119
-    CLOUD_INFRASTRUCTURE_DISCOVERY = 120
-    DEVELOP_CAPABILITIES = 121
-    DEVELOP_CAPABILITIES_MALWARE = 122
-    OBTAIN_CAPABILITIES = 123
-    OBTAIN_CAPABILITIES_MALWARE = 124
-    OBTAIN_CAPABILITIES_VULNERABILITIES = 125
-    ACTIVE_SCANNING = 126
-    SCANNING_IP_BLOCKS = 127
-    STAGE_CAPABILITIES = 128
-    UPLOAD_MALWARE = 129
-    CONTAINER_ADMINISTRATION_COMMAND = 130
-    DEPLOY_CONTAINER = 131
-    ESCAPE_TO_HOST = 132
-    CONTAINER_AND_RESOURCE_DISCOVERY = 133
-    REFLECTIVE_CODE_LOADING = 134
-    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 135
-    FINANCIAL_THEFT = 136
+    MULTI_FACTOR_AUTHENTICATION = 105
+    IMPAIR_DEFENSES = 106
+    DISABLE_OR_MODIFY_TOOLS = 107
+    INDICATOR_BLOCKING = 108
+    DISABLE_OR_MODIFY_LINUX_AUDIT_SYSTEM = 109
+    HIDE_ARTIFACTS = 110
+    HIDDEN_FILES_AND_DIRECTORIES = 111
+    HIDDEN_USERS = 112
+    EXFILTRATION_OVER_WEB_SERVICE = 113
+    EXFILTRATION_TO_CLOUD_STORAGE = 114
+    DYNAMIC_RESOLUTION = 115
+    LATERAL_TOOL_TRANSFER = 116
+    HIJACK_EXECUTION_FLOW = 117
+    HIJACK_EXECUTION_FLOW_DYNAMIC_LINKER_HIJACKING = 118
+    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 119
+    CREATE_SNAPSHOT = 120
+    CLOUD_INFRASTRUCTURE_DISCOVERY = 121
+    DEVELOP_CAPABILITIES = 122
+    DEVELOP_CAPABILITIES_MALWARE = 123
+    OBTAIN_CAPABILITIES = 124
+    OBTAIN_CAPABILITIES_MALWARE = 125
+    OBTAIN_CAPABILITIES_VULNERABILITIES = 126
+    ACTIVE_SCANNING = 127
+    SCANNING_IP_BLOCKS = 128
+    STAGE_CAPABILITIES = 129
+    UPLOAD_MALWARE = 130
+    CONTAINER_ADMINISTRATION_COMMAND = 131
+    DEPLOY_CONTAINER = 132
+    ESCAPE_TO_HOST = 133
+    CONTAINER_AND_RESOURCE_DISCOVERY = 134
+    REFLECTIVE_CODE_LOADING = 135
+    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 136
+    FINANCIAL_THEFT = 137
 
   class PrimaryTacticValueValuesEnum(_messages.Enum):
     r"""The MITRE ATT&CK tactic most closely represented by this finding, if
@@ -6768,6 +7027,7 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
       CREDENTIALS_FROM_PASSWORD_STORES: T1555
       MODIFY_AUTHENTICATION_PROCESS: T1556
       PLUGGABLE_AUTHENTICATION_MODULES: T1556.003
+      MULTI_FACTOR_AUTHENTICATION: T1556.006
       IMPAIR_DEFENSES: T1562
       DISABLE_OR_MODIFY_TOOLS: T1562.001
       INDICATOR_BLOCKING: T1562.006
@@ -6906,38 +7166,39 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
     CREDENTIALS_FROM_PASSWORD_STORES = 102
     MODIFY_AUTHENTICATION_PROCESS = 103
     PLUGGABLE_AUTHENTICATION_MODULES = 104
-    IMPAIR_DEFENSES = 105
-    DISABLE_OR_MODIFY_TOOLS = 106
-    INDICATOR_BLOCKING = 107
-    DISABLE_OR_MODIFY_LINUX_AUDIT_SYSTEM = 108
-    HIDE_ARTIFACTS = 109
-    HIDDEN_FILES_AND_DIRECTORIES = 110
-    HIDDEN_USERS = 111
-    EXFILTRATION_OVER_WEB_SERVICE = 112
-    EXFILTRATION_TO_CLOUD_STORAGE = 113
-    DYNAMIC_RESOLUTION = 114
-    LATERAL_TOOL_TRANSFER = 115
-    HIJACK_EXECUTION_FLOW = 116
-    HIJACK_EXECUTION_FLOW_DYNAMIC_LINKER_HIJACKING = 117
-    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 118
-    CREATE_SNAPSHOT = 119
-    CLOUD_INFRASTRUCTURE_DISCOVERY = 120
-    DEVELOP_CAPABILITIES = 121
-    DEVELOP_CAPABILITIES_MALWARE = 122
-    OBTAIN_CAPABILITIES = 123
-    OBTAIN_CAPABILITIES_MALWARE = 124
-    OBTAIN_CAPABILITIES_VULNERABILITIES = 125
-    ACTIVE_SCANNING = 126
-    SCANNING_IP_BLOCKS = 127
-    STAGE_CAPABILITIES = 128
-    UPLOAD_MALWARE = 129
-    CONTAINER_ADMINISTRATION_COMMAND = 130
-    DEPLOY_CONTAINER = 131
-    ESCAPE_TO_HOST = 132
-    CONTAINER_AND_RESOURCE_DISCOVERY = 133
-    REFLECTIVE_CODE_LOADING = 134
-    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 135
-    FINANCIAL_THEFT = 136
+    MULTI_FACTOR_AUTHENTICATION = 105
+    IMPAIR_DEFENSES = 106
+    DISABLE_OR_MODIFY_TOOLS = 107
+    INDICATOR_BLOCKING = 108
+    DISABLE_OR_MODIFY_LINUX_AUDIT_SYSTEM = 109
+    HIDE_ARTIFACTS = 110
+    HIDDEN_FILES_AND_DIRECTORIES = 111
+    HIDDEN_USERS = 112
+    EXFILTRATION_OVER_WEB_SERVICE = 113
+    EXFILTRATION_TO_CLOUD_STORAGE = 114
+    DYNAMIC_RESOLUTION = 115
+    LATERAL_TOOL_TRANSFER = 116
+    HIJACK_EXECUTION_FLOW = 117
+    HIJACK_EXECUTION_FLOW_DYNAMIC_LINKER_HIJACKING = 118
+    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 119
+    CREATE_SNAPSHOT = 120
+    CLOUD_INFRASTRUCTURE_DISCOVERY = 121
+    DEVELOP_CAPABILITIES = 122
+    DEVELOP_CAPABILITIES_MALWARE = 123
+    OBTAIN_CAPABILITIES = 124
+    OBTAIN_CAPABILITIES_MALWARE = 125
+    OBTAIN_CAPABILITIES_VULNERABILITIES = 126
+    ACTIVE_SCANNING = 127
+    SCANNING_IP_BLOCKS = 128
+    STAGE_CAPABILITIES = 129
+    UPLOAD_MALWARE = 130
+    CONTAINER_ADMINISTRATION_COMMAND = 131
+    DEPLOY_CONTAINER = 132
+    ESCAPE_TO_HOST = 133
+    CONTAINER_AND_RESOURCE_DISCOVERY = 134
+    REFLECTIVE_CODE_LOADING = 135
+    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 136
+    FINANCIAL_THEFT = 137
 
   additionalTactics = _messages.EnumField('AdditionalTacticsValueListEntryValuesEnum', 1, repeated=True)
   additionalTechniques = _messages.EnumField('AdditionalTechniquesValueListEntryValuesEnum', 2, repeated=True)
@@ -6959,6 +7220,9 @@ class GoogleCloudSecuritycenterV2MuteConfig(_messages.Message):
     createTime: Output only. The time at which the mute config was created.
       This field is set by the server and will be ignored if provided on
       config creation.
+    cryptoKeyName: Output only. The resource name of the Cloud KMS `CryptoKey`
+      used to encrypt this configuration data, if CMEK was enabled during
+      Security Command Center activation.
     description: A description of the mute config.
     expiryTime: Optional. The expiry of the mute config. Only applicable for
       dynamic configs. If the expiry is set, when the config expires, it is
@@ -7014,13 +7278,14 @@ class GoogleCloudSecuritycenterV2MuteConfig(_messages.Message):
     DYNAMIC = 2
 
   createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  expiryTime = _messages.StringField(3)
-  filter = _messages.StringField(4)
-  mostRecentEditor = _messages.StringField(5)
-  name = _messages.StringField(6)
-  type = _messages.EnumField('TypeValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  cryptoKeyName = _messages.StringField(2)
+  description = _messages.StringField(3)
+  expiryTime = _messages.StringField(4)
+  filter = _messages.StringField(5)
+  mostRecentEditor = _messages.StringField(6)
+  name = _messages.StringField(7)
+  type = _messages.EnumField('TypeValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class GoogleCloudSecuritycenterV2MuteInfo(_messages.Message):
@@ -7162,10 +7427,10 @@ class GoogleCloudSecuritycenterV2Pipeline(_messages.Message):
   r"""Vertex AI training pipeline associated with the finding.
 
   Fields:
-    displayName: The user defined display name of pipeline, e.g. plants-
+    displayName: The user-defined display name of pipeline, e.g. plants-
       classification
-    name: Resource name of pipeline, e.g. projects/{project}/locations/{locati
-      on}/trainingPipelines/5253428229225578496
+    name: Resource name of the pipeline, e.g. projects/{project}/locations/{lo
+      cation}/trainingPipelines/5253428229225578496
   """
 
   displayName = _messages.StringField(1)
@@ -7239,6 +7504,8 @@ class GoogleCloudSecuritycenterV2Process(_messages.Message):
     script: When the process represents the invocation of a script, `binary`
       provides information about the interpreter, while `script` provides
       information about the script file provided to the interpreter.
+    userId: The ID of the user that executed the process. E.g. If this is the
+      root user this will always be 0.
   """
 
   args = _messages.StringField(1, repeated=True)
@@ -7251,6 +7518,7 @@ class GoogleCloudSecuritycenterV2Process(_messages.Message):
   parentPid = _messages.IntegerField(8)
   pid = _messages.IntegerField(9)
   script = _messages.MessageField('GoogleCloudSecuritycenterV2File', 10)
+  userId = _messages.IntegerField(11)
 
 
 class GoogleCloudSecuritycenterV2ProcessSignature(_messages.Message):
@@ -7329,7 +7597,7 @@ class GoogleCloudSecuritycenterV2Resource(_messages.Message):
     azureMetadata: The Azure metadata associated with the finding.
     cloudProvider: Indicates which cloud provider the finding is from.
     displayName: The human readable name of the resource.
-    gcpMetadata: The GCP metadata associated with the finding.
+    gcpMetadata: The Google Cloud metadata associated with the finding.
     location: The region or location of the service (if applicable).
     name: The full resource name of the resource. See:
       https://cloud.google.com/apis/design/resource_names#full_resource_name
@@ -7353,7 +7621,7 @@ class GoogleCloudSecuritycenterV2Resource(_messages.Message):
 
     Values:
       CLOUD_PROVIDER_UNSPECIFIED: The cloud provider is unspecified.
-      GOOGLE_CLOUD_PLATFORM: The cloud provider is Google Cloud Platform.
+      GOOGLE_CLOUD_PLATFORM: The cloud provider is Google Cloud.
       AMAZON_WEB_SERVICES: The cloud provider is Amazon Web Services.
       MICROSOFT_AZURE: The cloud provider is Microsoft Azure.
     """
@@ -7488,7 +7756,7 @@ class GoogleCloudSecuritycenterV2ResourceValueConfig(_messages.Message):
 
     Values:
       CLOUD_PROVIDER_UNSPECIFIED: The cloud provider is unspecified.
-      GOOGLE_CLOUD_PLATFORM: The cloud provider is Google Cloud Platform.
+      GOOGLE_CLOUD_PLATFORM: The cloud provider is Google Cloud.
       AMAZON_WEB_SERVICES: The cloud provider is Amazon Web Services.
       MICROSOFT_AZURE: The cloud provider is Microsoft Azure.
     """
@@ -8999,6 +9267,7 @@ class MitreAttack(_messages.Message):
       CREDENTIALS_FROM_PASSWORD_STORES: T1555
       MODIFY_AUTHENTICATION_PROCESS: T1556
       PLUGGABLE_AUTHENTICATION_MODULES: T1556.003
+      MULTI_FACTOR_AUTHENTICATION: T1556.006
       IMPAIR_DEFENSES: T1562
       DISABLE_OR_MODIFY_TOOLS: T1562.001
       INDICATOR_BLOCKING: T1562.006
@@ -9137,38 +9406,39 @@ class MitreAttack(_messages.Message):
     CREDENTIALS_FROM_PASSWORD_STORES = 102
     MODIFY_AUTHENTICATION_PROCESS = 103
     PLUGGABLE_AUTHENTICATION_MODULES = 104
-    IMPAIR_DEFENSES = 105
-    DISABLE_OR_MODIFY_TOOLS = 106
-    INDICATOR_BLOCKING = 107
-    DISABLE_OR_MODIFY_LINUX_AUDIT_SYSTEM = 108
-    HIDE_ARTIFACTS = 109
-    HIDDEN_FILES_AND_DIRECTORIES = 110
-    HIDDEN_USERS = 111
-    EXFILTRATION_OVER_WEB_SERVICE = 112
-    EXFILTRATION_TO_CLOUD_STORAGE = 113
-    DYNAMIC_RESOLUTION = 114
-    LATERAL_TOOL_TRANSFER = 115
-    HIJACK_EXECUTION_FLOW = 116
-    HIJACK_EXECUTION_FLOW_DYNAMIC_LINKER_HIJACKING = 117
-    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 118
-    CREATE_SNAPSHOT = 119
-    CLOUD_INFRASTRUCTURE_DISCOVERY = 120
-    DEVELOP_CAPABILITIES = 121
-    DEVELOP_CAPABILITIES_MALWARE = 122
-    OBTAIN_CAPABILITIES = 123
-    OBTAIN_CAPABILITIES_MALWARE = 124
-    OBTAIN_CAPABILITIES_VULNERABILITIES = 125
-    ACTIVE_SCANNING = 126
-    SCANNING_IP_BLOCKS = 127
-    STAGE_CAPABILITIES = 128
-    UPLOAD_MALWARE = 129
-    CONTAINER_ADMINISTRATION_COMMAND = 130
-    DEPLOY_CONTAINER = 131
-    ESCAPE_TO_HOST = 132
-    CONTAINER_AND_RESOURCE_DISCOVERY = 133
-    REFLECTIVE_CODE_LOADING = 134
-    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 135
-    FINANCIAL_THEFT = 136
+    MULTI_FACTOR_AUTHENTICATION = 105
+    IMPAIR_DEFENSES = 106
+    DISABLE_OR_MODIFY_TOOLS = 107
+    INDICATOR_BLOCKING = 108
+    DISABLE_OR_MODIFY_LINUX_AUDIT_SYSTEM = 109
+    HIDE_ARTIFACTS = 110
+    HIDDEN_FILES_AND_DIRECTORIES = 111
+    HIDDEN_USERS = 112
+    EXFILTRATION_OVER_WEB_SERVICE = 113
+    EXFILTRATION_TO_CLOUD_STORAGE = 114
+    DYNAMIC_RESOLUTION = 115
+    LATERAL_TOOL_TRANSFER = 116
+    HIJACK_EXECUTION_FLOW = 117
+    HIJACK_EXECUTION_FLOW_DYNAMIC_LINKER_HIJACKING = 118
+    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 119
+    CREATE_SNAPSHOT = 120
+    CLOUD_INFRASTRUCTURE_DISCOVERY = 121
+    DEVELOP_CAPABILITIES = 122
+    DEVELOP_CAPABILITIES_MALWARE = 123
+    OBTAIN_CAPABILITIES = 124
+    OBTAIN_CAPABILITIES_MALWARE = 125
+    OBTAIN_CAPABILITIES_VULNERABILITIES = 126
+    ACTIVE_SCANNING = 127
+    SCANNING_IP_BLOCKS = 128
+    STAGE_CAPABILITIES = 129
+    UPLOAD_MALWARE = 130
+    CONTAINER_ADMINISTRATION_COMMAND = 131
+    DEPLOY_CONTAINER = 132
+    ESCAPE_TO_HOST = 133
+    CONTAINER_AND_RESOURCE_DISCOVERY = 134
+    REFLECTIVE_CODE_LOADING = 135
+    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 136
+    FINANCIAL_THEFT = 137
 
   class PrimaryTacticValueValuesEnum(_messages.Enum):
     r"""The MITRE ATT&CK tactic most closely represented by this finding, if
@@ -9316,6 +9586,7 @@ class MitreAttack(_messages.Message):
       CREDENTIALS_FROM_PASSWORD_STORES: T1555
       MODIFY_AUTHENTICATION_PROCESS: T1556
       PLUGGABLE_AUTHENTICATION_MODULES: T1556.003
+      MULTI_FACTOR_AUTHENTICATION: T1556.006
       IMPAIR_DEFENSES: T1562
       DISABLE_OR_MODIFY_TOOLS: T1562.001
       INDICATOR_BLOCKING: T1562.006
@@ -9454,38 +9725,39 @@ class MitreAttack(_messages.Message):
     CREDENTIALS_FROM_PASSWORD_STORES = 102
     MODIFY_AUTHENTICATION_PROCESS = 103
     PLUGGABLE_AUTHENTICATION_MODULES = 104
-    IMPAIR_DEFENSES = 105
-    DISABLE_OR_MODIFY_TOOLS = 106
-    INDICATOR_BLOCKING = 107
-    DISABLE_OR_MODIFY_LINUX_AUDIT_SYSTEM = 108
-    HIDE_ARTIFACTS = 109
-    HIDDEN_FILES_AND_DIRECTORIES = 110
-    HIDDEN_USERS = 111
-    EXFILTRATION_OVER_WEB_SERVICE = 112
-    EXFILTRATION_TO_CLOUD_STORAGE = 113
-    DYNAMIC_RESOLUTION = 114
-    LATERAL_TOOL_TRANSFER = 115
-    HIJACK_EXECUTION_FLOW = 116
-    HIJACK_EXECUTION_FLOW_DYNAMIC_LINKER_HIJACKING = 117
-    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 118
-    CREATE_SNAPSHOT = 119
-    CLOUD_INFRASTRUCTURE_DISCOVERY = 120
-    DEVELOP_CAPABILITIES = 121
-    DEVELOP_CAPABILITIES_MALWARE = 122
-    OBTAIN_CAPABILITIES = 123
-    OBTAIN_CAPABILITIES_MALWARE = 124
-    OBTAIN_CAPABILITIES_VULNERABILITIES = 125
-    ACTIVE_SCANNING = 126
-    SCANNING_IP_BLOCKS = 127
-    STAGE_CAPABILITIES = 128
-    UPLOAD_MALWARE = 129
-    CONTAINER_ADMINISTRATION_COMMAND = 130
-    DEPLOY_CONTAINER = 131
-    ESCAPE_TO_HOST = 132
-    CONTAINER_AND_RESOURCE_DISCOVERY = 133
-    REFLECTIVE_CODE_LOADING = 134
-    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 135
-    FINANCIAL_THEFT = 136
+    MULTI_FACTOR_AUTHENTICATION = 105
+    IMPAIR_DEFENSES = 106
+    DISABLE_OR_MODIFY_TOOLS = 107
+    INDICATOR_BLOCKING = 108
+    DISABLE_OR_MODIFY_LINUX_AUDIT_SYSTEM = 109
+    HIDE_ARTIFACTS = 110
+    HIDDEN_FILES_AND_DIRECTORIES = 111
+    HIDDEN_USERS = 112
+    EXFILTRATION_OVER_WEB_SERVICE = 113
+    EXFILTRATION_TO_CLOUD_STORAGE = 114
+    DYNAMIC_RESOLUTION = 115
+    LATERAL_TOOL_TRANSFER = 116
+    HIJACK_EXECUTION_FLOW = 117
+    HIJACK_EXECUTION_FLOW_DYNAMIC_LINKER_HIJACKING = 118
+    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 119
+    CREATE_SNAPSHOT = 120
+    CLOUD_INFRASTRUCTURE_DISCOVERY = 121
+    DEVELOP_CAPABILITIES = 122
+    DEVELOP_CAPABILITIES_MALWARE = 123
+    OBTAIN_CAPABILITIES = 124
+    OBTAIN_CAPABILITIES_MALWARE = 125
+    OBTAIN_CAPABILITIES_VULNERABILITIES = 126
+    ACTIVE_SCANNING = 127
+    SCANNING_IP_BLOCKS = 128
+    STAGE_CAPABILITIES = 129
+    UPLOAD_MALWARE = 130
+    CONTAINER_ADMINISTRATION_COMMAND = 131
+    DEPLOY_CONTAINER = 132
+    ESCAPE_TO_HOST = 133
+    CONTAINER_AND_RESOURCE_DISCOVERY = 134
+    REFLECTIVE_CODE_LOADING = 135
+    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 136
+    FINANCIAL_THEFT = 137
 
   additionalTactics = _messages.EnumField('AdditionalTacticsValueListEntryValuesEnum', 1, repeated=True)
   additionalTechniques = _messages.EnumField('AdditionalTechniquesValueListEntryValuesEnum', 2, repeated=True)
@@ -9791,8 +10063,8 @@ class Pipeline(_messages.Message):
   Fields:
     displayName: The user defined display name of pipeline, e.g. plants-
       classification
-    name: Resource name of pipeline, e.g. projects/{project}/locations/{locati
-      on}/trainingPipelines/5253428229225578496
+    name: Resource name of the pipeline, e.g. projects/{project}/locations/{lo
+      cation}/trainingPipelines/5253428229225578496
   """
 
   displayName = _messages.StringField(1)
@@ -9956,6 +10228,8 @@ class Process(_messages.Message):
     script: When the process represents the invocation of a script, `binary`
       provides information about the interpreter, while `script` provides
       information about the script file provided to the interpreter.
+    userId: The ID of the user that executed the process. E.g. If this is the
+      root user this will always be 0.
   """
 
   args = _messages.StringField(1, repeated=True)
@@ -9968,6 +10242,7 @@ class Process(_messages.Message):
   parentPid = _messages.IntegerField(8)
   pid = _messages.IntegerField(9)
   script = _messages.MessageField('File', 10)
+  userId = _messages.IntegerField(11)
 
 
 class ProcessSignature(_messages.Message):
@@ -10079,7 +10354,7 @@ class Resource(_messages.Message):
 
     Values:
       CLOUD_PROVIDER_UNSPECIFIED: The cloud provider is unspecified.
-      GOOGLE_CLOUD_PLATFORM: The cloud provider is Google Cloud Platform.
+      GOOGLE_CLOUD_PLATFORM: The cloud provider is Google Cloud.
       AMAZON_WEB_SERVICES: The cloud provider is Amazon Web Services.
       MICROSOFT_AZURE: The cloud provider is Microsoft Azure.
     """
@@ -14379,7 +14654,7 @@ class Simulation(_messages.Message):
 
     Values:
       CLOUD_PROVIDER_UNSPECIFIED: The cloud provider is unspecified.
-      GOOGLE_CLOUD_PLATFORM: The cloud provider is Google Cloud Platform.
+      GOOGLE_CLOUD_PLATFORM: The cloud provider is Google Cloud.
       AMAZON_WEB_SERVICES: The cloud provider is Amazon Web Services.
       MICROSOFT_AZURE: The cloud provider is Microsoft Azure.
     """
@@ -14962,7 +15237,7 @@ class VulnerabilitySnapshot(_messages.Message):
 
     Values:
       CLOUD_PROVIDER_UNSPECIFIED: The cloud provider is unspecified.
-      GOOGLE_CLOUD_PLATFORM: The cloud provider is Google Cloud Platform.
+      GOOGLE_CLOUD_PLATFORM: The cloud provider is Google Cloud.
       AMAZON_WEB_SERVICES: The cloud provider is Amazon Web Services.
       MICROSOFT_AZURE: The cloud provider is Microsoft Azure.
     """

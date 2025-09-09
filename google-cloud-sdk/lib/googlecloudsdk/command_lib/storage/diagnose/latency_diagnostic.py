@@ -46,6 +46,7 @@ _STANDARD_DEVIATION_TITLE = 'Standard deviation'
 _PERCENTILE_90TH_TITLE = '90th percentile'
 _PERCENTILE_50TH_TITLE = '50th percentile'
 _DIAGNOSTIC_NAME = 'Latency Diagnostic'
+_SUCCESSFUL_TRIALS_TITLE = 'Successful trials'
 
 
 def _format_as_milliseconds(time_in_seconds: float) -> str:
@@ -86,7 +87,6 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
     # Make sure the prefix is unique to avoid collisions with other diagnostics
     # and previous runs of this diagnostic.
     self.object_prefix = 'latency_diagnostics_' + str(uuid.uuid4())
-    self._should_clean_up_objects = False
 
   @property
   def name(self) -> str:
@@ -127,30 +127,38 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
       iteration: The iteration number of the upload.
     """
     self._create_result_entry(_UPLOAD_OPERATION_TITLE, object_number)
+    results_dict = self._result[_UPLOAD_OPERATION_TITLE][object_number]
 
-    with diagnostic.time_recorder(
-        iteration, self._result[_UPLOAD_OPERATION_TITLE][object_number]
-    ):
-      with file_utils.FileReader(file_path) as file:
-        self._api_client.upload_object(file, object_resource, request_config)
+    try:
+      with diagnostic.time_recorder(iteration, results_dict):
+        with file_utils.FileReader(file_path) as file:
+          self._api_client.upload_object(file, object_resource, request_config)
+    except api_errors.CloudApiError:
+      # Remove the entry if the operation failed
+      if iteration in results_dict:
+        del results_dict[iteration]
+      raise  # Re-raise the exception to be caught in _run
 
   def _fetch_object_metadata(self, object_number, object_name, iteration):
     """Fetches object metadata and records the latency.
 
     Args:
-      object_number: The number of the object being uploaded.
+      object_number: The number of the object being fetched.
       object_name: The name of the object to fetch metadata for.
-      iteration: The iteration number of the upload.
+      iteration: The iteration number of the fetch.
     """
     self._create_result_entry(_METADATA_OPERATION_TITLE, object_number)
+    results_dict = self._result[_METADATA_OPERATION_TITLE][object_number]
 
-    with diagnostic.time_recorder(
-        iteration,
-        self._result[_METADATA_OPERATION_TITLE][object_number],
-    ):
-      self._api_client.get_object_metadata(
-          self.bucket_url.bucket_name, object_name
-      )
+    try:
+      with diagnostic.time_recorder(iteration, results_dict):
+        self._api_client.get_object_metadata(
+            self.bucket_url.bucket_name, object_name
+        )
+    except api_errors.CloudApiError:
+      if iteration in results_dict:
+        del results_dict[iteration]
+      raise
 
   def _download_object(
       self, object_number, object_resource, request_config, iteration
@@ -158,22 +166,26 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
     """Downloads an object and records the latency.
 
     Args:
-      object_number: The number of the object being uploaded.
+      object_number: The number of the object being downloaded.
       object_resource: The object resource to download.
       request_config: The request config to use for the download.
-      iteration: The iteration number of the upload.
+      iteration: The iteration number of the download.
     """
     self._create_result_entry(_DOWNLOAD_OPERATION_TITLE, object_number)
+    results_dict = self._result[_DOWNLOAD_OPERATION_TITLE][object_number]
 
-    with diagnostic.time_recorder(
-        iteration, self._result[_DOWNLOAD_OPERATION_TITLE][object_number]
-    ):
-      self._api_client.download_object(
-          object_resource,
-          self._discard_sink,
-          request_config,
-          download_strategy=cloud_api.DownloadStrategy.ONE_SHOT,
-      )
+    try:
+      with diagnostic.time_recorder(iteration, results_dict):
+        self._api_client.download_object(
+            object_resource,
+            self._discard_sink,
+            request_config,
+            download_strategy=cloud_api.DownloadStrategy.ONE_SHOT,
+        )
+    except api_errors.CloudApiError:
+      if iteration in results_dict:
+        del results_dict[iteration]
+      raise
 
   def _delete_object(
       self, object_number, object_url, request_config, iteration
@@ -181,17 +193,21 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
     """Deletes an object and records the latency.
 
     Args:
-      object_number: The number of the object being uploaded.
+      object_number: The number of the object being deleted.
       object_url: The object url to delete.
       request_config: The request config to use for the delete.
-      iteration: The iteration number of the upload.
+      iteration: The iteration number of the delete.
     """
     self._create_result_entry(_DELETE_OPERATION_TITLE, object_number)
+    results_dict = self._result[_DELETE_OPERATION_TITLE][object_number]
 
-    with diagnostic.time_recorder(
-        iteration, self._result[_DELETE_OPERATION_TITLE][object_number]
-    ):
-      self._api_client.delete_object(object_url, request_config)
+    try:
+      with diagnostic.time_recorder(iteration, results_dict):
+        self._api_client.delete_object(object_url, request_config)
+    except api_errors.CloudApiError:
+      if iteration in results_dict:
+        del results_dict[iteration]
+      raise
 
   def _run(self):
     """Runs the diagnostic.
@@ -225,7 +241,6 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
               content_type=request_config_factory.DEFAULT_CONTENT_TYPE,
               size=file_size,
           )
-
           try:
             self._upload_object(
                 object_number,
@@ -234,7 +249,6 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
                 request_config,
                 iteration,
             )
-            self._should_clean_up_objects = True
             self._fetch_object_metadata(
                 object_number, object_resource.name, iteration
             )
@@ -244,12 +258,15 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
             self._delete_object(
                 object_number, object_url, request_config, iteration
             )
-            # Only clean up objects if delete could not be performed.
-            self._should_clean_up_objects = False
           except api_errors.CloudApiError as e:
+            log.debug(
+                'Failed to run full operation set for object'
+                f' {object_resource.name} in iteration {iteration}. {e}'
+            )
+          except Exception as e:
             raise diagnostic.DiagnosticIgnorableError(
-                'Failed to run operation for object'
-                f' {object_resource.name}. {e}'
+                'Unexpected error for object'
+                f' {object_resource.name} in iteration {iteration}. {e}'
             )
 
   def _post_process(self):
@@ -259,8 +276,9 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
       except OSError as e:
         log.warning(f'{self.name} : Failed to clean up temp files. {e}')
 
-      if self._should_clean_up_objects:
-        self._clean_up_objects(self.bucket_url.url_string, self.object_prefix)
+      # Clean up any remaining objects in the bucket with the
+      # diagnostic's object prefix.
+      self._clean_up_objects(self.bucket_url.url_string, self.object_prefix)
 
   @property
   def result(self) -> diagnostic.DiagnosticResult:
@@ -268,15 +286,28 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
     for operation_title, object_number_to_latency_dict in self._result.items():
       for object_number in object_number_to_latency_dict.keys():
         trials = self._result[operation_title][object_number].values()
+        object_size = self.object_sizes[object_number]
+        scaled_object_size = scaled_integer.FormatInteger(object_size)
+        if not trials:
+          log.warning(
+              f'No successful trials for {operation_title} on object'
+              f' size {scaled_object_size}. Skipping statistics.'
+          )
+          continue
+        num_trials = len(trials)
         cumulative_result_dict = {}
 
-        mean = sum(trials) / _ITERATION_COUNT
+        cumulative_result_dict[_SUCCESSFUL_TRIALS_TITLE] = (
+            f'{num_trials}/{_ITERATION_COUNT}'
+        )
+
+        mean = sum(trials) / num_trials
         cumulative_result_dict[_MEAN_TITLE] = _format_as_milliseconds(mean)
 
-        standard_deviation = (
-            math.sqrt(sum((x - mean) ** 2 for x in trials) / len(trials))
-            / _ITERATION_COUNT
+        standard_deviation = math.sqrt(
+            sum((x - mean) ** 2 for x in trials) / num_trials
         )
+
         cumulative_result_dict[_STANDARD_DEVIATION_TITLE] = (
             _format_as_milliseconds(standard_deviation)
         )

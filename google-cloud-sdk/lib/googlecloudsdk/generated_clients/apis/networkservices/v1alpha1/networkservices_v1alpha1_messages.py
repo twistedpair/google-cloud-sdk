@@ -1409,6 +1409,9 @@ class ExtensionChainExtension(_messages.Message):
       mode is supported for `LbRouteExtension` resources.
     ResponseBodySendModeValueValuesEnum: Optional. Configures the send mode
       for response processing. If unspecified, the default value `STREAMED` is
+      used. The field can only be set if `supported_events` includes
+      `RESPONSE_BODY`. If `supported_events` includes `RESPONSE_BODY`, but
+      `response_body_send_mode` is unset, the default value `STREAMED` is
       used. When this field is set to `FULL_DUPLEX_STREAMED`,
       `supported_events` must include both `RESPONSE_BODY` and
       `RESPONSE_TRAILERS`. This field can be set only for `LbTrafficExtension`
@@ -1419,8 +1422,11 @@ class ExtensionChainExtension(_messages.Message):
   Messages:
     MetadataValue: Optional. The metadata provided here is included as part of
       the `metadata_context` (of type `google.protobuf.Struct`) in the
-      `ProcessingRequest` message sent to the extension server. The metadata
-      is available under the namespace `com.google....`. For example:
+      `ProcessingRequest` message sent to the extension server. For
+      `AuthzExtension` resources, the metadata is available under the
+      namespace `com.google.authz_extension.`. For other types of extensions,
+      the metadata is available under the namespace `com.google....`. For
+      example:
       `com.google.lb_traffic_extension.lbtrafficextension1.chain1.ext1`. The
       following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
@@ -1439,8 +1445,8 @@ class ExtensionChainExtension(_messages.Message):
     allowDynamicForwarding: Optional. When set to `TRUE`, the response from an
       extension service is allowed to set the
       `com.google.envoy.dynamic_forwarding` namespace in the dynamic metadata.
-      This field is not supported for plugin extensions. Setting it results in
-      a validation error.
+      This field is not supported for plugin extensions or AuthzExtensions.
+      Setting it results in a validation error.
     authority: Optional. The `:authority` header in the gRPC request sent from
       Envoy to the extension service. Required for Callout extensions. This
       field is not supported for plugin extensions. Setting it results in a
@@ -1460,8 +1466,11 @@ class ExtensionChainExtension(_messages.Message):
       sent. Each element is a string indicating the header name.
     metadata: Optional. The metadata provided here is included as part of the
       `metadata_context` (of type `google.protobuf.Struct`) in the
-      `ProcessingRequest` message sent to the extension server. The metadata
-      is available under the namespace `com.google....`. For example:
+      `ProcessingRequest` message sent to the extension server. For
+      `AuthzExtension` resources, the metadata is available under the
+      namespace `com.google.authz_extension.`. For other types of extensions,
+      the metadata is available under the namespace `com.google....`. For
+      example:
       `com.google.lb_traffic_extension.lbtrafficextension1.chain1.ext1`. The
       following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
@@ -1475,11 +1484,12 @@ class ExtensionChainExtension(_messages.Message):
       less than 16. * The length of each key must be less than 64 characters.
       * The length of each value must be less than 1024 characters. * All
       values must be strings.
-    name: Required. The name for this extension. The name is logged as part of
+    name: Optional. The name for this extension. The name is logged as part of
       the HTTP request logs. The name must conform with RFC-1034, is
       restricted to lower-cased letters, numbers and hyphens, and can have a
       maximum length of 63 characters. Additionally, the first character must
-      be a letter and the last a letter or a number. This field is required.
+      be a letter and the last a letter or a number. This field is required
+      except for AuthzExtension.
     requestBodySendMode: Optional. Configures the send mode for request body
       processing. The field can only be set if `supported_events` includes
       `REQUEST_BODY`. If `supported_events` includes `REQUEST_BODY`, but
@@ -1491,11 +1501,15 @@ class ExtensionChainExtension(_messages.Message):
       `BackendService`. Only `FULL_DUPLEX_STREAMED` mode is supported for
       `LbRouteExtension` resources.
     responseBodySendMode: Optional. Configures the send mode for response
-      processing. If unspecified, the default value `STREAMED` is used. When
-      this field is set to `FULL_DUPLEX_STREAMED`, `supported_events` must
-      include both `RESPONSE_BODY` and `RESPONSE_TRAILERS`. This field can be
-      set only for `LbTrafficExtension` resources, and only when the `service`
-      field of the extension points to a `BackendService`.
+      processing. If unspecified, the default value `STREAMED` is used. The
+      field can only be set if `supported_events` includes `RESPONSE_BODY`. If
+      `supported_events` includes `RESPONSE_BODY`, but
+      `response_body_send_mode` is unset, the default value `STREAMED` is
+      used. When this field is set to `FULL_DUPLEX_STREAMED`,
+      `supported_events` must include both `RESPONSE_BODY` and
+      `RESPONSE_TRAILERS`. This field can be set only for `LbTrafficExtension`
+      resources, and only when the `service` field of the extension points to
+      a `BackendService`.
     service: Required. The reference to the service that runs the extension.
       To configure a callout extension, `service` must be a fully-qualified
       reference to a [backend service](https://cloud.google.com/compute/docs/r
@@ -1518,7 +1532,9 @@ class ExtensionChainExtension(_messages.Message):
       `LbRouteExtension` resource, this field is optional. If unspecified,
       `REQUEST_HEADERS` event is assumed as supported. For the
       `LbEdgeExtension` resource, this field is required and must only contain
-      `REQUEST_HEADERS` event.
+      `REQUEST_HEADERS` event. For the `AuthzExtension` resource, this field
+      is optional. `REQUEST_HEADERS` is the only supported event. If
+      unspecified, `REQUEST_HEADERS` event is assumed as supported.
     timeout: Optional. Specifies the timeout for each individual message on
       the stream. The timeout must be between `10`-`10000` milliseconds.
       Required for callout extensions. This field is not supported for plugin
@@ -1557,8 +1573,11 @@ class ExtensionChainExtension(_messages.Message):
 
   class ResponseBodySendModeValueValuesEnum(_messages.Enum):
     r"""Optional. Configures the send mode for response processing. If
-    unspecified, the default value `STREAMED` is used. When this field is set
-    to `FULL_DUPLEX_STREAMED`, `supported_events` must include both
+    unspecified, the default value `STREAMED` is used. The field can only be
+    set if `supported_events` includes `RESPONSE_BODY`. If `supported_events`
+    includes `RESPONSE_BODY`, but `response_body_send_mode` is unset, the
+    default value `STREAMED` is used. When this field is set to
+    `FULL_DUPLEX_STREAMED`, `supported_events` must include both
     `RESPONSE_BODY` and `RESPONSE_TRAILERS`. This field can be set only for
     `LbTrafficExtension` resources, and only when the `service` field of the
     extension points to a `BackendService`.
@@ -1612,8 +1631,10 @@ class ExtensionChainExtension(_messages.Message):
   class MetadataValue(_messages.Message):
     r"""Optional. The metadata provided here is included as part of the
     `metadata_context` (of type `google.protobuf.Struct`) in the
-    `ProcessingRequest` message sent to the extension server. The metadata is
-    available under the namespace `com.google....`. For example:
+    `ProcessingRequest` message sent to the extension server. For
+    `AuthzExtension` resources, the metadata is available under the namespace
+    `com.google.authz_extension.`. For other types of extensions, the metadata
+    is available under the namespace `com.google....`. For example:
     `com.google.lb_traffic_extension.lbtrafficextension1.chain1.ext1`. The
     following variables are supported in the metadata: `{forwarding_rule_id}`
     - substituted with the forwarding rule's fully qualified resource name.
@@ -5753,7 +5774,39 @@ class MulticastProducerAssociation(_messages.Message):
 
 
 class MulticastResourceState(_messages.Message):
-  r"""The multicast resource's state."""
+  r"""The multicast resource's state.
+
+  Enums:
+    StateValueValuesEnum: Optional. The state of the multicast resource.
+
+  Fields:
+    state: Optional. The state of the multicast resource.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Optional. The state of the multicast resource.
+
+    Values:
+      STATE_ENUM_UNSPECIFIED: The resource is in unspecified state.
+      CREATING: The resource is being created.
+      ACTIVE: The resource is in a normal state and ready to use.
+      DELETING: The resource is being deleted.
+      DELETE_FAILED: The resource is failed to be deleted.
+      UPDATING: The resource is being updated.
+      UPDATE_FAILED: The resource is failed to be updated.
+      INACTIVE: The multicast consumer resource that is deactivated by the
+        multicast administrator.
+    """
+    STATE_ENUM_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    DELETING = 3
+    DELETE_FAILED = 4
+    UPDATING = 5
+    UPDATE_FAILED = 6
+    INACTIVE = 7
+
+  state = _messages.EnumField('StateValueValuesEnum', 1)
 
 
 class NetworkservicesProjectsLocationsAuthzExtensionsCreateRequest(_messages.Message):
@@ -7382,8 +7435,9 @@ class NetworkservicesProjectsLocationsListRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).

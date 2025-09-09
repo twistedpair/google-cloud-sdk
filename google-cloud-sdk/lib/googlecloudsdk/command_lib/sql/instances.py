@@ -668,7 +668,12 @@ class _BaseInstances(object):
 
     if args.active_directory_domain is not None:
       settings.activeDirectoryConfig = reducers.ActiveDirectoryConfig(
-          sql_messages, args.active_directory_domain
+          sql_messages,
+          domain=args.active_directory_domain,
+          mode=args.active_directory_mode,
+          dns_servers=args.active_directory_dns_servers,
+          admin_credential_secret_key=args.active_directory_secret_manager_key,
+          organizational_unit=args.active_directory_organizational_unit
       )
 
     if args.IsKnownAndSpecified('password_policy_min_length'):
@@ -750,7 +755,14 @@ class _BaseInstances(object):
 
     # ALPHA args.
     if _IsAlpha(release_track):
-      pass
+      read_pool_auto_scale_config = reducers.ReadPoolAutoScaleConfig(
+          sql_messages, auto_scale_enabled=args.auto_scale_enabled,
+          auto_scale_min_node_count=args.auto_scale_min_node_count,
+          auto_scale_max_node_count=args.auto_scale_max_node_count,
+          auto_scale_target_metrics=args.auto_scale_target_metrics,
+      )
+      if read_pool_auto_scale_config is not None:
+        settings.readPoolAutoScaleConfig = read_pool_auto_scale_config
 
     return settings
 
@@ -845,7 +857,12 @@ class _BaseInstances(object):
 
     if args.active_directory_domain is not None:
       settings.activeDirectoryConfig = reducers.ActiveDirectoryConfig(
-          sql_messages, args.active_directory_domain
+          sql_messages,
+          domain=args.active_directory_domain,
+          mode=args.active_directory_mode,
+          dns_servers=args.active_directory_dns_servers,
+          admin_credential_secret_key=args.active_directory_secret_manager_key,
+          organizational_unit=args.active_directory_organizational_unit,
       )
 
     settings.passwordValidationPolicy = reducers.PasswordPolicy(
@@ -931,6 +948,19 @@ class _BaseInstances(object):
             unc_mappings=args.unc_mappings,
             clear_unc_mappings=args.clear_unc_mappings,
         )
+    # ALPHA args.
+    if _IsAlpha(release_track):
+      read_pool_auto_scale_config = reducers.ReadPoolAutoScaleConfig(
+          sql_messages,
+          auto_scale_enabled=args.auto_scale_enabled,
+          auto_scale_min_node_count=args.auto_scale_min_node_count,
+          auto_scale_max_node_count=args.auto_scale_max_node_count,
+          auto_scale_target_metrics=args.auto_scale_target_metrics,
+          auto_scale_disable_scale_in=args.auto_scale_disable_scale_in,
+          current_config=original_settings.readPoolAutoScaleConfig,
+      )
+      if read_pool_auto_scale_config is not None:
+        settings.readPoolAutoScaleConfig = read_pool_auto_scale_config
     return settings
 
   @classmethod

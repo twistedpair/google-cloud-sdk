@@ -646,12 +646,14 @@ class S3XmlClient(cloud_api.CloudApi):
       include_folders_as_prefixes=None,
       next_page_token=None,
       object_state=cloud_api.ObjectState.LIVE,
+      list_filter=None,
   ):
     """See super class."""
     del (
         halt_on_empty_response,
         include_folders_as_prefixes,
         next_page_token,
+        list_filter,
     )  # Only used by GCS.
     if object_state == cloud_api.ObjectState.LIVE_AND_NONCURRENT:
       api_method_name = 'list_object_versions'

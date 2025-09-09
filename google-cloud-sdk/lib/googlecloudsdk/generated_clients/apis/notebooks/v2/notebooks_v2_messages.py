@@ -800,7 +800,7 @@ class Instance(_messages.Message):
       service account can use the instance.
     labels: Optional. Labels to apply to this instance. These can be later
       modified by the UpdateInstance method.
-    name: Output only. The name of this notebook instance. Format:
+    name: Output only. Identifier. The name of this notebook instance. Format:
       `projects/{project_id}/locations/{location}/instances/{instance_id}`
     proxyUri: Output only. The proxy endpoint that is used to access the
       Jupyter notebook.
@@ -1265,7 +1265,7 @@ class NotebooksProjectsLocationsInstancesPatchRequest(_messages.Message):
 
   Fields:
     instance: A Instance resource to be passed as the request body.
-    name: Output only. The name of this notebook instance. Format:
+    name: Output only. Identifier. The name of this notebook instance. Format:
       `projects/{project_id}/locations/{location}/instances/{instance_id}`
     requestId: Optional. Idempotent request UUID.
     updateMask: Required. Mask used to update an instance. Updatable fields: *
@@ -1457,8 +1457,9 @@ class NotebooksProjectsLocationsListRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).

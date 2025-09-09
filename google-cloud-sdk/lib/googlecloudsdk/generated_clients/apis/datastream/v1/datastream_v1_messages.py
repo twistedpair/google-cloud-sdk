@@ -496,8 +496,9 @@ class DatastreamProjectsLocationsListRequest(_messages.Message):
   r"""A DatastreamProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1441,6 +1442,17 @@ class Merge(_messages.Message):
   destination table.
   """
 
+
+
+class MongodbChangeStreamPosition(_messages.Message):
+  r"""MongoDB change stream position
+
+  Fields:
+    startTime: Required. The timestamp (in epoch seconds) to start change
+      stream from.
+  """
+
+  startTime = _messages.StringField(1)
 
 
 class MongodbCluster(_messages.Message):
@@ -2685,16 +2697,19 @@ class SpecificStartPosition(_messages.Message):
   source.
 
   Fields:
+    mongodbChangeStreamPosition: MongoDB change stream position to start
+      replicating from.
     mysqlGtidPosition: MySQL GTID set to start replicating from.
     mysqlLogPosition: MySQL specific log position to start replicating from.
     oracleScnPosition: Oracle SCN to start replicating from.
     sqlServerLsnPosition: SqlServer LSN to start replicating from.
   """
 
-  mysqlGtidPosition = _messages.MessageField('MysqlGtidPosition', 1)
-  mysqlLogPosition = _messages.MessageField('MysqlLogPosition', 2)
-  oracleScnPosition = _messages.MessageField('OracleScnPosition', 3)
-  sqlServerLsnPosition = _messages.MessageField('SqlServerLsnPosition', 4)
+  mongodbChangeStreamPosition = _messages.MessageField('MongodbChangeStreamPosition', 1)
+  mysqlGtidPosition = _messages.MessageField('MysqlGtidPosition', 2)
+  mysqlLogPosition = _messages.MessageField('MysqlLogPosition', 3)
+  oracleScnPosition = _messages.MessageField('OracleScnPosition', 4)
+  sqlServerLsnPosition = _messages.MessageField('SqlServerLsnPosition', 5)
 
 
 class SqlServerChangeTables(_messages.Message):

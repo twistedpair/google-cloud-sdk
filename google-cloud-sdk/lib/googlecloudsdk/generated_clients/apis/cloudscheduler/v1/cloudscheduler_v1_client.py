@@ -12,7 +12,7 @@ class CloudschedulerV1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = 'https://cloudscheduler.googleapis.com/'
-  MTLS_BASE_URL = ''
+  MTLS_BASE_URL = 'https://cloudscheduler.mtls.googleapis.com/'
 
   _PACKAGE = 'cloudscheduler'
   _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
@@ -40,6 +40,7 @@ class CloudschedulerV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_jobs = self.ProjectsLocationsJobsService(self)
+    self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -162,15 +163,7 @@ class CloudschedulerV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a job.
-
-If successful, the updated Job is returned. If the job does
-not exist, `NOT_FOUND` is returned.
-
-If UpdateJob does not successfully return, it is possible for the
-job to be in an Job.State.UPDATE_FAILED state. A job in this state may
-not be executed. If this happens, retry the UpdateJob request
-until a successful response is received.
+      r"""Updates a job. If successful, the updated Job is returned. If the job does not exist, `NOT_FOUND` is returned. If UpdateJob does not successfully return, it is possible for the job to be in an Job.State.UPDATE_FAILED state. A job in this state may not be executed. If this happens, retry the UpdateJob request until a successful response is received.
 
       Args:
         request: (CloudschedulerProjectsLocationsJobsPatchRequest) input message
@@ -197,13 +190,7 @@ until a successful response is received.
     )
 
     def Pause(self, request, global_params=None):
-      r"""Pauses a job.
-
-If a job is paused then the system will stop executing the job
-until it is re-enabled via ResumeJob. The
-state of the job is stored in state; if paused it
-will be set to Job.State.PAUSED. A job must be in Job.State.ENABLED
-to be paused.
+      r"""Pauses a job. If a job is paused then the system will stop executing the job until it is re-enabled via ResumeJob. The state of the job is stored in state; if paused it will be set to Job.State.PAUSED. A job must be in Job.State.ENABLED to be paused.
 
       Args:
         request: (CloudschedulerProjectsLocationsJobsPauseRequest) input message
@@ -230,12 +217,7 @@ to be paused.
     )
 
     def Resume(self, request, global_params=None):
-      r"""Resume a job.
-
-This method reenables a job after it has been Job.State.PAUSED. The
-state of a job is stored in Job.state; after calling this method it
-will be set to Job.State.ENABLED. A job must be in
-Job.State.PAUSED to be resumed.
+      r"""Resume a job. This method reenables a job after it has been Job.State.PAUSED. The state of a job is stored in Job.state; after calling this method it will be set to Job.State.ENABLED. A job must be in Job.State.PAUSED to be resumed.
 
       Args:
         request: (CloudschedulerProjectsLocationsJobsResumeRequest) input message
@@ -262,10 +244,7 @@ Job.State.PAUSED to be resumed.
     )
 
     def Run(self, request, global_params=None):
-      r"""Forces a job to run now.
-
-When this method is called, Cloud Scheduler will dispatch the job, even
-if the job is already running.
+      r"""Forces a job to run now. When this method is called, Cloud Scheduler will dispatch the job, even if the job is already running.
 
       Args:
         request: (CloudschedulerProjectsLocationsJobsRunRequest) input message
@@ -288,6 +267,124 @@ if the job is already running.
         request_field='runJobRequest',
         request_type_name='CloudschedulerProjectsLocationsJobsRunRequest',
         response_type_name='Job',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_operations resource."""
+
+    _NAME = 'projects_locations_operations'
+
+    def __init__(self, client):
+      super(CloudschedulerV1.ProjectsLocationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of `1`, corresponding to `Code.CANCELLED`.
+
+      Args:
+        request: (CloudschedulerProjectsLocationsOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='cloudscheduler.projects.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='CloudschedulerProjectsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
+
+      Args:
+        request: (CloudschedulerProjectsLocationsOperationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='cloudscheduler.projects.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='CloudschedulerProjectsLocationsOperationsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (CloudschedulerProjectsLocationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='cloudscheduler.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='CloudschedulerProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
+
+      Args:
+        request: (CloudschedulerProjectsLocationsOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='cloudscheduler.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}/operations',
+        request_field='',
+        request_type_name='CloudschedulerProjectsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
@@ -328,6 +425,33 @@ if the job is already running.
         supports_download=False,
     )
 
+    def GetCmekConfig(self, request, global_params=None):
+      r"""Gets the Scheduler config in the project/region.
+
+      Args:
+        request: (CloudschedulerProjectsLocationsGetCmekConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CmekConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetCmekConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetCmekConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/cmekConfig',
+        http_method='GET',
+        method_id='cloudscheduler.projects.locations.getCmekConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='CloudschedulerProjectsLocationsGetCmekConfigRequest',
+        response_type_name='CmekConfig',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists information about the supported locations for this service.
 
@@ -347,11 +471,38 @@ if the job is already running.
         method_id='cloudscheduler.projects.locations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['extraLocationTypes', 'filter', 'pageSize', 'pageToken'],
         relative_path='v1/{+name}/locations',
         request_field='',
         request_type_name='CloudschedulerProjectsLocationsListRequest',
         response_type_name='ListLocationsResponse',
+        supports_download=False,
+    )
+
+    def UpdateCmekConfig(self, request, global_params=None):
+      r"""Initializes or Updates the a scheduler config.
+
+      Args:
+        request: (CloudschedulerProjectsLocationsUpdateCmekConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateCmekConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateCmekConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/cmekConfig',
+        http_method='PATCH',
+        method_id='cloudscheduler.projects.locations.updateCmekConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='cmekConfig',
+        request_type_name='CloudschedulerProjectsLocationsUpdateCmekConfigRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

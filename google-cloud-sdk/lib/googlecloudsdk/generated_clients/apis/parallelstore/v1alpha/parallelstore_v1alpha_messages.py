@@ -256,8 +256,7 @@ class Instance(_messages.Message):
       CREATING: The instance is being created.
       ACTIVE: The instance is available for use.
       DELETING: The instance is being deleted.
-      FAILED: LINT.IfChange The instance is not usable. LINT.ThenChange(//depo
-        t/google3/configs/monitoring/boq/daos_clh/cloud_precomputes_lib.py)
+      FAILED: The instance is not usable.
       UPGRADING: The instance is being upgraded.
       REPAIRING: The instance is being repaired. This should only be used by
         instances using the `PERSISTENT` deployment type.
@@ -730,8 +729,9 @@ class ParallelstoreProjectsLocationsListRequest(_messages.Message):
   r"""A ParallelstoreProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).

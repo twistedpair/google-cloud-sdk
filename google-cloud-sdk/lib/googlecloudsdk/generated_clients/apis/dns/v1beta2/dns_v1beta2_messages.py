@@ -810,12 +810,13 @@ class DnsResourceRecordSetsListRequest(_messages.Message):
     maxResults: Optional. Maximum number of results to be returned. If
       unspecified, the server decides how many results to return.
     name: Restricts the list to return only records with this fully qualified
-      domain name.
+      domain name. Mutually exclusive with the {@code filter} field.
     pageToken: Optional. A tag returned by a previous list request that was
       truncated. Use this parameter to continue a previous list request.
     project: Identifies the project addressed by this request.
     type: Restricts the list to return only records of this type. If present,
-      the "name" parameter must also be present.
+      the "name" parameter must also be present. Mutually exclusive with the
+      {@code filter} field.
   """
 
   managedZone = _messages.StringField(1, required=True)
@@ -1975,7 +1976,7 @@ class Policy(_messages.Message):
     description: A mutable string of at most 1024 characters associated with
       this resource for the user's convenience. Has no effect on the policy's
       function.
-    dns64Config: Configurations related to DNS64 for this Policy.
+    dns64Config: Configurations related to DNS64 for this policy.
     enableInboundForwarding: Allows networks bound to this policy to receive
       DNS queries sent by VMs or applications over VPN connections. When
       enabled, a virtual IP address is allocated from each of the subnetworks
@@ -2076,8 +2077,8 @@ class PolicyDns64ConfigScope(_messages.Message):
   r"""A PolicyDns64ConfigScope object.
 
   Fields:
-    allQueries: Controls whether DNS64 is enabled globally at the network
-      level.
+    allQueries: Controls whether DNS64 is enabled globally for all networks
+      bound to the policy.
     kind: A string attribute.
   """
 

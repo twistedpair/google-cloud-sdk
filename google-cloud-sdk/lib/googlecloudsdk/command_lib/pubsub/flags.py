@@ -27,6 +27,7 @@ from googlecloudsdk.command_lib.pubsub import resource_args
 from googlecloudsdk.command_lib.pubsub import util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+import six
 
 # Maximum number of attributes you can specify for a message.
 MAX_ATTRIBUTES = 100
@@ -1562,4 +1563,35 @@ def ValidateIsDefaultUniverse(command):
   raise exceptions.InvalidArgumentException(
       str.upper(command),
       command + ' is not available in universe_domain ' + universe_domain,
+  )
+
+
+def AddTagsFlag(parser):
+  """Adds the --tags flag to the parser."""
+  help_text = (
+      'List of tags KEY=VALUE pairs to bind. Each item must be expressed as'
+      ' `<tag-key-namespaced-name>=<tag-value-short-name>`.\n'
+      'Example: `123/environment=production,123/costCenter=marketing`'
+  )
+  parser.add_argument(
+      '--tags',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      action=arg_parsers.UpdateAction,
+      help=help_text,
+      hidden=True,
+  )
+
+
+def GetTagsMessage(args, tags_message, tags_arg_name='tags'):
+  """Makes the tags message object."""
+  tags = getattr(args, tags_arg_name, None)
+  if not tags:
+    return None
+  # Sorted for test stability
+  return tags_message(
+      additionalProperties=[
+          tags_message.AdditionalProperty(key=key, value=value)
+          for key, value in sorted(six.iteritems(tags))
+      ]
   )

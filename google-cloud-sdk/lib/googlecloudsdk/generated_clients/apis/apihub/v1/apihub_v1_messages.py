@@ -1246,6 +1246,75 @@ class ApihubProjectsLocationsDeploymentsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class ApihubProjectsLocationsDiscoveredApiObservationsDiscoveredApiOperationsGetRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsDiscoveredApiObservationsDiscoveredApiOperation
+  sGetRequest object.
+
+  Fields:
+    name: Required. The name of the DiscoveredApiOperation to retrieve.
+      Format: projects/{project}/locations/{location}/discoveredApiObservation
+      s/{discovered_api_observation}/discoveredApiOperations/{discovered_api_o
+      peration}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApihubProjectsLocationsDiscoveredApiObservationsDiscoveredApiOperationsListRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsDiscoveredApiObservationsDiscoveredApiOperation
+  sListRequest object.
+
+  Fields:
+    pageSize: Optional. DiscoveredApiOperations will be returned. The maximum
+      value is 1000; values above 1000 will be coerced to 1000.
+    pageToken: Optional. A page token, received from a previous
+      `ListDiscoveredApiApiOperations` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListDiscoveredApiApiOperations` must match the call that provided the
+      page token.
+    parent: Required. The parent, which owns this collection of
+      DiscoveredApiOperations. Format: projects/{project}/locations/{location}
+      /discoveredApiObservations/{discovered_api_observation}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ApihubProjectsLocationsDiscoveredApiObservationsGetRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsDiscoveredApiObservationsGetRequest object.
+
+  Fields:
+    name: Required. The name of the DiscoveredApiObservation to retrieve.
+      Format: projects/{project}/locations/{location}/discoveredApiObservation
+      s/{discovered_api_observation}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApihubProjectsLocationsDiscoveredApiObservationsListRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsDiscoveredApiObservationsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of ApiObservations to return. The
+      service may return fewer than this value. If unspecified, at most 10
+      ApiObservations will be returned. The maximum value is 1000; values
+      above 1000 will be coerced to 1000.
+    pageToken: Optional. A page token, received from a previous
+      `ListApiObservations` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `ListApiObservations` must match the call that provided the page token.
+    parent: Required. The parent, which owns this collection of
+      ApiObservations. Format: projects/{project}/locations/{location}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class ApihubProjectsLocationsExternalApisCreateRequest(_messages.Message):
   r"""A ApihubProjectsLocationsExternalApisCreateRequest object.
 
@@ -1409,8 +1478,9 @@ class ApihubProjectsLocationsListRequest(_messages.Message):
   r"""A ApihubProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -3306,6 +3376,136 @@ class GoogleCloudApihubV1DisablePluginRequest(_messages.Message):
   r"""The DisablePlugin method's request."""
 
 
+class GoogleCloudApihubV1DiscoveredApiObservation(_messages.Message):
+  r"""Respresents an API Observation observed in one of the sources.
+
+  Enums:
+    SourceTypesValueListEntryValuesEnum:
+    StyleValueValuesEnum: Optional. Style of ApiObservation
+
+  Fields:
+    apiOperationCount: Optional. The number of observed API Operations.
+    createTime: Output only. Create time stamp of the observation in API Hub.
+    hostname: Optional. The hostname of requests processed for this
+      Observation.
+    knownOperationsCount: Output only. The number of known API Operations.
+    lastEventDetectedTime: Optional. Last event detected time stamp
+    name: Identifier. The name of the discovered API Observation. Format: `pro
+      jects/{project}/locations/{location}/discoveredApiObservations/{discover
+      ed_api_observation}`
+    origin: Optional. For an observation pushed from a gcp resource, this
+      would be the gcp project id.
+    serverIps: Optional. The IP address (IPv4 or IPv6) of the origin server
+      that the request was sent to. This field can include port information.
+      Examples: `"192.168.1.1"`, `"10.0.0.1:80"`,
+      `"FE80::0202:B3FF:FE1E:8329"`.
+    sourceLocations: Optional. The location of the observation source.
+    sourceMetadata: Output only. The metadata of the source from which the
+      observation was collected.
+    sourceTypes: Optional. The type of the source from which the observation
+      was collected.
+    style: Optional. Style of ApiObservation
+    unknownOperationsCount: Output only. The number of unknown API Operations.
+    updateTime: Output only. Update time stamp of the observation in API Hub.
+  """
+
+  class SourceTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""SourceTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      SOURCE_TYPE_UNSPECIFIED: Source type not specified.
+      GCP_XLB: GCP external load balancer.
+      GCP_ILB: GCP internal load balancer.
+    """
+    SOURCE_TYPE_UNSPECIFIED = 0
+    GCP_XLB = 1
+    GCP_ILB = 2
+
+  class StyleValueValuesEnum(_messages.Enum):
+    r"""Optional. Style of ApiObservation
+
+    Values:
+      STYLE_UNSPECIFIED: Unknown style
+      REST: Style is Rest API
+      GRPC: Style is Grpc API
+      GRAPHQL: Style is GraphQL API
+    """
+    STYLE_UNSPECIFIED = 0
+    REST = 1
+    GRPC = 2
+    GRAPHQL = 3
+
+  apiOperationCount = _messages.IntegerField(1)
+  createTime = _messages.StringField(2)
+  hostname = _messages.StringField(3)
+  knownOperationsCount = _messages.IntegerField(4)
+  lastEventDetectedTime = _messages.StringField(5)
+  name = _messages.StringField(6)
+  origin = _messages.StringField(7)
+  serverIps = _messages.StringField(8, repeated=True)
+  sourceLocations = _messages.StringField(9, repeated=True)
+  sourceMetadata = _messages.MessageField('GoogleCloudApihubV1SourceMetadata', 10)
+  sourceTypes = _messages.EnumField('SourceTypesValueListEntryValuesEnum', 11, repeated=True)
+  style = _messages.EnumField('StyleValueValuesEnum', 12)
+  unknownOperationsCount = _messages.IntegerField(13)
+  updateTime = _messages.StringField(14)
+
+
+class GoogleCloudApihubV1DiscoveredApiOperation(_messages.Message):
+  r"""DiscoveredApiOperation represents an API Operation observed in one of
+  the sources.
+
+  Enums:
+    ClassificationValueValuesEnum: Output only. The classification of the
+      discovered API operation.
+
+  Fields:
+    classification: Output only. The classification of the discovered API
+      operation.
+    count: Optional. The number of occurrences of this API Operation.
+    createTime: Output only. Create time stamp of the discovered API operation
+      in API Hub.
+    firstSeenTime: Optional. First seen time stamp
+    httpOperation: Optional. An HTTP Operation.
+    lastSeenTime: Optional. Last seen time stamp
+    matchResults: Output only. The list of matched results for the discovered
+      API operation. This will be populated only if the classification is
+      known. The current usecase is for a single match. Keeping it repeated to
+      support multiple matches in future.
+    name: Identifier. The name of the discovered API Operation. Format: `proje
+      cts/{project}/locations/{location}/discoveredApiObservations/{discovered
+      _api_observation}/discoveredApiOperations/{discovered_api_operation}`
+    sourceMetadata: Output only. The metadata of the source from which the api
+      operation was collected.
+    updateTime: Output only. Update time stamp of the discovered API operation
+      in API Hub.
+  """
+
+  class ClassificationValueValuesEnum(_messages.Enum):
+    r"""Output only. The classification of the discovered API operation.
+
+    Values:
+      CLASSIFICATION_UNSPECIFIED: Operation is not classified as known or
+        unknown.
+      KNOWN: Operation has a matched catalog operation.
+      UNKNOWN: Operation does not have a matched catalog operation.
+    """
+    CLASSIFICATION_UNSPECIFIED = 0
+    KNOWN = 1
+    UNKNOWN = 2
+
+  classification = _messages.EnumField('ClassificationValueValuesEnum', 1)
+  count = _messages.IntegerField(2)
+  createTime = _messages.StringField(3)
+  firstSeenTime = _messages.StringField(4)
+  httpOperation = _messages.MessageField('GoogleCloudApihubV1HttpOperationDetails', 5)
+  lastSeenTime = _messages.StringField(6)
+  matchResults = _messages.MessageField('GoogleCloudApihubV1MatchResult', 7, repeated=True)
+  name = _messages.StringField(8)
+  sourceMetadata = _messages.MessageField('GoogleCloudApihubV1SourceMetadata', 9)
+  updateTime = _messages.StringField(10)
+
+
 class GoogleCloudApihubV1Documentation(_messages.Message):
   r"""Documentation details.
 
@@ -3476,6 +3676,41 @@ class GoogleCloudApihubV1GoogleServiceAccountConfig(_messages.Message):
   serviceAccount = _messages.StringField(1)
 
 
+class GoogleCloudApihubV1Header(_messages.Message):
+  r"""An aggregation of HTTP header occurrences.
+
+  Enums:
+    DataTypeValueValuesEnum: Data type of header
+
+  Fields:
+    count: The number of occurrences of this Header across transactions.
+    dataType: Data type of header
+    name: Header name.
+  """
+
+  class DataTypeValueValuesEnum(_messages.Enum):
+    r"""Data type of header
+
+    Values:
+      DATA_TYPE_UNSPECIFIED: Unspecified data type
+      BOOL: Boolean data type
+      INTEGER: Integer data type
+      FLOAT: Float data type
+      STRING: String data type
+      UUID: UUID data type
+    """
+    DATA_TYPE_UNSPECIFIED = 0
+    BOOL = 1
+    INTEGER = 2
+    FLOAT = 3
+    STRING = 4
+    UUID = 5
+
+  count = _messages.IntegerField(1)
+  dataType = _messages.EnumField('DataTypeValueValuesEnum', 2)
+  name = _messages.StringField(3)
+
+
 class GoogleCloudApihubV1HostProjectRegistration(_messages.Message):
   r"""Host project registration refers to the registration of a Google cloud
   project with Api Hub as a host project. This is the project where Api Hub is
@@ -3558,6 +3793,154 @@ class GoogleCloudApihubV1HttpOperation(_messages.Message):
 
   method = _messages.EnumField('MethodValueValuesEnum', 1)
   path = _messages.MessageField('GoogleCloudApihubV1Path', 2)
+
+
+class GoogleCloudApihubV1HttpOperationDetails(_messages.Message):
+  r"""An HTTP-based API Operation, sometimes called a "REST" Operation.
+
+  Messages:
+    QueryParamsValue: Optional. Query params of HttpOperation
+
+  Fields:
+    httpOperation: Required. An HTTP Operation.
+    pathParams: Optional. Path params of HttpOperation
+    queryParams: Optional. Query params of HttpOperation
+    request: Optional. Request metadata.
+    response: Optional. Response metadata.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class QueryParamsValue(_messages.Message):
+    r"""Optional. Query params of HttpOperation
+
+    Messages:
+      AdditionalProperty: An additional property for a QueryParamsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type QueryParamsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a QueryParamsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudApihubV1QueryParam attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudApihubV1QueryParam', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  httpOperation = _messages.MessageField('GoogleCloudApihubV1HttpOperation', 1)
+  pathParams = _messages.MessageField('GoogleCloudApihubV1PathParam', 2, repeated=True)
+  queryParams = _messages.MessageField('QueryParamsValue', 3)
+  request = _messages.MessageField('GoogleCloudApihubV1HttpRequest', 4)
+  response = _messages.MessageField('GoogleCloudApihubV1HttpResponse', 5)
+
+
+class GoogleCloudApihubV1HttpRequest(_messages.Message):
+  r"""An aggregation of HTTP requests.
+
+  Messages:
+    HeadersValue: Optional. Unordered map from header name to header metadata
+
+  Fields:
+    headers: Optional. Unordered map from header name to header metadata
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class HeadersValue(_messages.Message):
+    r"""Optional. Unordered map from header name to header metadata
+
+    Messages:
+      AdditionalProperty: An additional property for a HeadersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type HeadersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a HeadersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudApihubV1Header attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudApihubV1Header', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  headers = _messages.MessageField('HeadersValue', 1)
+
+
+class GoogleCloudApihubV1HttpResponse(_messages.Message):
+  r"""An aggregation of HTTP responses.
+
+  Messages:
+    HeadersValue: Optional. Unordered map from header name to header metadata
+    ResponseCodesValue: Optional. Map of status code to observed count
+
+  Fields:
+    headers: Optional. Unordered map from header name to header metadata
+    responseCodes: Optional. Map of status code to observed count
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class HeadersValue(_messages.Message):
+    r"""Optional. Unordered map from header name to header metadata
+
+    Messages:
+      AdditionalProperty: An additional property for a HeadersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type HeadersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a HeadersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudApihubV1Header attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudApihubV1Header', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResponseCodesValue(_messages.Message):
+    r"""Optional. Map of status code to observed count
+
+    Messages:
+      AdditionalProperty: An additional property for a ResponseCodesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ResponseCodesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResponseCodesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.IntegerField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  headers = _messages.MessageField('HeadersValue', 1)
+  responseCodes = _messages.MessageField('ResponseCodesValue', 2)
 
 
 class GoogleCloudApihubV1Issue(_messages.Message):
@@ -3766,6 +4149,34 @@ class GoogleCloudApihubV1ListDeploymentsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class GoogleCloudApihubV1ListDiscoveredApiObservationsResponse(_messages.Message):
+  r"""Message for response to listing DiscoveredApiObservations
+
+  Fields:
+    discoveredApiObservations: The DiscoveredApiObservation from the specified
+      project and location.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  discoveredApiObservations = _messages.MessageField('GoogleCloudApihubV1DiscoveredApiObservation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudApihubV1ListDiscoveredApiOperationsResponse(_messages.Message):
+  r"""Message for response to listing DiscoveredApiOperations
+
+  Fields:
+    discoveredApiOperations: The DiscoveredApiOperations from the specified
+      project, location and DiscoveredApiObservation.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  discoveredApiOperations = _messages.MessageField('GoogleCloudApihubV1DiscoveredApiOperation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class GoogleCloudApihubV1ListExternalApisResponse(_messages.Message):
   r"""The ListExternalApis method's response.
 
@@ -3877,6 +4288,19 @@ class GoogleCloudApihubV1LookupRuntimeProjectAttachmentResponse(_messages.Messag
   """
 
   runtimeProjectAttachment = _messages.MessageField('GoogleCloudApihubV1RuntimeProjectAttachment', 1)
+
+
+class GoogleCloudApihubV1MatchResult(_messages.Message):
+  r"""MatchResult represents the result of matching a discovered API operation
+  with a catalog API operation.
+
+  Fields:
+    name: Output only. The name of the matched API Operation. Format: `project
+      s/{project}/locations/{location}/apis/{api}/versions/{version}/operation
+      s/{operation}`
+  """
+
+  name = _messages.StringField(1)
 
 
 class GoogleCloudApihubV1MultiIntValues(_messages.Message):
@@ -4033,6 +4457,39 @@ class GoogleCloudApihubV1Path(_messages.Message):
   path = _messages.StringField(2)
 
 
+class GoogleCloudApihubV1PathParam(_messages.Message):
+  r"""HTTP Path parameter.
+
+  Enums:
+    DataTypeValueValuesEnum: Optional. Data type of path param
+
+  Fields:
+    dataType: Optional. Data type of path param
+    position: Optional. Segment location in the path, 1-indexed
+  """
+
+  class DataTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Data type of path param
+
+    Values:
+      DATA_TYPE_UNSPECIFIED: Unspecified data type
+      BOOL: Boolean data type
+      INTEGER: Integer data type
+      FLOAT: Float data type
+      STRING: String data type
+      UUID: UUID data type
+    """
+    DATA_TYPE_UNSPECIFIED = 0
+    BOOL = 1
+    INTEGER = 2
+    FLOAT = 3
+    STRING = 4
+    UUID = 5
+
+  dataType = _messages.EnumField('DataTypeValueValuesEnum', 1)
+  position = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class GoogleCloudApihubV1Plugin(_messages.Message):
   r"""A plugin resource in the API Hub.
 
@@ -4048,7 +4505,7 @@ class GoogleCloudApihubV1Plugin(_messages.Message):
       framework as the state will be managed at plugin instance level.
 
   Fields:
-    actionsConfig: Optional. The configuration of actions supported by the
+    actionsConfig: Required. The configuration of actions supported by the
       plugin.
     configTemplate: Optional. The configuration template for the plugin.
     createTime: Output only. Timestamp indicating when the plugin was created.
@@ -4452,6 +4909,42 @@ class GoogleCloudApihubV1Point(_messages.Message):
 
   character = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   line = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudApihubV1QueryParam(_messages.Message):
+  r"""An aggregation of HTTP query parameter occurrences.
+
+  Enums:
+    DataTypeValueValuesEnum: Optional. Data type of path param
+
+  Fields:
+    count: Optional. The number of occurrences of this query parameter across
+      transactions.
+    dataType: Optional. Data type of path param
+    name: Required. Name of query param
+  """
+
+  class DataTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Data type of path param
+
+    Values:
+      DATA_TYPE_UNSPECIFIED: Unspecified data type
+      BOOL: Boolean data type
+      INTEGER: Integer data type
+      FLOAT: Float data type
+      STRING: String data type
+      UUID: UUID data type
+    """
+    DATA_TYPE_UNSPECIFIED = 0
+    BOOL = 1
+    INTEGER = 2
+    FLOAT = 3
+    STRING = 4
+    UUID = 5
+
+  count = _messages.IntegerField(1)
+  dataType = _messages.EnumField('DataTypeValueValuesEnum', 2)
+  name = _messages.StringField(3)
 
 
 class GoogleCloudApihubV1Range(_messages.Message):

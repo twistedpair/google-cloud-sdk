@@ -4945,7 +4945,8 @@ class GooglePrivacyDlpV2DataProfileAction(_messages.Message):
       analytics](https://cloud.google.com/chronicle/docs/detection/usecase-
       dlp-high-risk-user-download).
     publishToDataplexCatalog: Publishes a portion of each profile to Dataplex
-      Catalog with the aspect type Sensitive Data Protection Profile.
+      Universal Catalog with the aspect type Sensitive Data Protection
+      Profile.
     publishToScc: Publishes findings to Security Command Center for each data
       profile.
     tagResources: Tags the profiled resources with the specified tag values.
@@ -8001,6 +8002,8 @@ class GooglePrivacyDlpV2InfoTypeDescription(_messages.Message):
       provided in the request.
     displayName: Human readable form of the infoType name.
     example: A sample that is a true positive for this infoType.
+    locationSupport: Locations at which this feature can be used. May change
+      over time.
     name: Internal name of the infoType.
     sensitivityScore: The default sensitivity of the infoType.
     specificInfoTypes: If this field is set, this infoType is a general
@@ -8028,11 +8031,12 @@ class GooglePrivacyDlpV2InfoTypeDescription(_messages.Message):
   description = _messages.StringField(2)
   displayName = _messages.StringField(3)
   example = _messages.StringField(4)
-  name = _messages.StringField(5)
-  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 6)
-  specificInfoTypes = _messages.StringField(7, repeated=True)
-  supportedBy = _messages.EnumField('SupportedByValueListEntryValuesEnum', 8, repeated=True)
-  versions = _messages.MessageField('GooglePrivacyDlpV2VersionDescription', 9, repeated=True)
+  locationSupport = _messages.MessageField('GooglePrivacyDlpV2LocationSupport', 5)
+  name = _messages.StringField(6)
+  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 7)
+  specificInfoTypes = _messages.StringField(8, repeated=True)
+  supportedBy = _messages.EnumField('SupportedByValueListEntryValuesEnum', 9, repeated=True)
+  versions = _messages.MessageField('GooglePrivacyDlpV2VersionDescription', 10, repeated=True)
 
 
 class GooglePrivacyDlpV2InfoTypeLikelihood(_messages.Message):
@@ -8978,6 +8982,39 @@ class GooglePrivacyDlpV2Location(_messages.Message):
   contentLocations = _messages.MessageField('GooglePrivacyDlpV2ContentLocation', 4, repeated=True)
 
 
+class GooglePrivacyDlpV2LocationSupport(_messages.Message):
+  r"""Locations at which a feature can be used.
+
+  Enums:
+    RegionalizationScopeValueValuesEnum: The current scope for location on
+      this feature. This may expand over time.
+
+  Fields:
+    locations: Specific locations where the feature may be used. Examples: us-
+      central1, us, asia, global If scope is ANY_LOCATION, no regions will be
+      listed.
+    regionalizationScope: The current scope for location on this feature. This
+      may expand over time.
+  """
+
+  class RegionalizationScopeValueValuesEnum(_messages.Enum):
+    r"""The current scope for location on this feature. This may expand over
+    time.
+
+    Values:
+      REGIONALIZATION_SCOPE_UNSPECIFIED: Invalid.
+      REGIONAL: Feature may be used with one or more regions. See locations
+        for details.
+      ANY_LOCATION: Feature may be used anywhere. Default value.
+    """
+    REGIONALIZATION_SCOPE_UNSPECIFIED = 0
+    REGIONAL = 1
+    ANY_LOCATION = 2
+
+  locations = _messages.StringField(1, repeated=True)
+  regionalizationScope = _messages.EnumField('RegionalizationScopeValueValuesEnum', 2)
+
+
 class GooglePrivacyDlpV2Manual(_messages.Message):
   r"""Job trigger option for hybrid jobs. Jobs must be manually created and
   finished.
@@ -9587,13 +9624,14 @@ class GooglePrivacyDlpV2PublishToChronicle(_messages.Message):
 
 
 class GooglePrivacyDlpV2PublishToDataplexCatalog(_messages.Message):
-  r"""Create Dataplex Catalog aspects for profiled resources with the aspect
-  type Sensitive Data Protection Profile. To learn more about aspects, see
-  https://cloud.google.com/sensitive-data-protection/docs/add-aspects.
+  r"""Create Dataplex Universal Catalog aspects for profiled resources with
+  the aspect type Sensitive Data Protection Profile. To learn more about
+  aspects, see https://cloud.google.com/sensitive-data-protection/docs/add-
+  aspects.
 
   Fields:
-    lowerDataRiskToLow: Whether creating a Dataplex Catalog aspect for a
-      profiled resource should lower the risk of the profile for that
+    lowerDataRiskToLow: Whether creating a Dataplex Universal Catalog aspect
+      for a profiled resource should lower the risk of the profile for that
       resource. This also lowers the data risk of resources at the lower
       levels of the resource hierarchy. For example, reducing the data risk of
       a table data profile also reduces the data risk of the constituent
@@ -10661,7 +10699,9 @@ class GooglePrivacyDlpV2Tag(_messages.Message):
     namespacedTagValue: The namespaced name for the tag value to attach to
       Google Cloud resources. Must be in the format
       `{parent_id}/{tag_key_short_name}/{short_name}`, for example,
-      "123456/environment/prod". This is only set for Google Cloud resources.
+      "123456/environment/prod" for an organization parent, or "my-
+      project/environment/prod" for a project parent. This is only set for
+      Google Cloud resources.
     value: The value of a tag key-value pair. For Google Cloud resources, this
       is the resource name of the value, for example, "tagValues/123456".
   """
@@ -10740,7 +10780,8 @@ class GooglePrivacyDlpV2TagValue(_messages.Message):
     namespacedValue: The namespaced name for the tag value to attach to
       resources. Must be in the format
       `{parent_id}/{tag_key_short_name}/{short_name}`, for example,
-      "123456/environment/prod".
+      "123456/environment/prod" for an organization parent, or "my-
+      project/environment/prod" for a project parent.
   """
 
   namespacedValue = _messages.StringField(1)
@@ -11530,6 +11571,20 @@ class GoogleTypeTimeOfDay(_messages.Message):
   seconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class Proto2BridgeMessageSet(_messages.Message):
+  r"""This is proto2's version of MessageSet. DEPRECATED: DO NOT USE FOR NEW
+  FIELDS. If you are using editions or proto2, please make your own extendable
+  messages for your use case. If you are using proto3, please use `Any`
+  instead. MessageSet was the implementation of extensions for proto1. When
+  proto2 was introduced, extensions were implemented as a first-class feature.
+  This schema for MessageSet was meant to be a "bridge" solution to migrate
+  MessageSet-bearing messages from proto1 to proto2. This schema has been
+  open-sourced only to facilitate the migration of Google products with
+  MessageSet-bearing messages to open-source environments.
+  """
+
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -11591,6 +11646,33 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class UtilStatusProto(_messages.Message):
+  r"""Wire-format for a Status object
+
+  Fields:
+    canonicalCode: copybara:strip_begin(b/383363683)
+      copybara:strip_end_and_replace optional int32 canonical_code = 6;
+    code: Numeric code drawn from the space specified below. Often, this is
+      the canonical error space, and code is drawn from
+      google3/util/task/codes.proto copybara:strip_begin(b/383363683)
+      copybara:strip_end_and_replace optional int32 code = 1;
+    message: Detail message copybara:strip_begin(b/383363683)
+      copybara:strip_end_and_replace optional string message = 3;
+    messageSet: message_set associates an arbitrary proto message with the
+      status. copybara:strip_begin(b/383363683) copybara:strip_end_and_replace
+      optional proto2.bridge.MessageSet message_set = 5;
+    space: copybara:strip_begin(b/383363683) Space to which this status
+      belongs copybara:strip_end_and_replace optional string space = 2; //
+      Space to which this status belongs
+  """
+
+  canonicalCode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  code = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  message = _messages.StringField(3)
+  messageSet = _messages.MessageField('Proto2BridgeMessageSet', 4)
+  space = _messages.StringField(5)
 
 
 encoding.AddCustomJsonFieldMapping(

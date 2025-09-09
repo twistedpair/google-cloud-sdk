@@ -1466,10 +1466,13 @@ class FhirStore(_messages.Message):
       versions can be fetched through the history APIs, but cannot be updated.
       If set to true, no historical versions are kept. The server sends errors
       for attempts to read the historical versions. Defaults to false.
-    enableHistoryModifications: Optional. Whether to allow ExecuteBundle to
-      accept history bundles, and directly insert and overwrite historical
-      resource versions into the FHIR store. If set to false, using history
-      bundles fails with an error. Defaults to false.
+    enableHistoryModifications: Optional. Whether to allow the
+      [ImportResourcesHistory] and [ExecuteBundle] APIs to accept history
+      bundles, and directly insert and overwrite historical resource versions
+      into the FHIR store. Changing resource histories creates resource
+      interactions that have occurred in the past which clients might not
+      allow. If set to false, [ImportResourcesHistory] and [ExecuteBundle]
+      requests will return errors.
     enableUpdateCreate: Whether this FHIR store has the [updateCreate
       capability](https://www.hl7.org/fhir/capabilitystatement-
       definitions.html#CapabilityStatement.rest.resource.updateCreate). This
@@ -3617,8 +3620,9 @@ class HealthcareProjectsLocationsListRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).

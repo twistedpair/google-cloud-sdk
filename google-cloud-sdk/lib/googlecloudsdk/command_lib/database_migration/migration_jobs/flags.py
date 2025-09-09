@@ -186,15 +186,16 @@ def AddDumpTypeFlag(parser):
 
 def AddSqlServerHomogeneousMigrationConfigFlag(parser, is_update=False):
   """Adds SQL Server homogeneous migration flag group to the given parser."""
-  sqlserver_homogeneous_migration_config = parser.add_group()
+  sqlserver_homogeneous_migration_config = parser.add_group(mutex=True)
   AddSqlServerLogShippingConfigFlag(
       sqlserver_homogeneous_migration_config, is_update
   )
+  AddSqlServerDagConfigFlag(sqlserver_homogeneous_migration_config, is_update)
 
 
 def AddSqlServerLogShippingConfigFlag(parser, is_update=False):
   """Adds SQL Server homogeneous log shipping migration flag group to the given parser."""
-  sqlserver_homogeneous_migration_config = parser.add_group(
+  sqlserver_log_shipping_config = parser.add_group(
       (
           'The SQL Server homogeneous migration config. This is used only for'
           ' SQL Server to CloudSQL SQL Server migrations.'
@@ -202,25 +203,25 @@ def AddSqlServerLogShippingConfigFlag(parser, is_update=False):
   )
   if is_update:
     AddSqlServerBackupFilePattern(
-        sqlserver_homogeneous_migration_config, default_value=None
+        sqlserver_log_shipping_config, default_value=None
     )
     AddSqlServerDatabasesFlag(
-        sqlserver_homogeneous_migration_config, required=False
+        sqlserver_log_shipping_config, required=False
     )
-    AddSqlServerEncryptedDatabasesFlag(sqlserver_homogeneous_migration_config)
-    AddSqlServerUseDiffBackupFlag(sqlserver_homogeneous_migration_config)
-    AddSqlServerPromoteWhenReadyFlag(sqlserver_homogeneous_migration_config)
+    AddSqlServerEncryptedDatabasesFlag(sqlserver_log_shipping_config)
+    AddSqlServerUseDiffBackupFlag(sqlserver_log_shipping_config)
+    AddSqlServerPromoteWhenReadyFlag(sqlserver_log_shipping_config)
   else:
     AddSqlServerBackupFilePattern(
-        sqlserver_homogeneous_migration_config,
+        sqlserver_log_shipping_config,
         default_value='.*(\\.|_)(<epoch>\\d*)\\.(trn|bak|trn\\.final)',
     )
     AddSqlServerDatabasesFlag(
-        sqlserver_homogeneous_migration_config, required=True
+        sqlserver_log_shipping_config, required=True
     )
-    AddSqlServerEncryptedDatabasesFlag(sqlserver_homogeneous_migration_config)
-    AddSqlServerUseDiffBackupFlag(sqlserver_homogeneous_migration_config)
-    AddSqlServerPromoteWhenReadyFlag(sqlserver_homogeneous_migration_config)
+    AddSqlServerEncryptedDatabasesFlag(sqlserver_log_shipping_config)
+    AddSqlServerUseDiffBackupFlag(sqlserver_log_shipping_config)
+    AddSqlServerPromoteWhenReadyFlag(sqlserver_log_shipping_config)
 
 
 def AddSqlServerBackupFilePattern(parser, default_value=None):
@@ -307,6 +308,32 @@ def AddSqlServerUseDiffBackupFlag(parser):
       '--sqlserver-diff-backup',
       action='store_true',
       help=help_text,
+  )
+
+
+def AddSqlServerDagConfigFlag(parser, is_update=False):
+  """Adds SQL Server homogeneous DAG migration flag group to the given parser."""
+  sqlserver_dag_config = parser.add_group(
+      (
+          'The SQL Server homogeneous DAG migration config. This is used only'
+          ' for SQL Server to CloudSQL SQL for SQL Server migrations.'
+      ),
+      hidden=True,
+  )
+  sqlserver_dag_config.add_argument(
+      '--sqlserver-dag-source-ag',
+      help='The name of the source availability group.',
+      required=not is_update,
+      hidden=True,
+  )
+  sqlserver_dag_config.add_argument(
+      '--sqlserver-dag-linked-server',
+      help=(
+          'The name of the linked server that points to the source SQL Server'
+          ' instance.'
+      ),
+      required=not is_update,
+      hidden=True,
   )
 
 

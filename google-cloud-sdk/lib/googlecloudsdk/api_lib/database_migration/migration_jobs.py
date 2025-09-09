@@ -331,24 +331,32 @@ class MigrationJobsClient(object):
         with.
     """
     sqlserver_homogeneous_migration_job_config_obj = (
-        self.messages.SqlServerHomogeneousMigrationJobConfig(
-            backupFilePattern=args.sqlserver_backup_file_pattern
-        )
+        self.messages.SqlServerHomogeneousMigrationJobConfig()
     )
-    if args.IsKnownAndSpecified('sqlserver_diff_backup'):
-      sqlserver_homogeneous_migration_job_config_obj.useDiffBackup = (
-          args.sqlserver_diff_backup
+    if args.IsKnownAndSpecified('sqlserver_dag_source_ag'):
+      dag_config = self.messages.SqlServerDagConfig(
+          sourceAg=args.sqlserver_dag_source_ag,
+          linkedServer=args.sqlserver_dag_linked_server,
       )
-    if args.IsKnownAndSpecified('sqlserver_promote_when_ready'):
-      sqlserver_homogeneous_migration_job_config_obj.promoteWhenReady = (
-          args.sqlserver_promote_when_ready
+      sqlserver_homogeneous_migration_job_config_obj.dagConfig = dag_config
+    else:
+      sqlserver_homogeneous_migration_job_config_obj.backupFilePattern = (
+          args.sqlserver_backup_file_pattern
       )
-    if args.IsKnownAndSpecified('sqlserver_databases'):
-      sqlserver_homogeneous_migration_job_config_obj.databaseBackups = (
-          self._GetSqlServerDatabaseBackups(
-              args.sqlserver_databases, args.sqlserver_encrypted_databases
-          )
-      )
+      if args.IsKnownAndSpecified('sqlserver_diff_backup'):
+        sqlserver_homogeneous_migration_job_config_obj.useDiffBackup = (
+            args.sqlserver_diff_backup
+        )
+      if args.IsKnownAndSpecified('sqlserver_promote_when_ready'):
+        sqlserver_homogeneous_migration_job_config_obj.promoteWhenReady = (
+            args.sqlserver_promote_when_ready
+        )
+      if args.IsKnownAndSpecified('sqlserver_databases'):
+        sqlserver_homogeneous_migration_job_config_obj.databaseBackups = (
+            self._GetSqlServerDatabaseBackups(
+                args.sqlserver_databases, args.sqlserver_encrypted_databases
+            )
+        )
     return sqlserver_homogeneous_migration_job_config_obj
 
   def _GetSourceObjectsConfigForAllDatabases(self):
@@ -701,7 +709,9 @@ class MigrationJobsClient(object):
           self.messages.MigrationJob, args.dump_type
       )
 
-    if args.IsKnownAndSpecified('sqlserver_databases'):
+    if args.IsKnownAndSpecified(
+        'sqlserver_databases'
+    ) or args.IsKnownAndSpecified('sqlserver_dag_source_ag'):
       migration_job_obj.sqlserverHomogeneousMigrationJobConfig = (
           self._GetSqlserverHomogeneousMigrationJobConfig(args)
       )
@@ -828,6 +838,21 @@ class MigrationJobsClient(object):
       sqlserver_homogeneous_migration_job_config_obj.promoteWhenReady = (
           args.sqlserver_promote_when_ready
       )
+    if args.IsKnownAndSpecified(
+        'sqlserver_dag_source_ag'
+    ) or args.IsKnownAndSpecified('sqlserver_dag_linked_server'):
+      if sqlserver_homogeneous_migration_job_config_obj.dagConfig is None:
+        sqlserver_homogeneous_migration_job_config_obj.dagConfig = (
+            self.messages.SqlServerDagConfig()
+        )
+      if args.IsKnownAndSpecified('sqlserver_dag_source_ag'):
+        sqlserver_homogeneous_migration_job_config_obj.dagConfig.sourceAg = (
+            args.sqlserver_dag_source_ag
+        )
+      if args.IsKnownAndSpecified('sqlserver_dag_linked_server'):
+        (
+            sqlserver_homogeneous_migration_job_config_obj.dagConfig.linkedServer
+        ) = args.sqlserver_dag_linked_server
     if args.IsKnownAndSpecified('sqlserver_databases'):
       sqlserver_homogeneous_migration_job_config_obj.databaseBackups = (
           self._GetSqlServerDatabaseBackups(
@@ -887,6 +912,14 @@ class MigrationJobsClient(object):
     if args.IsKnownAndSpecified('sqlserver_promote_when_ready'):
       update_fields.append(
           'sqlserverHomogeneousMigrationJobConfig.promoteWhenReady'
+      )
+    if args.IsKnownAndSpecified('sqlserver_dag_source_ag'):
+      update_fields.append(
+          'sqlserverHomogeneousMigrationJobConfig.dagConfig.sourceAg'
+      )
+    if args.IsKnownAndSpecified('sqlserver_dag_linked_server'):
+      update_fields.append(
+          'sqlserverHomogeneousMigrationJobConfig.dagConfig.linkedServer'
       )
     if args.IsKnownAndSpecified(
         'sqlserver_databases'
@@ -948,6 +981,8 @@ class MigrationJobsClient(object):
         or args.IsKnownAndSpecified('sqlserver_promote_when_ready')
         or args.IsKnownAndSpecified('sqlserver_databases')
         or args.IsKnownAndSpecified('sqlserver_encrypted_databases')
+        or args.IsKnownAndSpecified('sqlserver_dag_source_ag')
+        or args.IsKnownAndSpecified('sqlserver_dag_linked_server')
     ):
       self._UpdateSqlserverHomogeneousMigrationJobConfig(args, migration_job)
 

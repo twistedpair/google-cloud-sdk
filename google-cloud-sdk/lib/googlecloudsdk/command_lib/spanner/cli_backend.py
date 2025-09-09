@@ -90,12 +90,12 @@ class SpannerCliWrapper(binary_operations.BinaryBackedOperation):
     if database_role:
       formatted_arguments += (f"--role={database_role}",)
     if port and host:
-      formatted_arguments += (f"--deployment_endpoint={host}:{port}",)
+      formatted_arguments += (f"--deployment-endpoint={host}:{port}",)
     elif api_endpoint:
-      formatted_arguments += (f"--deployment_endpoint={api_endpoint}",)
+      formatted_arguments += (f"--deployment-endpoint={api_endpoint}",)
     if idle_transaction_timeout:
       formatted_arguments += (
-          f"--idle_transaction_timeout={idle_transaction_timeout}",
+          f"--idle-transaction-timeout={idle_transaction_timeout}",
       )
     if skip_column_names:
       formatted_arguments += ("--skip-column-names",)

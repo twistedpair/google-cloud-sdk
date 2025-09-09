@@ -38,6 +38,26 @@ class Collections(enum.Enum):
       ['foldersId', 'locationsId'],
       True
   )
+  FOLDERS_LOCATIONS_ACCESSPOLICYSIMULATIONS = (
+      'folders.locations.accessPolicySimulations',
+      'folders/{foldersId}/locations/{locationsId}/accessPolicySimulations/'
+      '{accessPolicySimulationsId}',
+      {},
+      ['foldersId', 'locationsId', 'accessPolicySimulationsId'],
+      True
+  )
+  FOLDERS_LOCATIONS_ACCESSPOLICYSIMULATIONS_OPERATIONS = (
+      'folders.locations.accessPolicySimulations.operations',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/locations/{locationsId}/'
+              'accessPolicySimulations/{accessPolicySimulationsId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   FOLDERS_LOCATIONS_ORGPOLICYVIOLATIONSPREVIEWS = (
       'folders.locations.orgPolicyViolationsPreviews',
       'folders/{foldersId}/locations/{locationsId}/'
@@ -104,6 +124,26 @@ class Collections(enum.Enum):
       ['organizationsId', 'locationsId'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_ACCESSPOLICYSIMULATIONS = (
+      'organizations.locations.accessPolicySimulations',
+      'organizations/{organizationsId}/locations/{locationsId}/'
+      'accessPolicySimulations/{accessPolicySimulationsId}',
+      {},
+      ['organizationsId', 'locationsId', 'accessPolicySimulationsId'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_ACCESSPOLICYSIMULATIONS_OPERATIONS = (
+      'organizations.locations.accessPolicySimulations.operations',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'accessPolicySimulations/{accessPolicySimulationsId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_LOCATIONS_ORGPOLICYVIOLATIONSPREVIEWS = (
       'organizations.locations.orgPolicyViolationsPreviews',
       '{+name}',
@@ -161,6 +201,26 @@ class Collections(enum.Enum):
       'projects/{projectsId}/locations/{locationsId}',
       {},
       ['projectsId', 'locationsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_ACCESSPOLICYSIMULATIONS = (
+      'projects.locations.accessPolicySimulations',
+      'projects/{projectsId}/locations/{locationsId}/accessPolicySimulations/'
+      '{accessPolicySimulationsId}',
+      {},
+      ['projectsId', 'locationsId', 'accessPolicySimulationsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_ACCESSPOLICYSIMULATIONS_OPERATIONS = (
+      'projects.locations.accessPolicySimulations.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'accessPolicySimulations/{accessPolicySimulationsId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_ORGPOLICYVIOLATIONSPREVIEWS = (

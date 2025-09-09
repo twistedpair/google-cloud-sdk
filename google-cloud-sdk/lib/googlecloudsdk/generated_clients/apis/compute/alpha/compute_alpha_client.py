@@ -55,6 +55,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.forwardingRules = self.ForwardingRulesService(self)
     self.futureReservations = self.FutureReservationsService(self)
     self.globalAddresses = self.GlobalAddressesService(self)
+    self.globalFolderOperations = self.GlobalFolderOperationsService(self)
     self.globalForwardingRules = self.GlobalForwardingRulesService(self)
     self.globalNetworkEndpointGroups = self.GlobalNetworkEndpointGroupsService(self)
     self.globalOperations = self.GlobalOperationsService(self)
@@ -791,6 +792,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='signedUrlKey',
         request_type_name='ComputeBackendBucketsAddSignedUrlKeyRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves the list of all BackendBucket resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+
+      Args:
+        request: (ComputeBackendBucketsAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackendBucketAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.backendBuckets.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
+        relative_path='projects/{project}/aggregated/backendBuckets',
+        request_field='',
+        request_type_name='ComputeBackendBucketsAggregatedListRequest',
+        response_type_name='BackendBucketAggregatedList',
         supports_download=False,
     )
 
@@ -2378,6 +2405,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def UpdateKmskey(self, request, global_params=None):
+      r"""Rotates the customer-managed encryption key to the latest version for the specified persistent disk.
+
+      Args:
+        request: (ComputeDisksUpdateKmskeyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateKmskey')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateKmskey.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.disks.updateKmskey',
+        ordered_params=['project', 'zone', 'disk'],
+        path_params=['disk', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/disks/{disk}/updateKmsKey',
+        request_field='',
+        request_type_name='ComputeDisksUpdateKmskeyRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def WaitForReplicationCatchUp(self, request, global_params=None):
       r"""Wait for replication to catch up on the secondary disk.
 
@@ -2724,13 +2777,12 @@ class ComputeAlpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     ForceStartProgressiveRollout.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='locations/global/firewallPolicies/{firewallPoliciesId}/forceStartProgressiveRollout',
         http_method='POST',
         method_id='compute.firewallPolicies.forceStartProgressiveRollout',
         ordered_params=['firewallPolicy'],
         path_params=['firewallPolicy'],
         query_params=[],
-        relative_path='locations/global/{+firewallPolicy}/forceStartProgressiveRollout',
+        relative_path='locations/global/firewallPolicies/{firewallPolicy}/forceStartProgressiveRollout',
         request_field='',
         request_type_name='ComputeFirewallPoliciesForceStartProgressiveRolloutRequest',
         response_type_name='Operation',
@@ -2937,7 +2989,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         method_id='compute.firewallPolicies.listAssociations',
         ordered_params=[],
         path_params=[],
-        query_params=['targetResource'],
+        query_params=['includeInheritedPolicies', 'targetResource'],
         relative_path='locations/global/firewallPolicies/listAssociations',
         request_field='',
         request_type_name='ComputeFirewallPoliciesListAssociationsRequest',
@@ -4022,6 +4074,70 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='testPermissionsRequest',
         request_type_name='ComputeGlobalAddressesTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class GlobalFolderOperationsService(base_api.BaseApiService):
+    """Service class for the globalFolderOperations resource."""
+
+    _NAME = 'globalFolderOperations'
+
+    def __init__(self, client):
+      super(ComputeAlpha.GlobalFolderOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves the specified Operations resource.
+
+      Args:
+        request: (ComputeGlobalFolderOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='folders/{foldersId}/global/operations/{operation}',
+        http_method='GET',
+        method_id='compute.globalFolderOperations.get',
+        ordered_params=['folder', 'operation'],
+        path_params=['folder', 'operation'],
+        query_params=[],
+        relative_path='{+folder}/global/operations/{operation}',
+        request_field='',
+        request_type_name='ComputeGlobalFolderOperationsGetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of Operation resources contained within the specified folder.
+
+      Args:
+        request: (ComputeGlobalFolderOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (OperationList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='folders/{foldersId}/global/operations',
+        http_method='GET',
+        method_id='compute.globalFolderOperations.list',
+        ordered_params=['folder'],
+        path_params=['folder'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='{+folder}/global/operations',
+        request_field='',
+        request_type_name='ComputeGlobalFolderOperationsListRequest',
+        response_type_name='OperationList',
         supports_download=False,
     )
 
@@ -6424,6 +6540,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeInstanceGroupManagersGetRequest',
         response_type_name='InstanceGroupManager',
+        supports_download=False,
+    )
+
+    def GetAvailableAcceleratorTopologies(self, request, global_params=None):
+      r"""Returns information about available accelerator topologies for a given MIG.
+
+      Args:
+        request: (ComputeInstanceGroupManagersGetAvailableAcceleratorTopologiesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstanceGroupManagersGetAvailableAcceleratorTopologiesResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetAvailableAcceleratorTopologies')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetAvailableAcceleratorTopologies.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instanceGroupManagers.getAvailableAcceleratorTopologies',
+        ordered_params=['project', 'zone', 'resourceId'],
+        path_params=['project', 'resourceId', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{resourceId}/getAvailableAcceleratorTopologies',
+        request_field='',
+        request_type_name='ComputeInstanceGroupManagersGetAvailableAcceleratorTopologiesRequest',
+        response_type_name='InstanceGroupManagersGetAvailableAcceleratorTopologiesResponse',
         supports_download=False,
     )
 
@@ -12575,6 +12717,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def CancelRequestRemovePeering(self, request, global_params=None):
+      r"""Cancel requests to remove a peering from the specified network. Applicable only for PeeringConnection with update_strategy=CONSENSUS. Cancels a request to remove a peering from the specified network.
+
+      Args:
+        request: (ComputeNetworksCancelRequestRemovePeeringRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CancelRequestRemovePeering')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CancelRequestRemovePeering.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.networks.cancelRequestRemovePeering',
+        ordered_params=['project', 'network'],
+        path_params=['network', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/networks/{network}/cancelRequestRemovePeering',
+        request_field='networksCancelRequestRemovePeeringRequest',
+        request_type_name='ComputeNetworksCancelRequestRemovePeeringRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes the specified network.
 
@@ -14570,7 +14738,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def MoveDisk(self, request, global_params=None):
-      r"""Moves a persistent disk from one zone to another.
+      r"""Starting September 29, 2025, you can't use the moveDisk API on new projects. To move a disk to a different region or zone, follow the steps in [Change the location of a disk](https://{$universe.dns_names.final_documentation_domain}/compute/docs/disks/migrate-to-hyperdisk#migrate-to-hd). Projects that already use the moveDisk API can continue usage until September 29, 2026. Starting November 1, 2025, API responses will include a warning message in the response body about the upcoming deprecation. You can skip the message to continue using the service without interruption.
 
       Args:
         request: (ComputeProjectsMoveDiskRequest) input message
@@ -17197,6 +17365,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         relative_path='projects/{project}/regions/{region}/disks/{disk}',
         request_field='diskResource',
         request_type_name='ComputeRegionDisksUpdateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def UpdateKmsKey(self, request, global_params=None):
+      r"""Rotates the customer-managed encryption key to the latest version for the specified persistent disk.
+
+      Args:
+        request: (ComputeRegionDisksUpdateKmsKeyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateKmsKey')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateKmsKey.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionDisks.updateKmsKey',
+        ordered_params=['project', 'region', 'disk'],
+        path_params=['disk', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/disks/{disk}/updateKmsKey',
+        request_field='',
+        request_type_name='ComputeRegionDisksUpdateKmsKeyRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -21571,6 +21765,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def UpdateKmsKey(self, request, global_params=None):
+      r"""Rotates the customer-managed encryption key to the latest version for the specified snapshot.
+
+      Args:
+        request: (ComputeRegionSnapshotsUpdateKmsKeyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateKmsKey')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateKmsKey.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionSnapshots.updateKmsKey',
+        ordered_params=['project', 'region', 'snapshot'],
+        path_params=['project', 'region', 'snapshot'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/snapshots/{snapshot}/updateKmsKey',
+        request_field='',
+        request_type_name='ComputeRegionSnapshotsUpdateKmsKeyRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class RegionSslCertificatesService(base_api.BaseApiService):
     """Service class for the regionSslCertificates resource."""
 
@@ -25408,6 +25628,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='testPermissionsRequest',
         request_type_name='ComputeSnapshotsTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+    def UpdateKmsKey(self, request, global_params=None):
+      r"""Rotates the customer-managed encryption key to the latest version for the specified snapshot.
+
+      Args:
+        request: (ComputeSnapshotsUpdateKmsKeyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateKmsKey')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateKmsKey.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.snapshots.updateKmsKey',
+        ordered_params=['project', 'snapshot'],
+        path_params=['project', 'snapshot'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/snapshots/{snapshot}/updateKmsKey',
+        request_field='',
+        request_type_name='ComputeSnapshotsUpdateKmsKeyRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

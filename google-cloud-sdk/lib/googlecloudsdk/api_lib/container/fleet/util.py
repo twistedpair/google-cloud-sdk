@@ -117,15 +117,24 @@ def MembershipResourceName(project, membership, location='global'):
 
 
 def MembershipFeatureResourceName(
-    project, membership, feature, location='global'
+    project,
+    membership,
+    feature,
+    location='global',
+    release_track=base.ReleaseTrack.ALPHA,
 ):
   # See command_lib/container/fleet/resources.yaml
-  return resources.REGISTRY.Create(
-      'gkehub.projects.locations.memberships.features',
-      projectsId=project,
-      locationsId=location,
-      membershipsId=membership,
-      featuresId=feature,
+  return resources.REGISTRY.Parse(
+      line=None,
+      params={
+          'projectsId': project,
+          'locationsId': location,
+          'membershipsId': membership,
+          'featuresId': feature,
+      },
+      collection='gkehub.projects.locations.memberships.features',
+      # Defaults to v1 without specifying api version.
+      api_version=V2_VERSION_MAP[release_track],
   ).RelativeName()
 
 

@@ -1101,9 +1101,8 @@ class IamLocationsWorkforcePoolsListRequest(_messages.Message):
 
   Fields:
     location: The location of the pool. Format: `locations/{location}`.
-    pageSize: The maximum number of pools to return. If unspecified, at most
-      50 pools will be returned. The maximum value is 1000; values above 1000
-      are truncated to 1000.
+    pageSize: The maximum number of pools to return. The default value is 50.
+      The maximum value is 100.
     pageToken: A page token, received from a previous `ListWorkforcePools`
       call. Provide this to retrieve the subsequent page.
     parent: Required. The parent resource to list pools for. Format:
@@ -2380,7 +2379,7 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesPatchR
   tchRequest object.
 
   Fields:
-    name: Output only. The resource name of the managed identity.
+    name: Identifier. The resource name of the managed identity.
     updateMask: Required. The list of fields to update.
     workloadIdentityPoolManagedIdentity: A WorkloadIdentityPoolManagedIdentity
       resource to be passed as the request body.
@@ -2954,7 +2953,7 @@ class IamProjectsLocationsWorkloadIdentityPoolsProvidersPatchRequest(_messages.M
   r"""A IamProjectsLocationsWorkloadIdentityPoolsProvidersPatchRequest object.
 
   Fields:
-    name: Output only. The resource name of the provider.
+    name: Identifier. The resource name of the provider.
     updateMask: Required. The list of fields to update.
     workloadIdentityPoolProvider: A WorkloadIdentityPoolProvider resource to
       be passed as the request body.
@@ -4013,6 +4012,14 @@ class InlineCertificateIssuanceConfig(_messages.Message):
       percentage of remaining lifetime after which certificate rotation is
       initiated. Must be between 50 and 80. If no value is specified, rotation
       window percentage is defaulted to 50.
+    useDefaultSharedCa: Optional. If set to true, the trust domain will
+      utilize the GCP-provisioned default CA. A default CA in the same region
+      as the workload will be selected to issue the certificate. Enabling this
+      will clear any existing `ca_pools` configuration to provision the
+      certificates. NOTE: This field is mutually exclusive with `ca_pools`. If
+      this flag is enabled, certificates will be automatically provisioned
+      from the default shared CAs. This flag should not be set if you want to
+      use your own CA pools to provision the certificates.
   """
 
   class KeyAlgorithmValueValuesEnum(_messages.Enum):
@@ -4073,6 +4080,7 @@ class InlineCertificateIssuanceConfig(_messages.Message):
   keyAlgorithm = _messages.EnumField('KeyAlgorithmValueValuesEnum', 2)
   lifetime = _messages.StringField(3)
   rotationWindowPercentage = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  useDefaultSharedCa = _messages.BooleanField(5)
 
 
 class InlineTrustConfig(_messages.Message):
@@ -5795,10 +5803,15 @@ class TrustStore(_messages.Message):
     trustAnchors: Required. List of trust anchors to be used while performing
       validation against a given TrustStore. The incoming end entity's
       certificate must be in the trust chain of one of the trust anchors here.
+    trustDefaultSharedCa: Optional. If set to True, the trust bundle will
+      include the private ca managed identity regional root public
+      certificates. Important: `trust_default_shared_ca` is only supported for
+      managed identity trust domain resource.
   """
 
   intermediateCas = _messages.MessageField('IntermediateCA', 1, repeated=True)
   trustAnchors = _messages.MessageField('TrustAnchor', 2, repeated=True)
+  trustDefaultSharedCa = _messages.BooleanField(3)
 
 
 class UndeleteOauthClientRequest(_messages.Message):
@@ -6157,8 +6170,8 @@ class WorkforcePoolProvider(_messages.Message):
       grant access.
     displayName: Optional. A user-specified display name for the provider.
       Cannot exceed 32 characters.
-    expireTime: Output only. Time after which the workload pool provider will
-      be permanently purged and cannot be recovered.
+    expireTime: Output only. Time after which the workforce identity pool
+      provider will be permanently purged and cannot be recovered.
     extendedAttributesOauth2Client: Optional. The configuration for OAuth 2.0
       client used to get the extended group memberships for user identities.
       Only the `AZURE_AD_GROUPS_ID` attribute type is supported. Extended
@@ -6168,8 +6181,8 @@ class WorkforcePoolProvider(_messages.Message):
       attribute mapping or attribute condition expressions. To keep extended
       group memberships up to date, extended groups are retrieved when the
       user signs in and at regular intervals during the user's active session.
-      Each user identity in the workforce identity pool must map to a
-      specific, unique Microsoft Entra ID user.
+      Each user identity in the workforce identity pool must map to a unique
+      Microsoft Entra ID user.
     extraAttributesOauth2Client: Optional. The configuration for OAuth 2.0
       client used to get the additional user attributes. This should be used
       when users can't get the desired claims in authentication credentials.
@@ -6489,6 +6502,11 @@ class WorkloadIdentityPool(_messages.Message):
       again.
     displayName: Optional. A display name for the pool. Cannot exceed 32
       characters.
+    enableMeshCaCompatibility: Optional. If set to true, - the generated trust
+      bundle for the workloads in this trust domain will include the Cloud
+      Service Mesh certificate authority's root CA certificates. - the
+      certificate chain for the workload in this trust domain will be signed
+      by the Cloud Service Mesh certificate authority root CA.
     expireTime: Output only. Time after which the workload identity pool will
       be permanently purged and cannot be recovered.
     inlineCertificateIssuanceConfig: Optional. Defines the Certificate
@@ -6556,13 +6574,14 @@ class WorkloadIdentityPool(_messages.Message):
   description = _messages.StringField(1)
   disabled = _messages.BooleanField(2)
   displayName = _messages.StringField(3)
-  expireTime = _messages.StringField(4)
-  inlineCertificateIssuanceConfig = _messages.MessageField('InlineCertificateIssuanceConfig', 5)
-  inlineTrustConfig = _messages.MessageField('InlineTrustConfig', 6)
-  mode = _messages.EnumField('ModeValueValuesEnum', 7)
-  name = _messages.StringField(8)
-  sessionDuration = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
+  enableMeshCaCompatibility = _messages.BooleanField(4)
+  expireTime = _messages.StringField(5)
+  inlineCertificateIssuanceConfig = _messages.MessageField('InlineCertificateIssuanceConfig', 6)
+  inlineTrustConfig = _messages.MessageField('InlineTrustConfig', 7)
+  mode = _messages.EnumField('ModeValueValuesEnum', 8)
+  name = _messages.StringField(9)
+  sessionDuration = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
 class WorkloadIdentityPoolManagedIdentity(_messages.Message):
@@ -6572,14 +6591,14 @@ class WorkloadIdentityPoolManagedIdentity(_messages.Message):
     StateValueValuesEnum: Output only. The state of the managed identity.
 
   Fields:
-    description: A description of the managed identity. Cannot exceed 256
-      characters.
-    disabled: Whether the managed identity is disabled. If disabled,
+    description: Optional. A description of the managed identity. Cannot
+      exceed 256 characters.
+    disabled: Optional. Whether the managed identity is disabled. If disabled,
       credentials may no longer be issued for the identity, however existing
       credentials will still be accepted until they expire.
     expireTime: Output only. Time after which the managed identity will be
       permanently purged and cannot be recovered.
-    name: Output only. The resource name of the managed identity.
+    name: Identifier. The resource name of the managed identity.
     state: Output only. The state of the managed identity.
   """
 
@@ -6614,10 +6633,12 @@ class WorkloadIdentityPoolNamespace(_messages.Message):
     StateValueValuesEnum: Output only. The state of the namespace.
 
   Fields:
-    description: A description of the namespace. Cannot exceed 256 characters.
-    disabled: Whether the namespace is disabled. If disabled, credentials may
-      no longer be issued for identities within this namespace, however
-      existing credentials will still be accepted until they expire.
+    description: Optional. A description of the namespace. Cannot exceed 256
+      characters.
+    disabled: Optional. Whether the namespace is disabled. If disabled,
+      credentials may no longer be issued for identities within this
+      namespace, however existing credentials will still be accepted until
+      they expire.
     expireTime: Output only. Time after which the namespace will be
       permanently purged and cannot be recovered.
     name: Output only. The resource name of the namespace.
@@ -6769,7 +6790,7 @@ class WorkloadIdentityPoolProvider(_messages.Message):
       characters.
     expireTime: Output only. Time after which the workload identity pool
       provider will be permanently purged and cannot be recovered.
-    name: Output only. The resource name of the provider.
+    name: Identifier. The resource name of the provider.
     oidc: An OpenId Connect 1.0 identity provider.
     saml: An SAML 2.0 identity provider.
     state: Output only. The state of the provider.

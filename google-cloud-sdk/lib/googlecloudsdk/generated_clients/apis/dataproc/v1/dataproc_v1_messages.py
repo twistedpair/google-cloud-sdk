@@ -8867,6 +8867,11 @@ class RepairClusterRequest(_messages.Message):
     clusterUuid: Optional. Specifying the cluster_uuid means the RPC will fail
       (with error NOT_FOUND) if a cluster with the specified UUID does not
       exist.
+    dataprocSuperUser: Optional. Whether the request is submitted by Dataproc
+      super user. If true, IAM will check 'dataproc.clusters.repair'
+      permission instead of 'dataproc.clusters.update' permission. This is to
+      give Dataproc superuser the ability to repair clusters without granting
+      the overly broad update permission.
     gracefulDecommissionTimeout: Optional. Timeout for graceful YARN
       decommissioning. Graceful decommissioning facilitates the removal of
       cluster nodes without interrupting jobs in progress. The timeout
@@ -8892,10 +8897,11 @@ class RepairClusterRequest(_messages.Message):
 
   cluster = _messages.MessageField('ClusterToRepair', 1)
   clusterUuid = _messages.StringField(2)
-  gracefulDecommissionTimeout = _messages.StringField(3)
-  nodePools = _messages.MessageField('NodePool', 4, repeated=True)
-  parentOperationId = _messages.StringField(5)
-  requestId = _messages.StringField(6)
+  dataprocSuperUser = _messages.BooleanField(3)
+  gracefulDecommissionTimeout = _messages.StringField(4)
+  nodePools = _messages.MessageField('NodePool', 5, repeated=True)
+  parentOperationId = _messages.StringField(6)
+  requestId = _messages.StringField(7)
 
 
 class RepairNodeGroupRequest(_messages.Message):
@@ -12433,7 +12439,6 @@ class UsageMetrics(_messages.Message):
     milliDcuSeconds: Optional. DCU (Dataproc Compute Units) usage in (milliDCU
       x seconds) (see Dataproc Serverless pricing
       (https://cloud.google.com/dataproc-serverless/pricing)).
-    milliSlotSeconds: Optional. Slot usage in (milliSlot x seconds).
     shuffleStorageGbSeconds: Optional. Shuffle storage usage in (GB x seconds)
       (see Dataproc Serverless pricing (https://cloud.google.com/dataproc-
       serverless/pricing)).
@@ -12443,9 +12448,8 @@ class UsageMetrics(_messages.Message):
   acceleratorType = _messages.StringField(1)
   milliAcceleratorSeconds = _messages.IntegerField(2)
   milliDcuSeconds = _messages.IntegerField(3)
-  milliSlotSeconds = _messages.IntegerField(4)
-  shuffleStorageGbSeconds = _messages.IntegerField(5)
-  updateTime = _messages.StringField(6)
+  shuffleStorageGbSeconds = _messages.IntegerField(4)
+  updateTime = _messages.StringField(5)
 
 
 class UsageSnapshot(_messages.Message):
@@ -12463,7 +12467,6 @@ class UsageSnapshot(_messages.Message):
     milliDcuPremium: Optional. Milli (one-thousandth) Dataproc Compute Units
       (DCUs) charged at premium tier (see Dataproc Serverless pricing
       (https://cloud.google.com/dataproc-serverless/pricing)).
-    milliSlot: Optional. Milli (one-thousandth) Slot usage of the workload.
     shuffleStorageGb: Optional. Shuffle Storage in gigabytes (GB). (see
       Dataproc Serverless pricing (https://cloud.google.com/dataproc-
       serverless/pricing))
@@ -12477,10 +12480,9 @@ class UsageSnapshot(_messages.Message):
   milliAccelerator = _messages.IntegerField(2)
   milliDcu = _messages.IntegerField(3)
   milliDcuPremium = _messages.IntegerField(4)
-  milliSlot = _messages.IntegerField(5)
-  shuffleStorageGb = _messages.IntegerField(6)
-  shuffleStorageGbPremium = _messages.IntegerField(7)
-  snapshotTime = _messages.StringField(8)
+  shuffleStorageGb = _messages.IntegerField(5)
+  shuffleStorageGbPremium = _messages.IntegerField(6)
+  snapshotTime = _messages.StringField(7)
 
 
 class ValueInfo(_messages.Message):

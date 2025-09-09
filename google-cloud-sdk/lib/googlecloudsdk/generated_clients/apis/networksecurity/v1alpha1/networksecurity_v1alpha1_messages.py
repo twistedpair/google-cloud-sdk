@@ -1100,24 +1100,29 @@ class Destination(_messages.Message):
 
 
 class DnsThreatDetector(_messages.Message):
-  r"""Message describing DnsThreatDetector object.
+  r"""A DNS threat detector sends DNS query logs to a _provider_ that then
+  analyzes the logs to identify malicious activity in the DNS queries. By
+  default, all VPC networks in your projects are included. You can exclude
+  specific networks by supplying `excluded_networks`.
 
   Enums:
     ProviderValueValuesEnum: Required. The provider used for DNS threat
       analysis.
 
   Messages:
-    LabelsValue: Optional. Labels as key value pairs
+    LabelsValue: Optional. Any labels associated with the DnsThreatDetector,
+      listed as key value pairs.
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
-    excludedNetworks: Optional. A list of Network resource names which are
-      exempt from the configuration in this DnsThreatDetector. Example:
+    createTime: Output only. Create time stamp.
+    excludedNetworks: Optional. A list of network resource names which aren't
+      monitored by this DnsThreatDetector. Example:
       `projects/PROJECT_ID/global/networks/NETWORK_NAME`.
-    labels: Optional. Labels as key value pairs
+    labels: Optional. Any labels associated with the DnsThreatDetector, listed
+      as key value pairs.
     name: Immutable. Identifier. Name of the DnsThreatDetector resource.
     provider: Required. The provider used for DNS threat analysis.
-    updateTime: Output only. [Output only] Update time stamp
+    updateTime: Output only. Update time stamp.
   """
 
   class ProviderValueValuesEnum(_messages.Enum):
@@ -1125,14 +1130,15 @@ class DnsThreatDetector(_messages.Message):
 
     Values:
       PROVIDER_UNSPECIFIED: An unspecified provider.
-      INFOBLOX: The Infoblox DNS threat detecter.
+      INFOBLOX: The Infoblox DNS threat detector provider.
     """
     PROVIDER_UNSPECIFIED = 0
     INFOBLOX = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
+    r"""Optional. Any labels associated with the DnsThreatDetector, listed as
+    key value pairs.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2852,11 +2858,11 @@ class ListClientTlsPoliciesResponse(_messages.Message):
 
 
 class ListDnsThreatDetectorsResponse(_messages.Message):
-  r"""Message for response to listing DnsThreatDetectors.
+  r"""The response message to requesting a list of DnsThreatDetectors.
 
   Fields:
     dnsThreatDetectors: The list of DnsThreatDetector resources.
-    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+    nextPageToken: A token, which can be sent as `page_token`, to retrieve the
       next page.
     unreachable: Unordered list. Unreachable `DnsThreatDetector` resources.
   """
@@ -5581,10 +5587,11 @@ class NetworksecurityProjectsLocationsDnsThreatDetectorsCreateRequest(_messages.
   Fields:
     dnsThreatDetector: A DnsThreatDetector resource to be passed as the
       request body.
-    dnsThreatDetectorId: Optional. Id of the requesting DnsThreatDetector
-      object. If this field is not supplied, the service will generate an
+    dnsThreatDetectorId: Optional. The ID of the requesting DnsThreatDetector
+      object. If this field is not supplied, the service generates an
       identifier.
-    parent: Required. Value for parent of the DnsThreatDetector resource.
+    parent: Required. The value for the parent of the DnsThreatDetector
+      resource.
   """
 
   dnsThreatDetector = _messages.MessageField('DnsThreatDetector', 1)
@@ -5607,7 +5614,7 @@ class NetworksecurityProjectsLocationsDnsThreatDetectorsGetRequest(_messages.Mes
   r"""A NetworksecurityProjectsLocationsDnsThreatDetectorsGetRequest object.
 
   Fields:
-    name: Required. Name of the DnsThreatDetector resource
+    name: Required. Name of the DnsThreatDetector resource.
   """
 
   name = _messages.StringField(1, required=True)
@@ -5617,12 +5624,13 @@ class NetworksecurityProjectsLocationsDnsThreatDetectorsListRequest(_messages.Me
   r"""A NetworksecurityProjectsLocationsDnsThreatDetectorsListRequest object.
 
   Fields:
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A page token, received from a previous
+    pageSize: Optional. The requested page size. The server may return fewer
+      items than requested. If unspecified, the server picks an appropriate
+      default.
+    pageToken: Optional. A page token received from a previous
       `ListDnsThreatDetectorsRequest` call. Provide this to retrieve the
       subsequent page.
-    parent: Required. Parent value for ListDnsThreatDetectorsRequest
+    parent: Required. The parent value for `ListDnsThreatDetectorsRequest`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -5637,7 +5645,7 @@ class NetworksecurityProjectsLocationsDnsThreatDetectorsPatchRequest(_messages.M
     dnsThreatDetector: A DnsThreatDetector resource to be passed as the
       request body.
     name: Immutable. Identifier. Name of the DnsThreatDetector resource.
-    updateMask: Optional. Field mask is used to specify the fields to be
+    updateMask: Optional. The field mask is used to specify the fields to be
       overwritten in the DnsThreatDetector resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
       request. A field will be overwritten if it is in the mask. If the mask

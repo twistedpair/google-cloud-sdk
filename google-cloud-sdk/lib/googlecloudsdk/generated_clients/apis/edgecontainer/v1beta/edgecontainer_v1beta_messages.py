@@ -713,8 +713,9 @@ class EdgecontainerProjectsLocationsListRequest(_messages.Message):
   r"""A EdgecontainerProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1766,9 +1767,11 @@ class OperationMetadata(_messages.Message):
     Values:
       STATUS_REASON_UNSPECIFIED: Reason unknown.
       UPGRADE_PAUSED: The cluster upgrade is currently paused.
+      RETRYABLE_ERROR: The request has errored, but the error is retryable.
     """
     STATUS_REASON_UNSPECIFIED = 0
     UPGRADE_PAUSED = 1
+    RETRYABLE_ERROR = 2
 
   apiVersion = _messages.StringField(1)
   createTime = _messages.StringField(2)
@@ -1813,6 +1816,16 @@ class Remote(_messages.Message):
   r"""Configuration specific to clusters with a control plane hosted remotely.
   """
 
+
+
+class RobinCloudNativeStorage(_messages.Message):
+  r"""Defines configurations for Robin Cloud Native Storage.
+
+  Fields:
+    enable: Optional. If true, enable Robin CNS in this cluster.
+  """
+
+  enable = _messages.BooleanField(1)
 
 
 class SdsOperator(_messages.Message):
@@ -1999,15 +2012,18 @@ class SystemAddonsConfig(_messages.Message):
 
   Fields:
     ingress: Optional. Config for Ingress.
+    robinCloudNativeStorage: Optional. Configurations for Robin Cloud Native
+      Storage.
     sdsOperator: Optional. Config for SDS Operator.
     unmanagedKafkaConfig: Optional. Config for unmanaged Kafka.
     vmServiceConfig: Optional. Config for VM Service.
   """
 
   ingress = _messages.MessageField('Ingress', 1)
-  sdsOperator = _messages.MessageField('SdsOperator', 2)
-  unmanagedKafkaConfig = _messages.MessageField('UnmanagedKafkaConfig', 3)
-  vmServiceConfig = _messages.MessageField('VMServiceConfig', 4)
+  robinCloudNativeStorage = _messages.MessageField('RobinCloudNativeStorage', 2)
+  sdsOperator = _messages.MessageField('SdsOperator', 3)
+  unmanagedKafkaConfig = _messages.MessageField('UnmanagedKafkaConfig', 4)
+  vmServiceConfig = _messages.MessageField('VMServiceConfig', 5)
 
 
 class TimeWindow(_messages.Message):

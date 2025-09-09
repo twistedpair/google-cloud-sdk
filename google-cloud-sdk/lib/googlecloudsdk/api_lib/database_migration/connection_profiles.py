@@ -589,6 +589,15 @@ class ConnectionProfilesClient(object):
     if args.IsSpecified('cloudsql_project_id'):
       connection_profile.sqlserver.cloudSqlProjectId = args.cloudsql_project_id
       update_fields.append('sqlserver.cloudSqlProjectId')
+    if args.IsSpecified('host'):
+      connection_profile.sqlserver.host = args.host
+      update_fields.append('sqlserver.host')
+    if args.IsSpecified('port'):
+      connection_profile.sqlserver.port = args.port
+      update_fields.append('sqlserver.port')
+    if args.IsSpecified('dbm_port'):
+      connection_profile.sqlserver.dbmPort = args.dbm_port
+      update_fields.append('sqlserver.dbmPort')
     if args.IsSpecified('username'):
       connection_profile.sqlserver.username = args.username
       update_fields.append('sqlserver.username')
@@ -878,6 +887,8 @@ class ConnectionProfilesClient(object):
     if args.IsKnownAndSpecified('host'):
       connection_profile_obj.host = args.host
       connection_profile_obj.port = args.port
+      if args.IsKnownAndSpecified('dbm_port'):
+        connection_profile_obj.dbmPort = args.dbm_port
     elif args.IsKnownAndSpecified('gcs_bucket'):
       connection_profile_obj.backups = self._GetSqlServerBackups(args)
 

@@ -614,9 +614,6 @@ class ClusterUpgradeUpgradeStatus(_messages.Message):
         scope level, this means all eligible clusters are in COMPLETE status.
       PAUSED: The upgrade is paused. At the scope level, this means the
         upgrade is paused for all the clusters in the scope.
-      FORCED_COMPLETE: The upgrade was forced into soaking and the soaking
-        time has passed. This is the equivalent of COMPLETE status for
-        upgrades that were forced into soaking.
     """
     CODE_UNSPECIFIED = 0
     INELIGIBLE = 1
@@ -626,7 +623,6 @@ class ClusterUpgradeUpgradeStatus(_messages.Message):
     FORCED_SOAKING = 5
     COMPLETE = 6
     PAUSED = 7
-    FORCED_COMPLETE = 8
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Type of the status.
@@ -669,6 +665,7 @@ class CommonFeatureSpec(_messages.Message):
     dataplanev2: DataplaneV2 feature spec.
     fleetobservability: FleetObservability feature spec.
     helloworld: Hello World-specific spec.
+    mesh: Servicemesh feature spec.
     multiclusteringress: Multicluster Ingress-specific spec.
     rbacrolebindingactuation: RBAC Role Binding Actuation feature spec
     workloadmigration: The specification for WorkloadMigration feature.
@@ -679,9 +676,10 @@ class CommonFeatureSpec(_messages.Message):
   dataplanev2 = _messages.MessageField('DataplaneV2FeatureSpec', 3)
   fleetobservability = _messages.MessageField('FleetObservabilityFeatureSpec', 4)
   helloworld = _messages.MessageField('HelloWorldFeatureSpec', 5)
-  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 6)
-  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 7)
-  workloadmigration = _messages.MessageField('WorkloadMigrationFeatureSpec', 8)
+  mesh = _messages.MessageField('ServiceMeshFeatureSpec', 6)
+  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 7)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 8)
+  workloadmigration = _messages.MessageField('WorkloadMigrationFeatureSpec', 9)
 
 
 class CommonFeatureState(_messages.Message):
@@ -3066,8 +3064,9 @@ class GkehubProjectsLocationsListRequest(_messages.Message):
   r"""A GkehubProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -7090,8 +7089,27 @@ class ServiceMeshCondition(_messages.Message):
       MODERNIZATION_IN_PROGRESS: Modernization is in progress for a cluster.
       MODERNIZATION_COMPLETED: Modernization is completed for a cluster.
       MODERNIZATION_ABORTED: Modernization is aborted for a cluster.
+      MODERNIZATION_PREPARING: Preparing cluster so that its workloads can be
+        migrated.
+      MODERNIZATION_STALLED: Modernization is stalled for a cluster.
+      MODERNIZATION_PREPARED: Cluster has been prepared for its workloads to
+        be migrated.
+      MODERNIZATION_MIGRATING_WORKLOADS: Migrating the cluster's workloads to
+        the new implementation.
+      MODERNIZATION_ROLLING_BACK_CLUSTER: Rollback is in progress for
+        modernization of a cluster.
       MODERNIZATION_WILL_BE_SCHEDULED: Modernization will be scheduled for a
         fleet.
+      MODERNIZATION_MANUAL: Fleet is opted out from automated modernization.
+      MODERNIZATION_ELIGIBLE: Fleet is eligible for modernization.
+      MODERNIZATION_MODERNIZING: Modernization of one or more clusters in a
+        fleet is in progress.
+      MODERNIZATION_MODERNIZED_SOAKING: Modernization of all the fleet's
+        clusters is complete. Soaking before finalizing the modernization.
+      MODERNIZATION_FINALIZED: Modernization is finalized for all clusters in
+        a fleet. Rollback is no longer allowed.
+      MODERNIZATION_ROLLING_BACK_FLEET: Rollback is in progress for
+        modernization of all clusters in a fleet.
     """
     CODE_UNSPECIFIED = 0
     MESH_IAM_PERMISSION_DENIED = 1
@@ -7134,7 +7152,18 @@ class ServiceMeshCondition(_messages.Message):
     MODERNIZATION_IN_PROGRESS = 38
     MODERNIZATION_COMPLETED = 39
     MODERNIZATION_ABORTED = 40
-    MODERNIZATION_WILL_BE_SCHEDULED = 41
+    MODERNIZATION_PREPARING = 41
+    MODERNIZATION_STALLED = 42
+    MODERNIZATION_PREPARED = 43
+    MODERNIZATION_MIGRATING_WORKLOADS = 44
+    MODERNIZATION_ROLLING_BACK_CLUSTER = 45
+    MODERNIZATION_WILL_BE_SCHEDULED = 46
+    MODERNIZATION_MANUAL = 47
+    MODERNIZATION_ELIGIBLE = 48
+    MODERNIZATION_MODERNIZING = 49
+    MODERNIZATION_MODERNIZED_SOAKING = 50
+    MODERNIZATION_FINALIZED = 51
+    MODERNIZATION_ROLLING_BACK_FLEET = 52
 
   class SeverityValueValuesEnum(_messages.Enum):
     r"""Severity level of the condition.
@@ -7261,6 +7290,32 @@ class ServiceMeshDataPlaneManagement(_messages.Message):
 
   details = _messages.MessageField('ServiceMeshStatusDetails', 1, repeated=True)
   state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
+class ServiceMeshFeatureSpec(_messages.Message):
+  r"""**Service Mesh**: Spec for the fleet for the servicemesh feature
+
+  Enums:
+    ModernizationValueValuesEnum: Optional. Specifies modernization for the
+      fleet.
+
+  Fields:
+    modernization: Optional. Specifies modernization for the fleet.
+  """
+
+  class ModernizationValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies modernization for the fleet.
+
+    Values:
+      MODERNIZATION_UNSPECIFIED: Unspecified.
+      AUTOMATICALLY_MODERNIZED: Google should start modernization.
+      BEFORE_MODERNIZATION: Google should rollback fleet.
+    """
+    MODERNIZATION_UNSPECIFIED = 0
+    AUTOMATICALLY_MODERNIZED = 1
+    BEFORE_MODERNIZATION = 2
+
+  modernization = _messages.EnumField('ModernizationValueValuesEnum', 1)
 
 
 class ServiceMeshMembershipSpec(_messages.Message):

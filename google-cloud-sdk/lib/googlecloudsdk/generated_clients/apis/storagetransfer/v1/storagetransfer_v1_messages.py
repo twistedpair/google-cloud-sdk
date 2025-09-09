@@ -255,11 +255,11 @@ class Empty(_messages.Message):
 
 
 class ErrorLogEntry(_messages.Message):
-  r"""An entry describing an error that has occurred.
+  r"""LINT.IfChange An entry describing an error that has occurred.
 
   Fields:
-    errorDetails: A list of messages that carry the error details.
-    url: Required. A URL that refers to the target (a data source, a data
+    errorDetails: Optional. A list of messages that carry the error details.
+    url: Output only. A URL that refers to the target (a data source, a data
       sink, or an object) with which the error is associated.
   """
 
@@ -417,21 +417,19 @@ class EventStream(_messages.Message):
 
 
 class FederatedIdentityConfig(_messages.Message):
-  r"""Identities of a user registered Azure application that enables identity
-  federation to trust tokens issued by the user's Google service account. For
-  more information about Azure application and identity federation, see
-  [Register an application with the Microsoft identity platform]
-  (https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-
-  register-app) Azure RBAC roles then need be assigned to the Azure
-  application to authorize access to the user's Azure data source. For more
-  information about Azure RBAC roles for blobs, see [Manage Access Rights with
-  RBAC] (https://learn.microsoft.com/en-us/rest/api/storageservices/authorize-
-  with-azure-active-directory#manage-access-rights-with-rbac)
+  r"""The identity of an Azure application through which Storage Transfer
+  Service can authenticate requests using Azure workload identity federation.
+  Storage Transfer Service can issue requests to Azure Storage through
+  registered Azure applications, eliminating the need to pass credentials to
+  Storage Transfer Service directly. To configure federated identity, see
+  [Configure access to Microsoft Azure
+  Storage](https://cloud.google.com/storage-transfer/docs/source-microsoft-
+  azure#option_3_authenticate_using_federated_identity).
 
   Fields:
-    clientId: Required. Client (application) ID of the application with
+    clientId: Required. The client (application) ID of the application with
       federated credentials.
-    tenantId: Required. Tenant (directory) ID of the application with
+    tenantId: Required. The tenant (directory) ID of the application with
       federated credentials.
   """
 
@@ -1829,16 +1827,17 @@ class TransferJob(_messages.Message):
       field. When the field is not set, the job never executes a transfer,
       unless you invoke RunTransferJob or update the job to have a non-empty
       schedule.
-    serviceAccount: Optional. The service account to be used to access
-      resources in the consumer project in the transfer job. We accept `email`
-      or `uniqueId` for the service account. Service account format is
-      projects/-/serviceAccounts/{ACCOUNT_EMAIL_OR_UNIQUEID} See https://cloud
-      .google.com/iam/docs/reference/credentials/rest/v1/projects.serviceAccou
-      nts/generateAccessToken#path-parameters for details. Caller requires the
-      following IAM permission on the specified service account:
-      `iam.serviceAccounts.actAs`. project-PROJECT_NUMBER@storage-transfer-
-      service.iam.gserviceaccount.com requires the following IAM permission on
-      the specified service account: `iam.serviceAccounts.getAccessToken`
+    serviceAccount: Optional. The user-managed service account to which to
+      delegate service agent permissions. You can grant Cloud Storage bucket
+      permissions to this service account instead of to the Transfer Service
+      service agent. Format is
+      `projects/-/serviceAccounts/ACCOUNT_EMAIL_OR_UNIQUEID` Either the
+      service account email
+      (`SERVICE_ACCOUNT_NAME@PROJECT_ID.iam.gserviceaccount.com`) or the
+      unique ID (`123456789012345678901`) are accepted in the string. The `-`
+      wildcard character is required; replacing it with a project ID is
+      invalid. See https://cloud.google.com//storage-transfer/docs/delegate-
+      service-agent-permissions for required permissions.
     status: Status of the job. This value MUST be specified for
       `CreateTransferJobRequests`. **Note:** The effect of the new job status
       takes place during a subsequent job run. For example, if you change the
@@ -2017,24 +2016,24 @@ class TransferSpec(_messages.Message):
   r"""Configuration for running a transfer.
 
   Fields:
-    awsS3CompatibleDataSource: An AWS S3 compatible data source.
-    awsS3DataSource: An AWS S3 data source.
-    azureBlobStorageDataSource: An Azure Blob Storage data source.
-    gcsDataSink: A Cloud Storage data sink.
-    gcsDataSource: A Cloud Storage data source.
+    awsS3CompatibleDataSource: Optional. An AWS S3 compatible data source.
+    awsS3DataSource: Optional. An AWS S3 data source.
+    azureBlobStorageDataSource: Optional. An Azure Blob Storage data source.
+    gcsDataSink: Optional. A Cloud Storage data sink.
+    gcsDataSource: Optional. A Cloud Storage data source.
     gcsIntermediateDataLocation: For transfers between file systems, specifies
       a Cloud Storage bucket to be used as an intermediate location through
       which to transfer data. See [Transfer data between file
       systems](https://cloud.google.com/storage-transfer/docs/file-to-file)
       for more information.
-    hdfsDataSource: An HDFS cluster data source.
-    httpDataSource: An HTTP URL data source.
+    hdfsDataSource: Optional. An HDFS cluster data source.
+    httpDataSource: Optional. An HTTP URL data source.
     objectConditions: Only objects that satisfy these object conditions are
       included in the set of data source and data sink objects. Object
       conditions based on objects' "last modification time" do not exclude
       objects in a data sink.
-    posixDataSink: A POSIX Filesystem data sink.
-    posixDataSource: A POSIX Filesystem data source.
+    posixDataSink: Optional. A POSIX Filesystem data sink.
+    posixDataSource: Optional. A POSIX Filesystem data source.
     sinkAgentPoolName: Specifies the agent pool name associated with the posix
       data sink. When unspecified, the default name is used.
     sourceAgentPoolName: Specifies the agent pool name associated with the

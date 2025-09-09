@@ -106,6 +106,7 @@ class DuExecutor(list_util.BaseListExecutor):
       total=False,
       use_gsutil_style=False,
       zero_terminator=False,
+      list_filter=None,
   ):
     """See list_util.BaseListExecutor class for function doc strings."""
 
@@ -118,6 +119,7 @@ class DuExecutor(list_util.BaseListExecutor):
         total=total,
         use_gsutil_style=use_gsutil_style,
         zero_terminator=zero_terminator,
+        list_filter=list_filter,
     )
     self._summarize = summarize
     if self._summarize:

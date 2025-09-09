@@ -482,7 +482,7 @@ class GceInstance(_messages.Message):
       the pool for faster workstation startup.
     reservationAffinity: Optional. [ReservationAffinity](https://cloud.google.
       com/compute/docs/instances/reserving-zonal-resources) specifies a
-      reservation that can be consumed to create boost VM instances. If
+      reservation that can be consumed to create VM instances. If
       SPECIFIC_RESERVATION is specified, Cloud Workstations will only create
       VMs in the zone where the reservation is located. This would affect
       availability since the service will no longer be resilient to zonal
@@ -1153,7 +1153,7 @@ class ReservationAffinity(_messages.Message):
       consumption.
     key: Optional. Corresponds to the label key of reservation resource.
     values: Optional. Corresponds to the label values of reservation
-      resources. Valid values are either a name to a reservation in the same
+      resources. Valid values are either the name of a reservation in the same
       project or "projects/{project}/reservations/{reservation}" to target a
       shared reservation in the same zone but in a different project.
   """

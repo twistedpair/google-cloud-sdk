@@ -128,6 +128,39 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_DATABASECHARACTERSETS = (
+      'projects.locations.databaseCharacterSets',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'databaseCharacterSets/{databaseCharacterSetsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_DATABASES = (
+      'projects.locations.databases',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/databases/'
+              '{databasesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_DBSYSTEMINITIALSTORAGESIZES = (
+      'projects.locations.dbSystemInitialStorageSizes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'dbSystemInitialStorageSizes/{dbSystemInitialStorageSizesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_DBSYSTEMSHAPES = (
       'projects.locations.dbSystemShapes',
       '{+name}',
@@ -135,6 +168,28 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/dbSystemShapes/'
               '{dbSystemShapesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_DBSYSTEMS = (
+      'projects.locations.dbSystems',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/dbSystems/'
+              '{dbSystemsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_DBVERSIONS = (
+      'projects.locations.dbVersions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/dbVersions/'
+              '{dbVersionsId}',
       },
       ['name'],
       True
@@ -234,6 +289,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_PLUGGABLEDATABASES = (
+      'projects.locations.pluggableDatabases',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'pluggableDatabases/{pluggableDatabasesId}',
       },
       ['name'],
       True

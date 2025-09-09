@@ -36,12 +36,18 @@ class Api(_messages.Message):
   opposed to simply a description of methods and bindings. They are also
   sometimes simply referred to as "APIs" in other contexts, such as the name
   of this message itself. See https://cloud.google.com/apis/design/glossary
-  for detailed terminology.
+  for detailed terminology. New usages of this message as an alternative to
+  ServiceDescriptorProto are strongly discouraged. This message does not
+  reliability preserve all information necessary to model the schema and
+  preserve semantics. Instead make use of FileDescriptorSet which preserves
+  the necessary information.
 
   Enums:
     SyntaxValueValuesEnum: The source syntax of the service.
 
   Fields:
+    edition: The source edition string, only valid when syntax is
+      SYNTAX_EDITIONS.
     methods: The methods of this interface, in unspecified order.
     mixins: Included interfaces. See Mixin.
     name: The fully qualified name of this interface, including package name
@@ -79,13 +85,14 @@ class Api(_messages.Message):
     SYNTAX_PROTO3 = 1
     SYNTAX_EDITIONS = 2
 
-  methods = _messages.MessageField('Method', 1, repeated=True)
-  mixins = _messages.MessageField('Mixin', 2, repeated=True)
-  name = _messages.StringField(3)
-  options = _messages.MessageField('Option', 4, repeated=True)
-  sourceContext = _messages.MessageField('SourceContext', 5)
-  syntax = _messages.EnumField('SyntaxValueValuesEnum', 6)
-  version = _messages.StringField(7)
+  edition = _messages.StringField(1)
+  methods = _messages.MessageField('Method', 2, repeated=True)
+  mixins = _messages.MessageField('Mixin', 3, repeated=True)
+  name = _messages.StringField(4)
+  options = _messages.MessageField('Option', 5, repeated=True)
+  sourceContext = _messages.MessageField('SourceContext', 6)
+  syntax = _messages.EnumField('SyntaxValueValuesEnum', 7)
+  version = _messages.StringField(8)
 
 
 class Aspect(_messages.Message):
@@ -337,7 +344,7 @@ class BackendRule(_messages.Message):
   r"""A backend rule provides configuration for an individual API element.
 
   Enums:
-    PathTranslationValueValuesEnum:
+    PathTranslationValueValuesEnum: no-lint
 
   Messages:
     OverridesByRequestProtocolValue: The map between request protocol and the
@@ -371,7 +378,7 @@ class BackendRule(_messages.Message):
       long running operation. The default is no deadline.
     overridesByRequestProtocol: The map between request protocol and the
       backend address.
-    pathTranslation: A PathTranslationValueValuesEnum attribute.
+    pathTranslation: no-lint
     protocol: The protocol used for sending a request to the backend. The
       supported values are "http/1.1" and "h2". The default value is inferred
       from the scheme in the address field: SCHEME PROTOCOL http:// http/1.1
@@ -387,7 +394,7 @@ class BackendRule(_messages.Message):
   """
 
   class PathTranslationValueValuesEnum(_messages.Enum):
-    r"""PathTranslationValueValuesEnum enum type.
+    r"""no-lint
 
     Values:
       PATH_TRANSLATION_UNSPECIFIED: <no description>
@@ -456,6 +463,95 @@ class BackendRule(_messages.Message):
   pathTranslation = _messages.EnumField('PathTranslationValueValuesEnum', 9)
   protocol = _messages.StringField(10)
   selector = _messages.StringField(11)
+
+
+class BatchingConfigProto(_messages.Message):
+  r"""`BatchingConfigProto` defines the batching configuration for an API
+  method.
+
+  Fields:
+    batchDescriptor: The request and response fields used in batching.
+    thresholds: The thresholds which trigger a batched request to be sent.
+  """
+
+  batchDescriptor = _messages.MessageField('BatchingDescriptorProto', 1)
+  thresholds = _messages.MessageField('BatchingSettingsProto', 2)
+
+
+class BatchingDescriptorProto(_messages.Message):
+  r"""`BatchingDescriptorProto` specifies the fields of the request message to
+  be used for batching, and, optionally, the fields of the response message to
+  be used for demultiplexing.
+
+  Fields:
+    batchedField: The repeated field in the request message to be aggregated
+      by batching.
+    discriminatorFields: A list of the fields in the request message. Two
+      requests will be batched together only if the values of every field
+      specified in `request_discriminator_fields` is equal between the two
+      requests.
+    subresponseField: Optional. When present, indicates the field in the
+      response message to be used to demultiplex the response into multiple
+      response messages, in correspondence with the multiple request messages
+      originally batched together.
+  """
+
+  batchedField = _messages.StringField(1)
+  discriminatorFields = _messages.StringField(2, repeated=True)
+  subresponseField = _messages.StringField(3)
+
+
+class BatchingSettingsProto(_messages.Message):
+  r"""`BatchingSettingsProto` specifies a set of batching thresholds, each of
+  which acts as a trigger to send a batch of messages as a request. At least
+  one threshold must be positive nonzero.
+
+  Enums:
+    FlowControlLimitExceededBehaviorValueValuesEnum: The behavior to take when
+      the flow control limit is exceeded.
+
+  Fields:
+    delayThreshold: The duration after which a batch should be sent, starting
+      from the addition of the first message to that batch.
+    elementCountLimit: The maximum number of elements collected in a batch
+      that could be accepted by server.
+    elementCountThreshold: The number of elements of a field collected into a
+      batch which, if exceeded, causes the batch to be sent.
+    flowControlByteLimit: The maximum size of data allowed by flow control.
+    flowControlElementLimit: The maximum number of elements allowed by flow
+      control.
+    flowControlLimitExceededBehavior: The behavior to take when the flow
+      control limit is exceeded.
+    requestByteLimit: The maximum size of the request that could be accepted
+      by server.
+    requestByteThreshold: The aggregated size of the batched field which, if
+      exceeded, causes the batch to be sent. This size is computed by
+      aggregating the sizes of the request field to be batched, not of the
+      entire request message.
+  """
+
+  class FlowControlLimitExceededBehaviorValueValuesEnum(_messages.Enum):
+    r"""The behavior to take when the flow control limit is exceeded.
+
+    Values:
+      UNSET_BEHAVIOR: Default behavior, system-defined.
+      THROW_EXCEPTION: Stop operation, raise error.
+      BLOCK: Pause operation until limit clears.
+      IGNORE: Continue operation, disregard limit.
+    """
+    UNSET_BEHAVIOR = 0
+    THROW_EXCEPTION = 1
+    BLOCK = 2
+    IGNORE = 3
+
+  delayThreshold = _messages.StringField(1)
+  elementCountLimit = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  elementCountThreshold = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  flowControlByteLimit = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  flowControlElementLimit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  flowControlLimitExceededBehavior = _messages.EnumField('FlowControlLimitExceededBehaviorValueValuesEnum', 6)
+  requestByteLimit = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  requestByteThreshold = _messages.IntegerField(8)
 
 
 class Billing(_messages.Message):
@@ -1485,7 +1581,11 @@ class Endpoint(_messages.Message):
 
 
 class Enum(_messages.Message):
-  r"""Enum type definition.
+  r"""Enum type definition. New usages of this message as an alternative to
+  EnumDescriptorProto are strongly discouraged. This message does not
+  reliability preserve all information necessary to model the schema and
+  preserve semantics. Instead make use of FileDescriptorSet which preserves
+  the necessary information.
 
   Enums:
     SyntaxValueValuesEnum: The source syntax.
@@ -1521,7 +1621,11 @@ class Enum(_messages.Message):
 
 
 class EnumValue(_messages.Message):
-  r"""Enum value definition.
+  r"""Enum value definition. New usages of this message as an alternative to
+  EnumValueDescriptorProto are strongly discouraged. This message does not
+  reliability preserve all information necessary to model the schema and
+  preserve semantics. Instead make use of FileDescriptorSet which preserves
+  the necessary information.
 
   Fields:
     name: Enum value name.
@@ -1596,7 +1700,11 @@ class Expr(_messages.Message):
 
 
 class Field(_messages.Message):
-  r"""A single field of a message type.
+  r"""A single field of a message type. New usages of this message as an
+  alternative to FieldDescriptorProto are strongly discouraged. This message
+  does not reliability preserve all information necessary to model the schema
+  and preserve semantics. Instead make use of FileDescriptorSet which
+  preserves the necessary information.
 
   Enums:
     CardinalityValueValuesEnum: The field cardinality.
@@ -1871,14 +1979,14 @@ class GoSettings(_messages.Message):
   Messages:
     RenamedServicesValue: Map of service names to renamed services. Keys are
       the package relative service names and values are the name to be used
-      for the service client and call options. publishing: go_settings:
-      renamed_services: Publisher: TopicAdmin
+      for the service client and call options. Example: publishing:
+      go_settings: renamed_services: Publisher: TopicAdmin
 
   Fields:
     common: Some settings.
     renamedServices: Map of service names to renamed services. Keys are the
       package relative service names and values are the name to be used for
-      the service client and call options. publishing: go_settings:
+      the service client and call options. Example: publishing: go_settings:
       renamed_services: Publisher: TopicAdmin
   """
 
@@ -1886,8 +1994,8 @@ class GoSettings(_messages.Message):
   class RenamedServicesValue(_messages.Message):
     r"""Map of service names to renamed services. Keys are the package
     relative service names and values are the name to be used for the service
-    client and call options. publishing: go_settings: renamed_services:
-    Publisher: TopicAdmin
+    client and call options. Example: publishing: go_settings:
+    renamed_services: Publisher: TopicAdmin
 
     Messages:
       AdditionalProperty: An additional property for a RenamedServicesValue
@@ -2406,23 +2514,36 @@ class ManagedService(_messages.Message):
 
 
 class Method(_messages.Message):
-  r"""Method represents a method of an API interface.
+  r"""Method represents a method of an API interface. New usages of this
+  message as an alternative to MethodDescriptorProto are strongly discouraged.
+  This message does not reliability preserve all information necessary to
+  model the schema and preserve semantics. Instead make use of
+  FileDescriptorSet which preserves the necessary information.
 
   Enums:
-    SyntaxValueValuesEnum: The source syntax of this method.
+    SyntaxValueValuesEnum: The source syntax of this method. This field should
+      be ignored, instead the syntax should be inherited from Api. This is
+      similar to Field and EnumValue.
 
   Fields:
+    edition: The source edition string, only valid when syntax is
+      SYNTAX_EDITIONS. This field should be ignored, instead the edition
+      should be inherited from Api. This is similar to Field and EnumValue.
     name: The simple name of this method.
     options: Any metadata attached to the method.
     requestStreaming: If true, the request is streamed.
     requestTypeUrl: A URL of the input message type.
     responseStreaming: If true, the response is streamed.
     responseTypeUrl: The URL of the output message type.
-    syntax: The source syntax of this method.
+    syntax: The source syntax of this method. This field should be ignored,
+      instead the syntax should be inherited from Api. This is similar to
+      Field and EnumValue.
   """
 
   class SyntaxValueValuesEnum(_messages.Enum):
-    r"""The source syntax of this method.
+    r"""The source syntax of this method. This field should be ignored,
+    instead the syntax should be inherited from Api. This is similar to Field
+    and EnumValue.
 
     Values:
       SYNTAX_PROTO2: Syntax `proto2`.
@@ -2433,13 +2554,14 @@ class Method(_messages.Message):
     SYNTAX_PROTO3 = 1
     SYNTAX_EDITIONS = 2
 
-  name = _messages.StringField(1)
-  options = _messages.MessageField('Option', 2, repeated=True)
-  requestStreaming = _messages.BooleanField(3)
-  requestTypeUrl = _messages.StringField(4)
-  responseStreaming = _messages.BooleanField(5)
-  responseTypeUrl = _messages.StringField(6)
-  syntax = _messages.EnumField('SyntaxValueValuesEnum', 7)
+  edition = _messages.StringField(1)
+  name = _messages.StringField(2)
+  options = _messages.MessageField('Option', 3, repeated=True)
+  requestStreaming = _messages.BooleanField(4)
+  requestTypeUrl = _messages.StringField(5)
+  responseStreaming = _messages.BooleanField(6)
+  responseTypeUrl = _messages.StringField(7)
+  syntax = _messages.EnumField('SyntaxValueValuesEnum', 8)
 
 
 class MethodPolicy(_messages.Message):
@@ -2468,6 +2590,11 @@ class MethodSettings(_messages.Message):
       Example of a YAML configuration: publishing: method_settings: -
       selector: google.example.v1.ExampleService.CreateExample
       auto_populated_fields: - request_id
+    batching: Batching configuration for an API method in client libraries.
+      Example of a YAML configuration: publishing: method_settings: -
+      selector: google.example.v1.ExampleService.BatchCreateExample batching:
+      element_count_threshold: 1000 request_byte_threshold: 100000000
+      delay_threshold_millis: 10
     longRunning: Describes settings to use for long-running operations when
       generating API methods for RPCs. Complements RPCs that use the
       annotations in google/longrunning/operations.proto. Example of a YAML
@@ -2483,8 +2610,9 @@ class MethodSettings(_messages.Message):
   """
 
   autoPopulatedFields = _messages.StringField(1, repeated=True)
-  longRunning = _messages.MessageField('LongRunning', 2)
-  selector = _messages.StringField(3)
+  batching = _messages.MessageField('BatchingConfigProto', 2)
+  longRunning = _messages.MessageField('LongRunning', 3)
+  selector = _messages.StringField(4)
 
 
 class MetricDescriptor(_messages.Message):
@@ -3213,7 +3341,9 @@ class OperationMetadata(_messages.Message):
 
 class Option(_messages.Message):
   r"""A protocol buffer option, which can be attached to a message, field,
-  enumeration, etc.
+  enumeration, etc. New usages of this message as an alternative to
+  FileOptions, MessageOptions, FieldOptions, EnumOptions, EnumValueOptions,
+  ServiceOptions, or MethodOptions are strongly discouraged.
 
   Messages:
     ValueValue: The option's value packed in an Any message. If the value is a
@@ -3297,9 +3427,16 @@ class PhpSettings(_messages.Message):
 
   Fields:
     common: Some settings.
+    libraryPackage: The package name to use in Php. Clobbers the php_namespace
+      option set in the protobuf. This should be used **only** by APIs who
+      have already set the language_settings.php.package_name" field in
+      gapic.yaml. API teams should use the protobuf php_namespace option where
+      possible. Example of a YAML configuration:: publishing:
+      library_settings: php_settings: library_package: Google\Cloud\PubSub\V1
   """
 
   common = _messages.MessageField('CommonLanguageSettings', 1)
+  libraryPackage = _messages.StringField(2)
 
 
 class Policy(_messages.Message):
@@ -5047,7 +5184,7 @@ class Step(_messages.Message):
     r"""The status code.
 
     Values:
-      STATUS_UNSPECIFIED: Unspecifed code.
+      STATUS_UNSPECIFIED: Unspecified code.
       DONE: The operation or step has completed without errors.
       NOT_STARTED: The operation or step has not started yet.
       IN_PROGRESS: The operation or step is in progress.
@@ -5232,7 +5369,11 @@ class TrafficPercentStrategy(_messages.Message):
 
 
 class Type(_messages.Message):
-  r"""A protocol buffer message type.
+  r"""A protocol buffer message type. New usages of this message as an
+  alternative to DescriptorProto are strongly discouraged. This message does
+  not reliability preserve all information necessary to model the schema and
+  preserve semantics. Instead make use of FileDescriptorSet which preserves
+  the necessary information.
 
   Enums:
     SyntaxValueValuesEnum: The source syntax.

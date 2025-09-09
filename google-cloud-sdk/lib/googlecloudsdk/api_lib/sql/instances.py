@@ -62,18 +62,6 @@ class DatabaseInstancePresentation(object):
         if value is not None and not (isinstance(value, list) and not value):
           if field.name in ['currentDiskSize', 'maxDiskSize']:
             setattr(self, field.name, six.text_type(value))
-          elif (
-              field.name == 'settings'
-              and orig.settings.ipConfiguration.ipv4Enabled
-              and len(orig.settings.ipConfiguration.authorizedNetworks) == 0
-          ):
-            self.settings = value
-            self.settings.ipConfiguration.message = (
-                'Configuring authorized network or using CloudSQL auth proxy or'
-                ' language connectors is a prerequisite for connecting to'
-                ' Public IP. Please refer to the documentation for more details'
-                ' https://cloud.google.com/sql/docs/mysql/authorize-networks.'
-            )
           else:
             setattr(self, field.name, value)
 
@@ -144,6 +132,11 @@ def _ReadLineFromStderr(proxy_process):
   return encoding.Decode(proxy_process.stderr.readline())
 
 
+def _ReadLineFromStdout(proxy_process):
+  """Reads and returns the next line from the proxy stdout stream."""
+  return encoding.Decode(proxy_process.stdout.readline())
+
+
 def _WaitForProxyV2ToStart(proxy_process, port, seconds_to_timeout):
   """Wait for the proxy to be ready for connections, then return proxy_process.
 
@@ -159,7 +152,7 @@ def _WaitForProxyV2ToStart(proxy_process, port, seconds_to_timeout):
   total_wait_seconds = 0
   seconds_to_sleep = 0.2
   while proxy_process.poll() is None:
-    line = _ReadLineFromStderr(proxy_process)
+    line = _ReadLineFromStdout(proxy_process)
     while line:
       log.status.write(line)
       if constants.PROXY_ADDRESS_IN_USE_ERROR in line:
@@ -170,7 +163,7 @@ def _WaitForProxyV2ToStart(proxy_process, port, seconds_to_timeout):
       elif constants.PROXY_V2_READY_FOR_CONNECTIONS_MSG in line:
         # The proxy is ready to go, so stop polling!
         return proxy_process
-      line = _ReadLineFromStderr(proxy_process)
+      line = _ReadLineFromStdout(proxy_process)
 
     # If we've been waiting past the timeout, throw an error.
     if total_wait_seconds >= seconds_to_timeout:

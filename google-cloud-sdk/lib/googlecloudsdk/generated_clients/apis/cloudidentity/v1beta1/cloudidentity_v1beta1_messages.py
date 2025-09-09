@@ -1475,6 +1475,78 @@ class CloudidentityGroupsUpdateSecuritySettingsRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class CloudidentityInboundOidcSsoProfilesDeleteRequest(_messages.Message):
+  r"""A CloudidentityInboundOidcSsoProfilesDeleteRequest object.
+
+  Fields:
+    name: Required. The [resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      InboundOidcSsoProfile to delete. Format:
+      `inboundOidcSsoProfiles/{sso_profile_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudidentityInboundOidcSsoProfilesGetRequest(_messages.Message):
+  r"""A CloudidentityInboundOidcSsoProfilesGetRequest object.
+
+  Fields:
+    name: Required. The [resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      InboundOidcSsoProfile to get. Format:
+      `inboundOidcSsoProfiles/{sso_profile_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudidentityInboundOidcSsoProfilesListRequest(_messages.Message):
+  r"""A CloudidentityInboundOidcSsoProfilesListRequest object.
+
+  Fields:
+    filter: A [Common Expression Language](https://github.com/google/cel-spec)
+      expression to filter the results. The only supported filter is filtering
+      by customer. For example: `customer=="customers/C0123abc"`. Omitting the
+      filter or specifying a filter of `customer=="customers/my_customer"`
+      will return the profiles for the customer that the caller (authenticated
+      user) belongs to. Specifying a filter of `customer==""` will return the
+      global shared OIDC profiles.
+    pageSize: The maximum number of InboundOidcSsoProfiles to return. The
+      service may return fewer than this value. If omitted (or defaulted to
+      zero) the server will use a sensible default. This default may change
+      over time. The maximum allowed value is 100. Requests with page_size
+      greater than that will be silently interpreted as having this maximum
+      value.
+    pageToken: A page token, received from a previous
+      `ListInboundOidcSsoProfiles` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListInboundOidcSsoProfiles` must match the call that provided the page
+      token.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
+class CloudidentityInboundOidcSsoProfilesPatchRequest(_messages.Message):
+  r"""A CloudidentityInboundOidcSsoProfilesPatchRequest object.
+
+  Fields:
+    inboundOidcSsoProfile: A InboundOidcSsoProfile resource to be passed as
+      the request body.
+    name: Output only. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the OIDC
+      SSO profile.
+    updateMask: Required. The list of fields to be updated.
+  """
+
+  inboundOidcSsoProfile = _messages.MessageField('InboundOidcSsoProfile', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class CloudidentityInboundSamlSsoProfilesDeleteRequest(_messages.Message):
   r"""A CloudidentityInboundSamlSsoProfilesDeleteRequest object.
 
@@ -1804,6 +1876,20 @@ class CreateDeviceRequest(_messages.Message):
   device = _messages.MessageField('Device', 2)
 
 
+class CreateInboundOidcSsoProfileOperationMetadata(_messages.Message):
+  r"""LRO response metadata for
+  InboundOidcSsoProfilesService.CreateInboundOidcSsoProfile.
+
+  Fields:
+    state: State of this Operation Will be "awaiting-multi-party-approval"
+      when the operation is deferred due to the target customer having enabled
+      [Multi-party approval for sensitive
+      actions](https://support.google.com/a/answer/13790448).
+  """
+
+  state = _messages.StringField(1)
+
+
 class CreateInboundSamlSsoProfileOperationMetadata(_messages.Message):
   r"""LRO response metadata for
   InboundSamlSsoProfilesService.CreateInboundSamlSsoProfile.
@@ -1842,6 +1928,13 @@ class CustomAttributeValue(_messages.Message):
 class DeleteIdpCredentialOperationMetadata(_messages.Message):
   r"""LRO response metadata for
   InboundSamlSsoProfilesService.DeleteIdpCredential.
+  """
+
+
+
+class DeleteInboundOidcSsoProfileOperationMetadata(_messages.Message):
+  r"""LRO response metadata for
+  InboundOidcSsoProfilesService.DeleteInboundOidcSsoProfile.
   """
 
 
@@ -3448,6 +3541,29 @@ class IdpCredential(_messages.Message):
   updateTime = _messages.StringField(4)
 
 
+class InboundOidcSsoProfile(_messages.Message):
+  r"""An [OIDC](https://openid.net/developers/how-connect-works/) federation
+  between a Google enterprise customer and an OIDC identity provider.
+
+  Fields:
+    customer: Immutable. The customer. For example: `customers/C0123abc`.
+    displayName: Human-readable name of the OIDC SSO profile.
+    idpConfig: OIDC identity provider configuration.
+    name: Output only. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the OIDC
+      SSO profile.
+    rpConfig: OIDC relying party (RP) configuration for this OIDC SSO profile.
+      These are the RP details provided by Google that should be configured on
+      the corresponding identity provider.
+  """
+
+  customer = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  idpConfig = _messages.MessageField('OidcIdpConfig', 3)
+  name = _messages.StringField(4)
+  rpConfig = _messages.MessageField('OidcRpConfig', 5)
+
+
 class InboundSamlSsoProfile(_messages.Message):
   r"""A [SAML 2.0](https://www.oasis-open.org/standards#samlv2.0) federation
   between a Google enterprise customer and a SAML identity provider.
@@ -3482,6 +3598,8 @@ class InboundSsoAssignment(_messages.Message):
     name: Output only. [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the
       Inbound SSO Assignment.
+    oidcSsoInfo: OpenID Connect SSO details. Must be set if and only if
+      `sso_mode` is set to `OIDC_SSO`.
     rank: Must be zero (which is the default value so it can be omitted) for
       assignments with `target_org_unit` set and must be greater-than-or-
       equal-to one for assignments with `target_group` set.
@@ -3504,6 +3622,8 @@ class InboundSsoAssignment(_messages.Message):
       SSO_OFF: Disable SSO for the targeted users.
       SAML_SSO: Use an external SAML Identity Provider for SSO for the
         targeted users.
+      OIDC_SSO: Use an external OIDC Identity Provider for SSO for the
+        targeted users.
       DOMAIN_WIDE_SAML_IF_ENABLED: Use the domain-wide SAML Identity Provider
         for the targeted users if one is configured; otherwise, this is
         equivalent to `SSO_OFF`. Note that this will also be equivalent to
@@ -3514,16 +3634,18 @@ class InboundSsoAssignment(_messages.Message):
     SSO_MODE_UNSPECIFIED = 0
     SSO_OFF = 1
     SAML_SSO = 2
-    DOMAIN_WIDE_SAML_IF_ENABLED = 3
+    OIDC_SSO = 3
+    DOMAIN_WIDE_SAML_IF_ENABLED = 4
 
   customer = _messages.StringField(1)
   name = _messages.StringField(2)
-  rank = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  samlSsoInfo = _messages.MessageField('SamlSsoInfo', 4)
-  signInBehavior = _messages.MessageField('SignInBehavior', 5)
-  ssoMode = _messages.EnumField('SsoModeValueValuesEnum', 6)
-  targetGroup = _messages.StringField(7)
-  targetOrgUnit = _messages.StringField(8)
+  oidcSsoInfo = _messages.MessageField('OidcSsoInfo', 3)
+  rank = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  samlSsoInfo = _messages.MessageField('SamlSsoInfo', 5)
+  signInBehavior = _messages.MessageField('SignInBehavior', 6)
+  ssoMode = _messages.EnumField('SsoModeValueValuesEnum', 7)
+  targetGroup = _messages.StringField(8)
+  targetOrgUnit = _messages.StringField(9)
 
 
 class IsInvitableUserResponse(_messages.Message):
@@ -3600,6 +3722,20 @@ class ListIdpCredentialsResponse(_messages.Message):
   """
 
   idpCredentials = _messages.MessageField('IdpCredential', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListInboundOidcSsoProfilesResponse(_messages.Message):
+  r"""Response of the InboundOidcSsoProfilesService.ListInboundOidcSsoProfiles
+  method.
+
+  Fields:
+    inboundOidcSsoProfiles: List of InboundOidcSsoProfiles.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  inboundOidcSsoProfiles = _messages.MessageField('InboundOidcSsoProfile', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -4053,6 +4189,51 @@ class MoveOrgMembershipRequest(_messages.Message):
 
   customer = _messages.StringField(1)
   destinationOrgUnit = _messages.StringField(2)
+
+
+class OidcIdpConfig(_messages.Message):
+  r"""OIDC IDP (identity provider) configuration.
+
+  Fields:
+    changePasswordUri: The **Change Password URL** of the identity provider.
+      Users will be sent to this URL when changing their passwords at
+      `myaccount.google.com`. This takes precedence over the change password
+      URL configured at customer-level. Must use `HTTPS`.
+    issuerUri: Required. The Issuer identifier for the IdP. Must be a URL. The
+      discovery URL will be derived from this as described in Section 4 of
+      [the OIDC specification](https://openid.net/specs/openid-connect-
+      discovery-1_0.html).
+  """
+
+  changePasswordUri = _messages.StringField(1)
+  issuerUri = _messages.StringField(2)
+
+
+class OidcRpConfig(_messages.Message):
+  r"""OIDC RP (relying party) configuration.
+
+  Fields:
+    clientId: OAuth2 client ID for OIDC.
+    clientSecret: Input only. OAuth2 client secret for OIDC.
+    redirectUris: Output only. The URL(s) that this client may use in
+      authentication requests.
+  """
+
+  clientId = _messages.StringField(1)
+  clientSecret = _messages.StringField(2)
+  redirectUris = _messages.StringField(3, repeated=True)
+
+
+class OidcSsoInfo(_messages.Message):
+  r"""Details that are applicable when `sso_mode` is set to `OIDC_SSO`.
+
+  Fields:
+    inboundOidcSsoProfile: Required. Name of the `InboundOidcSsoProfile` to
+      use. Must be of the form
+      `inboundOidcSsoProfiles/{inbound_oidc_sso_profile}`.
+  """
+
+  inboundOidcSsoProfile = _messages.StringField(1)
 
 
 class Operation(_messages.Message):
@@ -4671,6 +4852,20 @@ class TransitiveMembershipRole(_messages.Message):
   """
 
   role = _messages.StringField(1)
+
+
+class UpdateInboundOidcSsoProfileOperationMetadata(_messages.Message):
+  r"""LRO response metadata for
+  InboundOidcSsoProfilesService.UpdateInboundOidcSsoProfile.
+
+  Fields:
+    state: State of this Operation Will be "awaiting-multi-party-approval"
+      when the operation is deferred due to the target customer having enabled
+      [Multi-party approval for sensitive
+      actions](https://support.google.com/a/answer/13790448).
+  """
+
+  state = _messages.StringField(1)
 
 
 class UpdateInboundSamlSsoProfileOperationMetadata(_messages.Message):

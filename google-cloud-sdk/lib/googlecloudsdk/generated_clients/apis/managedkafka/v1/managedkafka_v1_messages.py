@@ -1239,7 +1239,13 @@ class ManagedkafkaProjectsLocationsClustersConsumerGroupsGetRequest(_messages.Me
 class ManagedkafkaProjectsLocationsClustersConsumerGroupsListRequest(_messages.Message):
   r"""A ManagedkafkaProjectsLocationsClustersConsumerGroupsListRequest object.
 
+  Enums:
+    ViewValueValuesEnum: Optional. Specifies which parts of the ConsumerGroup
+      resource should be returned in the response.
+
   Fields:
+    filter: Optional. Filter expression for the result. Only supports
+      filtering by topic name as a key in the `topics` map.
     pageSize: Optional. The maximum number of consumer groups to return. The
       service may return fewer than this value. If unset or zero, all consumer
       groups for the parent is returned.
@@ -1250,11 +1256,31 @@ class ManagedkafkaProjectsLocationsClustersConsumerGroupsListRequest(_messages.M
     parent: Required. The parent cluster whose consumer groups are to be
       listed. Structured like
       `projects/{project}/locations/{location}/clusters/{cluster}`.
+    view: Optional. Specifies which parts of the ConsumerGroup resource should
+      be returned in the response.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies which parts of the ConsumerGroup resource should
+    be returned in the response.
+
+    Values:
+      CONSUMER_GROUP_VIEW_UNSPECIFIED: The default / unset value. The API will
+        default to the FULL view.
+      CONSUMER_GROUP_VIEW_BASIC: Include the name of the ConsumerGroup. This
+        hides partition and topic metadata.
+      CONSUMER_GROUP_VIEW_FULL: Include everything, including partition and
+        topic metadata. This is the default value.
+    """
+    CONSUMER_GROUP_VIEW_UNSPECIFIED = 0
+    CONSUMER_GROUP_VIEW_BASIC = 1
+    CONSUMER_GROUP_VIEW_FULL = 2
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 5)
 
 
 class ManagedkafkaProjectsLocationsClustersConsumerGroupsPatchRequest(_messages.Message):
@@ -1795,8 +1821,9 @@ class ManagedkafkaProjectsLocationsListRequest(_messages.Message):
   r"""A ManagedkafkaProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -2379,12 +2406,39 @@ class ManagedkafkaProjectsLocationsSchemaRegistriesGetRequest(_messages.Message)
 class ManagedkafkaProjectsLocationsSchemaRegistriesListRequest(_messages.Message):
   r"""A ManagedkafkaProjectsLocationsSchemaRegistriesListRequest object.
 
+  Enums:
+    ViewValueValuesEnum: Optional. Specifies the view to return for the schema
+      registry instances. If not specified, the default view is
+      SCHEMA_REGISTRY_VIEW_BASIC.
+
   Fields:
     parent: Required. The parent whose schema registry instances are to be
       listed. Structured like: `projects/{project}/locations/{location}`
+    view: Optional. Specifies the view to return for the schema registry
+      instances. If not specified, the default view is
+      SCHEMA_REGISTRY_VIEW_BASIC.
   """
 
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the view to return for the schema registry
+    instances. If not specified, the default view is
+    SCHEMA_REGISTRY_VIEW_BASIC.
+
+    Values:
+      SCHEMA_REGISTRY_VIEW_UNSPECIFIED: The unset value. The API will default
+        to SCHEMA_REGISTRY_VIEW_BASIC.
+      SCHEMA_REGISTRY_VIEW_BASIC: If SchemaRegistryView is not specified, this
+        is the default value. Returns only the name of the schema registry.
+        The contexts associated with it are not included.
+      SCHEMA_REGISTRY_VIEW_FULL: Returns the name of the schema registry and
+        all the contexts associated with it.
+    """
+    SCHEMA_REGISTRY_VIEW_UNSPECIFIED = 0
+    SCHEMA_REGISTRY_VIEW_BASIC = 1
+    SCHEMA_REGISTRY_VIEW_FULL = 2
+
   parent = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
 
 
 class ManagedkafkaProjectsLocationsSchemaRegistriesModeDeleteRequest(_messages.Message):

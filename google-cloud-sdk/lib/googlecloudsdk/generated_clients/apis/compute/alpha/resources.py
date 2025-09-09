@@ -108,6 +108,13 @@ class Collections(enum.Enum):
       ['project', 'firewall'],
       True
   )
+  FOLDERS = (
+      'folders',
+      'folders/{foldersId}',
+      {},
+      ['foldersId'],
+      True
+  )
   FORWARDINGRULES = (
       'forwardingRules',
       'projects/{project}/regions/{region}/forwardingRules/{forwardingRule}',
@@ -127,6 +134,16 @@ class Collections(enum.Enum):
       'projects/{project}/global/addresses/{address}',
       {},
       ['project', 'address'],
+      True
+  )
+  GLOBALFOLDEROPERATIONS = (
+      'globalFolderOperations',
+      '{+folder}/global/operations/{operation}',
+      {
+          '':
+              'folders/{foldersId}/global/operations/{operation}',
+      },
+      ['folder', 'operation'],
       True
   )
   GLOBALFORWARDINGRULES = (

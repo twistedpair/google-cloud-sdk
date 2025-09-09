@@ -79,6 +79,34 @@ class CloudnumberregistryProjectsLocationsCustomRangesDeleteRequest(_messages.Me
   requestId = _messages.StringField(3)
 
 
+class CloudnumberregistryProjectsLocationsCustomRangesFindFreeIpRangeRequest(_messages.Message):
+  r"""A CloudnumberregistryProjectsLocationsCustomRangesFindFreeIpRangeRequest
+  object.
+
+  Fields:
+    freeRangeCount: Optional. The number of free IP ranges to find.
+    freeRangePrefixLength: Required. The prefix length of the free IP ranges
+      to find.
+    name: Required. Name of the CustomRange.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  freeRangeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  freeRangePrefixLength = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
 class CloudnumberregistryProjectsLocationsCustomRangesGetRequest(_messages.Message):
   r"""A CloudnumberregistryProjectsLocationsCustomRangesGetRequest object.
 
@@ -137,6 +165,35 @@ class CloudnumberregistryProjectsLocationsCustomRangesPatchRequest(_messages.Mes
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class CloudnumberregistryProjectsLocationsDiscoveredRangesFindFreeIpRangeRequest(_messages.Message):
+  r"""A
+  CloudnumberregistryProjectsLocationsDiscoveredRangesFindFreeIpRangeRequest
+  object.
+
+  Fields:
+    freeRangeCount: Optional. The number of free IP ranges to find.
+    freeRangePrefixLength: Required. The prefix length of the free IP ranges
+      to find.
+    name: Required. Name of the DiscoveredRange.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  freeRangeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  freeRangePrefixLength = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class CloudnumberregistryProjectsLocationsDiscoveredRangesGetRequest(_messages.Message):
@@ -299,8 +356,9 @@ class CloudnumberregistryProjectsLocationsListRequest(_messages.Message):
   r"""A CloudnumberregistryProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -737,6 +795,28 @@ class Empty(_messages.Message):
 
 
 
+class FindCustomRangeFreeIpRangeResponse(_messages.Message):
+  r"""Message for the response to finding free IP ranges.
+
+  Fields:
+    freeIpCidrRanges: Output only. Free IP CIDR ranges found in the
+      CustomRange.
+  """
+
+  freeIpCidrRanges = _messages.StringField(1, repeated=True)
+
+
+class FindDiscoveredRangeFreeIpRangeResponse(_messages.Message):
+  r"""Message for the response to finding free IP ranges.
+
+  Fields:
+    freeIpCidrRanges: Output only. Free IP CIDR ranges found in the
+      DiscoveredRange.
+  """
+
+  freeIpCidrRanges = _messages.StringField(1, repeated=True)
+
+
 class IpamAdminScope(_messages.Message):
   r"""Message describing IpamAdminScope object
 
@@ -1146,6 +1226,7 @@ class Realm(_messages.Message):
   r"""Message describing Realm object
 
   Enums:
+    IpVersionValueValuesEnum: Optional. IP version of the realm.
     ManagementTypeValueValuesEnum: Required. Management type of realm.
     TrafficTypeValueValuesEnum: Required. Traffic type of realm.
 
@@ -1155,6 +1236,7 @@ class Realm(_messages.Message):
   Fields:
     createTime: Output only. [Output only] Create time stamp
     discoveryMetadata: Output only. Discovery metadata of the realm.
+    ipVersion: Optional. IP version of the realm.
     labels: Optional. Labels as key value pairs
     managementType: Required. Management type of realm.
     name: Required. Identifier. Unique name/ID of the realm
@@ -1162,6 +1244,18 @@ class Realm(_messages.Message):
     trafficType: Required. Traffic type of realm.
     updateTime: Output only. [Output only] Update time stamp
   """
+
+  class IpVersionValueValuesEnum(_messages.Enum):
+    r"""Optional. IP version of the realm.
+
+    Values:
+      IP_VERSION_UNSPECIFIED: Unspecified IP version.
+      IPV4: IPv4.
+      IPV6: IPv6.
+    """
+    IP_VERSION_UNSPECIFIED = 0
+    IPV4 = 1
+    IPV6 = 2
 
   class ManagementTypeValueValuesEnum(_messages.Enum):
     r"""Required. Management type of realm.
@@ -1217,12 +1311,13 @@ class Realm(_messages.Message):
 
   createTime = _messages.StringField(1)
   discoveryMetadata = _messages.MessageField('DiscoveryMetadata', 2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 4)
-  name = _messages.StringField(5)
-  registryBook = _messages.StringField(6)
-  trafficType = _messages.EnumField('TrafficTypeValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 5)
+  name = _messages.StringField(6)
+  registryBook = _messages.StringField(7)
+  trafficType = _messages.EnumField('TrafficTypeValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class RegistryBook(_messages.Message):

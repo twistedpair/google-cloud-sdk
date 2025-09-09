@@ -105,6 +105,16 @@ def AddPortFlag(parser, required=False):
   parser.add_argument('--port', help=help_text, required=required, type=int)
 
 
+def AddDbmPortFlag(parser):
+  """Adds --dbm-port flag to the given parser."""
+  help_text = """\
+    The Database Mirroring (DBM) port.
+  """
+  parser.add_argument(
+      '--dbm-port', help=help_text, required=False, type=int, hidden=True
+  )
+
+
 def AddSslConfigGroup(parser, release_track):
   """Adds ssl server only & server client config group to the given parser."""
   ssl_config = parser.add_group()

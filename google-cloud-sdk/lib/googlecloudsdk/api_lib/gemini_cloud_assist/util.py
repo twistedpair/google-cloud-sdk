@@ -97,7 +97,7 @@ def CreateInvestigation(
   client = GetClientInstance()
   messages = GetMessagesModule()
   investigation_id = investigation_resource.RelativeName().split('/')[-1]
-  investigation = messages.Investigation(dataVersion=2, observations={})
+  investigation = messages.Investigation(observations={})
   if investigation_id != '-':
     investigation.name = investigation_resource.RelativeName()
   else:

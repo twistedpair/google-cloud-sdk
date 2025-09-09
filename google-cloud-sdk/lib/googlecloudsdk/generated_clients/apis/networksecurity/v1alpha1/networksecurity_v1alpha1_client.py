@@ -2170,7 +2170,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single DnsThreatDetector.
+      r"""Gets the details of a single DnsThreatDetector.
 
       Args:
         request: (NetworksecurityProjectsLocationsDnsThreatDetectorsGetRequest) input message
@@ -2224,7 +2224,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single DnsThreatDetector.
+      r"""Updates a single DnsThreatDetector.
 
       Args:
         request: (NetworksecurityProjectsLocationsDnsThreatDetectorsPatchRequest) input message

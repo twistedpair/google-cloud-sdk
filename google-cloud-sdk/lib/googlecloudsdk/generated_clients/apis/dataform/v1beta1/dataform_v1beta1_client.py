@@ -39,14 +39,226 @@ class DataformV1beta1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_folders = self.ProjectsLocationsFoldersService(self)
+    self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_repositories_compilationResults = self.ProjectsLocationsRepositoriesCompilationResultsService(self)
     self.projects_locations_repositories_releaseConfigs = self.ProjectsLocationsRepositoriesReleaseConfigsService(self)
     self.projects_locations_repositories_workflowConfigs = self.ProjectsLocationsRepositoriesWorkflowConfigsService(self)
     self.projects_locations_repositories_workflowInvocations = self.ProjectsLocationsRepositoriesWorkflowInvocationsService(self)
     self.projects_locations_repositories_workspaces = self.ProjectsLocationsRepositoriesWorkspacesService(self)
     self.projects_locations_repositories = self.ProjectsLocationsRepositoriesService(self)
+    self.projects_locations_teamFolders = self.ProjectsLocationsTeamFoldersService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsFoldersService(base_api.BaseApiService):
+    """Service class for the projects_locations_folders resource."""
+
+    _NAME = 'projects_locations_folders'
+
+    def __init__(self, client):
+      super(DataformV1beta1.ProjectsLocationsFoldersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (DataformProjectsLocationsFoldersGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/folders/{foldersId}:getIamPolicy',
+        http_method='GET',
+        method_id='dataform.projects.locations.folders.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1beta1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='DataformProjectsLocationsFoldersGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (DataformProjectsLocationsFoldersSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/folders/{foldersId}:setIamPolicy',
+        http_method='POST',
+        method_id='dataform.projects.locations.folders.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1beta1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='DataformProjectsLocationsFoldersSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (DataformProjectsLocationsFoldersTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/folders/{foldersId}:testIamPermissions',
+        http_method='POST',
+        method_id='dataform.projects.locations.folders.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1beta1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='DataformProjectsLocationsFoldersTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_operations resource."""
+
+    _NAME = 'projects_locations_operations'
+
+    def __init__(self, client):
+      super(DataformV1beta1.ProjectsLocationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of `1`, corresponding to `Code.CANCELLED`.
+
+      Args:
+        request: (DataformProjectsLocationsOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='dataform.projects.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='DataformProjectsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
+
+      Args:
+        request: (DataformProjectsLocationsOperationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='dataform.projects.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='DataformProjectsLocationsOperationsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (DataformProjectsLocationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='dataform.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='DataformProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
+
+      Args:
+        request: (DataformProjectsLocationsOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='dataform.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+name}/operations',
+        request_field='',
+        request_type_name='DataformProjectsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsRepositoriesCompilationResultsService(base_api.BaseApiService):
     """Service class for the projects_locations_repositories_compilationResults resource."""
@@ -1670,6 +1882,97 @@ class DataformV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+resource}:testIamPermissions',
         request_field='testIamPermissionsRequest',
         request_type_name='DataformProjectsLocationsRepositoriesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsTeamFoldersService(base_api.BaseApiService):
+    """Service class for the projects_locations_teamFolders resource."""
+
+    _NAME = 'projects_locations_teamFolders'
+
+    def __init__(self, client):
+      super(DataformV1beta1.ProjectsLocationsTeamFoldersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (DataformProjectsLocationsTeamFoldersGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/teamFolders/{teamFoldersId}:getIamPolicy',
+        http_method='GET',
+        method_id='dataform.projects.locations.teamFolders.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1beta1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='DataformProjectsLocationsTeamFoldersGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (DataformProjectsLocationsTeamFoldersSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/teamFolders/{teamFoldersId}:setIamPolicy',
+        http_method='POST',
+        method_id='dataform.projects.locations.teamFolders.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1beta1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='DataformProjectsLocationsTeamFoldersSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (DataformProjectsLocationsTeamFoldersTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/teamFolders/{teamFoldersId}:testIamPermissions',
+        http_method='POST',
+        method_id='dataform.projects.locations.teamFolders.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1beta1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='DataformProjectsLocationsTeamFoldersTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )

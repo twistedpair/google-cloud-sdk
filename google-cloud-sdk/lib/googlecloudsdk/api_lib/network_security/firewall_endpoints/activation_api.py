@@ -92,12 +92,18 @@ class Client:
         targetFirewallAttachment=target_firewall_attachment,
     )
 
+  def _ParseEndpointSettings(self, enable_jumbo_frames):
+    return self.messages.FirewallEndpointEndpointSettings(
+        jumboFramesEnabled=enable_jumbo_frames,
+    )
+
   def CreateEndpoint(
       self,
       name,
       parent,
       description,
       billing_project_id,
+      enable_jumbo_frames,
       endpoint_type=None,
       target_firewall_attachment=None,
       labels=None,
@@ -120,6 +126,10 @@ class Client:
           labels=labels,
           description=description,
           billingProjectId=billing_project_id,
+      )
+    if enable_jumbo_frames is not None:
+      endpoint.endpointSettings = self._ParseEndpointSettings(
+          enable_jumbo_frames
       )
     create_request = self.messages.NetworksecurityOrganizationsLocationsFirewallEndpointsCreateRequest(
         firewallEndpoint=endpoint, firewallEndpointId=name, parent=parent

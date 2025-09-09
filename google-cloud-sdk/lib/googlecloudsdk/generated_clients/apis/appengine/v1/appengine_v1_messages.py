@@ -989,6 +989,18 @@ class AppengineProjectsLocationsApplicationsDomainMappingsCreateRequest(_message
   parent = _messages.StringField(3, required=True)
 
 
+class AppengineProjectsLocationsApplicationsDomainMappingsDeleteRequest(_messages.Message):
+  r"""A AppengineProjectsLocationsApplicationsDomainMappingsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource to delete. Example:
+      apps/myapp/domainMappings/example.com.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class AppengineProjectsLocationsApplicationsDomainMappingsGetRequest(_messages.Message):
   r"""A AppengineProjectsLocationsApplicationsDomainMappingsGetRequest object.
 
@@ -998,6 +1010,23 @@ class AppengineProjectsLocationsApplicationsDomainMappingsGetRequest(_messages.M
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class AppengineProjectsLocationsApplicationsDomainMappingsPatchRequest(_messages.Message):
+  r"""A AppengineProjectsLocationsApplicationsDomainMappingsPatchRequest
+  object.
+
+  Fields:
+    domainMapping: A DomainMapping resource to be passed as the request body.
+    name: Required. Name of the resource to update. Example:
+      apps/myapp/domainMappings/example.com.
+    updateMask: Required. Standard field mask for the set of fields to be
+      updated.
+  """
+
+  domainMapping = _messages.MessageField('DomainMapping', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class AppengineProjectsLocationsApplicationsPatchRequest(_messages.Message):

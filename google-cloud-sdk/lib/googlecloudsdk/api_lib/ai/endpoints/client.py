@@ -934,9 +934,9 @@ class EndpointsClient(object):
       deployed_model_id: str or None, id of the deployed model.
       shared_resources_ref: str or None, the shared deployment resource pool the
         model should use
-      min_scaleup_period: str or None, the duration after which the deployment
-        is enrolled in scale to zero evaluation after scaling up. This only
-        applies to deployments enrolled in scale-to-zero.
+      min_scaleup_period: str or None, the minimum duration (in seconds) that a
+        deployment will be scaled up before traffic is evaluated for potential
+        scale-down. Defaults to 1 hour if min replica count is 0.
       idle_scaledown_period: str or None, the duration after which the
         deployment is scaled down if no traffic is received. This only applies
         to deployments enrolled in scale-to-zero.

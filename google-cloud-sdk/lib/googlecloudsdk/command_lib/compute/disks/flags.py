@@ -44,6 +44,10 @@ _DETAILED_SOURCE_INSTANT_SNAPSHOT_HELP = """\
       Name of the source instant snapshot used to create the disks.
 """
 
+_DETAILED_SOURCE_INSTANT_SNAPSHOT_PROJECT_HELP = """\
+      The project containing the instant snapshot used to create the disks.
+"""
+
 _SOURCE_DISK_DETAILED_HELP = """\
       Source disk used to create the disk(s). It is safe to
       delete a source disk after a disk has been created from the
@@ -433,6 +437,13 @@ def AddGuestOsFeatureArgs(parser, messages):
       ),
   )
 
+
+def AddSourceInstantSnapshotProject(parser, category=None):
+  parser.add_argument(
+      '--source-instant-snapshot-project',
+      category=category,
+      help=_DETAILED_SOURCE_INSTANT_SNAPSHOT_PROJECT_HELP,
+  )
 
 SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     resource_name='snapshot',

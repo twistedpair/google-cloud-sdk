@@ -5863,7 +5863,7 @@ def AddEnableCloudMonitoring(parser):
 def AddMaxNodesPerPool(parser):
   parser.add_argument(
       '--max-nodes-per-pool',
-      type=arg_parsers.BoundedInt(100, 2000),
+      type=arg_parsers.BoundedInt(100, 2048),
       help=(
           'The maximum number of nodes to allocate per default initial node'
           ' pool. Kubernetes Engine will automatically create enough nodes'
@@ -7837,3 +7837,73 @@ def AddAcceleratorNetworkProfileFlag(parser, hidden=True):
       default=None,
       choices=['auto'],
       hidden=hidden)
+
+
+def AddControlPlaneEgressFlag(parser):
+  """Adds the --control-plane-egress flag to parser."""
+  help_text = """\
+  Configures the egress policy for the GKE control plane to control outbound
+  traffic from the kube-apiserver.
+
+  * `NONE`: (Recommended) Provides maximum security. This mode removes the control
+    plane's public IP address and blocks all outbound traffic from the
+    kube-apiserver by default, preventing unexpected data exfiltration. Webhooks
+    that use `clientConfig.url` will be disabled. Essential GKE-managed services
+    are still permitted to function via an internal allowlist.
+
+  * `VIA_CONTROL_PLANE`: (Default) Maintains backward compatibility. The control
+    plane retains its public IP address and allows egress traffic from the
+    kube-apiserver.
+  """
+  parser.add_argument(
+      '--control-plane-egress',
+      default=None,
+      # TODO(b/436076409): Remove hidden flag once the feature is ready.
+      hidden=True,
+      choices={
+          'NONE': """\
+                (Recommended) Provides maximum security by removing the control plane's
+                public IP and blocking api server egress.""",
+          'VIA_CONTROL_PLANE': """\
+                (Default) Maintains backward compatibility by retaining the control
+                plane's public IP and api server allowing egress.""",
+      },
+      help=help_text,
+  )
+
+
+def AddTagBindingsCreate(
+    parser,
+):  # Added 'parser' as an argument here
+  """Adds the --tag-bindings flag for cluster creation."""
+  help_text = """\
+List of tag-bindings KEY=VALUE pairs to bind.
+Each item must be expressed as
+`<tag-key-namespaced-name>=<tag-value-short-name>`.
+
+Example: `123/environment=production,123/costCenter=marketing`
+"""
+  # Instead of returning a base.Argument, directly add it to the parser
+  parser.add_argument(
+      '--tag-bindings',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      action=arg_parsers.UpdateAction,
+      help=help_text,
+      hidden=True,
+  )
+
+
+def AddGpuDirectStrategyFlag(parser):
+  """Adds the --gpu-direct-strategy flag to parser."""
+  help_text = """\
+  Set the GPU direct strategy for the node pool, possible values are TCPX and
+  RDMA.
+  """
+  parser.add_argument(
+      '--gpu-direct-strategy',
+      default=None,
+      hidden=True,
+      choices=['TCPX', 'RDMA'],
+      help=help_text,
+  )

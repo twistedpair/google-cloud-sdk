@@ -120,6 +120,8 @@ class AbortInfo(_messages.Message):
       NO_SERVERLESS_IP_RANGES: Aborted because the source endpoint is a Cloud
         Run revision with direct VPC access enabled, but there are no reserved
         serverless IP ranges.
+      IP_VERSION_PROTOCOL_MISMATCH: Aborted because the used protocol is not
+        supported for the used IP version.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_NETWORK = 1
@@ -159,6 +161,7 @@ class AbortInfo(_messages.Message):
     UNKNOWN_ISSUE_IN_GOOGLE_MANAGED_PROJECT = 35
     UNSUPPORTED_GOOGLE_MANAGED_PROJECT_CONFIG = 36
     NO_SERVERLESS_IP_RANGES = 37
+    IP_VERSION_PROTOCOL_MISMATCH = 38
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   ipAddress = _messages.StringField(2)
@@ -652,9 +655,13 @@ class DropInfo(_messages.Message):
 
   Fields:
     cause: Cause that the packet is dropped.
+    destinationGeolocationCode: Geolocation (region code) of the destination
+      IP address (if relevant).
     destinationIp: Destination IP address of the dropped packet (if relevant).
     region: Region of the dropped packet (if relevant).
     resourceUri: URI of the resource that caused the drop.
+    sourceGeolocationCode: Geolocation (region code) of the source IP address
+      (if relevant).
     sourceIp: Source IP address of the dropped packet (if relevant).
   """
 
@@ -906,6 +913,8 @@ class DropInfo(_messages.Message):
       NO_KNOWN_ROUTE_FROM_NCC_NETWORK_TO_DESTINATION: Packet from the unknown
         NCC network is dropped due to no known route from the source network
         to the destination IP address.
+      CLOUD_NAT_PROTOCOL_UNSUPPORTED: Packet is dropped by Cloud NAT due to
+        using an unsupported protocol.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -1000,12 +1009,15 @@ class DropInfo(_messages.Message):
     NO_MATCHING_NAT64_GATEWAY = 90
     LOAD_BALANCER_BACKEND_IP_VERSION_MISMATCH = 91
     NO_KNOWN_ROUTE_FROM_NCC_NETWORK_TO_DESTINATION = 92
+    CLOUD_NAT_PROTOCOL_UNSUPPORTED = 93
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
-  destinationIp = _messages.StringField(2)
-  region = _messages.StringField(3)
-  resourceUri = _messages.StringField(4)
-  sourceIp = _messages.StringField(5)
+  destinationGeolocationCode = _messages.StringField(2)
+  destinationIp = _messages.StringField(3)
+  region = _messages.StringField(4)
+  resourceUri = _messages.StringField(5)
+  sourceGeolocationCode = _messages.StringField(6)
+  sourceIp = _messages.StringField(7)
 
 
 class EdgeLocation(_messages.Message):
@@ -1059,8 +1071,8 @@ class Endpoint(_messages.Message):
       Forwarding rules are also used for protocol forwarding, Private Service
       Connect and other network services to provide forwarding information in
       the control plane. Applicable only to destination endpoint. Format:
-      projects/{project}/global/forwardingRules/{id} or
-      projects/{project}/regions/{region}/forwardingRules/{id}
+      `projects/{project}/global/forwardingRules/{id}` or
+      `projects/{project}/regions/{region}/forwardingRules/{id}`
     forwardingRuleTarget: Output only. Specifies the type of the target of the
       forwarding rule.
     fqdn: DNS endpoint of [Google Kubernetes Engine cluster control
@@ -1255,6 +1267,7 @@ class FirewallInfo(_messages.Message):
 
   Enums:
     FirewallRuleTypeValueValuesEnum: The firewall rule's type.
+    TargetTypeValueValuesEnum: Target type of the firewall rule.
 
   Fields:
     action: Possible values: ALLOW, DENY, APPLY_SECURITY_PROFILE_GROUP
@@ -1279,6 +1292,7 @@ class FirewallInfo(_messages.Message):
       firewall rule.
     targetTags: The target tags defined by the VPC firewall rule. This field
       is not applicable to firewall policy rules.
+    targetType: Target type of the firewall rule.
     uri: The URI of the firewall rule. This field is not applicable to implied
       VPC firewall rules.
   """
@@ -1334,6 +1348,20 @@ class FirewallInfo(_messages.Message):
     TRACKING_STATE = 8
     ANALYSIS_SKIPPED = 9
 
+  class TargetTypeValueValuesEnum(_messages.Enum):
+    r"""Target type of the firewall rule.
+
+    Values:
+      TARGET_TYPE_UNSPECIFIED: Target type is not specified. In this case we
+        treat the rule as applying to INSTANCES target type.
+      INSTANCES: Firewall rule applies to instances.
+      INTERNAL_MANAGED_LB: Firewall rule applies to internal managed load
+        balancers.
+    """
+    TARGET_TYPE_UNSPECIFIED = 0
+    INSTANCES = 1
+    INTERNAL_MANAGED_LB = 2
+
   action = _messages.StringField(1)
   direction = _messages.StringField(2)
   displayName = _messages.StringField(3)
@@ -1345,7 +1373,8 @@ class FirewallInfo(_messages.Message):
   priority = _messages.IntegerField(9, variant=_messages.Variant.INT32)
   targetServiceAccounts = _messages.StringField(10, repeated=True)
   targetTags = _messages.StringField(11, repeated=True)
-  uri = _messages.StringField(12)
+  targetType = _messages.EnumField('TargetTypeValueValuesEnum', 12)
+  uri = _messages.StringField(13)
 
 
 class ForwardInfo(_messages.Message):
@@ -1549,6 +1578,26 @@ class InstanceInfo(_messages.Message):
   serviceAccount = _messages.StringField(9)
   status = _messages.EnumField('StatusValueValuesEnum', 10)
   uri = _messages.StringField(11)
+
+
+class InterconnectAttachmentInfo(_messages.Message):
+  r"""For display only. Metadata associated with an Interconnect attachment.
+
+  Fields:
+    cloudRouterUri: URI of the Cloud Router to be used for dynamic routing.
+    displayName: Name of an Interconnect attachment.
+    interconnectUri: URI of the Interconnect where the Interconnect attachment
+      is configured.
+    region: Name of a Google Cloud region where the Interconnect attachment is
+      configured.
+    uri: URI of an Interconnect attachment.
+  """
+
+  cloudRouterUri = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  interconnectUri = _messages.StringField(3)
+  region = _messages.StringField(4)
+  uri = _messages.StringField(5)
 
 
 class LatencyDistribution(_messages.Message):
@@ -2044,8 +2093,9 @@ class NetworkmanagementOrganizationsLocationsListRequest(_messages.Message):
   r"""A NetworkmanagementOrganizationsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -2068,9 +2118,10 @@ class NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsCreateRequest(_me
   object.
 
   Fields:
-    parent: Required. The parent resource of the VPC Flow Logs configuration
-      to create: `projects/{project_id}/locations/global`
-      `organizations/{organization_id}/locations/global`
+    parent: Required. The parent resource of the VpcFlowLogsConfig to create,
+      in one of the following formats: - For project-level resources:
+      `projects/{project_id}/locations/global` - For organization-level
+      resources: `organizations/{organization_id}/locations/global`
     vpcFlowLogsConfig: A VpcFlowLogsConfig resource to be passed as the
       request body.
     vpcFlowLogsConfigId: Required. ID of the `VpcFlowLogsConfig`.
@@ -2086,10 +2137,11 @@ class NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsDeleteRequest(_me
   object.
 
   Fields:
-    name: Required. `VpcFlowLogsConfig` resource name using one of the form: `
-      projects/{project_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs
-      _config}` `organizations/{organization_id}/locations/global/vpcFlowLogsC
-      onfigs/{vpc_flow_logs_config}`
+    name: Required. The resource name of the VpcFlowLogsConfig, in one of the
+      following formats: - For a project-level resource: `projects/{project_id
+      }/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs_config_id}` - For
+      an organization-level resource: `organizations/{organization_id}/locatio
+      ns/global/vpcFlowLogsConfigs/{vpc_flow_logs_config_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -2100,10 +2152,11 @@ class NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsGetRequest(_messa
   object.
 
   Fields:
-    name: Required. `VpcFlowLogsConfig` resource name using the form: `project
-      s/{project_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs_config
-      }` `organizations/{organization_id}/locations/global/vpcFlowLogsConfigs/
-      {vpc_flow_logs_config}`
+    name: Required. The resource name of the VpcFlowLogsConfig, in one of the
+      following formats: - For project-level resources: `projects/{project_id}
+      /locations/global/vpcFlowLogsConfigs/{vpc_flow_logs_config_id}` - For
+      organization-level resources: `organizations/{organization_id}/locations
+      /global/vpcFlowLogsConfigs/{vpc_flow_logs_config_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -2122,9 +2175,10 @@ class NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsListRequest(_mess
     pageSize: Optional. Number of `VpcFlowLogsConfigs` to return.
     pageToken: Optional. Page token from an earlier query, as returned in
       `next_page_token`.
-    parent: Required. The parent resource of the VpcFlowLogsConfig:
-      `projects/{project_id}/locations/global`
-      `organizations/{organization_id}/locations/global`
+    parent: Required. The parent resource of the VpcFlowLogsConfig, in one of
+      the following formats: - For project-level resourcs:
+      `projects/{project_id}/locations/global` - For organization-level
+      resources: `organizations/{organization_id}/locations/global`
   """
 
   filter = _messages.StringField(1)
@@ -2139,12 +2193,17 @@ class NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsPatchRequest(_mes
   object.
 
   Fields:
-    name: Identifier. Unique name of the configuration using one of the forms:
-      `projects/{project_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_log
-      s_config_id}` `organizations/{organization_id}/locations/global/vpcFlowL
-      ogsConfigs/{vpc_flow_logs_config_id}`
+    name: Identifier. Unique name of the configuration. The name can have one
+      of the following forms: - For project-level configurations: `projects/{p
+      roject_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs_config_id}
+      ` - For organization-level configurations: `organizations/{organization_
+      id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs_config_id}`
     updateMask: Required. Mask of fields to update. At least one path must be
-      supplied in this field.
+      supplied in this field. For example, to change the state of the
+      configuration to ENABLED, specify `update_mask` = `"state"`, and the
+      `vpc_flow_logs_config` would be: `vpc_flow_logs_config = { name =
+      "projects/my-project/locations/global/vpcFlowLogsConfigs/my-config"
+      state = "ENABLED" }`
     vpcFlowLogsConfig: A VpcFlowLogsConfig resource to be passed as the
       request body.
   """
@@ -2391,8 +2450,9 @@ class NetworkmanagementProjectsLocationsListRequest(_messages.Message):
   r"""A NetworkmanagementProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -2415,9 +2475,10 @@ class NetworkmanagementProjectsLocationsVpcFlowLogsConfigsCreateRequest(_message
   object.
 
   Fields:
-    parent: Required. The parent resource of the VPC Flow Logs configuration
-      to create: `projects/{project_id}/locations/global`
-      `organizations/{organization_id}/locations/global`
+    parent: Required. The parent resource of the VpcFlowLogsConfig to create,
+      in one of the following formats: - For project-level resources:
+      `projects/{project_id}/locations/global` - For organization-level
+      resources: `organizations/{organization_id}/locations/global`
     vpcFlowLogsConfig: A VpcFlowLogsConfig resource to be passed as the
       request body.
     vpcFlowLogsConfigId: Required. ID of the `VpcFlowLogsConfig`.
@@ -2433,10 +2494,11 @@ class NetworkmanagementProjectsLocationsVpcFlowLogsConfigsDeleteRequest(_message
   object.
 
   Fields:
-    name: Required. `VpcFlowLogsConfig` resource name using one of the form: `
-      projects/{project_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs
-      _config}` `organizations/{organization_id}/locations/global/vpcFlowLogsC
-      onfigs/{vpc_flow_logs_config}`
+    name: Required. The resource name of the VpcFlowLogsConfig, in one of the
+      following formats: - For a project-level resource: `projects/{project_id
+      }/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs_config_id}` - For
+      an organization-level resource: `organizations/{organization_id}/locatio
+      ns/global/vpcFlowLogsConfigs/{vpc_flow_logs_config_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -2446,10 +2508,11 @@ class NetworkmanagementProjectsLocationsVpcFlowLogsConfigsGetRequest(_messages.M
   r"""A NetworkmanagementProjectsLocationsVpcFlowLogsConfigsGetRequest object.
 
   Fields:
-    name: Required. `VpcFlowLogsConfig` resource name using the form: `project
-      s/{project_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs_config
-      }` `organizations/{organization_id}/locations/global/vpcFlowLogsConfigs/
-      {vpc_flow_logs_config}`
+    name: Required. The resource name of the VpcFlowLogsConfig, in one of the
+      following formats: - For project-level resources: `projects/{project_id}
+      /locations/global/vpcFlowLogsConfigs/{vpc_flow_logs_config_id}` - For
+      organization-level resources: `organizations/{organization_id}/locations
+      /global/vpcFlowLogsConfigs/{vpc_flow_logs_config_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -2468,9 +2531,10 @@ class NetworkmanagementProjectsLocationsVpcFlowLogsConfigsListRequest(_messages.
     pageSize: Optional. Number of `VpcFlowLogsConfigs` to return.
     pageToken: Optional. Page token from an earlier query, as returned in
       `next_page_token`.
-    parent: Required. The parent resource of the VpcFlowLogsConfig:
-      `projects/{project_id}/locations/global`
-      `organizations/{organization_id}/locations/global`
+    parent: Required. The parent resource of the VpcFlowLogsConfig, in one of
+      the following formats: - For project-level resourcs:
+      `projects/{project_id}/locations/global` - For organization-level
+      resources: `organizations/{organization_id}/locations/global`
   """
 
   filter = _messages.StringField(1)
@@ -2485,12 +2549,17 @@ class NetworkmanagementProjectsLocationsVpcFlowLogsConfigsPatchRequest(_messages
   object.
 
   Fields:
-    name: Identifier. Unique name of the configuration using one of the forms:
-      `projects/{project_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_log
-      s_config_id}` `organizations/{organization_id}/locations/global/vpcFlowL
-      ogsConfigs/{vpc_flow_logs_config_id}`
+    name: Identifier. Unique name of the configuration. The name can have one
+      of the following forms: - For project-level configurations: `projects/{p
+      roject_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs_config_id}
+      ` - For organization-level configurations: `organizations/{organization_
+      id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs_config_id}`
     updateMask: Required. Mask of fields to update. At least one path must be
-      supplied in this field.
+      supplied in this field. For example, to change the state of the
+      configuration to ENABLED, specify `update_mask` = `"state"`, and the
+      `vpc_flow_logs_config` would be: `vpc_flow_logs_config = { name =
+      "projects/my-project/locations/global/vpcFlowLogsConfigs/my-config"
+      state = "ENABLED" }`
     vpcFlowLogsConfig: A VpcFlowLogsConfig resource to be passed as the
       request body.
   """
@@ -2512,8 +2581,8 @@ class NetworkmanagementProjectsLocationsVpcFlowLogsConfigsQueryOrgVpcFlowLogsCon
     pageSize: Optional. Number of `VpcFlowLogsConfigs` to return.
     pageToken: Optional. Page token from an earlier query, as returned in
       `next_page_token`.
-    parent: Required. The parent resource of the VpcFlowLogsConfig:
-      `projects/{project_id}/locations/global`
+    parent: Required. The parent resource of the VpcFlowLogsConfig, specified
+      in the following format: `projects/{project_id}/locations/global`
   """
 
   filter = _messages.StringField(1)
@@ -3367,6 +3436,7 @@ class Step(_messages.Message):
       master.
     googleService: Display information of a Google service
     instance: Display information of a Compute Engine instance.
+    interconnectAttachment: Display information of an interconnect attachment.
     loadBalancer: Display information of the load balancers. Deprecated in
       favor of the `load_balancer_backend_info` field, not used in new tests.
     loadBalancerBackendInfo: Display information of a specific load balancer
@@ -3458,6 +3528,8 @@ class Step(_messages.Message):
       ARRIVE_AT_VPN_GATEWAY: Forwarding state: arriving at a Cloud VPN
         gateway.
       ARRIVE_AT_VPN_TUNNEL: Forwarding state: arriving at a Cloud VPN tunnel.
+      ARRIVE_AT_INTERCONNECT_ATTACHMENT: Forwarding state: arriving at an
+        interconnect attachment.
       ARRIVE_AT_VPC_CONNECTOR: Forwarding state: arriving at a VPC connector.
       DIRECT_VPC_EGRESS_CONNECTION: Forwarding state: for packets originating
         from a serverless endpoint forwarded through Direct VPC egress.
@@ -3501,16 +3573,17 @@ class Step(_messages.Message):
     ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 23
     ARRIVE_AT_VPN_GATEWAY = 24
     ARRIVE_AT_VPN_TUNNEL = 25
-    ARRIVE_AT_VPC_CONNECTOR = 26
-    DIRECT_VPC_EGRESS_CONNECTION = 27
-    SERVERLESS_EXTERNAL_CONNECTION = 28
-    NAT = 29
-    PROXY_CONNECTION = 30
-    DELIVER = 31
-    DROP = 32
-    FORWARD = 33
-    ABORT = 34
-    VIEWER_PERMISSION_MISSING = 35
+    ARRIVE_AT_INTERCONNECT_ATTACHMENT = 26
+    ARRIVE_AT_VPC_CONNECTOR = 27
+    DIRECT_VPC_EGRESS_CONNECTION = 28
+    SERVERLESS_EXTERNAL_CONNECTION = 29
+    NAT = 30
+    PROXY_CONNECTION = 31
+    DELIVER = 32
+    DROP = 33
+    FORWARD = 34
+    ABORT = 35
+    VIEWER_PERMISSION_MISSING = 36
 
   abort = _messages.MessageField('AbortInfo', 1)
   appEngineVersion = _messages.MessageField('AppEngineVersionInfo', 2)
@@ -3529,22 +3602,23 @@ class Step(_messages.Message):
   gkeMaster = _messages.MessageField('GKEMasterInfo', 15)
   googleService = _messages.MessageField('GoogleServiceInfo', 16)
   instance = _messages.MessageField('InstanceInfo', 17)
-  loadBalancer = _messages.MessageField('LoadBalancerInfo', 18)
-  loadBalancerBackendInfo = _messages.MessageField('LoadBalancerBackendInfo', 19)
-  nat = _messages.MessageField('NatInfo', 20)
-  network = _messages.MessageField('NetworkInfo', 21)
-  projectId = _messages.StringField(22)
-  proxyConnection = _messages.MessageField('ProxyConnectionInfo', 23)
-  redisCluster = _messages.MessageField('RedisClusterInfo', 24)
-  redisInstance = _messages.MessageField('RedisInstanceInfo', 25)
-  route = _messages.MessageField('RouteInfo', 26)
-  serverlessExternalConnection = _messages.MessageField('ServerlessExternalConnectionInfo', 27)
-  serverlessNeg = _messages.MessageField('ServerlessNegInfo', 28)
-  state = _messages.EnumField('StateValueValuesEnum', 29)
-  storageBucket = _messages.MessageField('StorageBucketInfo', 30)
-  vpcConnector = _messages.MessageField('VpcConnectorInfo', 31)
-  vpnGateway = _messages.MessageField('VpnGatewayInfo', 32)
-  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 33)
+  interconnectAttachment = _messages.MessageField('InterconnectAttachmentInfo', 18)
+  loadBalancer = _messages.MessageField('LoadBalancerInfo', 19)
+  loadBalancerBackendInfo = _messages.MessageField('LoadBalancerBackendInfo', 20)
+  nat = _messages.MessageField('NatInfo', 21)
+  network = _messages.MessageField('NetworkInfo', 22)
+  projectId = _messages.StringField(23)
+  proxyConnection = _messages.MessageField('ProxyConnectionInfo', 24)
+  redisCluster = _messages.MessageField('RedisClusterInfo', 25)
+  redisInstance = _messages.MessageField('RedisInstanceInfo', 26)
+  route = _messages.MessageField('RouteInfo', 27)
+  serverlessExternalConnection = _messages.MessageField('ServerlessExternalConnectionInfo', 28)
+  serverlessNeg = _messages.MessageField('ServerlessNegInfo', 29)
+  state = _messages.EnumField('StateValueValuesEnum', 30)
+  storageBucket = _messages.MessageField('StorageBucketInfo', 31)
+  vpcConnector = _messages.MessageField('VpcConnectorInfo', 32)
+  vpnGateway = _messages.MessageField('VpnGatewayInfo', 33)
+  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 34)
 
 
 class StorageBucketInfo(_messages.Message):
@@ -3642,9 +3716,8 @@ class VpcFlowLogsConfig(_messages.Message):
       configuration. Default value is ENABLED. When creating a new
       configuration, it must be enabled. Setting state=DISABLED will pause the
       log generation for this config.
-    TargetResourceStateValueValuesEnum: Output only. A diagnostic bit -
-      describes the state of the configured target resource for diagnostic
-      purposes.
+    TargetResourceStateValueValuesEnum: Output only. Describes the state of
+      the configured target resource for diagnostic purposes.
 
   Messages:
     LabelsValue: Optional. Resource labels to represent user-provided
@@ -3677,10 +3750,11 @@ class VpcFlowLogsConfig(_messages.Message):
     metadataFields: Optional. Custom metadata fields to include in the
       reported VPC flow logs. Can only be specified if "metadata" was set to
       CUSTOM_METADATA.
-    name: Identifier. Unique name of the configuration using one of the forms:
-      `projects/{project_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_log
-      s_config_id}` `organizations/{organization_id}/locations/global/vpcFlowL
-      ogsConfigs/{vpc_flow_logs_config_id}`
+    name: Identifier. Unique name of the configuration. The name can have one
+      of the following forms: - For project-level configurations: `projects/{p
+      roject_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs_config_id}
+      ` - For organization-level configurations: `organizations/{organization_
+      id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs_config_id}`
     network: Traffic will be logged from VMs, VPN tunnels and Interconnect
       Attachments within the network. Format:
       projects/{project_id}/global/networks/{name}
@@ -3689,8 +3763,8 @@ class VpcFlowLogsConfig(_messages.Message):
       Setting state=DISABLED will pause the log generation for this config.
     subnet: Traffic will be logged from VMs within the subnetwork. Format:
       projects/{project_id}/regions/{region}/subnetworks/{name}
-    targetResourceState: Output only. A diagnostic bit - describes the state
-      of the configured target resource for diagnostic purposes.
+    targetResourceState: Output only. Describes the state of the configured
+      target resource for diagnostic purposes.
     updateTime: Output only. The time the config was updated.
     vpnTunnel: Traffic will be logged from the VPN Tunnel. Format:
       projects/{project_id}/regions/{region}/vpnTunnels/{name}
@@ -3769,8 +3843,8 @@ class VpcFlowLogsConfig(_messages.Message):
     DISABLED = 2
 
   class TargetResourceStateValueValuesEnum(_messages.Enum):
-    r"""Output only. A diagnostic bit - describes the state of the configured
-    target resource for diagnostic purposes.
+    r"""Output only. Describes the state of the configured target resource for
+    diagnostic purposes.
 
     Values:
       TARGET_RESOURCE_STATE_UNSPECIFIED: Unspecified target resource state.

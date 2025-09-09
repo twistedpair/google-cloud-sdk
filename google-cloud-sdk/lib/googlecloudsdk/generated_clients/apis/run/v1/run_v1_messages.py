@@ -200,7 +200,8 @@ class CSIVolumeSource(_messages.Message):
     VolumeAttributesValue: stores driver specific attributes. For Google Cloud
       Storage volumes, the following attributes are supported: * bucketName:
       the name of the Cloud Storage bucket to mount. The Cloud Run Service
-      identity must have access to this bucket.
+      identity must have access to this bucket. * mountOptions: comma-
+      separated list of mount options to pass to the gcsfuse.
 
   Fields:
     driver: name of the CSI driver for the requested storage system. Cloud Run
@@ -210,7 +211,8 @@ class CSIVolumeSource(_messages.Message):
     volumeAttributes: stores driver specific attributes. For Google Cloud
       Storage volumes, the following attributes are supported: * bucketName:
       the name of the Cloud Storage bucket to mount. The Cloud Run Service
-      identity must have access to this bucket.
+      identity must have access to this bucket. * mountOptions: comma-
+      separated list of mount options to pass to the gcsfuse.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -218,7 +220,8 @@ class CSIVolumeSource(_messages.Message):
     r"""stores driver specific attributes. For Google Cloud Storage volumes,
     the following attributes are supported: * bucketName: the name of the
     Cloud Storage bucket to mount. The Cloud Run Service identity must have
-    access to this bucket.
+    access to this bucket. * mountOptions: comma-separated list of mount
+    options to pass to the gcsfuse.
 
     Messages:
       AdditionalProperty: An additional property for a VolumeAttributesValue
@@ -1960,7 +1963,9 @@ class GoogleDevtoolsCloudbuildV1NpmPackage(_messages.Message):
   all build steps.
 
   Fields:
-    packagePath: Path to the package.json. e.g. workspace/path/to/package
+    packagePath: Optional. Path to the package.json. e.g.
+      workspace/path/to/package Only one of `archive` or `package_path` can be
+      specified.
     repository: Artifact Registry repository, in the form "https://$REGION-
       npm.pkg.dev/$PROJECT/$REPOSITORY" Npm package in the workspace specified
       by path will be zipped and uploaded to Artifact Registry with this
@@ -2702,8 +2707,8 @@ class InstanceSplit(_messages.Message):
     latestRevision: Uses the "status.latestReadyRevisionName" to determine the
       instance split target. When it changes, workloads will automatically
       migrate from the prior "latest ready" revision to the new one.
-    percent: Specifies percent of the instance split to this Revision. This
-      defaults to zero if unspecified.
+    percent: Optional. Specifies percent of the instance split to this
+      Revision. This defaults to zero if unspecified.
     revisionName: Revision to which to assign this portion of instances.
   """
 
@@ -3691,7 +3696,7 @@ class RevisionSpec(_messages.Message):
     imagePullSecrets: Not supported by Cloud Run.
     nodeSelector: Optional. The Node Selector configuration. Map of selector
       key to a value which matches a node.
-    runtimeClassName: Runtime. Leave unset for default.
+    runtimeClassName: Optional. Runtime. Leave unset for default.
     serviceAccountName: Email address of the IAM service account associated
       with the revision of the service. The service account represents the
       identity of the running revision, and determines what permissions the
@@ -4795,8 +4800,9 @@ class RunProjectsLocationsListRequest(_messages.Message):
   r"""A RunProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).

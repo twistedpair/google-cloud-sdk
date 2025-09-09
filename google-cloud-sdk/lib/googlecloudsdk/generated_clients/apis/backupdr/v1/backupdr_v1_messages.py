@@ -1048,7 +1048,9 @@ class BackupRule(_messages.Message):
       than or equal to minimum enforced retention of the backup vault. Minimum
       value is 1 and maximum value is 36159 for custom retention on-demand
       backup. Minimum and maximum values are workload specific for all other
-      rules.
+      rules. Note: Longer retention can lead to higher storage costs post
+      introductory trial. We recommend starting with a short duration of 3
+      days or less.
     ruleId: Required. Immutable. The unique id of this `BackupRule`. The
       `rule_id` is unique per `BackupPlan`.The `rule_id` must start with a
       lowercase letter followed by up to 62 lowercase letters, numbers, or
@@ -1072,8 +1074,8 @@ class BackupVault(_messages.Message):
       if not provided during creation.
     BackupRetentionInheritanceValueValuesEnum: Optional. Setting for how a
       backup's enforced retention end time is inherited.
-    EncryptionModeValueValuesEnum: Optional. The encryption mode of the backup
-      vault.
+    EncryptionModeValueValuesEnum: Optional. Deprecated: The encryption mode
+      of the backup vault. Use EncryptionConfig.encryption_mode instead.
     StateValueValuesEnum: Output only. The BackupVault resource instance
       state.
 
@@ -1095,7 +1097,9 @@ class BackupVault(_messages.Message):
     backupCount: Output only. The number of backups in this backup vault.
     backupMinimumEnforcedRetentionDuration: Required. The default and minimum
       enforced retention for each backup within the backup vault. The enforced
-      retention for each backup can be extended.
+      retention for each backup can be extended. Note: Longer minimum enforced
+      retention period impacts potential storage costs post introductory
+      trial. We recommend starting with a short duration of 3 days or less.
     backupRetentionInheritance: Optional. Setting for how a backup's enforced
       retention end time is inherited.
     createTime: Output only. The time when the instance was created.
@@ -1105,7 +1109,9 @@ class BackupVault(_messages.Message):
       characters or less).
     effectiveTime: Optional. Time after which the BackupVault resource is
       locked.
-    encryptionMode: Optional. The encryption mode of the backup vault.
+    encryptionConfig: Optional. The encryption config of the backup vault.
+    encryptionMode: Optional. Deprecated: The encryption mode of the backup
+      vault. Use EncryptionConfig.encryption_mode instead.
     etag: Optional. Server specified ETag for the backup vault resource to
       prevent simultaneous updates from overwiting each other.
     labels: Optional. Resource labels to represent user provided metadata. No
@@ -1177,7 +1183,8 @@ class BackupVault(_messages.Message):
     MATCH_BACKUP_EXPIRE_TIME = 2
 
   class EncryptionModeValueValuesEnum(_messages.Enum):
-    r"""Optional. The encryption mode of the backup vault.
+    r"""Optional. Deprecated: The encryption mode of the backup vault. Use
+    EncryptionConfig.encryption_mode instead.
 
     Values:
       ENCRYPTION_MODE_UNSPECIFIED: Encryption mode not set. This will default
@@ -1271,16 +1278,17 @@ class BackupVault(_messages.Message):
   deletable = _messages.BooleanField(7)
   description = _messages.StringField(8)
   effectiveTime = _messages.StringField(9)
-  encryptionMode = _messages.EnumField('EncryptionModeValueValuesEnum', 10)
-  etag = _messages.StringField(11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  logMinimumEnforcedRetentionDuration = _messages.StringField(13)
-  name = _messages.StringField(14)
-  serviceAccount = _messages.StringField(15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  totalStoredBytes = _messages.IntegerField(17)
-  uid = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 10)
+  encryptionMode = _messages.EnumField('EncryptionModeValueValuesEnum', 11)
+  etag = _messages.StringField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  logMinimumEnforcedRetentionDuration = _messages.StringField(14)
+  name = _messages.StringField(15)
+  serviceAccount = _messages.StringField(16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  totalStoredBytes = _messages.IntegerField(18)
+  uid = _messages.StringField(19)
+  updateTime = _messages.StringField(20)
 
 
 class BackupWindow(_messages.Message):
@@ -3728,6 +3736,44 @@ class Empty(_messages.Message):
 
 
 
+class EncryptionConfig(_messages.Message):
+  r"""Message describing the EncryptionConfig of backup vault. This determines
+  how data within the vault is encrypted at rest.
+
+  Enums:
+    EncryptionModeValueValuesEnum: Output only. The encryption mode of the
+      backup vault.
+
+  Fields:
+    encryptionMode: Output only. The encryption mode of the backup vault.
+    kmsKeyName: Optional. The Cloud KMS key name to encrypt backups in this
+      backup vault. Must be in the same region as the vault. Some workload
+      backups like compute disk backups may use their inherited source key
+      instead. Format:
+      projects/{project}/locations/{location}/keyRings/{ring}/cryptoKeys/{key}
+  """
+
+  class EncryptionModeValueValuesEnum(_messages.Enum):
+    r"""Output only. The encryption mode of the backup vault.
+
+    Values:
+      ENCRYPTION_MODE_UNSPECIFIED: Encryption mode not set. This will default
+        to `GMEK_ENCRYPTION`.
+      GMEK_ENCRYPTION: Backups are encrypted with Google-managed encryption
+        keys. This is the default behavior.
+      CMEK_ENCRYPTION: Backups are encrypted with customer-managed encryption
+        keys via Cloud KMS. Note that this option does not provide key
+        compatibility checks and may be subject to cryptoshredding
+        vulnerabilities.
+    """
+    ENCRYPTION_MODE_UNSPECIFIED = 0
+    GMEK_ENCRYPTION = 1
+    CMEK_ENCRYPTION = 2
+
+  encryptionMode = _messages.EnumField('EncryptionModeValueValuesEnum', 1)
+  kmsKeyName = _messages.StringField(2)
+
+
 class Entry(_messages.Message):
   r"""A key/value pair to be used for storing metadata.
 
@@ -5787,15 +5833,30 @@ class Trial(_messages.Message):
   r"""Represents a Trial for a project.
 
   Enums:
+    EndReasonValueValuesEnum: Output only. The reason for ending the trial.
     StateValueValuesEnum: Output only. The state of the trial.
 
   Fields:
+    endReason: Output only. The reason for ending the trial.
     endTime: Output only. The time when the trial will expire.
     name: Identifier. The resource name of the trial. Format:
       projects/{project}/locations/{location}/trial
     startTime: Output only. The time when the trial was subscribed.
     state: Output only. The state of the trial.
   """
+
+  class EndReasonValueValuesEnum(_messages.Enum):
+    r"""Output only. The reason for ending the trial.
+
+    Values:
+      END_REASON_UNSPECIFIED: End reason not set.
+      MOVE_TO_PAID: Trial is deliberately ended by the user to transition to
+        paid usage.
+      DISCONTINUED: Trial is discontinued before expiration.
+    """
+    END_REASON_UNSPECIFIED = 0
+    MOVE_TO_PAID = 1
+    DISCONTINUED = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of the trial.
@@ -5815,16 +5876,21 @@ class Trial(_messages.Message):
     ELIGIBLE = 4
     NOT_ELIGIBLE = 5
 
-  endTime = _messages.StringField(1)
-  name = _messages.StringField(2)
-  startTime = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
+  endReason = _messages.EnumField('EndReasonValueValuesEnum', 1)
+  endTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  startTime = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class TriggerBackupRequest(_messages.Message):
   r"""Request message for triggering a backup.
 
   Fields:
+    customRetentionDays: Optional. The duration for which backup data will be
+      kept, while taking an on-demand backup with custom retention. It is
+      defined in "days". It is mutually exclusive with rule_id. This field is
+      required if rule_id is not provided.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -5841,8 +5907,9 @@ class TriggerBackupRequest(_messages.Message):
       triggered.
   """
 
-  requestId = _messages.StringField(1)
-  ruleId = _messages.StringField(2)
+  customRetentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  requestId = _messages.StringField(2)
+  ruleId = _messages.StringField(3)
 
 
 class WeekDayOfMonth(_messages.Message):

@@ -323,6 +323,7 @@ class Instance(_messages.Message):
     name: Output only. Format:
       `projects/{project}/locations/{location}/instances/{instance}`.
     oauthConfig: Looker instance OAuth login settings.
+    periodicExportConfig: Optional. Configuration for periodic export.
     platformEdition: Platform edition.
     privateIpEnabled: Whether private IP is enabled on the Looker instance.
     pscConfig: Optional. PSC configuration. Used when `psc_enabled` is true.
@@ -447,18 +448,19 @@ class Instance(_messages.Message):
   maintenanceWindow = _messages.MessageField('MaintenanceWindow', 19)
   name = _messages.StringField(20)
   oauthConfig = _messages.MessageField('OAuthConfig', 21)
-  platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 22)
-  privateIpEnabled = _messages.BooleanField(23)
-  pscConfig = _messages.MessageField('PscConfig', 24)
-  pscEnabled = _messages.BooleanField(25)
-  publicIpEnabled = _messages.BooleanField(26)
-  reservedRange = _messages.StringField(27)
-  satisfiesPzi = _messages.BooleanField(28)
-  satisfiesPzs = _messages.BooleanField(29)
-  state = _messages.EnumField('StateValueValuesEnum', 30)
-  tier = _messages.EnumField('TierValueValuesEnum', 31)
-  updateTime = _messages.StringField(32)
-  userMetadata = _messages.MessageField('UserMetadata', 33)
+  periodicExportConfig = _messages.MessageField('PeriodicExportConfig', 22)
+  platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 23)
+  privateIpEnabled = _messages.BooleanField(24)
+  pscConfig = _messages.MessageField('PscConfig', 25)
+  pscEnabled = _messages.BooleanField(26)
+  publicIpEnabled = _messages.BooleanField(27)
+  reservedRange = _messages.StringField(28)
+  satisfiesPzi = _messages.BooleanField(29)
+  satisfiesPzs = _messages.BooleanField(30)
+  state = _messages.EnumField('StateValueValuesEnum', 31)
+  tier = _messages.EnumField('TierValueValuesEnum', 32)
+  updateTime = _messages.StringField(33)
+  userMetadata = _messages.MessageField('UserMetadata', 34)
 
 
 class InstanceBackup(_messages.Message):
@@ -851,8 +853,9 @@ class LookerProjectsLocationsListRequest(_messages.Message):
   r"""A LookerProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1195,6 +1198,20 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class PeriodicExportConfig(_messages.Message):
+  r"""Configuration for periodic export.
+
+  Fields:
+    gcsUri: Required. Cloud Storage bucket URI for periodic export. Format:
+      gs://{bucket_name}
+    kmsKey: Required. Name of the CMEK key in KMS. Format: projects/{project}/
+      locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}
+  """
+
+  gcsUri = _messages.StringField(1)
+  kmsKey = _messages.StringField(2)
+
+
 class ProxySearchDirectGroupsRequest(_messages.Message):
   r"""Request wrapper for proxy to Groups API SearchDirectGroups
 
@@ -1351,6 +1368,9 @@ class ServiceAttachment(_messages.Message):
 
   Fields:
     connectionStatus: Output only. Connection status.
+    failureReason: Output only. Reason the service attachment creation failed.
+      This value will only be populated if the service attachment encounters
+      an issue during provisioning.
     localFqdn: Optional. Fully qualified domain name that will be used in the
       private DNS record created for the service attachment.
     localFqdns: Optional. List of fully qualified domain names that will be
@@ -1383,9 +1403,10 @@ class ServiceAttachment(_messages.Message):
     CLOSED = 5
 
   connectionStatus = _messages.EnumField('ConnectionStatusValueValuesEnum', 1)
-  localFqdn = _messages.StringField(2)
-  localFqdns = _messages.StringField(3, repeated=True)
-  targetServiceAttachmentUri = _messages.StringField(4)
+  failureReason = _messages.StringField(2)
+  localFqdn = _messages.StringField(3)
+  localFqdns = _messages.StringField(4, repeated=True)
+  targetServiceAttachmentUri = _messages.StringField(5)
 
 
 class StandardQueryParameters(_messages.Message):

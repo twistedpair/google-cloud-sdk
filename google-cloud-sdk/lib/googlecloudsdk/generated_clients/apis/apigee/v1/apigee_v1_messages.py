@@ -5028,6 +5028,87 @@ class ApigeeOrganizationsSecurityAssessmentResultsBatchComputeRequest(_messages.
   name = _messages.StringField(2, required=True)
 
 
+class ApigeeOrganizationsSecurityFeedbackCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityFeedbackCreateRequest object.
+
+  Fields:
+    googleCloudApigeeV1SecurityFeedback: A GoogleCloudApigeeV1SecurityFeedback
+      resource to be passed as the request body.
+    parent: Required. Name of the organization. Use the following structure in
+      your request: `organizations/{org}`.
+    securityFeedbackId: Optional. The id for this feedback report. If not
+      provided, it will be set to a system-generated UUID.
+  """
+
+  googleCloudApigeeV1SecurityFeedback = _messages.MessageField('GoogleCloudApigeeV1SecurityFeedback', 1)
+  parent = _messages.StringField(2, required=True)
+  securityFeedbackId = _messages.StringField(3)
+
+
+class ApigeeOrganizationsSecurityFeedbackDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityFeedbackDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the SecurityFeedback to delete. Use the following
+      structure in your request:
+      `organizations/{org}/securityFeedback/{feedback_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsSecurityFeedbackGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityFeedbackGetRequest object.
+
+  Fields:
+    name: Required. Name of the SecurityFeedback. Format:
+      `organizations/{org}/securityFeedback/{feedback_id}` Example:
+      organizations/apigee-organization-name/securityFeedback/feedback-id
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsSecurityFeedbackListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityFeedbackListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of feedback reports to return. The
+      service may return fewer than this value.
+      LINT.IfChange(documented_page_size_limits) If unspecified, at most 10
+      feedback reports will be returned. The maximum value is 100; values
+      above 100 will be coerced to 100. LINT.ThenChange( //depot/google3/edge/
+      sense/boq/service/v1/securityfeedback/securityfeedback_rpc.go:page_size_
+      limits )
+    pageToken: Optional. A page token, received from a previous
+      `ListSecurityFeedback` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `ListSecurityFeedback` must match the call that provided the page token.
+    parent: Required. Name of the organization. Format: `organizations/{org}`.
+      Example: organizations/apigee-organization-name/securityFeedback
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ApigeeOrganizationsSecurityFeedbackPatchRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityFeedbackPatchRequest object.
+
+  Fields:
+    googleCloudApigeeV1SecurityFeedback: A GoogleCloudApigeeV1SecurityFeedback
+      resource to be passed as the request body.
+    name: Output only. Identifier. The feedback name is intended to be a
+      system-generated uuid.
+    updateMask: Optional. The list of fields to update.
+  """
+
+  googleCloudApigeeV1SecurityFeedback = _messages.MessageField('GoogleCloudApigeeV1SecurityFeedback', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class ApigeeOrganizationsSecurityMonitoringConditionsCreateRequest(_messages.Message):
   r"""A ApigeeOrganizationsSecurityMonitoringConditionsCreateRequest object.
 
@@ -6427,12 +6508,14 @@ class GoogleCloudApigeeV1ApiDocDocumentation(_messages.Message):
   r"""The documentation for a catalog item.
 
   Fields:
+    asyncApiDocumentation: Optional. AsyncAPI Specification documentation.
     graphqlDocumentation: Optional. GraphQL documentation.
     oasDocumentation: Optional. OpenAPI Specification documentation.
   """
 
-  graphqlDocumentation = _messages.MessageField('GoogleCloudApigeeV1GraphqlDocumentation', 1)
-  oasDocumentation = _messages.MessageField('GoogleCloudApigeeV1OASDocumentation', 2)
+  asyncApiDocumentation = _messages.MessageField('GoogleCloudApigeeV1AsyncApiDocumentation', 1)
+  graphqlDocumentation = _messages.MessageField('GoogleCloudApigeeV1GraphqlDocumentation', 2)
+  oasDocumentation = _messages.MessageField('GoogleCloudApigeeV1OASDocumentation', 3)
 
 
 class GoogleCloudApigeeV1ApiDocDocumentationResponse(_messages.Message):
@@ -7227,6 +7310,17 @@ class GoogleCloudApigeeV1ArchiveDeployment(_messages.Message):
   updatedAt = _messages.IntegerField(6)
 
 
+class GoogleCloudApigeeV1AsyncApiDocumentation(_messages.Message):
+  r"""AsyncAPI Specification documentation for a catalog item.
+
+  Fields:
+    spec: Required. The documentation file contents for the AsyncAPI
+      Specification. JSON and YAML file formats are supported.
+  """
+
+  spec = _messages.MessageField('GoogleCloudApigeeV1DocumentationFile', 1)
+
+
 class GoogleCloudApigeeV1AsyncQuery(_messages.Message):
   r"""A GoogleCloudApigeeV1AsyncQuery object.
 
@@ -7338,7 +7432,7 @@ class GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequest(_messages.
       `BatchComputeSecurityAssessmentResults` call. Provide this to retrieve
       the subsequent page.
     profile: Required. Name of the profile that is used for computation.
-    scope: Required. Scope of the resources for the computation. For Apigee,
+    scope: Optional. Scope of the resources for the computation. For Apigee,
       the environment is the scope of the resources.
   """
 
@@ -9587,6 +9681,9 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
       CIDR block from Service Networking. Use the /22 CIDR block for
       configuring your firewall needs to allow traffic from Apigee. Input
       formats: `a.b.c.d/22` or `e.f.g.h/28` or `a.b.c.d/22,e.f.g.h/28`
+    isVersionLocked: Output only. Indicates whether the instance is version
+      locked. If true, the instance will not be updated by automated runtime
+      rollouts. This is only supported for Apigee X instances.
     labels: Optional. Labels associated with the instance.
     lastModifiedAt: Output only. Time the instance was last modified in
       milliseconds since epoch.
@@ -9693,18 +9790,19 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
   externalHostEnabled = _messages.BooleanField(8)
   host = _messages.StringField(9)
   ipRange = _messages.StringField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  lastModifiedAt = _messages.IntegerField(12)
-  location = _messages.StringField(13)
-  maintenanceUpdatePolicy = _messages.MessageField('GoogleCloudApigeeV1MaintenanceUpdatePolicy', 14)
-  name = _messages.StringField(15)
-  nodeConfig = _messages.MessageField('GoogleCloudApigeeV1NodeConfig', 16)
-  peeringCidrRange = _messages.EnumField('PeeringCidrRangeValueValuesEnum', 17)
-  port = _messages.StringField(18)
-  runtimeVersion = _messages.StringField(19)
-  scheduledMaintenance = _messages.MessageField('GoogleCloudApigeeV1ScheduledMaintenance', 20)
-  serviceAttachment = _messages.StringField(21)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
+  isVersionLocked = _messages.BooleanField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  lastModifiedAt = _messages.IntegerField(13)
+  location = _messages.StringField(14)
+  maintenanceUpdatePolicy = _messages.MessageField('GoogleCloudApigeeV1MaintenanceUpdatePolicy', 15)
+  name = _messages.StringField(16)
+  nodeConfig = _messages.MessageField('GoogleCloudApigeeV1NodeConfig', 17)
+  peeringCidrRange = _messages.EnumField('PeeringCidrRangeValueValuesEnum', 18)
+  port = _messages.StringField(19)
+  runtimeVersion = _messages.StringField(20)
+  scheduledMaintenance = _messages.MessageField('GoogleCloudApigeeV1ScheduledMaintenance', 21)
+  serviceAttachment = _messages.StringField(22)
+  state = _messages.EnumField('StateValueValuesEnum', 23)
 
 
 class GoogleCloudApigeeV1InstanceAttachment(_messages.Message):
@@ -9842,7 +9940,7 @@ class GoogleCloudApigeeV1KeyValueMap(_messages.Message):
       encrypted. This field is retained for backward compatibility and the
       value of encrypted will always be `true`. Apigee X and hybrid do not
       support unencrypted key value maps.
-    maskedValues: Required. Flag that specifies whether entry values will be
+    maskedValues: Optional. Flag that specifies whether entry values will be
       masked when returned.
     name: Required. ID of the key value map.
     resourceName: Output only. Resource URI on which the key value map is
@@ -10320,6 +10418,20 @@ class GoogleCloudApigeeV1ListSecurityActionsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   securityActions = _messages.MessageField('GoogleCloudApigeeV1SecurityAction', 2, repeated=True)
+
+
+class GoogleCloudApigeeV1ListSecurityFeedbackResponse(_messages.Message):
+  r"""Response for ListSecurityFeedback
+
+  Fields:
+    nextPageToken: A token that can be sent as `page_token` in
+      `ListSecurityFeedbackRequest` to retrieve the next page. If this field
+      is omitted, there are no subsequent pages.
+    securityFeedback: List of SecurityFeedback reports.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  securityFeedback = _messages.MessageField('GoogleCloudApigeeV1SecurityFeedback', 2, repeated=True)
 
 
 class GoogleCloudApigeeV1ListSecurityIncidentEnvironmentsResponse(_messages.Message):
@@ -12959,6 +13071,101 @@ class GoogleCloudApigeeV1SecurityAssessmentResultScoringResultAssessmentRecommen
   uri = _messages.StringField(2)
 
 
+class GoogleCloudApigeeV1SecurityFeedback(_messages.Message):
+  r"""Represents a feedback report from an Advanced API Security customer.
+
+  Enums:
+    FeedbackTypeValueValuesEnum: Required. The type of feedback being
+      submitted.
+    ReasonValueValuesEnum: Optional. The reason for the feedback.
+
+  Fields:
+    comment: Optional. Optional text the user can provide for additional,
+      unstructured context.
+    createTime: Output only. The time when this specific feedback id was
+      created.
+    displayName: Optional. The display name of the feedback.
+    feedbackContexts: Required. One or more attribute/value pairs for
+      constraining the feedback.
+    feedbackType: Required. The type of feedback being submitted.
+    name: Output only. Identifier. The feedback name is intended to be a
+      system-generated uuid.
+    reason: Optional. The reason for the feedback.
+    updateTime: Output only. The time when this specific feedback id was
+      updated.
+  """
+
+  class FeedbackTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of feedback being submitted.
+
+    Values:
+      FEEDBACK_TYPE_UNSPECIFIED: Unspecified feedback type.
+      EXCLUDED_DETECTION: Feedback identifying attributes to be excluded from
+        detections.
+    """
+    FEEDBACK_TYPE_UNSPECIFIED = 0
+    EXCLUDED_DETECTION = 1
+
+  class ReasonValueValuesEnum(_messages.Enum):
+    r"""Optional. The reason for the feedback.
+
+    Values:
+      REASON_UNSPECIFIED: Unspecified reason.
+      INTERNAL_SYSTEM: The feedback is created for an internal system.
+      NON_RISK_CLIENT: The feedback is created for a non-risk client.
+      NAT: The feedback is created for to label NAT.
+      PENETRATION_TEST: The feedback is created for a penetration test.
+      OTHER: The feedback is created for other reasons.
+    """
+    REASON_UNSPECIFIED = 0
+    INTERNAL_SYSTEM = 1
+    NON_RISK_CLIENT = 2
+    NAT = 3
+    PENETRATION_TEST = 4
+    OTHER = 5
+
+  comment = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  feedbackContexts = _messages.MessageField('GoogleCloudApigeeV1SecurityFeedbackFeedbackContext', 4, repeated=True)
+  feedbackType = _messages.EnumField('FeedbackTypeValueValuesEnum', 5)
+  name = _messages.StringField(6)
+  reason = _messages.EnumField('ReasonValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
+
+
+class GoogleCloudApigeeV1SecurityFeedbackFeedbackContext(_messages.Message):
+  r"""FeedbackContext captures the intent of the submitted feedback.
+
+  Enums:
+    AttributeValueValuesEnum: Required. The attribute the user is providing
+      feedback about.
+
+  Fields:
+    attribute: Required. The attribute the user is providing feedback about.
+    values: Required. The values of the attribute the user is providing
+      feedback about.
+  """
+
+  class AttributeValueValuesEnum(_messages.Enum):
+    r"""Required. The attribute the user is providing feedback about.
+
+    Values:
+      ATTRIBUTE_UNSPECIFIED: Unspecified attribute.
+      ATTRIBUTE_ENVIRONMENTS: Values will be a list of environments.
+      ATTRIBUTE_IP_ADDRESS_RANGES: Values will be a list of IP addresses. This
+        could be either IPv4 or IPv6.
+      ATTRIBUTE_API_KEYS: Values will be a list of API keys.
+    """
+    ATTRIBUTE_UNSPECIFIED = 0
+    ATTRIBUTE_ENVIRONMENTS = 1
+    ATTRIBUTE_IP_ADDRESS_RANGES = 2
+    ATTRIBUTE_API_KEYS = 3
+
+  attribute = _messages.EnumField('AttributeValueValuesEnum', 1)
+  values = _messages.StringField(2, repeated=True)
+
+
 class GoogleCloudApigeeV1SecurityIncident(_messages.Message):
   r"""Represents an SecurityIncident resource.
 
@@ -13059,7 +13266,7 @@ class GoogleCloudApigeeV1SecurityMonitoringCondition(_messages.Message):
       oring_condition}
     profile: Required. ID of security profile of the security monitoring
       condition.
-    scope: Required. Scope of the security monitoring condition. For Apigee,
+    scope: Optional. Scope of the security monitoring condition. For Apigee,
       the environment is the scope of the resources.
     totalDeployedResources: Output only. Total number of deployed resources
       within scope.

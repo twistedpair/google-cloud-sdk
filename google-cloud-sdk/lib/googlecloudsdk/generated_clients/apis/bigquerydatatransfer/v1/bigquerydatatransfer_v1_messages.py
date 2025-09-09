@@ -168,8 +168,9 @@ class BigquerydatatransferProjectsLocationsListRequest(_messages.Message):
   r"""A BigquerydatatransferProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1056,6 +1057,7 @@ class DataSourceParameter(_messages.Message):
     displayName: Parameter display name in the user interface.
     fields: Deprecated. This field has no effect.
     immutable: Cannot be changed after initial creation.
+    maxListSize: For list parameters, the max size of the list.
     maxValue: For integer and double values specifies maximum allowed value.
     minValue: For integer and double values specifies minimum allowed value.
     paramId: Parameter identifier.
@@ -1101,16 +1103,17 @@ class DataSourceParameter(_messages.Message):
   displayName = _messages.StringField(4)
   fields = _messages.MessageField('DataSourceParameter', 5, repeated=True)
   immutable = _messages.BooleanField(6)
-  maxValue = _messages.FloatField(7)
-  minValue = _messages.FloatField(8)
-  paramId = _messages.StringField(9)
-  recurse = _messages.BooleanField(10)
-  repeated = _messages.BooleanField(11)
-  required = _messages.BooleanField(12)
-  type = _messages.EnumField('TypeValueValuesEnum', 13)
-  validationDescription = _messages.StringField(14)
-  validationHelpUrl = _messages.StringField(15)
-  validationRegex = _messages.StringField(16)
+  maxListSize = _messages.IntegerField(7)
+  maxValue = _messages.FloatField(8)
+  minValue = _messages.FloatField(9)
+  paramId = _messages.StringField(10)
+  recurse = _messages.BooleanField(11)
+  repeated = _messages.BooleanField(12)
+  required = _messages.BooleanField(13)
+  type = _messages.EnumField('TypeValueValuesEnum', 14)
+  validationDescription = _messages.StringField(15)
+  validationHelpUrl = _messages.StringField(16)
+  validationRegex = _messages.StringField(17)
 
 
 class EmailPreferences(_messages.Message):

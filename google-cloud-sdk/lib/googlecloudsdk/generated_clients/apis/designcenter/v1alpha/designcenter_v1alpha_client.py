@@ -1805,6 +1805,33 @@ class DesigncenterV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def InferConnections(self, request, global_params=None):
+      r"""Infers conections for components present in a space.
+
+      Args:
+        request: (DesigncenterProjectsLocationsSpacesInferConnectionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('InferConnections')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    InferConnections.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/spaces/{spacesId}:inferConnections',
+        http_method='POST',
+        method_id='designcenter.projects.locations.spaces.inferConnections',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:inferConnections',
+        request_field='inferConnectionsRequest',
+        request_type_name='DesigncenterProjectsLocationsSpacesInferConnectionsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists spaces in a given project and location.
 

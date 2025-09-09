@@ -40,6 +40,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.organizations_locations_findingRemediationExecutions = self.OrganizationsLocationsFindingRemediationExecutionsService(self)
+    self.organizations_locations_hcptIacvReports = self.OrganizationsLocationsHcptIacvReportsService(self)
     self.organizations_locations_operations = self.OrganizationsLocationsOperationsService(self)
     self.organizations_locations_postureDeployments = self.OrganizationsLocationsPostureDeploymentsService(self)
     self.organizations_locations_postureTemplates = self.OrganizationsLocationsPostureTemplatesService(self)
@@ -84,6 +85,43 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
         request_field='createFindingRemediationExecutionRequest',
         request_type_name='SecuritypostureOrganizationsLocationsFindingRemediationExecutionsCreateRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsHcptIacvReportsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_hcptIacvReports resource."""
+
+    _NAME = 'organizations_locations_hcptIacvReports'
+
+    def __init__(self, client):
+      super(SecuritypostureV1alpha.OrganizationsLocationsHcptIacvReportsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def CreateHCPTIaCValidationReport(self, request, global_params=None):
+      r"""Validates a terraform plan file coming from an HCP Terraform Run Task for security policy violations.
+
+      Args:
+        request: (SecuritypostureOrganizationsLocationsHcptIacvReportsCreateHCPTIaCValidationReportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CreateHCPTIaCValidationReportResponse) The response message.
+      """
+      config = self.GetMethodConfig('CreateHCPTIaCValidationReport')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CreateHCPTIaCValidationReport.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/hcptIacvReports:createHCPTIaCValidationReport',
+        http_method='POST',
+        method_id='securityposture.organizations.locations.hcptIacvReports.createHCPTIaCValidationReport',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}/hcptIacvReports:createHCPTIaCValidationReport',
+        request_field='createHCPTIaCValidationReportRequest',
+        request_type_name='SecuritypostureOrganizationsLocationsHcptIacvReportsCreateHCPTIaCValidationReportRequest',
+        response_type_name='CreateHCPTIaCValidationReportResponse',
         supports_download=False,
     )
 

@@ -39,6 +39,8 @@ class PolicysimulatorV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.folders_locations_accessPolicySimulations_operations = self.FoldersLocationsAccessPolicySimulationsOperationsService(self)
+    self.folders_locations_accessPolicySimulations = self.FoldersLocationsAccessPolicySimulationsService(self)
     self.folders_locations_orgPolicyViolationsPreviews_operations = self.FoldersLocationsOrgPolicyViolationsPreviewsOperationsService(self)
     self.folders_locations_orgPolicyViolationsPreviews = self.FoldersLocationsOrgPolicyViolationsPreviewsService(self)
     self.folders_locations_replays_operations = self.FoldersLocationsReplaysOperationsService(self)
@@ -47,6 +49,8 @@ class PolicysimulatorV1(base_api.BaseApiClient):
     self.folders_locations = self.FoldersLocationsService(self)
     self.folders = self.FoldersService(self)
     self.operations = self.OperationsService(self)
+    self.organizations_locations_accessPolicySimulations_operations = self.OrganizationsLocationsAccessPolicySimulationsOperationsService(self)
+    self.organizations_locations_accessPolicySimulations = self.OrganizationsLocationsAccessPolicySimulationsService(self)
     self.organizations_locations_orgPolicyViolationsPreviews_operations = self.OrganizationsLocationsOrgPolicyViolationsPreviewsOperationsService(self)
     self.organizations_locations_orgPolicyViolationsPreviews_orgPolicyViolations = self.OrganizationsLocationsOrgPolicyViolationsPreviewsOrgPolicyViolationsService(self)
     self.organizations_locations_orgPolicyViolationsPreviews = self.OrganizationsLocationsOrgPolicyViolationsPreviewsService(self)
@@ -55,6 +59,8 @@ class PolicysimulatorV1(base_api.BaseApiClient):
     self.organizations_locations_replays = self.OrganizationsLocationsReplaysService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations = self.OrganizationsService(self)
+    self.projects_locations_accessPolicySimulations_operations = self.ProjectsLocationsAccessPolicySimulationsOperationsService(self)
+    self.projects_locations_accessPolicySimulations = self.ProjectsLocationsAccessPolicySimulationsService(self)
     self.projects_locations_orgPolicyViolationsPreviews_operations = self.ProjectsLocationsOrgPolicyViolationsPreviewsOperationsService(self)
     self.projects_locations_orgPolicyViolationsPreviews = self.ProjectsLocationsOrgPolicyViolationsPreviewsService(self)
     self.projects_locations_replays_operations = self.ProjectsLocationsReplaysOperationsService(self)
@@ -62,6 +68,53 @@ class PolicysimulatorV1(base_api.BaseApiClient):
     self.projects_locations_replays = self.ProjectsLocationsReplaysService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class FoldersLocationsAccessPolicySimulationsOperationsService(base_api.BaseApiService):
+    """Service class for the folders_locations_accessPolicySimulations_operations resource."""
+
+    _NAME = 'folders_locations_accessPolicySimulations_operations'
+
+    def __init__(self, client):
+      super(PolicysimulatorV1.FoldersLocationsAccessPolicySimulationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (PolicysimulatorFoldersLocationsAccessPolicySimulationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations/{locationsId}/accessPolicySimulations/{accessPolicySimulationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='policysimulator.folders.locations.accessPolicySimulations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='PolicysimulatorFoldersLocationsAccessPolicySimulationsOperationsGetRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+  class FoldersLocationsAccessPolicySimulationsService(base_api.BaseApiService):
+    """Service class for the folders_locations_accessPolicySimulations resource."""
+
+    _NAME = 'folders_locations_accessPolicySimulations'
+
+    def __init__(self, client):
+      super(PolicysimulatorV1.FoldersLocationsAccessPolicySimulationsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class FoldersLocationsOrgPolicyViolationsPreviewsOperationsService(base_api.BaseApiService):
     """Service class for the folders_locations_orgPolicyViolationsPreviews_operations resource."""
@@ -358,6 +411,53 @@ class PolicysimulatorV1(base_api.BaseApiClient):
         response_type_name='GoogleLongrunningListOperationsResponse',
         supports_download=False,
     )
+
+  class OrganizationsLocationsAccessPolicySimulationsOperationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_accessPolicySimulations_operations resource."""
+
+    _NAME = 'organizations_locations_accessPolicySimulations_operations'
+
+    def __init__(self, client):
+      super(PolicysimulatorV1.OrganizationsLocationsAccessPolicySimulationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (PolicysimulatorOrganizationsLocationsAccessPolicySimulationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/accessPolicySimulations/{accessPolicySimulationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='policysimulator.organizations.locations.accessPolicySimulations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='PolicysimulatorOrganizationsLocationsAccessPolicySimulationsOperationsGetRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsAccessPolicySimulationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_accessPolicySimulations resource."""
+
+    _NAME = 'organizations_locations_accessPolicySimulations'
+
+    def __init__(self, client):
+      super(PolicysimulatorV1.OrganizationsLocationsAccessPolicySimulationsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class OrganizationsLocationsOrgPolicyViolationsPreviewsOperationsService(base_api.BaseApiService):
     """Service class for the organizations_locations_orgPolicyViolationsPreviews_operations resource."""
@@ -706,6 +806,53 @@ class PolicysimulatorV1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(PolicysimulatorV1.OrganizationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ProjectsLocationsAccessPolicySimulationsOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_accessPolicySimulations_operations resource."""
+
+    _NAME = 'projects_locations_accessPolicySimulations_operations'
+
+    def __init__(self, client):
+      super(PolicysimulatorV1.ProjectsLocationsAccessPolicySimulationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (PolicysimulatorProjectsLocationsAccessPolicySimulationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/accessPolicySimulations/{accessPolicySimulationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='policysimulator.projects.locations.accessPolicySimulations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='PolicysimulatorProjectsLocationsAccessPolicySimulationsOperationsGetRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsAccessPolicySimulationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_accessPolicySimulations resource."""
+
+    _NAME = 'projects_locations_accessPolicySimulations'
+
+    def __init__(self, client):
+      super(PolicysimulatorV1.ProjectsLocationsAccessPolicySimulationsService, self).__init__(client)
       self._upload_configs = {
           }
 

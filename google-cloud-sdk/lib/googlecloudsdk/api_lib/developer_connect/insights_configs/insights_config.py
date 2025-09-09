@@ -109,7 +109,16 @@ class InsightsConfigClient(object):
   def Create(self, insight_config_ref, app_hub, user_artifact_configs):
     """Creates the insight config."""
     app_hub_application = name.parse_app_hub_application_uri(app_hub)
-    if app_hub_application.project_id() != insight_config_ref.projectsId:
+    # Check if the app hub application project is the same as the project where
+    # the insight config is being created.
+    are_projects_id_equal = (
+        app_hub_application.project_id() == insight_config_ref.projectsId
+    )
+    are_project_numbers_equal = (
+        str(app_hub_application.project_number())
+        == insight_config_ref.projectsId
+    )
+    if not are_projects_id_equal and not are_project_numbers_equal:
       raise InsightsConfigInitializationError(
           'Mismatch: App Hub application project'
           f' [{app_hub_application.project_id()}] must be the same as the'

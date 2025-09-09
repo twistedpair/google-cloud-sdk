@@ -40,6 +40,7 @@ class HypercomputeclusterV1alpha(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_clusters = self.ProjectsLocationsClustersService(self)
+    self.projects_locations_machineLearningRuns_profileSessions = self.ProjectsLocationsMachineLearningRunsProfileSessionsService(self)
     self.projects_locations_machineLearningRuns = self.ProjectsLocationsMachineLearningRunsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -187,6 +188,70 @@ class HypercomputeclusterV1alpha(base_api.BaseApiClient):
         request_field='cluster',
         request_type_name='HypercomputeclusterProjectsLocationsClustersPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsMachineLearningRunsProfileSessionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_machineLearningRuns_profileSessions resource."""
+
+    _NAME = 'projects_locations_machineLearningRuns_profileSessions'
+
+    def __init__(self, client):
+      super(HypercomputeclusterV1alpha.ProjectsLocationsMachineLearningRunsProfileSessionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets a Profile Session.
+
+      Args:
+        request: (HypercomputeclusterProjectsLocationsMachineLearningRunsProfileSessionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ProfileSession) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/machineLearningRuns/{machineLearningRunsId}/profileSessions/{profileSessionsId}',
+        http_method='GET',
+        method_id='hypercomputecluster.projects.locations.machineLearningRuns.profileSessions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='HypercomputeclusterProjectsLocationsMachineLearningRunsProfileSessionsGetRequest',
+        response_type_name='ProfileSession',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Profile Sessions for a Machine Learning Run.
+
+      Args:
+        request: (HypercomputeclusterProjectsLocationsMachineLearningRunsProfileSessionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListProfileSessionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/machineLearningRuns/{machineLearningRunsId}/profileSessions',
+        http_method='GET',
+        method_id='hypercomputecluster.projects.locations.machineLearningRuns.profileSessions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/profileSessions',
+        request_field='',
+        request_type_name='HypercomputeclusterProjectsLocationsMachineLearningRunsProfileSessionsListRequest',
+        response_type_name='ListProfileSessionsResponse',
         supports_download=False,
     )
 

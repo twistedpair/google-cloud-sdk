@@ -4874,7 +4874,9 @@ class GoogleDevtoolsCloudbuildV1NpmPackage(_messages.Message):
   all build steps.
 
   Fields:
-    packagePath: Path to the package.json. e.g. workspace/path/to/package
+    packagePath: Optional. Path to the package.json. e.g.
+      workspace/path/to/package Only one of `archive` or `package_path` can be
+      specified.
     repository: Artifact Registry repository, in the form "https://$REGION-
       npm.pkg.dev/$PROJECT/$REPOSITORY" Npm package in the workspace specified
       by path will be zipped and uploaded to Artifact Registry with this

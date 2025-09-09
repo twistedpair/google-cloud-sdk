@@ -297,6 +297,9 @@ class CaPool(_messages.Message):
     LabelsValue: Optional. Labels with user-defined metadata.
 
   Fields:
+    encryptionSpec: Optional. When EncryptionSpec is provided, the Subject,
+      SubjectAltNames, and the PEM-encoded certificate fields will be
+      encrypted at rest.
     issuancePolicy: Optional. The IssuancePolicy to control how Certificates
       will be issued from this CaPool.
     labels: Optional. Labels with user-defined metadata.
@@ -343,11 +346,12 @@ class CaPool(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  issuancePolicy = _messages.MessageField('IssuancePolicy', 1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  publishingOptions = _messages.MessageField('PublishingOptions', 4)
-  tier = _messages.EnumField('TierValueValuesEnum', 5)
+  encryptionSpec = _messages.MessageField('EncryptionSpec', 1)
+  issuancePolicy = _messages.MessageField('IssuancePolicy', 2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  publishingOptions = _messages.MessageField('PublishingOptions', 5)
+  tier = _messages.EnumField('TierValueValuesEnum', 6)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -1070,6 +1074,17 @@ class EnableCertificateAuthorityRequest(_messages.Message):
   """
 
   requestId = _messages.StringField(1)
+
+
+class EncryptionSpec(_messages.Message):
+  r"""The configuration used for encrypting data at rest.
+
+  Fields:
+    cloudKmsKey: The resource name for a Cloud KMS key in the format
+      `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
+  """
+
+  cloudKmsKey = _messages.StringField(1)
 
 
 class Expr(_messages.Message):
@@ -2672,8 +2687,9 @@ class PrivatecaProjectsLocationsListRequest(_messages.Message):
   r"""A PrivatecaProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).

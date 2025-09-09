@@ -429,8 +429,9 @@ def AddScaleToZeroArgs(parser, version):
         type=arg_parsers.Duration(lower_bound='300s', upper_bound='28800s'),
         hidden=True,
         help="""\
-Duration (in seconds) before a deployment is enrolled in scale to zero
-evaluation after scaling up. Defaults to 1 hour if min replica count is 0.
+Minimum duration (in seconds) that a deployment will be scaled up before traffic
+is evaluated for potential scale-down.
+Defaults to 1 hour if min replica count is 0.
 """,
     ).AddToParser(parser)
 

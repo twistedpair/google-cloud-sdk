@@ -27,6 +27,7 @@ import dataclasses
 import io
 import os
 import random
+import re
 import string
 import tempfile
 import time
@@ -44,6 +45,9 @@ _THREAD_COUNT_ENV_VAR = 'CLOUDSDK_STORAGE_THREAD_COUNT'
 _PROCESS_COUNT_ENV_VAR = 'CLOUDSDK_STORAGE_PROCESS_COUNT'
 # Placeholder value for metrics that are not available or cannot be calculated.
 PLACEHOLDER_METRIC_VALUE = 'N/A'
+_NO_OBJECT_TO_DELETE_REGEXP = re.compile(
+    r'.*following URLs matched no objects.*'
+)
 
 
 @contextlib.contextmanager
@@ -265,10 +269,15 @@ class Diagnostic(abc.ABC):
     ]
     _, err = utils.run_gcloud(args)
     if err:
-      log.warning(
-          f'Failed to clean up objects in {bucket_url} with prefix'
-          f' {object_prefix} : {err}'
-      )
+      if _NO_OBJECT_TO_DELETE_REGEXP.search(err):
+        log.info(
+            f'No objects to delete in {bucket_url} with prefix {object_prefix}.'
+        )
+      else:
+        log.warning(
+            f'Failed to clean up objects in {bucket_url} with prefix'
+            f' {object_prefix} : {err}'
+        )
 
   def _set_parallelism_env_vars(self):
     """Sets the process and thread count environment variables."""

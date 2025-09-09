@@ -112,6 +112,33 @@ class CloudnumberregistryV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def FindFreeIpRange(self, request, global_params=None):
+      r"""Finds free IP ranges in a single CustomRange.
+
+      Args:
+        request: (CloudnumberregistryProjectsLocationsCustomRangesFindFreeIpRangeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FindCustomRangeFreeIpRangeResponse) The response message.
+      """
+      config = self.GetMethodConfig('FindFreeIpRange')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FindFreeIpRange.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/customRanges/{customRangesId}:findFreeIpRange',
+        http_method='GET',
+        method_id='cloudnumberregistry.projects.locations.customRanges.findFreeIpRange',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['freeRangeCount', 'freeRangePrefixLength', 'requestId'],
+        relative_path='v1alpha/{+name}:findFreeIpRange',
+        request_field='',
+        request_type_name='CloudnumberregistryProjectsLocationsCustomRangesFindFreeIpRangeRequest',
+        response_type_name='FindCustomRangeFreeIpRangeResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details of a single CustomRange.
 
@@ -202,6 +229,33 @@ class CloudnumberregistryV1alpha(base_api.BaseApiClient):
       super(CloudnumberregistryV1alpha.ProjectsLocationsDiscoveredRangesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def FindFreeIpRange(self, request, global_params=None):
+      r"""Finds free IP ranges in a single DiscoveredRange.
+
+      Args:
+        request: (CloudnumberregistryProjectsLocationsDiscoveredRangesFindFreeIpRangeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FindDiscoveredRangeFreeIpRangeResponse) The response message.
+      """
+      config = self.GetMethodConfig('FindFreeIpRange')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FindFreeIpRange.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/discoveredRanges/{discoveredRangesId}:findFreeIpRange',
+        http_method='GET',
+        method_id='cloudnumberregistry.projects.locations.discoveredRanges.findFreeIpRange',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['freeRangeCount', 'freeRangePrefixLength', 'requestId'],
+        relative_path='v1alpha/{+name}:findFreeIpRange',
+        request_field='',
+        request_type_name='CloudnumberregistryProjectsLocationsDiscoveredRangesFindFreeIpRangeRequest',
+        response_type_name='FindDiscoveredRangeFreeIpRangeResponse',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       r"""Gets details of a single DiscoveredRange.

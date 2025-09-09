@@ -66,17 +66,25 @@ set on an object. For example:
 
 1. The following JSON document shows two key value
 pairs, i.e. (key1, value1) and (key2, value2):
-  {
-    "key1": "value1"
-    "key2": "value2"
-  }
+
+  ```
+    {
+      "key1": {"value": "value1"},
+      "key2": {"value": "value2"}
+    }
+  ```
 
 2. The following YAML document shows two key value
 pairs, i.e. (key1, value1) and (key2, value2):
-  key1: value1
-  key2: value2
 
-Note that the keys, and values should be string.
+  ```
+    key1:
+      value: value1
+    key2:
+      value: value2
+  ```
+
+Note: Currently object contexts only supports string format for values.
 """
 
 
@@ -114,7 +122,7 @@ def add_object_context_setter_flags(parser):
   """Adds flags that allow users to set object contexts."""
   parser.add_argument(
       '--custom-contexts',
-      metavar='CUSTOM_METADATA_KEYS_AND_VALUES',
+      metavar='CUSTOM_CONTEXTS_KEYS_AND_VALUES',
       type=arg_parsers.ArgDict(),
       help=(
           'Sets custom contexts on objects. The existing custom contexts (if'
@@ -134,7 +142,7 @@ def get_object_context_group(parser):
   return parser.add_mutually_exclusive_group(
       category='OBJECT CONTEXTS',
       help=(
-          'Flags that allow users to handle object contexts.'
+          'Group that allow users to handle object contexts.'
       ),
       hidden=True,
   )
@@ -159,7 +167,7 @@ def add_object_contexts_flags(parser):
   )
   context_subgroup.add_argument(
       '--update-custom-contexts',
-      metavar='CUSTOM_METADATA_KEYS_AND_VALUES',
+      metavar='CUSTOM_CONTEXTS_KEYS_AND_VALUES',
       type=arg_parsers.ArgDict(),
       help=(
           'Updates the custom contexts on the object, if an entry is found, it'
@@ -168,7 +176,7 @@ def add_object_contexts_flags(parser):
   )
   context_subgroup.add_argument(
       '--remove-custom-contexts',
-      metavar='CUSTOM_METADATA_KEYS_AND_VALUES',
+      metavar='CUSTOM_CONTEXTS_KEYS',
       type=arg_parsers.ArgList(),
       help=(
           'Removes the custom contexts on the object, if an entry is not found,'
@@ -877,6 +885,22 @@ def add_soft_deleted_flag(parser, hidden=False):
           ' exclude live and noncurrent ones.'
       ),
       hidden=hidden,
+  )
+
+
+def add_server_filter_flag(parser):
+  """Adds flag for filtering objects by server side filtering."""
+  parser.add_argument(
+      '--server-filter',
+      type=str,
+      hidden=True,
+      help=(
+          'Server side filtering for objects, Works only for Google Cloud'
+          ' Storage URLs. The filter only works for objects, and not'
+          ' directories or buckets. which means commands like `storage ls` and'
+          ' `storage du` will still list directories or buckets even if they do'
+          ' not contain any objects matching the filter.'
+      ),
   )
 
 

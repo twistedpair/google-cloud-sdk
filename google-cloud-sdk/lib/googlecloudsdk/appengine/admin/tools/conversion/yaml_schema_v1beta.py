@@ -189,4 +189,11 @@ SCHEMA = s.Message(
     vpc_access_connector=s.Message(
         name=s.Value(converter=c.ToJsonString),
         egress_setting=s.Value(converter=c.ToVpcEgressSettingEnum)),
+    vpc_egress=s.Message(
+        converter=c.ConvertVpcEgressSubnetworkKey,
+        host_project_id=s.Value(converter=c.ToJsonString),
+        subnet=s.Value(converter=c.ToJsonString),
+        egress_setting=s.Value(converter=c.ToVpcEgressSettingEnum),
+        network_tags=s.Value(converter=c.ToVpcNetworkTags),
+    ),
     zones=s.RepeatedField(element=s.Value(converter=c.ToJsonString)))

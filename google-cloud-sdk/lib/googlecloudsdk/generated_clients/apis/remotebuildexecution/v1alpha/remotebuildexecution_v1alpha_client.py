@@ -334,6 +334,33 @@ class RemotebuildexecutionV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def CreateTBI(self, request, global_params=None):
+      r"""Creates a new instance of type TBI in the specified region.
+
+      Args:
+        request: (RemotebuildexecutionProjectsInstancesCreateTBIRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('CreateTBI')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CreateTBI.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/instances:CreateTBI',
+        http_method='POST',
+        method_id='remotebuildexecution.projects.instances.createTBI',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}/instances:CreateTBI',
+        request_field='googleDevtoolsRemotebuildexecutionAdminV1alphaCreateTbiInstanceRequest',
+        request_type_name='RemotebuildexecutionProjectsInstancesCreateTBIRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes the specified instance. Returns a long running operation which contains a `google.protobuf.Empty` response on completion. Deleting an instance with worker pools in it will delete these worker pools.
 

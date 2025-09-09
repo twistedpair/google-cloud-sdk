@@ -159,7 +159,8 @@ class PrinterAttributes(resource_printer_base.ResourcePrinter):
       that should not be displayed in log files. Explicit command line IO
       redirection overrides this attribute.
     transforms: Apply projection transforms to the resource values. The default
-      is format specific. Use *no-transforms* to disable.
+      is format specific; table-like formats may define default transforms to
+      certain columns. Use *no-transforms* to disable.
   """
 
 

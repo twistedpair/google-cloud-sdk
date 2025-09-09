@@ -105,6 +105,19 @@ def AddTargetFirewallAttachmentArg(
   )
 
 
+def AddEnableJumboFramesArg(
+    parser,
+    required=False,
+    help_text="Enable jumbo frames for the firewall endpoint. To disable jumbo frames, use --no-enable-jumbo-frames.",
+):
+  parser.add_argument(
+      "--enable-jumbo-frames",
+      required=required,
+      help=help_text,
+      action="store_true",
+  )
+
+
 def AddZoneArg(parser, required=True, help_text="Zone of the endpoint"):
   parser.add_argument("--zone", required=required, help=help_text)
 

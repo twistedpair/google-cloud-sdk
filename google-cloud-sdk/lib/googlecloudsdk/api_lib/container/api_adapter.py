@@ -340,6 +340,10 @@ ROUTE_BASED_CLUSTERS_NOT_SUPPORTED_WITH_STACK_TYPE_IPV6 = """\
 Route-based clusters are not supported with stack type IPV6.
 """
 
+CONTROL_PLANE_EGRESS_NOT_SUPPORTED = """\
+Control plane egress '{mode}' is not supported.
+"""
+
 DEFAULT_MAX_NODES_PER_POOL = 1000
 
 MAX_AUTHORIZED_NETWORKS_CIDRS_PRIVATE = 100
@@ -637,6 +641,7 @@ class CreateClusterOptions(object):
       boot_disk_kms_key=None,
       node_pool_name=None,
       tags=None,
+      tag_bindings=None,
       autoprovisioning_network_tags=None,
       node_labels=None,
       node_taints=None,
@@ -733,6 +738,7 @@ class CreateClusterOptions(object):
       maintenance_window_end=None,
       maintenance_window_recurrence=None,
       enable_cost_allocation=None,
+      gpu_direct_strategy=None,
       max_surge_upgrade=None,
       max_unavailable_upgrade=None,
       enable_autoprovisioning=None,
@@ -855,6 +861,7 @@ class CreateClusterOptions(object):
       boot_disk_provisioned_iops=None,
       boot_disk_provisioned_throughput=None,
       network_tier=None,
+      control_plane_egress_mode=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -889,6 +896,7 @@ class CreateClusterOptions(object):
     self.boot_disk_kms_key = boot_disk_kms_key
     self.node_pool_name = node_pool_name
     self.tags = tags
+    self.tag_bindings = tag_bindings
     self.autoprovisioning_network_tags = autoprovisioning_network_tags
     self.node_labels = node_labels
     self.node_taints = node_taints
@@ -993,6 +1001,7 @@ class CreateClusterOptions(object):
     self.maintenance_window_end = maintenance_window_end
     self.maintenance_window_recurrence = maintenance_window_recurrence
     self.enable_cost_allocation = enable_cost_allocation
+    self.gpu_direct_strategy = gpu_direct_strategy
     self.max_surge_upgrade = max_surge_upgrade
     self.max_unavailable_upgrade = max_unavailable_upgrade
     self.enable_autoprovisioning = enable_autoprovisioning
@@ -1150,6 +1159,7 @@ class CreateClusterOptions(object):
     self.boot_disk_provisioned_iops = boot_disk_provisioned_iops
     self.boot_disk_provisioned_throughput = boot_disk_provisioned_throughput
     self.network_tier = network_tier
+    self.control_plane_egress_mode = control_plane_egress_mode
 
 
 class UpdateClusterOptions(object):
@@ -1336,6 +1346,7 @@ class UpdateClusterOptions(object):
       boot_disk_provisioned_iops=None,
       boot_disk_provisioned_throughput=None,
       network_tier=None,
+      control_plane_egress_mode=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1564,6 +1575,7 @@ class UpdateClusterOptions(object):
     self.boot_disk_provisioned_iops = boot_disk_provisioned_iops
     self.boot_disk_provisioned_throughput = boot_disk_provisioned_throughput
     self.network_tier = network_tier
+    self.control_plane_egress_mode = control_plane_egress_mode
 
 
 class SetMasterAuthOptions(object):
@@ -1602,6 +1614,7 @@ class CreateNodePoolOptions(object):
       ephemeral_storage_local_ssd=None,
       boot_disk_kms_key=None,
       tags=None,
+      tag_bindings=None,
       node_labels=None,
       labels=None,
       node_taints=None,
@@ -1636,6 +1649,7 @@ class CreateNodePoolOptions(object):
       sandbox=None,
       metadata=None,
       linux_sysctls=None,
+      gpu_direct_strategy=None,
       max_surge_upgrade=None,
       max_unavailable_upgrade=None,
       node_locations=None,
@@ -1700,6 +1714,7 @@ class CreateNodePoolOptions(object):
     self.local_nvme_ssd_block = local_nvme_ssd_block
     self.boot_disk_kms_key = boot_disk_kms_key
     self.tags = tags
+    self.tag_bindings = tag_bindings
     self.labels = labels
     self.node_labels = node_labels
     self.node_taints = node_taints
@@ -1734,6 +1749,7 @@ class CreateNodePoolOptions(object):
     self.sandbox = sandbox
     self.metadata = metadata
     self.linux_sysctls = linux_sysctls
+    self.gpu_direct_strategy = gpu_direct_strategy
     self.max_surge_upgrade = max_surge_upgrade
     self.max_unavailable_upgrade = max_unavailable_upgrade
     self.node_locations = node_locations
@@ -2283,6 +2299,14 @@ class APIAdapter(object):
     pools = self.ParseNodePools(options, node_config)
 
     cluster = self.messages.Cluster(name=cluster_ref.clusterId, nodePools=pools)
+    if options.tag_bindings:
+      # Assign the dictionary to the cluster.tags field
+      cluster.tags = self.messages.Cluster.TagsValue(
+          additionalProperties=[
+              self.messages.Cluster.TagsValue.AdditionalProperty(key=k, value=v)
+              for k, v in sorted(options.tag_bindings.items())
+          ]
+      )
     if options.additional_zones:
       cluster.locations = sorted([cluster_ref.zone] + options.additional_zones)
     if options.node_locations:
@@ -3240,6 +3264,12 @@ class APIAdapter(object):
       if cluster.ipAllocationPolicy is None:
         cluster.ipAllocationPolicy = self.messages.IPAllocationPolicy()
       cluster.ipAllocationPolicy.networkTierConfig = _GetNetworkTierConfig(options, self.messages)
+
+    if options.control_plane_egress_mode is not None:
+      if cluster.controlPlaneEgress is None:
+        cluster.controlPlaneEgress = self.messages.ControlPlaneEgress()
+      cluster.controlPlaneEgress = _GetControlPlaneEgress(options, self.messages)
+
     return cluster
 
   def _GetClusterNetworkPerformanceConfig(self, options):
@@ -3342,6 +3372,20 @@ class APIAdapter(object):
     if options.gvnic is not None:
       gvnic = self.messages.VirtualNIC(enabled=options.gvnic)
       node_config.gvnic = gvnic
+
+    if options.gpu_direct_strategy is not None:
+      if options.gpu_direct_strategy == 'RDMA':
+        node_config.gpuDirectConfig = self.messages.GPUDirectConfig(
+            gpuDirectStrategy=(
+                self.messages.GPUDirectConfig.GpuDirectStrategyValueValuesEnum.RDMA
+            )
+        )
+      elif options.gpu_direct_strategy == 'TCPX':
+        node_config.gpuDirectConfig = self.messages.GPUDirectConfig(
+            gpuDirectStrategy=(
+                self.messages.GPUDirectConfig.GpuDirectStrategyValueValuesEnum.TCPX
+            )
+        )
 
     if options.max_run_duration is not None:
       node_config.maxRunDuration = options.max_run_duration
@@ -5359,6 +5403,21 @@ class APIAdapter(object):
           )
       )
 
+    if options.control_plane_egress_mode is not None:
+      modes = {
+          'NONE': (
+              self.messages.DesiredControlPlaneEgress.ModeValueValuesEnum.NONE
+          ),
+          'VIA_CONTROL_PLANE': (
+              self.messages.DesiredControlPlaneEgress.ModeValueValuesEnum.VIA_CONTROL_PLANE
+          ),
+      }
+      config = self.messages.DesiredControlPlaneEgress()
+      config.mode = modes[options.control_plane_egress_mode]
+      update = self.messages.ClusterUpdate(
+          desiredControlPlaneEgress=config
+      )
+
     return update
 
   def UpdateCluster(self, cluster_ref, options):
@@ -6129,6 +6188,20 @@ class APIAdapter(object):
       )
     if options.placement_policy is not None:
       pool.placementPolicy.policyName = options.placement_policy
+
+    if options.gpu_direct_strategy is not None:
+      if options.gpu_direct_strategy == 'RDMA':
+        node_config.gpuDirectConfig = self.messages.GPUDirectConfig(
+            gpuDirectStrategy=(
+                self.messages.GPUDirectConfig.GpuDirectStrategyValueValuesEnum.RDMA
+            )
+        )
+      elif options.gpu_direct_strategy == 'TCPX':
+        node_config.gpuDirectConfig = self.messages.GPUDirectConfig(
+            gpuDirectStrategy=(
+                self.messages.GPUDirectConfig.GpuDirectStrategyValueValuesEnum.TCPX
+            )
+        )
 
     if options.tpu_topology:
       if pool.placementPolicy is None:
@@ -7518,6 +7591,35 @@ class APIAdapter(object):
         lustreCsiDriverConfig=lustre_csi_driver_config
     )
     update = self.messages.ClusterUpdate(desiredAddonsConfig=addons_config)
+    op = self.client.projects_locations_clusters.Update(
+        self.messages.UpdateClusterRequest(
+            name=ProjectLocationCluster(
+                cluster_ref.projectId, cluster_ref.zone, cluster_ref.clusterId
+            ),
+            update=update,
+        )
+    )
+    return self.ParseOperation(op.name, cluster_ref.zone)
+
+  def ModifyControlPlaneEgress(
+      self, cluster_ref, control_plane_egress_mode
+  ):
+    """Updates the control plane egress config on the cluster."""
+    update = self.messages.ClusterUpdate()
+    available_modes = {
+        'NONE': (
+            self.messages.ControlPlaneEgress.ModeValueValuesEnum.NONE
+        ),
+        'VIA_CONTROL_PLANE': (
+            self.messages.ControlPlaneEgress.ModeValueValuesEnum.VIA_CONTROL_PLANE
+        ),
+    }
+    if control_plane_egress_mode is not None:
+      update.desiredControlPlaneEgress = (
+          self.messages.ControlPlaneEgress(
+              mode=available_modes[control_plane_egress_mode]
+          )
+      )
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
             name=ProjectLocationCluster(
@@ -10163,3 +10265,27 @@ def _GetNetworkTierConfig(options, messages):
       )
     network_tier_config.networkTier = network_tiers[options.network_tier]
   return network_tier_config
+
+
+def _GetControlPlaneEgress(options, messages):
+  """Gets the ControlPlaneEgress from options."""
+  control_plane_egress = messages.ControlPlaneEgress()
+  if options.control_plane_egress_mode is not None:
+    control_plane_egress_modes = {
+        'NONE': (
+            messages.ControlPlaneEgress.ModeValueValuesEnum.NONE
+        ),
+        'VIA_CONTROL_PLANE': (
+            messages.ControlPlaneEgress.ModeValueValuesEnum.VIA_CONTROL_PLANE
+        ),
+    }
+    if options.control_plane_egress_mode not in control_plane_egress_modes:
+      raise util.Error(
+          CONTROL_PLANE_EGRESS_NOT_SUPPORTED.format(
+              control_plane_egress_mode=options.control_plane_egress_mode
+          )
+      )
+    control_plane_egress.mode = control_plane_egress_modes[
+        options.control_plane_egress_mode
+    ]
+  return control_plane_egress

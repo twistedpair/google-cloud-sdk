@@ -65,6 +65,7 @@ def AddHeterogeneousSourceOrDagDetailsFlag(parser):
   hetero_cp_params_group = parser.add_group()
   cp_flags.AddHostFlag(hetero_cp_params_group, required=True)
   cp_flags.AddPortFlag(hetero_cp_params_group, required=True)
+  cp_flags.AddDbmPortFlag(hetero_cp_params_group)
 
 
 def AddHomogeneousSourceDetailsFlag(parser):

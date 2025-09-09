@@ -519,7 +519,7 @@ class DnsV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Policy.
+      r"""Creates a new policy.
 
       Args:
         request: (DnsPoliciesCreateRequest) input message
@@ -545,7 +545,7 @@ class DnsV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a previously created Policy. Fails if the policy is still being referenced by a network.
+      r"""Deletes a previously created policy. Fails if the policy is still being referenced by a network.
 
       Args:
         request: (DnsPoliciesDeleteRequest) input message
@@ -571,7 +571,7 @@ class DnsV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Fetches the representation of an existing Policy.
+      r"""Fetches the representation of an existing policy.
 
       Args:
         request: (DnsPoliciesGetRequest) input message
@@ -597,7 +597,7 @@ class DnsV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Enumerates all Policies associated with a project.
+      r"""Enumerates all policies associated with a project.
 
       Args:
         request: (DnsPoliciesListRequest) input message
@@ -623,7 +623,7 @@ class DnsV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Applies a partial update to an existing Policy.
+      r"""Applies a partial update to an existing policy.
 
       Args:
         request: (DnsPoliciesPatchRequest) input message
@@ -649,7 +649,7 @@ class DnsV2(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates an existing Policy.
+      r"""Updates an existing policy.
 
       Args:
         request: (DnsPoliciesUpdateRequest) input message

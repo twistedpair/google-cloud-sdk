@@ -49,6 +49,8 @@ class ApihubV1(base_api.BaseApiClient):
     self.projects_locations_curations = self.ProjectsLocationsCurationsService(self)
     self.projects_locations_dependencies = self.ProjectsLocationsDependenciesService(self)
     self.projects_locations_deployments = self.ProjectsLocationsDeploymentsService(self)
+    self.projects_locations_discoveredApiObservations_discoveredApiOperations = self.ProjectsLocationsDiscoveredApiObservationsDiscoveredApiOperationsService(self)
+    self.projects_locations_discoveredApiObservations = self.ProjectsLocationsDiscoveredApiObservationsService(self)
     self.projects_locations_externalApis = self.ProjectsLocationsExternalApisService(self)
     self.projects_locations_hostProjectRegistrations = self.ProjectsLocationsHostProjectRegistrationsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
@@ -1425,6 +1427,134 @@ class ApihubV1(base_api.BaseApiClient):
         request_field='googleCloudApihubV1Deployment',
         request_type_name='ApihubProjectsLocationsDeploymentsPatchRequest',
         response_type_name='GoogleCloudApihubV1Deployment',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsDiscoveredApiObservationsDiscoveredApiOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_discoveredApiObservations_discoveredApiOperations resource."""
+
+    _NAME = 'projects_locations_discoveredApiObservations_discoveredApiOperations'
+
+    def __init__(self, client):
+      super(ApihubV1.ProjectsLocationsDiscoveredApiObservationsDiscoveredApiOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets a DiscoveredAPIOperation in a given project, location, ApiObservation and ApiOperation.
+
+      Args:
+        request: (ApihubProjectsLocationsDiscoveredApiObservationsDiscoveredApiOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApihubV1DiscoveredApiOperation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/discoveredApiObservations/{discoveredApiObservationsId}/discoveredApiOperations/{discoveredApiOperationsId}',
+        http_method='GET',
+        method_id='apihub.projects.locations.discoveredApiObservations.discoveredApiOperations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApihubProjectsLocationsDiscoveredApiObservationsDiscoveredApiOperationsGetRequest',
+        response_type_name='GoogleCloudApihubV1DiscoveredApiOperation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all the DiscoveredAPIOperations in a given project, location and ApiObservation.
+
+      Args:
+        request: (ApihubProjectsLocationsDiscoveredApiObservationsDiscoveredApiOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApihubV1ListDiscoveredApiOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/discoveredApiObservations/{discoveredApiObservationsId}/discoveredApiOperations',
+        http_method='GET',
+        method_id='apihub.projects.locations.discoveredApiObservations.discoveredApiOperations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/discoveredApiOperations',
+        request_field='',
+        request_type_name='ApihubProjectsLocationsDiscoveredApiObservationsDiscoveredApiOperationsListRequest',
+        response_type_name='GoogleCloudApihubV1ListDiscoveredApiOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsDiscoveredApiObservationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_discoveredApiObservations resource."""
+
+    _NAME = 'projects_locations_discoveredApiObservations'
+
+    def __init__(self, client):
+      super(ApihubV1.ProjectsLocationsDiscoveredApiObservationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets a DiscoveredAPIObservation in a given project, location and ApiObservation.
+
+      Args:
+        request: (ApihubProjectsLocationsDiscoveredApiObservationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApihubV1DiscoveredApiObservation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/discoveredApiObservations/{discoveredApiObservationsId}',
+        http_method='GET',
+        method_id='apihub.projects.locations.discoveredApiObservations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApihubProjectsLocationsDiscoveredApiObservationsGetRequest',
+        response_type_name='GoogleCloudApihubV1DiscoveredApiObservation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all the DiscoveredAPIObservations in a given project and location.
+
+      Args:
+        request: (ApihubProjectsLocationsDiscoveredApiObservationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApihubV1ListDiscoveredApiObservationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/discoveredApiObservations',
+        http_method='GET',
+        method_id='apihub.projects.locations.discoveredApiObservations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/discoveredApiObservations',
+        request_field='',
+        request_type_name='ApihubProjectsLocationsDiscoveredApiObservationsListRequest',
+        response_type_name='GoogleCloudApihubV1ListDiscoveredApiObservationsResponse',
         supports_download=False,
     )
 

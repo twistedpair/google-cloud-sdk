@@ -56,6 +56,8 @@ class RunComposeWrapper(binary_operations.StreamingBinaryBackedOperation):
       debug=False,
       dry_run=False,
       resources_config=None,
+      project_number=None,
+      region=None,
       **kwargs
   ):
     del kwargs
@@ -73,6 +75,8 @@ class RunComposeWrapper(binary_operations.StreamingBinaryBackedOperation):
         exec_args.append('--dry-run')
     if command == 'translate':
       exec_args += ['--resources-config', resources_config]
+      exec_args += ['--project-number', project_number]
+      exec_args += ['--region', region]
     return exec_args
 
 

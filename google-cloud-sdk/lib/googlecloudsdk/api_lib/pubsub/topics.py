@@ -291,6 +291,7 @@ class TopicsClient(object):
       confluent_cloud_ingestion_service_account=None,
       ingestion_log_severity=None,
       message_transforms_file=None,
+      tags=None,
   ):
     """Creates a Topic.
 
@@ -369,6 +370,7 @@ class TopicsClient(object):
         ingestion.
       message_transforms_file (str): The file path to the JSON or YAML file
         containing the message transforms.
+      tags (TagsValue): The tag Keys/Values to be bound to the topic.
 
     Returns:
       Topic: The created topic.
@@ -443,6 +445,9 @@ class TopicsClient(object):
       ) as e:
         e.args = (utils.GetErrorMessage(e),)
         raise
+
+    if tags:
+      topic.tags = tags
 
     return self._service.Create(topic)
 

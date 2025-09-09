@@ -49,6 +49,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  FOLDERS_LOCATIONS_ACCESSPOLICYSIMULATIONS_OPERATIONS = (
+      'folders.locations.accessPolicySimulations.operations',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/locations/{locationsId}/'
+              'accessPolicySimulations/{accessPolicySimulationsId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   FOLDERS_LOCATIONS_ACCESSPOLICYSIMULATIONS_RESULTS = (
       'folders.locations.accessPolicySimulations.results',
       '{+name}',
@@ -57,6 +69,28 @@ class Collections(enum.Enum):
               'folders/{foldersId}/locations/{locationsId}/'
               'accessPolicySimulations/{accessPolicySimulationsId}/results/'
               '{resultsId}',
+      },
+      ['name'],
+      True
+  )
+  FOLDERS_LOCATIONS_ACTIVITYBACKTESTRESULTS = (
+      'folders.locations.activityBacktestResults',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/locations/{locationsId}/'
+              'activityBacktestResults/{activityBacktestResultsId}',
+      },
+      ['name'],
+      True
+  )
+  FOLDERS_LOCATIONS_ACTIVITYBACKTESTS = (
+      'folders.locations.activityBacktests',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/locations/{locationsId}/activityBacktests/'
+              '{activityBacktestsId}',
       },
       ['name'],
       True
@@ -138,6 +172,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_ACCESSPOLICYSIMULATIONS_OPERATIONS = (
+      'organizations.locations.accessPolicySimulations.operations',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'accessPolicySimulations/{accessPolicySimulationsId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_LOCATIONS_ACCESSPOLICYSIMULATIONS_RESULTS = (
       'organizations.locations.accessPolicySimulations.results',
       '{+name}',
@@ -146,6 +192,28 @@ class Collections(enum.Enum):
               'organizations/{organizationsId}/locations/{locationsId}/'
               'accessPolicySimulations/{accessPolicySimulationsId}/results/'
               '{resultsId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_ACTIVITYBACKTESTRESULTS = (
+      'organizations.locations.activityBacktestResults',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'activityBacktestResults/{activityBacktestResultsId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_ACTIVITYBACKTESTS = (
+      'organizations.locations.activityBacktests',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'activityBacktests/{activityBacktestsId}',
       },
       ['name'],
       True
@@ -232,6 +300,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_ACCESSPOLICYSIMULATIONS_OPERATIONS = (
+      'projects.locations.accessPolicySimulations.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'accessPolicySimulations/{accessPolicySimulationsId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_ACCESSPOLICYSIMULATIONS_RESULTS = (
       'projects.locations.accessPolicySimulations.results',
       '{+name}',
@@ -240,6 +320,28 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/'
               'accessPolicySimulations/{accessPolicySimulationsId}/results/'
               '{resultsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_ACTIVITYBACKTESTRESULTS = (
+      'projects.locations.activityBacktestResults',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'activityBacktestResults/{activityBacktestResultsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_ACTIVITYBACKTESTS = (
+      'projects.locations.activityBacktests',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'activityBacktests/{activityBacktestsId}',
       },
       ['name'],
       True

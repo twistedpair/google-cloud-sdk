@@ -18,20 +18,25 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import functools
 import json
+import logging
 
+from google.auth import exceptions as google_auth_exceptions
+from google.auth import external_account
 from google.oauth2 import utils as oauth2_utils
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
-
 from six.moves import http_client
 from six.moves import urllib
+
 
 _ACCESS_TOKEN_TYPE = 'urn:ietf:params:oauth:token-type:access_token'
 _URLENCODED_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'}
 _EXTERNAL_ACCT_TOKEN_INTROSPECT_ENDPOINT = (
-    'https://sts.googleapis.com/v1/introspect')
+    'https://sts.googleapis.com/v1/introspect'
+)
 
 
 class Error(exceptions.Error):
@@ -103,7 +108,9 @@ class IntrospectionClient(oauth2_utils.OAuthClientAuthHandler):
 
     response_body = (
         response.data.decode('utf-8')
-        if hasattr(response.data, 'decode') else response.data)
+        if hasattr(response.data, 'decode')
+        else response.data
+    )
 
     # If non-200 response received, translate to TokenIntrospectionError.
     if response.status != http_client.OK:
@@ -141,8 +148,10 @@ def GetExternalAccountId(creds):
   # pylint: enable=g-import-not-at-top
   # Use basic client authentication.
   client_authentication = oauth2_utils.ClientAuthentication(
-      oauth2_utils.ClientAuthType.basic, config.CLOUDSDK_CLIENT_ID,
-      config.CLOUDSDK_CLIENT_NOTSOSECRET)
+      oauth2_utils.ClientAuthType.basic,
+      config.CLOUDSDK_CLIENT_ID,
+      config.CLOUDSDK_CLIENT_NOTSOSECRET,
+  )
 
   # Check if the introspection endpoint has been overridden,
   # otherwise use default endpoint. Prioritize property override first then
@@ -157,8 +166,35 @@ def GetExternalAccountId(creds):
 
   oauth_introspection = IntrospectionClient(
       token_introspect_endpoint=token_introspection_endpoint,
-      client_authentication=client_authentication)
+      client_authentication=client_authentication,
+  )
+  # Create request with mTLS certificate injection for X.509 credentials.
+  # If mTLS is required but the certificate and key paths cannot be obtained, ``
+  # fall back to basic auth only.
   request = core_requests.GoogleAuthRequest()
+  # Check for mTLS attributes. This is necessary because not all
+  # external_account.Credentials subclasses support mTLS, and there's no public
+  # interface to check for this capability.
+  if (
+      isinstance(creds, external_account.Credentials)
+      and hasattr(creds, '_mtls_required')
+      and callable(getattr(creds, '_mtls_required'))
+      and creds._mtls_required()  # pylint: disable=protected-access
+  ):
+    try:
+      cert_path, key_path = creds._get_mtls_cert_and_key_paths()  # pylint: disable=protected-access
+      request = functools.partial(request, cert=(cert_path, key_path))
+    except (
+        AttributeError,
+        ValueError,
+        google_auth_exceptions.GoogleAuthError,
+        IOError,
+        OSError,
+    ) as e:
+      # If mTLS is required but certificate and key paths are unavailable,
+      # log the error and fall back to basic auth only.
+      logging.debug('Could not get mTLS certificate and key paths: %s', e)
+      pass
   if not creds.valid:
     creds.refresh(request)
   token_info = oauth_introspection.introspect(request, creds.token)

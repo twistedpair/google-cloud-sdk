@@ -609,8 +609,8 @@ class GoogleCloudSecuritypostureV1PolicyRule(_messages.Message):
     ParametersValue: Optional. Required for managed constraints if parameters
       are defined. Passes parameter values when policy enforcement is enabled.
       Ensure that parameter value types match those defined in the constraint
-      definition. For example: { "allowedLocations" : ["us-east1", "us-
-      west1"], "allowAll" : true }
+      definition. For example: ``` { "allowedLocations": ["us-east1", "us-
+      west1"], "allowAll": true } ```
 
   Fields:
     allowAll: Whether to allow any value for a list constraint. Valid only for
@@ -637,8 +637,8 @@ class GoogleCloudSecuritypostureV1PolicyRule(_messages.Message):
     parameters: Optional. Required for managed constraints if parameters are
       defined. Passes parameter values when policy enforcement is enabled.
       Ensure that parameter value types match those defined in the constraint
-      definition. For example: { "allowedLocations" : ["us-east1", "us-
-      west1"], "allowAll" : true }
+      definition. For example: ``` { "allowedLocations": ["us-east1", "us-
+      west1"], "allowAll": true } ```
     resourceTypes: Optional. The resource types policies can support, only
       used for managed constraints. Method type is `GOVERN_TAGS`.
     values: The allowed and denied values for a list constraint. Valid only
@@ -650,8 +650,8 @@ class GoogleCloudSecuritypostureV1PolicyRule(_messages.Message):
     r"""Optional. Required for managed constraints if parameters are defined.
     Passes parameter values when policy enforcement is enabled. Ensure that
     parameter value types match those defined in the constraint definition.
-    For example: { "allowedLocations" : ["us-east1", "us-west1"], "allowAll" :
-    true }
+    For example: ``` { "allowedLocations": ["us-east1", "us-west1"],
+    "allowAll": true } ```
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.
@@ -2033,16 +2033,14 @@ class ResourceSelector(_messages.Message):
 
 
 class ResourceTypes(_messages.Message):
-  r"""Set multiple resource types for one policy, for example: resourceTypes:
-  included: - compute.googleapis.com/Instance - compute.googleapis.com/Disk
-  Constraint definition contains an empty resource type in order to support
-  multiple resource types in the policy. Only supports managed constraints.
-  Method type is `GOVERN_TAGS`. Refer go/multi-resource-support-force-tags-gmc
-  to get more details.
+  r"""Set multiple resource types for one policy, for example: ```
+  resourceTypes: included: - compute.googleapis.com/Instance -
+  compute.googleapis.com/Disk ``` Constraint definition contains an empty
+  resource type in order to support multiple resource types in the policy.
+  Only supports managed constraints. Method type is `GOVERN_TAGS`.
 
   Fields:
     included: Optional. The resource types we currently support.
-      cloud/orgpolicy/customconstraintconfig/prod/resource_types.prototext
   """
 
   included = _messages.StringField(1, repeated=True)
@@ -2634,8 +2632,9 @@ class SecuritypostureProjectsLocationsListRequest(_messages.Message):
   r"""A SecuritypostureProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).

@@ -848,8 +848,9 @@ class AlloydbProjectsLocationsListRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1409,6 +1410,7 @@ class Cluster(_messages.Message):
       information on the defaults, consult the documentation for the message
       type.
     backupSource: Output only. Cluster created from backup.
+    backupdrBackupSource: Output only. Cluster created from a BackupDR backup.
     cloudsqlBackupRunSource: Output only. Cluster created from CloudSQL
       snapshot.
     clusterType: Output only. The type of the cluster. This is an output-only
@@ -1668,40 +1670,41 @@ class Cluster(_messages.Message):
   annotations = _messages.MessageField('AnnotationsValue', 1)
   automatedBackupPolicy = _messages.MessageField('AutomatedBackupPolicy', 2)
   backupSource = _messages.MessageField('BackupSource', 3)
-  cloudsqlBackupRunSource = _messages.MessageField('CloudSQLBackupRunSource', 4)
-  clusterType = _messages.EnumField('ClusterTypeValueValuesEnum', 5)
-  continuousBackupConfig = _messages.MessageField('ContinuousBackupConfig', 6)
-  continuousBackupInfo = _messages.MessageField('ContinuousBackupInfo', 7)
-  createTime = _messages.StringField(8)
-  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 9)
-  deleteTime = _messages.StringField(10)
-  displayName = _messages.StringField(11)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 12)
-  encryptionInfo = _messages.MessageField('EncryptionInfo', 13)
-  etag = _messages.StringField(14)
-  geminiConfig = _messages.MessageField('GeminiClusterConfig', 15)
-  initialUser = _messages.MessageField('UserPassword', 16)
-  labels = _messages.MessageField('LabelsValue', 17)
-  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 18)
-  maintenanceUpdatePolicy = _messages.MessageField('MaintenanceUpdatePolicy', 19)
-  maintenanceVersionSelectionPolicy = _messages.EnumField('MaintenanceVersionSelectionPolicyValueValuesEnum', 20)
-  migrationSource = _messages.MessageField('MigrationSource', 21)
-  name = _messages.StringField(22)
-  network = _messages.StringField(23)
-  networkConfig = _messages.MessageField('NetworkConfig', 24)
-  primaryConfig = _messages.MessageField('PrimaryConfig', 25)
-  pscConfig = _messages.MessageField('PscConfig', 26)
-  reconciling = _messages.BooleanField(27)
-  satisfiesPzs = _messages.BooleanField(28)
-  secondaryConfig = _messages.MessageField('SecondaryConfig', 29)
-  serviceAccountEmail = _messages.StringField(30)
-  sslConfig = _messages.MessageField('SslConfig', 31)
-  state = _messages.EnumField('StateValueValuesEnum', 32)
-  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 33)
-  tags = _messages.MessageField('TagsValue', 34)
-  trialMetadata = _messages.MessageField('TrialMetadata', 35)
-  uid = _messages.StringField(36)
-  updateTime = _messages.StringField(37)
+  backupdrBackupSource = _messages.MessageField('BackupDrBackupSource', 4)
+  cloudsqlBackupRunSource = _messages.MessageField('CloudSQLBackupRunSource', 5)
+  clusterType = _messages.EnumField('ClusterTypeValueValuesEnum', 6)
+  continuousBackupConfig = _messages.MessageField('ContinuousBackupConfig', 7)
+  continuousBackupInfo = _messages.MessageField('ContinuousBackupInfo', 8)
+  createTime = _messages.StringField(9)
+  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 10)
+  deleteTime = _messages.StringField(11)
+  displayName = _messages.StringField(12)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 13)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 14)
+  etag = _messages.StringField(15)
+  geminiConfig = _messages.MessageField('GeminiClusterConfig', 16)
+  initialUser = _messages.MessageField('UserPassword', 17)
+  labels = _messages.MessageField('LabelsValue', 18)
+  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 19)
+  maintenanceUpdatePolicy = _messages.MessageField('MaintenanceUpdatePolicy', 20)
+  maintenanceVersionSelectionPolicy = _messages.EnumField('MaintenanceVersionSelectionPolicyValueValuesEnum', 21)
+  migrationSource = _messages.MessageField('MigrationSource', 22)
+  name = _messages.StringField(23)
+  network = _messages.StringField(24)
+  networkConfig = _messages.MessageField('NetworkConfig', 25)
+  primaryConfig = _messages.MessageField('PrimaryConfig', 26)
+  pscConfig = _messages.MessageField('PscConfig', 27)
+  reconciling = _messages.BooleanField(28)
+  satisfiesPzs = _messages.BooleanField(29)
+  secondaryConfig = _messages.MessageField('SecondaryConfig', 30)
+  serviceAccountEmail = _messages.StringField(31)
+  sslConfig = _messages.MessageField('SslConfig', 32)
+  state = _messages.EnumField('StateValueValuesEnum', 33)
+  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 34)
+  tags = _messages.MessageField('TagsValue', 35)
+  trialMetadata = _messages.MessageField('TrialMetadata', 36)
+  uid = _messages.StringField(37)
+  updateTime = _messages.StringField(38)
 
 
 class ClusterUpgradeDetails(_messages.Message):
@@ -2569,6 +2572,9 @@ class Instance(_messages.Message):
     labels: Labels as key value pairs
     machineConfig: Configurations for the machines that host the underlying
       database engine.
+    maintenanceVersionName: Output only. Maintenance version of the instance,
+      for example: POSTGRES_15_7.2025_07_15.04_00. Output only. Update this
+      field via the parent cluster's maintenance_version.
     name: Output only. The name of the instance resource with the format: * pr
       ojects/{project}/locations/{region}/clusters/{cluster_id}/instances/{ins
       tance_id} where the cluster and instance ID segments should satisfy the
@@ -2800,22 +2806,23 @@ class Instance(_messages.Message):
   ipAddress = _messages.StringField(16)
   labels = _messages.MessageField('LabelsValue', 17)
   machineConfig = _messages.MessageField('MachineConfig', 18)
-  name = _messages.StringField(19)
-  networkConfig = _messages.MessageField('InstanceNetworkConfig', 20)
-  nodes = _messages.MessageField('Node', 21, repeated=True)
-  observabilityConfig = _messages.MessageField('ObservabilityInstanceConfig', 22)
-  outboundPublicIpAddresses = _messages.StringField(23, repeated=True)
-  pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 24)
-  publicIpAddress = _messages.StringField(25)
-  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 26)
-  readPoolConfig = _messages.MessageField('ReadPoolConfig', 27)
-  reconciling = _messages.BooleanField(28)
-  satisfiesPzs = _messages.BooleanField(29)
-  state = _messages.EnumField('StateValueValuesEnum', 30)
-  uid = _messages.StringField(31)
-  updatePolicy = _messages.MessageField('UpdatePolicy', 32)
-  updateTime = _messages.StringField(33)
-  writableNode = _messages.MessageField('Node', 34)
+  maintenanceVersionName = _messages.StringField(19)
+  name = _messages.StringField(20)
+  networkConfig = _messages.MessageField('InstanceNetworkConfig', 21)
+  nodes = _messages.MessageField('Node', 22, repeated=True)
+  observabilityConfig = _messages.MessageField('ObservabilityInstanceConfig', 23)
+  outboundPublicIpAddresses = _messages.StringField(24, repeated=True)
+  pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 25)
+  publicIpAddress = _messages.StringField(26)
+  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 27)
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 28)
+  reconciling = _messages.BooleanField(29)
+  satisfiesPzs = _messages.BooleanField(30)
+  state = _messages.EnumField('StateValueValuesEnum', 31)
+  uid = _messages.StringField(32)
+  updatePolicy = _messages.MessageField('UpdatePolicy', 33)
+  updateTime = _messages.StringField(34)
+  writableNode = _messages.MessageField('Node', 35)
 
 
 class InstanceNetworkConfig(_messages.Message):
@@ -3355,6 +3362,16 @@ class PrimaryConfig(_messages.Message):
   secondaryClusterNames = _messages.StringField(1, repeated=True)
 
 
+class Progress(_messages.Message):
+  r"""Progress information for the stage execution.
+
+  Fields:
+    percentComplete: The percentage of the stage that has been completed.
+  """
+
+  percentComplete = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class PromoteClusterRequest(_messages.Message):
   r"""Message for promoting a Cluster
 
@@ -3824,6 +3841,7 @@ class StageStatus(_messages.Message):
     StateValueValuesEnum: State of this stage.
 
   Fields:
+    progress: Output only. Progress information for the stage execution.
     readPoolInstancesUpgrade: Read pool instances upgrade metadata.
     schedule: Output only. Timing information for the stage execution.
     stage: Upgrade stage.
@@ -3874,10 +3892,11 @@ class StageStatus(_messages.Message):
     CANCEL_IN_PROGRESS = 6
     CANCELLED = 7
 
-  readPoolInstancesUpgrade = _messages.MessageField('ReadPoolInstancesUpgradeStageStatus', 1)
-  schedule = _messages.MessageField('StageSchedule', 2)
-  stage = _messages.EnumField('StageValueValuesEnum', 3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
+  progress = _messages.MessageField('Progress', 1)
+  readPoolInstancesUpgrade = _messages.MessageField('ReadPoolInstancesUpgradeStageStatus', 2)
+  schedule = _messages.MessageField('StageSchedule', 3)
+  stage = _messages.EnumField('StageValueValuesEnum', 4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -4090,6 +4109,27 @@ class StorageDatabasecenterPartnerapiV1mainBackupDRConfiguration(_messages.Messa
   backupdrManaged = _messages.BooleanField(1)
 
 
+class StorageDatabasecenterPartnerapiV1mainBackupDRMetadata(_messages.Message):
+  r"""BackupDRMetadata contains information about the backup and disaster
+  recovery metadata of a database resource.
+
+  Fields:
+    backupConfiguration: Backup configuration for this instance.
+    backupRun: Latest backup run information for this instance.
+    backupdrConfiguration: BackupDR configuration for this instance.
+    fullResourceName: Required. Full resource name of this instance.
+    lastRefreshTime: Required. Last time backup configuration was refreshed.
+    resourceId: Required. Database resource id.
+  """
+
+  backupConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupConfiguration', 1)
+  backupRun = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupRun', 2)
+  backupdrConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupDRConfiguration', 3)
+  fullResourceName = _messages.StringField(4)
+  lastRefreshTime = _messages.StringField(5)
+  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 6)
+
+
 class StorageDatabasecenterPartnerapiV1mainBackupRun(_messages.Message):
   r"""A backup run.
 
@@ -4198,12 +4238,14 @@ class StorageDatabasecenterPartnerapiV1mainCustomMetadataData(_messages.Message)
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Message):
   r"""DatabaseResourceFeed is the top level proto to be used to ingest
-  different database resource level events into Condor platform. Next ID: 9
+  different database resource level events into Condor platform. Next ID: 11
 
   Enums:
     FeedTypeValueValuesEnum: Required. Type feed to be ingested into condor
 
   Fields:
+    backupdrMetadata: BackupDR metadata is used to ingest metadata from
+      BackupDR.
     configBasedSignalData: Config based signal data is used to ingest signals
       that are generated based on the configuration of the database resource.
     feedTimestamp: Required. Timestamp when feed is generated.
@@ -4219,6 +4261,11 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
       available in individual feed level as well.
     resourceMetadata: A
       StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata attribute.
+    skipIngestion: Optional. If true, the feed won't be ingested by DB Center.
+      This indicates that the feed is intentionally skipped. For example,
+      BackupDR feeds are only needed for resources integrated with DB Center
+      (e.g., CloudSQL, AlloyDB). Feeds for non-integrated resources (e.g.,
+      Compute Engine, Persistent Disk) can be skipped.
   """
 
   class FeedTypeValueValuesEnum(_messages.Enum):
@@ -4231,6 +4278,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
       SECURITY_FINDING_DATA: Database resource security health signal data
       RECOMMENDATION_SIGNAL_DATA: Database resource recommendation signal data
       CONFIG_BASED_SIGNAL_DATA: Database config based signal data
+      BACKUPDR_METADATA: Database resource metadata from BackupDR
     """
     FEEDTYPE_UNSPECIFIED = 0
     RESOURCE_METADATA = 1
@@ -4238,15 +4286,18 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
     SECURITY_FINDING_DATA = 3
     RECOMMENDATION_SIGNAL_DATA = 4
     CONFIG_BASED_SIGNAL_DATA = 5
+    BACKUPDR_METADATA = 6
 
-  configBasedSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainConfigBasedSignalData', 1)
-  feedTimestamp = _messages.StringField(2)
-  feedType = _messages.EnumField('FeedTypeValueValuesEnum', 3)
-  observabilityMetricData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainObservabilityMetricData', 4)
-  recommendationSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData', 5)
-  resourceHealthSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData', 6)
-  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 7)
-  resourceMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata', 8)
+  backupdrMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupDRMetadata', 1)
+  configBasedSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainConfigBasedSignalData', 2)
+  feedTimestamp = _messages.StringField(3)
+  feedType = _messages.EnumField('FeedTypeValueValuesEnum', 4)
+  observabilityMetricData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainObservabilityMetricData', 5)
+  recommendationSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData', 6)
+  resourceHealthSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData', 7)
+  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 8)
+  resourceMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata', 9)
+  skipIngestion = _messages.BooleanField(10)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_messages.Message):
@@ -4599,6 +4650,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
       SIGNAL_TYPE_MANY_IDLE_CONNECTIONS: High number of idle connections.
       SIGNAL_TYPE_REPLICATION_LAG: Replication delay.
       SIGNAL_TYPE_OUTDATED_VERSION: Outdated version.
+      SIGNAL_TYPE_OUTDATED_CLIENT: Outdated client.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -4701,6 +4753,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
     SIGNAL_TYPE_MANY_IDLE_CONNECTIONS = 98
     SIGNAL_TYPE_REPLICATION_LAG = 99
     SIGNAL_TYPE_OUTDATED_VERSION = 100
+    SIGNAL_TYPE_OUTDATED_CLIENT = 101
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -5302,6 +5355,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
       SIGNAL_TYPE_MANY_IDLE_CONNECTIONS: High number of idle connections.
       SIGNAL_TYPE_REPLICATION_LAG: Replication delay.
       SIGNAL_TYPE_OUTDATED_VERSION: Outdated version.
+      SIGNAL_TYPE_OUTDATED_CLIENT: Outdated client.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -5404,6 +5458,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
     SIGNAL_TYPE_MANY_IDLE_CONNECTIONS = 98
     SIGNAL_TYPE_REPLICATION_LAG = 99
     SIGNAL_TYPE_OUTDATED_VERSION = 100
+    SIGNAL_TYPE_OUTDATED_CLIENT = 101
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):

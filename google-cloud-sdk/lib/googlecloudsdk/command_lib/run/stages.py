@@ -26,6 +26,7 @@ SERVICE_IAM_POLICY_SET = 'IamPolicySet'
 SERVICE_IAP_ENABLE = 'IapEnable'
 SERVICE_ROUTES_READY = 'RoutesReady'
 SERVICE_CONFIGURATIONS_READY = 'ConfigurationsReady'
+MULTI_REGION_READY_PREFIX = 'MultiRegionReady/'
 BUILD_READY = 'BuildReady'
 UPLOAD_SOURCE = 'UploadSource'
 CREATE_REPO = 'CreateRepo'
@@ -43,9 +44,7 @@ def _CreateRepoStage():
 
 
 def _ValidateServiceStage():
-  return progress_tracker.Stage(
-      'Validating Service...', key=VALIDATE_SERVICE
-  )
+  return progress_tracker.Stage('Validating Service...', key=VALIDATE_SERVICE)
 
 
 def _UploadSourceStage():
@@ -88,6 +87,7 @@ def ServiceStages(
     include_create_repo=False,
     include_create_revision=True,
     include_iap=False,
+    regions_list=None,
 ):
   """Return the progress tracker Stages for conditions of a Service."""
   stages = []
@@ -100,12 +100,21 @@ def ServiceStages(
   if include_build:
     stages.append(_BuildContainerStage())
   if include_create_revision:
-    stages.append(
-        progress_tracker.Stage(
-            'Creating Revision...', key=SERVICE_CONFIGURATIONS_READY
+    if not regions_list:
+      stages.append(
+          progress_tracker.Stage(
+              'Creating Revision...', key=SERVICE_CONFIGURATIONS_READY
+          )
+      )
+    else:
+      for region in regions_list:
+        stages.append(
+            progress_tracker.Stage(
+                'Creating Revision in region: ' + region,
+                key=MULTI_REGION_READY_PREFIX + region,
+            )
         )
-    )
-  if include_route:
+  if include_route and not regions_list:
     stages.append(_NewRoutingTrafficStage())
   if include_iam_policy_set:
     stages.append(
@@ -119,12 +128,16 @@ def ServiceStages(
             'Setting IAP service agent...', key=SERVICE_IAP_ENABLE
         )
     )
-
   return stages
 
 
-def ServiceDependencies():
+def ServiceDependencies(regions_list):
   """Dependencies for the Service resource, for passing to ConditionPoller."""
+  if regions_list:
+    return {
+        MULTI_REGION_READY_PREFIX + region: {SERVICE_CONFIGURATIONS_READY}
+        for region in regions_list
+    }
   return {SERVICE_ROUTES_READY: {SERVICE_CONFIGURATIONS_READY}}
 
 
@@ -182,9 +195,5 @@ def WorkerPoolStages(
     stages.append(_UploadSourceStage())
     stages.append(_BuildContainerStage())
   if include_create_revision:
-    stages.append(
-        progress_tracker.Stage(
-            'Creating Revision...', key=READY
-        )
-    )
+    stages.append(progress_tracker.Stage('Creating Revision...', key=READY))
   return stages

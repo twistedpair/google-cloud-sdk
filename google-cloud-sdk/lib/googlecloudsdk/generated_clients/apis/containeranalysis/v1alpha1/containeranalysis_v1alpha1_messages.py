@@ -516,7 +516,7 @@ class BuildSignature(_messages.Message):
 
 
 class BuildStep(_messages.Message):
-  r"""A step in the build pipeline. Next ID: 22
+  r"""A step in the build pipeline. Next ID: 23
 
   Enums:
     StatusValueValuesEnum: Output only. Status of the build step. At this
@@ -571,6 +571,7 @@ class BuildStep(_messages.Message):
       to use as the name for a later build step.
     pullTiming: Output only. Stores timing information for pulling this build
       step's builder image only.
+    remoteConfig: Remote configuration for the build step.
     results: A StepResult attribute.
     script: A shell script to be executed in the step. When script is
       provided, the user cannot specify the entrypoint or args.
@@ -639,14 +640,15 @@ class BuildStep(_messages.Message):
   id = _messages.StringField(9)
   name = _messages.StringField(10)
   pullTiming = _messages.MessageField('TimeSpan', 11)
-  results = _messages.MessageField('StepResult', 12, repeated=True)
-  script = _messages.StringField(13)
-  secretEnv = _messages.StringField(14, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 15)
-  timeout = _messages.StringField(16)
-  timing = _messages.MessageField('TimeSpan', 17)
-  volumes = _messages.MessageField('Volume', 18, repeated=True)
-  waitFor = _messages.StringField(19, repeated=True)
+  remoteConfig = _messages.StringField(12)
+  results = _messages.MessageField('StepResult', 13, repeated=True)
+  script = _messages.StringField(14)
+  secretEnv = _messages.StringField(15, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 16)
+  timeout = _messages.StringField(17)
+  timing = _messages.MessageField('TimeSpan', 18)
+  volumes = _messages.MessageField('Volume', 19, repeated=True)
+  waitFor = _messages.StringField(20, repeated=True)
 
 
 class BuildType(_messages.Message):
@@ -671,6 +673,19 @@ class BuilderConfig(_messages.Message):
   """
 
   id = _messages.StringField(1)
+
+
+class CISAKnownExploitedVulnerabilities(_messages.Message):
+  r"""CISAKnownExploitedVulnerabilities provides information about whether the
+  vulnerability is known to have been leveraged as part of a ransomware
+  campaign.
+
+  Fields:
+    knownRansomwareCampaignUse: Optional. Whether the vulnerability is known
+      to have been leveraged as part of a ransomware campaign.
+  """
+
+  knownRansomwareCampaignUse = _messages.StringField(1)
 
 
 class CVSS(_messages.Message):
@@ -1179,7 +1194,9 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1ArtifactsNpmPackage(_messages.M
   all build steps.
 
   Fields:
-    packagePath: Path to the package.json. e.g. workspace/path/to/package
+    packagePath: Optional. Path to the package.json. e.g.
+      workspace/path/to/package Only one of `archive` or `package_path` can be
+      specified.
     repository: Artifact Registry repository, in the form "https://$REGION-
       npm.pkg.dev/$PROJECT/$REPOSITORY" Npm package in the workspace specified
       by path will be zipped and uploaded to Artifact Registry with this
@@ -3549,6 +3566,21 @@ class EnvelopeSignature(_messages.Message):
 
   keyid = _messages.StringField(1)
   sig = _messages.BytesField(2)
+
+
+class ExploitPredictionScoringSystem(_messages.Message):
+  r"""ExploitPredictionScoringSystem provides information about the Exploit
+  Prediction Scoring System (EPSS) score and percentile.
+
+  Fields:
+    percentile: Optional. The percentile of the current score, the proportion
+      of all scored vulnerabilities with the same or a lower EPSS score
+    score: Optional. The EPSS score representing the probability [0-1] of
+      exploitation in the wild in the next 30 days
+  """
+
+  percentile = _messages.FloatField(1)
+  score = _messages.FloatField(2)
 
 
 class Expr(_messages.Message):
@@ -5994,6 +6026,21 @@ class ResourceDescriptor(_messages.Message):
   uri = _messages.StringField(7)
 
 
+class Risk(_messages.Message):
+  r"""The Risk message provides information about the risk of a vulnerability.
+
+  Fields:
+    cisaKev: Optional. CISA maintains the authoritative source of
+      vulnerabilities that have been exploited in the wild.
+    epss: Optional. The Exploit Prediction Scoring System (EPSS) estimates the
+      likelihood (probability) that a software vulnerability will be exploited
+      in the wild.
+  """
+
+  cisaKev = _messages.MessageField('CISAKnownExploitedVulnerabilities', 1)
+  epss = _messages.MessageField('ExploitPredictionScoringSystem', 2)
+
+
 class RunDetails(_messages.Message):
   r"""A RunDetails object.
 
@@ -7113,6 +7160,7 @@ class VulnerabilityDetails(_messages.Message):
     extraDetails: Occurrence-specific extra details about the vulnerability.
     packageIssue: The set of affected locations and their fixes (if available)
       within the associated resource.
+    risk: Risk information about the vulnerability, such as CISA, EPSS, etc.
     severity: Output only. The note provider assigned Severity of the
       vulnerability.
     type: The type of package; whether native or non native(ruby gems, node.js
@@ -7186,9 +7234,10 @@ class VulnerabilityDetails(_messages.Message):
   effectiveSeverity = _messages.EnumField('EffectiveSeverityValueValuesEnum', 5)
   extraDetails = _messages.StringField(6)
   packageIssue = _messages.MessageField('PackageIssue', 7, repeated=True)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 8)
-  type = _messages.StringField(9)
-  vexAssessment = _messages.MessageField('VexAssessment', 10)
+  risk = _messages.MessageField('Risk', 8)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 9)
+  type = _messages.StringField(10)
+  vexAssessment = _messages.MessageField('VexAssessment', 11)
 
 
 class VulnerabilityLocation(_messages.Message):

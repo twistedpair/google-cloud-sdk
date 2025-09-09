@@ -1547,6 +1547,33 @@ class HealthcareV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def UpdateMetadata(self, request, global_params=None):
+      r"""UpdateInstanceMetadata modifies the metadata of a single instance. The request body must contain a JSON Patch document specifying the updates to be applied to the metadata of the instance.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesInstancesUpdateMetadataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('UpdateMetadata')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateMetadata.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/studies/{studiesId}/series/{seriesId}/instances/{instancesId}/metadata',
+        http_method='PATCH',
+        method_id='healthcare.projects.locations.datasets.dicomStores.studies.series.instances.updateMetadata',
+        ordered_params=['parent', 'dicomWebPath'],
+        path_params=['dicomWebPath', 'parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/dicomWeb/{+dicomWebPath}/metadata',
+        request_field='httpBody',
+        request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesInstancesUpdateMetadataRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
   class ProjectsLocationsDatasetsDicomStoresStudiesSeriesService(base_api.BaseApiService):
     """Service class for the projects_locations_datasets_dicomStores_studies_series resource."""
 
@@ -1662,6 +1689,33 @@ class HealthcareV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesSearchForInstancesRequest',
         response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+    def UpdateMetadata(self, request, global_params=None):
+      r"""UpdateSeriesMetadata modifies the metadata of all instances in the given series. The request body must contain a JSON Patch document specifying the updates to be applied to the metadata of all instances within the series.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesUpdateMetadataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateMetadata')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateMetadata.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/studies/{studiesId}/series/{seriesId}/metadata',
+        http_method='PATCH',
+        method_id='healthcare.projects.locations.datasets.dicomStores.studies.series.updateMetadata',
+        ordered_params=['parent', 'dicomWebPath'],
+        path_params=['dicomWebPath', 'parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/dicomWeb/{+dicomWebPath}/metadata',
+        request_field='httpBody',
+        request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesUpdateMetadataRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1834,6 +1888,60 @@ class HealthcareV1beta1(base_api.BaseApiClient):
         request_field='httpBody',
         request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresStudiesStoreInstancesRequest',
         response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+    def UpdateInstances(self, request, global_params=None):
+      r"""UpdateInstances updates DICOM instances associated with study instance unique identifiers (SUID).
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsDicomStoresStudiesUpdateInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('UpdateInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateInstances.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/studies/{studiesId}',
+        http_method='PUT',
+        method_id='healthcare.projects.locations.datasets.dicomStores.studies.updateInstances',
+        ordered_params=['parent', 'dicomWebPath'],
+        path_params=['dicomWebPath', 'parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/dicomWeb/{+dicomWebPath}',
+        request_field='httpBody',
+        request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresStudiesUpdateInstancesRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+    def UpdateMetadata(self, request, global_params=None):
+      r"""UpdateStudyMetadata modifies the metadata of all instances in the given study. The request body must contain a JSON Patch document specifying the updates to be applied to the metadata of all instances within the study.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsDicomStoresStudiesUpdateMetadataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateMetadata')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateMetadata.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/studies/{studiesId}/metadata',
+        http_method='PATCH',
+        method_id='healthcare.projects.locations.datasets.dicomStores.studies.updateMetadata',
+        ordered_params=['parent', 'dicomWebPath'],
+        path_params=['dicomWebPath', 'parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/dicomWeb/{+dicomWebPath}/metadata',
+        request_field='httpBody',
+        request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresStudiesUpdateMetadataRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2303,6 +2411,33 @@ class HealthcareV1beta1(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+    def UpdateInstances(self, request, global_params=None):
+      r"""UpdateInstances updates DICOM instances associated with study instance unique identifiers (SUID).
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsDicomStoresUpdateInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('UpdateInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateInstances.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/studies',
+        http_method='PUT',
+        method_id='healthcare.projects.locations.datasets.dicomStores.updateInstances',
+        ordered_params=['parent', 'dicomWebPath'],
+        path_params=['dicomWebPath', 'parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/dicomWeb/{+dicomWebPath}',
+        request_field='httpBody',
+        request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresUpdateInstancesRequest',
+        response_type_name='HttpBody',
         supports_download=False,
     )
 
@@ -2992,7 +3127,7 @@ class HealthcareV1beta1(base_api.BaseApiClient):
     )
 
     def Search(self, request, global_params=None):
-      r"""Searches for resources in the given FHIR store according to criteria specified as query parameters. Implements the FHIR standard search interaction ([DSTU2](https://hl7.org/fhir/DSTU2/http.html#search), [STU3](https://hl7.org/fhir/STU3/http.html#search), [R4](https://hl7.org/fhir/R4/http.html#search), [R5](https://hl7.org/fhir/R5/http.html#search)) using the search semantics described in the FHIR Search specification ([DSTU2](https://hl7.org/fhir/DSTU2/search.html), [STU3](https://hl7.org/fhir/STU3/search.html), [R4](https://hl7.org/fhir/R4/search.html), [R5](https://hl7.org/fhir/R5/search.html)). Supports four methods of search defined by the specification: * `GET [base]?[parameters]` to search across all resources. * `GET [base]/[type]?[parameters]` to search resources of a specified type. * `POST [base]/_search?[parameters]` as an alternate form having the same semantics as the `GET` method across all resources. * `POST [base]/[type]/_search?[parameters]` as an alternate form having the same semantics as the `GET` method for the specified type. The `GET` and `POST` methods do not support compartment searches. The `POST` method does not support `application/x-www-form-urlencoded` search parameters. On success, the response body contains a JSON-encoded representation of a `Bundle` resource of type `searchset`, containing the results of the search. Errors generated by the FHIR store contain a JSON-encoded `OperationOutcome` resource describing the reason for the error. If the request cannot be mapped to a valid API method on a FHIR store, a generic GCP error might be returned instead. The server's capability statement, retrieved through capabilities, indicates what search parameters are supported on each FHIR resource. A list of all search parameters defined by the specification can be found in the FHIR Search Parameter Registry ([STU3](https://hl7.org/fhir/STU3/searchparameter-registry.html), [R4](https://hl7.org/fhir/R4/searchparameter-registry.html), [R5](https://hl7.org/fhir/R5/searchparameter-registry.html)). FHIR search parameters for DSTU2 can be found on each resource's definition page. Supported search modifiers: `:missing`, `:exact`, `:contains`, `:text`, `:in`, `:not-in`, `:above`, `:below`, `:[type]`, `:not`, and `recurse` (DSTU2 and STU3) or `:iterate` (R4 and R5). Supported search result parameters: `_sort`, `_count`, `_include`, `_revinclude`, `_summary=text`, `_summary=data`, and `_elements`. The maximum number of search results returned defaults to 100, which can be overridden by the `_count` parameter up to a maximum limit of 1000. The server might return fewer resources than requested to prevent excessively large responses. If there are additional results, the returned `Bundle` contains a link of `relation` "next", which has a `_page_token` parameter for an opaque pagination token that can be used to retrieve the next page. Resources with a total size larger than 5MB or a field count larger than 50,000 might not be fully searchable as the server might trim its generated search index in those cases. Note: FHIR resources are indexed asynchronously, so there might be a slight delay between the time a resource is created or changed, and the time when the change reflects in search results. The only exception is resource identifier data, which is indexed synchronously as a special index. As a result, searching using resource identifier is not subject to indexing delay. To use the special synchronous index, the search term for identifier should be in the pattern `identifier=[system]|[value]` or `identifier=[value]`, and any of the following search result parameters can be used: * `_count` * `_include` * `_revinclude` * `_summary` * `_elements` If your query contains any other search parameters, the standard asynchronous index will be used instead. Note that searching against the special index is optimized for resolving a small number of matches. The search isn't optimized if your identifier search criteria matches a large number (i.e. more than 2,000) of resources. For a search query that will match a large number of resources, you can avoiding using the special synchronous index by including an additional `_sort` parameter in your query. Use `_sort=-_lastUpdated` if you want to keep the default sorting order. Note: The special synchronous identifier index are currently disabled for DocumentReference and DocumentManifest searches. For samples and detailed information, see [Searching for FHIR resources](https://cloud.google.com/healthcare/docs/how-tos/fhir-search) and [Advanced FHIR search features](https://cloud.google.com/healthcare/docs/how-tos/fhir-advanced-search).
+      r"""Searches for resources in the given FHIR store according to criteria specified as query parameters. Implements the FHIR standard search interaction ([DSTU2](https://hl7.org/fhir/DSTU2/http.html#search), [STU3](https://hl7.org/fhir/STU3/http.html#search), [R4](https://hl7.org/fhir/R4/http.html#search), [R5](https://hl7.org/fhir/R5/http.html#search)) using the search semantics described in the FHIR Search specification ([DSTU2](https://hl7.org/fhir/DSTU2/search.html), [STU3](https://hl7.org/fhir/STU3/search.html), [R4](https://hl7.org/fhir/R4/search.html), [R5](https://hl7.org/fhir/R5/search.html)). Supports four methods of search defined by the specification: * `GET [base]?[parameters]` to search across all resources. * `GET [base]/[type]?[parameters]` to search resources of a specified type. * `POST [base]/_search?[parameters]` as an alternate form having the same semantics as the `GET` method across all resources. * `POST [base]/[type]/_search?[parameters]` as an alternate form having the same semantics as the `GET` method for the specified type. The `GET` and `POST` methods do not support compartment searches. The `POST` method does not support `application/x-www-form-urlencoded` search parameters. On success, the response body contains a JSON-encoded representation of a `Bundle` resource of type `searchset`, containing the results of the search. Errors generated by the FHIR store contain a JSON-encoded `OperationOutcome` resource describing the reason for the error. If the request cannot be mapped to a valid API method on a FHIR store, a generic GCP error might be returned instead. The server's capability statement, retrieved through capabilities, indicates what search parameters are supported on each FHIR resource. A list of all search parameters defined by the specification can be found in the FHIR Search Parameter Registry ([STU3](https://hl7.org/fhir/STU3/searchparameter-registry.html), [R4](https://hl7.org/fhir/R4/searchparameter-registry.html), [R5](https://hl7.org/fhir/R5/searchparameter-registry.html)). FHIR search parameters for DSTU2 can be found on each resource's definition page. Supported search modifiers: `:missing`, `:exact`, `:contains`, `:text`, `:in`, `:not-in`, `:above`, `:below`, `:[type]`, `:not`, and `recurse` (DSTU2 and STU3) or `:iterate` (R4 and R5). Supported search result parameters: `_sort`, `_count`, `_include`, `_revinclude`, `_summary=text`, `_summary=data`, and `_elements`. The maximum number of search results returned defaults to 100, which can be overridden by the `_count` parameter up to a maximum limit of 1000. The server might return fewer resources than requested to prevent excessively large responses. If there are additional results, the returned `Bundle` contains a link of `relation` "next", which has a `_page_token` parameter for an opaque pagination token that can be used to retrieve the next page. Resources with a total size larger than 5MB or a field count larger than 50,000 might not be fully searchable as the server might trim its generated search index in those cases. Note: FHIR resources are indexed asynchronously, so there might be a slight delay between the time a resource is created or changed, and the time when the change reflects in search results. The only exception is resource identifier data, which is indexed synchronously as a special index. As a result, searching using resource identifier is not subject to indexing delay. To use the special synchronous index, the search term for identifier should be in the pattern `identifier=[system]|[value]` or `identifier=[value]`, and any of the following search result parameters can be used: * `_count` * `_include` * `_revinclude` * `_summary` * `_elements` If your query contains any other search parameters, the standard asynchronous index will be used instead. Note that searching against the special index is optimized for resolving a small number of matches. The search isn't optimized if your identifier search criteria matches a large number (i.e. more than 2,000) of resources. For a search query that will match a large number of resources, you can avoiding using the special synchronous index by including an additional `_sort` parameter in your query. Use `_sort=-_lastUpdated` if you want to keep the default sorting order. For samples and detailed information, see [Searching for FHIR resources](https://cloud.google.com/healthcare/docs/how-tos/fhir-search) and [Advanced FHIR search features](https://cloud.google.com/healthcare/docs/how-tos/fhir-advanced-search).
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsFhirStoresFhirSearchRequest) input message
@@ -3019,7 +3154,7 @@ class HealthcareV1beta1(base_api.BaseApiClient):
     )
 
     def Search_type(self, request, global_params=None):
-      r"""Searches for resources in the given FHIR store according to criteria specified as query parameters. Implements the FHIR standard search interaction ([DSTU2](https://hl7.org/fhir/DSTU2/http.html#search), [STU3](https://hl7.org/fhir/STU3/http.html#search), [R4](https://hl7.org/fhir/R4/http.html#search), [R5](https://hl7.org/fhir/R5/http.html#search)) using the search semantics described in the FHIR Search specification ([DSTU2](https://hl7.org/fhir/DSTU2/search.html), [STU3](https://hl7.org/fhir/STU3/search.html), [R4](https://hl7.org/fhir/R4/search.html), [R5](https://hl7.org/fhir/R5/search.html)). Supports four methods of search defined by the specification: * `GET [base]?[parameters]` to search across all resources. * `GET [base]/[type]?[parameters]` to search resources of a specified type. * `POST [base]/_search?[parameters]` as an alternate form having the same semantics as the `GET` method across all resources. * `POST [base]/[type]/_search?[parameters]` as an alternate form having the same semantics as the `GET` method for the specified type. The `GET` and `POST` methods do not support compartment searches. The `POST` method does not support `application/x-www-form-urlencoded` search parameters. On success, the response body contains a JSON-encoded representation of a `Bundle` resource of type `searchset`, containing the results of the search. Errors generated by the FHIR store contain a JSON-encoded `OperationOutcome` resource describing the reason for the error. If the request cannot be mapped to a valid API method on a FHIR store, a generic GCP error might be returned instead. The server's capability statement, retrieved through capabilities, indicates what search parameters are supported on each FHIR resource. A list of all search parameters defined by the specification can be found in the FHIR Search Parameter Registry ([STU3](https://hl7.org/fhir/STU3/searchparameter-registry.html), [R4](https://hl7.org/fhir/R4/searchparameter-registry.html), [R5](https://hl7.org/fhir/R5/searchparameter-registry.html)). FHIR search parameters for DSTU2 can be found on each resource's definition page. Supported search modifiers: `:missing`, `:exact`, `:contains`, `:text`, `:in`, `:not-in`, `:above`, `:below`, `:[type]`, `:not`, and `recurse` (DSTU2 and STU3) or `:iterate` (R4 and R5). Supported search result parameters: `_sort`, `_count`, `_include`, `_revinclude`, `_summary=text`, `_summary=data`, and `_elements`. The maximum number of search results returned defaults to 100, which can be overridden by the `_count` parameter up to a maximum limit of 1000. The server might return fewer resources than requested to prevent excessively large responses. If there are additional results, the returned `Bundle` contains a link of `relation` "next", which has a `_page_token` parameter for an opaque pagination token that can be used to retrieve the next page. Resources with a total size larger than 5MB or a field count larger than 50,000 might not be fully searchable as the server might trim its generated search index in those cases. Note: FHIR resources are indexed asynchronously, so there might be a slight delay between the time a resource is created or changed, and the time when the change reflects in search results. The only exception is resource identifier data, which is indexed synchronously as a special index. As a result, searching using resource identifier is not subject to indexing delay. To use the special synchronous index, the search term for identifier should be in the pattern `identifier=[system]|[value]` or `identifier=[value]`, and any of the following search result parameters can be used: * `_count` * `_include` * `_revinclude` * `_summary` * `_elements` If your query contains any other search parameters, the standard asynchronous index will be used instead. Note that searching against the special index is optimized for resolving a small number of matches. The search isn't optimized if your identifier search criteria matches a large number (i.e. more than 2,000) of resources. For a search query that will match a large number of resources, you can avoiding using the special synchronous index by including an additional `_sort` parameter in your query. Use `_sort=-_lastUpdated` if you want to keep the default sorting order. Note: The special synchronous identifier index are currently disabled for DocumentReference and DocumentManifest searches. For samples and detailed information, see [Searching for FHIR resources](https://cloud.google.com/healthcare/docs/how-tos/fhir-search) and [Advanced FHIR search features](https://cloud.google.com/healthcare/docs/how-tos/fhir-advanced-search).
+      r"""Searches for resources in the given FHIR store according to criteria specified as query parameters. Implements the FHIR standard search interaction ([DSTU2](https://hl7.org/fhir/DSTU2/http.html#search), [STU3](https://hl7.org/fhir/STU3/http.html#search), [R4](https://hl7.org/fhir/R4/http.html#search), [R5](https://hl7.org/fhir/R5/http.html#search)) using the search semantics described in the FHIR Search specification ([DSTU2](https://hl7.org/fhir/DSTU2/search.html), [STU3](https://hl7.org/fhir/STU3/search.html), [R4](https://hl7.org/fhir/R4/search.html), [R5](https://hl7.org/fhir/R5/search.html)). Supports four methods of search defined by the specification: * `GET [base]?[parameters]` to search across all resources. * `GET [base]/[type]?[parameters]` to search resources of a specified type. * `POST [base]/_search?[parameters]` as an alternate form having the same semantics as the `GET` method across all resources. * `POST [base]/[type]/_search?[parameters]` as an alternate form having the same semantics as the `GET` method for the specified type. The `GET` and `POST` methods do not support compartment searches. The `POST` method does not support `application/x-www-form-urlencoded` search parameters. On success, the response body contains a JSON-encoded representation of a `Bundle` resource of type `searchset`, containing the results of the search. Errors generated by the FHIR store contain a JSON-encoded `OperationOutcome` resource describing the reason for the error. If the request cannot be mapped to a valid API method on a FHIR store, a generic GCP error might be returned instead. The server's capability statement, retrieved through capabilities, indicates what search parameters are supported on each FHIR resource. A list of all search parameters defined by the specification can be found in the FHIR Search Parameter Registry ([STU3](https://hl7.org/fhir/STU3/searchparameter-registry.html), [R4](https://hl7.org/fhir/R4/searchparameter-registry.html), [R5](https://hl7.org/fhir/R5/searchparameter-registry.html)). FHIR search parameters for DSTU2 can be found on each resource's definition page. Supported search modifiers: `:missing`, `:exact`, `:contains`, `:text`, `:in`, `:not-in`, `:above`, `:below`, `:[type]`, `:not`, and `recurse` (DSTU2 and STU3) or `:iterate` (R4 and R5). Supported search result parameters: `_sort`, `_count`, `_include`, `_revinclude`, `_summary=text`, `_summary=data`, and `_elements`. The maximum number of search results returned defaults to 100, which can be overridden by the `_count` parameter up to a maximum limit of 1000. The server might return fewer resources than requested to prevent excessively large responses. If there are additional results, the returned `Bundle` contains a link of `relation` "next", which has a `_page_token` parameter for an opaque pagination token that can be used to retrieve the next page. Resources with a total size larger than 5MB or a field count larger than 50,000 might not be fully searchable as the server might trim its generated search index in those cases. Note: FHIR resources are indexed asynchronously, so there might be a slight delay between the time a resource is created or changed, and the time when the change reflects in search results. The only exception is resource identifier data, which is indexed synchronously as a special index. As a result, searching using resource identifier is not subject to indexing delay. To use the special synchronous index, the search term for identifier should be in the pattern `identifier=[system]|[value]` or `identifier=[value]`, and any of the following search result parameters can be used: * `_count` * `_include` * `_revinclude` * `_summary` * `_elements` If your query contains any other search parameters, the standard asynchronous index will be used instead. Note that searching against the special index is optimized for resolving a small number of matches. The search isn't optimized if your identifier search criteria matches a large number (i.e. more than 2,000) of resources. For a search query that will match a large number of resources, you can avoiding using the special synchronous index by including an additional `_sort` parameter in your query. Use `_sort=-_lastUpdated` if you want to keep the default sorting order. For samples and detailed information, see [Searching for FHIR resources](https://cloud.google.com/healthcare/docs/how-tos/fhir-search) and [Advanced FHIR search features](https://cloud.google.com/healthcare/docs/how-tos/fhir-advanced-search).
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsFhirStoresFhirSearchTypeRequest) input message

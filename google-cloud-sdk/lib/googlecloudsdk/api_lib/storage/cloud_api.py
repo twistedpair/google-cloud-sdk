@@ -728,6 +728,7 @@ class CloudApi(object):
       include_folders_as_prefixes=None,
       next_page_token=None,
       object_state=ObjectState.LIVE,
+      list_filter=None,
   ):
     """Lists objects (with metadata) and prefixes in a bucket.
 
@@ -747,6 +748,10 @@ class CloudApi(object):
         halt_on_empty_response was true and a halt warning is printed, it will
         contain a next_page_token the user can use to resume querying.
       object_state (ObjectState): What versions of an object to query.
+      list_filter (str|None): If provided, objects with matching
+        filters will be returned, The prefixes would still be returned
+        regardless of whether they match the specified filter, See
+        go/gcs-object-context-filtering for more details.
 
     Yields:
       Iterator over resource_reference.ObjectResource objects.

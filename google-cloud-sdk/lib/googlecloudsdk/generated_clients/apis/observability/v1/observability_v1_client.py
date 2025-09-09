@@ -41,6 +41,7 @@ class ObservabilityV1(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_scopes = self.ProjectsLocationsScopesService(self)
+    self.projects_locations_traceScopes = self.ProjectsLocationsTraceScopesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -223,6 +224,151 @@ class ObservabilityV1(base_api.BaseApiClient):
         request_field='scope',
         request_type_name='ObservabilityProjectsLocationsScopesPatchRequest',
         response_type_name='Scope',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsTraceScopesService(base_api.BaseApiService):
+    """Service class for the projects_locations_traceScopes resource."""
+
+    _NAME = 'projects_locations_traceScopes'
+
+    def __init__(self, client):
+      super(ObservabilityV1.ProjectsLocationsTraceScopesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a new TraceScope.
+
+      Args:
+        request: (ObservabilityProjectsLocationsTraceScopesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TraceScope) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/traceScopes',
+        http_method='POST',
+        method_id='observability.projects.locations.traceScopes.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['traceScopeId'],
+        relative_path='v1/{+parent}/traceScopes',
+        request_field='traceScope',
+        request_type_name='ObservabilityProjectsLocationsTraceScopesCreateRequest',
+        response_type_name='TraceScope',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a TraceScope.
+
+      Args:
+        request: (ObservabilityProjectsLocationsTraceScopesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/traceScopes/{traceScopesId}',
+        http_method='DELETE',
+        method_id='observability.projects.locations.traceScopes.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ObservabilityProjectsLocationsTraceScopesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get TraceScope resource.
+
+      Args:
+        request: (ObservabilityProjectsLocationsTraceScopesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TraceScope) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/traceScopes/{traceScopesId}',
+        http_method='GET',
+        method_id='observability.projects.locations.traceScopes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ObservabilityProjectsLocationsTraceScopesGetRequest',
+        response_type_name='TraceScope',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List TraceScopes of a project in a particular location.
+
+      Args:
+        request: (ObservabilityProjectsLocationsTraceScopesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListTraceScopesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/traceScopes',
+        http_method='GET',
+        method_id='observability.projects.locations.traceScopes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/traceScopes',
+        request_field='',
+        request_type_name='ObservabilityProjectsLocationsTraceScopesListRequest',
+        response_type_name='ListTraceScopesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update a TraceScope.
+
+      Args:
+        request: (ObservabilityProjectsLocationsTraceScopesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TraceScope) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/traceScopes/{traceScopesId}',
+        http_method='PATCH',
+        method_id='observability.projects.locations.traceScopes.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='traceScope',
+        request_type_name='ObservabilityProjectsLocationsTraceScopesPatchRequest',
+        response_type_name='TraceScope',
         supports_download=False,
     )
 

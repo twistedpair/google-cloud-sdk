@@ -150,6 +150,29 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_DISCOVEREDAPIOBSERVATIONS = (
+      'projects.locations.discoveredApiObservations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'discoveredApiObservations/{discoveredApiObservationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_DISCOVEREDAPIOBSERVATIONS_DISCOVEREDAPIOPERATIONS = (
+      'projects.locations.discoveredApiObservations.discoveredApiOperations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'discoveredApiObservations/{discoveredApiObservationsId}/'
+              'discoveredApiOperations/{discoveredApiOperationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_EXTERNALAPIS = (
       'projects.locations.externalApis',
       '{+name}',

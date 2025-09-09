@@ -2038,8 +2038,9 @@ class NetappProjectsLocationsListRequest(_messages.Message):
   r"""A NetappProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -3466,8 +3467,8 @@ class StoragePool(_messages.Message):
     availableThroughputMibps: Output only. Available throughput of the storage
       pool (in MiB/s).
     capacityGib: Required. Capacity in GIB of the pool
-    coldTierSizeUsedGib: Output only. Total cold tier data in GiB used by the
-      storage pool.
+    coldTierSizeUsedGib: Output only. Total cold tier data rounded down to the
+      nearest GiB used by the storage pool.
     createTime: Output only. Create time of the storage pool
     customPerformanceEnabled: Optional. True if using Independent Scaling of
       capacity and performance (Hyperdisk) By default set to false
@@ -3484,8 +3485,8 @@ class StoragePool(_messages.Message):
       is applicable only to Flex service level. It should be less than the
       minimum storage pool size and cannot be more than the current storage
       pool size. It cannot be decreased once set.
-    hotTierSizeUsedGib: Output only. Total hot tier data in GiB used by the
-      storage pool.
+    hotTierSizeUsedGib: Output only. Total hot tier data rounded down to the
+      nearest GiB used by the storage pool.
     kmsConfig: Optional. Specifies the KMS config to be used for volume
       encryption.
     labels: Optional. Labels as key value pairs
@@ -3816,7 +3817,8 @@ class Volume(_messages.Message):
     blockProperties: Optional. Block properties for the volume.
     cacheParameters: Optional. Cache parameters for the volume.
     capacityGib: Required. Capacity in GIB of the volume
-    coldTierSizeGib: Output only. Size of the volume cold tier data in GiB.
+    coldTierSizeGib: Output only. Size of the volume cold tier data rounded
+      down to the nearest GiB.
     createTime: Output only. Create time of the volume
     description: Optional. Description of the volume
     encryptionType: Output only. Specified the current volume encryption key
@@ -3824,8 +3826,9 @@ class Volume(_messages.Message):
     exportPolicy: Optional. Export policy of the volume
     hasReplication: Output only. Indicates whether the volume is part of a
       replication relationship.
-    hotTierSizeUsedGib: Output only. Total hot tier data in GiB used by the
-      Volume. This field is only used for flex Service Level
+    hotTierSizeUsedGib: Output only. Total hot tier data rounded down to the
+      nearest GiB used by the Volume. This field is only used for flex Service
+      Level
     hybridReplicationParameters: Optional. The Hybrid Replication parameters
       for the volume.
     kerberosEnabled: Optional. Flag indicating if the volume is a kerberos

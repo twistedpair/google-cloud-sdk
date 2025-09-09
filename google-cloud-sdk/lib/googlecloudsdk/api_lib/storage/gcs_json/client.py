@@ -1126,6 +1126,7 @@ class JsonClient(cloud_api.CloudApi):
       include_folders_as_prefixes=None,
       next_page_token=None,
       object_state=cloud_api.ObjectState.LIVE,
+      list_filter=None,
   ):
     """See super class."""
     projection = self._get_projection(fields_scope,
@@ -1173,6 +1174,7 @@ class JsonClient(cloud_api.CloudApi):
           includeFoldersAsPrefixes=include_folders_as_prefixes,
           # Avoid needlessly appending "&softDeleted=False" to URL.
           softDeleted=soft_deleted,
+          filter=list_filter,
       )
 
       try:

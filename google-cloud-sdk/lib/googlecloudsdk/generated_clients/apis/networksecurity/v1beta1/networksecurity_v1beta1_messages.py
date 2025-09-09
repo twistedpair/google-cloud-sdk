@@ -703,26 +703,29 @@ class AuthzPolicyTarget(_messages.Message):
   Enums:
     LoadBalancingSchemeValueValuesEnum: Required. All gateways and forwarding
       rules referenced by this policy and extensions must share the same load
-      balancing scheme. Supported values: `INTERNAL_MANAGED` and
-      `EXTERNAL_MANAGED`. For more information, refer to [Backend services
-      overview](https://cloud.google.com/load-balancing/docs/backend-service).
+      balancing scheme. Supported values: `INTERNAL_MANAGED`,
+      `INTERNAL_SELF_MANAGED`, and `EXTERNAL_MANAGED`. For more information,
+      refer to [Backend services overview](https://cloud.google.com/load-
+      balancing/docs/backend-service).
 
   Fields:
     loadBalancingScheme: Required. All gateways and forwarding rules
       referenced by this policy and extensions must share the same load
-      balancing scheme. Supported values: `INTERNAL_MANAGED` and
-      `EXTERNAL_MANAGED`. For more information, refer to [Backend services
-      overview](https://cloud.google.com/load-balancing/docs/backend-service).
+      balancing scheme. Supported values: `INTERNAL_MANAGED`,
+      `INTERNAL_SELF_MANAGED`, and `EXTERNAL_MANAGED`. For more information,
+      refer to [Backend services overview](https://cloud.google.com/load-
+      balancing/docs/backend-service).
     resources: Required. A list of references to the Forwarding Rules on which
-      this policy will be applied.
+      this policy will be applied. For policies created for Cloudrun, this
+      field will reference the Cloud Run services.
   """
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
     r"""Required. All gateways and forwarding rules referenced by this policy
     and extensions must share the same load balancing scheme. Supported
-    values: `INTERNAL_MANAGED` and `EXTERNAL_MANAGED`. For more information,
-    refer to [Backend services overview](https://cloud.google.com/load-
-    balancing/docs/backend-service).
+    values: `INTERNAL_MANAGED`, `INTERNAL_SELF_MANAGED`, and
+    `EXTERNAL_MANAGED`. For more information, refer to [Backend services
+    overview](https://cloud.google.com/load-balancing/docs/backend-service).
 
     Values:
       LOAD_BALANCING_SCHEME_UNSPECIFIED: Default value. Do not use.
@@ -999,24 +1002,29 @@ class Destination(_messages.Message):
 
 
 class DnsThreatDetector(_messages.Message):
-  r"""Message describing DnsThreatDetector object.
+  r"""A DNS threat detector sends DNS query logs to a _provider_ that then
+  analyzes the logs to identify malicious activity in the DNS queries. By
+  default, all VPC networks in your projects are included. You can exclude
+  specific networks by supplying `excluded_networks`.
 
   Enums:
     ProviderValueValuesEnum: Required. The provider used for DNS threat
       analysis.
 
   Messages:
-    LabelsValue: Optional. Labels as key value pairs
+    LabelsValue: Optional. Any labels associated with the DnsThreatDetector,
+      listed as key value pairs.
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
-    excludedNetworks: Optional. A list of Network resource names which are
-      exempt from the configuration in this DnsThreatDetector. Example:
+    createTime: Output only. Create time stamp.
+    excludedNetworks: Optional. A list of network resource names which aren't
+      monitored by this DnsThreatDetector. Example:
       `projects/PROJECT_ID/global/networks/NETWORK_NAME`.
-    labels: Optional. Labels as key value pairs
+    labels: Optional. Any labels associated with the DnsThreatDetector, listed
+      as key value pairs.
     name: Immutable. Identifier. Name of the DnsThreatDetector resource.
     provider: Required. The provider used for DNS threat analysis.
-    updateTime: Output only. [Output only] Update time stamp
+    updateTime: Output only. Update time stamp.
   """
 
   class ProviderValueValuesEnum(_messages.Enum):
@@ -1024,14 +1032,15 @@ class DnsThreatDetector(_messages.Message):
 
     Values:
       PROVIDER_UNSPECIFIED: An unspecified provider.
-      INFOBLOX: The Infoblox DNS threat detecter.
+      INFOBLOX: The Infoblox DNS threat detector provider.
     """
     PROVIDER_UNSPECIFIED = 0
     INFOBLOX = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
+    r"""Optional. Any labels associated with the DnsThreatDetector, listed as
+    key value pairs.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1128,6 +1137,7 @@ class FirewallEndpoint(_messages.Message):
     createTime: Output only. Create time stamp.
     description: Optional. Description of the firewall endpoint. Max length
       2048 characters.
+    endpointSettings: Optional. Settings for the endpoint.
     labels: Optional. Labels as key value pairs
     name: Immutable. Identifier. Name of resource.
     reconciling: Output only. Whether reconciling is in progress, recommended
@@ -1183,13 +1193,14 @@ class FirewallEndpoint(_messages.Message):
   billingProjectId = _messages.StringField(3)
   createTime = _messages.StringField(4)
   description = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  reconciling = _messages.BooleanField(8)
-  satisfiesPzi = _messages.BooleanField(9)
-  satisfiesPzs = _messages.BooleanField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
+  endpointSettings = _messages.MessageField('FirewallEndpointEndpointSettings', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  reconciling = _messages.BooleanField(9)
+  satisfiesPzi = _messages.BooleanField(10)
+  satisfiesPzs = _messages.BooleanField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  updateTime = _messages.StringField(13)
 
 
 class FirewallEndpointAssociation(_messages.Message):
@@ -1286,6 +1297,10 @@ class FirewallEndpointAssociationReference(_messages.Message):
 
   name = _messages.StringField(1)
   network = _messages.StringField(2)
+
+
+class FirewallEndpointEndpointSettings(_messages.Message):
+  r"""Settings for the endpoint."""
 
 
 class GatewaySecurityPolicy(_messages.Message):
@@ -2407,11 +2422,11 @@ class ListClientTlsPoliciesResponse(_messages.Message):
 
 
 class ListDnsThreatDetectorsResponse(_messages.Message):
-  r"""Message for response to listing DnsThreatDetectors.
+  r"""The response message to requesting a list of DnsThreatDetectors.
 
   Fields:
     dnsThreatDetectors: The list of DnsThreatDetector resources.
-    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+    nextPageToken: A token, which can be sent as `page_token`, to retrieve the
       next page.
     unreachable: Unordered list. Unreachable `DnsThreatDetector` resources.
   """
@@ -4851,10 +4866,11 @@ class NetworksecurityProjectsLocationsDnsThreatDetectorsCreateRequest(_messages.
   Fields:
     dnsThreatDetector: A DnsThreatDetector resource to be passed as the
       request body.
-    dnsThreatDetectorId: Optional. Id of the requesting DnsThreatDetector
-      object. If this field is not supplied, the service will generate an
+    dnsThreatDetectorId: Optional. The ID of the requesting DnsThreatDetector
+      object. If this field is not supplied, the service generates an
       identifier.
-    parent: Required. Value for parent of the DnsThreatDetector resource.
+    parent: Required. The value for the parent of the DnsThreatDetector
+      resource.
   """
 
   dnsThreatDetector = _messages.MessageField('DnsThreatDetector', 1)
@@ -4877,7 +4893,7 @@ class NetworksecurityProjectsLocationsDnsThreatDetectorsGetRequest(_messages.Mes
   r"""A NetworksecurityProjectsLocationsDnsThreatDetectorsGetRequest object.
 
   Fields:
-    name: Required. Name of the DnsThreatDetector resource
+    name: Required. Name of the DnsThreatDetector resource.
   """
 
   name = _messages.StringField(1, required=True)
@@ -4887,12 +4903,13 @@ class NetworksecurityProjectsLocationsDnsThreatDetectorsListRequest(_messages.Me
   r"""A NetworksecurityProjectsLocationsDnsThreatDetectorsListRequest object.
 
   Fields:
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A page token, received from a previous
+    pageSize: Optional. The requested page size. The server may return fewer
+      items than requested. If unspecified, the server picks an appropriate
+      default.
+    pageToken: Optional. A page token received from a previous
       `ListDnsThreatDetectorsRequest` call. Provide this to retrieve the
       subsequent page.
-    parent: Required. Parent value for ListDnsThreatDetectorsRequest
+    parent: Required. The parent value for `ListDnsThreatDetectorsRequest`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -4907,7 +4924,7 @@ class NetworksecurityProjectsLocationsDnsThreatDetectorsPatchRequest(_messages.M
     dnsThreatDetector: A DnsThreatDetector resource to be passed as the
       request body.
     name: Immutable. Identifier. Name of the DnsThreatDetector resource.
-    updateMask: Optional. Field mask is used to specify the fields to be
+    updateMask: Optional. The field mask is used to specify the fields to be
       overwritten in the DnsThreatDetector resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
       request. A field will be overwritten if it is in the mask. If the mask
@@ -5661,8 +5678,9 @@ class NetworksecurityProjectsLocationsListRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -7103,6 +7121,8 @@ class SecurityProfile(_messages.Message):
     type: Immutable. The single ProfileType that the SecurityProfile resource
       configures.
     updateTime: Output only. Last resource update timestamp.
+    urlFilteringProfile: The URL filtering configuration for the
+      SecurityProfile.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
@@ -7114,11 +7134,13 @@ class SecurityProfile(_messages.Message):
       THREAT_PREVENTION: Profile type for threat prevention.
       CUSTOM_MIRRORING: Profile type for packet mirroring v2
       CUSTOM_INTERCEPT: Profile type for TPPI.
+      URL_FILTERING: Profile type for URL filtering.
     """
     PROFILE_TYPE_UNSPECIFIED = 0
     THREAT_PREVENTION = 1
     CUSTOM_MIRRORING = 2
     CUSTOM_INTERCEPT = 3
+    URL_FILTERING = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -7154,6 +7176,7 @@ class SecurityProfile(_messages.Message):
   threatPreventionProfile = _messages.MessageField('ThreatPreventionProfile', 8)
   type = _messages.EnumField('TypeValueValuesEnum', 9)
   updateTime = _messages.StringField(10)
+  urlFilteringProfile = _messages.MessageField('UrlFilteringProfile', 11)
 
 
 class SecurityProfileGroup(_messages.Message):
@@ -7183,6 +7206,8 @@ class SecurityProfileGroup(_messages.Message):
     threatPreventionProfile: Optional. Reference to a SecurityProfile with the
       ThreatPrevention configuration.
     updateTime: Output only. Last resource update timestamp.
+    urlFilteringProfile: Optional. Reference to a SecurityProfile with the
+      UrlFiltering configuration.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -7219,6 +7244,7 @@ class SecurityProfileGroup(_messages.Message):
   name = _messages.StringField(8)
   threatPreventionProfile = _messages.StringField(9)
   updateTime = _messages.StringField(10)
+  urlFilteringProfile = _messages.StringField(11)
 
 
 class ServerTlsPolicy(_messages.Message):
@@ -7716,6 +7742,50 @@ class TlsInspectionPolicy(_messages.Message):
   tlsFeatureProfile = _messages.EnumField('TlsFeatureProfileValueValuesEnum', 8)
   trustConfig = _messages.StringField(9)
   updateTime = _messages.StringField(10)
+
+
+class UrlFilter(_messages.Message):
+  r"""A URL filter defines an action to take for some URL match.
+
+  Enums:
+    FilteringActionValueValuesEnum: Required. The action taken when this
+      filter is applied.
+
+  Fields:
+    filteringAction: Required. The action taken when this filter is applied.
+    priority: Required. The priority of this filter within the URL Filtering
+      Profile. Lower integers indicate higher priorities. The priority of a
+      filter must be unique within a URL Filtering Profile.
+    urls: Required. The list of strings that a URL must match with for this
+      filter to be applied.
+  """
+
+  class FilteringActionValueValuesEnum(_messages.Enum):
+    r"""Required. The action taken when this filter is applied.
+
+    Values:
+      URL_FILTERING_ACTION_UNSPECIFIED: Filtering action not specified.
+      ALLOW: The connection matching this filter will be allowed to transmit.
+      DENY: The connection matching this filter will be dropped.
+    """
+    URL_FILTERING_ACTION_UNSPECIFIED = 0
+    ALLOW = 1
+    DENY = 2
+
+  filteringAction = _messages.EnumField('FilteringActionValueValuesEnum', 1)
+  priority = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  urls = _messages.StringField(3, repeated=True)
+
+
+class UrlFilteringProfile(_messages.Message):
+  r"""UrlFilteringProfile defines filters based on URL.
+
+  Fields:
+    urlFilters: Optional. The list of filtering configs in which each config
+      defines an action to take for some URL match.
+  """
+
+  urlFilters = _messages.MessageField('UrlFilter', 1, repeated=True)
 
 
 class UrlList(_messages.Message):

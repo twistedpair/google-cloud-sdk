@@ -41,6 +41,14 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_CONNECTIONS_GITREPOSITORYLINKS = (
+      'projects.locations.connections.gitRepositoryLinks',
+      'projects/{projectsId}/locations/{locationsId}/connections/'
+      '{connectionsId}/gitRepositoryLinks/{gitRepositoryLinksId}',
+      {},
+      ['projectsId', 'locationsId', 'connectionsId', 'gitRepositoryLinksId'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

@@ -1252,7 +1252,7 @@ class GoogleCloudBigqueryMigrationV2MigrationTask(_messages.Message):
       Translation_AzureSynapse2BQ, Translation_Vertica2BQ,
       Translation_SQLServer2BQ, Translation_SQLServer2Postgresql,
       Translation_Presto2BQ, Translation_MySQL2BQ, Translation_Postgresql2BQ,
-      Translation_SQLite2BQ, Translation_Greenplum2BQ.
+      Translation_SQLite2BQ, Translation_Greenplum2BQ, Translation_Impala2BQ.
   """
 
   class StateValueValuesEnum(_messages.Enum):

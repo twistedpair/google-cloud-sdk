@@ -184,6 +184,7 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
       use_gsutil_style=False,
       zero_terminator=False,
       soft_deleted_buckets=False,
+      list_filter=None,
   ):
     """Initializes executor.
 
@@ -212,6 +213,7 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
       zero_terminator (bool): Use null byte instead of newline as line
         terminator.
       soft_deleted_buckets (bool): If true, soft deleted buckets will be listed.
+      list_filter (str|None): Performs list call with specified filter string.
     """
     self._cloud_urls = cloud_urls
     self._buckets_flag = buckets_flag
@@ -229,6 +231,7 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
     self._use_gsutil_style = use_gsutil_style
     self._zero_terminator = zero_terminator
     self._soft_deleted_buckets = soft_deleted_buckets
+    self._list_filter = list_filter
 
     self._full_formatter = None
     # Null wrappers print nothing
@@ -273,6 +276,7 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
         next_page_token=self._next_page_token,
         object_state=self._object_state,
         soft_deleted_buckets=self._soft_deleted_buckets,
+        list_filter=self._list_filter,
     )
     return self._recursion_helper(iterator, recursion_level)
 
@@ -416,6 +420,7 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
             next_page_token=self._next_page_token,
             object_state=self._object_state,
             soft_deleted_buckets=self._soft_deleted_buckets,
+            list_filter=self._list_filter,
         )
     )
 

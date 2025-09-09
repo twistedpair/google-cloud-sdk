@@ -974,8 +974,8 @@ class Rollout(_messages.Message):
       stemming from and adhering to.
     rolloutOrchestrationStrategy: Optional. The strategy used for executing
       this Rollout. This strategy will override whatever strategy is specified
-      in the RolloutType. If not specified on creation, the strategy from
-      RolloutType will be used. There are two supported values strategies
+      in the RolloutKind. If not specified on creation, the strategy from
+      RolloutKind will be used. There are two supported values strategies
       which are used to control - "Google.Cloud.Simple.AllAtOnce" -
       "Google.Cloud.Simple.OneLocationAtATime" A rollout with one of these
       simple strategies will rollout across all locations defined in the
@@ -1001,7 +1001,7 @@ class Rollout(_messages.Message):
       filter string against Unit. The filter will be applied to determine the
       eligible unit population. This filter can only reduce, but not expand
       the scope of the rollout. If not provided, the unit_filter from the
-      RolloutType will be used.
+      RolloutKind will be used.
     updateTime: Output only. The timestamp when the resource was last updated.
       Any change to the resource made by users must refresh this value.
       Changes to a resource made by the service should refresh this value.
@@ -1829,8 +1829,9 @@ class SaasservicemgmtProjectsLocationsListRequest(_messages.Message):
   r"""A SaasservicemgmtProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).

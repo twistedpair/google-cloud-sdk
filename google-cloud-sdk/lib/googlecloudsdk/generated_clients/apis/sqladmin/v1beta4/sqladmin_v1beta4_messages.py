@@ -3216,8 +3216,6 @@ class IpConfiguration(_messages.Message):
     enablePrivatePathForGoogleCloudServices: Controls connectivity to private
       IP instances from Google services, such as BigQuery.
     ipv4Enabled: Whether the instance is assigned a public IP address or not.
-    message: Informatory messages for customer to specify authorized networks
-      are to be added for instances with Public IP.
     privateNetwork: The resource link for the VPC network from which the Cloud
       SQL instance is accessible for private IP. For example,
       `/projects/myProject/global/networks/default`. This setting can be
@@ -3320,14 +3318,13 @@ class IpConfiguration(_messages.Message):
   customSubjectAlternativeNames = _messages.StringField(3, repeated=True)
   enablePrivatePathForGoogleCloudServices = _messages.BooleanField(4)
   ipv4Enabled = _messages.BooleanField(5)
-  message = _messages.StringField(6)
-  privateNetwork = _messages.StringField(7)
-  pscConfig = _messages.MessageField('PscConfig', 8)
-  requireSsl = _messages.BooleanField(9)
-  reservedIpRange = _messages.StringField(10)
-  serverCaMode = _messages.EnumField('ServerCaModeValueValuesEnum', 11)
-  serverCaPool = _messages.StringField(12)
-  sslMode = _messages.EnumField('SslModeValueValuesEnum', 13)
+  privateNetwork = _messages.StringField(6)
+  pscConfig = _messages.MessageField('PscConfig', 7)
+  requireSsl = _messages.BooleanField(8)
+  reservedIpRange = _messages.StringField(9)
+  serverCaMode = _messages.EnumField('ServerCaModeValueValuesEnum', 10)
+  serverCaPool = _messages.StringField(11)
+  sslMode = _messages.EnumField('SslModeValueValuesEnum', 12)
 
 
 class IpMapping(_messages.Message):

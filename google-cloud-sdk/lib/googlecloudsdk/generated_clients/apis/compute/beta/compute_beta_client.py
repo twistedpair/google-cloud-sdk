@@ -13640,7 +13640,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def MoveDisk(self, request, global_params=None):
-      r"""Moves a persistent disk from one zone to another.
+      r"""Starting September 29, 2025, you can't use the moveDisk API on new projects. To move a disk to a different region or zone, follow the steps in [Change the location of a disk](https://{$universe.dns_names.final_documentation_domain}/compute/docs/disks/migrate-to-hyperdisk#migrate-to-hd). Projects that already use the moveDisk API can continue usage until September 29, 2026. Starting November 1, 2025, API responses will include a warning message in the response body about the upcoming deprecation. You can skip the message to continue using the service without interruption.
 
       Args:
         request: (ComputeProjectsMoveDiskRequest) input message
@@ -21779,7 +21779,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.serviceAttachments.get',
         ordered_params=['project', 'region', 'serviceAttachment'],
         path_params=['project', 'region', 'serviceAttachment'],
-        query_params=[],
+        query_params=['showNatIps'],
         relative_path='projects/{project}/regions/{region}/serviceAttachments/{serviceAttachment}',
         request_field='',
         request_type_name='ComputeServiceAttachmentsGetRequest',

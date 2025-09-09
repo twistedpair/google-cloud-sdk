@@ -448,8 +448,9 @@ class CloudtasksProjectsLocationsListRequest(_messages.Message):
   r"""A CloudtasksProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -900,7 +901,7 @@ class CreateTaskRequest(_messages.Message):
       de-duplication. If a task's ID is identical to that of an existing task
       or a task that was deleted or executed recently then the call will fail
       with ALREADY_EXISTS. The IDs of deleted tasks are not immediately
-      available for reuse. It can take up to 4 hours (or 9 days if the task's
+      available for reuse. It can take up to 24 hours (or 9 days if the task's
       queue was created using a queue.yaml or queue.xml) for the task ID to be
       released and made available again. Because there is an extra lookup cost
       to identify duplicate task names, these CreateTask calls have

@@ -39,12 +39,211 @@ class NetworkmanagementV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.organizations_locations_operations = self.OrganizationsLocationsOperationsService(self)
+    self.organizations_locations = self.OrganizationsLocationsService(self)
+    self.organizations = self.OrganizationsService(self)
     self.projects_locations_global_connectivityTests = self.ProjectsLocationsGlobalConnectivityTestsService(self)
     self.projects_locations_global_operations = self.ProjectsLocationsGlobalOperationsService(self)
     self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
+    self.projects_locations_networkMonitoringProviders_monitoringPoints = self.ProjectsLocationsNetworkMonitoringProvidersMonitoringPointsService(self)
+    self.projects_locations_networkMonitoringProviders_networkPaths = self.ProjectsLocationsNetworkMonitoringProvidersNetworkPathsService(self)
+    self.projects_locations_networkMonitoringProviders_webPaths = self.ProjectsLocationsNetworkMonitoringProvidersWebPathsService(self)
+    self.projects_locations_networkMonitoringProviders = self.ProjectsLocationsNetworkMonitoringProvidersService(self)
     self.projects_locations_vpcFlowLogsConfigs = self.ProjectsLocationsVpcFlowLogsConfigsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class OrganizationsLocationsOperationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_operations resource."""
+
+    _NAME = 'organizations_locations_operations'
+
+    def __init__(self, client):
+      super(NetworkmanagementV1.OrganizationsLocationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of `1`, corresponding to `Code.CANCELLED`.
+
+      Args:
+        request: (NetworkmanagementOrganizationsLocationsOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='networkmanagement.organizations.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='NetworkmanagementOrganizationsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
+
+      Args:
+        request: (NetworkmanagementOrganizationsLocationsOperationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='networkmanagement.organizations.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworkmanagementOrganizationsLocationsOperationsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (NetworkmanagementOrganizationsLocationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='networkmanagement.organizations.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworkmanagementOrganizationsLocationsOperationsGetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
+
+      Args:
+        request: (NetworkmanagementOrganizationsLocationsOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='networkmanagement.organizations.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}/operations',
+        request_field='',
+        request_type_name='NetworkmanagementOrganizationsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations resource."""
+
+    _NAME = 'organizations_locations'
+
+    def __init__(self, client):
+      super(NetworkmanagementV1.OrganizationsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets information about a location.
+
+      Args:
+        request: (NetworkmanagementOrganizationsLocationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Location) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='networkmanagement.organizations.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworkmanagementOrganizationsLocationsGetRequest',
+        response_type_name='Location',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists information about the supported locations for this service.
+
+      Args:
+        request: (NetworkmanagementOrganizationsLocationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLocationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations',
+        http_method='GET',
+        method_id='networkmanagement.organizations.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['extraLocationTypes', 'filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}/locations',
+        request_field='',
+        request_type_name='NetworkmanagementOrganizationsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsService(base_api.BaseApiService):
+    """Service class for the organizations resource."""
+
+    _NAME = 'organizations'
+
+    def __init__(self, client):
+      super(NetworkmanagementV1.OrganizationsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsLocationsGlobalConnectivityTestsService(base_api.BaseApiService):
     """Service class for the projects_locations_global_connectivityTests resource."""
@@ -427,6 +626,316 @@ class NetworkmanagementV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+  class ProjectsLocationsNetworkMonitoringProvidersMonitoringPointsService(base_api.BaseApiService):
+    """Service class for the projects_locations_networkMonitoringProviders_monitoringPoints resource."""
+
+    _NAME = 'projects_locations_networkMonitoringProviders_monitoringPoints'
+
+    def __init__(self, client):
+      super(NetworkmanagementV1.ProjectsLocationsNetworkMonitoringProvidersMonitoringPointsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the MonitoringPoint resource.
+
+      Args:
+        request: (NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPointsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MonitoringPoint) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkMonitoringProviders/{networkMonitoringProvidersId}/monitoringPoints/{monitoringPointsId}',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.networkMonitoringProviders.monitoringPoints.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPointsGetRequest',
+        response_type_name='MonitoringPoint',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists MonitoringPoints for a given network monitoring provider.
+
+      Args:
+        request: (NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPointsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListMonitoringPointsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkMonitoringProviders/{networkMonitoringProvidersId}/monitoringPoints',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.networkMonitoringProviders.monitoringPoints.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/monitoringPoints',
+        request_field='',
+        request_type_name='NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPointsListRequest',
+        response_type_name='ListMonitoringPointsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsNetworkMonitoringProvidersNetworkPathsService(base_api.BaseApiService):
+    """Service class for the projects_locations_networkMonitoringProviders_networkPaths resource."""
+
+    _NAME = 'projects_locations_networkMonitoringProviders_networkPaths'
+
+    def __init__(self, client):
+      super(NetworkmanagementV1.ProjectsLocationsNetworkMonitoringProvidersNetworkPathsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the NetworkPath resource.
+
+      Args:
+        request: (NetworkmanagementProjectsLocationsNetworkMonitoringProvidersNetworkPathsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkPath) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkMonitoringProviders/{networkMonitoringProvidersId}/networkPaths/{networkPathsId}',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.networkMonitoringProviders.networkPaths.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworkmanagementProjectsLocationsNetworkMonitoringProvidersNetworkPathsGetRequest',
+        response_type_name='NetworkPath',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists NetworkPaths for a given network monitoring provider.
+
+      Args:
+        request: (NetworkmanagementProjectsLocationsNetworkMonitoringProvidersNetworkPathsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListNetworkPathsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkMonitoringProviders/{networkMonitoringProvidersId}/networkPaths',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.networkMonitoringProviders.networkPaths.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/networkPaths',
+        request_field='',
+        request_type_name='NetworkmanagementProjectsLocationsNetworkMonitoringProvidersNetworkPathsListRequest',
+        response_type_name='ListNetworkPathsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsNetworkMonitoringProvidersWebPathsService(base_api.BaseApiService):
+    """Service class for the projects_locations_networkMonitoringProviders_webPaths resource."""
+
+    _NAME = 'projects_locations_networkMonitoringProviders_webPaths'
+
+    def __init__(self, client):
+      super(NetworkmanagementV1.ProjectsLocationsNetworkMonitoringProvidersWebPathsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the WebPath resource.
+
+      Args:
+        request: (NetworkmanagementProjectsLocationsNetworkMonitoringProvidersWebPathsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WebPath) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkMonitoringProviders/{networkMonitoringProvidersId}/webPaths/{webPathsId}',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.networkMonitoringProviders.webPaths.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworkmanagementProjectsLocationsNetworkMonitoringProvidersWebPathsGetRequest',
+        response_type_name='WebPath',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists WebPaths for a given network monitoring provider.
+
+      Args:
+        request: (NetworkmanagementProjectsLocationsNetworkMonitoringProvidersWebPathsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListWebPathsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkMonitoringProviders/{networkMonitoringProvidersId}/webPaths',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.networkMonitoringProviders.webPaths.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/webPaths',
+        request_field='',
+        request_type_name='NetworkmanagementProjectsLocationsNetworkMonitoringProvidersWebPathsListRequest',
+        response_type_name='ListWebPathsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsNetworkMonitoringProvidersService(base_api.BaseApiService):
+    """Service class for the projects_locations_networkMonitoringProviders resource."""
+
+    _NAME = 'projects_locations_networkMonitoringProviders'
+
+    def __init__(self, client):
+      super(NetworkmanagementV1.ProjectsLocationsNetworkMonitoringProvidersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a NetworkMonitoringProvider resource.
+
+      Args:
+        request: (NetworkmanagementProjectsLocationsNetworkMonitoringProvidersCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkMonitoringProviders',
+        http_method='POST',
+        method_id='networkmanagement.projects.locations.networkMonitoringProviders.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['networkMonitoringProviderId'],
+        relative_path='v1/{+parent}/networkMonitoringProviders',
+        request_field='networkMonitoringProvider',
+        request_type_name='NetworkmanagementProjectsLocationsNetworkMonitoringProvidersCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a NetworkMonitoringProvider resource and all of its child resources.
+
+      Args:
+        request: (NetworkmanagementProjectsLocationsNetworkMonitoringProvidersDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkMonitoringProviders/{networkMonitoringProvidersId}',
+        http_method='DELETE',
+        method_id='networkmanagement.projects.locations.networkMonitoringProviders.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworkmanagementProjectsLocationsNetworkMonitoringProvidersDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the NetworkMonitoringProvider resource.
+
+      Args:
+        request: (NetworkmanagementProjectsLocationsNetworkMonitoringProvidersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkMonitoringProvider) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkMonitoringProviders/{networkMonitoringProvidersId}',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.networkMonitoringProviders.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworkmanagementProjectsLocationsNetworkMonitoringProvidersGetRequest',
+        response_type_name='NetworkMonitoringProvider',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists NetworkMonitoringProviders for a given project and location.
+
+      Args:
+        request: (NetworkmanagementProjectsLocationsNetworkMonitoringProvidersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListNetworkMonitoringProvidersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkMonitoringProviders',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.networkMonitoringProviders.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/networkMonitoringProviders',
+        request_field='',
+        request_type_name='NetworkmanagementProjectsLocationsNetworkMonitoringProvidersListRequest',
+        response_type_name='ListNetworkMonitoringProvidersResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsVpcFlowLogsConfigsService(base_api.BaseApiService):
     """Service class for the projects_locations_vpcFlowLogsConfigs resource."""
 
@@ -438,7 +947,7 @@ class NetworkmanagementV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new `VpcFlowLogsConfig`. If a configuration with the exact same settings already exists (even if the ID is different), the creation fails. Notes: 1. Creating a configuration with state=DISABLED will fail 2. The following fields are not considered as `settings` for the purpose of the check mentioned above, therefore - creating another configuration with the same fields but different values for the following fields will fail as well: * name * create_time * update_time * labels * description.
+      r"""Creates a new `VpcFlowLogsConfig`. If a configuration with the exact same settings already exists (even if the ID is different), the creation fails. Notes: 1. Creating a configuration with `state=DISABLED` will fail 2. The following fields are not considered as settings for the purpose of the check mentioned above, therefore - creating another configuration with the same fields but different values for the following fields will fail as well: * name * create_time * update_time * labels * description.
 
       Args:
         request: (NetworkmanagementProjectsLocationsVpcFlowLogsConfigsCreateRequest) input message
@@ -546,7 +1055,7 @@ class NetworkmanagementV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates an existing `VpcFlowLogsConfig`. If a configuration with the exact same settings already exists (even if the ID is different), the creation fails. Notes: 1. Updating a configuration with state=DISABLED will fail. 2. The following fields are not considered as `settings` for the purpose of the check mentioned above, therefore - updating another configuration with the same fields but different values for the following fields will fail as well: * name * create_time * update_time * labels * description.
+      r"""Updates an existing `VpcFlowLogsConfig`. If a configuration with the exact same settings already exists (even if the ID is different), the creation fails. Notes: 1. Updating a configuration with `state=DISABLED` will fail. 2. The following fields are not considered as settings for the purpose of the check mentioned above, therefore - updating another configuration with the same fields but different values for the following fields will fail as well: * name * create_time * update_time * labels * description.
 
       Args:
         request: (NetworkmanagementProjectsLocationsVpcFlowLogsConfigsPatchRequest) input message

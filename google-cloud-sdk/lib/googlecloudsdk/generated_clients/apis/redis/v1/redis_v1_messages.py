@@ -246,7 +246,13 @@ class BackupCollection(_messages.Message):
     createTime: Output only. The time when the backup collection was created.
     kmsKey: Output only. The KMS key used to encrypt the backups under this
       backup collection.
+    lastBackupTime: Output only. The last time a backup was created in the
+      backup collection.
     name: Identifier. Full resource path of the backup collection.
+    totalBackupCount: Output only. Total number of backups in the backup
+      collection.
+    totalBackupSizeBytes: Output only. Total size of all backups in the backup
+      collection.
     uid: Output only. System assigned unique identifier of the backup
       collection.
   """
@@ -255,8 +261,11 @@ class BackupCollection(_messages.Message):
   clusterUid = _messages.StringField(2)
   createTime = _messages.StringField(3)
   kmsKey = _messages.StringField(4)
-  name = _messages.StringField(5)
-  uid = _messages.StringField(6)
+  lastBackupTime = _messages.StringField(5)
+  name = _messages.StringField(6)
+  totalBackupCount = _messages.IntegerField(7)
+  totalBackupSizeBytes = _messages.IntegerField(8)
+  uid = _messages.StringField(9)
 
 
 class BackupConfiguration(_messages.Message):
@@ -286,6 +295,27 @@ class BackupDRConfiguration(_messages.Message):
   """
 
   backupdrManaged = _messages.BooleanField(1)
+
+
+class BackupDRMetadata(_messages.Message):
+  r"""BackupDRMetadata contains information about the backup and disaster
+  recovery metadata of a database resource.
+
+  Fields:
+    backupConfiguration: Backup configuration for this instance.
+    backupRun: Latest backup run information for this instance.
+    backupdrConfiguration: BackupDR configuration for this instance.
+    fullResourceName: Required. Full resource name of this instance.
+    lastRefreshTime: Required. Last time backup configuration was refreshed.
+    resourceId: Required. Database resource id.
+  """
+
+  backupConfiguration = _messages.MessageField('BackupConfiguration', 1)
+  backupRun = _messages.MessageField('BackupRun', 2)
+  backupdrConfiguration = _messages.MessageField('BackupDRConfiguration', 3)
+  fullResourceName = _messages.StringField(4)
+  lastRefreshTime = _messages.StringField(5)
+  resourceId = _messages.MessageField('DatabaseResourceId', 6)
 
 
 class BackupFile(_messages.Message):
@@ -376,15 +406,12 @@ class Cluster(_messages.Message):
       cluster.
 
   Messages:
+    LabelsValue: Optional. Labels to represent user-provided metadata.
     RedisConfigsValue: Optional. Key/Value pairs of customer overrides for
       mutable Redis Configs
 
   Fields:
-    allowFewerZonesDeployment: Optional. Immutable. Allows customers to
-      specify if they are okay with deploying a multi-zone cluster in less
-      than 3 zones. Once set, if there is a zonal outage during the cluster
-      creation, the cluster will only be deployed in 2 zones, and stay within
-      the 2 zones for its lifecycle.
+    allowFewerZonesDeployment: Optional. Immutable. Deprecated, do not use.
     asyncClusterEndpointsDeletionEnabled: Optional. If true, cluster endpoints
       that are created and registered by customers can be deleted
       asynchronously. That is, such a cluster endpoint can be de-registered
@@ -413,6 +440,7 @@ class Cluster(_messages.Message):
       objects.
     kmsKey: Optional. The KMS key used to encrypt the at-rest data of the
       cluster.
+    labels: Optional. Labels to represent user-provided metadata.
     maintenancePolicy: Optional. ClusterMaintenancePolicy determines when to
       allow or deny updates.
     maintenanceSchedule: Output only. ClusterMaintenanceSchedule Output only
@@ -522,6 +550,30 @@ class Cluster(_messages.Message):
     TRANSIT_ENCRYPTION_MODE_SERVER_AUTHENTICATION = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels to represent user-provided metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class RedisConfigsValue(_messages.Message):
     r"""Optional. Key/Value pairs of customer overrides for mutable Redis
     Configs
@@ -560,29 +612,30 @@ class Cluster(_messages.Message):
   encryptionInfo = _messages.MessageField('EncryptionInfo', 11)
   gcsSource = _messages.MessageField('GcsBackupSource', 12)
   kmsKey = _messages.StringField(13)
-  maintenancePolicy = _messages.MessageField('ClusterMaintenancePolicy', 14)
-  maintenanceSchedule = _messages.MessageField('ClusterMaintenanceSchedule', 15)
-  managedBackupSource = _messages.MessageField('ManagedBackupSource', 16)
-  name = _messages.StringField(17)
-  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 18)
-  ondemandMaintenance = _messages.BooleanField(19)
-  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 20)
-  preciseSizeGb = _messages.FloatField(21)
-  pscConfigs = _messages.MessageField('PscConfig', 22, repeated=True)
-  pscConnections = _messages.MessageField('PscConnection', 23, repeated=True)
-  pscServiceAttachments = _messages.MessageField('PscServiceAttachment', 24, repeated=True)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 25)
-  replicaCount = _messages.IntegerField(26, variant=_messages.Variant.INT32)
-  satisfiesPzi = _messages.BooleanField(27)
-  satisfiesPzs = _messages.BooleanField(28)
-  shardCount = _messages.IntegerField(29, variant=_messages.Variant.INT32)
-  simulateMaintenanceEvent = _messages.BooleanField(30)
-  sizeGb = _messages.IntegerField(31, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 32)
-  stateInfo = _messages.MessageField('StateInfo', 33)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 34)
-  uid = _messages.StringField(35)
-  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 36)
+  labels = _messages.MessageField('LabelsValue', 14)
+  maintenancePolicy = _messages.MessageField('ClusterMaintenancePolicy', 15)
+  maintenanceSchedule = _messages.MessageField('ClusterMaintenanceSchedule', 16)
+  managedBackupSource = _messages.MessageField('ManagedBackupSource', 17)
+  name = _messages.StringField(18)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 19)
+  ondemandMaintenance = _messages.BooleanField(20)
+  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 21)
+  preciseSizeGb = _messages.FloatField(22)
+  pscConfigs = _messages.MessageField('PscConfig', 23, repeated=True)
+  pscConnections = _messages.MessageField('PscConnection', 24, repeated=True)
+  pscServiceAttachments = _messages.MessageField('PscServiceAttachment', 25, repeated=True)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 26)
+  replicaCount = _messages.IntegerField(27, variant=_messages.Variant.INT32)
+  satisfiesPzi = _messages.BooleanField(28)
+  satisfiesPzs = _messages.BooleanField(29)
+  shardCount = _messages.IntegerField(30, variant=_messages.Variant.INT32)
+  simulateMaintenanceEvent = _messages.BooleanField(31)
+  sizeGb = _messages.IntegerField(32, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 33)
+  stateInfo = _messages.MessageField('StateInfo', 34)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 35)
+  uid = _messages.StringField(36)
+  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 37)
 
 
 class ClusterEndpoint(_messages.Message):
@@ -848,12 +901,14 @@ class CustomMetadataData(_messages.Message):
 
 class DatabaseResourceFeed(_messages.Message):
   r"""DatabaseResourceFeed is the top level proto to be used to ingest
-  different database resource level events into Condor platform. Next ID: 9
+  different database resource level events into Condor platform. Next ID: 11
 
   Enums:
     FeedTypeValueValuesEnum: Required. Type feed to be ingested into condor
 
   Fields:
+    backupdrMetadata: BackupDR metadata is used to ingest metadata from
+      BackupDR.
     configBasedSignalData: Config based signal data is used to ingest signals
       that are generated based on the configuration of the database resource.
     feedTimestamp: Required. Timestamp when feed is generated.
@@ -865,6 +920,11 @@ class DatabaseResourceFeed(_messages.Message):
     resourceId: Primary key associated with the Resource. resource_id is
       available in individual feed level as well.
     resourceMetadata: A DatabaseResourceMetadata attribute.
+    skipIngestion: Optional. If true, the feed won't be ingested by DB Center.
+      This indicates that the feed is intentionally skipped. For example,
+      BackupDR feeds are only needed for resources integrated with DB Center
+      (e.g., CloudSQL, AlloyDB). Feeds for non-integrated resources (e.g.,
+      Compute Engine, Persistent Disk) can be skipped.
   """
 
   class FeedTypeValueValuesEnum(_messages.Enum):
@@ -877,6 +937,7 @@ class DatabaseResourceFeed(_messages.Message):
       SECURITY_FINDING_DATA: Database resource security health signal data
       RECOMMENDATION_SIGNAL_DATA: Database resource recommendation signal data
       CONFIG_BASED_SIGNAL_DATA: Database config based signal data
+      BACKUPDR_METADATA: Database resource metadata from BackupDR
     """
     FEEDTYPE_UNSPECIFIED = 0
     RESOURCE_METADATA = 1
@@ -884,15 +945,18 @@ class DatabaseResourceFeed(_messages.Message):
     SECURITY_FINDING_DATA = 3
     RECOMMENDATION_SIGNAL_DATA = 4
     CONFIG_BASED_SIGNAL_DATA = 5
+    BACKUPDR_METADATA = 6
 
-  configBasedSignalData = _messages.MessageField('ConfigBasedSignalData', 1)
-  feedTimestamp = _messages.StringField(2)
-  feedType = _messages.EnumField('FeedTypeValueValuesEnum', 3)
-  observabilityMetricData = _messages.MessageField('ObservabilityMetricData', 4)
-  recommendationSignalData = _messages.MessageField('DatabaseResourceRecommendationSignalData', 5)
-  resourceHealthSignalData = _messages.MessageField('DatabaseResourceHealthSignalData', 6)
-  resourceId = _messages.MessageField('DatabaseResourceId', 7)
-  resourceMetadata = _messages.MessageField('DatabaseResourceMetadata', 8)
+  backupdrMetadata = _messages.MessageField('BackupDRMetadata', 1)
+  configBasedSignalData = _messages.MessageField('ConfigBasedSignalData', 2)
+  feedTimestamp = _messages.StringField(3)
+  feedType = _messages.EnumField('FeedTypeValueValuesEnum', 4)
+  observabilityMetricData = _messages.MessageField('ObservabilityMetricData', 5)
+  recommendationSignalData = _messages.MessageField('DatabaseResourceRecommendationSignalData', 6)
+  resourceHealthSignalData = _messages.MessageField('DatabaseResourceHealthSignalData', 7)
+  resourceId = _messages.MessageField('DatabaseResourceId', 8)
+  resourceMetadata = _messages.MessageField('DatabaseResourceMetadata', 9)
+  skipIngestion = _messages.BooleanField(10)
 
 
 class DatabaseResourceHealthSignalData(_messages.Message):
@@ -1245,6 +1309,7 @@ class DatabaseResourceHealthSignalData(_messages.Message):
       SIGNAL_TYPE_MANY_IDLE_CONNECTIONS: High number of idle connections.
       SIGNAL_TYPE_REPLICATION_LAG: Replication delay.
       SIGNAL_TYPE_OUTDATED_VERSION: Outdated version.
+      SIGNAL_TYPE_OUTDATED_CLIENT: Outdated client.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -1347,6 +1412,7 @@ class DatabaseResourceHealthSignalData(_messages.Message):
     SIGNAL_TYPE_MANY_IDLE_CONNECTIONS = 98
     SIGNAL_TYPE_REPLICATION_LAG = 99
     SIGNAL_TYPE_OUTDATED_VERSION = 100
+    SIGNAL_TYPE_OUTDATED_CLIENT = 101
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -1948,6 +2014,7 @@ class DatabaseResourceRecommendationSignalData(_messages.Message):
       SIGNAL_TYPE_MANY_IDLE_CONNECTIONS: High number of idle connections.
       SIGNAL_TYPE_REPLICATION_LAG: Replication delay.
       SIGNAL_TYPE_OUTDATED_VERSION: Outdated version.
+      SIGNAL_TYPE_OUTDATED_CLIENT: Outdated client.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -2050,6 +2117,7 @@ class DatabaseResourceRecommendationSignalData(_messages.Message):
     SIGNAL_TYPE_MANY_IDLE_CONNECTIONS = 98
     SIGNAL_TYPE_REPLICATION_LAG = 99
     SIGNAL_TYPE_OUTDATED_VERSION = 100
+    SIGNAL_TYPE_OUTDATED_CLIENT = 101
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):
@@ -4284,8 +4352,9 @@ class RedisProjectsLocationsListRequest(_messages.Message):
   r"""A RedisProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).

@@ -269,7 +269,7 @@ class AuditLogConfig(_messages.Message):
 
 
 class AutokeyConfig(_messages.Message):
-  r"""Cloud KMS Autokey configuration for a folder.
+  r"""Cloud KMS Autokey configuration for a folder or project.
 
   Enums:
     StateValueValuesEnum: Output only. The state for the AutokeyConfig.
@@ -290,7 +290,8 @@ class AutokeyConfig(_messages.Message):
       pertinent permissions). A request with an empty key project field will
       clear the configuration.
     name: Identifier. Name of the AutokeyConfig resource, e.g.
-      `folders/{FOLDER_NUMBER}/autokeyConfig`.
+      `folders/{FOLDER_NUMBER}/autokeyConfig`
+      `projects/{PROJECT_NUMBER}/autokeyConfig`.
     state: Output only. The state for the AutokeyConfig.
   """
 
@@ -505,7 +506,8 @@ class CloudkmsFoldersUpdateAutokeyConfigRequest(_messages.Message):
   Fields:
     autokeyConfig: A AutokeyConfig resource to be passed as the request body.
     name: Identifier. Name of the AutokeyConfig resource, e.g.
-      `folders/{FOLDER_NUMBER}/autokeyConfig`.
+      `folders/{FOLDER_NUMBER}/autokeyConfig`
+      `projects/{PROJECT_NUMBER}/autokeyConfig`.
     updateMask: Required. Masks which fields of the AutokeyConfig to update,
       e.g. `keyProject`.
   """
@@ -1580,8 +1582,9 @@ class CloudkmsProjectsLocationsListRequest(_messages.Message):
   r"""A CloudkmsProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).

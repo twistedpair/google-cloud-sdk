@@ -735,6 +735,9 @@ apis:
     v1alpha:
       discovery_doc: designcenter_v1alpha.json
       default: true
+      resources:
+        projects.locations.connections.gitRepositoryLinks:
+          path: projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}/gitRepositoryLinks/{gitRepositoryLinksId}
   discovery:
     v1:
       discovery_doc: discovery_v1.json

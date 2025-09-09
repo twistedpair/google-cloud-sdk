@@ -1289,6 +1289,33 @@ class VmmigrationV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ExtendMigration(self, request, global_params=None):
+      r"""Extend the migrating VM time to live.
+
+      Args:
+        request: (VmmigrationProjectsLocationsSourcesMigratingVmsExtendMigrationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ExtendMigration')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExtendMigration.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/sources/{sourcesId}/migratingVms/{migratingVmsId}:extendMigration',
+        http_method='POST',
+        method_id='vmmigration.projects.locations.sources.migratingVms.extendMigration',
+        ordered_params=['migratingVm'],
+        path_params=['migratingVm'],
+        query_params=[],
+        relative_path='v1alpha1/{+migratingVm}:extendMigration',
+        request_field='extendMigrationRequest',
+        request_type_name='VmmigrationProjectsLocationsSourcesMigratingVmsExtendMigrationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def FinalizeMigration(self, request, global_params=None):
       r"""Marks a migration as completed, deleting migration resources that are no longer being used. Only applicable after cutover is done.
 

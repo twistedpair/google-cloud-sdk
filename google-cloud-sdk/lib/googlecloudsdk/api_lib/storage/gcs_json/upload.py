@@ -25,11 +25,12 @@ import json
 from apitools.base.py import encoding_helper
 from apitools.base.py import transfer
 from googlecloudsdk.api_lib.storage import errors
-from googlecloudsdk.api_lib.storage import metadata_util as common_metadata_util
 from googlecloudsdk.api_lib.storage import retry_util
 from googlecloudsdk.api_lib.storage.gcs_json import metadata_util
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.command_lib.storage.resources import gcs_resource_reference
 from googlecloudsdk.command_lib.storage.resources import resource_reference
+from googlecloudsdk.command_lib.storage.resources import s3_resource_reference
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -93,6 +94,39 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
           self._source_resource.metadata.acl
       )
 
+  def _update_object_metadata_with_contexts(self, object_metadata):
+    """Update object metadata with contexts from the source resource."""
+    contexts_to_set = None
+    if isinstance(
+        self._source_resource, gcs_resource_reference.GcsObjectResource
+    ):
+      contexts_to_set = (
+          metadata_util.parse_custom_contexts_dict_from_resource_contexts_dict(
+              self._source_resource.contexts
+          )
+      )
+    elif isinstance(
+        self._source_resource, s3_resource_reference.S3ObjectResource
+    ):
+      # Treat S3 tags as contexts.
+      if self._source_resource.tags:
+        contexts_to_set = (
+            metadata_util.get_contexts_dict_from_custom_contexts_dict({
+                key: (
+                    metadata_util.get_context_value_dict_from_value(
+                        value
+                    )
+                )
+                for key, value in self._source_resource.tags.items()
+            })
+        )
+
+    if contexts_to_set:
+      object_metadata.contexts = encoding_helper.DictToMessage(
+          contexts_to_set,
+          self._messages.Object.ContextsValue,
+      )
+
   def _get_validated_insert_request(self):
     """Get an insert request that includes validated object metadata."""
     if self._request_config.predefined_acl_string:
@@ -116,17 +150,7 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
           )
       )
 
-    if (
-        isinstance(self._source_resource, resource_reference.ObjectResource)
-        and self._source_resource.contexts
-    ):
-      object_metadata.contexts = encoding_helper.DictToMessage(
-          common_metadata_util.parse_custom_contexts_dict_from_resource_contexts_dict(
-              self._source_resource.contexts
-          ),
-          self._messages.Object.ContextsValue,
-      )
-
+    self._update_object_metadata_with_contexts(object_metadata)
     self._copy_acl_from_source_if_source_is_a_cloud_object_and_preserve_acl_is_true(
         object_metadata
     )

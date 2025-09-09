@@ -22,6 +22,30 @@ from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 
+def GetProjectResourceSpec():
+  return concepts.ResourceSpec(
+      'designcenter.projects',
+      resource_name='project',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
+
+
+def GetProjectResourceArg(
+    arg_name='project',
+    help_text=None,
+    positional=False,
+    required=True,
+):
+  """Constructs and returns the Project Resource Argument."""
+  help_text = help_text or 'Project ID.'
+  return concept_parsers.ConceptParser.ForResource(
+      '{}{}'.format('' if positional else '--', arg_name),
+      GetProjectResourceSpec(),
+      help_text,
+      required=required,
+  )
+
+
 def LocationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='location',

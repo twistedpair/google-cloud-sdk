@@ -611,8 +611,9 @@ class FileProjectsLocationsListRequest(_messages.Message):
   r"""A FileProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1319,6 +1320,8 @@ class Instance(_messages.Message):
       and-managing#retrieving_tag_value
 
   Fields:
+    capacityStepSizeGb: Output only. The increase/decrease capacity step size
+      in GB.
     createTime: Output only. The time when the instance was created.
     customPerformanceSupported: Output only. Indicates whether this instance
       supports configuring its performance. If true, the user can configure
@@ -1337,6 +1340,8 @@ class Instance(_messages.Message):
       single file share is supported.
     kmsKeyName: KMS key name used for data encryption.
     labels: Resource labels to represent user provided metadata.
+    maxCapacityGb: Output only. The max capacity of the instance in GB.
+    minCapacityGb: Output only. The min capacity of the instance in GB.
     name: Output only. The resource name of the instance, in the format
       `projects/{project}/locations/{location}/instances/{instance}`.
     networks: VPC networks to which the instance is connected. For this
@@ -1513,29 +1518,32 @@ class Instance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  customPerformanceSupported = _messages.BooleanField(2)
-  deletionProtectionEnabled = _messages.BooleanField(3)
-  deletionProtectionReason = _messages.StringField(4)
-  description = _messages.StringField(5)
-  directoryServices = _messages.MessageField('DirectoryServicesConfig', 6)
-  etag = _messages.StringField(7)
-  fileShares = _messages.MessageField('FileShareConfig', 8, repeated=True)
-  kmsKeyName = _messages.StringField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  name = _messages.StringField(11)
-  networks = _messages.MessageField('NetworkConfig', 12, repeated=True)
-  performanceConfig = _messages.MessageField('PerformanceConfig', 13)
-  performanceLimits = _messages.MessageField('PerformanceLimits', 14)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 15)
-  replication = _messages.MessageField('Replication', 16)
-  satisfiesPzi = _messages.BooleanField(17)
-  satisfiesPzs = _messages.BooleanField(18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  statusMessage = _messages.StringField(20)
-  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 21, repeated=True)
-  tags = _messages.MessageField('TagsValue', 22)
-  tier = _messages.EnumField('TierValueValuesEnum', 23)
+  capacityStepSizeGb = _messages.IntegerField(1)
+  createTime = _messages.StringField(2)
+  customPerformanceSupported = _messages.BooleanField(3)
+  deletionProtectionEnabled = _messages.BooleanField(4)
+  deletionProtectionReason = _messages.StringField(5)
+  description = _messages.StringField(6)
+  directoryServices = _messages.MessageField('DirectoryServicesConfig', 7)
+  etag = _messages.StringField(8)
+  fileShares = _messages.MessageField('FileShareConfig', 9, repeated=True)
+  kmsKeyName = _messages.StringField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  maxCapacityGb = _messages.IntegerField(12)
+  minCapacityGb = _messages.IntegerField(13)
+  name = _messages.StringField(14)
+  networks = _messages.MessageField('NetworkConfig', 15, repeated=True)
+  performanceConfig = _messages.MessageField('PerformanceConfig', 16)
+  performanceLimits = _messages.MessageField('PerformanceLimits', 17)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 18)
+  replication = _messages.MessageField('Replication', 19)
+  satisfiesPzi = _messages.BooleanField(20)
+  satisfiesPzs = _messages.BooleanField(21)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  statusMessage = _messages.StringField(23)
+  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 24, repeated=True)
+  tags = _messages.MessageField('TagsValue', 25)
+  tier = _messages.EnumField('TierValueValuesEnum', 26)
 
 
 class LdapConfig(_messages.Message):
@@ -2222,10 +2230,14 @@ class ReplicaConfig(_messages.Message):
       STATE_REASON_UNSPECIFIED: Reason not specified.
       PEER_INSTANCE_UNREACHABLE: The peer instance is unreachable.
       REMOVE_FAILED: The remove replica peer instance operation failed.
+      PAUSE_FAILED: The pause replica operation failed.
+      RESUME_FAILED: The resume replica operation failed.
     """
     STATE_REASON_UNSPECIFIED = 0
     PEER_INSTANCE_UNREACHABLE = 1
     REMOVE_FAILED = 2
+    PAUSE_FAILED = 3
+    RESUME_FAILED = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The replica state.
@@ -2239,6 +2251,9 @@ class ReplicaConfig(_messages.Message):
         can get further details from the `stateReasons` field of the
         `ReplicaConfig` object.
       PROMOTING: The replica is being promoted.
+      PAUSING: The replica is being paused.
+      PAUSED: The replica is paused.
+      RESUMING: The replica is being resumed.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -2246,6 +2261,9 @@ class ReplicaConfig(_messages.Message):
     REMOVING = 3
     FAILED = 4
     PROMOTING = 5
+    PAUSING = 6
+    PAUSED = 7
+    RESUMING = 8
 
   lastActiveSyncTime = _messages.StringField(1)
   peerInstance = _messages.StringField(2)

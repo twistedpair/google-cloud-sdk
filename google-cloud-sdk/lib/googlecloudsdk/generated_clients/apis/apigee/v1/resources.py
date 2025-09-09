@@ -665,6 +665,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_SECURITYFEEDBACK = (
+      'organizations.securityFeedback',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/securityFeedback/'
+              '{securityFeedbackId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_SECURITYMONITORINGCONDITIONS = (
       'organizations.securityMonitoringConditions',
       '{+name}',

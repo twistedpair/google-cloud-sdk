@@ -111,6 +111,10 @@ class BillingMetadata(_messages.Message):
   name = _messages.StringField(2)
 
 
+class CancelOperationRequest(_messages.Message):
+  r"""The request message for Operations.CancelOperation."""
+
+
 class CelPolicySpec(_messages.Message):
   r"""YAML-based rule that uses CEL, which supports the declaration of
   variables and a filtering predicate. A vulnerable resource is emitted if the
@@ -745,6 +749,19 @@ class ListLocationsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListOperationsResponse(_messages.Message):
+  r"""The response message for Operations.ListOperations.
+
+  Fields:
+    nextPageToken: The standard List next-page token.
+    operations: A list of operations that matches the specified filter in the
+      request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
 class ListSecurityCenterServicesResponse(_messages.Message):
   r"""Response message for
   SecurityCenterManagement.ListSecurityCenterServices.
@@ -844,6 +861,114 @@ class ModuleSettings(_messages.Message):
 
   effectiveEnablementState = _messages.EnumField('EffectiveEnablementStateValueValuesEnum', 1)
   intendedEnablementState = _messages.EnumField('IntendedEnablementStateValueValuesEnum', 2)
+
+
+class Operation(_messages.Message):
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
+
+  Messages:
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
+      that returns a long-running operation should document the metadata type,
+      if any.
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
+      methods, the response should have the type `XxxResponse`, where `Xxx` is
+      the original method name. For example, if the original method name is
+      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+
+  Fields:
+    done: If the value is `false`, it means the operation is still in
+      progress. If `true`, the operation is completed, and either `error` or
+      `response` is available.
+    error: The error result of the operation in case of failure or
+      cancellation.
+    metadata: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
+      that returns a long-running operation should document the metadata type,
+      if any.
+    name: The server-assigned name, which is only unique within the same
+      service that originally returns it. If you use the default HTTP mapping,
+      the `name` should be a resource name ending with
+      `operations/{unique_id}`.
+    response: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
+      methods, the response should have the type `XxxResponse`, where `Xxx` is
+      the original method name. For example, if the original method name is
+      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Service-specific metadata associated with the operation. It typically
+    contains progress information and common metadata such as create time.
+    Some services might not provide such metadata. Any method that returns a
+    long-running operation should document the metadata type, if any.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResponseValue(_messages.Message):
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
+    methods, the response should have the type `XxxResponse`, where `Xxx` is
+    the original method name. For example, if the original method name is
+    `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResponseValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResponseValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  done = _messages.BooleanField(1)
+  error = _messages.MessageField('Status', 2)
+  metadata = _messages.MessageField('MetadataValue', 3)
+  name = _messages.StringField(4)
+  response = _messages.MessageField('ResponseValue', 5)
 
 
 class Policy(_messages.Message):
@@ -1007,7 +1132,9 @@ class SecurityCenterService(_messages.Message):
       ce}` The following values are valid for `{service}`: * `container-
       threat-detection` * `event-threat-detection` * `security-health-
       analytics` * `vm-threat-detection` * `web-security-scanner` * `vm-
-      threat-detection-aws` * `cloud-run-threat-detection`
+      threat-detection-aws` * `cloud-run-threat-detection` * `vm-manager` *
+      `ec2-vulnerability-assessment` * `gce-vulnerability-assessment` *
+      `azure-vulnerability-assessment` * `notebook-security-scanner`
     serviceConfig: Optional. Additional service-specific configuration. Not
       all services will utilize this field.
     updateTime: Output only. The time the service was last updated. This could
@@ -1491,7 +1618,9 @@ class SecuritycentermanagementFoldersLocationsSecurityCenterServicesPatchRequest
       ce}` The following values are valid for `{service}`: * `container-
       threat-detection` * `event-threat-detection` * `security-health-
       analytics` * `vm-threat-detection` * `web-security-scanner` * `vm-
-      threat-detection-aws` * `cloud-run-threat-detection`
+      threat-detection-aws` * `cloud-run-threat-detection` * `vm-manager` *
+      `ec2-vulnerability-assessment` * `gce-vulnerability-assessment` *
+      `azure-vulnerability-assessment` * `notebook-security-scanner`
     securityCenterService: A SecurityCenterService resource to be passed as
       the request body.
     updateMask: Optional. Required. The fields to update. Accepts the
@@ -1931,6 +2060,59 @@ class SecuritycentermanagementOrganizationsLocationsGetBillingMetadataRequest(_m
   name = _messages.StringField(1, required=True)
 
 
+class SecuritycentermanagementOrganizationsLocationsOperationsCancelRequest(_messages.Message):
+  r"""A SecuritycentermanagementOrganizationsLocationsOperationsCancelRequest
+  object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class SecuritycentermanagementOrganizationsLocationsOperationsDeleteRequest(_messages.Message):
+  r"""A SecuritycentermanagementOrganizationsLocationsOperationsDeleteRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycentermanagementOrganizationsLocationsOperationsGetRequest(_messages.Message):
+  r"""A SecuritycentermanagementOrganizationsLocationsOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycentermanagementOrganizationsLocationsOperationsListRequest(_messages.Message):
+  r"""A SecuritycentermanagementOrganizationsLocationsOperationsListRequest
+  object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
 class SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesGetRequest(_messages.Message):
   r"""A SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesGe
   tRequest object.
@@ -1993,7 +2175,9 @@ class SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesPatchR
       ce}` The following values are valid for `{service}`: * `container-
       threat-detection` * `event-threat-detection` * `security-health-
       analytics` * `vm-threat-detection` * `web-security-scanner` * `vm-
-      threat-detection-aws` * `cloud-run-threat-detection`
+      threat-detection-aws` * `cloud-run-threat-detection` * `vm-manager` *
+      `ec2-vulnerability-assessment` * `gce-vulnerability-assessment` *
+      `azure-vulnerability-assessment` * `notebook-security-scanner`
     securityCenterService: A SecurityCenterService resource to be passed as
       the request body.
     updateMask: Optional. Required. The fields to update. Accepts the
@@ -2446,8 +2630,9 @@ class SecuritycentermanagementProjectsLocationsListRequest(_messages.Message):
   r"""A SecuritycentermanagementProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -2463,6 +2648,57 @@ class SecuritycentermanagementProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(3, required=True)
   pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(5)
+
+
+class SecuritycentermanagementProjectsLocationsOperationsCancelRequest(_messages.Message):
+  r"""A SecuritycentermanagementProjectsLocationsOperationsCancelRequest
+  object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class SecuritycentermanagementProjectsLocationsOperationsDeleteRequest(_messages.Message):
+  r"""A SecuritycentermanagementProjectsLocationsOperationsDeleteRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycentermanagementProjectsLocationsOperationsGetRequest(_messages.Message):
+  r"""A SecuritycentermanagementProjectsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycentermanagementProjectsLocationsOperationsListRequest(_messages.Message):
+  r"""A SecuritycentermanagementProjectsLocationsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class SecuritycentermanagementProjectsLocationsSecurityCenterServicesGetRequest(_messages.Message):
@@ -2530,7 +2766,9 @@ class SecuritycentermanagementProjectsLocationsSecurityCenterServicesPatchReques
       ce}` The following values are valid for `{service}`: * `container-
       threat-detection` * `event-threat-detection` * `security-health-
       analytics` * `vm-threat-detection` * `web-security-scanner` * `vm-
-      threat-detection-aws` * `cloud-run-threat-detection`
+      threat-detection-aws` * `cloud-run-threat-detection` * `vm-manager` *
+      `ec2-vulnerability-assessment` * `gce-vulnerability-assessment` *
+      `azure-vulnerability-assessment` * `notebook-security-scanner`
     securityCenterService: A SecurityCenterService resource to be passed as
       the request body.
     updateMask: Optional. Required. The fields to update. Accepts the

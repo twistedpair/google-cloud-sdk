@@ -48,6 +48,17 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class Capabilities(_messages.Message):
+  r"""Capabilities requested for the validation report.
+
+  Fields:
+    outcomes: Required. Indicates if detailed outcome information should be
+      included in the report.
+  """
+
+  outcomes = _messages.BooleanField(1)
+
+
 class ComplianceStandard(_messages.Message):
   r"""Information about a compliance standard that the policy helps enforce.
 
@@ -102,6 +113,104 @@ class CreateFindingRemediationExecutionRequest(_messages.Message):
   """
 
   findingRemediationExecution = _messages.MessageField('FindingRemediationExecution', 1)
+
+
+class CreateHCPTIaCValidationReportRequest(_messages.Message):
+  r"""Run Task Request message Derived from
+  https://github.com/hashicorp/terraform-docs-
+  common/blob/main/website/docs/cloud-docs/api-docs/run-tasks/run-tasks-
+  integration.mdx#request-body.
+
+  Fields:
+    accessToken: Required. HashiCorp Cloud Platform (HCP) access token for
+      authentication. Used to access resources within the HCP organization.
+    apiKey: Optional. API Key for the particular request.
+    capabilities: Required. The requested capabilities for the validation
+      report.
+    configurationVersionDownloadUrl: Required. URL to download the
+      configuration version (Terraform configuration files). This URL points
+      to the specific version of the Terraform code being validated.
+    configurationVersionId: Required. ID of the configuration version.
+    isSpeculative: Required. Indicates if the run is speculative (e.g., a dry
+      run). A speculative run does not apply changes to infrastructure.
+    organizationName: Required. Name of the HCP organization.
+    payloadVersion: Required. Version of the payload. Used for compatibility
+      and future changes.
+    planJsonApiUrl: Required. URL to the Terraform plan in JSON format. This
+      is the plan that will be validated.
+    projectId: Optional. Project ID related to the API Key.
+    runAppUrl: Required. URL of the application that is running the current
+      HCP run.
+    runCreatedAt: Required. Timestamp of when the current run was created.
+    runCreatedBy: Required. Username of the user who created the current run.
+    runId: Required. ID of the current HCP run.
+    runMessage: Required. Message associated with the current run.
+    stage: Required. Stage of the Terraform run (e.g., "plan", "apply"). This
+      indicates at which point in the Terraform workflow the validation is
+      being triggered.
+    taskResultCallbackUrl: Required. URL to send the validation task result
+      (callback). This URL is used to send the results of the validation back
+      to HCP.
+    taskResultEnforcementLevel: Required. Enforcement level for the task
+      result (e.g., "mandatory", "advisory"). Defines how the validation
+      results will affect the run.
+    taskResultId: Required. ID of the task result.
+    vcsBranch: Required. Name of the VCS branch.
+    vcsCommitUrl: Required. URL of the VCS commit.
+    vcsPullRequestUrl: Required. URL of the VCS pull request.
+    vcsRepoUrl: Required. URL of the VCS repository.
+    workspaceAppUrl: Required. URL of the workspace application.
+    workspaceId: Required. ID of the HCP workspace.
+    workspaceName: Required. Name of the HCP workspace.
+    workspaceWorkingDirectory: Required. Working directory of the HCP
+      workspace.
+    xTfcTaskSignature: Optional. HMAC value to be validated.
+  """
+
+  accessToken = _messages.StringField(1)
+  apiKey = _messages.StringField(2)
+  capabilities = _messages.MessageField('Capabilities', 3)
+  configurationVersionDownloadUrl = _messages.StringField(4)
+  configurationVersionId = _messages.StringField(5)
+  isSpeculative = _messages.BooleanField(6)
+  organizationName = _messages.StringField(7)
+  payloadVersion = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  planJsonApiUrl = _messages.StringField(9)
+  projectId = _messages.StringField(10)
+  runAppUrl = _messages.StringField(11)
+  runCreatedAt = _messages.StringField(12)
+  runCreatedBy = _messages.StringField(13)
+  runId = _messages.StringField(14)
+  runMessage = _messages.StringField(15)
+  stage = _messages.StringField(16)
+  taskResultCallbackUrl = _messages.StringField(17)
+  taskResultEnforcementLevel = _messages.StringField(18)
+  taskResultId = _messages.StringField(19)
+  vcsBranch = _messages.StringField(20)
+  vcsCommitUrl = _messages.StringField(21)
+  vcsPullRequestUrl = _messages.StringField(22)
+  vcsRepoUrl = _messages.StringField(23)
+  workspaceAppUrl = _messages.StringField(24)
+  workspaceId = _messages.StringField(25)
+  workspaceName = _messages.StringField(26)
+  workspaceWorkingDirectory = _messages.StringField(27)
+  xTfcTaskSignature = _messages.StringField(28)
+
+
+class CreateHCPTIaCValidationReportResponse(_messages.Message):
+  r"""Run Task Response
+
+  Fields:
+    errorMessage: Output only. A human-readable error message providing more
+      detail about the failure. This field is populated only when the
+      status_code indicates an error.
+    statusCode: Output only. Canonical error code representing the overall
+      status of the request. This code indicates whether the operation was
+      successful, or if not, what type of error occurred.
+  """
+
+  errorMessage = _messages.StringField(1)
+  statusCode = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class CreateIaCValidationReportRequest(_messages.Message):
@@ -680,8 +789,8 @@ class GoogleCloudSecuritypostureV1alphaPolicyRule(_messages.Message):
     ParametersValue: Optional. Required for managed constraints if parameters
       are defined. Passes parameter values when policy enforcement is enabled.
       Ensure that parameter value types match those defined in the constraint
-      definition. For example: { "allowedLocations" : ["us-east1", "us-
-      west1"], "allowAll" : true }
+      definition. For example: ``` { "allowedLocations": ["us-east1", "us-
+      west1"], "allowAll": true } ```
 
   Fields:
     allowAll: Whether to allow any value for a list constraint. Valid only for
@@ -708,8 +817,8 @@ class GoogleCloudSecuritypostureV1alphaPolicyRule(_messages.Message):
     parameters: Optional. Required for managed constraints if parameters are
       defined. Passes parameter values when policy enforcement is enabled.
       Ensure that parameter value types match those defined in the constraint
-      definition. For example: { "allowedLocations" : ["us-east1", "us-
-      west1"], "allowAll" : true }
+      definition. For example: ``` { "allowedLocations": ["us-east1", "us-
+      west1"], "allowAll": true } ```
     resourceTypes: Optional. The resource types policies can support, only
       used for managed constraints. Method type is `GOVERN_TAGS`.
     values: The allowed and denied values for a list constraint. Valid only
@@ -721,8 +830,8 @@ class GoogleCloudSecuritypostureV1alphaPolicyRule(_messages.Message):
     r"""Optional. Required for managed constraints if parameters are defined.
     Passes parameter values when policy enforcement is enabled. Ensure that
     parameter value types match those defined in the constraint definition.
-    For example: { "allowedLocations" : ["us-east1", "us-west1"], "allowAll" :
-    true }
+    For example: ``` { "allowedLocations": ["us-east1", "us-west1"],
+    "allowAll": true } ```
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.
@@ -2048,16 +2157,14 @@ class ResourceSelector(_messages.Message):
 
 
 class ResourceTypes(_messages.Message):
-  r"""Set multiple resource types for one policy, for example: resourceTypes:
-  included: - compute.googleapis.com/Instance - compute.googleapis.com/Disk
-  Constraint definition contains an empty resource type in order to support
-  multiple resource types in the policy. Only supports managed constraints.
-  Method type is `GOVERN_TAGS`. Refer go/multi-resource-support-force-tags-gmc
-  to get more details.
+  r"""Set multiple resource types for one policy, for example: ```
+  resourceTypes: included: - compute.googleapis.com/Instance -
+  compute.googleapis.com/Disk ``` Constraint definition contains an empty
+  resource type in order to support multiple resource types in the policy.
+  Only supports managed constraints. Method type is `GOVERN_TAGS`.
 
   Fields:
     included: Optional. The resource types we currently support.
-      cloud/orgpolicy/customconstraintconfig/prod/resource_types.prototext
   """
 
   included = _messages.StringField(1, repeated=True)
@@ -2165,6 +2272,22 @@ class SecuritypostureOrganizationsLocationsGetIacValidationReportMetricsRequest(
 
   duration_days = _messages.IntegerField(1)
   name = _messages.StringField(2, required=True)
+
+
+class SecuritypostureOrganizationsLocationsHcptIacvReportsCreateHCPTIaCValidationReportRequest(_messages.Message):
+  r"""A SecuritypostureOrganizationsLocationsHcptIacvReportsCreateHCPTIaCValid
+  ationReportRequest object.
+
+  Fields:
+    createHCPTIaCValidationReportRequest: A
+      CreateHCPTIaCValidationReportRequest resource to be passed as the
+      request body.
+    parent: Optional. The parent resource name, in the format
+      `organizations/{organization}/locations/global`.
+  """
+
+  createHCPTIaCValidationReportRequest = _messages.MessageField('CreateHCPTIaCValidationReportRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class SecuritypostureOrganizationsLocationsOperationsCancelRequest(_messages.Message):

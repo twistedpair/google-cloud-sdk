@@ -82,6 +82,7 @@ def get_wildcard_iterator(
     preserve_symlinks=False,
     raise_managed_folder_precondition_errors=False,
     soft_deleted_buckets=False,
+    list_filter=None,
 ):
   """Instantiate a WildcardIterator for the given URL string.
 
@@ -118,6 +119,10 @@ def get_wildcard_iterator(
       these errors. This is helpful in commands that list managed folders by
       default.
     soft_deleted_buckets (bool): If true, soft deleted buckets will be queried.
+    list_filter (str|None): If provided, objects with matching filters
+      will be returned, The prefixes would still be returned regardless of
+      whether they match the specified filter, See
+      go/gcs-object-context-filtering for more details.
 
   Returns:
     A WildcardIterator object.
@@ -139,6 +144,7 @@ def get_wildcard_iterator(
         object_state=object_state,
         raise_managed_folder_precondition_errors=raise_managed_folder_precondition_errors,
         soft_deleted_buckets=soft_deleted_buckets,
+        list_filter=list_filter,
     )
   elif isinstance(url, storage_url.FileUrl):
     return FileWildcardIterator(
@@ -348,6 +354,7 @@ class CloudWildcardIterator(WildcardIterator):
       object_state=cloud_api.ObjectState.LIVE,
       raise_managed_folder_precondition_errors=True,
       soft_deleted_buckets=False,
+      list_filter=None,
   ):
     """Instantiates an iterator that matches the wildcard URL.
 
@@ -381,6 +388,10 @@ class CloudWildcardIterator(WildcardIterator):
         default.
       soft_deleted_buckets (bool): If true, soft deleted buckets will be
         queried.
+      list_filter (str|None): If provided, objects with matching
+        contexts will be returned. The prefixes would still be returned
+        regardless of whether they match the specified context, See
+        go/gcs-object-context-filtering for more details.
     """
     super(CloudWildcardIterator, self).__init__(
         url, exclude_patterns=exclude_patterns, files_only=files_only
@@ -399,6 +410,7 @@ class CloudWildcardIterator(WildcardIterator):
         raise_managed_folder_precondition_errors
     )
     self._soft_deleted_buckets = soft_deleted_buckets
+    self._list_filter = list_filter
 
     if (
         object_state is cloud_api.ObjectState.LIVE
@@ -653,6 +665,7 @@ class CloudWildcardIterator(WildcardIterator):
           next_page_token=self._next_page_token,
           prefix=wildcard_parts.prefix or None,
           object_state=self._object_state_for_listing,
+          list_filter=self._list_filter,
       )
     else:
       object_iterator = []

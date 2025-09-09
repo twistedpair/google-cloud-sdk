@@ -1512,6 +1512,33 @@ class AppengineV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified domain mapping. A user must be authorized to administer the associated domain in order to delete a DomainMapping resource.
+
+      Args:
+        request: (AppengineProjectsLocationsApplicationsDomainMappingsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}/domainMappings/{domainMappingsId}',
+        http_method='DELETE',
+        method_id='appengine.projects.locations.applications.domainMappings.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='AppengineProjectsLocationsApplicationsDomainMappingsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets the specified domain mapping.
 
@@ -1536,6 +1563,33 @@ class AppengineV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='AppengineProjectsLocationsApplicationsDomainMappingsGetRequest',
         response_type_name='DomainMapping',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified domain mapping. To map an SSL certificate to a domain mapping, update certificate_id to point to an AuthorizedCertificate resource. A user must be authorized to administer the associated domain in order to update a DomainMapping resource.
+
+      Args:
+        request: (AppengineProjectsLocationsApplicationsDomainMappingsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}/domainMappings/{domainMappingsId}',
+        http_method='PATCH',
+        method_id='appengine.projects.locations.applications.domainMappings.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['noManagedCertificate', 'updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='domainMapping',
+        request_type_name='AppengineProjectsLocationsApplicationsDomainMappingsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

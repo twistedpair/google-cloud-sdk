@@ -16,6 +16,192 @@ from apitools.base.py import extra_types
 package = 'documentai'
 
 
+class CloudAiDocumentaiLabHifiaToolsValidationValidatorInput(_messages.Message):
+  r"""Definition of the validation rules. Those are the input to the validator
+  logic and they are used to validate a document.
+
+  Fields:
+    validationRules: A
+      CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRule
+      attribute.
+  """
+
+  validationRules = _messages.MessageField('CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRule', 1, repeated=True)
+
+
+class CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRule(_messages.Message):
+  r"""A CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRule
+  object.
+
+  Fields:
+    description: Description of the validation rule. This has no use but for
+      documentation
+    fieldOccurrences: A CloudAiDocumentaiLabHifiaToolsValidationValidatorInput
+      ValidationRuleFieldOccurrences attribute.
+    fieldRegex: A CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValida
+      tionRuleFieldRegex attribute.
+    formValidation: A CloudAiDocumentaiLabHifiaToolsValidationValidatorInputVa
+      lidationRuleFormValidation attribute.
+    name: Name of the validation rule.
+  """
+
+  description = _messages.StringField(1)
+  fieldOccurrences = _messages.MessageField('CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleFieldOccurrences', 2)
+  fieldRegex = _messages.MessageField('CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleFieldRegex', 3)
+  formValidation = _messages.MessageField('CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleFormValidation', 4)
+  name = _messages.StringField(5)
+
+
+class CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleConstant(_messages.Message):
+  r"""The constant value used in the validation rules.
+
+  Fields:
+    floatValue: A number attribute.
+  """
+
+  floatValue = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+
+
+class CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleField(_messages.Message):
+  r"""A
+  CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleField
+  object.
+
+  Fields:
+    defaultValue: Default value to use if the field is not present. If the
+      field is missing and the default value is not set, the validation run as
+      if the field is not present in the validation logic.
+    fieldName: The field name to validate. This can be a simple field name or
+      a nested field one using the ':' (meant as an aggregator) or '*' (meant
+      as foreach) operators.
+  """
+
+  defaultValue = _messages.MessageField('CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleConstant', 1)
+  fieldName = _messages.StringField(2)
+
+
+class CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleFieldOccurrences(_messages.Message):
+  r"""A CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleFi
+  eldOccurrences object.
+
+  Fields:
+    field: A
+      CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleFiel
+      d attribute.
+    maxOccurrences: A integer attribute.
+    minOccurrences: Min and max occurrences of the field. If not set, there is
+      limit set. The defined interval is a closed-closed interval, i.e. [min,
+      max].
+  """
+
+  field = _messages.MessageField('CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleField', 1)
+  maxOccurrences = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
+  minOccurrences = _messages.IntegerField(3, variant=_messages.Variant.UINT32)
+
+
+class CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleFieldRegex(_messages.Message):
+  r"""A CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleFi
+  eldRegex object.
+
+  Fields:
+    field: A
+      CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleFiel
+      d attribute.
+    pattern: Python regex to validate the field values.
+  """
+
+  field = _messages.MessageField('CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleField', 1)
+  pattern = _messages.StringField(2)
+
+
+class CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleFormValidation(_messages.Message):
+  r"""A CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleFo
+  rmValidation object.
+
+  Enums:
+    ValidationOperatorValueValuesEnum: The relational operator to be applied
+      to the operands.
+
+  Fields:
+    leftOperand: A CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValid
+      ationRuleFormValidationOperation attribute.
+    rightOperand: A CloudAiDocumentaiLabHifiaToolsValidationValidatorInputVali
+      dationRuleFormValidationOperation attribute.
+    validationOperator: The relational operator to be applied to the operands.
+  """
+
+  class ValidationOperatorValueValuesEnum(_messages.Enum):
+    r"""The relational operator to be applied to the operands.
+
+    Values:
+      OPERATION_TYPE_UNSPECIFIED: <no description>
+      OPERATION_TYPE_EQ: <no description>
+      OPERATION_TYPE_NE: <no description>
+      OPERATION_TYPE_LT: <no description>
+      OPERATION_TYPE_LE: <no description>
+      OPERATION_TYPE_GT: <no description>
+      OPERATION_TYPE_GE: <no description>
+    """
+    OPERATION_TYPE_UNSPECIFIED = 0
+    OPERATION_TYPE_EQ = 1
+    OPERATION_TYPE_NE = 2
+    OPERATION_TYPE_LT = 3
+    OPERATION_TYPE_LE = 4
+    OPERATION_TYPE_GT = 5
+    OPERATION_TYPE_GE = 6
+
+  leftOperand = _messages.MessageField('CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleFormValidationOperation', 1)
+  rightOperand = _messages.MessageField('CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleFormValidationOperation', 2)
+  validationOperator = _messages.EnumField('ValidationOperatorValueValuesEnum', 3)
+
+
+class CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleFormValidationOperation(_messages.Message):
+  r"""A CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleFo
+  rmValidationOperation object.
+
+  Enums:
+    OperationTypeValueValuesEnum: The operation type to be applied to all the
+      operands.
+
+  Fields:
+    constants: A list of constants to be used as operands.
+    fields: A list of fields to be used as operands.
+    operationType: The operation type to be applied to all the operands.
+    operations: A list of recursive operations to be used as operands.
+  """
+
+  class OperationTypeValueValuesEnum(_messages.Enum):
+    r"""The operation type to be applied to all the operands.
+
+    Values:
+      OPERATION_TYPE_UNSPECIFIED: <no description>
+      OPERATION_TYPE_SUM: <no description>
+      OPERATION_TYPE_SUB: <no description>
+      OPERATION_TYPE_MUL: <no description>
+      OPERATION_TYPE_DIV: <no description>
+      OPERATION_TYPE_MAX: <no description>
+      OPERATION_TYPE_MIN: <no description>
+      OPERATION_TYPE_ABS: <no description>
+      OPERATION_TYPE_UNIQUE: <no description>
+      OPERATION_TYPE_COUNT: <no description>
+    """
+    OPERATION_TYPE_UNSPECIFIED = 0
+    OPERATION_TYPE_SUM = 1
+    OPERATION_TYPE_SUB = 2
+    OPERATION_TYPE_MUL = 3
+    OPERATION_TYPE_DIV = 4
+    OPERATION_TYPE_MAX = 5
+    OPERATION_TYPE_MIN = 6
+    OPERATION_TYPE_ABS = 7
+    OPERATION_TYPE_UNIQUE = 8
+    OPERATION_TYPE_COUNT = 9
+
+  constants = _messages.MessageField('CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleConstant', 1, repeated=True)
+  fields = _messages.MessageField('CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleField', 2, repeated=True)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 3)
+  operations = _messages.MessageField('CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleFormValidationOperation', 4, repeated=True)
+
+
 class DocumentaiOperationsDeleteRequest(_messages.Message):
   r"""A DocumentaiOperationsDeleteRequest object.
 
@@ -51,8 +237,9 @@ class DocumentaiProjectsLocationsListRequest(_messages.Message):
   r"""A DocumentaiProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1775,6 +1962,10 @@ class GoogleCloudDocumentaiV1DocumentEntity(_messages.Message):
   to the document. It is a known entity type, such as a person, an
   organization, or location.
 
+  Enums:
+    MethodValueValuesEnum: Optional. Specifies how the entity's value is
+      obtained.
+
   Fields:
     confidence: Optional. Confidence of detected Schema entity. Range `[0,
       1]`.
@@ -1783,6 +1974,7 @@ class GoogleCloudDocumentaiV1DocumentEntity(_messages.Message):
     mentionId: Optional. Deprecated. Use `id` field instead.
     mentionText: Optional. Text value of the entity e.g. `1600 Amphitheatre
       Pkwy`.
+    method: Optional. Specifies how the entity's value is obtained.
     normalizedValue: Optional. Normalized entity value. Absent if the
       extracted value could not be converted or the type (e.g. address) is not
       supported for certain parsers. This field is also only populated for
@@ -1799,17 +1991,33 @@ class GoogleCloudDocumentaiV1DocumentEntity(_messages.Message):
     type: Required. Entity type from a schema e.g. `Address`.
   """
 
+  class MethodValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies how the entity's value is obtained.
+
+    Values:
+      METHOD_UNSPECIFIED: When the method is not specified, it should be
+        treated as `EXTRACT`.
+      EXTRACT: The entity's value is directly extracted as-is from the
+        document text.
+      DERIVE: The entity's value is derived through inference and is not
+        necessarily an exact text extraction from the document.
+    """
+    METHOD_UNSPECIFIED = 0
+    EXTRACT = 1
+    DERIVE = 2
+
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
   id = _messages.StringField(2)
   mentionId = _messages.StringField(3)
   mentionText = _messages.StringField(4)
-  normalizedValue = _messages.MessageField('GoogleCloudDocumentaiV1DocumentEntityNormalizedValue', 5)
-  pageAnchor = _messages.MessageField('GoogleCloudDocumentaiV1DocumentPageAnchor', 6)
-  properties = _messages.MessageField('GoogleCloudDocumentaiV1DocumentEntity', 7, repeated=True)
-  provenance = _messages.MessageField('GoogleCloudDocumentaiV1DocumentProvenance', 8)
-  redacted = _messages.BooleanField(9)
-  textAnchor = _messages.MessageField('GoogleCloudDocumentaiV1DocumentTextAnchor', 10)
-  type = _messages.StringField(11)
+  method = _messages.EnumField('MethodValueValuesEnum', 5)
+  normalizedValue = _messages.MessageField('GoogleCloudDocumentaiV1DocumentEntityNormalizedValue', 6)
+  pageAnchor = _messages.MessageField('GoogleCloudDocumentaiV1DocumentPageAnchor', 7)
+  properties = _messages.MessageField('GoogleCloudDocumentaiV1DocumentEntity', 8, repeated=True)
+  provenance = _messages.MessageField('GoogleCloudDocumentaiV1DocumentProvenance', 9)
+  redacted = _messages.BooleanField(10)
+  textAnchor = _messages.MessageField('GoogleCloudDocumentaiV1DocumentTextAnchor', 11)
+  type = _messages.StringField(12)
 
 
 class GoogleCloudDocumentaiV1DocumentEntityNormalizedValue(_messages.Message):

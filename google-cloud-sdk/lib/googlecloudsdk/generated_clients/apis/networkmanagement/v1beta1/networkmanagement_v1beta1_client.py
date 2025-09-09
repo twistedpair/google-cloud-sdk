@@ -190,7 +190,7 @@ class NetworkmanagementV1beta1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new `VpcFlowLogsConfig`. If a configuration with the exact same settings already exists (even if the ID is different), the creation fails. Notes: 1. Creating a configuration with state=DISABLED will fail 2. The following fields are not considered as `settings` for the purpose of the check mentioned above, therefore - creating another configuration with the same fields but different values for the following fields will fail as well: * name * create_time * update_time * labels * description.
+      r"""Creates a new `VpcFlowLogsConfig`. If a configuration with the exact same settings already exists (even if the ID is different), the creation fails. Notes: 1. Creating a configuration with `state=DISABLED` will fail 2. The following fields are not considered as settings for the purpose of the check mentioned above, therefore - creating another configuration with the same fields but different values for the following fields will fail as well: * name * create_time * update_time * labels * description.
 
       Args:
         request: (NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsCreateRequest) input message
@@ -298,7 +298,7 @@ class NetworkmanagementV1beta1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates an existing `VpcFlowLogsConfig`. If a configuration with the exact same settings already exists (even if the ID is different), the creation fails. Notes: 1. Updating a configuration with state=DISABLED will fail 2. The following fields are not considered as `settings` for the purpose of the check mentioned above, therefore - updating another configuration with the same fields but different values for the following fields will fail as well: * name * create_time * update_time * labels * description.
+      r"""Updates an existing `VpcFlowLogsConfig`. If a configuration with the exact same settings already exists (even if the ID is different), the creation fails. Notes: 1. Updating a configuration with `state=DISABLED` will fail 2. The following fields are not considered as settings for the purpose of the check mentioned above, therefore - updating another configuration with the same fields but different values for the following fields will fail as well: * name * create_time * update_time * labels * description.
 
       Args:
         request: (NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsPatchRequest) input message
@@ -790,7 +790,7 @@ class NetworkmanagementV1beta1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new `VpcFlowLogsConfig`. If a configuration with the exact same settings already exists (even if the ID is different), the creation fails. Notes: 1. Creating a configuration with state=DISABLED will fail 2. The following fields are not considered as `settings` for the purpose of the check mentioned above, therefore - creating another configuration with the same fields but different values for the following fields will fail as well: * name * create_time * update_time * labels * description.
+      r"""Creates a new `VpcFlowLogsConfig`. If a configuration with the exact same settings already exists (even if the ID is different), the creation fails. Notes: 1. Creating a configuration with `state=DISABLED` will fail 2. The following fields are not considered as settings for the purpose of the check mentioned above, therefore - creating another configuration with the same fields but different values for the following fields will fail as well: * name * create_time * update_time * labels * description.
 
       Args:
         request: (NetworkmanagementProjectsLocationsVpcFlowLogsConfigsCreateRequest) input message
@@ -898,7 +898,7 @@ class NetworkmanagementV1beta1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates an existing `VpcFlowLogsConfig`. If a configuration with the exact same settings already exists (even if the ID is different), the creation fails. Notes: 1. Updating a configuration with state=DISABLED will fail 2. The following fields are not considered as `settings` for the purpose of the check mentioned above, therefore - updating another configuration with the same fields but different values for the following fields will fail as well: * name * create_time * update_time * labels * description.
+      r"""Updates an existing `VpcFlowLogsConfig`. If a configuration with the exact same settings already exists (even if the ID is different), the creation fails. Notes: 1. Updating a configuration with `state=DISABLED` will fail 2. The following fields are not considered as settings for the purpose of the check mentioned above, therefore - updating another configuration with the same fields but different values for the following fields will fail as well: * name * create_time * update_time * labels * description.
 
       Args:
         request: (NetworkmanagementProjectsLocationsVpcFlowLogsConfigsPatchRequest) input message
@@ -925,7 +925,7 @@ class NetworkmanagementV1beta1(base_api.BaseApiClient):
     )
 
     def QueryOrgVpcFlowLogsConfigs(self, request, global_params=None):
-      r"""QueryOrgVpcFlowLogsConfigs lists Organization resources for a given project.
+      r"""QueryOrgVpcFlowLogsConfigs returns a list of all organization-level VPC Flow Logs configurations applicable to the specified project.
 
       Args:
         request: (NetworkmanagementProjectsLocationsVpcFlowLogsConfigsQueryOrgVpcFlowLogsConfigsRequest) input message

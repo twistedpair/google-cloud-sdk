@@ -566,6 +566,23 @@ class DeleteRecognizerRequest(_messages.Message):
   validateOnly = _messages.BooleanField(4)
 
 
+class DenoiserConfig(_messages.Message):
+  r"""Denoiser config. May not be supported for all models and may have no
+  effect.
+
+  Fields:
+    denoiseAudio: Denoise audio before sending to the transcription model.
+    snrThreshold: Signal-to-Noise Ratio (SNR) threshold for the denoiser. Here
+      SNR means the loudness of the speech signal. Audio with an SNR below
+      this threshold, meaning the speech is too quiet, will be prevented from
+      being sent to the transcription model. If snr_threshold=0, no filtering
+      will be applied.
+  """
+
+  denoiseAudio = _messages.BooleanField(1)
+  snrThreshold = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
 class Entry(_messages.Message):
   r"""A single replacement configuration.
 
@@ -1282,6 +1299,8 @@ class RecognitionConfig(_messages.Message):
       for specific words and phrases.
     autoDecodingConfig: Automatically detect decoding parameters. Preferred
       for supported formats.
+    denoiserConfig: Optional. Optional denoiser config. May not be supported
+      for all models and may have no effect.
     explicitDecodingConfig: Explicitly specified decoding parameters. Required
       if using headerless PCM audio (linear16, mulaw, alaw).
     features: Speech recognition features to enable.
@@ -1313,12 +1332,13 @@ class RecognitionConfig(_messages.Message):
 
   adaptation = _messages.MessageField('SpeechAdaptation', 1)
   autoDecodingConfig = _messages.MessageField('AutoDetectDecodingConfig', 2)
-  explicitDecodingConfig = _messages.MessageField('ExplicitDecodingConfig', 3)
-  features = _messages.MessageField('RecognitionFeatures', 4)
-  languageCodes = _messages.StringField(5, repeated=True)
-  model = _messages.StringField(6)
-  transcriptNormalization = _messages.MessageField('TranscriptNormalization', 7)
-  translationConfig = _messages.MessageField('TranslationConfig', 8)
+  denoiserConfig = _messages.MessageField('DenoiserConfig', 3)
+  explicitDecodingConfig = _messages.MessageField('ExplicitDecodingConfig', 4)
+  features = _messages.MessageField('RecognitionFeatures', 5)
+  languageCodes = _messages.StringField(6, repeated=True)
+  model = _messages.StringField(7)
+  transcriptNormalization = _messages.MessageField('TranscriptNormalization', 8)
+  translationConfig = _messages.MessageField('TranslationConfig', 9)
 
 
 class RecognitionFeatures(_messages.Message):
@@ -1774,8 +1794,9 @@ class SpeechProjectsLocationsListRequest(_messages.Message):
   r"""A SpeechProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).

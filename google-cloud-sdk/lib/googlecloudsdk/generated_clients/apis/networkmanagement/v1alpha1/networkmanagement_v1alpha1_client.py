@@ -41,6 +41,10 @@ class NetworkmanagementV1alpha1(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.projects_locations_appliances = self.ProjectsLocationsAppliancesService(self)
     self.projects_locations_deployments = self.ProjectsLocationsDeploymentsService(self)
+    self.projects_locations_networkMonitoringProviders_monitoringPoints = self.ProjectsLocationsNetworkMonitoringProvidersMonitoringPointsService(self)
+    self.projects_locations_networkMonitoringProviders_networkPaths = self.ProjectsLocationsNetworkMonitoringProvidersNetworkPathsService(self)
+    self.projects_locations_networkMonitoringProviders_webPaths = self.ProjectsLocationsNetworkMonitoringProvidersWebPathsService(self)
+    self.projects_locations_networkMonitoringProviders = self.ProjectsLocationsNetworkMonitoringProvidersService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_simulations = self.ProjectsLocationsSimulationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -252,6 +256,343 @@ class NetworkmanagementV1alpha1(base_api.BaseApiClient):
         request_field='deployment',
         request_type_name='NetworkmanagementProjectsLocationsDeploymentsPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsNetworkMonitoringProvidersMonitoringPointsService(base_api.BaseApiService):
+    """Service class for the projects_locations_networkMonitoringProviders_monitoringPoints resource."""
+
+    _NAME = 'projects_locations_networkMonitoringProviders_monitoringPoints'
+
+    def __init__(self, client):
+      super(NetworkmanagementV1alpha1.ProjectsLocationsNetworkMonitoringProvidersMonitoringPointsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the MonitoringPoint resource.
+
+      Args:
+        request: (NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPointsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MonitoringPoint) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/networkMonitoringProviders/{networkMonitoringProvidersId}/monitoringPoints/{monitoringPointsId}',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.networkMonitoringProviders.monitoringPoints.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPointsGetRequest',
+        response_type_name='MonitoringPoint',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists MonitoringPoints for a given network monitoring provider.
+
+      Args:
+        request: (NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPointsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListMonitoringPointsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/networkMonitoringProviders/{networkMonitoringProvidersId}/monitoringPoints',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.networkMonitoringProviders.monitoringPoints.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/monitoringPoints',
+        request_field='',
+        request_type_name='NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPointsListRequest',
+        response_type_name='ListMonitoringPointsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsNetworkMonitoringProvidersNetworkPathsService(base_api.BaseApiService):
+    """Service class for the projects_locations_networkMonitoringProviders_networkPaths resource."""
+
+    _NAME = 'projects_locations_networkMonitoringProviders_networkPaths'
+
+    def __init__(self, client):
+      super(NetworkmanagementV1alpha1.ProjectsLocationsNetworkMonitoringProvidersNetworkPathsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the NetworkPath resource.
+
+      Args:
+        request: (NetworkmanagementProjectsLocationsNetworkMonitoringProvidersNetworkPathsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkPath) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/networkMonitoringProviders/{networkMonitoringProvidersId}/networkPaths/{networkPathsId}',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.networkMonitoringProviders.networkPaths.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkmanagementProjectsLocationsNetworkMonitoringProvidersNetworkPathsGetRequest',
+        response_type_name='NetworkPath',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists NetworkPaths for a given network monitoring provider.
+
+      Args:
+        request: (NetworkmanagementProjectsLocationsNetworkMonitoringProvidersNetworkPathsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListNetworkPathsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/networkMonitoringProviders/{networkMonitoringProvidersId}/networkPaths',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.networkMonitoringProviders.networkPaths.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/networkPaths',
+        request_field='',
+        request_type_name='NetworkmanagementProjectsLocationsNetworkMonitoringProvidersNetworkPathsListRequest',
+        response_type_name='ListNetworkPathsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsNetworkMonitoringProvidersWebPathsService(base_api.BaseApiService):
+    """Service class for the projects_locations_networkMonitoringProviders_webPaths resource."""
+
+    _NAME = 'projects_locations_networkMonitoringProviders_webPaths'
+
+    def __init__(self, client):
+      super(NetworkmanagementV1alpha1.ProjectsLocationsNetworkMonitoringProvidersWebPathsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the WebPath resource.
+
+      Args:
+        request: (NetworkmanagementProjectsLocationsNetworkMonitoringProvidersWebPathsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WebPath) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/networkMonitoringProviders/{networkMonitoringProvidersId}/webPaths/{webPathsId}',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.networkMonitoringProviders.webPaths.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkmanagementProjectsLocationsNetworkMonitoringProvidersWebPathsGetRequest',
+        response_type_name='WebPath',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists WebPaths for a given network monitoring provider.
+
+      Args:
+        request: (NetworkmanagementProjectsLocationsNetworkMonitoringProvidersWebPathsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListWebPathsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/networkMonitoringProviders/{networkMonitoringProvidersId}/webPaths',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.networkMonitoringProviders.webPaths.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/webPaths',
+        request_field='',
+        request_type_name='NetworkmanagementProjectsLocationsNetworkMonitoringProvidersWebPathsListRequest',
+        response_type_name='ListWebPathsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsNetworkMonitoringProvidersService(base_api.BaseApiService):
+    """Service class for the projects_locations_networkMonitoringProviders resource."""
+
+    _NAME = 'projects_locations_networkMonitoringProviders'
+
+    def __init__(self, client):
+      super(NetworkmanagementV1alpha1.ProjectsLocationsNetworkMonitoringProvidersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a NetworkMonitoringProvider resource.
+
+      Args:
+        request: (NetworkmanagementProjectsLocationsNetworkMonitoringProvidersCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/networkMonitoringProviders',
+        http_method='POST',
+        method_id='networkmanagement.projects.locations.networkMonitoringProviders.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['networkMonitoringProviderId'],
+        relative_path='v1alpha1/{+parent}/networkMonitoringProviders',
+        request_field='networkMonitoringProvider',
+        request_type_name='NetworkmanagementProjectsLocationsNetworkMonitoringProvidersCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a NetworkMonitoringProvider resource and all of its child resources.
+
+      Args:
+        request: (NetworkmanagementProjectsLocationsNetworkMonitoringProvidersDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/networkMonitoringProviders/{networkMonitoringProvidersId}',
+        http_method='DELETE',
+        method_id='networkmanagement.projects.locations.networkMonitoringProviders.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkmanagementProjectsLocationsNetworkMonitoringProvidersDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def GenerateProviderAccessToken(self, request, global_params=None):
+      r"""Generates a provider access token for a given GCP access token. Provider access token is a short-lived token that is used to access resources in the provider's platform.
+
+      Args:
+        request: (NetworkmanagementProjectsLocationsNetworkMonitoringProvidersGenerateProviderAccessTokenRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GenerateProviderAccessTokenResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateProviderAccessToken')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateProviderAccessToken.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/networkMonitoringProviders/{networkMonitoringProvidersId}:generateProviderAccessToken',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.networkMonitoringProviders.generateProviderAccessToken',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['gcpAccessToken'],
+        relative_path='v1alpha1/{+name}:generateProviderAccessToken',
+        request_field='',
+        request_type_name='NetworkmanagementProjectsLocationsNetworkMonitoringProvidersGenerateProviderAccessTokenRequest',
+        response_type_name='GenerateProviderAccessTokenResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the NetworkMonitoringProvider resource.
+
+      Args:
+        request: (NetworkmanagementProjectsLocationsNetworkMonitoringProvidersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkMonitoringProvider) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/networkMonitoringProviders/{networkMonitoringProvidersId}',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.networkMonitoringProviders.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkmanagementProjectsLocationsNetworkMonitoringProvidersGetRequest',
+        response_type_name='NetworkMonitoringProvider',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists NetworkMonitoringProviders for a given project and location.
+
+      Args:
+        request: (NetworkmanagementProjectsLocationsNetworkMonitoringProvidersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListNetworkMonitoringProvidersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/networkMonitoringProviders',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.networkMonitoringProviders.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/networkMonitoringProviders',
+        request_field='',
+        request_type_name='NetworkmanagementProjectsLocationsNetworkMonitoringProvidersListRequest',
+        response_type_name='ListNetworkMonitoringProvidersResponse',
         supports_download=False,
     )
 

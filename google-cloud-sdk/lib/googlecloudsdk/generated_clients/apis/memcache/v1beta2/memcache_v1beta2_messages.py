@@ -1592,8 +1592,9 @@ class MemcacheProjectsLocationsListRequest(_messages.Message):
   r"""A MemcacheProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -2019,6 +2020,8 @@ class SetTagsResponse(_messages.Message):
     tags: Required. Tag keys/values directly bound to this resource. Each item
       in the map must be expressed as " : ". For example: "123/environment" :
       "production", "123/costCenter" : "marketing"
+    tagsEtag: A checksum based on the current bindings. This field is always
+      set in server responses.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -2049,6 +2052,7 @@ class SetTagsResponse(_messages.Message):
 
   name = _messages.StringField(1)
   tags = _messages.MessageField('TagsValue', 2)
+  tagsEtag = _messages.StringField(3)
 
 
 class StandardQueryParameters(_messages.Message):

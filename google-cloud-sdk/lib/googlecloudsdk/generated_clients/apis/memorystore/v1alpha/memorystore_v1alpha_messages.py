@@ -181,7 +181,13 @@ class BackupCollection(_messages.Message):
     instanceUid: Output only. The instance uid of the backup collection.
     kmsKey: Output only. The KMS key used to encrypt the backups under this
       backup collection.
+    lastBackupTime: Output only. The last time a backup was created in the
+      backup collection.
     name: Identifier. Full resource path of the backup collection.
+    totalBackupCount: Output only. Total number of backups in the backup
+      collection.
+    totalBackupSizeBytes: Output only. Total size of all backups in the backup
+      collection.
     uid: Output only. System assigned unique identifier of the backup
       collection.
   """
@@ -190,8 +196,11 @@ class BackupCollection(_messages.Message):
   instance = _messages.StringField(2)
   instanceUid = _messages.StringField(3)
   kmsKey = _messages.StringField(4)
-  name = _messages.StringField(5)
-  uid = _messages.StringField(6)
+  lastBackupTime = _messages.StringField(5)
+  name = _messages.StringField(6)
+  totalBackupCount = _messages.IntegerField(7)
+  totalBackupSizeBytes = _messages.IntegerField(8)
+  uid = _messages.StringField(9)
 
 
 class BackupFile(_messages.Message):
@@ -466,11 +475,7 @@ class Instance(_messages.Message):
     LabelsValue: Optional. Labels to represent user-provided metadata.
 
   Fields:
-    allowFewerZonesDeployment: Optional. Immutable. Allows customers to
-      specify if they are okay with deploying a multi-zone instance in less
-      than 3 zones. Once set, if there is a zonal outage during the instance
-      creation, the instance will only be deployed in 2 zones, and stay within
-      the 2 zones for its lifecycle.
+    allowFewerZonesDeployment: Optional. Immutable. Deprecated, do not use.
     asyncInstanceEndpointsDeletionEnabled: Optional. If true, instance
       endpoints that are created and registered by customers can be deleted
       asynchronously. That is, such an instance endpoint can be de-registered
@@ -1218,8 +1223,9 @@ class MemorystoreProjectsLocationsListRequest(_messages.Message):
   r"""A MemorystoreProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).

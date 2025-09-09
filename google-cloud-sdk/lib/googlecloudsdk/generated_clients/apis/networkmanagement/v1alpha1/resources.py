@@ -63,6 +63,53 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_NETWORKMONITORINGPROVIDERS = (
+      'projects.locations.networkMonitoringProviders',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'networkMonitoringProviders/{networkMonitoringProvidersId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_NETWORKMONITORINGPROVIDERS_MONITORINGPOINTS = (
+      'projects.locations.networkMonitoringProviders.monitoringPoints',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'networkMonitoringProviders/{networkMonitoringProvidersId}/'
+              'monitoringPoints/{monitoringPointsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_NETWORKMONITORINGPROVIDERS_NETWORKPATHS = (
+      'projects.locations.networkMonitoringProviders.networkPaths',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'networkMonitoringProviders/{networkMonitoringProvidersId}/'
+              'networkPaths/{networkPathsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_NETWORKMONITORINGPROVIDERS_WEBPATHS = (
+      'projects.locations.networkMonitoringProviders.webPaths',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'networkMonitoringProviders/{networkMonitoringProvidersId}/'
+              'webPaths/{webPathsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

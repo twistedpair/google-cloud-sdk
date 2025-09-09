@@ -551,7 +551,6 @@ class GoogleCloudRecaptchaenterpriseV1FirewallActionBlockAction(_messages.Messag
   """
 
 
-
 class GoogleCloudRecaptchaenterpriseV1FirewallActionIncludeRecaptchaScriptAction(_messages.Message):
   r"""An include reCAPTCHA script action involves injecting reCAPTCHA
   JavaScript code into the HTML returned by the site backend. This reCAPTCHA
@@ -561,12 +560,10 @@ class GoogleCloudRecaptchaenterpriseV1FirewallActionIncludeRecaptchaScriptAction
   """
 
 
-
 class GoogleCloudRecaptchaenterpriseV1FirewallActionRedirectAction(_messages.Message):
   r"""A redirect action returns a 307 (temporary redirect) response, pointing
   the user to a reCAPTCHA interstitial page to attach a token.
   """
-
 
 
 class GoogleCloudRecaptchaenterpriseV1FirewallActionSetHeaderAction(_messages.Message):
@@ -1037,6 +1034,19 @@ class GoogleCloudRecaptchaenterpriseV1PhoneFraudAssessment(_messages.Message):
   """
 
   smsTollFraudVerdict = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1SmsTollFraudVerdict', 1)
+
+
+class GoogleCloudRecaptchaenterpriseV1Policy(_messages.Message):
+  r"""Represents a complete configuration set containing multiple resource
+
+  rules.
+
+  Fields:
+    name: Identifier. Resource name/identifier for this policy. Format:
+      "projects/{project}/keys/{key}/policy" for a policy under a key.
+  """
+
+  name = _messages.StringField(1)
 
 
 class GoogleCloudRecaptchaenterpriseV1PrivatePasswordLeakVerification(_messages.Message):
@@ -1867,8 +1877,7 @@ class GoogleCloudRecaptchaenterpriseV1WebKeySettings(_messages.Message):
         challenges after it is checked.
       INVISIBLE: Doesn't display the "I'm not a robot" checkbox, but may show
         captcha challenges after risk analysis.
-      SCORE_AND_CHALLENGE: Displays a visual challenge or not depending on the
-        user risk analysis score.
+      SCORE_AND_CHALLENGE: Deprecated: Use `POLICY_BASED_CHALLENGE` instead.
       POLICY_BASED_CHALLENGE: Displays a visual challenge or not depending on
         the user risk analysis score.
     """
@@ -1960,7 +1969,6 @@ class GoogleProtobufEmpty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
-
 
 
 class GoogleRpcStatus(_messages.Message):
@@ -2182,6 +2190,17 @@ class RecaptchaenterpriseProjectsKeysGetMetricsRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class RecaptchaenterpriseProjectsKeysGetPolicyRequest(_messages.Message):
+  r"""A RecaptchaenterpriseProjectsKeysGetPolicyRequest object.
+
+  Fields:
+    name: Required. The name of the policy to get, in the format
+      `projects/{project}/keys/{key}/policy`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class RecaptchaenterpriseProjectsKeysGetRequest(_messages.Message):
   r"""A RecaptchaenterpriseProjectsKeysGetRequest object.
 
@@ -2285,6 +2304,26 @@ class RecaptchaenterpriseProjectsKeysRetrieveLegacySecretKeyRequest(_messages.Me
   """
 
   key = _messages.StringField(1, required=True)
+
+
+class RecaptchaenterpriseProjectsKeysUpdatePolicyRequest(_messages.Message):
+  r"""A RecaptchaenterpriseProjectsKeysUpdatePolicyRequest object.
+
+  Fields:
+    googleCloudRecaptchaenterpriseV1Policy: A
+      GoogleCloudRecaptchaenterpriseV1Policy resource to be passed as the
+      request body.
+    name: Identifier. Resource name/identifier for this policy. Format:
+      "projects/{project}/keys/{key}/policy" for a policy under a key.
+    updateMask: Optional. The mask to control which fields of the policy get
+      updated. If the mask is not present, all fields are updated.
+  """
+
+  googleCloudRecaptchaenterpriseV1Policy = _messages.MessageField(
+      'GoogleCloudRecaptchaenterpriseV1Policy', 1
+  )
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class RecaptchaenterpriseProjectsRelatedaccountgroupmembershipsSearchRequest(_messages.Message):

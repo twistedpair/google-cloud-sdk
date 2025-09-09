@@ -155,6 +155,31 @@ class ArtifactConfig(_messages.Message):
   uri = _messages.StringField(4)
 
 
+class ArtifactDeployment(_messages.Message):
+  r"""The ArtifactDeployment resource represents the deployment of the
+  artifact within the InsightsConfig resource.
+
+  Fields:
+    artifactAlias: Output only. The artifact alias in the deployment spec,
+      with Tag/SHA. e.g. us-docker.pkg.dev/my-project/my-repo/image:1.0.0
+    artifactReference: Output only. The artifact that is deployed.
+    deployTime: Output only. The time at which the deployment was deployed.
+    id: Output only. Unique identifier of `ArtifactDeployment`.
+    sourceCommitUris: Output only. The source commits at which this artifact
+      was built. Extracted from provenance.
+    undeployTime: Output only. The time at which the deployment was
+      undeployed, all artifacts are considered undeployed once this time is
+      set.
+  """
+
+  artifactAlias = _messages.StringField(1)
+  artifactReference = _messages.StringField(2)
+  deployTime = _messages.StringField(3)
+  id = _messages.StringField(4)
+  sourceCommitUris = _messages.StringField(5, repeated=True)
+  undeployTime = _messages.StringField(6)
+
+
 class BitbucketCloudConfig(_messages.Message):
   r"""Configuration for connections to an instance of Bitbucket Cloud.
 
@@ -346,6 +371,63 @@ class CryptoKeyConfig(_messages.Message):
   """
 
   keyReference = _messages.StringField(1)
+
+
+class DeploymentEvent(_messages.Message):
+  r"""The DeploymentEvent resource represents the deployment of the artifact
+  within the InsightsConfig resource.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the DeploymentEvent.
+
+  Fields:
+    artifactDeployments: Output only. The artifact deployments of the
+      DeploymentEvent. Each artifact deployment contains the artifact uri and
+      the runtime configuration uri. For GKE, this would be all the containers
+      images that are deployed in the pod.
+    createTime: Output only. The create time of the DeploymentEvent.
+    deployTime: Output only. The time at which the DeploymentEvent was
+      deployed. This would be the min of all ArtifactDeployment deploy_times.
+    name: Identifier. The name of the DeploymentEvent. This name is provided
+      by DCI. Format: projects/{project}/locations/{location}/insightsConfigs/
+      {insights_config}/deploymentEvents/{uuid}
+    runtimeConfig: Output only. The runtime configurations where the
+      DeploymentEvent happened.
+    runtimeDeploymentUri: Output only. The runtime assigned URI of the
+      DeploymentEvent. For GKE, this is the fully qualified replica set uri.
+      e.g. container.googleapis.com/projects/{project}/locations/{location}/cl
+      usters/{cluster}/k8s/namespaces/{namespace}/apps/replicasets/{replica-
+      set-id} For Cloud Run, this is the revision name.
+    state: Output only. The state of the DeploymentEvent.
+    undeployTime: Output only. The time at which the DeploymentEvent was
+      undeployed, all artifacts are considered undeployed once this time is
+      set. This would be the max of all ArtifactDeployment undeploy_times. If
+      any ArtifactDeployment is still active (i.e. does not have an
+      undeploy_time), this field will be empty.
+    updateTime: Output only. The update time of the DeploymentEvent.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the DeploymentEvent.
+
+    Values:
+      STATE_UNSPECIFIED: No state specified.
+      STATE_ACTIVE: The deployment is active in the runtime.
+      STATE_INACTIVE: The deployment is not in the runtime.
+    """
+    STATE_UNSPECIFIED = 0
+    STATE_ACTIVE = 1
+    STATE_INACTIVE = 2
+
+  artifactDeployments = _messages.MessageField('ArtifactDeployment', 1, repeated=True)
+  createTime = _messages.StringField(2)
+  deployTime = _messages.StringField(3)
+  name = _messages.StringField(4)
+  runtimeConfig = _messages.MessageField('RuntimeConfig', 5)
+  runtimeDeploymentUri = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  undeployTime = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class DeveloperconnectProjectsLocationsAccountConnectorsCreateRequest(_messages.Message):
@@ -1035,6 +1117,47 @@ class DeveloperconnectProjectsLocationsInsightsConfigsDeleteRequest(_messages.Me
   validateOnly = _messages.BooleanField(4)
 
 
+class DeveloperconnectProjectsLocationsInsightsConfigsDeploymentEventsGetRequest(_messages.Message):
+  r"""A
+  DeveloperconnectProjectsLocationsInsightsConfigsDeploymentEventsGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the deployment event to retrieve. Format: proj
+      ects/{project}/locations/{location}/insightsConfigs/{insights_config}/de
+      ploymentEvents/{uuid}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DeveloperconnectProjectsLocationsInsightsConfigsDeploymentEventsListRequest(_messages.Message):
+  r"""A
+  DeveloperconnectProjectsLocationsInsightsConfigsDeploymentEventsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filter expression that matches a subset of the
+      DeploymentEvents. https://google.aip.dev/160.
+    pageSize: Optional. The maximum number of deployment events to return. The
+      service may return fewer than this value. If unspecified, at most 50
+      deployment events will be returned. The maximum value is 1000; values
+      above 1000 will be coerced to 1000.
+    pageToken: Optional. A page token, received from a previous
+      `ListDeploymentEvents` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `ListDeploymentEvents` must match the call that provided the page token.
+    parent: Required. The parent insights config that owns this collection of
+      deployment events. Format: projects/{project}/locations/{location}/insig
+      htsConfigs/{insights_config}
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
 class DeveloperconnectProjectsLocationsInsightsConfigsGetRequest(_messages.Message):
   r"""A DeveloperconnectProjectsLocationsInsightsConfigsGetRequest object.
 
@@ -1107,8 +1230,9 @@ class DeveloperconnectProjectsLocationsListRequest(_messages.Message):
   r"""A DeveloperconnectProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1872,6 +1996,19 @@ class ListConnectionsResponse(_messages.Message):
   connections = _messages.MessageField('Connection', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListDeploymentEventsResponse(_messages.Message):
+  r"""Request for response to listing DeploymentEvents.
+
+  Fields:
+    deploymentEvents: The list of DeploymentEvents.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  deploymentEvents = _messages.MessageField('DeploymentEvent', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListGitRepositoryLinksResponse(_messages.Message):

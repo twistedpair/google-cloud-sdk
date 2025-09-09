@@ -17,6 +17,7 @@
 import json
 
 from apitools.base.py import encoding
+from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
 
 
@@ -26,11 +27,14 @@ def PossiblyWritePrivateKeyToOutputFile(response, parsed_args):
   try:
     json_data = json.loads(json_response)
   except json.JSONDecodeError as e:
-    print(f"Error decoding JSON: {e}")
+    log.error(f"Error decoding JSON: {e}")
     return None
   # Jsonify python object with indents
   formatted_json = json.dumps(json_data, indent=2)
   if not parsed_args.output_file:
     return None
   files.WriteFileContents(parsed_args.output_file, formatted_json)
-  return "Service account key file [{}] created".format(parsed_args.output_file)
+  log.out.Print(
+      "Service account key file [{}] created".format(parsed_args.output_file)
+  )
+  return None

@@ -193,9 +193,9 @@ class Channel(_messages.Message):
       token must be used by the provider to register the channel for
       publishing.
     createTime: Output only. The creation time.
-    cryptoKeyName: Resource name of a KMS crypto key (managed by the user)
-      used to encrypt/decrypt their event data. It must match the pattern
-      `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
+    cryptoKeyName: Optional. Resource name of a KMS crypto key (managed by the
+      user) used to encrypt/decrypt their event data. It must match the
+      pattern `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
     labels: Optional. Resource labels.
     name: Required. The resource name of the channel. Must be unique within
       the location on the project and must be in
@@ -1293,8 +1293,9 @@ class EventarcProjectsLocationsListRequest(_messages.Message):
   r"""A EventarcProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -3308,6 +3309,9 @@ class Pipeline(_messages.Message):
     destinations: Required. List of destinations to which messages will be
       forwarded. Currently, exactly one destination is supported per Pipeline.
     displayName: Optional. Display name of resource.
+    errorMessageBus: Optional. Resource name of the message bus to publish
+      error messages to. It matches the form
+      projects/{project}/locations/{location}/messageBuses/{messageBus}.
     etag: Output only. This checksum is computed by the server based on the
       value of other fields, and might be sent only on create requests to
       ensure that the client has an up-to-date value before proceeding.
@@ -3398,16 +3402,17 @@ class Pipeline(_messages.Message):
   cryptoKeyName = _messages.StringField(3)
   destinations = _messages.MessageField('GoogleCloudEventarcV1PipelineDestination', 4, repeated=True)
   displayName = _messages.StringField(5)
-  etag = _messages.StringField(6)
-  inputPayloadFormat = _messages.MessageField('GoogleCloudEventarcV1PipelineMessagePayloadFormat', 7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  loggingConfig = _messages.MessageField('LoggingConfig', 9)
-  mediations = _messages.MessageField('GoogleCloudEventarcV1PipelineMediation', 10, repeated=True)
-  name = _messages.StringField(11)
-  retryPolicy = _messages.MessageField('GoogleCloudEventarcV1PipelineRetryPolicy', 12)
-  satisfiesPzs = _messages.BooleanField(13)
-  uid = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
+  errorMessageBus = _messages.StringField(6)
+  etag = _messages.StringField(7)
+  inputPayloadFormat = _messages.MessageField('GoogleCloudEventarcV1PipelineMessagePayloadFormat', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  loggingConfig = _messages.MessageField('LoggingConfig', 10)
+  mediations = _messages.MessageField('GoogleCloudEventarcV1PipelineMediation', 11, repeated=True)
+  name = _messages.StringField(12)
+  retryPolicy = _messages.MessageField('GoogleCloudEventarcV1PipelineRetryPolicy', 13)
+  satisfiesPzs = _messages.BooleanField(14)
+  uid = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
 
 
 class Policy(_messages.Message):

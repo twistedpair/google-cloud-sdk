@@ -19,12 +19,18 @@ class AcceleratePrivateCloudDeletionRequest(_messages.Message):
   r"""Request message for VmwareEngine.AcceleratePrivateCloudDeletion
 
   Fields:
+    etag: Optional. Checksum used to ensure that the user-provided value is up
+      to date before the server processes the request. The server compares
+      provided checksum with the current checksum of the resource. If the
+      user-provided value is out of date, this request returns an `ABORTED`
+      error.
     requestId: Optional. The request ID must be a valid UUID with the
       exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
-  requestId = _messages.StringField(1)
+  etag = _messages.StringField(1)
+  requestId = _messages.StringField(2)
 
 
 class Announcement(_messages.Message):
@@ -256,6 +262,7 @@ class AutoscalingSettings(_messages.Message):
       cluster. If not specified the default limits apply.
     minClusterNodeCount: Optional. Minimum number of nodes of any type in a
       cluster. If not specified the default limits apply.
+    scheduleId: Optional. The schedule id for the autoscale manicron job.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -295,6 +302,7 @@ class AutoscalingSettings(_messages.Message):
   coolDownPeriod = _messages.StringField(2)
   maxClusterNodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   minClusterNodeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  scheduleId = _messages.StringField(5)
 
 
 class Binding(_messages.Message):
@@ -1825,6 +1833,8 @@ class NetworkPeering(_messages.Message):
         PowerScale Filers
       GOOGLE_CLOUD_NETAPP_VOLUMES: Peering connection used for connecting to
         Google Cloud NetApp Volumes.
+      GOOGLE_CLOUD_FILESTORE_INSTANCES: Peering connection used for connecting
+        to Google Cloud Filestore Instances.
     """
     PEER_NETWORK_TYPE_UNSPECIFIED = 0
     STANDARD = 1
@@ -1834,6 +1844,7 @@ class NetworkPeering(_messages.Message):
     THIRD_PARTY_SERVICE = 5
     DELL_POWERSCALE = 6
     GOOGLE_CLOUD_NETAPP_VOLUMES = 7
+    GOOGLE_CLOUD_FILESTORE_INSTANCES = 8
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of the network peering. This field has a value of
@@ -3836,8 +3847,9 @@ class VmwareengineProjectsLocationsListRequest(_messages.Message):
   r"""A VmwareengineProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).

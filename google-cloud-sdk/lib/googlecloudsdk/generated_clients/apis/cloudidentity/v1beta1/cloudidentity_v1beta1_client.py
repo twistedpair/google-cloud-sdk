@@ -46,6 +46,7 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
     self.devices = self.DevicesService(self)
     self.groups_memberships = self.GroupsMembershipsService(self)
     self.groups = self.GroupsService(self)
+    self.inboundOidcSsoProfiles = self.InboundOidcSsoProfilesService(self)
     self.inboundSamlSsoProfiles_idpCredentials = self.InboundSamlSsoProfilesIdpCredentialsService(self)
     self.inboundSamlSsoProfiles = self.InboundSamlSsoProfilesService(self)
     self.inboundSsoAssignments = self.InboundSsoAssignmentsService(self)
@@ -1220,6 +1221,149 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+name}',
         request_field='securitySettings',
         request_type_name='CloudidentityGroupsUpdateSecuritySettingsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class InboundOidcSsoProfilesService(base_api.BaseApiService):
+    """Service class for the inboundOidcSsoProfiles resource."""
+
+    _NAME = 'inboundOidcSsoProfiles'
+
+    def __init__(self, client):
+      super(CloudidentityV1beta1.InboundOidcSsoProfilesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an InboundOidcSsoProfile for a customer. When the target customer has enabled [Multi-party approval for sensitive actions](https://support.google.com/a/answer/13790448), the `Operation` in the response will have `"done": false`, it will not have a response, and the metadata will have `"state": "awaiting-multi-party-approval"`.
+
+      Args:
+        request: (InboundOidcSsoProfile) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='cloudidentity.inboundOidcSsoProfiles.create',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v1beta1/inboundOidcSsoProfiles',
+        request_field='<request>',
+        request_type_name='InboundOidcSsoProfile',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an InboundOidcSsoProfile.
+
+      Args:
+        request: (CloudidentityInboundOidcSsoProfilesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/inboundOidcSsoProfiles/{inboundOidcSsoProfilesId}',
+        http_method='DELETE',
+        method_id='cloudidentity.inboundOidcSsoProfiles.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='CloudidentityInboundOidcSsoProfilesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an InboundOidcSsoProfile.
+
+      Args:
+        request: (CloudidentityInboundOidcSsoProfilesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InboundOidcSsoProfile) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/inboundOidcSsoProfiles/{inboundOidcSsoProfilesId}',
+        http_method='GET',
+        method_id='cloudidentity.inboundOidcSsoProfiles.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='CloudidentityInboundOidcSsoProfilesGetRequest',
+        response_type_name='InboundOidcSsoProfile',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists InboundOidcSsoProfile objects for a Google enterprise customer.
+
+      Args:
+        request: (CloudidentityInboundOidcSsoProfilesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListInboundOidcSsoProfilesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='cloudidentity.inboundOidcSsoProfiles.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/inboundOidcSsoProfiles',
+        request_field='',
+        request_type_name='CloudidentityInboundOidcSsoProfilesListRequest',
+        response_type_name='ListInboundOidcSsoProfilesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an InboundOidcSsoProfile. When the target customer has enabled [Multi-party approval for sensitive actions](https://support.google.com/a/answer/13790448), the `Operation` in the response will have `"done": false`, it will not have a response, and the metadata will have `"state": "awaiting-multi-party-approval"`.
+
+      Args:
+        request: (CloudidentityInboundOidcSsoProfilesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/inboundOidcSsoProfiles/{inboundOidcSsoProfilesId}',
+        http_method='PATCH',
+        method_id='cloudidentity.inboundOidcSsoProfiles.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='inboundOidcSsoProfile',
+        request_type_name='CloudidentityInboundOidcSsoProfilesPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )

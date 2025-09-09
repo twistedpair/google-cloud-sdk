@@ -43,6 +43,7 @@ class DeveloperconnectV1alpha(base_api.BaseApiClient):
     self.projects_locations_accountConnectors = self.ProjectsLocationsAccountConnectorsService(self)
     self.projects_locations_connections_gitRepositoryLinks = self.ProjectsLocationsConnectionsGitRepositoryLinksService(self)
     self.projects_locations_connections = self.ProjectsLocationsConnectionsService(self)
+    self.projects_locations_insightsConfigs = self.ProjectsLocationsInsightsConfigsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -866,6 +867,151 @@ class DeveloperconnectV1alpha(base_api.BaseApiClient):
         request_field='processGitHubEnterpriseWebhookRequest',
         request_type_name='DeveloperconnectProjectsLocationsConnectionsProcessGitHubEnterpriseWebhookRequest',
         response_type_name='Empty',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsInsightsConfigsService(base_api.BaseApiService):
+    """Service class for the projects_locations_insightsConfigs resource."""
+
+    _NAME = 'projects_locations_insightsConfigs'
+
+    def __init__(self, client):
+      super(DeveloperconnectV1alpha.ProjectsLocationsInsightsConfigsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new InsightsConfig in a given project and location.
+
+      Args:
+        request: (DeveloperconnectProjectsLocationsInsightsConfigsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/insightsConfigs',
+        http_method='POST',
+        method_id='developerconnect.projects.locations.insightsConfigs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['insightsConfigId', 'validateOnly'],
+        relative_path='v1alpha/{+parent}/insightsConfigs',
+        request_field='insightsConfig',
+        request_type_name='DeveloperconnectProjectsLocationsInsightsConfigsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a single Insight.
+
+      Args:
+        request: (DeveloperconnectProjectsLocationsInsightsConfigsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/insightsConfigs/{insightsConfigsId}',
+        http_method='DELETE',
+        method_id='developerconnect.projects.locations.insightsConfigs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag', 'requestId', 'validateOnly'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='DeveloperconnectProjectsLocationsInsightsConfigsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single Insight.
+
+      Args:
+        request: (DeveloperconnectProjectsLocationsInsightsConfigsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InsightsConfig) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/insightsConfigs/{insightsConfigsId}',
+        http_method='GET',
+        method_id='developerconnect.projects.locations.insightsConfigs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='DeveloperconnectProjectsLocationsInsightsConfigsGetRequest',
+        response_type_name='InsightsConfig',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists InsightsConfigs in a given project and location.
+
+      Args:
+        request: (DeveloperconnectProjectsLocationsInsightsConfigsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListInsightsConfigsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/insightsConfigs',
+        http_method='GET',
+        method_id='developerconnect.projects.locations.insightsConfigs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/insightsConfigs',
+        request_field='',
+        request_type_name='DeveloperconnectProjectsLocationsInsightsConfigsListRequest',
+        response_type_name='ListInsightsConfigsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single InsightsConfig.
+
+      Args:
+        request: (DeveloperconnectProjectsLocationsInsightsConfigsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/insightsConfigs/{insightsConfigsId}',
+        http_method='PATCH',
+        method_id='developerconnect.projects.locations.insightsConfigs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'requestId', 'validateOnly'],
+        relative_path='v1alpha/{+name}',
+        request_field='insightsConfig',
+        request_type_name='DeveloperconnectProjectsLocationsInsightsConfigsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

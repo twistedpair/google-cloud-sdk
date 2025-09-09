@@ -147,6 +147,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_OPERATIONS = (
+      'organizations.locations.operations',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_LOCATIONS_SECURITYCENTERSERVICES = (
       'organizations.locations.securityCenterServices',
       '{+name}',
@@ -219,6 +230,17 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/'
               'eventThreatDetectionCustomModules/'
               '{eventThreatDetectionCustomModulesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_OPERATIONS = (
+      'projects.locations.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/operations/'
+              '{operationsId}',
       },
       ['name'],
       True

@@ -37,14 +37,8 @@ class Amount(_messages.Message):
   r"""A Amount object.
 
   Fields:
-    nanos: Number of nano (10^-9) units of the amount. The value must be
-      between -999,999,999 and +999,999,999 inclusive. If `units` is positive,
-      `nanos` must be positive or zero. If `units` is zero, `nanos` can be
-      positive, zero, or negative. If `units` is negative, `nanos` must be
-      negative or zero. For example $-1.75 is represented as `units`=-1 and
-      `nanos`=-750,000,000.
-    units: The whole units of the amount. For example if `currencyCode` is
-      `"USD"`, then 1 unit is one US dollar.
+    nanos: A integer attribute.
+    units: A string attribute.
   """
 
   nanos = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -71,7 +65,7 @@ class GenerateOptimizedManifestResponse(_messages.Message):
   r"""A GenerateOptimizedManifestResponse object.
 
   Fields:
-    comments: Includes command bundle
+    comments: A string attribute.
     k8sManifests: A K8SManifest attribute.
   """
 
@@ -86,29 +80,17 @@ class GkerecommenderAcceleratorsListRequest(_messages.Message):
     modelName: A string attribute.
     modelServerName: A string attribute.
     modelServerVersion: A string attribute.
-    performanceRequirements_cost_costPerMillionInputTokens_nanos: Number of
-      nano (10^-9) units of the amount. The value must be between -999,999,999
-      and +999,999,999 inclusive. If `units` is positive, `nanos` must be
-      positive or zero. If `units` is zero, `nanos` can be positive, zero, or
-      negative. If `units` is negative, `nanos` must be negative or zero. For
-      example $-1.75 is represented as `units`=-1 and `nanos`=-750,000,000.
-    performanceRequirements_cost_costPerMillionInputTokens_units: The whole
-      units of the amount. For example if `currencyCode` is `"USD"`, then 1
-      unit is one US dollar.
-    performanceRequirements_cost_costPerMillionNormalizedOutputTokens_nanos:
-      Number of nano (10^-9) units of the amount. The value must be between
-      -999,999,999 and +999,999,999 inclusive. If `units` is positive, `nanos`
-      must be positive or zero. If `units` is zero, `nanos` can be positive,
-      zero, or negative. If `units` is negative, `nanos` must be negative or
-      zero. For example $-1.75 is represented as `units`=-1 and
-      `nanos`=-750,000,000.
-    performanceRequirements_cost_costPerMillionNormalizedOutputTokens_units:
-      The whole units of the amount. For example if `currencyCode` is `"USD"`,
-      then 1 unit is one US dollar.
+    performanceRequirements_cost_costPerMillionInputTokens_nanos: A integer
+      attribute.
+    performanceRequirements_cost_costPerMillionInputTokens_units: A string
+      attribute.
+    performanceRequirements_cost_costPerMillionNormalizedOutputTokens_nanos: A
+      integer attribute.
+    performanceRequirements_cost_costPerMillionNormalizedOutputTokens_units: A
+      string attribute.
     performanceRequirements_cost_outputToInputCostRatio: A number attribute.
     performanceRequirements_cost_pricingModel: A string attribute.
-    performanceRequirements_maxNtpotMilliseconds: The max normalized time per
-      output token.
+    performanceRequirements_maxNtpotMilliseconds: A integer attribute.
   """
 
   modelName = _messages.StringField(1)
@@ -168,15 +150,12 @@ class GkerecommenderOptimizedManifestRequest(_messages.Message):
 
   Fields:
     acceleratorType: A string attribute.
-    kubernetesNamespace: The namespace in which the manifests will be
-      deployed.
+    kubernetesNamespace: A string attribute.
     modelAndModelServerInfo_modelName: A string attribute.
     modelAndModelServerInfo_modelServerName: A string attribute.
     modelAndModelServerInfo_modelServerVersion: A string attribute.
-    storageConfig_modelBucketUri: The uri for the GCS bucket containing the
-      model weights.
-    targetNtpotMilliseconds: The target number of normalized time per output
-      token.
+    storageConfig_modelBucketUri: A string attribute.
+    targetNtpotMilliseconds: A integer attribute.
   """
 
   acceleratorType = _messages.StringField(1)
@@ -192,9 +171,9 @@ class K8SManifest(_messages.Message):
   r"""A K8SManifest object.
 
   Fields:
-    apiVersion: Kubernetes API version
-    content: YAML content
-    kind: Kubernetes resource kind
+    apiVersion: A string attribute.
+    content: A string attribute.
+    kind: A string attribute.
   """
 
   apiVersion = _messages.StringField(1)
@@ -210,8 +189,7 @@ class ListCompatibleAcceleratorProfilesResponse(_messages.Message):
     comments: A string attribute.
     maxNtpotMilliseconds: A integer attribute.
     maxThroughputTokensPerSecond: A integer attribute.
-    minNtpotMilliseconds: The minimum and maximum normalized time per output
-      token.
+    minNtpotMilliseconds: A integer attribute.
     minThroughputTokensPerSecond: A integer attribute.
   """
 
@@ -283,7 +261,7 @@ class PerformanceStats(_messages.Message):
   Fields:
     cost: A Cost attribute.
     inputTokensPerSecond: A integer attribute.
-    ntpotMilliseconds: normalized time per output token.
+    ntpotMilliseconds: A integer attribute.
     outputTokensPerSecond: A integer attribute.
     queriesPerSecond: A integer attribute.
   """

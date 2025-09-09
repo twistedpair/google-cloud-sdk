@@ -799,7 +799,7 @@ class ServerlessOperations(object):
       tracker=None,
       asyn=False,
       allow_unauthenticated=None,
-      allow_unauth_regions=None,
+      multiregion_regions=None,
       for_replace=False,
       prefetch=False,
       build_image=None,
@@ -839,8 +839,7 @@ class ServerlessOperations(object):
         which should also have its IAM policy set to allow unauthenticated
         access. False if removing the IAM policy to allow unauthenticated access
         from a service.
-      allow_unauth_regions: str, For multi-region services, the regions in which
-        we will allow unauthenticated access.
+      multiregion_regions: The regions for a multi-region service.
       for_replace: bool, If the change is for a replacing the service from a
         YAML specification.
       prefetch: the service, pre-fetched for ReleaseService. `False` indicates
@@ -870,8 +869,8 @@ class ServerlessOperations(object):
       enable_automatic_updates: If true, opt-in automatic build image updates.
         If false, opt-out automatic build image updates.
       is_verbose: Print verbose output. Forces polling instead of waiting.
-      source_bucket: The existing bucket to use for source uploads. Leave it
-        as None to create a new bucket.
+      source_bucket: The existing bucket to use for source uploads. Leave it as
+        None to create a new bucket.
       kms_key: The KMS key to use for the deployment.
       iap_enabled: If true, assign run.invoker access to IAP P4SA, if false,
         remove run.invoker access from IAP P4SA.
@@ -1002,8 +1001,10 @@ class ServerlessOperations(object):
           self._AddRevisionForcingChange(serv, config_changes)
         else:
           config_changes.append(_NewRevisionNonceChange(_Nonce()))
-        if serv and not with_image:
+        if serv and not with_image and not multiregion_regions:
           # Avoid changing the running code by making the new revision by digest
+          # We can't do this in multi-region services, because there is no
+          # Revisions API.
           self._EnsureImageDigest(serv, config_changes)
 
     if serv and serv.metadata.deletionTimestamp is not None:
@@ -1019,7 +1020,7 @@ class ServerlessOperations(object):
 
     # Handle SetIamPolicy call(s).
     self._HandleAllowUnauthenticated(
-        service_ref, allow_unauthenticated, allow_unauth_regions, tracker
+        service_ref, allow_unauthenticated, multiregion_regions, tracker
     )
 
     self._HandleIap(service_ref, iap_enabled, updated_service, tracker)
@@ -1027,7 +1028,6 @@ class ServerlessOperations(object):
     if not asyn and not dry_run:
       if updated_service.conditions.IsReady():
         return updated_service
-
       getter = (
           functools.partial(self.GetService, service_ref)
           if updated_service.operation_id is None or is_verbose
@@ -1036,7 +1036,7 @@ class ServerlessOperations(object):
       poller = op_pollers.ServiceConditionPoller(
           getter,
           tracker,
-          dependencies=stages.ServiceDependencies(),
+          dependencies=stages.ServiceDependencies(multiregion_regions),
           serv=updated_service,
       )
       self.WaitForCondition(poller)
@@ -1047,12 +1047,12 @@ class ServerlessOperations(object):
     return updated_service
 
   def _HandleAllowUnauthenticated(
-      self, service_ref, allow_unauthenticated, allow_unauth_regions, tracker
+      self, service_ref, allow_unauthenticated, multiregion_regions, tracker
   ):
     """Handle SetIamPolicy call(s)."""
-    if allow_unauthenticated is not None and allow_unauth_regions is not None:
+    if allow_unauthenticated is not None and multiregion_regions is not None:
       return self._HandleMultiRegionAllowUnauthenticated(
-          service_ref, allow_unauthenticated, allow_unauth_regions, tracker
+          service_ref, allow_unauthenticated, multiregion_regions, tracker
       )
     if allow_unauthenticated is not None:
       try:
@@ -1080,12 +1080,12 @@ class ServerlessOperations(object):
         )
 
   def _HandleMultiRegionAllowUnauthenticated(
-      self, service_ref, allow_unauthenticated, allow_unauth_regions, tracker
+      self, service_ref, allow_unauthenticated, multiregion_regions, tracker
   ):
     """Handle SetIamPolicy calls for Multi-Region Services."""
     tracker.StartStage(stages.SERVICE_IAM_POLICY_SET)
     warning_message = None
-    for region in allow_unauth_regions:
+    for region in multiregion_regions:
       try:
         tracker.UpdateStage(
             stages.SERVICE_IAM_POLICY_SET,

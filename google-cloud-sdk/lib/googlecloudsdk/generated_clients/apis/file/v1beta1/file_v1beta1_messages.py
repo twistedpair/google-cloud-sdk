@@ -480,6 +480,20 @@ class FileProjectsLocationsInstancesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class FileProjectsLocationsInstancesPauseReplicaRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesPauseReplicaRequest object.
+
+  Fields:
+    name: Required. The resource name of the instance, in the format
+      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`.
+    pauseReplicaRequest: A PauseReplicaRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pauseReplicaRequest = _messages.MessageField('PauseReplicaRequest', 2)
+
+
 class FileProjectsLocationsInstancesPromoteReplicaRequest(_messages.Message):
   r"""A FileProjectsLocationsInstancesPromoteReplicaRequest object.
 
@@ -506,6 +520,20 @@ class FileProjectsLocationsInstancesRestoreRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   restoreInstanceRequest = _messages.MessageField('RestoreInstanceRequest', 2)
+
+
+class FileProjectsLocationsInstancesResumeReplicaRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesResumeReplicaRequest object.
+
+  Fields:
+    name: Required. The resource name of the instance, in the format
+      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`.
+    resumeReplicaRequest: A ResumeReplicaRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  resumeReplicaRequest = _messages.MessageField('ResumeReplicaRequest', 2)
 
 
 class FileProjectsLocationsInstancesRevertRequest(_messages.Message):
@@ -693,8 +721,9 @@ class FileProjectsLocationsListRequest(_messages.Message):
   r"""A FileProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1429,6 +1458,7 @@ class Instance(_messages.Message):
     labels: Resource labels to represent user provided metadata.
     maxCapacityGb: Output only. The max capacity of the instance.
     maxShareCount: The max number of shares allowed.
+    minCapacityGb: Output only. The min capacity of the instance.
     multiShareEnabled: Indicates whether this instance uses a multi-share
       configuration with which it can have more than one file-share or none at
       all. File-shares are added, updated and removed through the separate
@@ -1637,20 +1667,21 @@ class Instance(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 13)
   maxCapacityGb = _messages.IntegerField(14)
   maxShareCount = _messages.IntegerField(15)
-  multiShareEnabled = _messages.BooleanField(16)
-  name = _messages.StringField(17)
-  networks = _messages.MessageField('NetworkConfig', 18, repeated=True)
-  performanceConfig = _messages.MessageField('PerformanceConfig', 19)
-  performanceLimits = _messages.MessageField('PerformanceLimits', 20)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 21)
-  replication = _messages.MessageField('Replication', 22)
-  satisfiesPzi = _messages.BooleanField(23)
-  satisfiesPzs = _messages.BooleanField(24)
-  state = _messages.EnumField('StateValueValuesEnum', 25)
-  statusMessage = _messages.StringField(26)
-  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 27, repeated=True)
-  tags = _messages.MessageField('TagsValue', 28)
-  tier = _messages.EnumField('TierValueValuesEnum', 29)
+  minCapacityGb = _messages.IntegerField(16)
+  multiShareEnabled = _messages.BooleanField(17)
+  name = _messages.StringField(18)
+  networks = _messages.MessageField('NetworkConfig', 19, repeated=True)
+  performanceConfig = _messages.MessageField('PerformanceConfig', 20)
+  performanceLimits = _messages.MessageField('PerformanceLimits', 21)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 22)
+  replication = _messages.MessageField('Replication', 23)
+  satisfiesPzi = _messages.BooleanField(24)
+  satisfiesPzs = _messages.BooleanField(25)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
+  statusMessage = _messages.StringField(27)
+  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 28, repeated=True)
+  tags = _messages.MessageField('TagsValue', 29)
+  tier = _messages.EnumField('TierValueValuesEnum', 30)
 
 
 class LdapConfig(_messages.Message):
@@ -2271,6 +2302,10 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class PauseReplicaRequest(_messages.Message):
+  r"""PauseReplicaRequest pauses a Filestore standby instance (replica)."""
+
+
 class PerformanceConfig(_messages.Message):
   r"""Used for setting the performance configuration. If the user doesn't
   specify PerformanceConfig, automatically provision the default performance
@@ -2463,6 +2498,10 @@ class RestoreInstanceRequest(_messages.Message):
   fileShare = _messages.StringField(1)
   sourceBackup = _messages.StringField(2)
   sourceSnapshot = _messages.StringField(3)
+
+
+class ResumeReplicaRequest(_messages.Message):
+  r"""ResumeReplicaRequest resumes a Filestore standby instance (replica)."""
 
 
 class RevertInstanceRequest(_messages.Message):

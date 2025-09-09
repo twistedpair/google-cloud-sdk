@@ -79,11 +79,12 @@ class Bucket(_messages.Message):
       `{bucket}` portion of the `name` field. For globally unique buckets,
       this is equal to the "bucket name" of other Cloud Storage APIs. Example:
       "pub".
-    cors: Optional. The bucket's https://www.w3.org/TR/cors/ (CORS) config.
+    cors: Optional. The bucket's [Cross-Origin Resource
+      Sharing](https://www.w3.org/TR/cors/) (CORS) config.
     createTime: Output only. The creation time of the bucket.
     customPlacementConfig: Optional. Configuration that, if present, specifies
-      the data placement for a
-      https://cloud.google.com/storage/docs/locations#location-dr.
+      the data placement for a [configurable dual-
+      region](https://cloud.google.com/storage/docs/locations#location-dr).
     defaultEventBasedHold: Optional. The default value for event-based hold on
       newly created objects in this bucket. Event-based hold is a way to
       retain objects indefinitely until an event occurs, signified by the
@@ -113,9 +114,9 @@ class Bucket(_messages.Message):
     iamConfig: Optional. The bucket's IAM config.
     ipFilter: Optional. The bucket's IP filter configuration.
     labels: Optional. User-provided labels, in key/value pairs.
-    lifecycle: Optional. The bucket's lifecycle config. See
-      [https://developers.google.com/storage/docs/lifecycle]Lifecycle
-      Management] for more information.
+    lifecycle: Optional. The bucket's lifecycle config. See [Lifecycle
+      Management](https://developers.google.com/storage/docs/lifecycle) for
+      more information.
     location: Immutable. The location of the bucket. Object data for objects
       in the bucket resides in physical storage within this region. Defaults
       to `US`. See the https://developers.google.com/storage/docs/concepts-
@@ -153,8 +154,9 @@ class Bucket(_messages.Message):
       "DEFAULT" uses default replication. "ASYNC_TURBO" enables turbo
       replication, valid for dual-region buckets only. If rpo is not specified
       when the bucket is created, it defaults to "DEFAULT". For more
-      information, see https://cloud.google.com/storage/docs/availability-
-      durability#turbo-replication.
+      information, see [Turbo
+      replication](https://cloud.google.com/storage/docs/availability-
+      durability#turbo-replication).
     satisfiesPzi: Optional. Reserved for future use.
     satisfiesPzs: Optional. Reserved for future use.
     softDeletePolicy: Optional. The bucket's soft delete policy. The soft
@@ -165,14 +167,14 @@ class Bucket(_messages.Message):
       no storageClass is specified for a newly-created object. This defines
       how objects in the bucket are stored and determines the SLA and the cost
       of storage. If this value is not specified when the bucket is created,
-      it will default to `STANDARD`. For more information, see
-      https://developers.google.com/storage/docs/storage-classes.
+      it will default to `STANDARD`. For more information, see [Storage
+      classes](https://developers.google.com/storage/docs/storage-classes).
     updateTime: Output only. The modification time of the bucket.
     versioning: Optional. The bucket's versioning config.
     website: Optional. The bucket's website config, controlling how the
       service behaves when accessing bucket contents as a web site. See the
-      https://cloud.google.com/storage/docs/static-website for more
-      information.
+      [Static Website Examples](https://cloud.google.com/storage/docs/static-
+      website) for more information.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -414,18 +416,19 @@ class Cors(_messages.Message):
   https://tools.ietf.org/html/rfc6454.
 
   Fields:
-    maxAgeSeconds: Optional. The value, in seconds, to return in the
-      https://www.w3.org/TR/cors/#access-control-max-age-response-header used
-      in preflight responses.
+    maxAgeSeconds: Optional. The value, in seconds, to return in the [Access-
+      Control-Max-Age header](https://www.w3.org/TR/cors/#access-control-max-
+      age-response-header) used in preflight responses.
     method: Optional. The list of HTTP methods on which to include CORS
       response headers, (`GET`, `OPTIONS`, `POST`, etc) Note: "*" is permitted
       in the list of methods, and means "any method".
     origin: Optional. The list of Origins eligible to receive CORS response
-      headers. See https://tools.ietf.org/html/rfc6454 for more on origins.
-      Note: "*" is permitted in the list of origins, and means "any Origin".
-    responseHeader: Optional. The list of HTTP headers other than the
-      https://www.w3.org/TR/cors/#simple-response-header to give permission
-      for the user-agent to share across domains.
+      headers. See [RFC 6454](https://tools.ietf.org/html/rfc6454) for more on
+      origins. Note: "*" is permitted in the list of origins, and means "any
+      Origin".
+    responseHeader: Optional. The list of HTTP headers other than the [simple
+      response headers](https://www.w3.org/TR/cors/#simple-response-headers)
+      to give permission for the user-agent to share across domains.
   """
 
   maxAgeSeconds = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -672,7 +675,7 @@ class GoogleManagedEncryptionEnforcementConfig(_messages.Message):
 class GoogleStorageV2CustomPlacementConfig(_messages.Message):
   r"""Configuration for Custom Dual Regions. It should specify precisely two
   eligible regions within the same Multiregion. More information on regions
-  may be found [here](https://cloud.google.com/storage/docs/locations).
+  see [Bucket locations](https://cloud.google.com/storage/docs/locations).
 
   Fields:
     dataLocations: Optional. List of locations to use for data placement.
@@ -1931,8 +1934,8 @@ class Website(_messages.Message):
       `index.html` objects to represent directory pages.
     notFoundPage: Optional. If the requested object path is missing, and any
       `mainPageSuffix` object is missing, if applicable, the service will
-      return the named object from this bucket as the content for a
-      https://tools.ietf.org/html/rfc7231#section-6.5.4 result.
+      return the named object from this bucket as the content for a [404 Not
+      Found](https://tools.ietf.org/html/rfc7231#section-6.5.4) result.
   """
 
   mainPageSuffix = _messages.StringField(1)

@@ -186,6 +186,7 @@ class ArimaForecastingMetrics(_messages.Message):
       MONTHLY: Monthly period, 30 days or irregular.
       QUARTERLY: Quarterly period, 90 days or irregular.
       YEARLY: Yearly period, 365 days or irregular.
+      HOURLY: Hourly period, 1 hour.
     """
     SEASONAL_PERIOD_TYPE_UNSPECIFIED = 0
     NO_SEASONALITY = 1
@@ -194,6 +195,7 @@ class ArimaForecastingMetrics(_messages.Message):
     MONTHLY = 4
     QUARTERLY = 5
     YEARLY = 6
+    HOURLY = 7
 
   arimaFittingMetrics = _messages.MessageField('ArimaFittingMetrics', 1, repeated=True)
   arimaSingleModelForecastingMetrics = _messages.MessageField('ArimaSingleModelForecastingMetrics', 2, repeated=True)
@@ -245,6 +247,7 @@ class ArimaModelInfo(_messages.Message):
       MONTHLY: Monthly period, 30 days or irregular.
       QUARTERLY: Quarterly period, 90 days or irregular.
       YEARLY: Yearly period, 365 days or irregular.
+      HOURLY: Hourly period, 1 hour.
     """
     SEASONAL_PERIOD_TYPE_UNSPECIFIED = 0
     NO_SEASONALITY = 1
@@ -253,6 +256,7 @@ class ArimaModelInfo(_messages.Message):
     MONTHLY = 4
     QUARTERLY = 5
     YEARLY = 6
+    HOURLY = 7
 
   arimaCoefficients = _messages.MessageField('ArimaCoefficients', 1)
   arimaFittingMetrics = _messages.MessageField('ArimaFittingMetrics', 2)
@@ -305,6 +309,7 @@ class ArimaResult(_messages.Message):
       MONTHLY: Monthly period, 30 days or irregular.
       QUARTERLY: Quarterly period, 90 days or irregular.
       YEARLY: Yearly period, 365 days or irregular.
+      HOURLY: Hourly period, 1 hour.
     """
     SEASONAL_PERIOD_TYPE_UNSPECIFIED = 0
     NO_SEASONALITY = 1
@@ -313,6 +318,7 @@ class ArimaResult(_messages.Message):
     MONTHLY = 4
     QUARTERLY = 5
     YEARLY = 6
+    HOURLY = 7
 
   arimaModelInfo = _messages.MessageField('ArimaModelInfo', 1, repeated=True)
   seasonalPeriods = _messages.EnumField('SeasonalPeriodsValueListEntryValuesEnum', 2, repeated=True)
@@ -359,6 +365,7 @@ class ArimaSingleModelForecastingMetrics(_messages.Message):
       MONTHLY: Monthly period, 30 days or irregular.
       QUARTERLY: Quarterly period, 90 days or irregular.
       YEARLY: Yearly period, 365 days or irregular.
+      HOURLY: Hourly period, 1 hour.
     """
     SEASONAL_PERIOD_TYPE_UNSPECIFIED = 0
     NO_SEASONALITY = 1
@@ -367,6 +374,7 @@ class ArimaSingleModelForecastingMetrics(_messages.Message):
     MONTHLY = 4
     QUARTERLY = 5
     YEARLY = 6
+    HOURLY = 7
 
   arimaFittingMetrics = _messages.MessageField('ArimaFittingMetrics', 1)
   hasDrift = _messages.BooleanField(2)
@@ -2341,8 +2349,9 @@ class DataMaskingStatistics(_messages.Message):
 
 
 class DataPolicyOption(_messages.Message):
-  r"""Data policy option proto, it currently supports name only, will support
-  precedence later.
+  r"""Data policy option. For more information, see [Mask data by applying
+  data policies to a column](https://cloud.google.com/bigquery/docs/column-
+  data-masking#data-policies-on-column/).
 
   Fields:
     name: Data policy resource name in the form of
@@ -3692,8 +3701,8 @@ class ExternalServiceCost(_messages.Message):
   billing purposes. Output only.
 
   Fields:
-    billingMethod: The billing method used for the external job. This field is
-      only used when billed on the services sku, set to "SERVICES_SKU".
+    billingMethod: The billing method used for the external job. This field,
+      set to `SERVICES_SKU`, is only used when billing under the services SKU.
       Otherwise, it is unspecified for backward compatibility.
     bytesBilled: External service cost in terms of bigquery bytes billed.
     bytesProcessed: External service cost in terms of bigquery bytes
@@ -4084,6 +4093,41 @@ class HparamTuningTrial(_messages.Message):
   status = _messages.EnumField('StatusValueValuesEnum', 8)
   trainingLoss = _messages.FloatField(9)
   trialId = _messages.IntegerField(10)
+
+
+class IncrementalResultStats(_messages.Message):
+  r"""Statistics related to Incremental Query Results. Populated as part of
+  JobStatistics2. This feature is not yet available.
+
+  Enums:
+    DisabledReasonValueValuesEnum: Reason why incremental query results
+      are/were not written by the query.
+
+  Fields:
+    disabledReason: Reason why incremental query results are/were not written
+      by the query.
+    resultSetLastModifyTime: The time at which the result table's contents
+      were modified. May be absent if no results have been written or the
+      query has completed.
+    resultSetLastReplaceTime: The time at which the result table's contents
+      were completely replaced. May be absent if no results have been written
+      or the query has completed.
+  """
+
+  class DisabledReasonValueValuesEnum(_messages.Enum):
+    r"""Reason why incremental query results are/were not written by the
+    query.
+
+    Values:
+      DISABLED_REASON_UNSPECIFIED: Disabled reason not specified.
+      OTHER: Some other reason.
+    """
+    DISABLED_REASON_UNSPECIFIED = 0
+    OTHER = 1
+
+  disabledReason = _messages.EnumField('DisabledReasonValueValuesEnum', 1)
+  resultSetLastModifyTime = _messages.StringField(2)
+  resultSetLastReplaceTime = _messages.StringField(3)
 
 
 class IndexUnusedReason(_messages.Message):
@@ -4660,13 +4704,14 @@ class JobConfigurationLoad(_messages.Message):
     schemaUpdateOptions: Allows the schema of the destination table to be
       updated as a side effect of the load job if a schema is autodetected or
       supplied in the job configuration. Schema update options are supported
-      in two cases: when writeDisposition is WRITE_APPEND; when
-      writeDisposition is WRITE_TRUNCATE and the destination table is a
-      partition of a table, specified by partition decorators. For normal
-      tables, WRITE_TRUNCATE will always overwrite the schema. One or more of
-      the following values are specified: * ALLOW_FIELD_ADDITION: allow adding
-      a nullable field to the schema. * ALLOW_FIELD_RELAXATION: allow relaxing
-      a required field in the original schema to nullable.
+      in three cases: when writeDisposition is WRITE_APPEND; when
+      writeDisposition is WRITE_TRUNCATE_DATA; when writeDisposition is
+      WRITE_TRUNCATE and the destination table is a partition of a table,
+      specified by partition decorators. For normal tables, WRITE_TRUNCATE
+      will always overwrite the schema. One or more of the following values
+      are specified: * ALLOW_FIELD_ADDITION: allow adding a nullable field to
+      the schema. * ALLOW_FIELD_RELAXATION: allow relaxing a required field in
+      the original schema to nullable.
     skipLeadingRows: Optional. The number of rows at the top of a CSV file
       that BigQuery will skip when loading the data. The default value is 0.
       This property is useful if you have header rows in the file that should
@@ -4936,13 +4981,14 @@ class JobConfigurationQuery(_messages.Message):
       specified.
     schemaUpdateOptions: Allows the schema of the destination table to be
       updated as a side effect of the query job. Schema update options are
-      supported in two cases: when writeDisposition is WRITE_APPEND; when
-      writeDisposition is WRITE_TRUNCATE and the destination table is a
-      partition of a table, specified by partition decorators. For normal
-      tables, WRITE_TRUNCATE will always overwrite the schema. One or more of
-      the following values are specified: * ALLOW_FIELD_ADDITION: allow adding
-      a nullable field to the schema. * ALLOW_FIELD_RELAXATION: allow relaxing
-      a required field in the original schema to nullable.
+      supported in three cases: when writeDisposition is WRITE_APPEND; when
+      writeDisposition is WRITE_TRUNCATE_DATA; when writeDisposition is
+      WRITE_TRUNCATE and the destination table is a partition of a table,
+      specified by partition decorators. For normal tables, WRITE_TRUNCATE
+      will always overwrite the schema. One or more of the following values
+      are specified: * ALLOW_FIELD_ADDITION: allow adding a nullable field to
+      the schema. * ALLOW_FIELD_RELAXATION: allow relaxing a required field in
+      the original schema to nullable.
     scriptOptions: Options controlling the execution of scripts.
     systemVariables: Output only. System variables for GoogleSQL queries. A
       system variable is output if the variable is settable and its value
@@ -5384,6 +5430,9 @@ class JobStatistics2(_messages.Message):
     exportDataStatistics: Output only. Stats for EXPORT DATA statement.
     externalServiceCosts: Output only. Job cost breakdown as bigquery internal
       cost and external service costs.
+    incrementalResultStats: Output only. Statistics related to incremental
+      query results, if enabled for the query. This feature is not yet
+      available.
     loadQueryStatistics: Output only. Statistics for a LOAD query.
     materializedViewStatistics: Output only. Statistics of materialized views
       of a query job.
@@ -5536,10 +5585,10 @@ class JobStatistics2(_messages.Message):
       upper bound of what the query would cost.
     totalPartitionsProcessed: Output only. Total number of partitions
       processed from all partitioned tables referenced in the job.
-    totalServicesSkuSlotMs: Output only. Total slot-milliseconds for the job
-      that run on external services and billed on the service SKU. This field
+    totalServicesSkuSlotMs: Output only. Total slot milliseconds for the job
+      that ran on external services and billed on the services SKU. This field
       is only populated for jobs that have external service costs, and is the
-      total of the usage for costs whose billing method is "SERVICES_SKU".
+      total of the usage for costs whose billing method is `"SERVICES_SKU"`.
     totalSlotMs: Output only. Slot-milliseconds for the job.
     transferredBytes: Output only. Total bytes transferred for cross-cloud
       queries such as Cross Cloud Transfer and CREATE TABLE AS SELECT (CTAS).
@@ -5579,34 +5628,35 @@ class JobStatistics2(_messages.Message):
   estimatedBytesProcessed = _messages.IntegerField(15)
   exportDataStatistics = _messages.MessageField('ExportDataStatistics', 16)
   externalServiceCosts = _messages.MessageField('ExternalServiceCost', 17, repeated=True)
-  loadQueryStatistics = _messages.MessageField('LoadQueryStatistics', 18)
-  materializedViewStatistics = _messages.MessageField('MaterializedViewStatistics', 19)
-  metadataCacheStatistics = _messages.MessageField('MetadataCacheStatistics', 20)
-  mlStatistics = _messages.MessageField('MlStatistics', 21)
-  modelTraining = _messages.MessageField('BigQueryModelTraining', 22)
-  modelTrainingCurrentIteration = _messages.IntegerField(23, variant=_messages.Variant.INT32)
-  modelTrainingExpectedTotalIteration = _messages.IntegerField(24)
-  numDmlAffectedRows = _messages.IntegerField(25)
-  performanceInsights = _messages.MessageField('PerformanceInsights', 26)
-  queryInfo = _messages.MessageField('QueryInfo', 27)
-  queryPlan = _messages.MessageField('ExplainQueryStage', 28, repeated=True)
-  referencedRoutines = _messages.MessageField('RoutineReference', 29, repeated=True)
-  referencedTables = _messages.MessageField('TableReference', 30, repeated=True)
-  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 31, repeated=True)
-  schema = _messages.MessageField('TableSchema', 32)
-  searchStatistics = _messages.MessageField('SearchStatistics', 33)
-  sparkStatistics = _messages.MessageField('SparkStatistics', 34)
-  statementType = _messages.StringField(35)
-  timeline = _messages.MessageField('QueryTimelineSample', 36, repeated=True)
-  totalBytesBilled = _messages.IntegerField(37)
-  totalBytesProcessed = _messages.IntegerField(38)
-  totalBytesProcessedAccuracy = _messages.StringField(39)
-  totalPartitionsProcessed = _messages.IntegerField(40)
-  totalServicesSkuSlotMs = _messages.IntegerField(41)
-  totalSlotMs = _messages.IntegerField(42)
-  transferredBytes = _messages.IntegerField(43)
-  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 44, repeated=True)
-  vectorSearchStatistics = _messages.MessageField('VectorSearchStatistics', 45)
+  incrementalResultStats = _messages.MessageField('IncrementalResultStats', 18)
+  loadQueryStatistics = _messages.MessageField('LoadQueryStatistics', 19)
+  materializedViewStatistics = _messages.MessageField('MaterializedViewStatistics', 20)
+  metadataCacheStatistics = _messages.MessageField('MetadataCacheStatistics', 21)
+  mlStatistics = _messages.MessageField('MlStatistics', 22)
+  modelTraining = _messages.MessageField('BigQueryModelTraining', 23)
+  modelTrainingCurrentIteration = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  modelTrainingExpectedTotalIteration = _messages.IntegerField(25)
+  numDmlAffectedRows = _messages.IntegerField(26)
+  performanceInsights = _messages.MessageField('PerformanceInsights', 27)
+  queryInfo = _messages.MessageField('QueryInfo', 28)
+  queryPlan = _messages.MessageField('ExplainQueryStage', 29, repeated=True)
+  referencedRoutines = _messages.MessageField('RoutineReference', 30, repeated=True)
+  referencedTables = _messages.MessageField('TableReference', 31, repeated=True)
+  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 32, repeated=True)
+  schema = _messages.MessageField('TableSchema', 33)
+  searchStatistics = _messages.MessageField('SearchStatistics', 34)
+  sparkStatistics = _messages.MessageField('SparkStatistics', 35)
+  statementType = _messages.StringField(36)
+  timeline = _messages.MessageField('QueryTimelineSample', 37, repeated=True)
+  totalBytesBilled = _messages.IntegerField(38)
+  totalBytesProcessed = _messages.IntegerField(39)
+  totalBytesProcessedAccuracy = _messages.StringField(40)
+  totalPartitionsProcessed = _messages.IntegerField(41)
+  totalServicesSkuSlotMs = _messages.IntegerField(42)
+  totalSlotMs = _messages.IntegerField(43)
+  transferredBytes = _messages.IntegerField(44)
+  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 45, repeated=True)
+  vectorSearchStatistics = _messages.MessageField('VectorSearchStatistics', 46)
 
 
 class JobStatistics3(_messages.Message):
@@ -6655,6 +6705,20 @@ class ProjectReference(_messages.Message):
   """
 
   projectId = _messages.StringField(1)
+
+
+class PruningStats(_messages.Message):
+  r"""The column metadata index pruning statistics.
+
+  Fields:
+    postCmetaPruningParallelInputCount: The number of parallel inputs matched.
+    postCmetaPruningPartitionCount: The number of partitions matched.
+    preCmetaPruningParallelInputCount: The number of parallel inputs scanned.
+  """
+
+  postCmetaPruningParallelInputCount = _messages.IntegerField(1)
+  postCmetaPruningPartitionCount = _messages.IntegerField(2)
+  preCmetaPruningParallelInputCount = _messages.IntegerField(3)
 
 
 class PythonOptions(_messages.Message):
@@ -8989,8 +9053,8 @@ class TableFieldSchema(_messages.Message):
       field is STRING. The following values are supported: * 'und:ci':
       undetermined locale, case insensitive. * '': empty string. Default to
       case-sensitive behavior.
-    dataPolicies: Optional. Data policy options, will replace the
-      data_policies.
+    dataPolicies: Optional. Data policies attached to this field, used for
+      field-level access control.
     defaultValueExpression: Optional. A SQL expression to specify the [default
       value] (https://cloud.google.com/bigquery/docs/default-values) for this
       field.
@@ -9225,6 +9289,7 @@ class TableMetadataCacheUsage(_messages.Message):
   Fields:
     explanation: Free form human-readable reason metadata caching was unused
       for the job.
+    pruningStats: The column metadata index pruning statistics.
     staleness: Duration since last refresh as of this job for managed tables
       (indicates metadata cache staleness as seen by this job).
     tableReference: Metadata caching eligible table referenced in the query.
@@ -9251,10 +9316,11 @@ class TableMetadataCacheUsage(_messages.Message):
     OTHER_REASON = 3
 
   explanation = _messages.StringField(1)
-  staleness = _messages.StringField(2)
-  tableReference = _messages.MessageField('TableReference', 3)
-  tableType = _messages.StringField(4)
-  unusedReason = _messages.EnumField('UnusedReasonValueValuesEnum', 5)
+  pruningStats = _messages.MessageField('PruningStats', 2)
+  staleness = _messages.StringField(3)
+  tableReference = _messages.MessageField('TableReference', 4)
+  tableType = _messages.StringField(5)
+  unusedReason = _messages.EnumField('UnusedReasonValueValuesEnum', 6)
 
 
 class TableReference(_messages.Message):
@@ -9431,6 +9497,9 @@ class TrainingOptions(_messages.Message):
     OptimizationStrategyValueValuesEnum: Optimization strategy for training
       linear regression models.
     PcaSolverValueValuesEnum: The solver for PCA.
+    ReservationAffinityTypeValueValuesEnum: Specifies the reservation affinity
+      type used to configure a Vertex AI resource. The default value is
+      `NO_RESERVATION`.
     TreeMethodValueValuesEnum: Tree construction algorithm for boosted tree
       models.
 
@@ -9498,6 +9567,8 @@ class TrainingOptions(_messages.Message):
       significantly any more (compared to min_relative_progress). Used only
       for iterative training algorithms.
     enableGlobalExplain: If true, enable global explanation during training.
+    endpointIdleTtl: The idle TTL of the endpoint before the resources get
+      destroyed. The default value is 6.5 hours.
     feedbackType: Feedback type that specifies which algorithm to run for
       matrix factorization.
     fitIntercept: Whether the model should include intercept during model
@@ -9516,6 +9587,8 @@ class TrainingOptions(_messages.Message):
     horizon: The number of periods ahead that need to be forecasted.
     hparamTuningObjectives: The target evaluation metrics to optimize the
       hyperparameters for.
+    huggingFaceModelId: The id of a Hugging Face model. For example,
+      `google/gemma-2-2b-it`.
     includeDrift: Include drift when fitting an ARIMA model.
     initialLearnRate: Specifies the initial learning rate for the line search
       learn rate strategy.
@@ -9543,9 +9616,13 @@ class TrainingOptions(_messages.Message):
     learnRateStrategy: The strategy to determine learn rate for the current
       iteration.
     lossType: Type of loss function used during training run.
+    machineType: The type of the machine used to deploy and serve the model.
     maxIterations: The maximum number of iterations in training. Used only for
       iterative training algorithms.
     maxParallelTrials: Maximum number of trials to run in parallel.
+    maxReplicaCount: The maximum number of machine replicas that will be
+      deployed on an endpoint. The default value is equal to
+      min_replica_count.
     maxTimeSeriesLength: The maximum number of time points in a time series
       that can be used in modeling the trend component of the time series.
       Don't use this option with the `timeSeriesLengthFraction` or
@@ -9556,6 +9633,9 @@ class TrainingOptions(_messages.Message):
     minRelativeProgress: When early_stop is true, stops training when accuracy
       improvement is less than 'min_relative_progress'. Used only for
       iterative training algorithms.
+    minReplicaCount: The minimum number of machine replicas that will be
+      always deployed on an endpoint. This value must be greater than or equal
+      to 1. The default value is 1.
     minSplitLoss: Minimum split loss for boosted tree models.
     minTimeSeriesLength: The minimum number of time points in a time series
       that are used in modeling the trend component of the time series. If you
@@ -9568,6 +9648,8 @@ class TrainingOptions(_messages.Message):
       available time points.
     minTreeChildWeight: Minimum sum of instance weight needed in a child for
       boosted tree models.
+    modelGardenModelName: The name of a Vertex model garden publisher model.
+      Format is `publishers/{publisher}/models/{model}@{optional_version_id}`.
     modelRegistry: The model registry.
     modelUri: Google Cloud Storage URI from which the model was imported. Only
       applicable for imported models.
@@ -9587,6 +9669,15 @@ class TrainingOptions(_messages.Message):
     pcaExplainedVarianceRatio: The minimum ratio of cumulative explained
       variance that needs to be given by the PCA model.
     pcaSolver: The solver for PCA.
+    reservationAffinityKey: Corresponds to the label key of a reservation
+      resource used by Vertex AI. To target a SPECIFIC_RESERVATION by name,
+      use `compute.googleapis.com/reservation-name` as the key and specify the
+      name of your reservation as its value.
+    reservationAffinityType: Specifies the reservation affinity type used to
+      configure a Vertex AI resource. The default value is `NO_RESERVATION`.
+    reservationAffinityValues: Corresponds to the label values of a
+      reservation resource used by Vertex AI. This must be the full resource
+      name of the reservation or reservation block.
     sampledShapleyNumPaths: Number of paths for the sampled Shapley explain
       method.
     scaleFeatures: If true, scale the feature values by dividing the feature
@@ -10179,6 +10270,21 @@ class TrainingOptions(_messages.Message):
     RANDOMIZED = 2
     AUTO = 3
 
+  class ReservationAffinityTypeValueValuesEnum(_messages.Enum):
+    r"""Specifies the reservation affinity type used to configure a Vertex AI
+    resource. The default value is `NO_RESERVATION`.
+
+    Values:
+      RESERVATION_AFFINITY_TYPE_UNSPECIFIED: Default value.
+      NO_RESERVATION: No reservation.
+      ANY_RESERVATION: Any reservation.
+      SPECIFIC_RESERVATION: Specific reservation.
+    """
+    RESERVATION_AFFINITY_TYPE_UNSPECIFIED = 0
+    NO_RESERVATION = 1
+    ANY_RESERVATION = 2
+    SPECIFIC_RESERVATION = 3
+
   class TreeMethodValueValuesEnum(_messages.Enum):
     r"""Tree construction algorithm for boosted tree models.
 
@@ -10252,69 +10358,78 @@ class TrainingOptions(_messages.Message):
   dropout = _messages.FloatField(27)
   earlyStop = _messages.BooleanField(28)
   enableGlobalExplain = _messages.BooleanField(29)
-  feedbackType = _messages.EnumField('FeedbackTypeValueValuesEnum', 30)
-  fitIntercept = _messages.BooleanField(31)
-  forecastLimitLowerBound = _messages.FloatField(32)
-  forecastLimitUpperBound = _messages.FloatField(33)
-  hiddenUnits = _messages.IntegerField(34, repeated=True)
-  holidayRegion = _messages.EnumField('HolidayRegionValueValuesEnum', 35)
-  holidayRegions = _messages.EnumField('HolidayRegionsValueListEntryValuesEnum', 36, repeated=True)
-  horizon = _messages.IntegerField(37)
-  hparamTuningObjectives = _messages.EnumField('HparamTuningObjectivesValueListEntryValuesEnum', 38, repeated=True)
-  includeDrift = _messages.BooleanField(39)
-  initialLearnRate = _messages.FloatField(40)
-  inputLabelColumns = _messages.StringField(41, repeated=True)
-  instanceWeightColumn = _messages.StringField(42)
-  integratedGradientsNumSteps = _messages.IntegerField(43)
-  isTestColumn = _messages.StringField(44)
-  itemColumn = _messages.StringField(45)
-  kmeansInitializationColumn = _messages.StringField(46)
-  kmeansInitializationMethod = _messages.EnumField('KmeansInitializationMethodValueValuesEnum', 47)
-  l1RegActivation = _messages.FloatField(48)
-  l1Regularization = _messages.FloatField(49)
-  l2Regularization = _messages.FloatField(50)
-  labelClassWeights = _messages.MessageField('LabelClassWeightsValue', 51)
-  learnRate = _messages.FloatField(52)
-  learnRateStrategy = _messages.EnumField('LearnRateStrategyValueValuesEnum', 53)
-  lossType = _messages.EnumField('LossTypeValueValuesEnum', 54)
-  maxIterations = _messages.IntegerField(55)
-  maxParallelTrials = _messages.IntegerField(56)
-  maxTimeSeriesLength = _messages.IntegerField(57)
-  maxTreeDepth = _messages.IntegerField(58)
-  minAprioriSupport = _messages.FloatField(59)
-  minRelativeProgress = _messages.FloatField(60)
-  minSplitLoss = _messages.FloatField(61)
-  minTimeSeriesLength = _messages.IntegerField(62)
-  minTreeChildWeight = _messages.IntegerField(63)
-  modelRegistry = _messages.EnumField('ModelRegistryValueValuesEnum', 64)
-  modelUri = _messages.StringField(65)
-  nonSeasonalOrder = _messages.MessageField('ArimaOrder', 66)
-  numClusters = _messages.IntegerField(67)
-  numFactors = _messages.IntegerField(68)
-  numParallelTree = _messages.IntegerField(69)
-  numPrincipalComponents = _messages.IntegerField(70)
-  numTrials = _messages.IntegerField(71)
-  optimizationStrategy = _messages.EnumField('OptimizationStrategyValueValuesEnum', 72)
-  optimizer = _messages.StringField(73)
-  pcaExplainedVarianceRatio = _messages.FloatField(74)
-  pcaSolver = _messages.EnumField('PcaSolverValueValuesEnum', 75)
-  sampledShapleyNumPaths = _messages.IntegerField(76)
-  scaleFeatures = _messages.BooleanField(77)
-  standardizeFeatures = _messages.BooleanField(78)
-  subsample = _messages.FloatField(79)
-  tfVersion = _messages.StringField(80)
-  timeSeriesDataColumn = _messages.StringField(81)
-  timeSeriesIdColumn = _messages.StringField(82)
-  timeSeriesIdColumns = _messages.StringField(83, repeated=True)
-  timeSeriesLengthFraction = _messages.FloatField(84)
-  timeSeriesTimestampColumn = _messages.StringField(85)
-  treeMethod = _messages.EnumField('TreeMethodValueValuesEnum', 86)
-  trendSmoothingWindowSize = _messages.IntegerField(87)
-  userColumn = _messages.StringField(88)
-  vertexAiModelVersionAliases = _messages.StringField(89, repeated=True)
-  walsAlpha = _messages.FloatField(90)
-  warmStart = _messages.BooleanField(91)
-  xgboostVersion = _messages.StringField(92)
+  endpointIdleTtl = _messages.StringField(30)
+  feedbackType = _messages.EnumField('FeedbackTypeValueValuesEnum', 31)
+  fitIntercept = _messages.BooleanField(32)
+  forecastLimitLowerBound = _messages.FloatField(33)
+  forecastLimitUpperBound = _messages.FloatField(34)
+  hiddenUnits = _messages.IntegerField(35, repeated=True)
+  holidayRegion = _messages.EnumField('HolidayRegionValueValuesEnum', 36)
+  holidayRegions = _messages.EnumField('HolidayRegionsValueListEntryValuesEnum', 37, repeated=True)
+  horizon = _messages.IntegerField(38)
+  hparamTuningObjectives = _messages.EnumField('HparamTuningObjectivesValueListEntryValuesEnum', 39, repeated=True)
+  huggingFaceModelId = _messages.StringField(40)
+  includeDrift = _messages.BooleanField(41)
+  initialLearnRate = _messages.FloatField(42)
+  inputLabelColumns = _messages.StringField(43, repeated=True)
+  instanceWeightColumn = _messages.StringField(44)
+  integratedGradientsNumSteps = _messages.IntegerField(45)
+  isTestColumn = _messages.StringField(46)
+  itemColumn = _messages.StringField(47)
+  kmeansInitializationColumn = _messages.StringField(48)
+  kmeansInitializationMethod = _messages.EnumField('KmeansInitializationMethodValueValuesEnum', 49)
+  l1RegActivation = _messages.FloatField(50)
+  l1Regularization = _messages.FloatField(51)
+  l2Regularization = _messages.FloatField(52)
+  labelClassWeights = _messages.MessageField('LabelClassWeightsValue', 53)
+  learnRate = _messages.FloatField(54)
+  learnRateStrategy = _messages.EnumField('LearnRateStrategyValueValuesEnum', 55)
+  lossType = _messages.EnumField('LossTypeValueValuesEnum', 56)
+  machineType = _messages.StringField(57)
+  maxIterations = _messages.IntegerField(58)
+  maxParallelTrials = _messages.IntegerField(59)
+  maxReplicaCount = _messages.IntegerField(60)
+  maxTimeSeriesLength = _messages.IntegerField(61)
+  maxTreeDepth = _messages.IntegerField(62)
+  minAprioriSupport = _messages.FloatField(63)
+  minRelativeProgress = _messages.FloatField(64)
+  minReplicaCount = _messages.IntegerField(65)
+  minSplitLoss = _messages.FloatField(66)
+  minTimeSeriesLength = _messages.IntegerField(67)
+  minTreeChildWeight = _messages.IntegerField(68)
+  modelGardenModelName = _messages.StringField(69)
+  modelRegistry = _messages.EnumField('ModelRegistryValueValuesEnum', 70)
+  modelUri = _messages.StringField(71)
+  nonSeasonalOrder = _messages.MessageField('ArimaOrder', 72)
+  numClusters = _messages.IntegerField(73)
+  numFactors = _messages.IntegerField(74)
+  numParallelTree = _messages.IntegerField(75)
+  numPrincipalComponents = _messages.IntegerField(76)
+  numTrials = _messages.IntegerField(77)
+  optimizationStrategy = _messages.EnumField('OptimizationStrategyValueValuesEnum', 78)
+  optimizer = _messages.StringField(79)
+  pcaExplainedVarianceRatio = _messages.FloatField(80)
+  pcaSolver = _messages.EnumField('PcaSolverValueValuesEnum', 81)
+  reservationAffinityKey = _messages.StringField(82)
+  reservationAffinityType = _messages.EnumField('ReservationAffinityTypeValueValuesEnum', 83)
+  reservationAffinityValues = _messages.StringField(84, repeated=True)
+  sampledShapleyNumPaths = _messages.IntegerField(85)
+  scaleFeatures = _messages.BooleanField(86)
+  standardizeFeatures = _messages.BooleanField(87)
+  subsample = _messages.FloatField(88)
+  tfVersion = _messages.StringField(89)
+  timeSeriesDataColumn = _messages.StringField(90)
+  timeSeriesIdColumn = _messages.StringField(91)
+  timeSeriesIdColumns = _messages.StringField(92, repeated=True)
+  timeSeriesLengthFraction = _messages.FloatField(93)
+  timeSeriesTimestampColumn = _messages.StringField(94)
+  treeMethod = _messages.EnumField('TreeMethodValueValuesEnum', 95)
+  trendSmoothingWindowSize = _messages.IntegerField(96)
+  userColumn = _messages.StringField(97)
+  vertexAiModelVersionAliases = _messages.StringField(98, repeated=True)
+  walsAlpha = _messages.FloatField(99)
+  warmStart = _messages.BooleanField(100)
+  xgboostVersion = _messages.StringField(101)
 
 
 class TrainingRun(_messages.Message):

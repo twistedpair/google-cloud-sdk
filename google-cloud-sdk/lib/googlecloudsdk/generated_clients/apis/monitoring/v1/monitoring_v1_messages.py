@@ -840,8 +840,10 @@ class Dimension(_messages.Message):
     SortOrderValueValuesEnum: The sort order applied to the sort column.
 
   Fields:
-    column: Required. The name of the column in the source SQL query that is
-      used to chart the dimension.
+    column: Required. For widgets that use SQL queries, set the value to the
+      name of the column in the results table whose data is charted. For a
+      histogram that uses a time series query, set the value of this field to
+      metric_value.
     columnType: Optional. The type of the dimension column. This is relevant
       only if one of the bin_size fields is set. If it is empty, the type
       TIMESTAMP or INT64 will be assumed based on which bin_size field is set.
@@ -849,18 +851,23 @@ class Dimension(_messages.Message):
       TIME, DATETIME, TIMESTAMP, BIGNUMERIC, INT64, NUMERIC, FLOAT64.
     floatBinSize: Optional. float_bin_size is used when the column type used
       for a dimension is a floating point numeric column.
-    maxBinCount: A limit to the number of bins generated. When 0 is specified,
-      the maximum count is not enforced.
+    maxBinCount: For widgets that use SQL queries, the limit to the number of
+      bins to generate. When 0 is specified, the maximum count is not
+      enforced. For a histogram that uses a time series query, the exact
+      number of bins to generate. If not specified or the value is 0, then the
+      histogram determines the number of bins to use.
     numericBinSize: numeric_bin_size is used when the column type used for a
-      dimension is numeric or string.
+      dimension is numeric or string. If the column field is set to
+      metric_value, then numericBinSize overrides maxBinCount.
     sortColumn: The column name to sort on for binning. This column can be the
       same column as this dimension or any other column used as a measure in
       the results. If sort_order is set to NONE, then this value is not used.
     sortOrder: The sort order applied to the sort column.
-    timeBinSize: time_bin_size is used when the data type specified by column
-      is a time type and the bin size is determined by a time duration. If
-      column_type is DATE, this must be a whole value multiple of 1 day. If
-      column_type is TIME, this must be less than or equal to 24 hours.
+    timeBinSize: time_bin_size is used when the data type of the specified
+      dimension is a time type and the bin size is determined by a time
+      duration. If column_type is DATE, this must be a whole value multiple of
+      1 day. If column_type is TIME, this must be less than or equal to 24
+      hours.
   """
 
   class SortOrderValueValuesEnum(_messages.Enum):

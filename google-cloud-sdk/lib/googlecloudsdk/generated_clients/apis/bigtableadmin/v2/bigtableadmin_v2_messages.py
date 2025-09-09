@@ -321,26 +321,6 @@ class BackupInfo(_messages.Message):
   startTime = _messages.StringField(5)
 
 
-class BigtableadminOperationsCancelRequest(_messages.Message):
-  r"""A BigtableadminOperationsCancelRequest object.
-
-  Fields:
-    name: The name of the operation resource to be cancelled.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class BigtableadminOperationsDeleteRequest(_messages.Message):
-  r"""A BigtableadminOperationsDeleteRequest object.
-
-  Fields:
-    name: The name of the operation resource to be deleted.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class BigtableadminOperationsGetRequest(_messages.Message):
   r"""A BigtableadminOperationsGetRequest object.
 
@@ -1025,7 +1005,7 @@ class BigtableadminProjectsInstancesMaterializedViewsPatchRequest(_messages.Mess
       body.
     name: Identifier. The unique name of the materialized view. Format: `proje
       cts/{project}/instances/{instance}/materializedViews/{materialized_view}
-      `
+      ` Views: `SCHEMA_VIEW`, `REPLICATION_VIEW`, `FULL`.
     updateMask: Optional. The list of fields to update.
   """
 
@@ -1775,22 +1755,13 @@ class BigtableadminProjectsInstancesTestIamPermissionsRequest(_messages.Message)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
-class BigtableadminProjectsLocationsGetRequest(_messages.Message):
-  r"""A BigtableadminProjectsLocationsGetRequest object.
-
-  Fields:
-    name: Resource name for the location.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class BigtableadminProjectsLocationsListRequest(_messages.Message):
   r"""A BigtableadminProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -3229,7 +3200,7 @@ class Instance(_messages.Message):
       associated with a given resource. * Keys and values must both be under
       128 bytes.
     TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
-      to this resource. For example: "123/environment": "production",
+      to this resource. For example: - "123/environment": "production", -
       "123/costCenter": "marketing" Tags and Labels (above) are both used to
       bind metadata to resources, with different use-cases. See
       https://cloud.google.com/resource-manager/docs/tags/tags-overview for an
@@ -3257,7 +3228,7 @@ class Instance(_messages.Message):
     satisfiesPzs: Output only. Reserved for future use.
     state: Output only. The current state of the instance.
     tags: Optional. Input only. Immutable. Tag keys/values directly bound to
-      this resource. For example: "123/environment": "production",
+      this resource. For example: - "123/environment": "production", -
       "123/costCenter": "marketing" Tags and Labels (above) are both used to
       bind metadata to resources, with different use-cases. See
       https://cloud.google.com/resource-manager/docs/tags/tags-overview for an
@@ -3330,7 +3301,7 @@ class Instance(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TagsValue(_messages.Message):
     r"""Optional. Input only. Immutable. Tag keys/values directly bound to
-    this resource. For example: "123/environment": "production",
+    this resource. For example: - "123/environment": "production", -
     "123/costCenter": "marketing" Tags and Labels (above) are both used to
     bind metadata to resources, with different use-cases. See
     https://cloud.google.com/resource-manager/docs/tags/tags-overview for an
@@ -3665,14 +3636,16 @@ class MaterializedView(_messages.Message):
 
   Fields:
     deletionProtection: Set to true to make the MaterializedView protected
-      against deletion.
+      against deletion. Views: `SCHEMA_VIEW`, `REPLICATION_VIEW`, `FULL`.
     etag: Optional. The etag for this materialized view. This may be sent on
       update requests to ensure that the client has an up-to-date value before
       proceeding. The server returns an ABORTED error on a mismatched etag.
+      Views: `SCHEMA_VIEW`, `REPLICATION_VIEW`, `FULL`.
     name: Identifier. The unique name of the materialized view. Format: `proje
       cts/{project}/instances/{instance}/materializedViews/{materialized_view}
-      `
-    query: Required. Immutable. The materialized view's select query.
+      ` Views: `SCHEMA_VIEW`, `REPLICATION_VIEW`, `FULL`.
+    query: Required. Immutable. The materialized view's select query. Views:
+      `SCHEMA_VIEW`, `FULL`.
   """
 
   deletionProtection = _messages.BooleanField(1)

@@ -54,12 +54,13 @@ class SnapshotsClient(object):
     self.messages = messages or GetMessagesModule(client)
     self._service = self.client.projects_snapshots
 
-  def Create(self, snapshot_ref, subscription_ref, labels=None):
+  def Create(self, snapshot_ref, subscription_ref, labels=None, tags=None):
     """Creates a Snapshot."""
     create_req = self.messages.PubsubProjectsSnapshotsCreateRequest(
         createSnapshotRequest=self.messages.CreateSnapshotRequest(
             subscription=subscription_ref.RelativeName(),
-            labels=labels),
+            labels=labels,
+            tags=tags),
         name=snapshot_ref.RelativeName())
     return self._service.Create(create_req)
 

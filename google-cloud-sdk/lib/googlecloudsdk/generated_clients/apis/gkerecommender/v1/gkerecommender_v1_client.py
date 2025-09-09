@@ -57,15 +57,11 @@ class GkerecommenderV1(base_api.BaseApiClient):
           }
 
     def Fetch(self, request, global_params=None):
-      r"""Fetches all of the benchmarking data available for a profile.
-
-      Benchmarking data returns all of the performance metrics available for a
-      given model server setup on a given instance type.
+      r"""Fetches all of the benchmarking data available for a profile. Benchmarking data returns all of the performance metrics available for a given model server setup on a given instance type.
 
       Args:
         request: (FetchBenchmarkingDataRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (FetchBenchmarkingDataResponse) The response message.
       """
@@ -97,18 +93,11 @@ class GkerecommenderV1(base_api.BaseApiClient):
           }
 
     def Fetch(self, request, global_params=None):
-      r"""Fetches available model server versions.
-
-      Open-source servers use their own versioning schemas (e.g., `vllm` uses
-      semver like `v1.0.0`). Some model servers have different versioning
-      schemas depending on the accelerator. For example, `vllm` uses semver on
-      GPUs, but returns nightly build tags on TPUs. All available versions will
-      be returned when different schemas are present.
+      r"""Fetches available model server versions. Open-source servers use their own versioning schemas (e.g., `vllm` uses semver like `v1.0.0`). Some model servers have different versioning schemas depending on the accelerator. For example, `vllm` uses semver on GPUs, but returns nightly build tags on TPUs. All available versions will be returned when different schemas are present.
 
       Args:
         request: (GkerecommenderModelServerVersionsFetchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (FetchModelServerVersionsResponse) The response message.
       """
@@ -140,14 +129,11 @@ class GkerecommenderV1(base_api.BaseApiClient):
           }
 
     def Fetch(self, request, global_params=None):
-      r"""Fetches available model servers.
-
-      Open-source model servers use simplified, lowercase names (e.g., `vllm`).
+      r"""Fetches available model servers. Open-source model servers use simplified, lowercase names (e.g., `vllm`).
 
       Args:
         request: (GkerecommenderModelServersFetchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (FetchModelServersResponse) The response message.
       """
@@ -179,14 +165,11 @@ class GkerecommenderV1(base_api.BaseApiClient):
           }
 
     def Fetch(self, request, global_params=None):
-      r"""Fetches available models.
-
-      Open-source models follow the Huggingface Hub `owner/model_name` format.
+      r"""Fetches available models. Open-source models follow the Huggingface Hub `owner/model_name` format.
 
       Args:
         request: (GkerecommenderModelsFetchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (FetchModelsResponse) The response message.
       """
@@ -218,16 +201,11 @@ class GkerecommenderV1(base_api.BaseApiClient):
           }
 
     def Generate(self, request, global_params=None):
-      r"""Generates an optimized deployment manifest for a given model and model server, based on the specified accelerator, performance targets, and configurations.
-
-      See [Run best practice inference with GKE Inference Quickstart
-      recipes](https://cloud.google.com/kubernetes-engine/docs/how-to/machine-learning/inference/inference-quickstart)
-      for deployment details.
+      r"""Generates an optimized deployment manifest for a given model and model server, based on the specified accelerator, performance targets, and configurations. See [Run best practice inference with GKE Inference Quickstart recipes](https://cloud.google.com/kubernetes-engine/docs/how-to/machine-learning/inference/inference-quickstart) for deployment details.
 
       Args:
         request: (GenerateOptimizedManifestRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (GenerateOptimizedManifestResponse) The response message.
       """
@@ -255,24 +233,15 @@ class GkerecommenderV1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(GkerecommenderV1.ProfilesService, self).__init__(client)
-      self._upload_configs = {}
+      self._upload_configs = {
+          }
 
     def Fetch(self, request, global_params=None):
-      r"""Fetches available profiles.
-
-      A profile contains performance metrics and cost information for a specific
-      model server setup. Profiles can be filtered by parameters. If no filters
-      are provided, all profiles are returned. Profiles display a single value
-      per performance metric based on the provided performance requirements. If
-      no requirements are given, the metrics represent the inflection point. See
-      [Run best practice inference with GKE Inference Quickstart
-      recipes](https://cloud.google.com/kubernetes-engine/docs/how-to/machine-learning/inference/inference-quickstart#how)
-      for details.
+      r"""Fetches available profiles. A profile contains performance metrics and cost information for a specific model server setup. Profiles can be filtered by parameters. If no filters are provided, all profiles are returned. Profiles display a single value per performance metric based on the provided performance requirements. If no requirements are given, the metrics represent the inflection point. See [Run best practice inference with GKE Inference Quickstart recipes](https://cloud.google.com/kubernetes-engine/docs/how-to/machine-learning/inference/inference-quickstart#how) for details.
 
       Args:
         request: (FetchProfilesRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (FetchProfilesResponse) The response message.
       """
