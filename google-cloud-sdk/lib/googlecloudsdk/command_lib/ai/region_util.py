@@ -25,6 +25,13 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 
 
+def _IsDefaultUniverse():
+  return (
+      properties.VALUES.core.universe_domain.Get()
+      == properties.VALUES.core.universe_domain.default
+  )
+
+
 def GetPromptForRegionFunc(available_regions=constants.SUPPORTED_REGION):
   """Returns a no argument function that prompts available regions and catches the user selection."""
   return lambda: PromptForRegion(available_regions)
@@ -34,16 +41,17 @@ def PromptForRegion(available_regions=constants.SUPPORTED_REGION):
   """Prompt for region from list of available regions.
 
   This method is referenced by the declaritive iam commands as a fallthrough
-  for getting the region.
+  for getting the region. Prompts only in GDU
 
   Args:
     available_regions: list of the available regions to choose from
 
   Returns:
-    The region specified by the user, str
+    The region specified by the user, str, or None if not in GDU or cannot
+    prompt.
   """
 
-  if console_io.CanPrompt():
+  if console_io.CanPrompt() and _IsDefaultUniverse():
     all_regions = list(available_regions)
     idx = console_io.PromptChoice(
         all_regions, message='Please specify a region:\n', cancel_option=True)
@@ -57,16 +65,14 @@ def PromptForOpRegion():
   """Prompt for region from list of online prediction available regions.
 
   This method is referenced by the declaritive iam commands as a fallthrough
-  for getting the region.
+  for getting the region. Prompts only in GDU.
 
   Returns:
-    The region specified by the user, str
-
-  Raises:
-    RequiredArgumentException: If can not prompt a console for region.
+    The region specified by the user, str, or None if not in GDU or cannot
+    prompt.
   """
 
-  if console_io.CanPrompt():
+  if console_io.CanPrompt() and _IsDefaultUniverse():
     all_regions = list(constants.SUPPORTED_OP_REGIONS)
     idx = console_io.PromptChoice(
         all_regions, message='Please specify a region:\n', cancel_option=True)
@@ -74,26 +80,20 @@ def PromptForOpRegion():
     log.status.Print('To make this the default region, run '
                      '`gcloud config set ai/region {}`.\n'.format(region))
     return region
-  raise exceptions.RequiredArgumentException(
-      '--region',
-      ('Cannot prompt a console for region. Region is required. '
-       'Please specify `--region` to select a region.'))
 
 
 def PromptForDeploymentResourcePoolSupportedRegion():
   """Prompt for region from list of deployment resource pool available regions.
 
   This method is referenced by the declaritive iam commands as a fallthrough
-  for getting the region.
+  for getting the region. Prompts only in GDU.
 
   Returns:
-    The region specified by the user, str
-
-  Raises:
-    RequiredArgumentException: If can not prompt a console for region.
+    The region specified by the user, str, or None if not in GDU or cannot
+    prompt.
   """
 
-  if console_io.CanPrompt():
+  if console_io.CanPrompt() and _IsDefaultUniverse():
     all_regions = list(constants.SUPPORTED_DEPLOYMENT_RESOURCE_POOL_REGIONS)
     idx = console_io.PromptChoice(
         all_regions, message='Please specify a region:\n', cancel_option=True)
@@ -101,10 +101,6 @@ def PromptForDeploymentResourcePoolSupportedRegion():
     log.status.Print('To make this the default region, run '
                      '`gcloud config set ai/region {}`.\n'.format(region))
     return region
-  raise exceptions.RequiredArgumentException(
-      '--region',
-      ('Cannot prompt a console for region. Region is required. '
-       'Please specify `--region` to select a region.'))
 
 
 def GetRegion(args, prompt_func=PromptForRegion):
@@ -113,7 +109,7 @@ def GetRegion(args, prompt_func=PromptForRegion):
     Region is decided in the following order:
   - region argument;
   - ai/region gcloud config;
-  - prompt user input.
+  - prompt user input (only in GDU).
 
   Args:
     args: Namespace, The args namespace.

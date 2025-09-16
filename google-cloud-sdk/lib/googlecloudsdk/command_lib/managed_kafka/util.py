@@ -365,7 +365,7 @@ def PrepareConnectClusterUpdate(_, args, request):
   return request
 
 
-def ConnectorCreateReadConfigFile(_, args, request):
+def ConnectorCreateReadConfigAndTaskRestartPolicy(_, args, request):
   """Load the config JSON from the argument to the request.
 
   Args:
@@ -375,17 +375,34 @@ def ConnectorCreateReadConfigFile(_, args, request):
 
   Returns:
   """
-  if args.config_file:
+  if not request.connector:
     request.connector = {}
+  if args.config_file:
     config = core.yaml.load(args.config_file)
     request.connector.configs = encoding.DictToMessage(
         config, _MESSAGE.Connector.ConfigsValue
     )
+  # Gcloud's duration formatting doesn't seem to play nice with the protobuf
+  # duration parsing, so we convert to seconds and append the unit suffix here.
+  task_restart_policy_dict = {}
+  if args.task_restart_max_backoff:
+    task_restart_policy_dict["maximum_backoff"] = (
+        str(args.task_restart_max_backoff.total_seconds) + "s"
+    )
+  if args.task_restart_min_backoff:
+    task_restart_policy_dict["minimum_backoff"] = (
+        str(args.task_restart_min_backoff.total_seconds) + "s"
+    )
+  if task_restart_policy_dict:
+    request.connector.taskRestartPolicy = encoding.DictToMessage(
+        task_restart_policy_dict,
+        _MESSAGE.TaskRetryPolicy,
+    )
   return request
 
 
-def ConnectorUpdateReadConfigFile(_, args, request):
-  """Load the config JSON from the argument to the request.
+def ConnectorUpdateReadConfigAndTaskRestartPolicy(_, args, request):
+  """Load the config JSON from the argument to the request, and parse out the task restart policy.
 
   Args:
     _:  resource parameter required but unused variable.
@@ -394,13 +411,30 @@ def ConnectorUpdateReadConfigFile(_, args, request):
 
   Returns:
   """
-  if args.config_file:
+  if not request.connector:
     request.connector = {}
+  if args.config_file:
     config = core.yaml.load(args.config_file)
     request.connector.configs = encoding.DictToMessage(
         config, _MESSAGE.Connector.ConfigsValue
     )
     request.updateMask = AppendUpdateMask(request.updateMask, "configs")
+  # Gcloud's duration formatting doesn't seem to play nice with the protobuf
+  # duration parsing, so we convert to seconds and append the unit suffix here.
+  task_restart_policy_dict = {}
+  if args.task_restart_max_backoff:
+    task_restart_policy_dict["maximum_backoff"] = (
+        str(args.task_restart_max_backoff.total_seconds) + "s"
+    )
+  if args.task_restart_min_backoff:
+    task_restart_policy_dict["minimum_backoff"] = (
+        str(args.task_restart_min_backoff.total_seconds) + "s"
+    )
+  if task_restart_policy_dict:
+    request.connector.taskRestartPolicy = encoding.DictToMessage(
+        task_restart_policy_dict,
+        _MESSAGE.TaskRetryPolicy,
+    )
   return request
 
 

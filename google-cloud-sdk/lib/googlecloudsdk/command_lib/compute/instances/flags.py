@@ -1989,8 +1989,8 @@ def AddProvisioningModelVmArgs(parser, support_flex_start=False):
   }
   if support_flex_start:
     choices['FLEX_START'] = (
-        'Instance is provisioned using the Flex Start provisioning model and'
-        ' has a limited runtime.'
+        'The VM instance is provisioned using the Flex Start provisioning model'
+        ' and has a limited runtime.'
     )
   parser.add_argument(
       '--provisioning-model',
@@ -2163,6 +2163,17 @@ def AddGracefulShutdownArgs(parser, is_create=False):
       type=arg_parsers.Duration(lower_bound='1s', upper_bound='3600s'),
       help="""
       Specifies the maximum time for the graceful shutdown. After this time, the instance is set to STOPPING even if tasks are still running. Specify the time as the number of hours, minutes, or seconds followed by h, m, and s respectively. For example, specify 30m for 30 minutes or 20m10s for 20 minutes and 10 seconds. The value must be between 1 second and 1 hour.
+      """,
+  )
+
+
+def AddPreemptionNoticeDurationArgs(parser):
+  parser.add_argument(
+      '--preemption-notice-duration',
+      type=arg_parsers.Duration(),
+      help="""\
+      Specifies the metadata preemption notice duration before the ACPI G2
+      soft off signal is triggered for Spot VMs. e.g. 120s.
       """,
   )
 
@@ -4153,7 +4164,6 @@ def AddRequestValidForDurationArgs(parser):
       example, specify `30m` for a duration of 30 minutes, or `1h2m3s` for
       1 hour, 2 minutes, and 3 seconds. Longer durations give you higher chances
       that your instance creation request succeeds when resources are in high
-      demand. If you don't specify a duration, then the default duration is 90
-      seconds.
+      demand.
       """,
   )

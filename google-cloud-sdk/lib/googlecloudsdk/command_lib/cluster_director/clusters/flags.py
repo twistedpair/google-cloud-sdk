@@ -24,7 +24,7 @@ from googlecloudsdk.command_lib.cluster_director.clusters import flag_types
 from googlecloudsdk.command_lib.cluster_director.clusters import utils
 
 
-def AddConfig(group, api_version=None, hidden=False):
+def AddConfig(group, api_version=None, required=False, hidden=False):
   """Adds a config flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
@@ -35,6 +35,24 @@ def AddConfig(group, api_version=None, hidden=False):
           spec=utils.GetClusterFlagType(api_version=api_version),
           enable_shorthand=True,
       ),
+      required=required,
+      hidden=hidden,
+  )
+
+
+def AddUpdateMask(group, api_version=None, required=False, hidden=False):
+  """Adds an update mask flag for the given API version."""
+  if api_version not in ["v1alpha"]:
+    raise exceptions.ToolException(f"Unsupported API version: {api_version}")
+  group.add_argument(
+      "--update-mask",
+      help=textwrap.dedent("""
+        Update mask to specify the fields to update.
+
+        For e.g. --update-mask "description,labels"
+      """),
+      type=arg_parsers.ArgObject(value_type=str, enable_shorthand=True),
+      required=required,
       hidden=hidden,
   )
 
@@ -55,20 +73,41 @@ def AddDescription(group, api_version=None, hidden=False):
   )
 
 
-def AddLabels(group, api_version=None, hidden=False):
+def AddLabels(
+    group,
+    name="labels",
+    api_version=None,
+    hidden=False,
+    include_update_flags=False,
+):
   """Adds a labels flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
+  remove_flag_name = f"remove-{name}"
+  if include_update_flags:
+    name = f"add-{name}"
   group.add_argument(
-      "--labels",
-      help=textwrap.dedent("""
+      f"--{name}",
+      help=textwrap.dedent(f"""
         Cluster labels as key value pairs.
 
-        For e.g. --labels key1=value1,key2=value2
+        For e.g. --{name} key1=value1,key2=value2
       """),
       type=flag_types.LABEL,
       hidden=hidden,
   )
+  if include_update_flags:
+    group.add_argument(
+        f"--{remove_flag_name}",
+        help=textwrap.dedent(f"""
+          Parameters to remove cluster label by key.
+
+          For e.g. --{remove_flag_name} {{key1}},{{key2}},...
+        """),
+        type=arg_parsers.ArgList(element_type=str),
+        action=arg_parsers.FlattenAction(),
+        hidden=hidden,
+    )
 
 
 def AddCreateNetwork(group, api_version=None, hidden=False):
@@ -78,16 +117,23 @@ def AddCreateNetwork(group, api_version=None, hidden=False):
   group.add_argument(
       "--create-network",
       help=textwrap.dedent("""
-        Name of the network to be created.
+        Parameters to create a network.
 
-        For e.g. --create-network {network}
+        For e.g. --create-network name={network},description={description}
       """),
-      type=str,
+      type=arg_parsers.ArgObject(
+          spec={
+              "name": str,
+              "description": str,
+          },
+          required_keys=["name"],
+          enable_shorthand=True,
+      ),
       hidden=hidden,
   )
 
 
-def AddNetworkSource(group, api_version=None, hidden=False):
+def AddNetworkSource(group, api_version=None, required=False, hidden=False):
   """Adds a network flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
@@ -99,11 +145,12 @@ def AddNetworkSource(group, api_version=None, hidden=False):
         For e.g. --network {network}
       """),
       type=str,
+      required=required,
       hidden=hidden,
   )
 
 
-def AddSubnetSource(group, api_version=None, hidden=False):
+def AddSubnetSource(group, api_version=None, required=False, hidden=False):
   """Adds a subnet flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
@@ -115,6 +162,7 @@ def AddSubnetSource(group, api_version=None, hidden=False):
         For e.g. --subnet regions/{region}/subnetworks/{subnetwork}
       """),
       type=str,
+      required=required,
       hidden=hidden,
   )
 
@@ -129,36 +177,34 @@ def AddCreateFilestores(group, api_version=None, hidden=False):
       help=textwrap.dedent("""
         Parameters to create a filestore instance.
 
-        For e.g. --create-filestores name=locations/{location}/instances/{filestore},tier=TIER_BASIC_HDD,sizeGb=100,fileshare=nfsshare
+        For e.g. --create-filestores name=locations/{location}/instances/{filestore},tier=BASIC_HDD,capacityGb={filestoreSize},fileshare={fileshare}
 
         Supported tier values:
-        - TIER_BASIC_HDD
-        - TIER_BASIC_SSD
-        - TIER_HIGH_SCALE_SSD
-        - TIER_ZONAL
-        - TIER_ENTERPRISE
-        - TIER_REGIONAL
+        - BASIC_HDD
+        - BASIC_SSD
+        - HIGH_SCALE_SSD
+        - ZONAL
+        - ENTERPRISE
+        - REGIONAL
 
         Supported protocol values:
-        - PROTOCOL_NFSV3
-        - PROTOCOL_NFSV41
-        - If not specified, defaults to PROTOCOL_NFSV3
+        - NFSV3
+        - NFSV41
+        - If not specified, defaults to NFSV3
 
         Defaults:
-        - protocol: PROTOCOL_NFSV3
+        - protocol: NFSV3
       """),
       type=arg_parsers.ArgObject(
           spec={
               "name": str,
-              "tier": messages.FilestoreInitializeParams.TierValueValuesEnum,
-              "sizeGb": int,
+              "tier": messages.NewFilestoreConfig.TierValueValuesEnum,
+              "capacityGb": int,
               "fileshare": str,
-              "protocol": (
-                  messages.FilestoreInitializeParams.ProtocolValueValuesEnum
-              ),
+              "protocol": messages.NewFilestoreConfig.ProtocolValueValuesEnum,
               "description": str,
           },
-          required_keys=["name", "tier", "sizeGb", "fileshare"],
+          required_keys=["name", "tier", "capacityGb", "fileshare"],
           enable_shorthand=True,
           repeated=True,
       ),
@@ -190,20 +236,20 @@ def AddCreateGcsBuckets(group, api_version=None, hidden=False):
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
   messages = api_utils.GetMessagesModule(api_utils.GetReleaseTrack(api_version))
   group.add_argument(
-      "--create-gcs-buckets",
+      "--create-buckets",
       help=textwrap.dedent("""
         Parameters to create a Google Cloud Storage bucket.
 
-        For e.g. --create-gcs-buckets name={bucket-path}
+        For e.g. --create-buckets name={bucket-path}
 
         Supported storageClass values:
-        - STORAGE_CLASS_STANDARD
-        - STORAGE_CLASS_NEARLINE
-        - STORAGE_CLASS_COLDLINE
-        - STORAGE_CLASS_ARCHIVE
+        - STANDARD
+        - NEARLINE
+        - COLDLINE
+        - ARCHIVE
 
         Defaults:
-        - storageClass: STORAGE_CLASS_STANDARD
+        - storageClass: STANDARD
 
         Note:
         - Either storageClass or enableAutoclass can be set.
@@ -214,7 +260,7 @@ def AddCreateGcsBuckets(group, api_version=None, hidden=False):
           spec={
               "name": str,
               "storageClass": (
-                  messages.GcsInitializeParams.StorageClassValueValuesEnum
+                  messages.NewBucketConfig.StorageClassValueValuesEnum
               ),
               "enableAutoclass": bool,
               "enableHNS": bool,
@@ -233,11 +279,11 @@ def AddGcsBuckets(group, api_version=None, hidden=False):
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
   group.add_argument(
-      "--gcs-buckets",
+      "--buckets",
       help=textwrap.dedent("""
         Reference of existing Google Cloud Storage bucket.
 
-        For e.g. --gcs-buckets {bucket-path}
+        For e.g. --buckets {bucket-path}
       """),
       type=arg_parsers.ArgList(element_type=str),
       action=arg_parsers.FlattenAction(),
@@ -254,16 +300,16 @@ def AddCreateLustres(group, api_version=None, hidden=False):
       help=textwrap.dedent("""
         Parameters to create a Lustre instance.
 
-        For e.g. --create-lustres name=locations/{location}/instances/{lustre},sizeGb={lustreSize},filesystem={filesystem}
+        For e.g. --create-lustres name=locations/{location}/instances/{lustre},capacityGb={lustreSize},filesystem={filesystem}
       """),
       type=arg_parsers.ArgObject(
           spec={
               "name": str,
               "filesystem": str,
-              "sizeGb": int,
+              "capacityGb": int,
               "description": str,
           },
-          required_keys=["name", "sizeGb", "filesystem"],
+          required_keys=["name", "capacityGb", "filesystem"],
           enable_shorthand=True,
           repeated=True,
       ),
@@ -289,196 +335,353 @@ def AddLustres(group, api_version=None, hidden=False):
   )
 
 
-def AddComputeResources(group, api_version=None, hidden=False):
-  """Adds a compute resources flag for the given API version."""
+def AddOnDemandInstances(
+    group,
+    name="on-demand-instances",
+    api_version=None,
+    hidden=False,
+    include_update_flags=False,
+):
+  """Adds an on demand instances flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
-  messages = api_utils.GetMessagesModule(api_utils.GetReleaseTrack(api_version))
+  remove_flag_name = f"remove-{name}"
+  if include_update_flags:
+    name = f"add-{name}"
   group.add_argument(
-      "--compute-resources",
-      help=textwrap.dedent("""
-        Parameters to define cluster compute resource.
+      f"--{name}",
+      help=textwrap.dedent(f"""
+        Parameters to define cluster on demand instances.
 
-        For e.g. --compute-resources name={computeId},zone={zone},machineType={machineType}
-
-        Supported provisioningModel values:
-        - PROVISIONING_MODEL_STANDARD
-        - PROVISIONING_MODEL_SPOT
-        - PROVISIONING_MODEL_FLEX_START
-        - PROVISIONING_MODEL_RESERVATION_BOUND
-
-        Supported terminationAction values:
-        - TERMINATION_ACTION_DELETE
-        - TERMINATION_ACTION_STOP
+        For e.g. --{name} id={{computeId}},zone={{zone}},machineType={{machineType}}
       """),
       type=arg_parsers.ArgObject(
           spec={
-              "name": str,
+              "id": str,
               "zone": str,
               "machineType": str,
-              "provisioningModel": (
-                  messages.ResourceRequest.ProvisioningModelValueValuesEnum
-              ),
-              "maxRunDuration": int,
-              "terminationAction": (
-                  messages.ResourceRequest.TerminationActionValueValuesEnum
-              ),
-              "guestAcceleratorType": str,
-              "guestAcceleratorCount": int,
           },
-          required_keys=["name", "zone", "machineType"],
+          required_keys=["id", "zone", "machineType"],
           enable_shorthand=True,
           repeated=True,
       ),
       action=arg_parsers.FlattenAction(),
-      required=True,
       hidden=hidden,
   )
+  if include_update_flags:
+    group.add_argument(
+        f"--{remove_flag_name}",
+        help=textwrap.dedent(f"""
+          Parameters to remove on demand instances config by compute id.
+
+          For e.g. --{remove_flag_name} {{computeId1}},{{computeId2}},...
+        """),
+        type=arg_parsers.ArgList(element_type=str),
+        action=arg_parsers.FlattenAction(),
+        hidden=hidden,
+    )
 
 
-def AddComputeResourceDisks(group, api_version=None, hidden=False):
-  """Adds a compute resource disks flag for the given API version."""
+def AddSpotInstances(
+    group,
+    name="spot-instances",
+    api_version=None,
+    hidden=False,
+    include_update_flags=False,
+):
+  """Adds an spot instances flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
+  remove_flag_name = f"remove-{name}"
+  if include_update_flags:
+    name = f"add-{name}"
   group.add_argument(
-      "--compute-resource-disks",
-      help=textwrap.dedent("""
-        Parameters to define disk config for compute resource.
+      f"--{name}",
+      help=textwrap.dedent(f"""
+        Parameters to define cluster spot instances.
 
-        For e.g. --compute-resource-disks computeId={computeId},type={diskType},boot=true,sizeGb={diskSize},sourceImage={family/{image-family} | {image}}
-
-        Note:
-        - for boot disk, all fields are required.
-        - for non-boot disk, only computeId, type and sizeGb are required.
+        For e.g. --{name} id={{computeId}},zone={{zone}},machineType={{machineType}}
       """),
       type=arg_parsers.ArgObject(
           spec={
-              "computeId": str,
-              "type": str,
-              "boot": bool,
-              "sizeGb": int,
-              "sourceImage": str,
+              "id": str,
+              "zone": str,
+              "machineType": str,
           },
-          required_keys=["computeId", "type", "sizeGb"],
+          required_keys=["id", "zone", "machineType"],
           enable_shorthand=True,
           repeated=True,
       ),
       action=arg_parsers.FlattenAction(),
-      required=True,
       hidden=hidden,
   )
+  if include_update_flags:
+    group.add_argument(
+        f"--{remove_flag_name}",
+        help=textwrap.dedent(f"""
+          Parameters to remove spot instance config by compute id.
+
+          For e.g. --{remove_flag_name} {{computeId1}},{{computeId2}},...
+        """),
+        type=arg_parsers.ArgList(element_type=str),
+        action=arg_parsers.FlattenAction(),
+        hidden=hidden,
+    )
 
 
-def AddComputeResourceReservations(group, api_version=None, hidden=False):
-  """Adds a compute resource reservations flag for the given API version."""
+def AddReservedInstances(
+    group,
+    name="reserved-instances",
+    api_version=None,
+    hidden=False,
+    include_update_flags=False,
+):
+  """Adds an reserved instances flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
-  messages = api_utils.GetMessagesModule(api_utils.GetReleaseTrack(api_version))
+  remove_flag_name = f"remove-{name}"
+  if include_update_flags:
+    name = f"add-{name}"
   group.add_argument(
-      "--compute-resource-reservations",
-      help=textwrap.dedent("""
-        Parameters to define reservation for compute resource.
+      f"--{name}",
+      help=textwrap.dedent(f"""
+        Parameters to define cluster reserved instances.
 
-        For e.g. --compute-resource-reservations computeId={computeId},type=RESERVATION_TYPE_SPECIFIC_RESERVATION,values=zones/{zone}/reservations/{reservation}
-
-        Supported type values:
-        - RESERVATION_TYPE_NO_RESERVATION
-        - RESERVATION_TYPE_ANY_RESERVATION
-        - RESERVATION_TYPE_SPECIFIC_RESERVATION
-
-        Defaults:
-        - key: compute.googleapis.com/reservation-name (if type is RESERVATION_TYPE_SPECIFIC_RESERVATION or RESERVATION_TYPE_ANY_RESERVATION)
+        For e.g. --{name} id={{computeId}},reservation=zones/{{zone}}/reservations/{{reservation}},machineType={{machineType}}
       """),
       type=arg_parsers.ArgObject(
           spec={
-              "computeId": str,
-              "type": messages.ReservationAffinity.TypeValueValuesEnum,
-              "key": str,
-              "values": arg_parsers.ArgList(element_type=str),
+              "id": str,
+              "reservation": str,
+              "machineType": str,
           },
-          required_keys=["computeId", "type"],
+          required_keys=["id", "reservation", "machineType"],
           enable_shorthand=True,
           repeated=True,
       ),
       action=arg_parsers.FlattenAction(),
       hidden=hidden,
   )
+  if include_update_flags:
+    group.add_argument(
+        f"--{remove_flag_name}",
+        help=textwrap.dedent(f"""
+          Parameters to remove reserved instance config by compute id.
+
+          For e.g. --{remove_flag_name} {{computeId1}},{{computeId2}},...
+        """),
+        type=arg_parsers.ArgList(element_type=str),
+        action=arg_parsers.FlattenAction(),
+        hidden=hidden,
+    )
 
 
-def AddSlurmNodeSets(group, api_version=None, hidden=False):
+def AddDwsFlexInstances(
+    group,
+    name="dws-flex-instances",
+    api_version=None,
+    hidden=False,
+    include_update_flags=False,
+):
+  """Adds an DWS Flex instances flag for the given API version."""
+  if api_version not in ["v1alpha"]:
+    raise exceptions.ToolException(f"Unsupported API version: {api_version}")
+  remove_flag_name = f"remove-{name}"
+  if include_update_flags:
+    name = f"add-{name}"
+  group.add_argument(
+      f"--{name}",
+      help=textwrap.dedent(f"""
+        Parameters to define cluster DWS Flex instances.
+
+        For e.g. --{name} id={{computeId}},zone={{zone}},machineType={{machineType}},maxDuration=10000s
+      """),
+      type=arg_parsers.ArgObject(
+          spec={
+              "id": str,
+              "zone": str,
+              "machineType": str,
+              "maxDuration": str,
+          },
+          required_keys=["id", "zone", "machineType", "maxDuration"],
+          enable_shorthand=True,
+          repeated=True,
+      ),
+      action=arg_parsers.FlattenAction(),
+      hidden=hidden,
+  )
+  if include_update_flags:
+    group.add_argument(
+        f"--{remove_flag_name}",
+        help=textwrap.dedent(f"""
+          Parameters to remove DWS Flex instance config by compute id.
+
+          For e.g. --{remove_flag_name} {{computeId1}},{{computeId2}},...
+        """),
+        type=arg_parsers.ArgList(element_type=str),
+        action=arg_parsers.FlattenAction(),
+        hidden=hidden,
+    )
+
+
+def AddSlurmNodeSets(
+    group,
+    name="slurm-node-sets",
+    api_version=None,
+    required=False,
+    hidden=False,
+    include_update_flags=False,
+):
   """Adds a slurm node sets flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
+  update_flag_name = f"update-{name}"
+  remove_flag_name = f"remove-{name}"
+  if include_update_flags:
+    name = f"add-{name}"
   group.add_argument(
-      "--slurm-node-sets",
-      help=textwrap.dedent("""
+      f"--{name}",
+      help=textwrap.dedent(f"""
         Parameters to define slurm cluster nodeset config.
 
-        For e.g. --slurm-node-sets name={nodesetId},computeId={computeId},staticNodeCount={staticNodeCount},maxDynamicNodeCount={maxDynamicNodeCount},enableOSLogin=true,enableIPForward=false,enablePublicIPs=false,serviceAccountEmail={serviceAccountEmail},serviceAccountScopes=[scope1,scope2],startupScript="echo hello",labels="{key1=value1,key2=value2}"
+        For e.g. --{name} id={{nodesetId}},computeId={{computeId}},staticNodeCount={{staticNodeCount}},maxDynamicNodeCount={{maxDynamicNodeCount}},startupScript="echo hello",labels="{{key1=value1,key2=value2}}"
 
         Defaults:
         - staticNodeCount: 1
-        - enableOSLogin: true
 
         Note:
         - startupScript:
           - Either str or file_path
           - For file_path, only bash file format (.sh or .bash) is supported.
-          - For file_path, absolute or relative path to current work directory is supported.
+          - For file_path, only absolute path is supported.
       """),
       type=arg_parsers.ArgObject(
           spec={
-              "name": str,
+              "id": str,
               "computeId": str,
               "staticNodeCount": int,
               "maxDynamicNodeCount": int,
-              "enableOSLogin": bool,
-              "enableIPForward": bool,
-              "enablePublicIPs": bool,
-              "serviceAccountEmail": str,
-              "serviceAccountScopes": arg_parsers.ArgObject(
-                  value_type=str, repeated=True
-              ),
               "startupScript": arg_parsers.ArgObject(),
               "labels": flag_types.LABEL,
           },
-          required_keys=["name", "computeId"],
+          required_keys=["id", "computeId"],
           enable_shorthand=True,
           repeated=True,
       ),
       action=arg_parsers.FlattenAction(),
-      required=True,
+      required=required,
       hidden=hidden,
   )
+  if include_update_flags:
+    group.add_argument(
+        f"--{update_flag_name}",
+        help=textwrap.dedent(f"""
+          Parameters to define and update slurm cluster nodeset config.
+
+          For e.g. --{update_flag_name} id={{nodesetId}},staticNodeCount={{staticNodeCount}},maxDynamicNodeCount={{maxDynamicNodeCount}}
+        """),
+        type=arg_parsers.ArgObject(
+            spec={
+                "id": str,
+                "staticNodeCount": int,
+                "maxDynamicNodeCount": int,
+            },
+            required_keys=["id"],
+            enable_shorthand=True,
+            repeated=True,
+        ),
+        action=arg_parsers.FlattenAction(),
+        required=required,
+        hidden=hidden,
+    )
+    group.add_argument(
+        f"--{remove_flag_name}",
+        help=textwrap.dedent(f"""
+          Parameters to remove slurm nodeset config by nodeset id.
+
+          For e.g. --{remove_flag_name} {{nodesetId1}},{{nodesetId2}},...
+        """),
+        type=arg_parsers.ArgList(element_type=str),
+        action=arg_parsers.FlattenAction(),
+        required=required,
+        hidden=hidden,
+    )
 
 
-def AddSlurmPartitions(group, api_version=None, hidden=False):
+def AddSlurmPartitions(
+    group,
+    name="slurm-partitions",
+    api_version=None,
+    required=False,
+    hidden=False,
+    include_update_flags=False,
+):
   """Adds a slurm partitions flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
+  update_flag_name = f"update-{name}"
+  remove_flag_name = f"remove-{name}"
+  if include_update_flags:
+    name = f"add-{name}"
   group.add_argument(
-      "--slurm-partitions",
-      help=textwrap.dedent("""
+      f"--{name}",
+      help=textwrap.dedent(f"""
         Parameters to define slurm cluster partitions.
 
-        For e.g. --slurm-partitions name={partitionId},nodesetIds=[{nodesetId1},{nodesetId2}],exclusive=false
+        For e.g. --{name} id={{partitionId}},nodesetIds=[{{nodesetId1}},{{nodesetId2}}],exclusive=false
       """),
       type=arg_parsers.ArgObject(
           spec={
-              "name": str,
+              "id": str,
               "nodesetIds": arg_parsers.ArgObject(
                   value_type=str, repeated=True
               ),
               "exclusive": bool,
           },
-          required_keys=["name", "nodesetIds"],
+          required_keys=["id", "nodesetIds"],
           enable_shorthand=True,
           repeated=True,
       ),
       action=arg_parsers.FlattenAction(),
-      required=True,
+      required=required,
       hidden=hidden,
   )
+  if include_update_flags:
+    group.add_argument(
+        f"--{update_flag_name}",
+        help=textwrap.dedent(f"""
+          Parameters to define and update slurm cluster partition config.
+
+          For e.g. --{update_flag_name} id={{partitionId}},nodesetIds=[{{nodesetId1}},{{nodesetId2}}],exclusive=false
+        """),
+        type=arg_parsers.ArgObject(
+            spec={
+                "id": str,
+                "nodesetIds": arg_parsers.ArgObject(
+                    value_type=str, repeated=True
+                ),
+                "exclusive": bool,
+            },
+            required_keys=["id"],
+            enable_shorthand=True,
+            repeated=True,
+        ),
+        action=arg_parsers.FlattenAction(),
+        required=required,
+        hidden=hidden,
+    )
+    group.add_argument(
+        f"--{remove_flag_name}",
+        help=textwrap.dedent(f"""
+          Parameters to remove slurm partition config by partition id.
+
+          For e.g. --{remove_flag_name} {{partitionId1}},{{partitionId2}},...
+        """),
+        type=arg_parsers.ArgList(element_type=str),
+        action=arg_parsers.FlattenAction(),
+        required=required,
+        hidden=hidden,
+    )
 
 
 def AddSlurmDefaultPartition(group, api_version=None, hidden=False):
@@ -497,7 +700,7 @@ def AddSlurmDefaultPartition(group, api_version=None, hidden=False):
   )
 
 
-def AddSlurmLoginNode(group, api_version=None, hidden=False):
+def AddSlurmLoginNode(group, api_version=None, required=False, hidden=False):
   """Adds a slurm login node flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
@@ -506,7 +709,7 @@ def AddSlurmLoginNode(group, api_version=None, hidden=False):
       help=textwrap.dedent("""
         Parameters to define slurm cluster login node.
 
-        For e.g. --slurm-login-node machineType={machineType},zone={zone},count={count},enableOSLogin=true,enablePublicIPs=true,serviceAccountEmail={serviceAccountEmail},serviceAccountScopes=[scope1,scope2],startupScript="echo hello",labels="{key1=value1,key2=value2}"
+        For e.g. --slurm-login-node machineType={machineType},zone={zone},count={count},enableOSLogin=true,enablePublicIPs=true,startupScript="echo hello",labels="{key1=value1,key2=value2}"
 
         Defaults:
         - count: 1
@@ -517,7 +720,7 @@ def AddSlurmLoginNode(group, api_version=None, hidden=False):
         - startupScript:
           - Either str or file_path
           - For file_path, only bash file format (.sh or .bash) is supported.
-          - For file_path, absolute or relative path to current work directory is supported.
+          - For file_path, only absolute path is supported.
       """),
       type=arg_parsers.ArgObject(
           spec={
@@ -526,100 +729,12 @@ def AddSlurmLoginNode(group, api_version=None, hidden=False):
               "count": int,
               "enableOSLogin": bool,
               "enablePublicIPs": bool,
-              "serviceAccountEmail": str,
-              "serviceAccountScopes": arg_parsers.ArgList(element_type=str),
               "startupScript": arg_parsers.ArgObject(),
               "labels": flag_types.LABEL,
           },
           required_keys=["machineType", "zone"],
           enable_shorthand=True,
       ),
-      required=True,
-      hidden=hidden,
-  )
-
-
-def AddSlurmLoginNodeDisks(group, api_version=None, hidden=False):
-  """Adds a slurm login node disks flag for the given API version."""
-  if api_version not in ["v1alpha"]:
-    raise exceptions.ToolException(f"Unsupported API version: {api_version}")
-  group.add_argument(
-      "--slurm-login-node-disks",
-      help=textwrap.dedent("""
-        Parameters to define disk config for slurm cluster login node.
-
-        For e.g. --slurm-login-node-disks type={diskType},boot=true,sizeGb={diskSize},sourceImage={family/{image-family} | {image}}
-
-        Note:
-        - for boot disk, all fields are required.
-        - for non-boot disk, only type and sizeGb are required.
-      """),
-      type=flag_types.DISK,
-      action=arg_parsers.FlattenAction(),
-      required=True,
-      hidden=hidden,
-  )
-
-
-def AddSlurmConfig(group, api_version=None, hidden=False):
-  """Adds a slurm config flag for the given API version."""
-  if api_version not in ["v1alpha"]:
-    raise exceptions.ToolException(f"Unsupported API version: {api_version}")
-  messages = api_utils.GetMessagesModule(api_utils.GetReleaseTrack(api_version))
-  group.add_argument(
-      "--slurm-config",
-      help=textwrap.dedent("""
-        Parameters to define slurm cluster config.
-
-        For e.g. --slurm-config requeueExitCodes=[1,2,3],requeueHoldExitCodes=[4,5,6],prologFlags=[ALLOC,CONTAIN,NO_HOLD],prologEpilogTimeout=10000s,jobPrologBashScripts=["echo hello",...],jobEpilogBashScripts=["echo goodbye",...],taskPrologBashScripts=["echo hi",...],taskEpilogBashScripts=["echo bye",...]
-
-        Supported prologFlags values:
-        - ALLOC
-        - CONTAIN
-        - DEFER_BATCH
-        - NO_HOLD
-        - FORCE_REQUEUE_ON_FAIL
-        - RUN_IN_JOB
-        - SERIAL
-        - X11
-
-        Note:
-        - jobPrologBashScripts, jobEpilogBashScripts, taskPrologBashScripts, taskEpilogBashScripts:
-          - Either str or file_path
-          - For file_path, only bash file format (.sh or .bash) is supported.
-          - For file_path, absolute or relative path to current work directory is supported.
-      """),
-      type=arg_parsers.ArgObject(
-          spec={
-              "requeueExitCodes": arg_parsers.ArgObject(
-                  value_type=int, repeated=True
-              ),
-              "requeueHoldExitCodes": arg_parsers.ArgObject(
-                  value_type=int, repeated=True
-              ),
-              "prologFlags": arg_parsers.ArgObject(
-                  value_type=messages.SlurmConfig.PrologFlagsValueListEntryValuesEnum,
-                  repeated=True,
-              ),
-              "prologEpilogTimeout": str,
-              "jobPrologBashScripts": arg_parsers.ArgObject(
-                  value_type=str,
-                  repeated=True,
-              ),
-              "jobEpilogBashScripts": arg_parsers.ArgObject(
-                  value_type=str,
-                  repeated=True,
-              ),
-              "taskPrologBashScripts": arg_parsers.ArgObject(
-                  value_type=str,
-                  repeated=True,
-              ),
-              "taskEpilogBashScripts": arg_parsers.ArgObject(
-                  value_type=str,
-                  repeated=True,
-              ),
-          },
-          enable_shorthand=True,
-      ),
+      required=required,
       hidden=hidden,
   )

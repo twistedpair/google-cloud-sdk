@@ -14,6 +14,9 @@
 # limitations under the License.
 """Utilities for HA controllers."""
 
+from googlecloudsdk.api_lib.compute.operations import poller
+from googlecloudsdk.api_lib.util import waiter
+
 
 def CreateInsertRequest(client, ha_controller, ha_controller_ref):
   return client.messages.ComputeHaControllersInsertRequest(
@@ -23,10 +26,18 @@ def CreateInsertRequest(client, ha_controller, ha_controller_ref):
   )
 
 
-def Insert(client, ha_controller, ha_controller_ref):
-  request = CreateInsertRequest(client, ha_controller, ha_controller_ref)
-  return client.MakeRequests(
-      [(client.apitools_client.haControllers, 'Insert', request)]
+def Insert(ha_controller, ha_controller_ref, holder):
+  request = CreateInsertRequest(holder.client, ha_controller, ha_controller_ref)
+  response = holder.client.apitools_client.haControllers.Insert(request)
+  operation_ref = holder.resources.Parse(response.selfLink)
+  return waiter.WaitFor(
+      poller.Poller(holder.client.apitools_client.haControllers),
+      operation_ref,
+      message=(
+          'HA controller creation in progress for [{}]: {}'.format(
+              ha_controller.name, operation_ref.SelfLink()
+          )
+      ),
   )
 
 

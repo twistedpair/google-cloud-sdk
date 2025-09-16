@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import properties
@@ -31,6 +32,8 @@ VERSION_MAP = {
     # base.ReleaseTrack.BETA: 'v1beta',
     # base.ReleaseTrack.GA: 'v1',
 }
+
+OPERATIONS_COLLECTION = 'designcenter.projects.locations.operations'
 
 
 # The messages module can also be accessed from client.MESSAGES_MODULE
@@ -83,3 +86,28 @@ def MakeGetUriFunc(collection, release_track=base.ReleaseTrack.ALPHA):
     return result.SelfLink()
 
   return _GetUri
+
+
+def WaitForOperation(
+    client,
+    operation,
+    message: str,
+    max_wait_sec: int,
+    release_track=base.ReleaseTrack.ALPHA,
+):
+  """Waits for the given operation to complete."""
+  operation_ref = resources.REGISTRY.ParseRelativeName(
+      operation.name,
+      collection=OPERATIONS_COLLECTION,
+      api_version=VERSION_MAP.get(release_track),
+  )
+
+  return waiter.WaitFor(
+      poller=waiter.CloudOperationPoller(
+          client.projects_locations_operations,
+          client.projects_locations_operations,
+      ),
+      operation_ref=operation_ref,
+      message=message,
+      max_wait_ms=max_wait_sec * 1000,
+  )

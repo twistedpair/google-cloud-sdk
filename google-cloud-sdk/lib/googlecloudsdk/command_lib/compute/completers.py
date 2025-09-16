@@ -395,6 +395,16 @@ class RoutesCompleter(ListCommandCompleter):
         **kwargs)
 
 
+class NetworksCompleter(ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(NetworksCompleter, self).__init__(
+        collection='compute.networks',
+        list_command='compute networks list --uri',
+        **kwargs
+    )
+
+
 # completers for testing the completer framework
 
 

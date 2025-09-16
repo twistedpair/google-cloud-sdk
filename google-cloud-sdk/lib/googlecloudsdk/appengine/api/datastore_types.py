@@ -119,7 +119,7 @@ _NAMESPACE_SEPARATOR = '!'
 _EMPTY_NAMESPACE_ID = 1
 
 # Serialized GD_WHEN integers values are offsets relative to this epoch.
-_EPOCH = datetime.datetime.utcfromtimestamp(0)
+_EPOCH = datetime.datetime.fromtimestamp(0, tz=datetime.timezone.utc)
 
 
 if six_subset.PY2:

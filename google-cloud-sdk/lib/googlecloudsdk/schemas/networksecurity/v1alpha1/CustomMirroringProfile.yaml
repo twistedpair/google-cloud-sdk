@@ -27,9 +27,17 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
+  mirroringDeploymentGroups:
+    description: |-
+      The target downstream MirroringDeploymentGroups. This field is used for
+      Packet Broker mirroring endpoint groups to specify the deployment groups
+      that the packet should be mirrored to by the broker.
+    type: array
+    items:
+      type: string
   mirroringEndpointGroup:
     description: |-
       The target MirroringEndpointGroup. When a mirroring rule with this
-      security profile attached matches a packet, a replica will be mirrored to
-      the location-local target in this group.
+      security profile attached matches a packet, a replica will be mirrored
+      to the location-local target in this group.
     type: string

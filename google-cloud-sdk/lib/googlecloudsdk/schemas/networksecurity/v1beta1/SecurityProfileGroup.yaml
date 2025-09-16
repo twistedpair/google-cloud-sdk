@@ -25,20 +25,32 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
+  customInterceptProfile:
+    description: |-
+      Reference to a SecurityProfile with the CustomIntercept configuration.
+    type: string
+  customMirroringProfile:
+    description: |-
+      Reference to a SecurityProfile with the CustomMirroring configuration.
+    type: string
   description:
-    description: An optional description of the profile group.
+    description: |-
+      An optional description of the profile group. Max length 2048 characters.
     type: string
   labels:
     description: Labels as key value pairs.
     $ref: LabelsValue.yaml
   name:
     description: |-
-      Immutable. Name of the SecurityProfileGroup resource. It matches pattern
-      `projects|organizations/*/locations/{location}/securityProfileGr
-      oups/{security_profile_group}`.
+      Immutable. Identifier. Name of the SecurityProfileGroup resource. It
+      matches pattern `projects|organizations/*/locations/{location}/securityP
+      rofileGroups/{security_profile_group}`.
     type: string
   threatPreventionProfile:
     description: |-
-      Reference to a SecurityProfile with the threat prevention configuration
-      for the SecurityProfileGroup.
+      Reference to a SecurityProfile with the ThreatPrevention configuration.
+    type: string
+  urlFilteringProfile:
+    description: |-
+      Reference to a SecurityProfile with the UrlFiltering configuration.
     type: string

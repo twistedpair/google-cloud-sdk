@@ -327,6 +327,7 @@ properties:
     - RANDOM
     - RING_HASH
     - ROUND_ROBIN
+    - WEIGHTED_GCP_RENDEZVOUS
     - WEIGHTED_MAGLEV
     - WEIGHTED_ROUND_ROBIN
   logConfig:
@@ -379,7 +380,9 @@ properties:
       Passthrough Network Load Balancers when the
       haPolicy fastIpMove is enabled. This field can
       only be specified when the load balancing scheme
-      is set to INTERNAL.
+      is set to INTERNAL, or when the load balancing
+      scheme is set to EXTERNAL and haPolicy fastIpMove
+      is enabled.
     type: string
   networkPassThroughLbTrafficPolicy:
     description: |-
@@ -428,6 +431,12 @@ properties:
       gRPC proxy that has validateForProxyless field set
       to true.
     $ref: OutlierDetection.yaml
+  params:
+    description: |-
+      Input only. [Input Only] Additional params passed
+      with the request, but not persisted as part of
+      resource payload.
+    $ref: BackendServiceParams.yaml
   port:
     description: |-
       Deprecated in favor of portName. The TCP port to
@@ -462,7 +471,6 @@ properties:
       bound to target gRPC proxy.
     type: string
     enum:
-    - ALL
     - GRPC
     - H2C
     - HTTP
@@ -511,9 +519,9 @@ properties:
     description: |-
       URL to networkservices.ServiceLbPolicy
       resource. Can only be set if load balancing
-      scheme is EXTERNAL, EXTERNAL_MANAGED,
-      INTERNAL_MANAGED or INTERNAL_SELF_MANAGED and
-      the scope is global.
+      scheme is EXTERNAL_MANAGED, INTERNAL_MANAGED
+      or INTERNAL_SELF_MANAGED and the scope is
+      global.
     type: string
   sessionAffinity:
     description: |-

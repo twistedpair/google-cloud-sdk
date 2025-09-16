@@ -29,6 +29,7 @@ _EXCLUDE_FEATURES = util.ENTRYPOINT_FEATURE_KEYS + [_ALLOW_ENV_VARIABLES_KEY]
 
 
 def translate_supported_features(
+    input_type: feature_helper.InputType,
     input_data: Mapping[str, any],
     supported_features: Mapping[str, feature_helper.SupportedFeature],
     project_cli_flag: str,
@@ -44,7 +45,7 @@ def translate_supported_features(
       output_flags += util.generate_output_flags(feature.flags, input_value)
 
   output_flags += _get_output_flags_for_env_variables(
-      input_data, supported_features
+      input_type, input_data, supported_features
   )
   output_flags += _get_output_flags_for_default_service_account(
       input_data, supported_features, project_cli_flag
@@ -53,6 +54,7 @@ def translate_supported_features(
 
 
 def _get_output_flags_for_env_variables(
+    input_type: feature_helper.InputType,
     input_data: Mapping[str, any],
     supported_features: Mapping[str, feature_helper.SupportedFeature],
 ) -> Sequence[str]:
@@ -65,9 +67,23 @@ def _get_output_flags_for_env_variables(
       input_data, [_ALLOW_ENV_VARIABLES_KEY]
   )
   if env_variables_key_from_input:
-    env_variables_value = _generate_envs_output(
-        input_data[env_variables_key_from_input]
-    )
+    # If input is deployed version, envVariables is a list, otherwise it is a
+    # dict.
+    if input_type == feature_helper.InputType.ADMIN_API:
+      env_variables_value_for_admin_api = input_data[
+          env_variables_key_from_input
+      ]
+      dict_env_variables_value_for_admin_api = {
+          value.key: value.value
+          for value in env_variables_value_for_admin_api
+      }
+      env_variables_value = _generate_envs_output(
+          dict_env_variables_value_for_admin_api
+      )
+    else:
+      env_variables_value = _generate_envs_output(
+          input_data[env_variables_key_from_input]
+      )
     feature = supported_features[env_variables_key_from_input]
     output_flags += util.generate_output_flags(
         feature.flags, f'"{env_variables_value}"'

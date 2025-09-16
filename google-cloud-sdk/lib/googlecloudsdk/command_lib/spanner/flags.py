@@ -443,7 +443,7 @@ def AsymmetricAutoscalingOptionFlag(
   Returns:
     A base.Argument for the --asymmetric-autoscaling-option flag.
   """
-  help_text = 'Specify the asymmetric autoscaling option for the instance. '
+  help_text = 'Specifies the asymmetric autoscaling option for the instance. '
   spec = {
             'location': str,
             'min_nodes': int,
@@ -603,13 +603,14 @@ def AddCapacityArgsForInstance(
       help='Autoscaling'
   )
   if autoscaling_cpu_target_group:
+    # TODO(b/424254143): Add help text for the cpu target options group "Specify
+    # both or only one of the CPU targets:"
     cpu_target_options_group_parser = (
         autoscaling_config_group_parser.add_argument_group(
             required=require_all_autoscaling_args,
-            help=(
-                'Specify both or only one of the CPU targets:'
-            ),
-        ))
+            help='',
+        )
+    )
     AutoscalingHighPriorityCpuTarget(
         required=False
     ).AddToParser(cpu_target_options_group_parser)

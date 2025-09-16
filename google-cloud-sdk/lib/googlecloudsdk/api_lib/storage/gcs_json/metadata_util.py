@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import copy
+import datetime
 import enum
 from typing import List
 
@@ -35,6 +36,7 @@ from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.command_lib.storage.resources import gcs_resource_reference
 from googlecloudsdk.command_lib.storage.resources import resource_reference
+from googlecloudsdk.command_lib.storage.resources import resource_util
 from googlecloudsdk.core import properties
 
 
@@ -47,6 +49,8 @@ PRIVATE_DEFAULT_OBJECT_ACL = apis.GetMessagesModule(
     'storage', 'v1').ObjectAccessControl(id='PRIVATE_DEFAULT_OBJ_ACL')
 CONTEXT_TYPE_LITERAL = 'type'
 CONTEXT_VALUE_LITERAL = 'value'
+CONTEXT_CREATE_TIME_LITERAL = 'createTime'
+CONTEXT_UPDATE_TIME_LITERAL = 'updateTime'
 
 _NO_TRANSFORM = 'no-transform'
 
@@ -342,15 +346,20 @@ def _parse_contexts_from_object_metadata(metadata):
     return None
 
   custom_contexts = _message_to_dict(metadata.contexts.custom)
-  return {
-      key: {
-          **value,
-          CONTEXT_TYPE_LITERAL: (
-              ContextType.CUSTOM.value
-          ),
-      }
-      for key, value in custom_contexts.items()
-  }
+  parsed_contexts = {}
+  for key, value in custom_contexts.items():
+    context_value_dict = {}
+    for field in [CONTEXT_CREATE_TIME_LITERAL, CONTEXT_UPDATE_TIME_LITERAL]:
+      if field in value:
+        context_value_dict[field] = (
+            resource_util.get_formatted_string_from_datetime_object(
+                datetime.datetime.fromisoformat(value[field])
+            )
+        )
+    context_value_dict[CONTEXT_VALUE_LITERAL] = value[CONTEXT_VALUE_LITERAL]
+    context_value_dict[CONTEXT_TYPE_LITERAL] = ContextType.CUSTOM.value
+    parsed_contexts[key] = context_value_dict
+  return parsed_contexts
 
 
 def get_object_resource_from_metadata(metadata):
@@ -869,7 +878,7 @@ def get_contexts_dict_from_custom_contexts_dict(custom_contexts_dict):
   return {ContextType.CUSTOM.value.lower(): custom_contexts_dict}
 
 
-def parse_context_from_file(file_path):
+def parse_custom_contexts_from_file(file_path):
   """Parses custom contexts from a file, and validate it against the message.
 
   Args:
@@ -887,15 +896,29 @@ def parse_context_from_file(file_path):
     parsed_custom_contexts = metadata_util.cached_read_yaml_json_file(
         file_path
     )
-    custom_contexts = {
-        key: get_context_value_dict_from_value(value)
-        for key, value in parsed_custom_contexts.items()
-    }
+
+    # We extract the value from the dict, because user might specify other
+    # fields in the dict which API might not expect, such as 'type' or
+    # 'createTime'.
+    extracted_custom_contexts = {}
+    for key, value in parsed_custom_contexts.items():
+      if (
+          not isinstance(value, dict)
+          or CONTEXT_VALUE_LITERAL not in value
+      ):
+        raise errors.Error('Invalid format for specified contexts file.')
+
+      extracted_custom_contexts[key] = (
+          get_context_value_dict_from_value(
+              value[CONTEXT_VALUE_LITERAL]
+          )
+      )
+
     # Validate the parsed content respect the API message.
     encoding_helper.DictToMessage(
-        custom_contexts, messages.Object.ContextsValue.CustomValue
+        extracted_custom_contexts, messages.Object.ContextsValue.CustomValue
     )
-    return parsed_custom_contexts
+    return extracted_custom_contexts
   except (errors.InvalidUrlError, AttributeError):
     raise errors.Error(
         'Error while parsing the specified contexts file, please ensure that'
@@ -939,25 +962,22 @@ def get_updated_custom_contexts(
   if resource_args.custom_contexts_to_set:
     if isinstance(resource_args.custom_contexts_to_set, str):
       # It points to a file, so parse it and update the contexts.
-      parsed_custom_contexts = parse_context_from_file(
+      parsed_custom_contexts = parse_custom_contexts_from_file(
           resource_args.custom_contexts_to_set
       )
     else:
-      parsed_custom_contexts = resource_args.custom_contexts_to_set
-
-    if method_type == MethodType.OBJECT_PATCH:
-      # `patch` behavior: Clear existing contexts before setting new ones
-      updated_custom_contexts = {elem: {} for elem in existing_custom_contexts}
-      updated_custom_contexts.update({
+      parsed_custom_contexts = {
           key: get_context_value_dict_from_value(value)
-          for key, value in parsed_custom_contexts.items()
-      })
-    else:
-      # 'override' behavior: Just return the new set of contexts
-      updated_custom_contexts = {
-          key: get_context_value_dict_from_value(value)
-          for key, value in parsed_custom_contexts.items()
+          for key, value in resource_args.custom_contexts_to_set.items()
       }
+
+    if method_type != MethodType.OBJECT_PATCH:
+      # 'override' behavior: Just return the new set of contexts
+      return parsed_custom_contexts
+
+    # `patch` behavior: Clear existing contexts before setting new ones
+    updated_custom_contexts = {elem: {} for elem in existing_custom_contexts}
+    updated_custom_contexts.update(**parsed_custom_contexts)
     return updated_custom_contexts
 
   updated_custom_contexts = (

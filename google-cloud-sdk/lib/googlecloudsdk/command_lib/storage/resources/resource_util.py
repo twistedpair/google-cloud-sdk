@@ -101,12 +101,23 @@ def configured_json_dumps(item):
   return json.dumps(item, indent=METADATA_LINE_INDENT_LENGTH)
 
 
+def get_formatted_string_from_datetime_object(datetime_object):
+  """Returns a formatted string from a datetime object."""
+  if datetime_object is None:
+    return None
+  if not isinstance(datetime_object, datetime.datetime):
+    raise ValueError(
+        'Expected a datetime object, but got a %s' % type(datetime_object)
+    )
+  return datetime_object.strftime('%Y-%m-%dT%H:%M:%S%z')
+
+
 def convert_to_json_parsable_type(value):
   """Converts values encountered in metadata to be JSON-parsable."""
   if isinstance(value, Exception):
     return str(value)
   if isinstance(value, datetime.datetime):
-    return value.strftime('%Y-%m-%dT%H:%M:%S%z')
+    return get_formatted_string_from_datetime_object(value)
   # datetime.datetime is an instance of datetime.date, but not the opposite.
   if isinstance(value, datetime.date):
     return value.strftime('%Y-%m-%d')

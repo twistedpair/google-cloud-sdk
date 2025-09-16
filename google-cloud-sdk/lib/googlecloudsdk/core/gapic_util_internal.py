@@ -312,21 +312,31 @@ def ShouldRecover(credentials):
 class BidiRpc(bidi.ResumableBidiRpc):
   """Bidi implementation to be used throughout codebase."""
 
-  def __init__(self, client, start_rpc, initial_request=None):
+  def __init__(
+      self,
+      client,
+      start_rpc,
+      initial_request=None,
+      metadata: list[tuple[str, str]] | None = None,
+  ):
     """Initializes a BidiRpc instances.
 
     Args:
         client: GAPIC Wrapper client to use.
         start_rpc (grpc.StreamStreamMultiCallable): The gRPC method used to
-            start the RPC.
-        initial_request: The initial request to
-            yield. This is useful if an initial request is needed to start the
-            stream.
+          start the RPC.
+        initial_request: The initial request to yield. This is useful if an
+          initial request is needed to start the stream.
+        metadata: The metadata headers to use for the RPC. It is a list of
+          tuples. The first string in the tuple is the header name and the
+          second is the header value.
     """
     super(BidiRpc, self).__init__(
         start_rpc,
         initial_request=initial_request,
-        should_recover=ShouldRecover(client.credentials))
+        metadata=metadata,
+        should_recover=ShouldRecover(client.credentials),
+    )
 
 
 class _ClientCallDetails(

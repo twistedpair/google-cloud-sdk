@@ -2296,3 +2296,23 @@ class PresetChange(TemplateConfigChanger):
       }]
     resource.annotations[service.PRESETS_ANNOTATION] = json.dumps(presets)
     return resource
+
+
+@dataclasses.dataclass(frozen=True)
+class RemovePresetsChange(TemplateConfigChanger):
+  """Removes one or more presets from annotation from the service metadata.
+
+  Attributes:
+    clear_presets: Whether to clear all presets.
+  """
+
+  clear_presets: bool
+
+  def Adjust(self, resource):
+    presets = json.loads(
+        resource.annotations.get(service.PRESETS_ANNOTATION, '[]')
+    )
+    if presets and self.clear_presets:
+      del resource.annotations[service.PRESETS_ANNOTATION]
+      return resource
+

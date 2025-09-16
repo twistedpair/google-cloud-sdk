@@ -261,6 +261,14 @@ def AddPlaintextFileFlag(parser, help_action):
   )
 
 
+def AddSharedSecretFileFlag(parser, help_action):
+  parser.add_argument(
+      '--shared-secret-file',
+      help='File path of the shared secret file {0}.'.format(help_action),
+      required=True,
+  )
+
+
 def AddCiphertextFileFlag(parser, help_action):
   parser.add_argument(
       '--ciphertext-file',

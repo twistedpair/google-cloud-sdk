@@ -1806,7 +1806,7 @@ class DesigncenterV1alpha(base_api.BaseApiClient):
     )
 
     def InferConnections(self, request, global_params=None):
-      r"""Infers conections for components present in a space.
+      r"""Infers and suggests connections between components within a space. The generated connection information can be used in application templates and designs.
 
       Args:
         request: (DesigncenterProjectsLocationsSpacesInferConnectionsRequest) input message

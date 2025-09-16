@@ -34,6 +34,16 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  MCPPOLICIES = (
+      'mcpPolicies',
+      '{+name}',
+      {
+          '':
+              '{v2betaId}/{v2betaId1}/mcpPolicies/{mcpPoliciesId}',
+      },
+      ['name'],
+      True
+  )
   OPERATIONS = (
       'operations',
       '{+name}',

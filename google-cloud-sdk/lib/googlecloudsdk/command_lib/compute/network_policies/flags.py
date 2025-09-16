@@ -28,7 +28,7 @@ class NetworkPoliciesCompleter(compute_completers.ListCommandCompleter):
     super(NetworkPoliciesCompleter, self).__init__(
         collection='compute.regionNetworkPolicies',
         list_command='compute network-policies list --uri',
-        **kwargs
+        **kwargs,
     )
 
 
@@ -45,9 +45,59 @@ def NetworkPolicyArgument(required=False, plural=False, operation=None):
   )
 
 
+def NetworkPolicyAssociationArgument(
+    required=False, plural=False, operation=None
+):
+  return compute_flags.ResourceArgument(
+      name='--network-policy',
+      resource_name='network policy',
+      plural=plural,
+      required=required,
+      custom_plural='network policies',
+      short_help=f'Network Policy ID with which to {operation} association.',
+      regional_collection='compute.regionNetworkPolicies',
+  )
+
+
 def AddArgNetworkPolicyCreation(parser):
   """Adds the arguments for network policy creation."""
   parser.add_argument(
       '--description',
       help='An optional, textual description for the network policy.',
+  )
+
+
+def NetworkArgumentForOtherResource(short_help, required=True):
+  return compute_flags.ResourceArgument(
+      name='--network',
+      resource_name='network',
+      completer=compute_completers.NetworksCompleter,
+      plural=False,
+      required=required,
+      global_collection='compute.networks',
+      short_help=short_help,
+  )
+
+
+def AddArgsCreateAssociation(parser):
+  """Adds the arguments for network policy association creation."""
+  parser.add_argument(
+      '--name',
+      help="""\
+      Name of the new association. If not specified, the name will be
+      auto-generated.""",
+  )
+  parser.add_argument(
+      '--network',
+      required=True,
+      help='Name of the network with which the association is created.',
+  )
+
+
+def AddArgsDescribeAssociation(parser):
+  """Adds the arguments for network policy association description."""
+  parser.add_argument(
+      '--name',
+      required=True,
+      help='Name of the association to describe.',
   )

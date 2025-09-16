@@ -18,6 +18,7 @@ from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.apis import yaml_data
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
+from googlecloudsdk.core import properties
 from googlecloudsdk.generated_clients.apis.compute.alpha import compute_alpha_messages
 
 
@@ -54,10 +55,19 @@ def MakeZoneConfiguration(
       single_zone_config["reservationAffinity"] = (
           compute_alpha_messages.HaControllerZoneConfigurationReservationAffinity(
               consumeReservationType=compute_alpha_messages.HaControllerZoneConfigurationReservationAffinity.ConsumeReservationTypeValueValuesEnum(
-                  config["reservation-affinity"]
-              ),
+                  config["reservation-affinity"],
+              )
           )
       )
+      if "reservation" in config:
+        single_zone_config["reservationAffinity"].key = (
+            "compute."
+            + properties.VALUES.core.universe_domain.Get()
+            + "/reservation-name"
+        )
+        single_zone_config["reservationAffinity"].values = [
+            config["reservation"]
+        ]
     if "node-affinity" in config:
       single_zone_config["nodeAffinity"] = (
           compute_alpha_messages.HaControllerZoneConfigurationNodeAffinity(

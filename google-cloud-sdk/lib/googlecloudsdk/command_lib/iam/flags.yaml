@@ -570,6 +570,12 @@ workforce_pool_provider_scim_tenant:
     # TODO(b/412401165): Add specific SCIM claim mapping examples and link to relevant docs when available.
     help_text: |-
       A comma-separated list of KEY=VALUE pairs defining attribute mappings.
+  hard_delete:
+    api_field: hardDelete
+    arg_name: hard-delete
+    action: store_true
+    help_text: |-
+      If set, hard delete the scim tenant. This will delete the scim tenant resources i.e. the scim tenant project and service account associated with it. This action cannot be undone.
 
 workforce_pool_provider_scim_token:
   display_name:

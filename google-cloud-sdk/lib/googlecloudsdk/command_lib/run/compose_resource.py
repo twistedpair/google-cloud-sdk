@@ -32,6 +32,7 @@ from typing import Any, Dict, Optional
 
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
+from googlecloudsdk.api_lib.run import api_enabler
 from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.api_lib.run import service
 from googlecloudsdk.api_lib.secrets import api as secrets_api
@@ -183,13 +184,17 @@ class BindMountConfig:
   ):
     self.source = source
     self.target = target
+    self.mount_source: Optional[str] = None
 
   @classmethod
   def from_dict(cls, data: Dict[str, Any]) -> 'BindMountConfig':
-    return cls(
+    config = cls(
         source=data.get('source'),
         target=data.get('target'),
     )
+
+    config.mount_source = data.get('mount_source')
+    return config
 
   def handle(self, gcs_handler: 'GcsHandler', service_name: str) -> None:
     """Handles the creation of resources for the bind mount."""
@@ -201,9 +206,14 @@ class BindMountConfig:
           ' exist.'
       )
 
-    source_basename = os.path.basename(source)
-    gcs_path = '/'.join(['bind_mounts', service_name, source_basename])
+    # Resolve the source path to handle cases like '.', './', etc. consistently.
+    if os.path.abspath(source) == os.getcwd():
+      gcs_path = '/'.join(['bind_mounts', service_name])
+    else:
+      source_basename = os.path.basename(source)
+      gcs_path = '/'.join(['bind_mounts', service_name, source_basename])
 
+    self.mount_source = gcs_path
     if os.path.isdir(source):
       gcs_handler.upload_directory(gcs_path, source)
     elif os.path.isfile(source):
@@ -218,6 +228,7 @@ class BindMountConfig:
     return {
         'source': self.source,
         'target': self.target,
+        'mount_source': self.mount_source,
     }
 
 
@@ -269,10 +280,6 @@ class GcsHandler:
     sanitized_project_name = re.sub(r'-+', '-', sanitized_project_name)
     return f'{project_number}-{sanitized_project_name}-{self.region}-compose'
 
-  def _get_compute_service_account(self) -> str:
-    project_number = _get_project_number()
-    return f'{project_number}-compute@developer.gserviceaccount.com'
-
   def _ensure_bucket_exists(self, bucket_name: str) -> None:
     """Creates the GCS bucket if it doesn't exist and sets IAM policy."""
     try:
@@ -290,18 +297,19 @@ class GcsHandler:
 
     # Add IAM policy binding for the compute service account
     try:
-      service_account = self._get_compute_service_account()
+      service_account = _get_compute_service_account()
       bucket_resource = storage_util.BucketReference(bucket_name)
       policy = self._gcs_client.GetIamPolicy(bucket_resource)
+      binding_class = policy.field_by_name('bindings').message_type
       iam_util.AddBindingToIamPolicy(
-          self._gcs_client.messages,
+          binding_class,
           policy,
           f'serviceAccount:{service_account}',
           'roles/storage.objectUser',
       )
       self._gcs_client.SetIamPolicy(bucket_resource, policy)
       log.status.Print(
-          f'Set roles/storage.admin for {service_account} on bucket'
+          f'Set roles/storage.objectUser for {service_account} on bucket'
           f" '{bucket_name}'."
       )
     except Exception as e:
@@ -353,6 +361,7 @@ class VolumeConfig:
   ):
     self.bind_mount = bind_mount if bind_mount is not None else {}
     self.named_volume = named_volume if named_volume is not None else {}
+    self.bucket_name: Optional[str] = None
 
   @classmethod
   def from_dict(cls, data: Dict[str, Any]) -> 'VolumeConfig':
@@ -375,12 +384,15 @@ class VolumeConfig:
 
     log.debug('Handling volume configurations.')
 
+    gcs_handler.ensure_bucket()
+    self.bucket_name = gcs_handler.bucket_name
+
     # Handle bind mounts
     for service_name, bind_mounts in self.bind_mount.items():
       for bm_config in bind_mounts:
         bm_config.handle(gcs_handler, service_name)
 
-    log.status.Print('Volume handling complete.')
+    log.debug('Volume handling complete.')
 
   def to_dict(self) -> Dict[str, Any]:
     """Serializes the VolumeConfig instance to a dictionary."""
@@ -392,6 +404,7 @@ class VolumeConfig:
         'named_volume': {
             key: value.to_dict() for key, value in self.named_volume.items()
         },
+        'bucket_name': self.bucket_name,
     }
 
 
@@ -444,7 +457,7 @@ class ResourcesConfig:
         configs=configs,
     )
 
-  def handle_resources(self, region: str) -> 'ResourcesConfig':
+  def handle_resources(self, region: str, repo: str) -> 'ResourcesConfig':
     """Creates or updates all resources defined in the configuration.
 
     This method orchestrates the handling of each type of resource,
@@ -452,20 +465,50 @@ class ResourcesConfig:
 
     Args:
       region: The region of the compose project.
+      repo: The repo of the compose project.
 
     Returns:
       The ResourcesConfig instance after handling the resources.
     """
+    project_id = properties.VALUES.core.project.Get(required=True)
+    api_enabler.check_and_enable_apis(
+        project_id,
+        ['run.googleapis.com', 'cloudresourcemanager.googleapis.com'],
+    )
+
+    if self.source_builds:
+      api_enabler.check_and_enable_apis(
+          project_id,
+          [
+              'cloudbuild.googleapis.com',
+              'storage.googleapis.com',
+              'artifactregistry.googleapis.com',
+          ],
+      )
+      perform_source_build(
+          self.source_builds,
+          repo,
+          self.project,
+          region,
+      )
+
     log.debug('Starting resource handling for project: %s', self.project)
     if self.secrets:
+      api_enabler.check_and_enable_apis(
+          project_id,
+          ['secretmanager.googleapis.com', 'iam.googleapis.com'],
+      )
       for name, secret_config in self.secrets.items():
-        log.status.Print('Handling secret: %s', name)
+        log.debug(f'Handling secret: {name}')
         secret_config.handle()
 
     if self.volumes.bind_mount or self.volumes.named_volume or self.configs:
       log.debug('Initializing GCS handler for volumes and/or configs.')
       gcs_handler = GcsHandler(self.project, region)
-      if self.volumes:
+      if self.volumes.bind_mount or self.volumes.named_volume:
+        api_enabler.check_and_enable_apis(
+            project_id, ['storage.googleapis.com', 'iam.googleapis.com']
+        )
         self.volumes.handle(gcs_handler)
       if self.configs:
         for config in self.configs:
@@ -650,6 +693,34 @@ def _create_secret_and_add_version(
   else:
     log.status.Print(f"Secret '{config.name}' already exists.")
 
+  # Add IAM policy binding for the compute service account
+  try:
+    service_account = _get_compute_service_account()
+    policy = secrets_client.GetIamPolicy(secret_ref)
+    member = f'serviceAccount:{service_account}'
+    role = 'roles/secretmanager.secretAccessor'
+    if not iam_util.BindingInPolicy(policy, member, role):
+      binding_class = policy.field_by_name('bindings').message_type
+      iam_util.AddBindingToIamPolicy(
+          binding_class,
+          policy,
+          member,
+          role,
+      )
+      secrets_client.SetIamPolicy(secret_ref, policy)
+      log.status.Print(
+          f"Set {role} for {service_account} on secret '{config.name}'."
+      )
+    else:
+      log.status.Print(
+          f'{role} for {service_account} already exists on secret'
+          f' \'{config.name}\'.'
+      )
+  except Exception as e:
+    raise exceptions.Error(
+        f"Failed to set IAM policy on secret '{config.name}': {e}"
+    )
+
   # Add secret version
   try:
     log.status.Print(
@@ -694,8 +765,8 @@ def deploy_application(yaml_file_path: str, region: str) -> None:
   """
   project = properties.VALUES.core.project.Get(required=True)
   log.status.Print(
-      f"Deploying application from '{yaml_file_path}' to project '{project}'"
-      f" in region '{region}'."
+      f'Deploying application from \'{yaml_file_path}\' project \'{project}\''
+      f' in region \'{region}\'.'
   )
 
   run_messages = apis.GetMessagesModule(
@@ -747,9 +818,9 @@ def deploy_application(yaml_file_path: str, region: str) -> None:
     changes = [config_changes.ReplaceServiceChange(new_service)]
 
     header = (
-        f"Deploying service '{new_service.name}'..."
+        f'Deploying service \'{new_service.name}\'...'
         if not existing_service
-        else f"Updating service '{new_service.name}'..."
+        else f'Updating service \'{new_service.name}\'...'
     )
 
     with progress_tracker.StagedProgressTracker(
@@ -758,7 +829,7 @@ def deploy_application(yaml_file_path: str, region: str) -> None:
         failure_message='Deployment failed',
         suppress_output=False,
     ) as tracker:
-      client.ReleaseService(
+      deployed_service = client.ReleaseService(
           service_ref,
           changes,
           base.ReleaseTrack.GA,
@@ -769,3 +840,15 @@ def deploy_application(yaml_file_path: str, region: str) -> None:
           prefetch=existing_service,
       )
   log.status.Print(f"Service '{new_service.name}' has been deployed.")
+  if (
+      deployed_service
+      and deployed_service.status
+      and deployed_service.status.url
+  ):
+    log.status.Print(f'Service URL: {deployed_service.status.url}')
+
+
+def _get_compute_service_account() -> str:
+  """Retrieves the default compute service account for the current project."""
+  project_number = _get_project_number()
+  return f'{project_number}-compute@developer.gserviceaccount.com'

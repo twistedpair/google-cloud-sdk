@@ -969,6 +969,33 @@ class ConsumerPolicy(_messages.Message):
   updateTime = _messages.StringField(5)
 
 
+class ContentSecurity(_messages.Message):
+  r"""ContentSecurity defines the content security related fields of a MCP
+  policy.
+
+  Fields:
+    contentSecurityProviders: List of content security providers that are
+      enabled for content scanning.
+  """
+
+  contentSecurityProviders = _messages.MessageField('ContentSecurityProvider', 1, repeated=True)
+
+
+class ContentSecurityProvider(_messages.Message):
+  r"""ContentSecurityProvider contains the name of content security provider.
+
+  Fields:
+    name: Name of security service for content scanning, such as Google Cloud
+      Model Armor or supported third-party ISV solutions. If it is Google 1P
+      service, the name should be prefixed with `services/`. If it is a 3P
+      service, the format needs to be documented. The currently supported
+      values are: - `services/modelarmor.googleapis.com` for Google Cloud
+      Model Armor.
+  """
+
+  name = _messages.StringField(1)
+
+
 class Context(_messages.Message):
   r"""`Context` defines which contexts an API requests. Example: context:
   rules: - selector: "*" requested: - google.rpc.context.ProjectContext -
@@ -1307,6 +1334,30 @@ class DotnetSettings(_messages.Message):
   ignoredResources = _messages.StringField(4, repeated=True)
   renamedResources = _messages.MessageField('RenamedResourcesValue', 5)
   renamedServices = _messages.MessageField('RenamedServicesValue', 6)
+
+
+class EffectiveMcpPolicy(_messages.Message):
+  r"""Effective MCP Policy is a singleton read-only resource modeling the
+  collapsed policies and metadata effective at a particular point in the
+  hierarchy.
+
+  Fields:
+    mcpEnableRuleMetadata: Output only. Metadata about mcp enable rules in the
+      same order as the `mcp_enable_rules` objects.
+    mcpEnableRules: Output only. Aggregated `McpEnableRule` objects grouped by
+      any associated conditions. Conditions are not supported in `beta` and
+      there will be exactly one rule present.
+    name: Output only. The name of the effective MCP policy. Format:
+      `projects/100/effectiveMcpPolicy`, `folders/101/effectiveMcpPolicy`,
+      `organizations/102/effectiveMcpPolicy`.
+    updateTime: Output only. The time the effective MCP policy was last
+      updated.
+  """
+
+  mcpEnableRuleMetadata = _messages.MessageField('McpRuleSource', 1, repeated=True)
+  mcpEnableRules = _messages.MessageField('McpEnableRule', 2, repeated=True)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
 
 
 class EffectivePolicy(_messages.Message):
@@ -2188,8 +2239,8 @@ class GoogleApiServiceusageV2betaConsumerPolicy(_messages.Message):
     enableRules: Enable rules define usable services, groups, and categories.
       There can currently be at most one `EnableRule`. This restriction will
       be lifted in later releases.
-    etag: Output only. An opaque tag indicating the current version of the
-      policy, used for concurrency control.
+    etag: An opaque tag indicating the current version of the policy, used for
+      concurrency control.
     name: Output only. The resource name of the policy. Only the `default`
       policy is supported: `projects/12345/consumerPolicies/default`,
       `folders/12345/consumerPolicies/default`,
@@ -2823,6 +2874,19 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListPublicServicesResponse(_messages.Message):
+  r"""The response message of the `ListPublicServices` method.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    services: Output only. The public services.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  services = _messages.MessageField('Service', 2, repeated=True)
+
+
 class ListServiceApisResponse(_messages.Message):
   r"""The response message of the `ListServiceApis` method.
 
@@ -2847,6 +2911,20 @@ class ListServiceGroupsResponse(_messages.Message):
 
   groups = _messages.MessageField('GroupState', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListSharedServicesResponse(_messages.Message):
+  r"""The response message of the `ListSharedServices` method.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    sharedServices: Output only. The services that are shared with the parent
+      resource.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sharedServices = _messages.MessageField('SharedService', 2, repeated=True)
 
 
 class LogDescriptor(_messages.Message):
@@ -2943,6 +3021,140 @@ class LongRunning(_messages.Message):
   maxPollDelay = _messages.StringField(2)
   pollDelayMultiplier = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
   totalPollTimeout = _messages.StringField(4)
+
+
+class McpEnableRule(_messages.Message):
+  r"""McpEnableRule contains MCP enablement related rules.
+
+  Fields:
+    mcpServices: List of enabled MCP services.
+  """
+
+  mcpServices = _messages.MessageField('McpService', 1, repeated=True)
+
+
+class McpPolicy(_messages.Message):
+  r"""MCP Consumer Policy is a set of rules that define MCP related policy for
+  a cloud resource hierarchy.
+
+  Fields:
+    contentSecurity: ContentSecurity contains the content security related
+      fields of a MCP policy.
+    createTime: Output only. The time the policy was created. For singleton
+      policies (such as the `default` policy), this is the first touch of the
+      policy.
+    etag: An opaque tag indicating the current version of the policy, used for
+      concurrency control.
+    mcpEnableRules: McpEnableRules contains MCP enablement related rules.
+    name: Output only. The resource name of the policy. Only the `default`
+      policy is supported. We allow the following formats:
+      `projects/{PROJECT_NUMBER}/mcpPolicies/default`,
+      `projects/{PROJECT_ID}/mcpPolicies/default`,
+      `folders/{FOLDER_ID}/mcpPolicies/default`,
+      `organizations/{ORG_ID}/mcpPolicies/default`.
+    updateTime: Output only. The time the policy was last updated.
+  """
+
+  contentSecurity = _messages.MessageField('ContentSecurity', 1)
+  createTime = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  mcpEnableRules = _messages.MessageField('McpEnableRule', 4, repeated=True)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+
+
+class McpPolicyList(_messages.Message):
+  r"""`McpPolicyList` contains MCP policy resources in the hierarchy ordered
+  from leaf to root.
+
+  Fields:
+    policies: List of MCP policy resources ordered from leaf to root.
+  """
+
+  policies = _messages.StringField(1, repeated=True)
+
+
+class McpRuleSource(_messages.Message):
+  r"""`McpRuleSource` contains source information for where a MCP rule was
+  found.
+
+  Messages:
+    ServiceSourcesValue: Map of MCP enabled services as keys and the policy
+      that enabled it as values. For example, the key can be
+      `services/serviceusage.googleapis.com` and value can be
+      `{"projects/123/mcpPolicies/default",
+      "folders/456/mcpPolicies/default"}` where the service is enabled and the
+      order of the resource list is nearest first in the hierarchy.
+
+  Fields:
+    serviceSources: Map of MCP enabled services as keys and the policy that
+      enabled it as values. For example, the key can be
+      `services/serviceusage.googleapis.com` and value can be
+      `{"projects/123/mcpPolicies/default",
+      "folders/456/mcpPolicies/default"}` where the service is enabled and the
+      order of the resource list is nearest first in the hierarchy.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ServiceSourcesValue(_messages.Message):
+    r"""Map of MCP enabled services as keys and the policy that enabled it as
+    values. For example, the key can be `services/serviceusage.googleapis.com`
+    and value can be `{"projects/123/mcpPolicies/default",
+    "folders/456/mcpPolicies/default"}` where the service is enabled and the
+    order of the resource list is nearest first in the hierarchy.
+
+    Messages:
+      AdditionalProperty: An additional property for a ServiceSourcesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ServiceSourcesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ServiceSourcesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A McpPolicyList attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('McpPolicyList', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  serviceSources = _messages.MessageField('ServiceSourcesValue', 1)
+
+
+class McpService(_messages.Message):
+  r"""McpService contains the service names that are enabled for MCP.
+
+  Fields:
+    service: The names of the services that are enabled for MCP. Example:
+      `services/library-example.googleapis.com`
+  """
+
+  service = _messages.StringField(1)
+
+
+class McpState(_messages.Message):
+  r"""`McpState` objects represent the MCP related state of a service with
+  respect to a consumer.
+
+  Fields:
+    mcpEnableRules: Output only. Mcp enable rules, grouped by any associated
+      conditions, that provide access to this resource. If the
+      `mcp_enable_rules` field is empty, then the named resource is not
+      enabled for MCP.
+    name: Output only. The resource whose MCP state is being represented.
+      Format: `projects/100/services/hello.googleapis.com`,
+      `folders/101/services/hello.googleapis.com`,
+      `organizations/102/services/hello.googleapis.com`.
+  """
+
+  mcpEnableRules = _messages.MessageField('McpEnableRule', 1, repeated=True)
+  name = _messages.StringField(2)
 
 
 class Member(_messages.Message):
@@ -4370,7 +4582,7 @@ class ServiceusageCategoriesCategoryServicesListRequest(_messages.Message):
 
   Fields:
     pageSize: The maximum number of services to return. The service may return
-      fewer than this value. If unspecified, at most 50 groups will be
+      fewer than this value. If unspecified, at most 50 services will be
       returned. The maximum value is 1000; values above 1000 will be coerced
       to 1000.
     pageToken: A page token, received from a previous `ListCategoryServices`
@@ -4436,6 +4648,38 @@ class ServiceusageConsumerPoliciesPatchRequest(_messages.Message):
   validateOnly = _messages.BooleanField(4)
 
 
+class ServiceusageGetEffectiveMcpPolicyRequest(_messages.Message):
+  r"""A ServiceusageGetEffectiveMcpPolicyRequest object.
+
+  Enums:
+    ViewValueValuesEnum: The view of the effective MCP policy to use.
+
+  Fields:
+    name: Required. The name of the effective policy to retrieve. Format:
+      `projects/100/effectiveMcpPolicy`, `folders/101/effectiveMcpPolicy`,
+      `organizations/102/effectiveMcpPolicy`.
+    view: The view of the effective MCP policy to use.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""The view of the effective MCP policy to use.
+
+    Values:
+      EFFECTIVE_MCP_POLICY_VIEW_UNSPECIFIED: The default / unset value. The
+        API will default to the BASIC view.
+      EFFECTIVE_MCP_POLICY_VIEW_BASIC: Include basic metadata about the
+        effective MCP policy, but not the source of policy rules. This is the
+        default value.
+      EFFECTIVE_MCP_POLICY_VIEW_FULL: Include everything.
+    """
+    EFFECTIVE_MCP_POLICY_VIEW_UNSPECIFIED = 0
+    EFFECTIVE_MCP_POLICY_VIEW_BASIC = 1
+    EFFECTIVE_MCP_POLICY_VIEW_FULL = 2
+
+  name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
+
+
 class ServiceusageGetEffectivePolicyRequest(_messages.Message):
   r"""A ServiceusageGetEffectivePolicyRequest object.
 
@@ -4465,6 +4709,40 @@ class ServiceusageGetEffectivePolicyRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   view = _messages.EnumField('ViewValueValuesEnum', 2)
+
+
+class ServiceusageMcpPoliciesGetRequest(_messages.Message):
+  r"""A ServiceusageMcpPoliciesGetRequest object.
+
+  Fields:
+    name: Required. The name of the MCP consumer policy to retrieve. Format:
+      `projects/100/mcpPolicies/default`, `folders/101/mcpPolicies/default`,
+      `organizations/102/mcpPolicies/default`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ServiceusageMcpPoliciesPatchRequest(_messages.Message):
+  r"""A ServiceusageMcpPoliciesPatchRequest object.
+
+  Fields:
+    force: This flag will skip the breaking change detections.
+    mcpPolicy: A McpPolicy resource to be passed as the request body.
+    name: Output only. The resource name of the policy. Only the `default`
+      policy is supported. We allow the following formats:
+      `projects/{PROJECT_NUMBER}/mcpPolicies/default`,
+      `projects/{PROJECT_ID}/mcpPolicies/default`,
+      `folders/{FOLDER_ID}/mcpPolicies/default`,
+      `organizations/{ORG_ID}/mcpPolicies/default`.
+    validateOnly: If set, validate the request and preview the result but do
+      not actually commit it.
+  """
+
+  force = _messages.BooleanField(1)
+  mcpPolicy = _messages.MessageField('McpPolicy', 2)
+  name = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
 
 
 class ServiceusageOperationsGetRequest(_messages.Message):
@@ -4601,9 +4879,9 @@ class ServiceusageServicesGroupsExpandedMembersListRequest(_messages.Message):
 
   Fields:
     pageSize: The maximum number of expanded members to return. It may return
-      fewer than this value. If unspecified, at most 50 groups will be
-      returned. The maximum value is 1000; values above 1000 will be coerced
-      to 1000.
+      fewer than this value. If unspecified, at most 50 expanded members will
+      be returned. The maximum value is 1000; values above 1000 will be
+      coerced to 1000.
     pageToken: A page token, received from a previous `ListExpandedMembers`
       call. Provide this to retrieve the subsequent page. When paginating, all
       other parameters provided to `ListExpandedMembers` must match the call
@@ -4665,7 +4943,7 @@ class ServiceusageServicesGroupsMembersListRequest(_messages.Message):
 
   Fields:
     pageSize: The maximum number of members to return. The service may return
-      fewer than this value. If unspecified, at most 50 groups will be
+      fewer than this value. If unspecified, at most 50 members will be
       returned. The maximum value is 1000; values above 1000 will be coerced
       to 1000.
     pageToken: A page token, received from a previous `ListGroupMembers` call.
@@ -4697,6 +4975,45 @@ class ServiceusageServicesGroupsMembersListRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
+class ServiceusageServicesListRequest(_messages.Message):
+  r"""A ServiceusageServicesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of services to return. The service may return
+      fewer than this value. If unspecified, at most 50 services will be
+      returned. The maximum value is 1000; values above 1000 will be coerced
+      to 1000.
+    pageToken: A page token, received from a previous `ListPublicServices`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListPublicServices` must match the call
+      that provided the page token.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+
+
+class ServiceusageSharedServicesListRequest(_messages.Message):
+  r"""A ServiceusageSharedServicesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of services to return. The service may return
+      fewer than this value. If unspecified, at most 50 services will be
+      returned. The maximum value is 1000; values above 1000 will be coerced
+      to 1000.
+    pageToken: A page token, received from a previous `ListSharedServices`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListSharedServices` must match the call
+      that provided the page token.
+    parent: Required. Resource name that services are shared with. Format:
+      `projects/100`, `folders/101` or `organizations/102`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class ServiceusageTestEnabledRequest(_messages.Message):
   r"""A ServiceusageTestEnabledRequest object.
 
@@ -4709,6 +5026,35 @@ class ServiceusageTestEnabledRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   testEnabledRequest = _messages.MessageField('TestEnabledRequest', 2)
+
+
+class ServiceusageTestMcpEnabledRequest(_messages.Message):
+  r"""A ServiceusageTestMcpEnabledRequest object.
+
+  Fields:
+    name: Required. Resource name to check the value against hierarchically.
+      Format: `projects/100`, `folders/101` or `organizations/102`.
+    testMcpEnabledRequest: A TestMcpEnabledRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  testMcpEnabledRequest = _messages.MessageField('TestMcpEnabledRequest', 2)
+
+
+class SharedService(_messages.Message):
+  r"""A shared service available to the parent resource.
+
+  Fields:
+    name: Output only. The name of the shared service in format, e.g.,
+      `projects/{project}/services/{service}`,
+      `folders/{folder}/services/{service}`,
+      `organizations/{organization}/services/{service}`.
+    service: Output only. The service referenced by this shared service.
+  """
+
+  name = _messages.StringField(1)
+  service = _messages.MessageField('Service', 2)
 
 
 class SourceContext(_messages.Message):
@@ -4834,7 +5180,10 @@ class State(_messages.Message):
     enableRules: Output only. Enable rules, grouped by any associated
       conditions, that provide access to this resource. If the `enable_rules`
       field is empty, then the named resource is not enabled.
-    name: Output only. The resource whose state is being represented.
+    name: Output only. The resource whose state is being represented. Format:
+      `projects/100/services/hello.googleapis.com`,
+      `folders/101/services/hello.googleapis.com`,
+      `organizations/102/services/hello.googleapis.com`.
   """
 
   enableRules = _messages.MessageField('GoogleApiServiceusageV2betaEnableRule', 1, repeated=True)
@@ -4975,6 +5324,18 @@ class TestEnabledRequest(_messages.Message):
   serviceName = _messages.StringField(1)
 
 
+class TestMcpEnabledRequest(_messages.Message):
+  r"""The request to test a value against the result of merging MCP consumer
+  policies in the resource hierarchy.
+
+  Fields:
+    serviceName: The name of a service to test for MCP enablement. Format:
+      `services/{service}`.
+  """
+
+  serviceName = _messages.StringField(1)
+
+
 class Type(_messages.Message):
   r"""A protocol buffer message type. New usages of this message as an
   alternative to DescriptorProto are strongly discouraged. This message does
@@ -5027,6 +5388,10 @@ class UpdateAdminQuotaPolicyMetadata(_messages.Message):
 
 class UpdateConsumerPolicyMetadata(_messages.Message):
   r"""Metadata for the `UpdateConsumerPolicy` method."""
+
+
+class UpdateMcpPolicyMetadata(_messages.Message):
+  r"""Metadata for the `UpdateMcpPolicy` method."""
 
 
 class Usage(_messages.Message):

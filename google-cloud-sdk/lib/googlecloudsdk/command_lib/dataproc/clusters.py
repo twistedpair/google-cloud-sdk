@@ -669,6 +669,8 @@ If you want to enable all scopes use the 'cloud-platform' scope.
       hidden=True,
   )
 
+  # Note: include_driver_pool_args is only supported in the default universe.
+  # The check occurs in create.py.
   if include_driver_pool_args:
     flags.AddDriverPoolId(parser)
     parser.add_argument(
@@ -703,10 +705,15 @@ If you want to enable all scopes use the 'cloud-platform' scope.
   parser.add_argument(
       '--enable-component-gateway',
       action='store_true',
-      help="""\
-        Enable access to the web UIs of selected components on the cluster
-        through the component gateway.
-        """,
+      help=arg_parsers.UniverseHelpText(
+          default=(
+              'Enable access to the web UIs of selected components on the'
+              ' cluster through the component gateway.'
+          ),
+          universe_help=(
+              'Component gateway is only supported in the default universe'
+          ),
+      ),
   )
   parser.add_argument(
       '--node-group',
@@ -757,11 +764,16 @@ If you want to enable all scopes use the 'cloud-platform' scope.
   metastore_group = parser.add_argument_group(mutex=True)  # Mutually exclusive
   metastore_group.add_argument(
       '--dataproc-metastore',
-      help="""\
-      Specify the name of a Dataproc Metastore service to be used as an
-      external metastore in the format:
-      "projects/{project-id}/locations/{region}/services/{service-name}".
-      """,
+      help=arg_parsers.UniverseHelpText(
+          default="""\
+          Specify the name of a Dataproc Metastore service to be used as an
+          external metastore in the format:
+          "projects/{project-id}/locations/{region}/services/{service-name}".
+          """,
+          universe_help="""\
+          Dataproc Metastore is only supported in the default universe.
+          """,
+      ),
   )
   # Not mutually exclusive
   if alpha or beta:
@@ -910,14 +922,21 @@ If you want to enable all scopes use the 'cloud-platform' scope.
       group_text='Specifies the reservation for the instance.',
       affinity_text='The type of reservation for the instance.',
   )
+  # Note: include_gke_platform_args is only supported in the default universe.
+  # The check occurs in create.py.
   if include_gke_platform_args:
     gke_based_cluster_group = platform_group.add_argument_group(
         hidden=True,
-        help="""\
-          Options for creating a GKE-based Dataproc cluster. Specifying any of these
-          will indicate that this cluster is intended to be a GKE-based cluster.
-          These options are mutually exclusive with GCE-based options.
-          """,
+        help=arg_parsers.UniverseHelpText(
+            default="""\
+                    Options for creating a GKE-based Dataproc cluster. Specifying any of these
+                    will indicate that this cluster is intended to be a GKE-based cluster.
+                    These options are mutually exclusive with GCE-based options.
+                    """,
+            universe_help="""\
+                          GKE-based clusters are only supported in the default universe.
+                          """,
+        ),
     )
     gke_based_cluster_group.add_argument(
         '--gke-cluster',
@@ -2543,7 +2562,12 @@ def AddKerberosGroup(parser):
   """Adds the argument group to handle Kerberos configurations."""
   kerberos_group = parser.add_argument_group(
       mutex=True,
-      help='Specifying these flags will enable Kerberos for the cluster.',
+      help=arg_parsers.UniverseHelpText(
+          default=(
+              'Specifying these flags will enable Kerberos for the cluster.'
+          ),
+          universe_help='Kerberos is only supported in the default universe.',
+      ),
   )
   # Not mutually exclusive
   kerberos_flag_group = kerberos_group.add_argument_group()
@@ -2713,9 +2737,15 @@ def AddSecureMultiTenancyGroup(parser):
   """Adds the argument group to handle Secure Multi-Tenancy configurations."""
   secure_multi_tenancy_group = parser.add_argument_group(
       mutex=True,
-      help=(
-          'Specifying these flags will enable Secure Multi-Tenancy for the'
-          ' cluster.'
+      help=arg_parsers.UniverseHelpText(
+          default=(
+              'Specifying these flags will enable Secure Multi-Tenancy for the'
+              ' cluster.'
+          ),
+          universe_help=(
+              'Secure Multi-Tenancy for clusters is only supported in the'
+              ' default universe.'
+          ),
       ),
   )
   secure_multi_tenancy_group.add_argument(

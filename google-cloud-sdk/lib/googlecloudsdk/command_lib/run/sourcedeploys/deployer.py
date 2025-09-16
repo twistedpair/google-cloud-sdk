@@ -220,7 +220,7 @@ def _PrepareBuildConfig(
 
     # is docker build
     if build_pack is None:
-      assert build_config.steps[0].name == 'gcr.io/cloud-builders/docker'
+      assert build_config.steps[0].name == 'gcr.io/cloud-builders/gcb-internal'
       # https://docs.docker.com/engine/reference/commandline/image_build/
       build_config.steps[0].args.extend(['--label', f'google.source={uri}'])
 

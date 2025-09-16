@@ -14,9 +14,6 @@
 # limitations under the License.
 """General utilities for cloud deploy resources."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
 
 import enum
 from googlecloudsdk.core.resource import resource_property

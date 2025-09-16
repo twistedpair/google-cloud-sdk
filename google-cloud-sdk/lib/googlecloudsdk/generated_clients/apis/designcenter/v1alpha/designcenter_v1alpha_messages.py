@@ -170,6 +170,17 @@ class ApplicationOperationMetadata(_messages.Message):
   step = _messages.StringField(2)
 
 
+class ApplicationOutputParameters(_messages.Message):
+  r"""The application output parameters of the deployment.
+
+  Fields:
+    helmApplicationOutputParameters: Output only. Helm application output
+      parameters.
+  """
+
+  helmApplicationOutputParameters = _messages.MessageField('HelmApplicationOutputParameters', 1)
+
+
 class ApplicationTemplate(_messages.Message):
   r"""Application template resource.
 
@@ -199,7 +210,7 @@ class ApplicationTemplate(_messages.Message):
     Values:
       IAC_FORMAT_UNSPECIFIED: IaC format is unspecified.
       TERRAFORM: IaC format is Terraform.
-      HELM: IaC format is HELM.
+      HELM: IaC format is Helm.
     """
     IAC_FORMAT_UNSPECIFIED = 0
     TERRAFORM = 1
@@ -236,10 +247,11 @@ class ArtifactLocation(_messages.Message):
   r"""Defines the location for storing an artifact, such as generated IaC.
 
   Fields:
-    developerConnectExportConfig: Optional. SCM Config for storing the
-      generated IaC. Supports sources integrated with Developer Connect like
-      GitHub, GitHub Enterprise, GitLab, Bitbucket, etc.
-    gcsUri: Optional. The Cloud Storage uri for storing the generated IaC.
+    developerConnectExportConfig: Optional. Source Code Management(SCM) config
+      for storing the content, such as generated IaC. Supports sources
+      integrated with Developer Connect like GitHub, GitHub Enterprise,
+      GitLab, and Bitbucket.
+    gcsUri: Optional. The Cloud Storage URI for storing the generated IaC.
   """
 
   developerConnectExportConfig = _messages.MessageField('DeveloperConnectExportConfig', 1)
@@ -468,10 +480,10 @@ class CatalogTemplate(_messages.Message):
 
     Values:
       TEMPLATE_CATEGORY_UNSPECIFIED: Unspecified category.
-      COMPONENT_TEMPLATE: A component template is an ADC component.
-      APPLICATION_TEMPLATE: An adc application template is an ADC application.
-      COMPOSITE_SOLUTION_TEMPLATE: A composite solution template is imported
-        as a single, complex unit without disassembling into components.
+      COMPONENT_TEMPLATE: ADC component.
+      APPLICATION_TEMPLATE: ADC application.
+      COMPOSITE_SOLUTION_TEMPLATE: Imported as a single, complex unit without
+        disassembling into components.
     """
     TEMPLATE_CATEGORY_UNSPECIFIED = 0
     COMPONENT_TEMPLATE = 1
@@ -532,7 +544,8 @@ class CatalogTemplateRevision(_messages.Message):
     createTime: Output only. The catalog template creation timestamp.
     description: Optional. The catalog template revision description.
     developerConnectSourceConfig: Optional. Configuration for fetching content
-      from a private source code repository, such as GitHub or Bitbucket.
+      from source code repository such as GitHub or Bitbucket through
+      Developer Connect.
     gcsSourceUri: Optional. The Cloud Storage URI, which must be in the format
       gs://[bucket] or gs://[bucket]/[object].
     gitSource: Optional. The git source.
@@ -541,7 +554,8 @@ class CatalogTemplateRevision(_messages.Message):
     name: Identifier. The catalog template revision name. projects/$project/lo
       cations/$location/spaces/$space/catalogs/$catalog/templates/$template/re
       visions/$revision
-    ociRepo: Optional. The oci repo source that would contain helm charts.
+    ociRepo: Optional. The Open Container Initiative (OCI) repo source that
+      contains helm charts.
     state: Output only. The template state (validating/ready/invalid).
     templateCategory: Output only. The category of the ADC template.
     templateMetadata: Output only. Template metadata related to Terraform
@@ -570,10 +584,10 @@ class CatalogTemplateRevision(_messages.Message):
 
     Values:
       TEMPLATE_CATEGORY_UNSPECIFIED: Unspecified category.
-      COMPONENT_TEMPLATE: A component template is an ADC component.
-      APPLICATION_TEMPLATE: An adc application template is an ADC application.
-      COMPOSITE_SOLUTION_TEMPLATE: A composite solution template is imported
-        as a single, complex unit without disassembling into components.
+      COMPONENT_TEMPLATE: ADC component.
+      APPLICATION_TEMPLATE: ADC application.
+      COMPOSITE_SOLUTION_TEMPLATE: Imported as a single, complex unit without
+        disassembling into components.
     """
     TEMPLATE_CATEGORY_UNSPECIFIED = 0
     COMPONENT_TEMPLATE = 1
@@ -643,8 +657,8 @@ class Component(_messages.Message):
   Fields:
     apis: Output only. APIs required to be enabled to deploy the component, in
       the form of "*.googleapis.com".
-    componentParameterSchema: Output only. The component parameter schema
-      having info about the possible parameter values.
+    componentParameterSchema: Output only. The component parameter schema,
+      which includes possible parameter values. values.
     connectionsParameters: Output only. The connection parameters of the
       component.
     createTime: Output only.
@@ -653,8 +667,8 @@ class Component(_messages.Message):
     parameters: Optional. The component parameters.
     roles: Output only. IAM roles required by the service account to deploy
       the component.
-    sharedTemplateRevisionUri: Required. The shared template used to generate
-      the component.
+    sharedTemplateRevisionUri: Required. Immutable. The shared template used
+      to generate the component.
     updateTime: Output only. The component update timestamp.
   """
 
@@ -707,8 +721,8 @@ class ComponentParameters(_messages.Message):
 
   Fields:
     component: Required. The name of the component parameter.
-    componentParameterSchema: Output only. The component parameter schema
-      having info about the possible parameter values.
+    componentParameterSchema: Output only. The component parameter schema,
+      which includes possible parameter values.
     connectionsParameters: Output only.
     parameters: Optional. A list of parameters associated with the component.
     state: Output only. Deployment state of the component.
@@ -720,9 +734,9 @@ class ComponentParameters(_messages.Message):
     Values:
       STATE_UNSPECIFIED: Unspecified component deployment state.
       DRAFT: Component is in draft.
-      CREATING_DEPLOYMENT: New Component deployment is in progress.
-      UPDATING_DEPLOYMENT: Update Component deployment is in progress.
-      DELETING: Delete Component deployment is in progress.
+      CREATING_DEPLOYMENT: New deployment is in progress.
+      UPDATING_DEPLOYMENT: Update is in progress.
+      DELETING: Deletion is in progress.
       DEPLOYED: Component deployment is completed.
       DELETED: Component deployment is deleted.
       FAILED: Component deployment is failed.
@@ -887,16 +901,15 @@ class DeployApplicationRequest(_messages.Message):
     serviceAccount: Optional. The email address of the service account to use
       for this deployment. - If provided, this service account will be used to
       execute the deployment process, taking precedence over any
-      service_account specified on the Application resource itself for this
-      operation. - The caller MUST have the 'iam.serviceAccounts.actAs'
-      permission on this service account. - If this field is omitted, the
-      system will use the 'service_account' defined within the Application
-      resource. - It is strongly RECOMMENDED to provide a service account
-      either here or on the Application resource, as deployment will fail if
-      no service account can be determined. Format:
+      service_account specified on the Application resource. - The caller must
+      have the 'iam.serviceAccounts.actAs' permission on this service account.
+      - If this field is omitted, the system will use the 'service_account'
+      defined within the Application resource. - We recommend that you provide
+      a service account here or on the Application resource. If you don't
+      provide a service account, the deployment will fail. Format:
       projects/{PROJECT}/serviceAccounts/{EMAIL_ADDRESS}
     workerPool: Optional. The user-specified Worker Pool resource in which the
-      Cloud Build job will execute. Format
+      Cloud Build job will execute, in the following format:
       projects/{project}/locations/{location}/workerPools/{workerPoolId} If
       this field is unspecified, the default Cloud Build worker pool will be
       used. If omitted and application resource ref provided has worker_pool
@@ -942,7 +955,7 @@ class DeploymentError(_messages.Message):
     detail: Output only. Human readable string that summarizes the deployment
       error issue.
     errorMessage: Output only. Stores errors generated by Infra Manager, as
-      well as all the non-internal errors (e.g., INVALID_ARGUMENT) that occur
+      well as all non-internal errors (such as INVALID_ARGUMENT) that occur
       before initiating the deployment.
     tfErrors: Output only. The error message associated with the deployment.
     type: Output only. The error type based on the deployment error code.
@@ -1030,26 +1043,28 @@ class DeploymentMetadata(_messages.Message):
   r"""Deployment information for the application.
 
   Fields:
+    applicationOutputParameters: Output only. The application output
+      parameters of the deployment.
     build: Output only. Cloud Build instance UUID associated with this
       deployment.
     componentOutputParameters: Output only. The component output parameters of
       the deployment.
     error: Output only. The error associated with the deployment.
-    retryAttempts: Output only. The attempted number of retry in the
-      deployment.
+    retryAttempts: Output only. The attempted number of deployment retries.
     revision: Output only. The revision of the deployment associated with the
       Application.
     workerPool: Output only. The user-specified Cloud Build worker pool
-      resource used for application deployment. Format:
+      resource used, which the system uses to deploy the application. Format:
       `projects/{project}/locations/{location}/workerPools/{workerPoolId}`.
   """
 
-  build = _messages.StringField(1)
-  componentOutputParameters = _messages.MessageField('ComponentOutputParameters', 2, repeated=True)
-  error = _messages.MessageField('DeploymentError', 3)
-  retryAttempts = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  revision = _messages.StringField(5)
-  workerPool = _messages.StringField(6)
+  applicationOutputParameters = _messages.MessageField('ApplicationOutputParameters', 1)
+  build = _messages.StringField(2)
+  componentOutputParameters = _messages.MessageField('ComponentOutputParameters', 3, repeated=True)
+  error = _messages.MessageField('DeploymentError', 4)
+  retryAttempts = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  revision = _messages.StringField(6)
+  workerPool = _messages.StringField(7)
 
 
 class DeploymentOperationMetadata(_messages.Message):
@@ -2189,20 +2204,22 @@ class DeveloperConnectConfig(_messages.Message):
 
 
 class DeveloperConnectExportConfig(_messages.Message):
-  r"""This config defines the location of a source through Developer Connect
-  where IaC will be written to.
+  r"""Through Developer Connect, defines a location where content such as
+  Infrastructure as Code (IaC) is stored.
 
   Fields:
-    branch: Optional. The branch in repo to which the contents should be
-      written to. If empty, ADC will create one and push the changes.
-    commitSha: Output only. The commit SHA of the exported content.
+    branch: Optional. The branch in repo to which the content such as
+      Infrastructure as Code (IaC) should be written to. If empty, ADC will
+      create a branch and push the changes.
+    commitSha: Output only. The SHA of the Git commit that contains the
+      exported content such as Infrastructure as Code (IaC).
     developerConnectRepoUri: Required. The Developer Connect Git repository
       link, formatted as
       `projects/*/locations/*/connections/*/gitRepositoryLinks/*`.
-    dir: Required. Directory, relative to the source repo, where content will
-      be written to. This must be a relative path.To specify the root
-      directory, use '/'. If the path or any subdirectories do not exist, they
-      will be created.
+    dir: Required. Directory, relative to the source repo, where content such
+      as Infrastructure as Code (IaC) will be stored. This must be a relative
+      path.To specify the root directory, use '/'. If the path or any
+      subdirectories do not exist, they will be created.
   """
 
   branch = _messages.StringField(1)
@@ -2212,20 +2229,21 @@ class DeveloperConnectExportConfig(_messages.Message):
 
 
 class DeveloperConnectSourceConfig(_messages.Message):
-  r"""This config specifies the location of a source through Developer
-  Connect.
+  r"""This config specifies the location of a source (such as GitHub or
+  Bitbucket) through Developer Connect.
 
   Fields:
     developerConnectRepoUri: Required. The Developer Connect Git repository
       link, formatted as
       `projects/*/locations/*/connections/*/gitRepositoryLinks/*`.
     dir: Required. The sub-directory within the repository from which to read
-      content. The path must be relative to the repository's root. To read
-      from the repository's root, explicitly use "/".
-    fetchedCommitSha: Output only. The SHA of the commit deduced from the
+      content. The path must be relative to the repository's root such as
+      dir1/dir2. To read content from the root dir, provide "/" as the value
+      of the field.
+    fetchedCommitSha: Output only. The SHA of the commit deduced from
       GitReference.
-    reference: Required. The reference (for eg: branch, tag or commit SHA)
-      from which the content should be read.
+    reference: Required. The reference (for example, a branch, tag, or commit
+      SHA) from which the content should be read.
   """
 
   developerConnectRepoUri = _messages.StringField(1)
@@ -2373,7 +2391,7 @@ class GenerateApplicationIaCRequest(_messages.Message):
     artifactLocation: Optional. Specifies the destination for the generated
       IaC, which can be Cloud Storage or a Developer Connect repository.
     gcsUri: Optional. The Cloud Storage URI to write the generated IaC to.
-      DEPRECATED: Please use the 'artifact_location' field instead.
+      DEPRECATED: Use the 'artifact_location' field instead.
     iacFormat: Optional. The IaC format to generate.
   """
 
@@ -2401,7 +2419,7 @@ class GenerateApplicationIaCResponse(_messages.Message):
     artifactLocation: Output only. The destination where the generated IaC was
       written.
     gcsUri: Output only. The Cloud Storage URI of the generated IaC.
-      DEPRECATED: Please use the 'artifact_location' field instead.
+      DEPRECATED: Use the 'artifact_location' field instead.
   """
 
   artifactLocation = _messages.MessageField('ArtifactLocation', 1)
@@ -2418,7 +2436,7 @@ class GenerateApplicationTemplateIaCRequest(_messages.Message):
     artifactLocation: Optional. Specifies the destination for the generated
       IaC, which can be Cloud Storage or a Developer Connect repository.
     gcsUri: Optional. The Cloud Storage URI to write the generated IaC to.
-      DEPRECATED: Please use the 'artifact_location' field instead.
+      DEPRECATED: Use the 'artifact_location' field instead.
     iacFormat: Optional. The IaC format to generate.
   """
 
@@ -2446,7 +2464,7 @@ class GenerateApplicationTemplateIaCResponse(_messages.Message):
     artifactLocation: Output only. The destination where the generated IaC was
       written.
     gcsUri: Output only. The Cloud Storage URI of the generated IaC.
-      DEPRECATED: Please use the 'artifact_location' field instead.
+      DEPRECATED: Use the 'artifact_location' field instead.
   """
 
   artifactLocation = _messages.MessageField('ArtifactLocation', 1)
@@ -2492,8 +2510,18 @@ class GitSource(_messages.Message):
   repo = _messages.StringField(5)
 
 
+class HelmApplicationOutputParameters(_messages.Message):
+  r"""The helm application output parameters of the deployment.
+
+  Fields:
+    parameters: Output only. The output parameters of the helm application.
+  """
+
+  parameters = _messages.MessageField('Parameter', 1, repeated=True)
+
+
 class HelmChartInput(_messages.Message):
-  r"""Helm Chart inputs.
+  r"""Helm Chart inputs. Documentation: https://helm.sh/docs/
 
   Messages:
     NestedInputsValue: Output only. Contains details of nested inputs.
@@ -2597,11 +2625,10 @@ class InferConnectionsRequest(_messages.Message):
   r"""Request message for InferConnections method.
 
   Fields:
-    catalogTemplateRevisionIds: Optional. List of components which user wants
-      to infer connections for. This is optional, so if user doesn't provide
-      this the API will infer for all components available in the space (all
-      catalogs).
-    useGemini: Optional. boolean value to use gemini.
+    catalogTemplateRevisionIds: Optional. A list of components that you want
+      to infer connections for. If you don't provide this, the system infers
+      connections for all components in the space, including all catalogs.
+    useGemini: Optional. Whether to use Gemini.
   """
 
   catalogTemplateRevisionIds = _messages.StringField(1, repeated=True)
@@ -2936,11 +2963,11 @@ class MetadataInputSpec(_messages.Message):
 
 
 class OciRepo(_messages.Message):
-  r"""Oci repo.
+  r"""Open Container Initiative (OCI) repo.
 
   Fields:
-    uri: Required. Path to Oci repo. Example: oci://us-
-      west1-docker.pkg.dev/nyap-test/helm-repo/my-chart
+    uri: Required. Path to Open Container Initiative (OCI) repo. Example:
+      oci://us-west1-docker.pkg.dev/nyap-test/helm-repo/my-chart
     version: Optional. The version of the helm chart.
   """
 
@@ -3189,13 +3216,12 @@ class PreviewApplicationRequest(_messages.Message):
     serviceAccount: Optional. The email address of the service account to use
       for this preview operation. - If provided, this service account will be
       used to execute the preview process, taking precedence over any
-      service_account specified on the Application resource itself for this
-      operation. - The caller MUST have the 'iam.serviceAccounts.actAs'
-      permission on this service account. - If this field is omitted, the
-      system will use the 'service_account' defined within the Application
-      resource. - It is strongly RECOMMENDED to provide a service account
-      either here or on the Application resource, as preview will fail if no
-      service account can be determined. Format:
+      service_account specified on the Application resource. - The caller must
+      have the 'iam.serviceAccounts.actAs' permission on this service account.
+      - If this field is omitted, the system will use the 'service_account'
+      defined within the Application resource. - We recommend that you provide
+      a service account here or on the Application resource. If you don't
+      provide a service account, the preview will fail. Format:
       projects/{PROJECT}/serviceAccounts/{EMAIL_ADDRESS}
     workerPool: Optional. The user-specified Worker Pool resource in which the
       Cloud Build job will execute. Format
@@ -3250,8 +3276,9 @@ class ProviderVersion(_messages.Message):
   r"""ProviderVersion defines the required version for a provider.
 
   Fields:
-    source: Output only. Provider source of form \[hostname]\namespace\name
-      Hostname is optional defaulting to Terraform registry.
+    source: Output only. The provider source in the format:
+      [hostname]/[namespace]/[name]. Hostname is optional, and defaults to the
+      Terraform registry.
     version: Output only. Version constraint string.
   """
 
@@ -3348,7 +3375,7 @@ class SerializedApplicationTemplate(_messages.Message):
     Values:
       IAC_FORMAT_UNSPECIFIED: IaC format is unspecified.
       TERRAFORM: IaC format is Terraform.
-      HELM: IaC format is HELM.
+      HELM: IaC format is Helm.
     """
     IAC_FORMAT_UNSPECIFIED = 0
     TERRAFORM = 1
@@ -3370,8 +3397,8 @@ class SerializedComponent(_messages.Message):
   Fields:
     apis: Optional. APIs required to be enabled to deploy the component, in
       the form of "*.googleapis.com".
-    componentParameterSchema: Output only. The component parameter schema
-      having info about the possible parameter values.
+    componentParameterSchema: Output only. The component parameter schema,
+      which includes possible parameter values.
     connections: Optional. The component connections.
     connectionsParameters: Output only. The connection parameters of the
       component.
@@ -3492,10 +3519,10 @@ class SharedTemplate(_messages.Message):
 
     Values:
       TEMPLATE_CATEGORY_UNSPECIFIED: Unspecified category.
-      COMPONENT_TEMPLATE: A component template is an ADC component.
-      APPLICATION_TEMPLATE: An adc application template is an ADC application.
-      COMPOSITE_SOLUTION_TEMPLATE: A composite solution template is imported
-        as a single, complex unit without disassembling into components.
+      COMPONENT_TEMPLATE: ADC component.
+      APPLICATION_TEMPLATE: ADC application.
+      COMPOSITE_SOLUTION_TEMPLATE: Imported as a single, complex unit without
+        disassembling into components.
     """
     TEMPLATE_CATEGORY_UNSPECIFIED = 0
     COMPONENT_TEMPLATE = 1
@@ -3554,7 +3581,8 @@ class SharedTemplateRevision(_messages.Message):
     createTime: Output only. The shared template revision creation timestamp.
     description: Optional. The shared template revision description.
     developerConnectSourceConfig: Optional. Configuration for fetching content
-      from a private source code repository, such as GitHub or Bitbucket.
+      from source code repository such as GitHub or Bitbucket through
+      Developer Connect.
     gcsSourceUri: Optional. The Cloud Storage URI, which must be in the format
       gs://[bucket] or gs://[bucket]/[object].
     gitSource: Optional. The git source.
@@ -3562,7 +3590,8 @@ class SharedTemplateRevision(_messages.Message):
     name: Identifier. The shared template revision name. $sharedTemplate is a
       server-generated UUID. projects/$project/locations/$location/spaces/$spa
       ce/sharedTemplates/$sharedTemplate/revisions/$revision
-    ociRepo: Optional. The oci repo source that would contain helm charts.
+    ociRepo: Optional. The Open Container Initiative (OCI) repo source that
+      contains helm charts.
     originTemplateRevision: Output only. The shared template revision refers
       to the following catalog template revision.
     sharedTemplateMetadata: Output only. The shared template metadata.
@@ -3575,10 +3604,10 @@ class SharedTemplateRevision(_messages.Message):
 
     Values:
       TEMPLATE_CATEGORY_UNSPECIFIED: Unspecified category.
-      COMPONENT_TEMPLATE: A component template is an ADC component.
-      APPLICATION_TEMPLATE: An adc application template is an ADC application.
-      COMPOSITE_SOLUTION_TEMPLATE: A composite solution template is imported
-        as a single, complex unit without disassembling into components.
+      COMPONENT_TEMPLATE: ADC component.
+      APPLICATION_TEMPLATE: ADC application.
+      COMPOSITE_SOLUTION_TEMPLATE: Imported as a single, complex unit without
+        disassembling into components.
     """
     TEMPLATE_CATEGORY_UNSPECIFIED = 0
     COMPONENT_TEMPLATE = 1
@@ -3859,7 +3888,7 @@ class TemplateSchema(_messages.Message):
   information.
 
   Fields:
-    variables: Required. all defined variables for the Template
+    variables: Required. All defined variables for the Template
   """
 
   variables = _messages.MessageField('TemplateVariable', 1, repeated=True)
@@ -4058,8 +4087,8 @@ class TerraformUiInputDisplayVariable(_messages.Message):
   r"""Terraform blueprint UI input display variable.
 
   Messages:
-    PropertiesValue: Output only. properties is a map defining all the fields
-      of the input variable.
+    PropertiesValue: Output only. A map that defines all fields of the input
+      variable.
 
   Fields:
     alternateDefaults: Output only. Alternate defaults for the input.
@@ -4073,8 +4102,8 @@ class TerraformUiInputDisplayVariable(_messages.Message):
       to level 1 by the UI implementation. Optional.
     max: Output only. Maximum value for numeric types.
     min: Output only. Minimum value for numeric types.
-    properties: Output only. properties is a map defining all the fields of
-      the input variable.
+    properties: Output only. A map that defines all fields of the input
+      variable.
     regexValidation: Output only. Regex based validation rules for the
       variable.
     subtext: Output only. Property subtext, displayed below the title.
@@ -4088,8 +4117,7 @@ class TerraformUiInputDisplayVariable(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
-    r"""Output only. properties is a map defining all the fields of the input
-    variable.
+    r"""Output only. A map that defines all fields of the input variable.
 
     Messages:
       AdditionalProperty: An additional property for a PropertiesValue object.

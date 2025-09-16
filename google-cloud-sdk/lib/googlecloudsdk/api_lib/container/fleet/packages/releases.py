@@ -14,6 +14,7 @@
 # limitations under the License.
 """Utilities for Package Rollouts Releases API."""
 
+from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.fleet.packages import util
 from googlecloudsdk.api_lib.container.fleet.packages import variants as variants_apis
@@ -157,14 +158,22 @@ class ReleasesClient(object):
     )
     for variant, variant_resources in variants.items():
       variants_client = variants_apis.VariantsClient(self._api_version)
-      variants_client.Create(
-          resource_bundle=resource_bundle,
-          release=version.replace('.', '-'),
-          name=variant,
-          project=project,
-          location=location,
-          variant_resources=variant_resources,
-      )
+      try:
+        variants_client.Create(
+            resource_bundle=resource_bundle,
+            release=version.replace('.', '-'),
+            name=variant,
+            project=project,
+            location=location,
+            variant_resources=variant_resources,
+        )
+      except apitools_exceptions.HttpConflictError as e:
+        # If the variant already exists, we can safely skip.
+        if 'already_exists' in str(e).lower():
+          pass
+        else:
+          # Re-raise the exception if conflict is not due to "already exists".
+          raise
     return self.Update(
         release=version,
         project=project,

@@ -24,18 +24,6 @@ class Artifacts(_messages.Message):
   gcsPath = _messages.StringField(1)
 
 
-class AtmTag(_messages.Message):
-  r"""Message describing ATM Tag object
-
-  Fields:
-    key: Required. Key of the ATM tag
-    value: Required. Value of the ATM tag
-  """
-
-  key = _messages.StringField(1)
-  value = _messages.StringField(2)
-
-
 class BucketReference(_messages.Message):
   r"""BucketReference describes the underlying bucket resource.
 
@@ -51,40 +39,75 @@ class CancelOperationRequest(_messages.Message):
 
 
 class Cluster(_messages.Message):
-  r"""Message describing Cluster object
+  r"""A collection of virtual machines and connected resources forming a high-
+  performance computing cluster capable of running large-scale, tightly
+  coupled workloads. A cluster combines a set a compute resources that perform
+  computations, storage resources that contain inputs and store outputs, an
+  orchestrator that is responsible for assigning jobs to compute resources,
+  and network resources that connect everything together.
 
   Messages:
-    ComputeResourcesValue: Optional. Compute resources. where key is string ID
-      of the compute resource.
-    LabelsValue: Optional. Labels as key value pairs
-    NetworkResourcesValue: Optional. Network resources. where key is string ID
-      of the network resource.
-    StorageResourcesValue: Optional. Storage resources. where key is string ID
-      of the storage resource.
+    ComputeResourcesValue: Optional. Compute resources available to the
+      cluster. Keys specify the ID of the compute resource by which it can be
+      referenced elsewhere, and must conform to
+      [RFC-1034](https://datatracker.ietf.org/doc/html/rfc1034) (lower-case,
+      alphanumeric, and at most 63 characters).
+    LabelsValue: Optional.
+      [Labels](https://cloud.google.com/compute/docs/labeling-resources)
+      applied to the cluster. Labels can be used to organize clusters and to
+      filter them in queries.
+    NetworkResourcesValue: Optional. Network resources available to the
+      cluster. Must contain at most one value. Keys specify the ID of the
+      network resource by which it can be referenced elsewhere, and must
+      conform to [RFC-1034](https://datatracker.ietf.org/doc/html/rfc1034)
+      (lower-case, alphanumeric, and at most 63 characters).
+    StorageResourcesValue: Optional. Storage resources available to the
+      cluster. Keys specify the ID of the storage resource by which it can be
+      referenced elsewhere, and must conform to
+      [RFC-1034](https://datatracker.ietf.org/doc/html/rfc1034) (lower-case,
+      alphanumeric, and at most 63 characters).
 
   Fields:
-    compute: Optional. Compute Engine instances
-    computeResources: Optional. Compute resources. where key is string ID of
-      the compute resource.
-    createTime: Output only. Creation time of the cluster
-    description: Optional. Description of the cluster
-    labels: Optional. Labels as key value pairs
-    name: Identifier. Name of the cluster
-    networkResources: Optional. Network resources. where key is string ID of
-      the network resource.
-    networks: Optional. List of networks
-    orchestrator: Optional. Orchestrator of the cluster
-    reconciling: Output only. Whether the cluster is being reconciled.
-    storageResources: Optional. Storage resources. where key is string ID of
-      the storage resource.
-    storages: Optional. List of storages
-    updateTime: Output only. Update time of the cluster
+    compute: Optional. Deprecated. Use compute_resources instead.
+    computeResources: Optional. Compute resources available to the cluster.
+      Keys specify the ID of the compute resource by which it can be
+      referenced elsewhere, and must conform to
+      [RFC-1034](https://datatracker.ietf.org/doc/html/rfc1034) (lower-case,
+      alphanumeric, and at most 63 characters).
+    createTime: Output only. Time that the cluster was originally created.
+    description: Optional. User-provided description of the cluster.
+    labels: Optional. [Labels](https://cloud.google.com/compute/docs/labeling-
+      resources) applied to the cluster. Labels can be used to organize
+      clusters and to filter them in queries.
+    name: Identifier. [Relative resource name](https://google.aip.dev/122) of
+      the cluster, in the format
+      `projects/{project}/locations/{location}/clusters/{cluster}`.
+    networkResources: Optional. Network resources available to the cluster.
+      Must contain at most one value. Keys specify the ID of the network
+      resource by which it can be referenced elsewhere, and must conform to
+      [RFC-1034](https://datatracker.ietf.org/doc/html/rfc1034) (lower-case,
+      alphanumeric, and at most 63 characters).
+    networks: Optional. Deprecated. Use network_resources instead.
+    orchestrator: Optional. Orchestrator that is responsible for scheduling
+      and running jobs on the cluster.
+    reconciling: Output only. Indicates whether changes to the cluster are
+      currently in flight. If this is `true`, then the current state might not
+      match the cluster's intended state.
+    storageResources: Optional. Storage resources available to the cluster.
+      Keys specify the ID of the storage resource by which it can be
+      referenced elsewhere, and must conform to
+      [RFC-1034](https://datatracker.ietf.org/doc/html/rfc1034) (lower-case,
+      alphanumeric, and at most 63 characters).
+    storages: Optional. Deprecated. Use storage_resources instead.
+    updateTime: Output only. Time that the cluster was most recently updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ComputeResourcesValue(_messages.Message):
-    r"""Optional. Compute resources. where key is string ID of the compute
-    resource.
+    r"""Optional. Compute resources available to the cluster. Keys specify the
+    ID of the compute resource by which it can be referenced elsewhere, and
+    must conform to [RFC-1034](https://datatracker.ietf.org/doc/html/rfc1034)
+    (lower-case, alphanumeric, and at most 63 characters).
 
     Messages:
       AdditionalProperty: An additional property for a ComputeResourcesValue
@@ -110,7 +133,9 @@ class Cluster(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
+    r"""Optional. [Labels](https://cloud.google.com/compute/docs/labeling-
+    resources) applied to the cluster. Labels can be used to organize clusters
+    and to filter them in queries.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -134,8 +159,11 @@ class Cluster(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class NetworkResourcesValue(_messages.Message):
-    r"""Optional. Network resources. where key is string ID of the network
-    resource.
+    r"""Optional. Network resources available to the cluster. Must contain at
+    most one value. Keys specify the ID of the network resource by which it
+    can be referenced elsewhere, and must conform to
+    [RFC-1034](https://datatracker.ietf.org/doc/html/rfc1034) (lower-case,
+    alphanumeric, and at most 63 characters).
 
     Messages:
       AdditionalProperty: An additional property for a NetworkResourcesValue
@@ -161,8 +189,10 @@ class Cluster(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class StorageResourcesValue(_messages.Message):
-    r"""Optional. Storage resources. where key is string ID of the storage
-    resource.
+    r"""Optional. Storage resources available to the cluster. Keys specify the
+    ID of the storage resource by which it can be referenced elsewhere, and
+    must conform to [RFC-1034](https://datatracker.ietf.org/doc/html/rfc1034)
+    (lower-case, alphanumeric, and at most 63 characters).
 
     Messages:
       AdditionalProperty: An additional property for a StorageResourcesValue
@@ -205,12 +235,10 @@ class Compute(_messages.Message):
   r"""Message describing Compute object
 
   Fields:
-    atmTags: Optional. ATM Tags to attach to compute VM instances
     resourceRequests: Required. Source of compute resource
   """
 
-  atmTags = _messages.MessageField('AtmTag', 1, repeated=True)
-  resourceRequests = _messages.MessageField('ResourceRequest', 2, repeated=True)
+  resourceRequests = _messages.MessageField('ResourceRequest', 1, repeated=True)
 
 
 class ComputeInstance(_messages.Message):
@@ -715,7 +743,9 @@ class HypercomputeclusterProjectsLocationsClustersPatchRequest(_messages.Message
 
   Fields:
     cluster: A Cluster resource to be passed as the request body.
-    name: Identifier. Name of the cluster
+    name: Identifier. [Relative resource name](https://google.aip.dev/122) of
+      the cluster, in the format
+      `projects/{project}/locations/{location}/clusters/{cluster}`.
     requestId: Optional. A unique identifier for this request
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the Cluster resource by the update. The fields specified
@@ -745,8 +775,8 @@ class HypercomputeclusterProjectsLocationsListRequest(_messages.Message):
   r"""A HypercomputeclusterProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Do not use this field. It is unsupported and
-      is ignored unless explicitly documented otherwise. This is primarily for
+    extraLocationTypes: Optional. Unless explicitly documented otherwise,
+      don't use this unsupported field which is primarily intended for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -1269,16 +1299,31 @@ class NetworkInitializeParams(_messages.Message):
   network = _messages.StringField(2)
 
 
+class NetworkReference(_messages.Message):
+  r"""NetworkReference describes which underlying network resource being
+  represented.
+
+  Fields:
+    network: Output only. The name of the network.
+    subnetwork: Output only. Subnetwork of the network.
+  """
+
+  network = _messages.StringField(1)
+  subnetwork = _messages.StringField(2)
+
+
 class NetworkResource(_messages.Message):
   r"""NetworkResource represents a network resource of a cluster.
 
   Fields:
     computeNetwork: Compute network reference.
     config: Immutable. Configuration to initialize the network resource.
+    network: Network reference.
   """
 
   computeNetwork = _messages.MessageField('ComputeNetworkReference', 1)
   config = _messages.MessageField('NetworkResourceConfig', 2)
+  network = _messages.MessageField('NetworkReference', 3)
 
 
 class NetworkResourceConfig(_messages.Message):
@@ -1368,44 +1413,36 @@ class NewDWSFlexInstancesConfig(_messages.Message):
   r"""NewDWSFlexInstancesConfig describes the config to create new dws flex
   instances.
 
-  Messages:
-    AtmTagsValue: Immutable. Map atm tags to attach to the instance
+  Enums:
+    TerminationActionValueValuesEnum: Optional. Specifies the termination
+      action of the instance
 
   Fields:
-    atmTags: Immutable. Map atm tags to attach to the instance
+    bootDisk: Immutable. Boot disk for the instances
     machineType: Immutable. Machine type of the instance
     maxDuration: Immutable. Max duration of the instance
+    terminationAction: Optional. Specifies the termination action of the
+      instance
     zone: Immutable. Zone of the instance
   """
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AtmTagsValue(_messages.Message):
-    r"""Immutable. Map atm tags to attach to the instance
+  class TerminationActionValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the termination action of the instance
 
-    Messages:
-      AdditionalProperty: An additional property for a AtmTagsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type AtmTagsValue
+    Values:
+      TERMINATION_ACTION_UNSPECIFIED: Unspecified termination action
+      STOP: Stop the instance
+      DELETE: Delete the instance
     """
+    TERMINATION_ACTION_UNSPECIFIED = 0
+    STOP = 1
+    DELETE = 2
 
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AtmTagsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  atmTags = _messages.MessageField('AtmTagsValue', 1)
+  bootDisk = _messages.MessageField('Disk', 1)
   machineType = _messages.StringField(2)
   maxDuration = _messages.StringField(3)
-  zone = _messages.StringField(4)
+  terminationAction = _messages.EnumField('TerminationActionValueValuesEnum', 4)
+  zone = _messages.StringField(5)
 
 
 class NewFilestoreConfig(_messages.Message):
@@ -1497,40 +1534,13 @@ class NewOnDemandInstancesConfig(_messages.Message):
   r"""NewOnDemandInstancesConfig describes the config to create new on demand
   instances.
 
-  Messages:
-    AtmTagsValue: Immutable. Map atm tags to attach to the instance
-
   Fields:
-    atmTags: Immutable. Map atm tags to attach to the instance
+    bootDisk: Immutable. Boot disk for the instances
     machineType: Immutable. Machine type of the instance
     zone: Immutable. Zone of the instance
   """
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AtmTagsValue(_messages.Message):
-    r"""Immutable. Map atm tags to attach to the instance
-
-    Messages:
-      AdditionalProperty: An additional property for a AtmTagsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type AtmTagsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AtmTagsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  atmTags = _messages.MessageField('AtmTagsValue', 1)
+  bootDisk = _messages.MessageField('Disk', 1)
   machineType = _messages.StringField(2)
   zone = _messages.StringField(3)
 
@@ -1539,80 +1549,52 @@ class NewReservedInstancesConfig(_messages.Message):
   r"""NewReservedInstancesConfig describes the config to create new reserved
   instances.
 
-  Messages:
-    AtmTagsValue: Immutable. Map atm tags to attach to the instance
+  Enums:
+    TypeValueValuesEnum: Required. Specifies the type of reservation instance
+      can consume resources
 
   Fields:
-    atmTags: Immutable. Map atm tags to attach to the instance
+    bootDisk: Immutable. Boot disk for the instances
+    machineType: Immutable. Machine type of instances
     reservation: Immutable. Reservation name of the instance
+    type: Required. Specifies the type of reservation instance can consume
+      resources
+    zone: Immutable. Zone of the instances
   """
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AtmTagsValue(_messages.Message):
-    r"""Immutable. Map atm tags to attach to the instance
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. Specifies the type of reservation instance can consume
+    resources
 
-    Messages:
-      AdditionalProperty: An additional property for a AtmTagsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type AtmTagsValue
+    Values:
+      RESERVATION_TYPE_UNSPECIFIED: Unspecified reservation type
+      NO_RESERVATION: No reservation type
+      ANY_RESERVATION: Any reservation type
+      SPECIFIC_RESERVATION: Specific reservation type
     """
+    RESERVATION_TYPE_UNSPECIFIED = 0
+    NO_RESERVATION = 1
+    ANY_RESERVATION = 2
+    SPECIFIC_RESERVATION = 3
 
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AtmTagsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  atmTags = _messages.MessageField('AtmTagsValue', 1)
-  reservation = _messages.StringField(2)
+  bootDisk = _messages.MessageField('Disk', 1)
+  machineType = _messages.StringField(2)
+  reservation = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+  zone = _messages.StringField(5)
 
 
 class NewSpotInstancesConfig(_messages.Message):
   r"""NewSpotInstancesConfig describes the config to create new spot
   instances.
 
-  Messages:
-    AtmTagsValue: Immutable. Map atm tags to attach to the instance
-
   Fields:
-    atmTags: Immutable. Map atm tags to attach to the instance
+    bootDisk: Immutable. Boot disk for the instances
     machineType: Immutable. Machine type of the instance
     zone: Immutable. Zone of the instance
   """
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AtmTagsValue(_messages.Message):
-    r"""Immutable. Map atm tags to attach to the instance
-
-    Messages:
-      AdditionalProperty: An additional property for a AtmTagsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type AtmTagsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AtmTagsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  atmTags = _messages.MessageField('AtmTagsValue', 1)
+  bootDisk = _messages.MessageField('Disk', 1)
   machineType = _messages.StringField(2)
   zone = _messages.StringField(3)
 
@@ -1764,6 +1746,10 @@ class ProfileSession(_messages.Message):
 
   Fields:
     createTime: Output only. The creation time of the session.
+    dashboardUrl: Output only. The URL to dashboard to see session specific
+      data. Not specified if URL is not ready yet. Currently represents only
+      Xprof. Form https://? Could contains user information like bucket name
+      etc.
     gcsPath: Output only. The cloud storage path of the session. Example:
       `gs://my-bucket/my-run-directory/session-1`.
     name: Identifier. The name of the profile session. Format: projects/{proje
@@ -1772,8 +1758,9 @@ class ProfileSession(_messages.Message):
   """
 
   createTime = _messages.StringField(1)
-  gcsPath = _messages.StringField(2)
-  name = _messages.StringField(3)
+  dashboardUrl = _messages.StringField(2)
+  gcsPath = _messages.StringField(3)
+  name = _messages.StringField(4)
 
 
 class ReservationAffinity(_messages.Message):

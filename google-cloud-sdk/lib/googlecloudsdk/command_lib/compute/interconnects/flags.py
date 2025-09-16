@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2017 Google LLC. All Rights Reserved.
+# Copyright 2025 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ REQUESTED_FEATURES_CHOICES = {
     ),
 }
 
-SUBZONE_CHOICES = {
+_SUBZONE_CHOICES = {
     'a': 'Subzone a.',
     'b': 'Subzone b.',
 }
@@ -194,7 +194,7 @@ def GetRequestedFeature(messages, feature_arg):
   return None
 
 
-def GetSubzoneAlpha(messages, subzone_arg):
+def GetSubzone(messages, subzone_arg):
   """Converts the subzone flag to a message enum.
 
   Args:
@@ -212,7 +212,15 @@ def GetSubzoneAlpha(messages, subzone_arg):
 
 
 def AddCreateCommonArgs(parser, required=True):
-  """Adds shared flags for create command to the argparse.ArgumentParser."""
+  """Adds shared flags for create command to the argparse.ArgumentParser.
+
+  These flags are shared by the create command and the create members command
+  for interconnect groups.
+
+  Args:
+    parser: The argparse.ArgumentParser to add the flags to.
+    required: Whether the flags are required.
+  """
   AddAdminEnabled(parser)
   AddDescription(parser)
   AddCustomerName(parser)
@@ -225,24 +233,17 @@ def AddCreateCommonArgs(parser, required=True):
 def AddCreateArgs(parser, track, required=True):
   """Adds flags for create command to the argparse.ArgumentParser."""
   AddCreateCommonArgs(parser, required)
+  AddSubzone(parser)
   if track == base.ReleaseTrack.GA:
     AddInterconnectTypeGA(parser, required)
   else:
     AddInterconnectTypeBetaAndAlpha(parser)
-    if track == base.ReleaseTrack.ALPHA:
-      AddSubzone(parser)
 
 
-def AddCreateGaArgs(parser, required=True):
-  """Adds GA flags for create command to the argparse.ArgumentParser."""
+def AddCreateArgsForInterconnectGroupsCreateMembers(parser, required=True):
+  """Adds flags for interconnect groups create members command to the argparse.ArgumentParser."""
   AddCreateCommonArgs(parser, required)
   AddInterconnectTypeGA(parser, required)
-
-
-def AddCreateAlphaBetaArgs(parser, required=True):
-  """Adds alpha / beta flags for create command to the argparse.ArgumentParser."""
-  AddCreateCommonArgs(parser, required=required)
-  AddInterconnectTypeBetaAndAlpha(parser)
 
 
 def AddDescription(parser):
@@ -256,7 +257,7 @@ def AddSubzone(parser):
   """Adds subzone flag to the argparse.ArgumentParser."""
   parser.add_argument(
       '--subzone',
-      choices=SUBZONE_CHOICES,
+      choices=_SUBZONE_CHOICES,
       help="""\
       Subzone in the LOCATION specified by the --location flag.
       """,

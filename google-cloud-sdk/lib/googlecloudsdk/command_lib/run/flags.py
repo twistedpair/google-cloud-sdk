@@ -3001,6 +3001,12 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
   if FlagIsExplicitlySet(args, 'preset'):
     changes.append(config_changes.PresetChange(type=args.preset))
 
+  if FlagIsExplicitlySet(args, 'clear_presets'):
+    changes.append(
+        config_changes.RemovePresetsChange(
+            clear_presets=args.clear_presets
+        )
+    )
   return changes
 
 
@@ -4736,10 +4742,28 @@ def ShouldRetryNoZonalRedundancy(args, error_message):
   )
 
 
-def AddPresetFlag(parser):
-  """Add the --preset flag."""
-  parser.add_argument(
+def AddPresetFlags(parser):
+  """Add the --preset flag and other preset related flags."""
+  group = parser.add_mutually_exclusive_group(hidden=True)
+  PresetFlag().AddToParser(group)
+  AddClearPresetFlag(group)
+
+
+def PresetFlag():
+  """Create a --preset flag."""
+  return base.Argument(
       '--preset',
       help='Specifies a preset to be used for the deployment.',
+      hidden=True,
+  )
+
+
+def AddClearPresetFlag(parser):
+  """Add the --clear-presets flag."""
+  parser.add_argument(
+      '--clear-presets',
+      help='Clears all presets from the deployment.',
+      action='store_true',
+      default=False,
       hidden=True,
   )

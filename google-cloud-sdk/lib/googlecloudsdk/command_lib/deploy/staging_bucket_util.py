@@ -14,9 +14,6 @@
 # limitations under the License.
 """Support library to handle the staging bucket."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
 
 import six
 

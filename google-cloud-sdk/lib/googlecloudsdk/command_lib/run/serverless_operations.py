@@ -813,7 +813,7 @@ class ServerlessOperations(object):
       delegate_builds=False,
       base_image=None,
       build_service_account=None,
-      build_from_source_container_name='',
+      deploy_from_source_container_name='',
       build_worker_pool=None,
       build_machine_type=None,
       build_env_vars=None,
@@ -859,8 +859,9 @@ class ServerlessOperations(object):
       delegate_builds: bool. If true, use the Build API to submit builds.
       base_image: The build base image to opt-in automatic build image updates.
       build_service_account: The service account to use to execute the build.
-      build_from_source_container_name: The name of the ingress container that
-        is build from source. This could be empty string.
+      deploy_from_source_container_name: The name of the ingress container that
+        is deployed from source include build-from-source and zip deploy. This
+        field could be an empty string.
       build_worker_pool:  The name of the Cloud Build custom worker pool that
         should be used to build the function.
       build_machine_type: The machine type from Cloud Build default pool to use
@@ -922,7 +923,7 @@ class ServerlessOperations(object):
         source_path = sources.GetGsutilUri(source)
       config_changes.append(
           config_changes_mod.SourcesAnnotationChange(
-              updates={build_from_source_container_name: source_path}
+              updates={deploy_from_source_container_name: source_path}
           )
       )
       tracker.CompleteStage(stages.UPLOAD_SOURCE)
@@ -975,7 +976,7 @@ class ServerlessOperations(object):
             build_image=build_image,
             build_name=build_name,
             build_base_image=build_base_image,
-            build_from_source_container_name=build_from_source_container_name,
+            build_from_source_container_name=deploy_from_source_container_name,
             enable_automatic_updates=enable_automatic_updates,
         )
         config_changes.append(_AddDigestToImageChange(image_digest))

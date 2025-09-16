@@ -23,7 +23,11 @@ import io
 
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import request_config_factory
+from googlecloudsdk.api_lib.storage.gcs_grpc import grpc_util
+from googlecloudsdk.api_lib.storage.gcs_grpc import metadata_util
 from googlecloudsdk.command_lib.storage.resources import resource_reference
+from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
+from googlecloudsdk.core import gapic_util
 import six
 
 
@@ -71,6 +75,48 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
     self._source_resource = source_resource
     self._delegator = delegator
 
+  def _bidi_write_appendable_object(self, bidi_write_rpc):
+    """Yields the responses for writing to an appendable object."""
+    try:
+      bidi_write_rpc.open()
+      yield bidi_write_rpc.recv()
+      # TODO: b/440323479 - Add upload logic. (e.g. send data requests, handle
+      # exceptions, recv responses, etc.)
+    finally:
+      bidi_write_rpc.close()
+
+  def _get_request_for_creating_append_object(self):
+    """Returns the request for creating an appendable object.
+
+    Returns:
+      gapic_clients.storage_v2.types.BidiWriteObjectRequest: A
+        BidiWriteObjectRequest instance.
+    """
+    destination_object = self._client.types.Object(
+        name=self._destination_resource.storage_url.resource_name,
+        bucket=grpc_util.get_full_bucket_name(
+            self._destination_resource.storage_url.bucket_name
+        ),
+    )
+
+    metadata_util.update_object_metadata_from_request_config(
+        destination_object, self._request_config, self._source_resource
+    )
+
+    write_object_spec = self._client.types.WriteObjectSpec(
+        resource=destination_object,
+        if_generation_match=copy_util.get_generation_match_value(
+            self._request_config
+        ),
+        if_metageneration_match=(
+            self._request_config.precondition_metageneration_match
+        ),
+        appendable=True,
+    )
+    return self._client.types.BidiWriteObjectRequest(
+        write_object_spec=write_object_spec,
+    )
+
   @abc.abstractmethod
   def run(self):
     """Performs an upload and returns an Object message."""
@@ -87,6 +133,23 @@ class SimpleUpload(_Upload):
       gapic_clients.storage_v2.types.BidiWriteObjectResponse: A
         BidiWriteObjectResponse instance.
     """
+
+    bidi_write_rpc = gapic_util.MakeBidiRpc(
+        self._client,
+        self._client.storage.bidi_write_object,
+        initial_request=self._get_request_for_creating_append_object(),
+        metadata=metadata_util.get_bucket_name_routing_header(
+            grpc_util.get_full_bucket_name(
+                self._destination_resource.storage_url.bucket_name
+            )
+        ),
+    )
+
+    # The method returns a generator, so we need to consume it. To avoid early
+    # exit. The response is additionally required in future implementations
+    # for b/440505603.
+    _ = list(self._bidi_write_appendable_object(bidi_write_rpc))
+
     raise NotImplementedError()
 
 

@@ -27,6 +27,7 @@ from __future__ import unicode_literals
 import collections
 import json
 
+from googlecloudsdk.command_lib.apigee import defaults
 from googlecloudsdk.command_lib.apigee import errors
 from googlecloudsdk.command_lib.apigee import resource_args
 from googlecloudsdk.core import properties
@@ -34,7 +35,8 @@ from googlecloudsdk.core.credentials import requests
 from six.moves import urllib
 
 
-APIGEE_HOST = "apigee.googleapis.com"
+APIGEE_GLOBAL_HOST = "apigee.googleapis.com"
+APIGEE_LEP_HOST = "%s-apigee.googleapis.com"
 ERROR_FIELD = "error"
 MESSAGE_FIELD = "message"
 
@@ -109,6 +111,20 @@ def _ExtractErrorMessage(response):
   return None
 
 
+def _GetApigeeHostByOrganization(organization):
+  """Returns the Apigee host based on the organization."""
+  location = defaults.GetOrganizationLocation(organization)
+  return _GetApigeeHostByLocation(location)
+
+
+def _GetApigeeHostByLocation(location=None):
+  """Returns the Apigee host based on the location."""
+  if location is None or location == "global" or not location:
+    return APIGEE_GLOBAL_HOST
+
+  return APIGEE_LEP_HOST % location
+
+
 def ResponseToApiRequest(identifiers,
                          entity_path,
                          entity_collection=None,
@@ -117,7 +133,8 @@ def ResponseToApiRequest(identifiers,
                          accept_mimetype=None,
                          body=None,
                          body_mimetype="application/json",
-                         method_override=None):
+                         method_override=None,
+                         location=None):
   """Makes a request to the Apigee API and returns the response.
 
   Args:
@@ -136,6 +153,7 @@ def ResponseToApiRequest(identifiers,
     body_mimetype: the mimetype of the body data, if not JSON.
     method_override: the HTTP method to use for the request, when method starts
       with a colon.
+    location: the location of the apigee organization.
 
   Returns:
     an object containing the API's response. If accept_mimetype was set, this
@@ -163,13 +181,19 @@ def ResponseToApiRequest(identifiers,
   query_string = urllib.parse.urlencode(query_params) if query_params else ""
 
   endpoint_override = properties.VALUES.api_endpoint_overrides.apigee.Get()
-  if endpoint_override:
+  if location:
+    scheme = "https"
+    # Construct the host based on the location.
+    host = _GetApigeeHostByLocation(location)
+  elif endpoint_override:
     endpoint = urllib.parse.urlparse(endpoint_override)
     scheme = endpoint.scheme
     host = endpoint.netloc
   else:
     scheme = "https"
-    host = APIGEE_HOST
+    # Construct the host based on the organization location.
+    organization = identifiers.get("organizationsId", None)
+    host = _GetApigeeHostByOrganization(organization)
 
   url_path = "/".join(url_path_elements)
   if method and method[0] == ":":

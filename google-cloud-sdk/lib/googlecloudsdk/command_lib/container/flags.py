@@ -5368,6 +5368,10 @@ Examples:
       hugepageConfig:
         hugepage_size2m: '1024'
         hugepage_size1g: '2'
+      swapConfig:
+        enabled: true
+        bootDiskProfile:
+          swapSizeGib: 8
       cgroupMode: 'CGROUP_MODE_V2'
 
 List of supported kubelet configs in 'kubeletConfig'.
@@ -5489,6 +5493,43 @@ KEY             | VALUE
 ----------------| ---------------------------------------------
 hugepage_size2m | Number of 2M huge pages, any positive integer
 hugepage_size1g | Number of 1G huge pages, any positive integer
+
+List of supported keys in 'swapConfig' under 'linuxConfig'.
+
+KEY                                        | VALUE
+------------------------------------------ | ------------------------------------------
+enabled                                    | boolean
+encryptionConfig                           | specify encryption settings for the swap space
+bootDiskProfile                            | specify swap on the node's boot disk
+ephemeralLocalSsdProfile                   | specify swap on the local SSD shared with pod ephemeral storage
+dedicatedLocalSsdProfile                   | specify swap on a new, separate local NVMe SSD exclusively for swap
+
+List of supported keys in 'encryptionConfig' under 'swapConfig'.
+
+KEY                                        | VALUE
+------------------------------------------ | ------------------------------------------
+disabled                                   | boolean
+
+List of supported keys in 'bootDiskProfile' under 'swapConfig'.
+
+KEY                                        | VALUE
+------------------------------------------ | ------------------------------------------
+swapSizeGib                                | integer
+swapSizePercent                            | integer
+
+List of supported keys in 'ephemeralLocalSsdProfile' under 'swapConfig'.
+
+KEY                                        | VALUE
+------------------------------------------ | ------------------------------------------
+swapSizeGib                                | integer
+swapSizePercent                            | integer
+
+List of supported keys in 'dedicatedLocalSsdProfile' under 'swapConfig'.
+
+KEY                                        | VALUE
+------------------------------------------ | ------------------------------------------
+diskCount                                  | integer
+
 
 Allocated hugepage size should not exceed 60% of available memory on the node. For example, c2d-highcpu-4 has 8GB memory, total
 allocated hugepage of 2m and 1g should not exceed 8GB * 0.6 = 4.8GB.
@@ -7544,6 +7585,13 @@ def AddClusterTierFlag(parser):
   help_text = 'Set the desired tier for the cluster.'
   parser.add_argument(
       '--tier',
+      action=actions.DeprecationAction(
+          '--tier',
+          warn=(
+              'The `--tier` flag is deprecated. More info:'
+              ' https://cloud.google.com/kubernetes-engine/docs/release-notes#September_02_2025'
+          ),
+      ),
       metavar='TIER',
       help=help_text,
       choices=['standard', 'enterprise'],

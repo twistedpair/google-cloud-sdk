@@ -41,6 +41,7 @@ properties:
     enum:
     - CONNECTION
     - CUSTOM_METRICS
+    - IN_FLIGHT
     - RATE
     - UTILIZATION
   capacityScaler:
@@ -80,7 +81,8 @@ properties:
       overview](https://cloud.google.com/load-balancing/docs/backend-
       service#backends). You must use the *fully-qualified* URL (starting
       with https://www.googleapis.com/) to specify the instance group or
-      NEG. Partial URLs are not supported.
+      NEG. Partial URLs are not supported. If haPolicy is specified,
+      backends must refer to NEG resources of type GCE_VM_IP.
     type: string
   maxConnections:
     description: |-
@@ -99,6 +101,22 @@ properties:
       Defines a target maximum number of simultaneous connections. For usage
       guidelines, see Connection balancing mode and Utilization balancing
       mode. Not available if the backend's balancingMode is RATE.
+    type: integer
+  maxInFlightRequests:
+    description: |-
+      Defines a maximum number of in-flight requests for the whole NEG or
+      instance group. Not available if backend's balancingMode is RATE or
+      CONNECTION.
+    type: integer
+  maxInFlightRequestsPerEndpoint:
+    description: |-
+      Defines a maximum number of in-flight requests for a single endpoint.
+      Not available if backend's balancingMode is RATE or CONNECTION.
+    type: integer
+  maxInFlightRequestsPerInstance:
+    description: |-
+      Defines a maximum number of in-flight requests for a single VM. Not
+      available if backend's balancingMode is RATE or CONNECTION.
     type: integer
   maxRate:
     description: |-
@@ -135,3 +153,10 @@ properties:
     - DEFAULT
     - PREFERENCE_UNSPECIFIED
     - PREFERRED
+  trafficDuration:
+    description: A TrafficDurationValueValuesEnum attribute.
+    type: string
+    enum:
+    - LONG
+    - SHORT
+    - TRAFFIC_DURATION_UNSPECIFIED

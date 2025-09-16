@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.util.anthos import binary_operations
-from googlecloudsdk.core import log
 
 
 MISSING_BINARY = (
@@ -73,9 +72,11 @@ class RunComposeWrapper(binary_operations.StreamingBinaryBackedOperation):
         exec_args.append('--debug')
       if dry_run:
         exec_args.append('--dry-run')
+    if command == 'resource':
+      exec_args += ['--region', region]
     if command == 'translate':
       exec_args += ['--resources-config', resources_config]
-      exec_args += ['--project-number', project_number]
+      exec_args += ['--project-number', str(project_number)]
       exec_args += ['--region', region]
     return exec_args
 
@@ -85,11 +86,12 @@ def StreamOutHandler(result_holder, capture_output=False):
 
   def HandleStdOut(line):
     if line:
-      line.rstrip()
+      line = line.strip()
     if capture_output:
       if not result_holder.stdout:
         result_holder.stdout = []
-      result_holder.stdout.append(line)
+      if line:
+        result_holder.stdout.append(line)
 
   return HandleStdOut
 
@@ -97,10 +99,12 @@ def StreamOutHandler(result_holder, capture_output=False):
 def StreamErrHandler(result_holder, capture_output=False):
   """Customized processing for streaming stderr from subprocess."""
 
-  del result_holder, capture_output
-
   def HandleStdErr(line):
     if line:
-      log.status.Print(line)
+      line.rstrip()
+    if capture_output:
+      if not result_holder.stderr:
+        result_holder.stderr = []
+      result_holder.stderr.append(line)
 
   return HandleStdErr

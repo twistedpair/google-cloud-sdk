@@ -14,9 +14,6 @@
 # limitations under the License.
 """Utilities for the cloud deploy custom target type resource."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.clouddeploy import custom_target_type
 

@@ -59,6 +59,10 @@ properties:
     - PROFILE_TYPE_UNSPECIFIED
     - THREAT_PREVENTION
     - URL_FILTERING
+    - WILDFIRE_ANALYSIS
   urlFilteringProfile:
     description: The URL filtering configuration for the SecurityProfile.
     $ref: UrlFilteringProfile.yaml
+  wildfireAnalysisProfile:
+    description: The WildFire Analysis configurations for SecurityProfile.
+    $ref: WildfireAnalysisProfile.yaml

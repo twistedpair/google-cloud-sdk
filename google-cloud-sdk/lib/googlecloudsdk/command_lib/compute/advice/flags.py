@@ -18,15 +18,20 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute.reservations import flags as reservation_flags
+from googlecloudsdk.command_lib.util.apis import arg_utils
 
 
 def AddRegionFlag(parser):
   """Add the --region flag."""
   compute_flags.AddRegionFlag(
-      parser=parser, resource_type=None, operation_type=None
+      parser=parser,
+      resource_type=None,
+      operation_type=None,
   )
 
 
@@ -225,3 +230,88 @@ def AddDeploymentTypeFlag(parser):
       help=help_text,
       hidden=True,
   )
+
+
+def AddProvisioningModelFlag(parser):
+  """Add the --provisioning-model flag."""
+  provisioning_model_choices = {
+      "SPOT": (
+          "Compute Engine may preempt a Spot VM whenever it needs capacity. "
+          "Because Spot VMs don't have a guaranteed runtime, they come at a "
+          "discounted price."
+      ),
+  }
+  parser.add_argument(
+      "--provisioning-model",
+      choices=provisioning_model_choices,
+      type=arg_utils.ChoiceToEnumName,
+      required=True,
+      help="""
+Specifies the provisioning model.
+""",
+  )
+
+
+def AddTargetDistributionShapeFlag(parser):
+  """Add the --target-distribution-shape flag."""
+  help_text = """\
+Defines the distribution requirement for the requested VMs.
+  """
+  choices = {
+      "ANY": (
+          "When you specify ANY for VM instance creation across multiple"
+          " zones, you specify that you want to create your VM instances in one"
+          " or more zones based on resource availability, and to use any"
+          " unused, matching reservation in your project. Use ANY for batch"
+          " workloads that don't require high availability."
+      ),
+      "ANY_SINGLE_ZONE": (
+          "When you specify ANY_SINGLE_ZONE for VM instance creation, you"
+          " specify that you want to create all VM instances in a single"
+          " available zone. Compute Engine selects this zone based on resource"
+          " availability and on any unused, matching reservation in your"
+          " project. However, zonal resource availability constraints might"
+          " prevent Compute Engine from creating all your requested VM"
+          " instances. Use ANY_SINGLE_ZONE when the VM instances in your"
+          " workloads need to frequently communicate among each other."
+      ),
+  }
+  parser.add_argument(
+      "--target-distribution-shape",
+      choices=choices,
+      type=arg_utils.ChoiceToEnumName,
+      required=True,
+      help=help_text)
+
+
+def ValidateZonesAndRegionFlags(args, resources):
+  """Validate --zones and --region flags."""
+  if not args.zones:
+    return
+
+  ignored_required_params = {"project": "fake"}
+  zone_names = []
+  for zone in args.zones:
+    zone_ref = resources.Parse(
+        zone, collection="compute.zones", params=ignored_required_params
+    )
+    zone_names.append(zone_ref.Name())
+
+  zone_regions = set([utils.ZoneNameToRegionName(z) for z in zone_names])
+  if len(zone_regions) > 1:
+    raise exceptions.InvalidArgumentException(
+        "--zones", "All zones must be in the same region."
+    )
+  elif len(zone_regions) == 1 and args.region:
+    zone_region = zone_regions.pop()
+    region_ref = resources.Parse(
+        args.region,
+        collection="compute.regions",
+        params=ignored_required_params,
+    )
+    region = region_ref.Name()
+    if zone_region != region:
+      raise exceptions.InvalidArgumentException(
+          "--zones",
+          "Specified zones are not in specified region [{0}].".format(region),
+      )

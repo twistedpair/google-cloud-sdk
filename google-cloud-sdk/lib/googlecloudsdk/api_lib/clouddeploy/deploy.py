@@ -52,47 +52,45 @@ class DeployClient(object):
      manifests: the list of parsed resource yaml definitions.
      region: location ID.
     """
-    resource_dict = manifest_util.ParseDeployConfig(self.messages, manifests,
-                                                    region)
+    resource_dict = manifest_util.ParseDeployConfig(
+        self.messages, manifests, region
+    )
     msg_template = 'Created Cloud Deploy resource: {}.'
-    # Create delivery pipeline first.
-    # In case user has both types of pipeline definition in the same
-    # config file.
-    pipelines = resource_dict[manifest_util.DELIVERY_PIPELINE_KIND_V1BETA1]
-    if pipelines:
-      operation_dict = {}
-      for resource in pipelines:
-        operation_dict[resource.name] = self.CreateDeliveryPipeline(resource)
-      self.operation_client.CheckOperationStatus(operation_dict, msg_template)
-    # In case user has both types of target definition in the same
-    # config file.
-    targets = resource_dict[manifest_util.TARGET_KIND_V1BETA1]
-    if targets:
-      operation_dict = {}
-      for resource in targets:
-        operation_dict[resource.name] = target_util.PatchTarget(resource)
-      self.operation_client.CheckOperationStatus(operation_dict, msg_template)
+    operation_dict = {
+        resource.name: self.CreateDeliveryPipeline(resource)
+        for resource in resource_dict[
+            manifest_util.ResourceKind.DELIVERY_PIPELINE
+        ]
+    }
+    self.operation_client.CheckOperationStatus(operation_dict, msg_template)
+
+    operation_dict = {
+        resource.name: target_util.PatchTarget(resource)
+        for resource in resource_dict[manifest_util.ResourceKind.TARGET]
+    }
+    self.operation_client.CheckOperationStatus(operation_dict, msg_template)
+
     # Create automation resource.
-    automations = resource_dict[manifest_util.AUTOMATION_KIND]
-    operation_dict = {}
-    for resource in automations:
-      operation_dict[resource.name] = automation_util.PatchAutomation(resource)
+    operation_dict = {
+        resource.name: automation_util.PatchAutomation(resource)
+        for resource in resource_dict[manifest_util.ResourceKind.AUTOMATION]
+    }
     self.operation_client.CheckOperationStatus(operation_dict, msg_template)
+
     # Create custom target type resource.
-    custom_target_types = resource_dict[manifest_util.CUSTOM_TARGET_TYPE_KIND]
-    operation_dict = {}
-    for resource in custom_target_types:
-      operation_dict[resource.name] = (
-          custom_target_type_util.PatchCustomTargetType(resource)
-      )
+    operation_dict = {
+        resource.name: custom_target_type_util.PatchCustomTargetType(resource)
+        for resource in resource_dict[
+            manifest_util.ResourceKind.CUSTOM_TARGET_TYPE
+        ]
+    }
     self.operation_client.CheckOperationStatus(operation_dict, msg_template)
+
     # Create deploy policy resource.
-    deploy_policies = resource_dict[manifest_util.DEPLOY_POLICY_KIND]
-    operation_dict = {}
-    for resource in deploy_policies:
-      operation_dict[resource.name] = deploy_policy_util.PatchDeployPolicy(
-          resource
-      )
+    operation_dict = {
+        resource.name: deploy_policy_util.PatchDeployPolicy(resource)
+        for resource in resource_dict[manifest_util.ResourceKind.DEPLOY_POLICY]
+    }
     self.operation_client.CheckOperationStatus(operation_dict, msg_template)
 
   def DeleteResources(self, manifests, region, force):
@@ -107,51 +105,45 @@ class DeployClient(object):
      force: bool, if true, the delivery pipeline with sub-resources will be
        deleted and its sub-resources will also be deleted.
     """
-    resource_dict = manifest_util.ParseDeployConfig(self.messages, manifests,
-                                                    region)
+    resource_dict = manifest_util.ParseDeployConfig(
+        self.messages, manifests, region
+    )
     msg_template = 'Deleted Cloud Deploy resource: {}.'
-    # Delete targets first.
-    targets = resource_dict[manifest_util.TARGET_KIND_V1BETA1]
-    if targets:
-      operation_dict = {}
-      for resource in targets:
-        operation_dict[resource.name] = target_util.DeleteTarget(resource.name)
-      self.operation_client.CheckOperationStatus(operation_dict, msg_template)
-    custom_target_types = resource_dict[manifest_util.CUSTOM_TARGET_TYPE_KIND]
-    if custom_target_types:
-      operation_dict = {}
-      for resource in custom_target_types:
-        operation_dict[resource.name] = (
-            custom_target_type_util.DeleteCustomTargetType(resource.name)
-        )
-      self.operation_client.CheckOperationStatus(operation_dict, msg_template)
-    # Then delete the child resources.
-    automations = resource_dict[manifest_util.AUTOMATION_KIND]
-    operation_dict = {}
-    for resource in automations:
-      operation_dict[resource.name] = automation_util.DeleteAutomation(
-          resource.name
-      )
-      self.operation_client.CheckOperationStatus(operation_dict, msg_template)
+    operation_dict = {
+        resource.name: target_util.DeleteTarget(resource.name)
+        for resource in resource_dict[manifest_util.ResourceKind.TARGET]
+    }
+    self.operation_client.CheckOperationStatus(operation_dict, msg_template)
 
-    pipelines = resource_dict[manifest_util.DELIVERY_PIPELINE_KIND_V1BETA1]
-    if pipelines:
-      operation_dict = {}
-      for resource in pipelines:
-        operation_dict[resource.name] = self.DeleteDeliveryPipeline(
-            resource, force)
-      self.operation_client.CheckOperationStatus(operation_dict, msg_template)
-
-    deploy_policies = resource_dict[manifest_util.DEPLOY_POLICY_KIND]
-    if deploy_policies:
-      operation_dict = {}
-      # Create dictionary of deploy policy name to operation msg after the
-      # policy is deleted.
-      for resource in deploy_policies:
-        operation_dict[resource.name] = deploy_policy_util.DeleteDeployPolicy(
+    operation_dict = {
+        resource.name: custom_target_type_util.DeleteCustomTargetType(
             resource.name
         )
-      self.operation_client.CheckOperationStatus(operation_dict, msg_template)
+        for resource in resource_dict[
+            manifest_util.ResourceKind.CUSTOM_TARGET_TYPE
+        ]
+    }
+    self.operation_client.CheckOperationStatus(operation_dict, msg_template)
+
+    operation_dict = {
+        resource.name: automation_util.DeleteAutomation(resource.name)
+        for resource in resource_dict[manifest_util.ResourceKind.AUTOMATION]
+    }
+    self.operation_client.CheckOperationStatus(operation_dict, msg_template)
+
+    operation_dict = {
+        resource.name: self.DeleteDeliveryPipeline(resource, force)
+        for resource in resource_dict[
+            manifest_util.ResourceKind.DELIVERY_PIPELINE
+        ]
+    }
+    self.operation_client.CheckOperationStatus(operation_dict, msg_template)
+
+    operation_dict = {
+        resource.name: deploy_policy_util.DeleteDeployPolicy(resource.name)
+        for resource in resource_dict[manifest_util.ResourceKind.DEPLOY_POLICY]
+    }
+    self.operation_client.CheckOperationStatus(operation_dict, msg_template)
 
   def CreateDeliveryPipeline(self, pipeline_config):
     """Creates a delivery pipeline resource.
@@ -169,7 +161,9 @@ class DeployClient(object):
             deliveryPipeline=pipeline_config,
             allowMissing=True,
             name=pipeline_config.name,
-            updateMask=manifest_util.PIPELINE_UPDATE_MASK))
+            updateMask=manifest_util.PIPELINE_UPDATE_MASK,
+        )
+    )
 
   def DeleteDeliveryPipeline(self, pipeline_config, force):
     """Deletes a delivery pipeline resource.
@@ -185,6 +179,7 @@ class DeployClient(object):
     """
     log.debug('Deleting delivery pipeline: ' + repr(pipeline_config))
     return self._pipeline_service.Delete(
-        self.messages
-        .ClouddeployProjectsLocationsDeliveryPipelinesDeleteRequest(
-            allowMissing=True, name=pipeline_config.name, force=force))
+        self.messages.ClouddeployProjectsLocationsDeliveryPipelinesDeleteRequest(
+            allowMissing=True, name=pipeline_config.name, force=force
+        )
+    )

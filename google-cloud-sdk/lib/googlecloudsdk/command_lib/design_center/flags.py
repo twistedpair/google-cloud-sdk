@@ -5,7 +5,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#    http://www.apache.org/licenses/LICENSE-2.0
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
@@ -116,6 +117,41 @@ def GetSpaceResourceArg(
   )
 
 
+# -- Revision Resource and Flags --
+
+
+def CatalogAttributeConfig():
+  """Creates an attribute config for the catalog."""
+  return concepts.ResourceParameterAttributeConfig(
+      name='catalog',
+      help_text='The ID of the catalog.'
+  )
+
+
+def CatalogTemplateAttributeConfig():
+  """Creates an attribute config for the template."""
+  return concepts.ResourceParameterAttributeConfig(
+      name='template',
+      help_text='The ID of the template.'
+  )
+
+
+def GetCatalogTemplateRevisionResourceSpec():
+  """Creates the resource spec for a revision."""
+  return concepts.ResourceSpec(
+      'designcenter.projects.locations.spaces.catalogs.templates.revisions',
+      resource_name='revision',
+      revisionsId=concepts.ResourceParameterAttributeConfig(
+          name='revision', help_text='The ID of the revision to create.'
+      ),
+      templatesId=CatalogTemplateAttributeConfig(),
+      catalogsId=CatalogAttributeConfig(),
+      spacesId=SpaceResourceAttributeConfig('space', 'The ID of the space.'),
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
+
+
 def AddDescribeLocationFlags(parser):
   GetLocationResourceArg(positional=True).AddToParser(parser)
 
@@ -130,3 +166,55 @@ def AddSetIamPolicyFlags(parser):
 
 def AddTestIamPermissionsFlags(parser):
   GetSpaceResourceArg().AddToParser(parser)
+
+
+def AddCreateCatalogTemplateRevisionFlags(parser):
+  """Adds all flags for the create revision command.
+
+  Args:
+    parser: An argparse.ArgumentParser-like object. It is mocked out in tests.
+  """
+  # This defines the resource argument for the revision.
+  # By using the full resource spec and a positional name ('revision'), the
+  # SDK automatically creates a positional argument for the revision ID and
+  # flags for all its parents (--template, --catalog, --space, etc.).
+  concept_parsers.ConceptParser.ForResource(
+      'revision',
+      GetCatalogTemplateRevisionResourceSpec(),
+      'The revision to create.',
+      required=True,
+  ).AddToParser(parser)
+  parser.add_argument('--description', help='A description for the revision.')
+  parser.add_argument(
+      '--developer-connect-repo',
+      help=(
+          'The Developer Connect repository to use as a source. Example: '
+          'projects/my-project/locations/us-central1/connections/my-connection/'
+          'gitRepositoryLinks/my-repo'
+      ),
+      required=True,
+  )
+  parser.add_argument(
+      '--developer-connect-repo-ref',
+      help=(
+          'The Git ref (branch or tag) within the repository to use. Example:'
+          ' "refs/tags/v1.0.0" or "refs/heads/main" or '
+          '"refs/commits/269b518b99d06b31ff938a2d182e75f5e41941c7".'
+      ),
+      required=True,
+  )
+  parser.add_argument(
+      '--developer-connect-repo-dir',
+      help=(
+          'The directory within the repository to use. Example:'
+          ' "modules/my-product"'
+      ),
+      required=True,
+  )
+
+  # The --metadata flag is now optional.
+  parser.add_argument(
+      '--metadata',
+      type=arg_parsers.YAMLFileContents(),
+      help='Path to a local YAML file containing the template metadata.',
+  )

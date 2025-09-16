@@ -14,9 +14,6 @@
 # limitations under the License.
 """Resource flags and helpers for the deploy command group."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
 
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps

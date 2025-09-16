@@ -430,7 +430,7 @@ def AddZonalListerArgs(parser, hidden=False):
       default=[])
 
 
-def AddRegionsArg(parser, hidden=False):
+def AddRegionsArg(parser, hidden=False, add_deprecated_base_lister_args=True):
   """Add arguments used by regional list command.
 
   These arguments are added by this function:
@@ -441,8 +441,24 @@ def AddRegionsArg(parser, hidden=False):
   Args:
     parser: argparse.Parser, The parser that this function will add arguments to
     hidden: bool, If the flags should be hidden.
+    add_deprecated_base_lister_args: bool, If deprecated names and regex flags
+      should be added.
   """
-  AddBaseListerArgs(parser, hidden=hidden)
+
+  # b/38256601 - "--filter" should replace args added by this function.
+  if add_deprecated_base_lister_args:
+    AddBaseListerArgs(parser, hidden=hidden)
+  AddRegionsArgWithoutBaseArgs(parser, hidden=hidden)
+
+
+def AddRegionsArgWithoutBaseArgs(parser, hidden=False):
+  """Add --regions argument.
+
+  Args:
+    parser: argparse.Parser, The parser that this function will add arguments to
+    hidden: bool, If the flags should be hidden.
+  """
+
   parser.add_argument(
       '--regions',
       metavar='REGION',

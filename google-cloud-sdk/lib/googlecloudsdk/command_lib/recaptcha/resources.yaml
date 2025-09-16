@@ -12,11 +12,11 @@ keys:
   name: key
   collection: recaptchaenterprise.projects.keys
   attributes:
-      - *project
-      - &key
-         parameter_name: keysId
-         attribute_name: key
-         help: reCAPTCHA Key
+  - *project
+  - &key
+    parameter_name: keysId
+    attribute_name: key
+    help: reCAPTCHA Key
 
 firewall_policies:
   name: firewall_policy

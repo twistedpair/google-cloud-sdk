@@ -1336,12 +1336,16 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsDeleteRequest(_messages.Mess
   r"""A IamLocationsWorkforcePoolsProvidersScimTenantsDeleteRequest object.
 
   Fields:
+    hardDelete: Optional. If set, hard delete the scim tenant. This will
+      delete the scim tenant resources i.e. the scim tenant and service
+      account associated with it. This action cannot be undone.
     name: Required. The name of the scim tenant to delete. Format: `locations/
       {location}/workforcePools/{workforce_pool}/providers/{provider}/scimTena
       nts/{scim_tenant}`
   """
 
-  name = _messages.StringField(1, required=True)
+  hardDelete = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class IamLocationsWorkforcePoolsProvidersScimTenantsGetRequest(_messages.Message):

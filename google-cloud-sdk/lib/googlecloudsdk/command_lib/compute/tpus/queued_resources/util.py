@@ -129,8 +129,9 @@ def CreateNodeSpec(api_version):
       node_spec.node.tags = args.tags
     node_spec.node.networkConfig.enableExternalIps = not args.internal_ips
 
-    if api_version == 'v2alpha1' and args.boot_disk:
-      node_spec.node.bootDiskConfig = ParseBootDiskConfig(args.boot_disk)
+    if args.boot_disk:
+      node_spec.node.bootDiskConfig = ParseBootDiskConfig(
+          args.boot_disk, api_version)
 
     node_spec.node.metadata = MergeMetadata(args, api_version)
 
@@ -163,31 +164,18 @@ def CreateNodeSpec(api_version):
 
 
 def ParseBootDiskConfig(
-    boot_disk_args,
+    boot_disk_args, api_version='v2alpha1'
 ) -> GetMessagesModule('v2alpha1').BootDiskConfig:
-  """Parses configurations for boot disk. Boot disk is only in v2alpha1 API.
-
-  Parsing boot disk configuration if --boot-disk flag is set.
-
-  Args:
-    boot_disk_args: args for --boot-disk flag.
-
-  Returns:
-    Return GetMessagesModule().BootDiskConfig object with parsed configurations.
-
-  Raises:
-    BootDiskConfigurationError: if confidential compute is enable
-      but kms-key is not provided.
-    BootDiskConfigurationError: if invalid argument name is provided.
-  """
-  tpu_messages = GetMessagesModule('v2alpha1')
+  """Parses configurations for boot disk."""
+  tpu_messages = GetMessagesModule(api_version)
   kms_key_arg_name = 'kms-key'
   confidential_compute_arg_name = 'confidential-compute'
   for arg_name in boot_disk_args.keys():
     if arg_name not in [kms_key_arg_name, confidential_compute_arg_name]:
       raise BootDiskConfigurationError(
-          '--boot-disk only supports arguments: %s and %s'
-          % (confidential_compute_arg_name, kms_key_arg_name)
+          '--boot-disk only supports arguments: {} and {}'.format(
+              confidential_compute_arg_name, kms_key_arg_name
+          )
       )
 
   enable_confidential_compute = (
@@ -196,19 +184,31 @@ def ParseBootDiskConfig(
   )
   kms_key = boot_disk_args.get(kms_key_arg_name, None)
 
-  if enable_confidential_compute and kms_key is None:
-    raise BootDiskConfigurationError(
-        'argument --boot-disk: with confidential-compute=%s '
-        'requires kms-key; received: %s'
-        % (enable_confidential_compute, kms_key)
-    )
-  customer_encryption_key = tpu_messages.CustomerEncryptionKey(
-      kmsKeyName=kms_key
-  )
-  return tpu_messages.BootDiskConfig(
-      customerEncryptionKey=customer_encryption_key,
-      enableConfidentialCompute=enable_confidential_compute,
-  )
+  if enable_confidential_compute:
+    if api_version != 'v2alpha1':
+      raise exceptions.InvalidArgumentException(
+          '--boot-disk',
+          'confidential-compute is only available in the alpha release track.')
+    if kms_key is None:
+      raise BootDiskConfigurationError(
+          'argument --boot-disk: with confidential-compute={} '
+          'requires kms-key; received: {}'.format(
+              enable_confidential_compute, kms_key)
+      )
+
+  boot_disk_config_kwargs = {}
+  if kms_key:
+    customer_encryption_key = tpu_messages.CustomerEncryptionKey(
+        kmsKeyName=kms_key)
+    boot_disk_config_kwargs['customerEncryptionKey'] = customer_encryption_key
+
+  if api_version == 'v2alpha1' and enable_confidential_compute:
+    boot_disk_config_kwargs['enableConfidentialCompute'] = (
+        enable_confidential_compute)
+
+  if boot_disk_config_kwargs:
+    return tpu_messages.BootDiskConfig(**boot_disk_config_kwargs)
+  return None
 
 
 def VerifyNodeCount(ref, args, request):

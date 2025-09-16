@@ -34,20 +34,20 @@ properties:
       applies.
     type: string
     enum:
-    - ALERT
-    - ALLOW
-    - DEFAULT_ACTION
-    - DENY
-    - THREAT_ACTION_UNSPECIFIED
+    - WILDFIRE_ALERT
+    - WILDFIRE_ALLOW
+    - WILDFIRE_DEFAULT_ACTION
+    - WILDFIRE_DENY
+    - WILDFIRE_THREAT_ACTION_UNSPECIFIED
   protocol:
     description: Protocol to match.
     type: string
     enum:
-    - FTP
-    - HTTP
-    - HTTP2
-    - IMAP
-    - POP3
-    - PROTOCOL_UNSPECIFIED
-    - SMB
-    - SMTP
+    - WILDFIRE_FTP
+    - WILDFIRE_HTTP
+    - WILDFIRE_HTTP2
+    - WILDFIRE_IMAP
+    - WILDFIRE_POP3
+    - WILDFIRE_PROTOCOL_UNSPECIFIED
+    - WILDFIRE_SMB
+    - WILDFIRE_SMTP

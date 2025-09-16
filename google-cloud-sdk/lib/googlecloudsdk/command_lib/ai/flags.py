@@ -553,6 +553,16 @@ The number of nodes per replica for multihost GPU deployments. Required for
 multihost GPU deployments.
 """,
     ).AddToParser(parser)
+    base.Argument(
+        '--gpu-partition-size',
+        type=str,
+        hidden=True,
+        help="""\
+The partition size of the GPU accelerator. This can be used to partition a
+single GPU into multiple smaller GPU instances.
+See https://cloud.google.com/kubernetes-engine/docs/how-to/gpus-multi#multi-instance_gpu_partitions for more details.
+""",
+    ).AddToParser(parser)
 
   base.Argument(
       '--accelerator',

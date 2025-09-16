@@ -31,8 +31,8 @@ properties:
       separate values. Set to one or more of the following values: -
       VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET - UEFI_COMPATIBLE -
       SECURE_BOOT - GVNIC - SEV_CAPABLE - SEV_LIVE_MIGRATABLE - SEV_SNP_CAPABLE -
-      SEV_LIVE_MIGRATABLE_V2 - IDPF - TDX_CAPABLE For more information, see Enabling guest operating
-      system features.
+      SNP_SVSM_CAPABLE -SEV_LIVE_MIGRATABLE_V2 - IDPF - TDX_CAPABLE For more -
+      information, see Enabling guest operating system features.
     type: string
     enum:
     - FEATURE_TYPE_UNSPECIFIED
@@ -45,6 +45,7 @@ properties:
     - WINDOWS
     - SEV_LIVE_MIGRATABLE
     - SEV_SNP_CAPABLE
+    - SNP_SVSM_CAPABLE
     - SEV_LIVE_MIGRATABLE_V2
     - IDPF
     - TDX_CAPABLE

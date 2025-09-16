@@ -20,11 +20,9 @@ from __future__ import unicode_literals
 
 import functools
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.util.args import labels_util
-
-# The list of extensions that can be added to the policy.
-EXTENSIONS = ('filestore', 'ops-agent', 'sap-extension')
 
 
 def AddPolicyDescription(parser):
@@ -40,9 +38,11 @@ def AddExtensions(parser):
   parser.add_argument(
       '--extensions',
       required=True,
-      choices=EXTENSIONS,
-      action='append',
-      help='A list of extensions to be added to the policy.',
+      action=arg_parsers.StoreOnceAction,
+      default=[],
+      metavar='EXTENSION_NAME',
+      type=arg_parsers.ArgList(min_length=1),
+      help='One or more extensions to be added to the policy.',
   )
 
 
@@ -79,44 +79,41 @@ def AddPolicyPriority(parser):
   )
 
 
-def VersionFlag(extension) -> str:
-  return '--{0}-version'.format(extension)
+def AddExtensionVersion(parser):
+  """Adds --version flag."""
+  parser.add_argument(
+      '--version',
+      type=arg_parsers.ArgDict(min_length=1),
+      default={},
+      metavar='KEY=VALUE',
+      action=arg_parsers.StoreOnceAction,
+      required=False,
+      help="""
+      A comma separated key:value list where the key is the extension name and the value is the
+      desired version for the given extension. The extension name must be one of the extensions
+      specified in the --extensions flag. If no version is specified for an
+      extension, the latest version will be used and will be upgraded automatically.
 
-
-def VersionAttr(extension) -> str:
-  return '{0}_version'.format(extension).replace('-', '_')
-
-
-def ConfigFlag(extension) -> str:
-  return '--{0}-config'.format(extension)
-
-
-def ConfigAttr(extension) -> str:
-  return '{0}_config'.format(extension).replace('-', '_')
-
-
-def AddExtensionPinnedVersions(parser):
-  """Adds the PinnedVersions flag for each extension in the policy."""
-  for extension in EXTENSIONS:
-    parser.add_argument(
-        VersionFlag(extension),
-        help="""
-        The pinned version for {0}.
-
-        If not specified, the latest version will be used, and will be upgraded automatically.
-        """.format(extension),
-    )
+      E.g. --version=filestore=123ABC,ops-agent=456DEF
+      """)
 
 
 def AddExtensionConfigs(parser):
-  """Adds the string config send to the extension when extension starts."""
-  for extension in EXTENSIONS:
-    parser.add_argument(
-        ConfigFlag(extension),
-        help="""
-        The config send to the extension when extension starts.
-        """,
-    )
+  """Adds the --config flag."""
+  parser.add_argument(
+      '--config',
+      type=arg_parsers.ArgDict(min_length=1),
+      default={},
+      metavar='KEY=VALUE',
+      action=arg_parsers.StoreOnceAction,
+      required=False,
+      help="""
+      A comma separated key:value list where the key is the extension name and the value is the
+      desired config for the given extension. The extension name must be one of the extensions
+      specified in the --extensions flag.
+
+      E.g. --config=filestore=,ops-agent=
+      """)
 
 
 def AddPolicyInclusionLabels(parser):
@@ -171,8 +168,36 @@ def AddExtensionPolicyArgs(parser):
   AddPolicyPriority(parser)
   AddPolicyInclusionLabels(parser)
   AddExtensions(parser)
-  AddExtensionPinnedVersions(parser)
+  AddExtensionVersion(parser)
   AddExtensionConfigs(parser)
+
+
+def ParseExtensionConfigs(extensions, configs):
+  """Parses the extension configs."""
+  if not configs:
+    return
+  extensions_set = set(extensions)
+  config_extensions_set = set(configs.keys())
+  extra_extensions = config_extensions_set - extensions_set
+  if extra_extensions:
+    raise ValueError(
+        f'Extensions {extra_extensions} from --config are not specified in the \
+        --extensions flag. {extensions}'
+    )
+
+
+def ParseExtensionVersions(extensions, versions):
+  """Parses the extension versions."""
+  if not versions:
+    return
+  extensions_set = set(extensions)
+  versions_extensions_set = set(versions.keys())
+  extra_extensions = versions_extensions_set - extensions_set
+  if extra_extensions:
+    raise ValueError(
+        f'Extensions {extra_extensions} from --version are not specified in \
+        the --extensions flag. {extensions}'
+    )
 
 
 def BuildZoneVmExtensionPolicy(resource_ref, args, messages):
@@ -195,8 +220,8 @@ def BuildZoneVmExtensionPolicy(resource_ref, args, messages):
         messages.VmExtensionPolicy.ExtensionPoliciesValue.AdditionalProperty(
             key=extension,
             value=messages.VmExtensionPolicyExtensionPolicy(
-                stringConfig=getattr(args, ConfigAttr(extension)),
-                pinnedVersion=getattr(args, VersionAttr(extension)),
+                stringConfig=(args.config or {}).get(extension),
+                pinnedVersion=(args.version or {}).get(extension),
             ),
         )
         for extension in args.extensions

@@ -42,6 +42,22 @@ projects_locations_spaces:
     attribute_name: space
     help: The space id of the {resource} resource.
   disable_auto_completers: true
+projects_locations_connections_git_repository_links:
+  name: gitRepositoryLink
+  plural_name: gitRepositoryLinks
+  collection: designcenter.projects.locations.connections.gitRepositoryLinks
+  attributes:
+  - *project
+  - *location
+  - &connection
+    parameter_name: connectionsId
+    attribute_name: connection
+    help: The connection id of the {resource} resource.
+  - &gitRepositoryLink
+    parameter_name: gitRepositoryLinksId
+    attribute_name: git_repository_link
+    help: The gitRepositoryLink id of the {resource} resource.
+  disable_auto_completers: true
 projects_locations_spaces_application_templates:
   name: applicationTemplate
   plural_name: applicationTemplates
@@ -80,19 +96,6 @@ projects_locations_spaces_catalogs:
     parameter_name: catalogsId
     attribute_name: catalog
     help: The catalog id of the {resource} resource.
-  disable_auto_completers: true
-projects_locations_spaces_shared_templates:
-  name: sharedTemplate
-  plural_name: sharedTemplates
-  collection: designcenter.projects.locations.spaces.sharedTemplates
-  attributes:
-  - *project
-  - *location
-  - *space
-  - &sharedTemplate
-    parameter_name: sharedTemplatesId
-    attribute_name: shared_template
-    help: The sharedTemplate id of the {resource} resource.
   disable_auto_completers: true
 projects_locations_spaces_application_templates_components:
   name: component
@@ -158,7 +161,10 @@ projects_locations_spaces_shared_templates_revisions:
   - *project
   - *location
   - *space
-  - *sharedTemplate
+  - &sharedTemplate
+    parameter_name: sharedTemplatesId
+    attribute_name: shared_template
+    help: The sharedTemplate id of the {resource} resource.
   - *revision
   disable_auto_completers: false
 projects_locations_spaces_application_templates_components_connections:
@@ -171,10 +177,7 @@ projects_locations_spaces_application_templates_components_connections:
   - *space
   - *applicationTemplate
   - *component
-  - &connection
-    parameter_name: connectionsId
-    attribute_name: connection
-    help: The connection id of the {resource} resource.
+  - *connection
   disable_auto_completers: false
 projects_locations_spaces_catalogs_templates_revisions:
   name: revision

@@ -321,25 +321,35 @@ enable_secure_boot:
     them Shielded VM instances.
 
 boot_disk:
-  api_field: node.bootDiskConfig
   arg_name: boot-disk
   required: false
   metavar: KEY=VALUE
   type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
   help_text: |
-    Specifies if the boot disk should be created in confidential-compute mode.
+    Specifies the boot disk configuration.
 
       $ {command} \
-            --boot-disk confidential-compute=True,kms-key=<full_kms_key_name_here>
+            --boot-disk kms-key=<full_kms_key_name_here>
 
     The following keys are allowed:
 
-    *confidential-compute*::: Create the boot disk in confidential compute mode,
-     CMEK layer is required and only applicable to HyperDisk series.
-
-    *kms-key*::: Specifies fully qualified Cloud KMS cryptokey name
+    *kms-key*::: Specifies the fully qualified Cloud KMS cryptokey name
     which will be used to protect the disk. KMS cryptokey name format:
       projects/<kms-project>/locations/<kms-location>/keyRings/<kms-keyring>/cryptoKeys/<key-name>
+  ALPHA:
+    help_text: |
+      Specifies the boot disk configuration.
+
+        $ {command} \
+              --boot-disk confidential-compute=True,kms-key=<full_kms_key_name_here>
+
+      The following keys are allowed:
+
+      *confidential-compute*::: Create the boot disk in confidential compute mode.
+       CMEK layer is required.
+      *kms-key*::: Specifies the fully qualified Cloud KMS cryptokey name
+      which will be used to protect the disk. KMS cryptokey name format:
+        projects/<kms-project>/locations/<kms-location>/keyRings/<kms-keyring>/cryptoKeys/<key-name>
 
 autocheckpoint_enabled:
   api_field: node.autocheckpointEnabled

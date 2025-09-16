@@ -291,6 +291,7 @@ class CLILoader(object):
     self.__post_run_hooks = []
 
     self.__modules = []
+    self.__modules_by_parent = collections.defaultdict(list)
     self.__missing_components = {}
     self.__release_tracks = {}
 
@@ -339,6 +340,16 @@ class CLILoader(object):
   def GetModules(self):
     """Returns modules added to this CLI tool."""
     return self.__modules
+
+  def GetModulesByParent(self):
+    """Returns info about added modules (if any) for each parent command group.
+
+    Returns:
+      {str: [(str, bool, str)]}, Mapping of parent group to list of
+        (module_name, module_is_command, module_impl_path) tuples for each
+        additional module.
+    """
+    return self.__modules_by_parent
 
   def RegisterPreRunHook(self, func,
                          include_commands=None, exclude_commands=None):
@@ -435,6 +446,30 @@ class CLILoader(object):
     Returns:
       CLI, The generated CLI tool.
     """
+    # Register additional modules (if any) to be loaded later.
+    for module_dot_path, module_dir_path, component in self.__modules:
+      is_command = module_dir_path.endswith(_COMMAND_SUFFIX)
+      if is_command:
+        module_dir_path = module_dir_path[:-len(_COMMAND_SUFFIX)]
+      match = CLILoader.PATH_RE.match(module_dot_path)
+      root, cmd_or_grp_name = match.group(1, 2)
+      impl_path = self.__ValidateCommandOrGroupInfo(
+          module_dir_path,
+          allow_non_existing_modules=self.__allow_non_existing_modules)
+      # Create a mapping under the parent for each release track that exists.
+      for track in [calliope_base.ReleaseTrack.GA, *self.__release_tracks]:
+        if impl_path:
+          parent_group_name = '.'.join(
+              [self.__name] + ([track.prefix] if track.prefix else []) +
+              ([root.replace('_', '-')] if root else []))
+          self.__modules_by_parent[parent_group_name].append(
+              (cmd_or_grp_name, is_command, impl_path))
+        elif component:
+          group_name = '.'.join(
+              [self.__name] + ([track.prefix] if track.prefix else []) +
+              [module_dot_path.replace('_', '-')])
+          self.__missing_components[group_name] = component
+
     # The root group of the CLI.
     impl_path = self.__ValidateCommandOrGroupInfo(
         self.__command_root_directory, allow_non_existing_modules=False)
@@ -444,7 +479,6 @@ class CLILoader(object):
     self.__AddBuiltinGlobalFlags(top_group)
 
     # Sub groups for each alternate release track.
-    loaded_release_tracks = dict([(calliope_base.ReleaseTrack.GA, top_group)])
     track_names = set(track.prefix for track in self.__release_tracks.keys())
     for track, (module_dir, component) in six.iteritems(self.__release_tracks):
       impl_path = self.__ValidateCommandOrGroupInfo(
@@ -460,86 +494,14 @@ class CLILoader(object):
             track.prefix, allow_empty=True, release_track_override=track)
         # Copy all the root elements of the top group into the release group.
         top_group.CopyAllSubElementsTo(track_group, ignore=track_names)
-        loaded_release_tracks[track] = track_group
       elif component:
         self.__missing_components[f'{self.__name}.{track.prefix}'] = component
 
-    # Load the normal set of registered sub groups.
-    for module_dot_path, module_dir_path, component in self.__modules:
-      is_command = module_dir_path.endswith(_COMMAND_SUFFIX)
-      if is_command:
-        module_dir_path = module_dir_path[:-len(_COMMAND_SUFFIX)]
-      match = CLILoader.PATH_RE.match(module_dot_path)
-      root, name = match.group(1, 2)
-      try:
-        # Mount each registered sub group under each release track that exists.
-        for track, track_root_group in six.iteritems(loaded_release_tracks):
-          # pylint: disable=line-too-long
-          parent_group = self.__FindParentGroup(track_root_group, root)
-          # pylint: enable=line-too-long
-          exception_if_present = None
-          if not parent_group:
-            if track != calliope_base.ReleaseTrack.GA:
-              # Don't error mounting sub groups if the parent group can't be
-              # found unless this is for the GA group.  The GA should always be
-              # there, but for alternate release channels, the parent group
-              # might not be enabled for that particular release channel, so it
-              # is valid to not exist.
-              continue
-            exception_if_present = command_loading.LayoutException(
-                'Root [{root}] for command group [{group}] does not exist.'
-                .format(root=root, group=name))
-
-          cmd_or_grp_name = module_dot_path.split('.')[-1]
-          impl_path = self.__ValidateCommandOrGroupInfo(
-              module_dir_path,
-              allow_non_existing_modules=self.__allow_non_existing_modules,
-              exception_if_present=exception_if_present)
-
-          if impl_path:
-            # pylint: disable=protected-access
-            if is_command:
-              parent_group._commands_to_load[cmd_or_grp_name] = [impl_path]
-            else:
-              parent_group._groups_to_load[cmd_or_grp_name] = [impl_path]
-          elif component:
-            cmd_prefix = (
-                f'{self.__name}.{track.prefix}.' if track.prefix else
-                f'{self.__name}.')
-            self.__missing_components[
-                cmd_prefix + module_dot_path.replace('_', '-')] = component
-      except command_loading.CommandLoadFailure as e:
-        log.exception(e)
-
     cli = self.__MakeCLI(top_group)
-
     return cli
 
-  def __FindParentGroup(self, top_group, root):
-    """Find the group that should be the parent of this command.
-
-    Args:
-      top_group: _CommandCommon, The top group in this CLI hierarchy.
-      root: str, The dotted path of where this command or group should appear
-        in the command tree.
-
-    Returns:
-      _CommandCommon, The group that should be parent of this new command tree
-        or None if it could not be found.
-    """
-    if not root:
-      return top_group
-    root_path = root.split('.')
-    group = top_group
-    for part in root_path:
-      group = group.LoadSubElement(part)
-      if not group:
-        return None
-    return group
-
   def __ValidateCommandOrGroupInfo(
-      self, impl_path, allow_non_existing_modules=False,
-      exception_if_present=None):
+      self, impl_path, allow_non_existing_modules=False):
     """Generates the information necessary to be able to load a command group.
 
     The group might actually be loaded now if it is the root of the SDK, or the
@@ -550,8 +512,6 @@ class CLILoader(object):
         command or group.
       allow_non_existing_modules: True to allow this module directory to not
         exist, False to raise an exception if this module does not exist.
-      exception_if_present: Exception, An exception to throw if the module
-        actually exists, or None.
 
     Raises:
       LayoutException: If the module directory does not exist and
@@ -568,9 +528,6 @@ class CLILoader(object):
       raise command_loading.LayoutException(
           'The given module directory does not exist: {0}'.format(
               impl_path))
-    elif exception_if_present:
-      # pylint: disable=raising-bad-type, This will be an actual exception.
-      raise exception_if_present
     return impl_path
 
   def __AddBuiltinGlobalFlags(self, top_element):

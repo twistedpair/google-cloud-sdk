@@ -54,3 +54,6 @@ properties:
     description: |-
       Reference to a SecurityProfile with the UrlFiltering configuration.
     type: string
+  wildfireAnalysisProfile:
+    description: Reference to a SecurityProfile with the WildFire configuration.
+    type: string

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2017 Google LLC. All Rights Reserved.
+# Copyright 2025 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import dataclasses
-
-from googlecloudsdk.command_lib.compute.interconnects import flags
 
 
 class Interconnect(object):
@@ -73,9 +71,6 @@ class Interconnect(object):
     Returns:
     Insert interconnect tuple that can be used in a request.
     """
-    kwargs = {}
-    if subzone is not None:
-      kwargs['subzone'] = flags.GetSubzoneAlpha(self._messages, subzone)
     return (
         self._client.interconnects,
         'Insert',
@@ -89,11 +84,11 @@ class Interconnect(object):
                 nocContactEmail=noc_contact_email,
                 requestedLinkCount=requested_link_count,
                 location=location,
+                subzone=subzone,
                 adminEnabled=admin_enabled,
                 customerName=customer_name,
                 remoteLocation=remote_location,
                 requestedFeatures=requested_features,
-                **kwargs
             ),
         ),
     )

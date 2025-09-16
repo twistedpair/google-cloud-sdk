@@ -47,6 +47,7 @@ PURPOSE_MAP = {
     'asymmetric-signing': PURPOSE_ENUM.ASYMMETRIC_SIGN,
     'asymmetric-encryption': PURPOSE_ENUM.ASYMMETRIC_DECRYPT,
     'mac': PURPOSE_ENUM.MAC,
+    'key-encapsulation': PURPOSE_ENUM.KEY_ENCAPSULATION,
 }
 
 PROTECTION_LEVEL_ENUM = (
@@ -109,6 +110,11 @@ VALID_ALGORITHMS_MAP = {
         'hmac-sha256',
         'hmac-sha384',
         'hmac-sha512',
+    ],
+    PURPOSE_ENUM.KEY_ENCAPSULATION: [
+        'ml-kem-768',
+        'ml-kem-1024',
+        'kem-xwing',
     ],
 }
 

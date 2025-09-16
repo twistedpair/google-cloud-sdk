@@ -22,16 +22,6 @@ presets:
     description: Name of the GCS bucket that will be mounted for model storage.
     type: GCS_BUCKET
     data_type: DATA_TYPE_STRING
-  - name: network
-    label: VPC Network Name
-    description: VPC network to optimize network performance to Cloud Storage.
-    type: NETWORK
-    data_type: DATA_TYPE_STRING
-  - name: subnetwork
-    label: VPC Subnetwork Name
-    description: VPC network subnet, used to optimize network performance to Cloud Storage.
-    type: NETWORK
-    data_type: DATA_TYPE_STRING
   config_values:
     Container Image: ollama/ollama:latest
     CPU: 4 vCPUs
@@ -46,6 +36,14 @@ presets:
   - SERVICE
   config_values:
     Ingress: internal
+- name: public-service
+  category: CATEGORY_QUICKSTART
+  description: Publicly accessible endpoint, exposing your service to anyone on the internet, without any authentication.
+  supported_resources:
+  - SERVICE
+  config_values:
+    Ingress: all
+    Authentication: Allow public access
 - name: single-concurrency
   category: CATEGORY_QUICKSTART
   description: Create a service where requests are handled strictly one at a time.

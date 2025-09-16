@@ -673,7 +673,7 @@ class _BaseInstances(object):
           mode=args.active_directory_mode,
           dns_servers=args.active_directory_dns_servers,
           admin_credential_secret_key=args.active_directory_secret_manager_key,
-          organizational_unit=args.active_directory_organizational_unit
+          organizational_unit=args.active_directory_organizational_unit,
       )
 
     if args.IsKnownAndSpecified('password_policy_min_length'):
@@ -756,7 +756,8 @@ class _BaseInstances(object):
     # ALPHA args.
     if _IsAlpha(release_track):
       read_pool_auto_scale_config = reducers.ReadPoolAutoScaleConfig(
-          sql_messages, auto_scale_enabled=args.auto_scale_enabled,
+          sql_messages,
+          auto_scale_enabled=args.auto_scale_enabled,
           auto_scale_min_node_count=args.auto_scale_min_node_count,
           auto_scale_max_node_count=args.auto_scale_max_node_count,
           auto_scale_target_metrics=args.auto_scale_target_metrics,
@@ -909,6 +910,21 @@ class _BaseInstances(object):
     if updated_config is not None:
       settings.connectionPoolConfig = updated_config
 
+    if args.IsKnownAndSpecified('psc_auto_connections'):
+      if not settings.ipConfiguration:
+        settings.ipConfiguration = sql_messages.IpConfiguration()
+      if not settings.ipConfiguration.pscConfig:
+        settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
+      settings.ipConfiguration.pscConfig.pscAutoConnections = (
+          reducers.PscAutoConnections(sql_messages, args.psc_auto_connections)
+      )
+    if args.IsKnownAndSpecified('clear_psc_auto_connections'):
+      if not settings.ipConfiguration:
+        settings.ipConfiguration = sql_messages.IpConfiguration()
+      if not settings.ipConfiguration.pscConfig:
+        settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
+      settings.ipConfiguration.pscConfig.pscAutoConnections = []
+
     # BETA args.
     if IsBetaOrNewer(release_track):
       labels_diff = labels_util.ExplicitNullificationDiff.FromUpdateArgs(args)
@@ -924,23 +940,6 @@ class _BaseInstances(object):
         if not settings.ipConfiguration:
           settings.ipConfiguration = sql_messages.IpConfiguration()
         settings.ipConfiguration.allocatedIpRange = args.allocated_ip_range_name
-
-      if args.IsKnownAndSpecified('psc_auto_connections'):
-        if not settings.ipConfiguration:
-          settings.ipConfiguration = sql_messages.IpConfiguration()
-        if not settings.ipConfiguration.pscConfig:
-          settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
-        settings.ipConfiguration.pscConfig.pscAutoConnections = (
-            reducers.PscAutoConnections(
-                sql_messages, args.psc_auto_connections
-            )
-        )
-      if args.IsKnownAndSpecified('clear_psc_auto_connections'):
-        if not settings.ipConfiguration:
-          settings.ipConfiguration = sql_messages.IpConfiguration()
-        if not settings.ipConfiguration.pscConfig:
-          settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
-        settings.ipConfiguration.pscConfig.pscAutoConnections = []
 
       if args.IsKnownAndSpecified('unc_mappings'):
         settings.uncMappings = reducers.UncMappings(
@@ -1223,9 +1222,7 @@ class _BaseInstances(object):
 
     if args.IsKnownAndSpecified('failover_dr_replica_name'):
       replication_cluster = sql_messages.ReplicationCluster()
-      replication_cluster.failoverDrReplicaName = (
-          args.failover_dr_replica_name
-      )
+      replication_cluster.failoverDrReplicaName = args.failover_dr_replica_name
       instance_resource.replicationCluster = replication_cluster
     if args.IsKnownAndSpecified('clear_failover_dr_replica_name'):
       if instance_resource.replicationCluster is not None:

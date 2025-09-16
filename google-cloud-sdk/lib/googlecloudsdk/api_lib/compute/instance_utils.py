@@ -263,6 +263,7 @@ def CreateSchedulingMessage(
     graceful_shutdown=None,
     discard_local_ssds_at_termination_timestamp=None,
     skip_guest_os_shutdown=None,
+    preemption_notice_duration=None,
 ):
   """Create scheduling message for VM."""
   # Note: We always specify automaticRestart=False for preemptible VMs. This
@@ -346,6 +347,11 @@ def CreateSchedulingMessage(
 
   if skip_guest_os_shutdown is not None:
     scheduling.skipGuestOsShutdown = skip_guest_os_shutdown
+
+  if preemption_notice_duration is not None:
+    scheduling.preemptionNoticeDuration = messages.Duration(
+        seconds=preemption_notice_duration
+    )
 
   return scheduling
 
@@ -732,6 +738,7 @@ def GetScheduling(
     support_local_ssd_recovery_timeout=False,
     support_graceful_shutdown=False,
     support_skip_guest_os_shutdown=False,
+    support_preemption_notice_duration=False,
 ):
   """Generate a Scheduling Message or None based on specified args."""
   node_affinities = None
@@ -807,11 +814,16 @@ def GetScheduling(
     availability_domain = args.availability_domain
 
   skip_guest_os_shutdown = None
-  if (
-      support_skip_guest_os_shutdown
-      and args.IsKnownAndSpecified('skip_guest_os_shutdown')
+  if support_skip_guest_os_shutdown and args.IsKnownAndSpecified(
+      'skip_guest_os_shutdown'
   ):
     skip_guest_os_shutdown = args.skip_guest_os_shutdown
+
+  preemption_notice_duration = None
+  if support_preemption_notice_duration and hasattr(
+      args, 'preemption_notice_duration'
+  ):
+    preemption_notice_duration = args.preemption_notice_duration
 
   if (
       skip_defaults
@@ -831,6 +843,7 @@ def GetScheduling(
       and not maintenance_interval
       and not local_ssd_recovery_timeout
       and not graceful_shutdown
+      and not preemption_notice_duration
   ):
     return None
 
@@ -854,6 +867,7 @@ def GetScheduling(
       graceful_shutdown=graceful_shutdown,
       discard_local_ssds_at_termination_timestamp=discard_local_ssds_at_termination_timestamp,
       skip_guest_os_shutdown=skip_guest_os_shutdown,
+      preemption_notice_duration=preemption_notice_duration,
   )
 
 

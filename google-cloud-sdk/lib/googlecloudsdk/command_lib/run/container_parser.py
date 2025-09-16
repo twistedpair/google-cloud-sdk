@@ -140,7 +140,7 @@ class ContainerParser(object):
     while i < len(args):
       value = args[i]
       i += 1
-      if value == self._CONTAINER_FLAG_NAME or value == self._PRESET_FLAG_NAME:
+      if value == self._CONTAINER_FLAG_NAME:
         if i >= len(args):
           remaining.append(value)
         else:
@@ -152,8 +152,9 @@ class ContainerParser(object):
         current = containers[value.split(sep='=', maxsplit=1)[1]]
       # Add container for preset to container dict to capture container specific
       # flags for the placeholder container.
-      # TODO(b/436350694): Change this to use preset metadata once it is
-      # implemented.
+      # TODO(b/436350694): Change this to use preset metadata and rework this
+      # branch to use regex similar to how the base parsers work.
+      # For case "--preset=ollama"
       elif (
           isinstance(value, str)
           and value.startswith(self._PRESET_FLAG_NAME + '=')
@@ -162,6 +163,17 @@ class ContainerParser(object):
       ):
         current = containers[value.split(sep='=', maxsplit=1)[1]]
         remaining.append(value)
+      # For case "--preset ollama"
+      elif (
+          isinstance(value, str)
+          and value.startswith(self._PRESET_FLAG_NAME)
+          and i < len(args)
+          and args[i] in flags.INGRESS_CONTAINER_PRESETS
+      ):
+        current = containers[args[i]]
+        remaining.append(value)
+        remaining.append(args[i])
+        i += 1
       elif value == '--':
         remaining.append(value)
         remaining.extend(args[i:])

@@ -253,6 +253,25 @@ connector-config-file:
     The path to the JSON or YAML file containing the configuration that are overridden
     from the connector defaults. This also supports inline JSON or YAML.
 
+task-restart-min-backoff:
+  api_field: connector.taskRestartPolicy.minimumBackoff
+  arg_name: task-restart-min-backoff
+  type: googlecloudsdk.core.util.times:ParseDuration
+  processor: googlecloudsdk.core.util.times:FormatDuration
+  help_text: |
+    The minimum amount of time to wait before retrying a failed task in seconds.
+    This sets a lower bound for the backoff delay. The default value is 60s.
+    See $ gcloud topic datetimes for information on duration formats.
+task-restart-max-backoff:
+  api_field: connector.taskRestartPolicy.maximumBackoff
+  arg_name: task-restart-max-backoff
+  type: googlecloudsdk.core.util.times:ParseDuration
+  processor: googlecloudsdk.core.util.times:FormatDuration
+  help_text: |
+    The maximum amount of time to wait before retrying a failed task in seconds.
+    This sets an upper bound for the backoff delay. The default value is 1800s (30 minutes).
+    See $ gcloud topic datetimes for information on duration formats.
+
 clear-secrets:
   arg_name: clear-secrets
   action: store_true

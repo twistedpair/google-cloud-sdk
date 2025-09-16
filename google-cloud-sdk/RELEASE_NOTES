@@ -5,6 +5,108 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 539.0.0 (2025-09-16)
+
+### AI
+
+*   Updated `gcloud ai` commands to ensure correct endpoint resolution in non-default Google Cloud universes.
+*   Added `--gpu-partition-size` flag to `gcloud beta ai endpoints deploy-model` for multi-instance GPU partitioning.
+
+### Apigee
+
+* When an Apigee organization name and its Google Cloud project ID are the same, `gcloud apigee` commands will now automatically use the correct regional endpoint.
+
+### App Engine
+
+* Updated the Java SDK to version 2.0.39 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.39>.
+
+### Cloud Backup DR
+
+* Promoted `gcloud backup-dr service-config` command group which includes `gcloud backup-dr service-config init` to GA.
+
+### Cloud Filestore
+
+* Added `psc-endpoint-project` option to `--network` flag of `gcloud filestore instances create` command.
+
+### Cloud Interconnect
+
+* Promoted `--subzone` flag of `gcloud compute interconnects create` to GA.
+
+### Cloud Key Management Service
+
+* Add support for `key-encapsulation` key purpose and `ml-kem-768`, `ml-kem-1024`, and `kem-xwing` algorithms.
+* Add support for `der` and `xwing-raw-bytes` format.
+* Fix bug in get-public-key: when non-pem format is specified, the returned public key should be in raw bytes (not in base-64).
+* Add support for decapsulate.
+
+### Cloud Resource Manager
+
+* Updated `gcloud resource-manager tags values create` to support Hierarchical Tag Values for beta release.
+* Updated `gcloud resource-manager tags values list` to support Hierarchical Tag Values for beta release.
+
+### Cloud SQL
+
+*   Promoted `patch --[clear-]psc-auto-connections` flags to GA for PSC service
+    automation.
+*   Added `--source-instance-deletion-time` flag to
+    `gcloud sql instances clone`, and
+    `gcloud sql instances get-latest-recovery-time` to support clone from
+    deleted instances.
+*   Updated 'cloud-sql-proxy' packaged component to use 2.18.2 of the Cloud SQL
+    Proxy.
+
+### Cloud TPU
+
+* Promoted the `--boot-disk` flag with the `kms-key` option to GA for `gcloud compute tpus tpu-vm create` and `gcloud compute tpus queued-resources create`.
+
+### Compute Engine
+
+* Promoted `--provisioning-model=flex-start` to GA for `gcloud compute instances
+  create` and `gcloud compute instance-templates create` commands.
+* Promoted `--request-valid-for-duration` to GA for `gcloud compute instances
+  create` command.
+* Added `SNP_SVSM_CAPABLE` to the list of `guestOsFeatures`.
+* Removed extension specific `<extension>-version` and `<extension>-config`
+  flags and added generic '--config' and `--version` flags for `gcloud compute
+  zone-vm-extension-policies create|update` commands.
+
+### Kubernetes Engine
+
+* Removed `The Kubelet readonly port (10255) is now deprecated` warning on
+  `gcloud` CLI cluster creation unless either the
+  enable-insecure-kubelet-readonly-port or
+  autoprovisioning-enable-insecure-kubelet-readonly-port flags are set.
+* Deprecate flag option `--tier` in
+  `gcloud container clusters create`, `gcloud container clusters create-auto`
+  and `gcloud container clustes update` commands.
+  Deprecated as GKE Enterprise features are now available without an Enterprise
+  tier. See <https://cloud.google.com/kubernetes-engine/docs/release-notes#September_02_2025>
+  for the announcement of this change.
+*   Added `swapConfig` option with `enabled`, `encryptionConfig`,
+     `bootDiskProfile`, `ephemeralLocalSsdProfile`, and
+     `dedicatedLocalSsdProfile` fields to `gcloud container clusters create`,
+     `gcloud container node-pools create`, and`gcloud container node-pools
+      update` commands to configure swap space on nodes.
+
+### Network Security
+
+* Updated import and export schemas for `gcloud beta network-security security-profile-groups`.
+* Updated import and export schemas for `gcloud beta network-security security-profiles`.
+
+### Pubsub Emulator
+
+*   Fix bug that caused non-utf8 data to be incorrectly decoded before being sent to a subscription's push endpoint.
+
+### Recommender
+
+* Update `gcloud recommender list insights` recursive search feature to beta release target.
+* Update `gcloud recommender list recommendations` recursive search feature to beta release target.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 538.0.0 (2025-09-09)
 
 ### AI

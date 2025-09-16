@@ -41,6 +41,7 @@ properties:
     - WINDOWS
     - SEV_LIVE_MIGRATABLE
     - SEV_SNP_CAPABLE
+    - SNP_SVSM_CAPABLE
     - SEV_LIVE_MIGRATABLE_V2
     - IDPF
     - TDX_CAPABLE

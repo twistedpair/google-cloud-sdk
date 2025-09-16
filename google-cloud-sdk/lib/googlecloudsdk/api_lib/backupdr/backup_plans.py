@@ -165,6 +165,7 @@ class BackupPlansClient(util.BackupDrClientBase):
       remove_backup_rules,
       current_backup_plan,
       log_retention_days,
+      max_custom_on_demand_retention_days,
   ):
     """Parses the update request for a Backup Plan.
 
@@ -177,6 +178,8 @@ class BackupPlansClient(util.BackupDrClientBase):
       remove_backup_rules: The backup rules to remove from the Backup Plan.
       current_backup_plan: The current Backup Plan.
       log_retention_days: The log retention days of the Backup Plan.
+      max_custom_on_demand_retention_days: The custom on demand retention days
+        limit of the Backup Plan.
 
     Returns:
       The updated Backup Plan.
@@ -194,6 +197,10 @@ class BackupPlansClient(util.BackupDrClientBase):
       updated_backup_plan.description = description
     if log_retention_days is not None:
       updated_backup_plan.logRetentionDays = log_retention_days
+    if max_custom_on_demand_retention_days is not None:
+      updated_backup_plan.maxCustomOnDemandRetentionDays = (
+          int(max_custom_on_demand_retention_days)
+      )
     current_rule_ids = {rule.ruleId for rule in current_backup_plan.backupRules}
     if new_backup_rules_from_file is not None:
       updated_backup_plan.backupRules = self._ParseBackupRules(

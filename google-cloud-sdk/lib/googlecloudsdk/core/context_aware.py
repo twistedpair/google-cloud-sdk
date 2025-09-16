@@ -50,7 +50,9 @@ CONTEXT_AWARE_ACCESS_HELP_MSG = (
     ' company managed device, please first CRD (Chrome Remote Desktop) or RDP'
     ' (Remote Desktop Protocol) into your remote machine and log into Chrome'
     ' using your credentials to register your remote machine. After that, you'
-    ' may need to wait for a few minutes before retrying.'
+    ' may need to wait for a few minutes before retrying. If you are using'
+    " cloud shell, you don't need to run `gcloud auth login` and can run"
+    ' your gcloud commands directly.'
 )
 CONTEXT_AWARE_ACCESS_HELP_MSG_GOOGLER = (
     'Access was blocked by Context Aware Access. Possible solutions:\n\n 1.'

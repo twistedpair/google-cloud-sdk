@@ -2748,12 +2748,11 @@ def AddPscAutoConnections(parser, hidden=False):
       ),
       required=False,
       help=(
-          'A comma-separated list of networks or a comma-separated list of '
-          'network-project pairs. Each project in this list is represented '
-          'by a project number (numeric) or by a project ID (alphanumeric).'
-          ' This allows Private Service Connect connections to be created '
-          'automatically for the specified networks. For example, this'
-          ' connection uses "the form'
+          'A comma-separated list of networks or network-project pairs. Each'
+          ' project is represented by a project number (numeric) or by a'
+          ' project ID (alphanumeric). This allows Private Service Connect'
+          ' connections to be created automatically for the specified networks.'
+          ' For example, this connection uses "the form'
           ' `psc-auto-connections`=`network=projects/testproject1/global/'
           'networks/testnetwork1`" or "the form'
           ' `psc-auto-connections`=`project=testproject1,network=projects/'
@@ -2770,7 +2769,7 @@ def AddClearPscAutoConnections(parser, hidden=False):
       '--clear-psc-auto-connections',
       required=False,
       help=(
-          'This removes all connections created automatically. Cloud SQL'
+          'This removes all automatically created connections. Cloud SQL'
           ' uses these connections to connect to an instance using Private'
           ' Service Connect.'
       ),
@@ -3528,4 +3527,29 @@ def AddClearUncMappings(parser, hidden=True):
       action='store_true',
       hidden=hidden,
       help="""Clear the UNC mappings for the SQL Server instance.""",
+  )
+
+
+def AddDatabaseRoles(parser):
+  """Add the flag to specify database roles for the user.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--database-roles',
+      required=False,
+      # TODO: b/440167373 - Remove hidden flag once the feature is launched.
+      hidden=True,
+      default=[],
+      metavar='ROLE',
+      type=arg_parsers.ArgList(),
+      help="""\
+        A comma-separated list of database roles to be assigned to the user.
+        This option is only available for MySQL and PostgreSQL instances. You
+        can include predefined Cloud SQL roles, like cloudsqlsuperuser, or your
+        own custom roles. Custom roles must be created in the database before
+        you can assign them. You can create roles using the CREATE ROLE
+        statement for both MySQL and PostgreSQL.
+      """,
   )

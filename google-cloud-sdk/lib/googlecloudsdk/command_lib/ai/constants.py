@@ -35,12 +35,16 @@ AI_PLATFORM_RELEASE_TRACK_TO_VERSION = {
     base.ReleaseTrack.GA: GA_VERSION,
     base.ReleaseTrack.BETA: BETA_VERSION
 }
-
+# NOTE: The following region lists are GDU-specific.
+# They should ONLY be used as fallbacks within the Google Default Universe
+# when dynamic region lookups fail. Do not use for validation or prompting
+# in non GDU environments.
 # The default available regions for most Vertex AI products. See
 # https://cloud.google.com/vertex-ai/docs/general/locations#feature-availability
 # for more details.
 SUPPORTED_REGION = ('us-central1', 'europe-west4', 'asia-east1')
 
+# NOTE: GDU-specific, see comment above SUPPORTED_REGION.
 # Available regions specifically for training, including custom-jobs and
 # hp-tuning-jobs.
 SUPPORTED_TRAINING_REGIONS = (
@@ -85,6 +89,7 @@ SUPPORTED_TRAINING_REGIONS = (
     'us-west4',
 )
 
+# NOTE: GDU-specific, see comment above SUPPORTED_REGION.
 # Available regions specifically for online prediction, including endpoints and
 # models
 SUPPORTED_OP_REGIONS = (
@@ -129,6 +134,7 @@ SUPPORTED_OP_REGIONS = (
     'us-west4',
 )
 
+# NOTE: GDU-specific, see comment above SUPPORTED_REGION.
 # Available regions specifically for deployment resource pools
 SUPPORTED_DEPLOYMENT_RESOURCE_POOL_REGIONS = (
     'us-central1',
@@ -140,6 +146,7 @@ SUPPORTED_DEPLOYMENT_RESOURCE_POOL_REGIONS = (
     'asia-southeast1',
 )
 
+# NOTE: GDU-specific, see comment above SUPPORTED_REGION.
 # Available regions specifically for model monitoring jobs
 SUPPORTED_MODEL_MONITORING_JOBS_REGIONS = (
     'asia-east1',

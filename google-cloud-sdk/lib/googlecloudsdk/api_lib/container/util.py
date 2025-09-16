@@ -138,6 +138,16 @@ NC_TOPOLOGY_MANAGER_POLICY = 'policy'
 NC_TOPOLOGY_MANAGER_SCOPE = 'scope'
 NC_SINGLE_PROCESS_OOMKILL = 'singleProcessOomKill'
 
+NC_SWAP_CONFIG = 'swapConfig'
+NC_SWAP_CONFIG_ENABLED = 'enabled'
+NC_SWAP_CONFIG_ENCRYPTION_CONFIG = 'encryptionConfig'
+NC_SWAP_CONFIG_ENCRYPTION_CONFIG_DISABLED = 'disabled'
+NC_SWAP_CONFIG_BOOT_DISK_PROFILE = 'bootDiskProfile'
+NC_SWAP_CONFIG_EPHEMERAL_LOCAL_SSD_PROFILE = 'ephemeralLocalSsdProfile'
+NC_SWAP_CONFIG_DEDICATED_LOCAL_SSD_PROFILE = 'dedicatedLocalSsdProfile'
+NC_SWAP_CONFIG_SWAP_SIZE_GIB = 'swapSizeGib'
+NC_SWAP_CONFIG_SWAP_SIZE_PERCENT = 'swapSizePercent'
+NC_SWAP_CONFIG_DISK_COUNT = 'diskCount'
 NC_CC_PRIVATE_CR_CONFIG = 'privateRegistryAccessConfig'
 NC_CC_PRIVATE_CR_CONFIG_ENABLED = 'enabled'
 NC_CC_CA_CONFIG = 'certificateAuthorityDomainConfig'
@@ -988,6 +998,7 @@ def LoadSystemConfigFromYAML(
             NC_HUGEPAGE: dict,
             NC_TRANSPARENT_HUGEPAGE_ENABLED: str,
             NC_TRANSPARENT_HUGEPAGE_DEFRAG: str,
+            NC_SWAP_CONFIG: dict,
         },
     )
     node_config.linuxNodeConfig = messages.LinuxNodeConfig()
@@ -1125,6 +1136,114 @@ def LoadSystemConfigFromYAML(
       hugepage_size1g = hugepage_opts.get(NC_HUGEPAGE_1G)
       if hugepage_size1g:
         node_config.linuxNodeConfig.hugepages.hugepageSize1g = hugepage_size1g
+    # Parse swap config.
+    if swap_config_opts := linux_config_opts.get(NC_SWAP_CONFIG):
+      node_config.linuxNodeConfig.swapConfig = messages.SwapConfig()
+      _CheckNodeConfigFields(
+          NC_SWAP_CONFIG,
+          swap_config_opts,
+          {
+              NC_SWAP_CONFIG_ENABLED: bool,
+              NC_SWAP_CONFIG_ENCRYPTION_CONFIG: dict,
+              NC_SWAP_CONFIG_BOOT_DISK_PROFILE: dict,
+              NC_SWAP_CONFIG_EPHEMERAL_LOCAL_SSD_PROFILE: dict,
+              NC_SWAP_CONFIG_DEDICATED_LOCAL_SSD_PROFILE: dict,
+          },
+      )
+      enabled = swap_config_opts.get(NC_SWAP_CONFIG_ENABLED)
+      if enabled is not None:
+        node_config.linuxNodeConfig.swapConfig.enabled = enabled
+      encryption_config_opts = swap_config_opts.get(
+          NC_SWAP_CONFIG_ENCRYPTION_CONFIG
+      )
+      if encryption_config_opts:
+        node_config.linuxNodeConfig.swapConfig.encryptionConfig = (
+            messages.EncryptionConfig()
+        )
+        _CheckNodeConfigFields(
+            NC_SWAP_CONFIG_ENCRYPTION_CONFIG,
+            encryption_config_opts,
+            {NC_SWAP_CONFIG_ENCRYPTION_CONFIG_DISABLED: bool},
+        )
+        disabled = encryption_config_opts.get(
+            NC_SWAP_CONFIG_ENCRYPTION_CONFIG_DISABLED
+        )
+        if disabled is not None:
+          node_config.linuxNodeConfig.swapConfig.encryptionConfig.disabled = (
+              disabled
+          )
+      boot_disk_profile_opts = swap_config_opts.get(
+          NC_SWAP_CONFIG_BOOT_DISK_PROFILE
+      )
+      if boot_disk_profile_opts:
+        boot_disk_profile_msg = messages.BootDiskProfile()
+        _CheckNodeConfigFields(
+            NC_SWAP_CONFIG_BOOT_DISK_PROFILE,
+            boot_disk_profile_opts,
+            {
+                NC_SWAP_CONFIG_SWAP_SIZE_GIB: int,
+                NC_SWAP_CONFIG_SWAP_SIZE_PERCENT: int,
+            },
+        )
+        swap_size_gib = boot_disk_profile_opts.get(NC_SWAP_CONFIG_SWAP_SIZE_GIB)
+        if swap_size_gib is not None:
+          boot_disk_profile_msg.swapSizeGib = swap_size_gib
+        swap_size_percent = boot_disk_profile_opts.get(
+            NC_SWAP_CONFIG_SWAP_SIZE_PERCENT
+        )
+        if swap_size_percent is not None:
+          boot_disk_profile_msg.swapSizePercent = swap_size_percent
+        node_config.linuxNodeConfig.swapConfig.bootDiskProfile = (
+            boot_disk_profile_msg
+        )
+      ephemeral_local_ssd_profile_opts = swap_config_opts.get(
+          NC_SWAP_CONFIG_EPHEMERAL_LOCAL_SSD_PROFILE
+      )
+      if ephemeral_local_ssd_profile_opts:
+        ephemeral_local_ssd_profile_msg = (
+            messages.EphemeralLocalSsdProfile()
+        )
+        _CheckNodeConfigFields(
+            NC_SWAP_CONFIG_EPHEMERAL_LOCAL_SSD_PROFILE,
+            ephemeral_local_ssd_profile_opts,
+            {
+                NC_SWAP_CONFIG_SWAP_SIZE_GIB: int,
+                NC_SWAP_CONFIG_SWAP_SIZE_PERCENT: int,
+            },
+        )
+        swap_size_gib = ephemeral_local_ssd_profile_opts.get(
+            NC_SWAP_CONFIG_SWAP_SIZE_GIB
+        )
+        if swap_size_gib is not None:
+          ephemeral_local_ssd_profile_msg.swapSizeGib = swap_size_gib
+        swap_size_percent = ephemeral_local_ssd_profile_opts.get(
+            NC_SWAP_CONFIG_SWAP_SIZE_PERCENT
+        )
+        if swap_size_percent is not None:
+          ephemeral_local_ssd_profile_msg.swapSizePercent = swap_size_percent
+        node_config.linuxNodeConfig.swapConfig.ephemeralLocalSsdProfile = (
+            ephemeral_local_ssd_profile_msg
+        )
+      dedicated_local_ssd_profile_opts = swap_config_opts.get(
+          NC_SWAP_CONFIG_DEDICATED_LOCAL_SSD_PROFILE
+      )
+      if dedicated_local_ssd_profile_opts:
+        dedicated_local_ssd_profile_msg = (
+            messages.DedicatedLocalSsdProfile()
+        )
+        _CheckNodeConfigFields(
+            NC_SWAP_CONFIG_DEDICATED_LOCAL_SSD_PROFILE,
+            dedicated_local_ssd_profile_opts,
+            {NC_SWAP_CONFIG_DISK_COUNT: int},
+        )
+        disk_count = dedicated_local_ssd_profile_opts.get(
+            NC_SWAP_CONFIG_DISK_COUNT
+        )
+        if disk_count is not None:
+          dedicated_local_ssd_profile_msg.diskCount = disk_count
+        node_config.linuxNodeConfig.swapConfig.dedicatedLocalSsdProfile = (
+            dedicated_local_ssd_profile_msg
+        )
 
 
 def CheckForCgroupModeV1(pool):

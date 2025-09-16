@@ -35,15 +35,36 @@ class OrganizationsClient(base.BaseClient):
   _entity_path = ["organization"]
 
   @classmethod
+  def ListOrganizationsGlobal(cls):
+    """Returns a list of Apigee organizations on global endpoint."""
+    try:
+      return request.ResponseToApiRequest(
+          identifiers=None,
+          entity_path=cls._entity_path[:-1],
+          entity_collection=cls._entity_path[-1],
+          location="global")
+    except errors.RequestError as error:
+      # Rewrite error message to better describe what was attempted.
+      raise error.RewrittenError("organization", "list")
+
+  @classmethod
   def ProjectMapping(cls, identifiers):
     """Returns a mapping of GCP projects to Apigee organization."""
     try:
       return request.ResponseToApiRequest(
           identifiers,
-          ["organization"],
+          cls._entity_path,
           method=":getProjectMapping",
-          method_override="GET")
+          method_override="GET",
+          location="global",
+      )
 
+    except (
+        errors.UnauthorizedRequestError,
+        errors.EntityNotFoundError,
+    ) as error:
+      # Rewrite error message to better describe what was attempted.
+      raise error.RewrittenError("project mapping", "get")
     except errors.RequestError as error:
       # Rewrite error message to better describe what was attempted.
       raise error.RewrittenError("project mapping", "get")
@@ -129,10 +150,11 @@ class ProjectsClient(base.BaseClient):
   _entity_path = ["project"]
 
   @classmethod
-  def ProvisionOrganization(cls, project_id, org_info):
+  def ProvisionOrganization(cls, project_id, org_info, location=None):
     return request.ResponseToApiRequest({"projectsId": project_id}, ["project"],
                                         method=":provisionOrganization",
-                                        body=json.dumps(org_info))
+                                        body=json.dumps(org_info),
+                                        location=location)
 
 
 class ApplicationsClient(base.FieldPagedListClient):

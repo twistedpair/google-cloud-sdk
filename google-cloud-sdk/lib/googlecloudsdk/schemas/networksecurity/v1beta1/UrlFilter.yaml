@@ -1,0 +1,51 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networksecurity v1beta1 UrlFilter export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- filteringAction
+- priority
+- urls
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  filteringAction:
+    description: The action taken when this filter is applied.
+    type: string
+    enum:
+    - ALLOW
+    - DENY
+    - URL_FILTERING_ACTION_UNSPECIFIED
+  priority:
+    description: |-
+      The priority of this filter within the URL Filtering Profile. Lower
+      integers indicate higher priorities. The priority of a filter must be
+      unique within a URL Filtering Profile.
+    type: integer
+  urls:
+    description: |-
+      The list of strings that a URL must match with for this filter to be
+      applied.
+    type: array
+    items:
+      type: string

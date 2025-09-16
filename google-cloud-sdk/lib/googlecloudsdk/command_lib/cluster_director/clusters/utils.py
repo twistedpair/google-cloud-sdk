@@ -18,7 +18,7 @@
 import collections
 import os
 import re
-from typing import Any, List
+from typing import Any, Dict, List, Set
 
 from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.calliope import exceptions
@@ -63,11 +63,19 @@ def GetClusterFlagType(api_version=None) -> dict[str, Any]:
 class ClusterUtil:
   """Represents a cluster utility class."""
 
-  def __init__(self, args, message_module):
+  def __init__(
+      self,
+      args,
+      message_module,
+      existing_cluster=None,
+      update_mask: Set[str] = None,
+  ):
     """Initializes the cluster utility class."""
     self.args = args
     self.message_module = message_module
     self.cluster_ref = self.args.CONCEPTS.cluster.Parse()
+    self.existing_cluster = existing_cluster
+    self.update_mask: Set[str] = update_mask if update_mask else set()
 
   def MakeClusterFromConfig(self):
     """Returns a cluster message from the config JSON string."""
@@ -78,9 +86,9 @@ class ClusterUtil:
   def MakeCluster(self):
     """Returns a cluster message from the granular flags."""
     cluster = self.MakeClusterBasic()
-    cluster.networks = self.MakeClusterNetworks()
-    cluster.storages = self.MakeClusterStorages()
-    cluster.compute = self.MakeClusterCompute()
+    cluster.networkResources = self.MakeClusterNetworks()
+    cluster.storageResources = self.MakeClusterStorages()
+    cluster.computeResources = self.MakeClusterCompute()
     cluster.orchestrator = self.message_module.Orchestrator(
         slurm=self.MakeClusterSlurmOrchestrator(cluster)
     )
@@ -100,29 +108,44 @@ class ClusterUtil:
 
   def MakeClusterNetworks(self):
     """Makes a cluster message with network fields."""
-    networks: List[self.message_module.Network] = []
+    networks = self.message_module.Cluster.NetworkResourcesValue()
     if self.args.IsSpecified("create_network"):
-      networks.append(
-          self.message_module.Network(
-              initializeParams=self.message_module.NetworkInitializeParams(
-                  network=self._GetNetworkName(self.args.create_network),
-              )
+      network_name = self._GetNetworkName(self.args.create_network.get("name"))
+      networks.additionalProperties.append(
+          self.message_module.Cluster.NetworkResourcesValue.AdditionalProperty(
+              key=f"net-{network_name}",
+              value=self.message_module.NetworkResource(
+                  config=self.message_module.NetworkResourceConfig(
+                      newNetwork=self.message_module.NewNetworkConfig(
+                          network=network_name,
+                          description=self.args.create_network.get(
+                              "description"
+                          ),
+                      )
+                  )
+              ),
           )
       )
     if self.args.IsSpecified("network") and self.args.IsSpecified("subnet"):
-      networks.append(
-          self.message_module.Network(
-              networkSource=self.message_module.NetworkSource(
-                  network=self._GetNetworkName(self.args.network),
-                  subnetwork=self._GetSubNetworkName(self.args.subnet),
-              )
+      network_name = self._GetNetworkName(self.args.network)
+      networks.additionalProperties.append(
+          self.message_module.Cluster.NetworkResourcesValue.AdditionalProperty(
+              key=f"net-{network_name}",
+              value=self.message_module.NetworkResource(
+                  config=self.message_module.NetworkResourceConfig(
+                      existingNetwork=self.message_module.ExistingNetworkConfig(
+                          network=network_name,
+                          subnetwork=self._GetSubNetworkName(self.args.subnet),
+                      )
+                  )
+              ),
           )
       )
     return networks
 
   def MakeClusterStorages(self):
     """Makes a cluster message with storage fields."""
-    storages: List[self.message_module.Storage] = []
+    storages = self.message_module.Cluster.StorageResourcesValue()
     # Gives a range of 10 to 99 for storage IDs, required for deterministic
     # sorting.
     storage_counter = 10
@@ -130,22 +153,26 @@ class ClusterUtil:
       for filestore in self.args.create_filestores:
         storage_id = self._GetNextStorageId(storage_counter)
         storage_counter += 1
-        storages.append(
-            self.message_module.Storage(
-                id=storage_id,
-                initializeParams=self.message_module.StorageInitializeParams(
-                    filestore=self.message_module.FilestoreInitializeParams(
-                        filestore=self._GetFilestoreName(filestore.get("name")),
-                        tier=filestore.get("tier"),
-                        fileShares=[
-                            self.message_module.FileShareConfig(
-                                capacityGb=filestore.get("sizeGb"),
-                                fileShare=filestore.get("fileshare"),
-                            )
-                        ],
-                        protocol=filestore.get("protocol"),
-                        description=filestore.get("description"),
-                    )
+        storages.additionalProperties.append(
+            self.message_module.Cluster.StorageResourcesValue.AdditionalProperty(
+                key=storage_id,
+                value=self.message_module.StorageResource(
+                    config=self.message_module.StorageResourceConfig(
+                        newFilestore=self.message_module.NewFilestoreConfig(
+                            filestore=self._GetFilestoreName(
+                                filestore.get("name")
+                            ),
+                            tier=filestore.get("tier"),
+                            fileShares=[
+                                self.message_module.FileShareConfig(
+                                    capacityGb=filestore.get("capacityGb"),
+                                    fileShare=filestore.get("fileshare"),
+                                )
+                            ],
+                            protocol=filestore.get("protocol"),
+                            description=filestore.get("description"),
+                        )
+                    ),
                 ),
             )
         )
@@ -153,11 +180,15 @@ class ClusterUtil:
       for filestore in self.args.filestores:
         storage_id = self._GetNextStorageId(storage_counter)
         storage_counter += 1
-        storages.append(
-            self.message_module.Storage(
-                id=storage_id,
-                storageSource=self.message_module.StorageSource(
-                    filestore=self._GetFilestoreName(filestore)
+        storages.additionalProperties.append(
+            self.message_module.Cluster.StorageResourcesValue.AdditionalProperty(
+                key=storage_id,
+                value=self.message_module.StorageResource(
+                    config=self.message_module.StorageResourceConfig(
+                        existingFilestore=self.message_module.ExistingFilestoreConfig(
+                            filestore=self._GetFilestoreName(filestore),
+                        )
+                    ),
                 ),
             )
         )
@@ -165,16 +196,18 @@ class ClusterUtil:
       for lustre in self.args.create_lustres:
         storage_id = self._GetNextStorageId(storage_counter)
         storage_counter += 1
-        storages.append(
-            self.message_module.Storage(
-                id=storage_id,
-                initializeParams=self.message_module.StorageInitializeParams(
-                    lustre=self.message_module.LustreInitializeParams(
-                        lustre=self._GetLustreName(lustre.get("name")),
-                        filesystem=lustre.get("filesystem"),
-                        capacityGb=lustre.get("sizeGb"),
-                        description=lustre.get("description"),
-                    )
+        storages.additionalProperties.append(
+            self.message_module.Cluster.StorageResourcesValue.AdditionalProperty(
+                key=storage_id,
+                value=self.message_module.StorageResource(
+                    config=self.message_module.StorageResourceConfig(
+                        newLustre=self.message_module.NewLustreConfig(
+                            lustre=self._GetLustreName(lustre.get("name")),
+                            filesystem=lustre.get("filesystem"),
+                            capacityGb=lustre.get("capacityGb"),
+                            description=lustre.get("description"),
+                        )
+                    ),
                 ),
             )
         )
@@ -182,20 +215,24 @@ class ClusterUtil:
       for lustre in self.args.lustres:
         storage_id = self._GetNextStorageId(storage_counter)
         storage_counter += 1
-        storages.append(
-            self.message_module.Storage(
-                id=storage_id,
-                storageSource=self.message_module.StorageSource(
-                    lustre=self._GetLustreName(lustre)
+        storages.additionalProperties.append(
+            self.message_module.Cluster.StorageResourcesValue.AdditionalProperty(
+                key=storage_id,
+                value=self.message_module.StorageResource(
+                    config=self.message_module.StorageResourceConfig(
+                        existingLustre=self.message_module.ExistingLustreConfig(
+                            lustre=self._GetLustreName(lustre),
+                        )
+                    ),
                 ),
             )
         )
-    if self.args.IsSpecified("create_gcs_buckets"):
-      for gcs_bucket in self.args.create_gcs_buckets:
+    if self.args.IsSpecified("create_buckets"):
+      for gcs_bucket in self.args.create_buckets:
         storage_id = self._GetNextStorageId(storage_counter)
         storage_counter += 1
-        gcs = self.message_module.GcsInitializeParams(
-            bucket=gcs_bucket.get("name")
+        gcs = self.message_module.NewBucketConfig(
+            bucket=gcs_bucket.get("name"),
         )
         if "storageClass" in gcs_bucket:
           gcs.storageClass = gcs_bucket.get("storageClass")
@@ -204,10 +241,10 @@ class ClusterUtil:
               enabled=gcs_bucket.get("enableAutoclass")
           )
         # If neither storageClass nor autoclass is set, set storageClass to
-        # STORAGE_CLASS_STANDARD by default.
+        # STANDARD by default.
         if not gcs.storageClass and not gcs.autoclass:
           gcs.storageClass = (
-              self.message_module.GcsInitializeParams.StorageClassValueValuesEnum.STORAGE_CLASS_STANDARD
+              self.message_module.NewBucketConfig.StorageClassValueValuesEnum.STANDARD
           )
         if "enableHNS" in gcs_bucket:
           gcs.hierarchicalNamespace = (
@@ -215,23 +252,29 @@ class ClusterUtil:
                   enabled=gcs_bucket.get("enableHNS"),
               )
           )
-        storages.append(
-            self.message_module.Storage(
-                id=storage_id,
-                initializeParams=self.message_module.StorageInitializeParams(
-                    gcs=gcs
+        storages.additionalProperties.append(
+            self.message_module.Cluster.StorageResourcesValue.AdditionalProperty(
+                key=storage_id,
+                value=self.message_module.StorageResource(
+                    config=self.message_module.StorageResourceConfig(
+                        newBucket=gcs
+                    )
                 ),
-            )
+            ),
         )
-    if self.args.IsSpecified("gcs_buckets"):
-      for gcs_bucket in self.args.gcs_buckets:
+    if self.args.IsSpecified("buckets"):
+      for gcs_bucket in self.args.buckets:
         storage_id = self._GetNextStorageId(storage_counter)
         storage_counter += 1
-        storages.append(
-            self.message_module.Storage(
-                id=storage_id,
-                storageSource=self.message_module.StorageSource(
-                    bucket=gcs_bucket
+        storages.additionalProperties.append(
+            self.message_module.Cluster.StorageResourcesValue.AdditionalProperty(
+                key=storage_id,
+                value=self.message_module.StorageResource(
+                    config=self.message_module.StorageResourceConfig(
+                        existingBucket=self.message_module.ExistingBucketConfig(
+                            bucket=gcs_bucket,
+                        )
+                    ),
                 ),
             )
         )
@@ -239,59 +282,62 @@ class ClusterUtil:
 
   def MakeClusterCompute(self):
     """Makes a cluster message with compute fields."""
-    compute = self.message_module.Compute()
-    compute_reservation: dict[str, self.message_module.ReservationAffinity] = {}
-    if self.args.IsSpecified("compute_resource_reservations"):
-      for reservation in self.args.compute_resource_reservations:
-        reservation_affinity = self.message_module.ReservationAffinity(
-            type=reservation.get("type"),
-            key=reservation.get("key"),
-            values=[
-                self._GetReservationName(value)
-                for value in reservation.get("values")
-            ],
+    if (
+        not self.args.IsSpecified("on_demand_instances")
+        and not self.args.IsSpecified("spot_instances")
+        and not self.args.IsSpecified("reserved_instances")
+        and not self.args.IsSpecified("dws_flex_instances")
+    ):
+      raise exceptions.ToolException(
+          "At least one of on_demand_instances, spot_instances,"
+          " reserved_instances, or dws_flex_instances flag must be specified."
+      )
+    compute_ids = set()
+    compute = self.message_module.Cluster.ComputeResourcesValue()
+    if self.args.IsSpecified("on_demand_instances"):
+      for instance in self.args.on_demand_instances:
+        compute_id = instance.get("id")
+        compute_ids.add(compute_id)
+        compute.additionalProperties.append(
+            self.message_module.Cluster.ComputeResourcesValue.AdditionalProperty(
+                key=compute_id,
+                value=self._MakeOnDemandComputeResource(instance),
+            )
         )
-        if not reservation_affinity.key and reservation_affinity.type in [
-            self.message_module.ReservationAffinity.TypeValueValuesEnum.RESERVATION_TYPE_SPECIFIC_RESERVATION,
-            self.message_module.ReservationAffinity.TypeValueValuesEnum.RESERVATION_TYPE_ANY_RESERVATION,
-        ]:
-          reservation_affinity.key = "compute.googleapis.com/reservation-name"
-        compute_reservation[reservation.get("computeId")] = reservation_affinity
-
-    compute_disks: dict[str, list[self.message_module.Disk]] = (
-        collections.defaultdict(list[self.message_module.Disk])
-    )
-    if self.args.IsSpecified("compute_resource_disks"):
-      for disk in self.args.compute_resource_disks:
-        compute_disks[disk.get("computeId")].append(
-            self.MakeDisk(disk_args=disk)
+    if self.args.IsSpecified("spot_instances"):
+      for instance in self.args.spot_instances:
+        compute_id = instance.get("id")
+        compute_ids.add(compute_id)
+        compute.additionalProperties.append(
+            self.message_module.Cluster.ComputeResourcesValue.AdditionalProperty(
+                key=compute_id,
+                value=self._MakeSpotComputeResource(instance),
+            )
         )
-
-    if self.args.IsSpecified("compute_resources"):
-      for compute_resource in self.args.compute_resources:
-        resource_request = self.message_module.ResourceRequest(
-            id=compute_resource.get("name"),
-            zone=compute_resource.get("zone"),
-            machineType=compute_resource.get("machineType"),
-            reservationAffinity=compute_reservation.get(
-                compute_resource.get("name")
-            ),
-            disks=compute_disks[compute_resource.get("name")],
-            provisioningModel=compute_resource.get("provisioningModel"),
-            maxRunDuration=compute_resource.get("maxRunDuration"),
-            terminationAction=compute_resource.get("terminationAction"),
+    if self.args.IsSpecified("reserved_instances"):
+      for instance in self.args.reserved_instances:
+        compute_id = instance.get("id")
+        compute_ids.add(compute_id)
+        compute.additionalProperties.append(
+            self.message_module.Cluster.ComputeResourcesValue.AdditionalProperty(
+                key=compute_id,
+                value=self._MakeReservedComputeResource(instance),
+            )
         )
-        if {
-            "guestAcceleratorType",
-            "guestAcceleratorCount",
-        } <= compute_resource.keys():
-          resource_request.guestAccelerators.append(
-              self.message_module.GuestAccelerator(
-                  acceleratorType=compute_resource.get("guestAcceleratorType"),
-                  count=compute_resource.get("guestAcceleratorCount"),
-              )
-          )
-        compute.resourceRequests.append(resource_request)
+    if self.args.IsSpecified("dws_flex_instances"):
+      for instance in self.args.dws_flex_instances:
+        compute_id = instance.get("id")
+        compute_ids.add(compute_id)
+        compute.additionalProperties.append(
+            self.message_module.Cluster.ComputeResourcesValue.AdditionalProperty(
+                key=compute_id,
+                value=self._MakeDwsFlexComputeResource(instance),
+            )
+        )
+    if len(compute_ids) != len(compute.additionalProperties):
+      raise exceptions.ToolException(
+          "Compute instances with duplicate ids are not supported."
+      )
     return compute
 
   def MakeClusterSlurmOrchestrator(self, cluster):
@@ -302,77 +348,36 @@ class ClusterUtil:
     )
     if self.args.IsSpecified("slurm_node_sets"):
       for node_set in self.args.slurm_node_sets:
+        compute_id = node_set.get("computeId")
+        machine_type = self._GetComputeMachineTypeFromArgs(compute_id)
         slurm.nodeSets.append(
-            self.message_module.SlurmNodeSet(
-                id=node_set.get("name"),
-                resourceRequestId=node_set.get("computeId"),
-                staticNodeCount=node_set.get("staticNodeCount", 1),
-                maxDynamicNodeCount=node_set.get("maxDynamicNodeCount"),
-                storageConfigs=storage_configs,
-                canIpForward=node_set.get("enableIPForward"),
-                enableOsLogin=node_set.get("enableOSLogin", True),
-                enablePublicIps=node_set.get("enablePublicIPs"),
-                serviceAccount=self.MakeServiceAccount(node_set),
-                startupScript=self._GetBashScript(
-                    node_set.get("startupScript")
-                ),
-                labels=self.MakeLabels(
-                    label_args=node_set.get("labels"),
-                    label_cls=self.message_module.SlurmNodeSet.LabelsValue,
-                ),
-            )
+            self._MakeSlurmNodeSet(node_set, machine_type, storage_configs)
         )
 
     if self.args.IsSpecified("slurm_partitions"):
       for partition in self.args.slurm_partitions:
-        slurm.partitions.append(
-            self.message_module.SlurmPartition(
-                id=partition.get("name"),
-                nodeSetIds=partition.get("nodesetIds"),
-                exclusive=partition.get("exclusive"),
-            )
-        )
+        slurm.partitions.append(self._MakeSlurmPartition(partition))
 
     if self.args.IsSpecified("slurm_default_partition"):
       slurm.defaultPartition = self.args.slurm_default_partition
 
     if self.args.IsSpecified("slurm_login_node"):
       login_node = self.args.slurm_login_node
+      machine_type = login_node.get("machineType")
       slurm.loginNodes = self.message_module.SlurmLoginNodes(
           count=login_node.get("count", 1),
-          machineType=login_node.get("machineType"),
+          machineType=machine_type,
           zone=login_node.get("zone"),
           storageConfigs=storage_configs,
           enableOsLogin=login_node.get("enableOSLogin", True),
-          enablePublicIps=login_node.get("enablePublicIPs", True),
-          serviceAccount=self.MakeServiceAccount(login_node),
+          enablePublicIps=login_node.get("enablePublicIps", True),
           startupScript=self._GetBashScript(login_node.get("startupScript")),
           labels=self.MakeLabels(
               label_args=login_node.get("labels"),
               label_cls=self.message_module.SlurmLoginNodes.LabelsValue,
           ),
       )
-
-    if self.args.IsSpecified("slurm_login_node_disks"):
-      for disk in self.args.slurm_login_node_disks:
-        slurm.loginNodes.disks.append(self.MakeDisk(disk_args=disk))
-
-    if self.args.IsSpecified("slurm_config"):
-      config = self.args.slurm_config
-      slurm.config = self.message_module.SlurmConfig(
-          requeueExitCodes=config.get("requeueExitCodes"),
-          requeueHoldExitCodes=config.get("requeueHoldExitCodes"),
-          prologFlags=config.get("prologFlags"),
-          prologEpilogTimeout=config.get("prologEpilogTimeout"),
-      )
-      for script in config.get("jobPrologBashScripts"):
-        slurm.prologBashScripts.append(self._GetBashScript(script))
-      for script in config.get("jobEpilogBashScripts"):
-        slurm.epilogBashScripts.append(self._GetBashScript(script))
-      for script in config.get("taskPrologBashScripts"):
-        slurm.taskPrologBashScripts.append(self._GetBashScript(script))
-      for script in config.get("taskEpilogBashScripts"):
-        slurm.taskEpilogBashScripts.append(self._GetBashScript(script))
+      slurm.loginNodes.disks.append(self.MakeDisk(machine_type=machine_type))
     return slurm
 
   def MakeLabels(self, label_args, label_cls):
@@ -386,27 +391,252 @@ class ClusterUtil:
         ]
     )
 
-  def MakeServiceAccount(self, service_account_args):
-    """Returns the service account message."""
-    email = service_account_args.get("serviceAccountEmail")
-    scopes = service_account_args.get("serviceAccountScopes")
-    if not email and not scopes:
-      return None
-    service_account = self.message_module.ServiceAccount()
-    if email:
-      service_account.email = email
-    if scopes:
-      service_account.scopes = scopes
-    return service_account
-
-  def MakeDisk(self, disk_args):
-    """Returns the disk message."""
+  def MakeDisk(
+      self,
+      machine_type: str,
+      boot: bool = True,
+      source_image: str = "",
+  ):
+    """Returns the disk message, defaults to boot disk with empty source image."""
+    disk_type = "pd-standard"
+    if machine_type.startswith(
+        ("a3-megagpu", "a3-ultragpu", "a4-highgpu", "a4x-highgpu")
+    ):
+      disk_type = "hyperdisk-balanced"
     return self.message_module.Disk(
-        type=disk_args.get("type"),
-        sizeGb=disk_args.get("sizeGb"),
-        boot=disk_args.get("boot"),
-        sourceImage=self._GetDiskSourceImageName(disk_args.get("sourceImage")),
+        type=disk_type,
+        boot=boot,
+        sourceImage=source_image,
     )
+
+  def MakeClusterPatchFromConfig(self):
+    """Returns the cluster message from the config."""
+    cluster = self.MakeClusterFromConfig()
+    return cluster, self.args.update_mask
+
+  def MakeClusterPatch(self):
+    """Returns the cluster patch message and update mask."""
+    cluster = self.MakeClusterBasicPatch()
+    cluster.computeResources = self.MakeClusterComputePatch()
+    cluster.orchestrator = self.message_module.Orchestrator(
+        slurm=self.MakeClusterSlurmOrchestratorPatch(cluster)
+    )
+    return cluster, ",".join(sorted(self.update_mask))
+
+  def MakeClusterBasicPatch(self):
+    """Makes a cluster patch message with basic fields."""
+    cluster = self.message_module.Cluster()
+    if self.args.IsSpecified("description"):
+      cluster.description = self.args.description
+      self.update_mask.add("description")
+
+    labels = self._ConvertMessageToDict(self.existing_cluster.labels)
+    is_labels_updated = False
+    exception_message = "Label with key={0} not found."
+    if self.args.IsSpecified("remove_labels"):
+      for key in self.args.remove_labels:
+        self._RemoveKeyFromDictSpec(key, labels, exception_message)
+        is_labels_updated = True
+    if self.args.IsSpecified("add_labels"):
+      labels.update(self.args.add_labels)
+      is_labels_updated = True
+    if is_labels_updated:
+      cluster.labels = self.MakeLabels(
+          label_args=labels,
+          label_cls=self.message_module.Cluster.LabelsValue,
+      )
+      self.update_mask.add("labels")
+    return cluster
+
+  def MakeClusterComputePatch(self):
+    """Makes a cluster compute patch message with compute fields."""
+    compute_resources = self.message_module.Cluster.ComputeResourcesValue()
+    compute = self._ConvertMessageToDict(self.existing_cluster.computeResources)
+    is_compute_updated = False
+    ex_msg_not_found = "Compute instances with id={0} not found."
+    ex_msg_already_exist = "Compute instances with id={0} already exist."
+    if self.args.IsSpecified("remove_on_demand_instances"):
+      for compute_id in self.args.remove_on_demand_instances:
+        self._RemoveKeyByAttrFromDictSpec(
+            key=compute_id,
+            dict_spec=compute,
+            attr="newOnDemandInstances",
+            key_exception_message=ex_msg_not_found,
+            attr_exception_message=f"On demand {ex_msg_not_found}",
+        )
+        is_compute_updated = True
+    if self.args.IsSpecified("remove_spot_instances"):
+      for compute_id in self.args.remove_spot_instances:
+        self._RemoveKeyByAttrFromDictSpec(
+            key=compute_id,
+            dict_spec=compute,
+            attr="newSpotInstances",
+            key_exception_message=ex_msg_not_found,
+            attr_exception_message=f"Spot {ex_msg_not_found}",
+        )
+        is_compute_updated = True
+    if self.args.IsSpecified("remove_reserved_instances"):
+      for compute_id in self.args.remove_reserved_instances:
+        self._RemoveKeyByAttrFromDictSpec(
+            key=compute_id,
+            dict_spec=compute,
+            attr="newReservedInstances",
+            key_exception_message=ex_msg_not_found,
+            attr_exception_message=f"Reserved {ex_msg_not_found}",
+        )
+        is_compute_updated = True
+    if self.args.IsSpecified("remove_dws_flex_instances"):
+      for compute_id in self.args.remove_dws_flex_instances:
+        self._RemoveKeyByAttrFromDictSpec(
+            key=compute_id,
+            dict_spec=compute,
+            attr="newDwsFlexInstances",
+            key_exception_message=ex_msg_not_found,
+            attr_exception_message=f"DWS Flex {ex_msg_not_found}",
+        )
+        is_compute_updated = True
+    if self.args.IsSpecified("add_on_demand_instances"):
+      for instance in self.args.add_on_demand_instances:
+        self._AddKeyToDictSpec(
+            key=instance.get("id"),
+            dict_spec=compute,
+            value=self._MakeOnDemandComputeResource(instance),
+            exception_message=ex_msg_already_exist,
+        )
+        is_compute_updated = True
+    if self.args.IsSpecified("add_spot_instances"):
+      for instance in self.args.add_spot_instances:
+        self._AddKeyToDictSpec(
+            key=instance.get("id"),
+            dict_spec=compute,
+            value=self._MakeSpotComputeResource(instance),
+            exception_message=ex_msg_already_exist,
+        )
+        is_compute_updated = True
+    if self.args.IsSpecified("add_reserved_instances"):
+      for instance in self.args.add_reserved_instances:
+        self._AddKeyToDictSpec(
+            key=instance.get("id"),
+            dict_spec=compute,
+            value=self._MakeReservedComputeResource(instance),
+            exception_message=ex_msg_already_exist,
+        )
+        is_compute_updated = True
+    if self.args.IsSpecified("add_dws_flex_instances"):
+      for instance in self.args.add_dws_flex_instances:
+        self._AddKeyToDictSpec(
+            key=instance.get("id"),
+            dict_spec=compute,
+            value=self._MakeDwsFlexComputeResource(instance),
+            exception_message=ex_msg_already_exist,
+        )
+        is_compute_updated = True
+    if is_compute_updated:
+      compute_resources.additionalProperties = [
+          self.message_module.Cluster.ComputeResourcesValue.AdditionalProperty(
+              key=key, value=value
+          )
+          for key, value in compute.items()
+      ]
+      if not compute_resources.additionalProperties:
+        raise exceptions.ToolException("Compute instances cannot be empty.")
+      self.update_mask.add("compute.resource_requests")
+    return compute_resources
+
+  def MakeClusterSlurmOrchestratorPatch(self, cluster_patch):
+    """Makes a cluster slurm orchestrator patch message with slurm fields."""
+    slurm = self.message_module.SlurmOrchestrator()
+    if self.args.IsSpecified("slurm_default_partition"):
+      slurm.defaultPartition = self.args.slurm_default_partition
+      self.update_mask.add("orchestrator.slurm.default_partition")
+
+    slurm_node_sets = self._ConvertSlurmMessageToDict(
+        self.existing_cluster.orchestrator.slurm.nodeSets
+    )
+    is_node_sets_updated = False
+    ex_msg_not_found = "Slurm nodesets with id={0} not found."
+    ex_msg_already_exist = "Slurm nodesets with id={0} already exist."
+    if self.args.IsSpecified("remove_slurm_node_sets"):
+      for node_set_id in self.args.remove_slurm_node_sets:
+        self._RemoveKeyFromDictSpec(
+            node_set_id, slurm_node_sets, ex_msg_not_found
+        )
+        is_node_sets_updated = True
+    if self.args.IsSpecified("update_slurm_node_sets"):
+      for node_set in self.args.update_slurm_node_sets:
+        node_set_id = node_set.get("id")
+        existing_node_set = self._GetValueFromDictSpec(
+            node_set_id, slurm_node_sets, ex_msg_not_found
+        )
+        if "staticNodeCount" in node_set:
+          existing_node_set.staticNodeCount = node_set.get("staticNodeCount")
+        if "maxDynamicNodeCount" in node_set:
+          existing_node_set.maxDynamicNodeCount = node_set.get(
+              "maxDynamicNodeCount"
+          )
+        slurm_node_sets[node_set_id] = existing_node_set
+        is_node_sets_updated = True
+    if self.args.IsSpecified("add_slurm_node_sets"):
+      for node_set in self.args.add_slurm_node_sets:
+        storage_configs = self._GetStorageConfigs(self.existing_cluster)
+        compute_id = node_set.get("computeId")
+        machine_type = self._GetComputeMachineTypeFromCluster(
+            compute_id, cluster_patch, use_existing_cluster=True
+        )
+        self._AddKeyToDictSpec(
+            key=node_set.get("id"),
+            dict_spec=slurm_node_sets,
+            value=self._MakeSlurmNodeSet(
+                node_set, machine_type, storage_configs
+            ),
+            exception_message=ex_msg_already_exist,
+        )
+        is_node_sets_updated = True
+    if is_node_sets_updated:
+      slurm.nodeSets = list(slurm_node_sets.values())
+      if not slurm.nodeSets:
+        raise exceptions.ToolException("Slurm nodesets cannot be empty.")
+      self.update_mask.add("orchestrator.slurm.node_sets")
+
+    slurm_partitions = self._ConvertSlurmMessageToDict(
+        self.existing_cluster.orchestrator.slurm.partitions
+    )
+    is_partitions_updated = False
+    ex_msg_not_found = "Slurm partitions with id={0} not found."
+    ex_msg_already_exist = "Slurm partitions with id={0} already exist."
+    if self.args.IsSpecified("remove_slurm_partitions"):
+      for partition_id in self.args.remove_slurm_partitions:
+        self._RemoveKeyFromDictSpec(
+            partition_id, slurm_partitions, ex_msg_not_found
+        )
+        is_partitions_updated = True
+    if self.args.IsSpecified("update_slurm_partitions"):
+      for partition in self.args.update_slurm_partitions:
+        partition_id = partition.get("id")
+        existing_partition = self._GetValueFromDictSpec(
+            partition_id, slurm_partitions, ex_msg_not_found
+        )
+        if "nodesetIds" in partition:
+          existing_partition.nodeSetIds = partition.get("nodesetIds")
+        if "exclusive" in partition:
+          existing_partition.exclusive = partition.get("exclusive")
+        slurm_partitions[partition_id] = existing_partition
+        is_partitions_updated = True
+    if self.args.IsSpecified("add_slurm_partitions"):
+      for partition in self.args.add_slurm_partitions:
+        self._AddKeyToDictSpec(
+            key=partition.get("id"),
+            dict_spec=slurm_partitions,
+            value=self._MakeSlurmPartition(partition),
+            exception_message=ex_msg_already_exist,
+        )
+        is_partitions_updated = True
+    if is_partitions_updated:
+      slurm.partitions = list(slurm_partitions.values())
+      if not slurm.partitions:
+        raise exceptions.ToolException("Slurm partitions cannot be empty.")
+      self.update_mask.add("orchestrator.slurm.partitions")
+    return slurm
 
   def _GetNetworkName(self, network) -> str:
     """Returns the network name."""
@@ -432,51 +662,96 @@ class ClusterUtil:
     project = self.cluster_ref.Parent().projectsId
     return f"projects/{project}/{lustre}"
 
-  def _GetDiskSourceImageName(self, source_image) -> str | None:
-    """Returns the disk source image."""
-    if not source_image:
-      return source_image
-    project = self.cluster_ref.Parent().projectsId
-    return f"projects/{project}/global/images/{source_image}"
-
   def _GetReservationName(self, reservation) -> str:
     """Returns the reservation name."""
     project = self.cluster_ref.Parent().projectsId
     return f"projects/{project}/{reservation}"
 
+  def _GetComputeMachineTypeFromArgs(self, compute_id):
+    """Returns the compute machine type from args."""
+    instances = []
+    if self.args.IsSpecified("on_demand_instances"):
+      instances.extend(self.args.on_demand_instances)
+    if self.args.IsSpecified("spot_instances"):
+      instances.extend(self.args.spot_instances)
+    if self.args.IsSpecified("reserved_instances"):
+      instances.extend(self.args.reserved_instances)
+    if self.args.IsSpecified("dws_flex_instances"):
+      instances.extend(self.args.dws_flex_instances)
+    for instance in instances:
+      if instance.get("id") == compute_id:
+        return instance.get("machineType")
+    raise exceptions.ToolException(
+        f"Compute instances with id={compute_id} not found."
+    )
+
+  def _GetComputeMachineTypeFromCluster(
+      self, compute_id: str, cluster, use_existing_cluster=False
+  ):
+    """Returns the compute machine type from cluster."""
+    if cluster:
+      compute_resources = self._ConvertMessageToDict(cluster.computeResources)
+      if compute_id in compute_resources:
+        return self._GetComputeMachineType(compute_id, compute_resources)
+    if use_existing_cluster:
+      compute_resources = self._ConvertMessageToDict(
+          self.existing_cluster.computeResources
+      )
+      if compute_id in compute_resources:
+        return self._GetComputeMachineType(compute_id, compute_resources)
+    raise exceptions.ToolException(
+        f"Compute instances with id={compute_id} not found."
+    )
+
+  def _GetComputeMachineType(
+      self, compute_id: str, compute_resources: Dict[str, Any]
+  ):
+    """Returns the compute machine type from compute resources."""
+    if compute_resources[compute_id].newOnDemandInstances:
+      return compute_resources[compute_id].newOnDemandInstances.machineType
+    if compute_resources[compute_id].newSpotInstances:
+      return compute_resources[compute_id].newSpotInstances.machineType
+    if compute_resources[compute_id].newReservedInstances:
+      return compute_resources[compute_id].newReservedInstances.machineType
+    if compute_resources[compute_id].newDwsFlexInstances:
+      return compute_resources[compute_id].newDwsFlexInstances.machineType
+    raise exceptions.ToolException("Compute instances type not supported.")
+
   def _GetStorageConfigs(self, cluster):
     """Returns the storage configs."""
     storage_configs: List[self.message_module.StorageConfig] = []
-    sorted_storages = sorted(cluster.storages, key=lambda storage: storage.id)
+    sorted_storages = sorted(
+        cluster.storageResources.additionalProperties,
+        key=lambda storage: storage.key,
+    )
     if sorted_storages:
       first_storage = sorted_storages[0]
       storage_configs.append(
           self.message_module.StorageConfig(
-              id=first_storage.id,
+              id=first_storage.key,
               localMount="/home",
           )
       )
     counters = collections.defaultdict(int)
     for storage in sorted_storages[1:]:
       local_mount = None
-      if storage.initializeParams:
-        if storage.initializeParams.filestore:
+      if storage.value:
+        if (
+            storage.value.config.newFilestore
+            or storage.value.config.existingFilestore
+        ):
           local_mount = f"/shared{counters['filestore']}"
           counters["filestore"] += 1
-        elif storage.initializeParams.lustre:
+        elif (
+            storage.value.config.newLustre
+            or storage.value.config.existingLustre
+        ):
           local_mount = f"/scratch{counters['lustre']}"
           counters["lustre"] += 1
-        elif storage.initializeParams.gcs:
-          local_mount = f"/data{counters['bucket']}"
-          counters["bucket"] += 1
-      if storage.storageSource:
-        if storage.storageSource.filestore:
-          local_mount = f"/shared{counters['filestore']}"
-          counters["filestore"] += 1
-        elif storage.storageSource.lustre:
-          local_mount = f"/scratch{counters['lustre']}"
-          counters["lustre"] += 1
-        elif storage.storageSource.bucket:
+        elif (
+            storage.value.config.newBucket
+            or storage.value.config.existingBucket
+        ):
           local_mount = f"/data{counters['bucket']}"
           counters["bucket"] += 1
       if not local_mount:
@@ -486,7 +761,7 @@ class ClusterUtil:
 
       storage_configs.append(
           self.message_module.StorageConfig(
-              id=storage.id,
+              id=storage.key,
               localMount=local_mount,
           )
       )
@@ -496,13 +771,133 @@ class ClusterUtil:
     """Returns the bash script if argument is a valid bash file path."""
     if not arg_value or not self._CheckIfBashFileFormat(arg_value):
       return arg_value
-    path = os.path.normpath(os.path.join(files.GetCWD(), arg_value))
+    path = arg_value
+    if not os.path.isabs(path):
+      raise exceptions.BadFileException(
+          f"Script file path must be absolute, got {path}"
+      )
     if not os.path.exists(path) or not os.path.isfile(path):
       raise exceptions.BadFileException(
-          f"Script file not found at path={path} resolved from {arg_value}"
+          f"Script file not found at absolute path={path}"
       )
     return files.ReadFileContents(path)
 
   def _CheckIfBashFileFormat(self, arg_value: str) -> bool:
     """Checks if the argument is a bash file format."""
     return re.match(r"^\S*\.(sh|bash)$", arg_value)
+
+  def _ConvertMessageToDict(self, message) -> dict[str, Any]:
+    """Convert a message with list of type AdditionalProperty(key=str, value=Any) to a dict."""
+    if not message:
+      return {}
+    return {each.key: each.value for each in message.additionalProperties}
+
+  def _ConvertSlurmMessageToDict(self, message):
+    """Convert a list of slurm message (SlurmNodeSet, SlurmPartition) to a dict."""
+    if not message:
+      return {}
+    return {each.id: each for each in message}
+
+  def _AddKeyToDictSpec(
+      self,
+      key: str,
+      dict_spec: dict[str, Any],
+      value: Any,
+      exception_message: str,
+  ) -> None | exceptions.ToolException:
+    """Adds a cluster identifier (key) with value, if not present in dict spec."""
+    if key in dict_spec:
+      raise exceptions.ToolException(exception_message.format(key))
+    dict_spec[key] = value
+
+  def _RemoveKeyFromDictSpec(
+      self, key: str, dict_spec: dict[str, Any], exception_message: str
+  ) -> None | exceptions.ToolException:
+    """Removes a cluster identifier (key), if present in dict spec."""
+    if key not in dict_spec:
+      raise exceptions.ToolException(exception_message.format(key))
+    dict_spec.pop(key)
+
+  def _RemoveKeyByAttrFromDictSpec(
+      self,
+      key: str,
+      dict_spec: dict[str, Any],
+      attr: str,
+      key_exception_message: str,
+      attr_exception_message: str,
+  ) -> None | exceptions.ToolException:
+    """Removes a cluster identifier (key) by attribute, if present in dict spec."""
+    if key not in dict_spec:
+      raise exceptions.ToolException(key_exception_message.format(key))
+    if not getattr(dict_spec[key], attr, None):
+      raise exceptions.ToolException(attr_exception_message.format(key))
+    dict_spec.pop(key)
+
+  def _GetValueFromDictSpec(
+      self, key: str, dict_spec: dict[str, Any], exception_message: str
+  ) -> Any | exceptions.ToolException:
+    """Returns the value message by cluster identifier (key) from a dict spec."""
+    if key not in dict_spec:
+      raise exceptions.ToolException(exception_message.format(key))
+    return dict_spec[key]
+
+  def _MakeOnDemandComputeResource(self, instance):
+    """Makes a cluster compute resource message for on demand instances."""
+    return self.message_module.ComputeResource(
+        newOnDemandInstances=self.message_module.NewOnDemandInstancesConfig(
+            zone=instance.get("zone"),
+            machineType=instance.get("machineType"),
+        ),
+    )
+
+  def _MakeSpotComputeResource(self, instance):
+    """Makes a cluster compute resource message for spot instances."""
+    return self.message_module.ComputeResource(
+        newSpotInstances=self.message_module.NewSpotInstancesConfig(
+            zone=instance.get("zone"),
+            machineType=instance.get("machineType"),
+        ),
+    )
+
+  def _MakeReservedComputeResource(self, instance):
+    """Makes a cluster compute resource message for reserved instances."""
+    return self.message_module.ComputeResource(
+        newReservedInstances=self.message_module.NewReservedInstancesConfig(
+            reservation=self._GetReservationName(instance.get("reservation")),
+            machineType=instance.get("machineType"),
+        ),
+    )
+
+  def _MakeDwsFlexComputeResource(self, instance):
+    """Makes a cluster compute resource message for DWS Flex instances."""
+    return self.message_module.ComputeResource(
+        newDwsFlexInstances=self.message_module.NewDWSFlexInstancesConfig(
+            zone=instance.get("zone"),
+            machineType=instance.get("machineType"),
+            maxDuration=instance.get("maxDuration"),
+        ),
+    )
+
+  def _MakeSlurmNodeSet(self, node_set, machine_type, storage_configs):
+    """Makes a cluster slurm node set message from node set args."""
+    return self.message_module.SlurmNodeSet(
+        id=node_set.get("id"),
+        resourceRequestId=node_set.get("computeId"),
+        staticNodeCount=node_set.get("staticNodeCount", 1),
+        maxDynamicNodeCount=node_set.get("maxDynamicNodeCount"),
+        storageConfigs=storage_configs,
+        startupScript=self._GetBashScript(node_set.get("startupScript")),
+        labels=self.MakeLabels(
+            label_args=node_set.get("labels"),
+            label_cls=self.message_module.SlurmNodeSet.LabelsValue,
+        ),
+        bootDisk=self.MakeDisk(machine_type=machine_type),
+    )
+
+  def _MakeSlurmPartition(self, partition):
+    """Makes a cluster slurm partition message from partition args."""
+    return self.message_module.SlurmPartition(
+        id=partition.get("id"),
+        nodeSetIds=partition.get("nodesetIds"),
+        exclusive=partition.get("exclusive"),
+    )

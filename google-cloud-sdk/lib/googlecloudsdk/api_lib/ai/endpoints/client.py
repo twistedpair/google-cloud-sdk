@@ -901,6 +901,7 @@ class EndpointsClient(object):
       min_scaleup_period=None,
       idle_scaledown_period=None,
       initial_replica_count=None,
+      gpu_partition_size=None,
   ):
     """Deploys a model to an existing endpoint using v1beta1 API.
 
@@ -943,6 +944,8 @@ class EndpointsClient(object):
       initial_replica_count: int or None, the initial number of replicas the
         deployment will be scaled up to. This only applies to deployments
         enrolled in scale-to-zero.
+      gpu_partition_size: str or None, the partition size of the GPU
+        accelerator.
 
     Returns:
       A long-running operation for DeployModel.
@@ -987,6 +990,8 @@ class EndpointsClient(object):
           machine_spec.reservationAffinity = flags.ParseReservationAffinityFlag(
               reservation_affinity, constants.BETA_VERSION
           )
+        if gpu_partition_size is not None:
+          machine_spec.gpuPartitionSize = gpu_partition_size
 
         dedicated = (
             self.messages.GoogleCloudAiplatformV1beta1DedicatedResources(

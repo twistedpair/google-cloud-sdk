@@ -1,0 +1,38 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networksecurity v1alpha1 WildfireInlineCloudAnalysisRuleCustomFileTypes export
+  schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- fileTypes
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  fileTypes:
+    description: File types to be submitted for WildFire inline cloud analysis.
+    type: array
+    items:
+      type: string
+      enum:
+      - FILE_TYPE_UNSPECIFIED
+      - PE

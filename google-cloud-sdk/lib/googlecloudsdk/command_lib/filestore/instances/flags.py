@@ -478,13 +478,13 @@ def AddNetworkArg(parser, api_version):
     api_version: filestore_client api version.
   """
 
-  network_arg_spec_v1 = {
+  network_arg_spec_alpha = {
       'name': str,
       'reserved-ip-range': str,
       'connect-mode': str,
   }
 
-  network_arg_spec_beta = {
+  network_arg_spec_beta_v1 = {
       'name': str,
       'reserved-ip-range': str,
       'connect-mode': str,
@@ -492,12 +492,12 @@ def AddNetworkArg(parser, api_version):
   }
 
   network_arg_spec = {
-      filestore_client.V1_API_VERSION: network_arg_spec_v1,
-      filestore_client.ALPHA_API_VERSION: network_arg_spec_v1,
-      filestore_client.BETA_API_VERSION: network_arg_spec_beta,
+      filestore_client.V1_API_VERSION: network_arg_spec_beta_v1,
+      filestore_client.ALPHA_API_VERSION: network_arg_spec_alpha,
+      filestore_client.BETA_API_VERSION: network_arg_spec_beta_v1,
   }
 
-  network_help_v1 = """\
+  network_help_alpha = """\
         Network configuration for a Cloud Filestore instance. Specifying
         `reserved-ip-range` and `connect-mode` is optional.
         *name*::: The name of the Google Compute Engine
@@ -521,7 +521,7 @@ def AddNetworkArg(parser, api_version):
         CONNECT_MODE must be one of: DIRECT_PEERING or PRIVATE_SERVICE_ACCESS.
   """
 
-  network_help_beta = """\
+  network_help_beta_v1 = """\
         Network configuration for a Cloud Filestore instance. Specifying
         `reserved-ip-range` and `connect-mode` is optional.
         *name*::: The name of the Google Compute Engine
@@ -551,15 +551,16 @@ def AddNetworkArg(parser, api_version):
   """
 
   network_help = {
-      filestore_client.V1_API_VERSION: network_help_v1,
-      filestore_client.ALPHA_API_VERSION: network_help_v1,
-      filestore_client.BETA_API_VERSION: network_help_beta,
+      filestore_client.V1_API_VERSION: network_help_beta_v1,
+      filestore_client.ALPHA_API_VERSION: network_help_alpha,
+      filestore_client.BETA_API_VERSION: network_help_beta_v1,
   }
 
   parser.add_argument(
       '--network',
-      type=arg_parsers.ArgDict(spec=network_arg_spec[api_version],
-                               required_keys=['name']),
+      type=arg_parsers.ArgDict(
+          spec=network_arg_spec[api_version], required_keys=['name']
+      ),
       required=True,
       help=network_help[api_version],
   )

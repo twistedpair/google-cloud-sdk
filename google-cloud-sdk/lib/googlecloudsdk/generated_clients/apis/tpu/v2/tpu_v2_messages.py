@@ -116,8 +116,33 @@ class AttachedDisk(_messages.Message):
   sourceDisk = _messages.StringField(2)
 
 
+class BootDiskConfig(_messages.Message):
+  r"""Sets the boot disk configuration for the TPU node.
+
+  Fields:
+    customerEncryptionKey: Optional. Customer encryption key for boot disk.
+  """
+
+  customerEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 1)
+
+
 class CreatingData(_messages.Message):
   r"""Further data for the creating state."""
+
+
+class CustomerEncryptionKey(_messages.Message):
+  r"""Defines the customer encryption key for disk encryption.
+
+  Fields:
+    kmsKeyName: The name of the encryption key that is stored in Google Cloud
+      KMS. For example: "kmsKeyName": "projects/KMS_PROJECT_ID/locations/REGIO
+      N/keyRings/KEY_REGION/cryptoKeys/KEY The fully-qualifed key name may be
+      returned for resource GET requests. For example: "kmsKeyName": "projects
+      /KMS_PROJECT_ID/locations/REGION/keyRings/KEY_REGION/cryptoKeys/KEY/cryp
+      toKeyVersions/1
+  """
+
+  kmsKeyName = _messages.StringField(1)
 
 
 class DeletingData(_messages.Message):
@@ -489,6 +514,7 @@ class Node(_messages.Message):
     acceleratorType: Optional. The type of hardware accelerators associated
       with this node.
     apiVersion: Output only. The API version that created this Node.
+    bootDiskConfig: Optional. Boot disk configuration.
     cidrBlock: The CIDR block that the TPU node will use when selecting an IP
       address. This CIDR block must be a /29 block; the Compute Engine
       networks API forbids a smaller block, and using a larger block would be
@@ -664,29 +690,30 @@ class Node(_messages.Message):
   acceleratorConfig = _messages.MessageField('AcceleratorConfig', 1)
   acceleratorType = _messages.StringField(2)
   apiVersion = _messages.EnumField('ApiVersionValueValuesEnum', 3)
-  cidrBlock = _messages.StringField(4)
-  createTime = _messages.StringField(5)
-  dataDisks = _messages.MessageField('AttachedDisk', 6, repeated=True)
-  description = _messages.StringField(7)
-  health = _messages.EnumField('HealthValueValuesEnum', 8)
-  healthDescription = _messages.StringField(9)
-  id = _messages.IntegerField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  metadata = _messages.MessageField('MetadataValue', 12)
-  multisliceNode = _messages.BooleanField(13)
-  name = _messages.StringField(14)
-  networkConfig = _messages.MessageField('NetworkConfig', 15)
-  networkConfigs = _messages.MessageField('NetworkConfig', 16, repeated=True)
-  networkEndpoints = _messages.MessageField('NetworkEndpoint', 17, repeated=True)
-  queuedResource = _messages.StringField(18)
-  runtimeVersion = _messages.StringField(19)
-  schedulingConfig = _messages.MessageField('SchedulingConfig', 20)
-  serviceAccount = _messages.MessageField('ServiceAccount', 21)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 22)
-  state = _messages.EnumField('StateValueValuesEnum', 23)
-  symptoms = _messages.MessageField('Symptom', 24, repeated=True)
-  tags = _messages.StringField(25, repeated=True)
-  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 26)
+  bootDiskConfig = _messages.MessageField('BootDiskConfig', 4)
+  cidrBlock = _messages.StringField(5)
+  createTime = _messages.StringField(6)
+  dataDisks = _messages.MessageField('AttachedDisk', 7, repeated=True)
+  description = _messages.StringField(8)
+  health = _messages.EnumField('HealthValueValuesEnum', 9)
+  healthDescription = _messages.StringField(10)
+  id = _messages.IntegerField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  metadata = _messages.MessageField('MetadataValue', 13)
+  multisliceNode = _messages.BooleanField(14)
+  name = _messages.StringField(15)
+  networkConfig = _messages.MessageField('NetworkConfig', 16)
+  networkConfigs = _messages.MessageField('NetworkConfig', 17, repeated=True)
+  networkEndpoints = _messages.MessageField('NetworkEndpoint', 18, repeated=True)
+  queuedResource = _messages.StringField(19)
+  runtimeVersion = _messages.StringField(20)
+  schedulingConfig = _messages.MessageField('SchedulingConfig', 21)
+  serviceAccount = _messages.MessageField('ServiceAccount', 22)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
+  symptoms = _messages.MessageField('Symptom', 25, repeated=True)
+  tags = _messages.StringField(26, repeated=True)
+  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 27)
 
 
 class NodeSpec(_messages.Message):
@@ -1301,8 +1328,9 @@ class TpuProjectsLocationsListRequest(_messages.Message):
   r"""A TpuProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Unless explicitly documented otherwise,
+      don't use this unsupported field which is primarily intended for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).

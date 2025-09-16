@@ -127,14 +127,12 @@ def _get_cloud_run_flags(
       )
       + timeout.translate_timeout_features(input_flatten_as_appyaml)
       + supported_features.translate_supported_features(
-          input_flatten_as_appyaml, supported_features_app_yaml, project
-      )
-      + entrypoint.translate_entrypoint_features(
-          input_data,
           input_type,
+          input_flatten_as_appyaml,
           supported_features_app_yaml,
-          entrypoint_command,
+          project,
       )
+      + entrypoint.translate_entrypoint_features(entrypoint_command)
       + required_flags.translate_add_required_flags(input_data)
   )
 

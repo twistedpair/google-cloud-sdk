@@ -672,13 +672,23 @@ def ParseBuildConfigArgs(trigger,
           'Substitutions are not supported with a Dockerfile configuration.')
 
     image = args.dockerfile_image or default_image
-    trigger.build = messages.Build(steps=[
-        messages.BuildStep(
-            name='gcr.io/cloud-builders/docker',
-            dir=args.dockerfile_dir,
-            args=['build', '-t', image, '-f', args.dockerfile, '.'],
-        )
-    ])
+    trigger.build = messages.Build(
+        steps=[
+            messages.BuildStep(
+                name='gcr.io/cloud-builders/gcb-internal',
+                dir=args.dockerfile_dir,
+                args=[
+                    'docker',
+                    'build',
+                    '-t',
+                    image,
+                    '-f',
+                    args.dockerfile,
+                    '.',
+                ],
+            )
+        ]
+    )
   if args.inline_config:
     trigger.build = cloudbuild_util.LoadMessageFromPath(args.inline_config,
                                                         messages.Build,
@@ -735,15 +745,23 @@ def ParseBuildConfigArgsForUpdate(trigger,
       dockerfile_dir = '/'
 
     dockerfile_image = args.dockerfile_image or default_image
-    trigger.build = messages.Build(steps=[
-        messages.BuildStep(
-            name='gcr.io/cloud-builders/docker',
-            dir=dockerfile_dir,
-            args=[
-                'build', '-t', dockerfile_image, '-f', args.dockerfile, '.'
-            ],
-        )
-    ])
+    trigger.build = messages.Build(
+        steps=[
+            messages.BuildStep(
+                name='gcr.io/cloud-builders/gcb-internal',
+                dir=dockerfile_dir,
+                args=[
+                    'docker',
+                    'build',
+                    '-t',
+                    dockerfile_image,
+                    '-f',
+                    args.dockerfile,
+                    '.',
+                ],
+            )
+        ]
+    )
   if args.inline_config:
     trigger.build = cloudbuild_util.LoadMessageFromPath(args.inline_config,
                                                         messages.Build,

@@ -191,8 +191,9 @@ def _SetBuildSteps(
           images=[tag],
           steps=[
               messages.BuildStep(
-                  name='gcr.io/cloud-builders/docker',
+                  name='gcr.io/cloud-builders/gcb-internal',
                   args=[
+                      'docker',
                       'build',
                       '--network',
                       'cloudbuild',

@@ -117,20 +117,31 @@ def parse_key(raw_key):
 
 
 @function_result_cache.lru(maxsize=1)
-def _read_key_store_file():
-  key_store_path = properties.VALUES.storage.key_store_path.Get()
+def _read_key_store_file(key_path):
+  """Reads the key store file, if it exists.
+
+  Args:
+    key_path: str | None, only provided for unit tests.
+
+  Returns:
+    The contents of the key store file, or an empty dict if the file does not
+    exist.
+  """
+  key_store_path = key_path or properties.VALUES.storage.key_store_path.Get()
   if not key_store_path:
     return {}
   return yaml.load_path(key_store_path)
 
 
-def _get_raw_key(args, key_field_name):
+def _get_raw_key(args, key_field_name, key_store_path):
   """Searches for key values in flags, falling back to a file if necessary.
 
   Args:
     args: An object containing flag values from the command surface.
     key_field_name (str): Corresponds to a flag name or field name in the key
         file.
+    key_store_path (str | None): The path to the key store file. Only provided
+      if testing.
 
   Returns:
     The flag value associated with key_field_name, or the value contained in the
@@ -139,7 +150,7 @@ def _get_raw_key(args, key_field_name):
   flag_key = getattr(args, key_field_name, None)
   if flag_key is not None:
     return flag_key
-  return _read_key_store_file().get(key_field_name)
+  return _read_key_store_file(key_store_path).get(key_field_name)
 
 
 def _index_decryption_keys(raw_keys):
@@ -163,7 +174,7 @@ def _index_decryption_keys(raw_keys):
   return index
 
 
-def initialize_key_store(args):
+def initialize_key_store(args, key_store_path=None):
   """Loads appropriate encryption and decryption keys into memory.
 
   Prefers values from flags over those from the user's key file. If _key_store
@@ -172,18 +183,20 @@ def initialize_key_store(args):
 
   Args:
     args: An object containing flag values from the command surface.
+    key_store_path (str | None): The path to the key store file. Only provided
+      if testing.
   """
   if _key_store.initialized:
     return
 
-  raw_encryption_key = _get_raw_key(args, 'encryption_key')
+  raw_encryption_key = _get_raw_key(args, 'encryption_key', key_store_path)
   if getattr(args, 'clear_encryption_key', None):
     _key_store.encryption_key = user_request_args_factory.CLEAR
   elif raw_encryption_key:
     _key_store.encryption_key = parse_key(raw_encryption_key)
 
   raw_keys = [raw_encryption_key]
-  raw_decryption_keys = _get_raw_key(args, 'decryption_keys')
+  raw_decryption_keys = _get_raw_key(args, 'decryption_keys', key_store_path)
   if raw_decryption_keys:
     raw_keys += raw_decryption_keys
   _key_store.decryption_key_index = _index_decryption_keys(raw_keys)

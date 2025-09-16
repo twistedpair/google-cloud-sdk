@@ -54,6 +54,24 @@ class NetworkPolicy:
         ),
     )
 
+  def Describe(self, only_generate_request=False):
+    """Sends request to describe a network policy."""
+    requests = [self._MakeGetRequestTuple(network_policy=self.ref.Name())]
+    if only_generate_request:
+      return requests
+    return self._compute_client.MakeRequests(requests)
+
+  def _MakeGetRequestTuple(self, network_policy: str):
+    return (
+        self._client.regionNetworkPolicies,
+        'Get',
+        self._messages.ComputeRegionNetworkPoliciesGetRequest(
+            networkPolicy=network_policy,
+            project=self.ref.project,
+            region=self.ref.region,
+        ),
+    )
+
   def Delete(self, only_generate_request=False):
     """Sends request to create a network policy."""
     requests = [self._MakeDeleteRequestTuple(network_policy=self.ref.Name())]
@@ -67,6 +85,58 @@ class NetworkPolicy:
         'Delete',
         self._messages.ComputeRegionNetworkPoliciesDeleteRequest(
             networkPolicy=network_policy,
+            project=self.ref.project,
+            region=self.ref.region,
+        ),
+    )
+
+  def AddAssociation(
+      self, association, network_policy, only_generate_request=False
+  ):
+    """Sends request to add an association to a network policy."""
+    requests = [
+        self._MakeAddAssociationRequestTuple(
+            association=association, network_policy=network_policy
+        )
+    ]
+    if only_generate_request:
+      return requests
+    return self._compute_client.MakeRequests(requests)
+
+  def _MakeAddAssociationRequestTuple(self, association, network_policy: str):
+    return (
+        self._client.regionNetworkPolicies,
+        'AddAssociation',
+        self._messages.ComputeRegionNetworkPoliciesAddAssociationRequest(
+            networkPolicy=network_policy,
+            networkPolicyAssociation=association,
+            project=self.ref.project,
+            region=self.ref.region,
+        ),
+    )
+
+  def GetAssociation(
+      self, *, name: str, network_policy: str, only_generate_request=False
+  ):
+    """Sends request to get an association to a network policy."""
+    requests = [
+        self._MakeGetAssociationRequestTuple(
+            association=name, network_policy=network_policy
+        )
+    ]
+    if only_generate_request:
+      return requests
+    return self._compute_client.MakeRequests(requests)
+
+  def _MakeGetAssociationRequestTuple(
+      self, association: str, network_policy: str
+  ):
+    return (
+        self._client.regionNetworkPolicies,
+        'GetAssociation',
+        self._messages.ComputeRegionNetworkPoliciesGetAssociationRequest(
+            networkPolicy=network_policy,
+            name=association,
             project=self.ref.project,
             region=self.ref.region,
         ),

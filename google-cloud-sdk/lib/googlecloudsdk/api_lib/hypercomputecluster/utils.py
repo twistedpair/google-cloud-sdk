@@ -15,10 +15,11 @@
 
 """Utility functions for the Hypercompute Cluster API."""
 
+from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import resources
 
 
@@ -33,7 +34,7 @@ OPERATIONS_COLLECTION = 'hypercomputecluster.projects.locations.operations'
 def GetApiVersion(release_track=base.ReleaseTrack.GA) -> str:
   """Returns the API version for the given release track."""
   if release_track not in TRACK_TO_API_VERSION:
-    raise exceptions.ToolException(
+    raise calliope_exceptions.ToolException(
         f'Unsupported release track: {release_track}'
     )
   return TRACK_TO_API_VERSION[release_track]
@@ -42,7 +43,9 @@ def GetApiVersion(release_track=base.ReleaseTrack.GA) -> str:
 def GetReleaseTrack(api_version=ALPHA_API_VERSION) -> base.ReleaseTrack:
   """Returns the API version for the given release track."""
   if api_version not in TRACK_TO_API_VERSION.values():
-    raise exceptions.ToolException(f'Unsupported API version: {api_version}')
+    raise calliope_exceptions.ToolException(
+        f'Unsupported API version: {api_version}'
+    )
   return [
       key for key, value in TRACK_TO_API_VERSION.items() if value == api_version
   ][0]
@@ -76,3 +79,16 @@ def WaitForOperation(client, operation, message: str, max_wait_sec: int):
       message=message,
       max_wait_ms=max_wait_sec * 1000,
   )
+
+
+def GetCluster(client, args, messages):
+  """Returns the cluster message for the cluster name derived from the args."""
+  cluster_ref = args.CONCEPTS.cluster.Parse()
+  try:
+    return client.projects_locations_clusters.Get(
+        messages.HypercomputeclusterProjectsLocationsClustersGetRequest(
+            name=cluster_ref.RelativeName()
+        )
+    )
+  except apitools_exceptions.HttpError as error:
+    raise calliope_exceptions.HttpException(error)

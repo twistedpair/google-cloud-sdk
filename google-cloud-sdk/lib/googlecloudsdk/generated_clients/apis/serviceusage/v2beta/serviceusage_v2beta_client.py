@@ -42,6 +42,7 @@ class ServiceusageV2beta(base_api.BaseApiClient):
     self.categories_categoryServices = self.CategoriesCategoryServicesService(self)
     self.categories = self.CategoriesService(self)
     self.consumerPolicies = self.ConsumerPoliciesService(self)
+    self.mcpPolicies = self.McpPoliciesService(self)
     self.operations = self.OperationsService(self)
     self.services_apis_apiVersions_apiOperations = self.ServicesApisApiVersionsApiOperationsService(self)
     self.services_apis_apiVersions = self.ServicesApisApiVersionsService(self)
@@ -50,6 +51,7 @@ class ServiceusageV2beta(base_api.BaseApiClient):
     self.services_groups_members = self.ServicesGroupsMembersService(self)
     self.services_groups = self.ServicesGroupsService(self)
     self.services = self.ServicesService(self)
+    self.sharedServices = self.SharedServicesService(self)
     self.v2beta = self.V2betaService(self)
 
   class CategoriesCategoryServicesService(base_api.BaseApiService):
@@ -186,6 +188,70 @@ class ServiceusageV2beta(base_api.BaseApiClient):
         relative_path='v2beta/{+name}',
         request_field='googleApiServiceusageV2betaConsumerPolicy',
         request_type_name='ServiceusageConsumerPoliciesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class McpPoliciesService(base_api.BaseApiService):
+    """Service class for the mcpPolicies resource."""
+
+    _NAME = 'mcpPolicies'
+
+    def __init__(self, client):
+      super(ServiceusageV2beta.McpPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get the MCP consumer policy of a resource.
+
+      Args:
+        request: (ServiceusageMcpPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (McpPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2beta/{v2betaId}/{v2betaId1}/mcpPolicies/{mcpPoliciesId}',
+        http_method='GET',
+        method_id='serviceusage.mcpPolicies.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2beta/{+name}',
+        request_field='',
+        request_type_name='ServiceusageMcpPoliciesGetRequest',
+        response_type_name='McpPolicy',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update the MCP consumer policy of a resource.
+
+      Args:
+        request: (ServiceusageMcpPoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2beta/{v2betaId}/{v2betaId1}/mcpPolicies/{mcpPoliciesId}',
+        http_method='PATCH',
+        method_id='serviceusage.mcpPolicies.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['force', 'validateOnly'],
+        relative_path='v2beta/{+name}',
+        request_field='mcpPolicy',
+        request_type_name='ServiceusageMcpPoliciesPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -512,6 +578,69 @@ class ServiceusageV2beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def List(self, request, global_params=None):
+      r"""List public services.
+
+      Args:
+        request: (ServiceusageServicesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPublicServicesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='serviceusage.services.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2beta/services',
+        request_field='',
+        request_type_name='ServiceusageServicesListRequest',
+        response_type_name='ListPublicServicesResponse',
+        supports_download=False,
+    )
+
+  class SharedServicesService(base_api.BaseApiService):
+    """Service class for the sharedServices resource."""
+
+    _NAME = 'sharedServices'
+
+    def __init__(self, client):
+      super(ServiceusageV2beta.SharedServicesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""List shared services to the given resource.
+
+      Args:
+        request: (ServiceusageSharedServicesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSharedServicesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2beta/{v2betaId}/{v2betaId1}/sharedServices',
+        http_method='GET',
+        method_id='serviceusage.sharedServices.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2beta/{+parent}/sharedServices',
+        request_field='',
+        request_type_name='ServiceusageSharedServicesListRequest',
+        response_type_name='ListSharedServicesResponse',
+        supports_download=False,
+    )
+
   class V2betaService(base_api.BaseApiService):
     """Service class for the v2beta resource."""
 
@@ -521,6 +650,33 @@ class ServiceusageV2beta(base_api.BaseApiClient):
       super(ServiceusageV2beta.V2betaService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def GetEffectiveMcpPolicy(self, request, global_params=None):
+      r"""Get effective MCP consumer policy for a resource, which contains enable rule information of MCP consumer policies from the resource hierarchy.
+
+      Args:
+        request: (ServiceusageGetEffectiveMcpPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EffectiveMcpPolicy) The response message.
+      """
+      config = self.GetMethodConfig('GetEffectiveMcpPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetEffectiveMcpPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2beta/{v2betaId}/{v2betaId1}/effectiveMcpPolicy',
+        http_method='GET',
+        method_id='serviceusage.getEffectiveMcpPolicy',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v2beta/{+name}',
+        request_field='',
+        request_type_name='ServiceusageGetEffectiveMcpPolicyRequest',
+        response_type_name='EffectiveMcpPolicy',
+        supports_download=False,
+    )
 
     def GetEffectivePolicy(self, request, global_params=None):
       r"""Get effective consumer policy for a resource, which contains enable rule information of consumer policies from the resource hierarchy.
@@ -573,5 +729,32 @@ class ServiceusageV2beta(base_api.BaseApiClient):
         request_field='testEnabledRequest',
         request_type_name='ServiceusageTestEnabledRequest',
         response_type_name='State',
+        supports_download=False,
+    )
+
+    def TestMcpEnabled(self, request, global_params=None):
+      r"""Tests a value against the result of merging MCP consumer policies in the resource hierarchy. This operation is designed to be used for building policy-aware UIs and command-line tools, not for access checking.
+
+      Args:
+        request: (ServiceusageTestMcpEnabledRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (McpState) The response message.
+      """
+      config = self.GetMethodConfig('TestMcpEnabled')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestMcpEnabled.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2beta/{v2betaId}/{v2betaId1}:testMcpEnabled',
+        http_method='POST',
+        method_id='serviceusage.testMcpEnabled',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2beta/{+name}:testMcpEnabled',
+        request_field='testMcpEnabledRequest',
+        request_type_name='ServiceusageTestMcpEnabledRequest',
+        response_type_name='McpState',
         supports_download=False,
     )

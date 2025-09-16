@@ -14,9 +14,6 @@
 # limitations under the License.
 """Utilities for the cloud deploy deploy policy resource."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.clouddeploy import deploy_policy
 from googlecloudsdk.core import resources

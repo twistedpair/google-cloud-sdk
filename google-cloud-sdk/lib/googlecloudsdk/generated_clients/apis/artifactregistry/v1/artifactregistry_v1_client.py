@@ -1677,6 +1677,33 @@ class ArtifactregistryV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ExportArtifact(self, request, global_params=None):
+      r"""Exports an artifact.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesExportArtifactRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ExportArtifact')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExportArtifact.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}:exportArtifact',
+        http_method='POST',
+        method_id='artifactregistry.projects.locations.repositories.exportArtifact',
+        ordered_params=['repository'],
+        path_params=['repository'],
+        query_params=[],
+        relative_path='v1/{+repository}:exportArtifact',
+        request_field='exportArtifactRequest',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesExportArtifactRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets a repository.
 

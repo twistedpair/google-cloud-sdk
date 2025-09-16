@@ -5285,8 +5285,8 @@ class OracledatabaseProjectsLocationsListRequest(_messages.Message):
   r"""A OracledatabaseProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Do not use this field. It is unsupported and
-      is ignored unless explicitly documented otherwise. This is primarily for
+    extraLocationTypes: Optional. Unless explicitly documented otherwise,
+      don't use this unsupported field which is primarily intended for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -5857,8 +5857,6 @@ class RemoveVirtualMachineExadbVmClusterRequest(_messages.Message):
   r"""The request for `ExadbVmCluster.RemoveVirtualMachine`.
 
   Fields:
-    dbNodesIds: Required. The list of db nodes (OCIDs) to be removed from the
-      ExadbVmCluster.
     hostnames: Required. The list of host names of db nodes to be removed from
       the ExadbVmCluster.
     requestId: Optional. An optional ID to identify the request. This value is
@@ -5870,9 +5868,8 @@ class RemoveVirtualMachineExadbVmClusterRequest(_messages.Message):
       (00000000-0000-0000-0000-000000000000).
   """
 
-  dbNodesIds = _messages.StringField(1, repeated=True)
-  hostnames = _messages.StringField(2, repeated=True)
-  requestId = _messages.StringField(3)
+  hostnames = _messages.StringField(1, repeated=True)
+  requestId = _messages.StringField(2)
 
 
 class RestartAutonomousDatabaseRequest(_messages.Message):

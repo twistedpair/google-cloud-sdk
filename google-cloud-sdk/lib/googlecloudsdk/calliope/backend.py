@@ -616,6 +616,15 @@ class CommandGroup(CommandCommon):
     self._groups_to_load.update(group_infos)
     self._commands_to_load.update(command_infos)
 
+    group_name = '.'.join(self._path)
+    added_modules = self._cli_generator.GetModulesByParent().get(
+        group_name, [])
+    for module_name, module_is_command, module_impl_path in added_modules:
+      if module_is_command:
+        self._commands_to_load[module_name] = [module_impl_path]
+      else:
+        self._groups_to_load[module_name] = [module_impl_path]
+
     if (
         not allow_empty
         and not self._groups_to_load

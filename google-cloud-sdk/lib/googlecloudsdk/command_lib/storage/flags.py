@@ -61,8 +61,8 @@ For more information about supported configurations, see
 """
 
 _CUSTOM_CONTEXT_FILE_HELP_TEXT = """
-Path to a local JSON or YAML file containing valid custom contexts one wants to
-set on an object. For example:
+Path to a local JSON or YAML file containing custom contexts one wants to set on
+an object. For example:
 
 1. The following JSON document shows two key value
 pairs, i.e. (key1, value1) and (key2, value2):

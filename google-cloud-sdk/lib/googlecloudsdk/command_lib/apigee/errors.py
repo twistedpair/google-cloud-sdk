@@ -289,3 +289,16 @@ class BundleFileNotValidError(exceptions.Error):
   def __init__(self, bundle_file):
     msg = "Bundle file is not a valid zip archive: {}".format(bundle_file)
     super(BundleFileNotValidError, self).__init__(msg)
+
+
+class LocationResolutionError(exceptions.Error):
+  """Raised when the unable to resolve the location of the Apigee organization.
+
+  All the commands in the apigee surface require a valid location to execute.
+  This error is raised when the gcloud command is unable to determine the
+  location of the Apigee organization.
+  """
+
+  def __init__(self):
+    msg = "Failed to resolve the location of the Apigee organization."
+    super(LocationResolutionError, self).__init__(msg)

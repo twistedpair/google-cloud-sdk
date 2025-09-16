@@ -5061,15 +5061,11 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
     backupDisasterRecovery: Fields related to Backup and DR findings.
     canonicalName: Output only. The canonical name of the finding. The
       following list shows some examples: + `organizations/{organization_id}/s
-      ources/{source_id}/findings/{finding_id}` + `organizations/{organization
-      _id}/sources/{source_id}/locations/{location_id}/findings/{finding_id}`
-      + `folders/{folder_id}/sources/{source_id}/findings/{finding_id}` + `fol
+      ources/{source_id}/locations/{location_id}/findings/{finding_id}` + `fol
       ders/{folder_id}/sources/{source_id}/locations/{location_id}/findings/{f
-      inding_id}` +
-      `projects/{project_id}/sources/{source_id}/findings/{finding_id}` + `pro
-      jects/{project_id}/sources/{source_id}/locations/{location_id}/findings/
-      {finding_id}` The prefix is the closest CRM ancestor of the resource
-      associated with the finding.
+      inding_id}` + `projects/{project_id}/sources/{source_id}/locations/{loca
+      tion_id}/findings/{finding_id}` The prefix is the closest CRM ancestor
+      of the resource associated with the finding.
     category: Immutable. The additional taxonomy group within findings from a
       given source. Example: "XSS_FLASH_INJECTION"
     chokepoint: Contains details about a chokepoint, which is a resource or
@@ -5905,6 +5901,8 @@ class GoogleCloudSecuritycenterV2IssueResource(_messages.Message):
       associated with the issue.
 
   Fields:
+    application: The AppHub application associated with the resource, if any.
+      Only populated for the primary resource.
     awsMetadata: The AWS metadata of the resource associated with the issue.
       Only populated for AWS resources.
     azureMetadata: The Azure metadata of the resource associated with the
@@ -5933,13 +5931,25 @@ class GoogleCloudSecuritycenterV2IssueResource(_messages.Message):
     AMAZON_WEB_SERVICES = 2
     MICROSOFT_AZURE = 3
 
-  awsMetadata = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceAwsMetadata', 1)
-  azureMetadata = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceAzureMetadata', 2)
-  cloudProvider = _messages.EnumField('CloudProviderValueValuesEnum', 3)
-  displayName = _messages.StringField(4)
-  googleCloudMetadata = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceGoogleCloudMetadata', 5)
-  name = _messages.StringField(6)
-  type = _messages.StringField(7)
+  application = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceApplication', 1)
+  awsMetadata = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceAwsMetadata', 2)
+  azureMetadata = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceAzureMetadata', 3)
+  cloudProvider = _messages.EnumField('CloudProviderValueValuesEnum', 4)
+  displayName = _messages.StringField(5)
+  googleCloudMetadata = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceGoogleCloudMetadata', 6)
+  name = _messages.StringField(7)
+  type = _messages.StringField(8)
+
+
+class GoogleCloudSecuritycenterV2IssueResourceApplication(_messages.Message):
+  r"""The AppHub application associated with the resource, if any.
+
+  Fields:
+    name: The resource name of an Application. Format: `projects/{host-
+      project-id}/locations/{location}/applications/{application-id}`
+  """
+
+  name = _messages.StringField(1)
 
 
 class GoogleCloudSecuritycenterV2IssueResourceAwsMetadata(_messages.Message):
@@ -10619,6 +10629,20 @@ class SecuritycenterFoldersSourcesListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class SecuritycenterFoldersSourcesLocationsFindingsExportRequest(_messages.Message):
+  r"""A SecuritycenterFoldersSourcesLocationsFindingsExportRequest object.
+
+  Fields:
+    exportFindingsRequest: A ExportFindingsRequest resource to be passed as
+      the request body.
+    parent: Required. The relative name of the export scope. Example formats:
+      organizations/{organization}/sources/-/locations/{location}
+  """
+
+  exportFindingsRequest = _messages.MessageField('ExportFindingsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class SecuritycenterFoldersSourcesLocationsFindingsExternalSystemsPatchRequest(_messages.Message):
   r"""A
   SecuritycenterFoldersSourcesLocationsFindingsExternalSystemsPatchRequest
@@ -13156,6 +13180,20 @@ class SecuritycenterProjectsSourcesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class SecuritycenterProjectsSourcesLocationsFindingsExportRequest(_messages.Message):
+  r"""A SecuritycenterProjectsSourcesLocationsFindingsExportRequest object.
+
+  Fields:
+    exportFindingsRequest: A ExportFindingsRequest resource to be passed as
+      the request body.
+    parent: Required. The relative name of the export scope. Example formats:
+      organizations/{organization}/sources/-/locations/{location}
+  """
+
+  exportFindingsRequest = _messages.MessageField('ExportFindingsRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class SecuritycenterProjectsSourcesLocationsFindingsExternalSystemsPatchRequest(_messages.Message):

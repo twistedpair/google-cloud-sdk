@@ -14,12 +14,10 @@
 # limitations under the License.
 """Utilities for parsing the cloud deploy resource to yaml definition."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
 
 import collections
 import datetime
+import enum
 import re
 
 from dateutil import parser
@@ -34,13 +32,8 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core.resource import resource_property
 
 PIPELINE_UPDATE_MASK = '*,labels'
-DELIVERY_PIPELINE_KIND_V1BETA1 = 'DeliveryPipeline'
 DELIVERY_PIPELINE = 'deliveryPipeline'
-TARGET_KIND_V1BETA1 = 'Target'
 TARGET = 'target'
-AUTOMATION_KIND = 'Automation'
-CUSTOM_TARGET_TYPE_KIND = 'CustomTargetType'
-DEPLOY_POLICY_KIND = 'DeployPolicy'
 API_VERSION_V1BETA1 = 'deploy.cloud.google.com/v1beta1'
 API_VERSION_V1 = 'deploy.cloud.google.com/v1'
 USAGE_CHOICES = ['RENDER', 'DEPLOY']
@@ -129,6 +122,18 @@ DEPLOY_FIELD = 'deploy'
 RENDER_FIELD = 'render'
 
 
+@enum.unique
+class ResourceKind(enum.Enum):
+  TARGET = 'Target'
+  DELIVERY_PIPELINE = 'DeliveryPipeline'
+  AUTOMATION = 'Automation'
+  CUSTOM_TARGET_TYPE = 'CustomTargetType'
+  DEPLOY_POLICY = 'DeployPolicy'
+
+  def __str__(self):
+    return self.value
+
+
 def ParseDeployConfig(messages, manifests, region):
   """Parses the declarative definition of the resources into message.
 
@@ -143,18 +148,13 @@ def ParseDeployConfig(messages, manifests, region):
     exceptions.CloudDeployConfigError, if the declarative definition is
     incorrect.
   """
-  resource_dict = {
-      DELIVERY_PIPELINE_KIND_V1BETA1: [],
-      TARGET_KIND_V1BETA1: [],
-      AUTOMATION_KIND: [],
-      CUSTOM_TARGET_TYPE_KIND: [],
-      DEPLOY_POLICY_KIND: [],
-  }
+  resource_dict = collections.defaultdict(list)
   project = properties.VALUES.core.project.GetOrFail()
   _ValidateConfig(manifests)
   for manifest in manifests:
-    _ParseV1Config(
-        messages, manifest['kind'], manifest, project, region, resource_dict
+    kind = ResourceKind(manifest['kind'])
+    resource_dict[kind].append(
+        _ParseV1Config(messages, kind, manifest, project, region)
     )
 
   return resource_dict
@@ -180,6 +180,11 @@ def _ValidateConfig(manifests):
     resource_type = manifest.get('kind')
     if resource_type is None:
       raise exceptions.CloudDeployConfigError('missing required field .kind')
+    if resource_type not in ResourceKind:
+      raise exceptions.CloudDeployConfigError(
+          'kind {} not supported'.format(resource_type)
+      )
+    kind = ResourceKind(resource_type)
     api_version = manifest['apiVersion']
     if api_version not in {API_VERSION_V1BETA1, API_VERSION_V1}:
       raise exceptions.CloudDeployConfigError(
@@ -193,8 +198,8 @@ def _ValidateConfig(manifests):
           )
       )
     # Populate a dictionary with resource_type: [names].
-    # E.g. [TARGET: "target1, target2"]
-    resource_type_to_names[resource_type].append(metadata.get(NAME_FIELD))
+    # E.g. {TARGET: ["target1", "target2"]}
+    resource_type_to_names[kind].append(metadata.get(NAME_FIELD))
   _CheckDuplicateResourceNames(resource_type_to_names)
 
 
@@ -222,11 +227,8 @@ def _CheckDuplicateResourceNames(resource_type_to_names):
     raise exceptions.CloudDeployConfigError(errors)
 
 
-def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
-  """Parses the Cloud Deploy v1 and v1beta1 resource specifications into message.
-
-       This specification version is KRM complied and should be used after
-       private review.
+def _ParseV1Config(messages, kind, manifest, project, region):
+  """Parses the Cloud Deploy resource specifications into a proto message.
 
   Args:
      messages: module containing the definitions of messages for Cloud Deploy.
@@ -234,43 +236,45 @@ def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
      manifest: dict[str,str], cloud deploy resource yaml definition.
      project: str, gcp project.
      region: str, ID of the location.
-     resource_dict: dict[str,optional[message]], a dictionary of resource kind
-       and message.
+
+  Returns:
+    The parsed resource as a message.
 
   Raises:
     exceptions.CloudDeployConfigError, if the declarative definition is
     incorrect.
   """
   metadata = manifest.get('metadata')
-  if kind == DELIVERY_PIPELINE_KIND_V1BETA1:
+  # Once gcloud drops Python 3.9 support, this should be converted to a match
+  # statement.
+  if kind == ResourceKind.DELIVERY_PIPELINE:
     resource_type = deploy_util.ResourceType.DELIVERY_PIPELINE
     resource, resource_ref = _CreateDeliveryPipelineResource(
         messages, metadata[NAME_FIELD], project, region
     )
-  elif kind == TARGET_KIND_V1BETA1:
+  elif kind == ResourceKind.TARGET:
     resource_type = deploy_util.ResourceType.TARGET
     resource, resource_ref = _CreateTargetResource(
         messages, metadata[NAME_FIELD], project, region
     )
-  elif kind == AUTOMATION_KIND:
+  elif kind == ResourceKind.AUTOMATION:
     resource_type = deploy_util.ResourceType.AUTOMATION
     resource, resource_ref = _CreateAutomationResource(
         messages, metadata[NAME_FIELD], project, region
     )
-  elif kind == CUSTOM_TARGET_TYPE_KIND:
+  elif kind == ResourceKind.CUSTOM_TARGET_TYPE:
     resource_type = deploy_util.ResourceType.CUSTOM_TARGET_TYPE
     resource, resource_ref = _CreateCustomTargetTypeResource(
         messages, metadata[NAME_FIELD], project, region
     )
-  elif kind == DEPLOY_POLICY_KIND:
+  elif kind == ResourceKind.DEPLOY_POLICY:
     resource_type = deploy_util.ResourceType.DEPLOY_POLICY
     resource, resource_ref = _CreateDeployPolicyResource(
         messages, metadata[NAME_FIELD], project, region
     )
   else:
-    raise exceptions.CloudDeployConfigError(
-        'kind {} not supported'.format(kind)
-    )
+    # InternalError because we already validated the kind in _ValidateConfig.
+    raise exceptions.InternalError('kind {} not supported'.format(kind))
 
   if '/' in resource_ref.Name():
     raise exceptions.CloudDeployConfigError(
@@ -283,19 +287,19 @@ def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
       if field == 'executionConfigs':
         SetExecutionConfig(messages, resource, resource_ref, value)
         continue
-      if field == 'deployParameters' and kind == TARGET_KIND_V1BETA1:
+      if field == 'deployParameters' and kind == ResourceKind.TARGET:
         SetDeployParametersForTarget(messages, resource, resource_ref, value)
         continue
-      if field == 'customTarget' and kind == TARGET_KIND_V1BETA1:
+      if field == 'customTarget' and kind == ResourceKind.TARGET:
         SetCustomTarget(resource, value, project, region)
         continue
-      if field == TASKS_FIELD and kind == CUSTOM_TARGET_TYPE_KIND:
+      if field == TASKS_FIELD and kind == ResourceKind.CUSTOM_TARGET_TYPE:
         SetCustomTargetTasks(messages, resource, value)
         continue
-      if field == 'associatedEntities' and kind == TARGET_KIND_V1BETA1:
+      if field == 'associatedEntities' and kind == ResourceKind.TARGET:
         SetAssociatedEntities(messages, resource, resource_ref, value)
         continue
-      if field == 'serialPipeline' and kind == DELIVERY_PIPELINE_KIND_V1BETA1:
+      if field == 'serialPipeline' and kind == ResourceKind.DELIVERY_PIPELINE:
         serial_pipeline = manifest.get('serialPipeline')
         _EnsureIsType(
             serial_pipeline,
@@ -314,13 +318,13 @@ def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
           SetDeployParametersForPipelineStage(messages, resource_ref, stage)
           SetMapFieldsForPipelineStage(messages, stage)
 
-      if field == SELECTOR_FIELD and kind == AUTOMATION_KIND:
+      if field == SELECTOR_FIELD and kind == ResourceKind.AUTOMATION:
         SetAutomationSelector(messages, resource, value)
         continue
-      if field == RULES_FIELD and kind == AUTOMATION_KIND:
+      if field == RULES_FIELD and kind == ResourceKind.AUTOMATION:
         SetAutomationRules(messages, resource, resource_ref, value)
         continue
-      if field == RULES_FIELD and kind == DEPLOY_POLICY_KIND:
+      if field == RULES_FIELD and kind == ResourceKind.DEPLOY_POLICY:
         rules = manifest.get('rules')
         _EnsureIsType(
             rules,
@@ -330,7 +334,7 @@ def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
         )
         SetPolicyRules(messages, resource, rules)
         continue
-      if field == 'selectors' and kind == DEPLOY_POLICY_KIND:
+      if field == 'selectors' and kind == ResourceKind.DEPLOY_POLICY:
         selectors = manifest.get('selectors')
         _EnsureIsType(
             selectors,
@@ -354,7 +358,7 @@ def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
       metadata.get(LABELS_FIELD),
   )
 
-  resource_dict[kind].append(resource)
+  return resource
 
 
 def SetMapFieldsForPipelineStage(messages, stage):
@@ -470,7 +474,7 @@ def SetLabelsForAlertPolicyCheck(messages, alert_policy_check):
   Args:
     messages: module containing the definitions of messages for Cloud Deploy.
     alert_policy_check: Cloud Deploy Alert Policy Check message for an Analysis
-    with Google Cloud.
+      with Google Cloud.
   """
   if alert_policy_check is None:
     return
@@ -856,7 +860,7 @@ def ProtoToManifest(resource, resource_ref, kind):
     A dictionary that represents the cloud deploy resource.
   """
   manifest = collections.OrderedDict(
-      apiVersion=API_VERSION_V1, kind=kind, metadata={}
+      apiVersion=API_VERSION_V1, kind=kind.value, metadata={}
   )
 
   for k in METADATA_FIELDS:
@@ -865,7 +869,7 @@ def ProtoToManifest(resource, resource_ref, kind):
     if v:
       manifest['metadata'][k] = v
   # Sets the name to resource ID instead of the full name.
-  if kind == AUTOMATION_KIND:
+  if kind == ResourceKind.AUTOMATION:
     manifest['metadata'][NAME_FIELD] = (
         resource_ref.AsDict()['deliveryPipelinesId'] + '/' + resource_ref.Name()
     )
@@ -878,16 +882,16 @@ def ProtoToManifest(resource, resource_ref, kind):
     v = getattr(resource, f.name)
     # Skips the 'zero' values in the message.
     if v:
-      if f.name == SELECTOR_FIELD and kind == AUTOMATION_KIND:
+      if f.name == SELECTOR_FIELD and kind == ResourceKind.AUTOMATION:
         ExportAutomationSelector(manifest, v)
         continue
-      if f.name == RULES_FIELD and kind == AUTOMATION_KIND:
+      if f.name == RULES_FIELD and kind == ResourceKind.AUTOMATION:
         ExportAutomationRules(manifest, v)
         continue
       # Special handling for the deploy policy rules field.
       # The rollout restriction rule accepts date/time strings in YAML which
       # then need to be parsed into the correct fields in the API.
-      if f.name == RULES_FIELD and kind == DEPLOY_POLICY_KIND:
+      if f.name == RULES_FIELD and kind == ResourceKind.DEPLOY_POLICY:
         ExportDeployPolicyRules(manifest, v)
         continue
       manifest[f.name] = v

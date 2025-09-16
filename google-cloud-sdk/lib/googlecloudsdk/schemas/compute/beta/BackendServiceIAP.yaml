@@ -33,11 +33,6 @@ properties:
   oauth2ClientId:
     description: OAuth2 client ID to use for the authentication flow.
     type: string
-  oauth2ClientInfo:
-    description: |-
-      [Input Only] OAuth client info required to generate client id to be used
-      for IAP.
-    $ref: BackendServiceIAPOAuth2ClientInfo.yaml
   oauth2ClientSecret:
     description: |-
       OAuth2 client secret to use for the authentication flow. For security

@@ -115,8 +115,8 @@ class ArtifactregistryProjectsLocationsListRequest(_messages.Message):
   r"""A ArtifactregistryProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Do not use this field. It is unsupported and
-      is ignored unless explicitly documented otherwise. This is primarily for
+    extraLocationTypes: Optional. Unless explicitly documented otherwise,
+      don't use this unsupported field which is primarily intended for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -319,6 +319,21 @@ class ArtifactregistryProjectsLocationsRepositoriesDockerImagesListRequest(_mess
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesExportArtifactRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesExportArtifactRequest
+  object.
+
+  Fields:
+    exportArtifactRequest: A ExportArtifactRequest resource to be passed as
+      the request body.
+    repository: Required. The repository of the artifact to export. Format:
+      projects/{project}/locations/{location}/repositories/{repository}
+  """
+
+  exportArtifactRequest = _messages.MessageField('ExportArtifactRequest', 1)
+  repository = _messages.StringField(2, required=True)
 
 
 class ArtifactregistryProjectsLocationsRepositoriesFilesDeleteRequest(_messages.Message):
@@ -1719,6 +1734,63 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class ExportArtifactMetadata(_messages.Message):
+  r"""The LRO metadata for exporting an artifact.
+
+  Fields:
+    exportedFiles: The exported artifact files.
+  """
+
+  exportedFiles = _messages.MessageField('ExportedFile', 1, repeated=True)
+
+
+class ExportArtifactRequest(_messages.Message):
+  r"""The request for exporting an artifact to a destination.
+
+  Fields:
+    gcsPath: The Cloud Storage path to export the artifact to. Should start
+      with the bucket name, and optionally have a directory path. Examples:
+      `dst_bucket`, `dst_bucket/sub_dir`. Existing objects with the same path
+      will be overwritten.
+    sourceTag: The artifact tag to export. Format:projects/{project}/locations
+      /{location}/repositories/{repository}/packages/{package}/tags/{tag}
+    sourceVersion: Required. The artifact version to export. Format: projects/
+      {project}/locations/{location}/repositories/{repository}/packages/{packa
+      ge}/versions/{version}
+  """
+
+  gcsPath = _messages.StringField(1)
+  sourceTag = _messages.StringField(2)
+  sourceVersion = _messages.StringField(3)
+
+
+class ExportArtifactResponse(_messages.Message):
+  r"""The response for exporting an artifact to a destination.
+
+  Fields:
+    exportedVersion: The exported version. Should be the same as the request
+      version with fingerprint resource name.
+  """
+
+  exportedVersion = _messages.MessageField('Version', 1)
+
+
+class ExportedFile(_messages.Message):
+  r"""The exported artifact file.
+
+  Fields:
+    gcsObjectPath: Cloud Storage Object path of the exported file. Examples:
+      `dst_bucket/file1`, `dst_bucket/sub_dir/file1`
+    hashes: The hashes of the file content.
+    name: Name of the exported artifact file. Format:
+      `projects/p1/locations/us/repositories/repo1/files/file1`
+  """
+
+  gcsObjectPath = _messages.StringField(1)
+  hashes = _messages.MessageField('Hash', 2, repeated=True)
+  name = _messages.StringField(3)
 
 
 class Expr(_messages.Message):
@@ -3945,6 +4017,9 @@ class Version(_messages.Message):
     createTime: The time when the version was created.
     description: Optional. Description of the version, as specified in its
       metadata.
+    fingerprints: Output only. Immutable reference for the version, calculated
+      based on the version's content. Currently we only support dirsum_sha256
+      hash algorithm. Additional hash algorithms may be added in the future.
     metadata: Output only. Repository-specific Metadata stored against this
       version. The fields returned are defined by the underlying repository-
       specific resource. Currently, the resources could be: DockerImage
@@ -4011,10 +4086,11 @@ class Version(_messages.Message):
   annotations = _messages.MessageField('AnnotationsValue', 1)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
-  metadata = _messages.MessageField('MetadataValue', 4)
-  name = _messages.StringField(5)
-  relatedTags = _messages.MessageField('Tag', 6, repeated=True)
-  updateTime = _messages.StringField(7)
+  fingerprints = _messages.MessageField('Hash', 4, repeated=True)
+  metadata = _messages.MessageField('MetadataValue', 5)
+  name = _messages.StringField(6)
+  relatedTags = _messages.MessageField('Tag', 7, repeated=True)
+  updateTime = _messages.StringField(8)
 
 
 class VirtualRepositoryConfig(_messages.Message):
@@ -4075,11 +4151,14 @@ class VulnerabilityScanningConfig(_messages.Message):
       SCANNING_DISABLED: Vulnerability scanning is disabled for this
         repository.
       SCANNING_ACTIVE: Vulnerability scanning is active for this repository.
+      ACTIVE_VIA_SCC: Vulnerability scanning is active for this repository via
+        SCC entitlement.
     """
     ENABLEMENT_STATE_UNSPECIFIED = 0
     SCANNING_UNSUPPORTED = 1
     SCANNING_DISABLED = 2
     SCANNING_ACTIVE = 3
+    ACTIVE_VIA_SCC = 4
 
   enablementConfig = _messages.EnumField('EnablementConfigValueValuesEnum', 1)
   enablementState = _messages.EnumField('EnablementStateValueValuesEnum', 2)

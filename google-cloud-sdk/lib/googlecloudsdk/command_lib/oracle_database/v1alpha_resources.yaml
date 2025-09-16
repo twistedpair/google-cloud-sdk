@@ -89,6 +89,42 @@ projects_locations_cloud_vm_clusters_or_exadb_vm_clusters:
       attribute_name: exadb_vm_cluster
       help: The exadbVmCluster id of the {resource} resource.
     disable_auto_completers: true
+projects_locations_database_character_sets:
+  name: databaseCharacterSet
+  plural_name: databaseCharacterSets
+  collection: oracledatabase.projects.locations.databaseCharacterSets
+  attributes:
+  - *project
+  - *location
+  - &databaseCharacterSet
+    parameter_name: databaseCharacterSetsId
+    attribute_name: database_character_set
+    help: The databaseCharacterSet id of the {resource} resource.
+  disable_auto_completers: false
+projects_locations_databases:
+  name: database
+  plural_name: databases
+  collection: oracledatabase.projects.locations.databases
+  attributes:
+  - *project
+  - *location
+  - &database
+    parameter_name: databasesId
+    attribute_name: database
+    help: The database id of the {resource} resource.
+  disable_auto_completers: false
+projects_locations_db_system_initial_storage_sizes:
+  name: dbSystemInitialStorageSize
+  plural_name: dbSystemInitialStorageSizes
+  collection: oracledatabase.projects.locations.dbSystemInitialStorageSizes
+  attributes:
+  - *project
+  - *location
+  - &dbSystemInitialStorageSize
+    parameter_name: dbSystemInitialStorageSizesId
+    attribute_name: db_system_initial_storage_size
+    help: The dbSystemInitialStorageSize id of the {resource} resource.
+  disable_auto_completers: false
 projects_locations_entitlements:
   name: entitlement
   plural_name: entitlements
@@ -101,6 +137,27 @@ projects_locations_entitlements:
     attribute_name: entitlement
     help: The entitlement id of the {resource} resource.
   disable_auto_completers: false
+projects_locations_exadb_vm_clusters:
+  name: exadbVmCluster
+  plural_name: exadbVmClusters
+  collection: oracledatabase.projects.locations.exadbVmClusters
+  attributes:
+  - *project
+  - *location
+  - *exadbVmCluster
+  disable_auto_completers: false
+projects_locations_exascale_db_storage_vaults:
+  name: exascaleDbStorageVault
+  plural_name: exascaleDbStorageVaults
+  collection: oracledatabase.projects.locations.exascaleDbStorageVaults
+  attributes:
+  - *project
+  - *location
+  - &exascaleDbStorageVault
+    parameter_name: exascaleDbStorageVaultsId
+    attribute_name: exascale_db_storage_vault
+    help: The exascaleDbStorageVault id of the {resource} resource.
+  disable_auto_completers: false
 projects_locations_odb_networks:
   name: odbNetwork
   plural_name: odbNetworks
@@ -112,6 +169,18 @@ projects_locations_odb_networks:
     parameter_name: odbNetworksId
     attribute_name: odb_network
     help: The odbNetwork id of the {resource} resource.
+  disable_auto_completers: false
+projects_locations_pluggable_databases:
+  name: pluggableDatabase
+  plural_name: pluggableDatabases
+  collection: oracledatabase.projects.locations.pluggableDatabases
+  attributes:
+  - *project
+  - *location
+  - &pluggableDatabase
+    parameter_name: pluggableDatabasesId
+    attribute_name: pluggable_database
+    help: The pluggableDatabase id of the {resource} resource.
   disable_auto_completers: false
 projects_none_networks:
   name: network

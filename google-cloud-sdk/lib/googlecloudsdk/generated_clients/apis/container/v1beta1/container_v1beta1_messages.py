@@ -750,6 +750,19 @@ class BootDisk(_messages.Message):
   sizeGb = _messages.IntegerField(4)
 
 
+class BootDiskProfile(_messages.Message):
+  r"""Swap on the node's boot disk.
+
+  Fields:
+    swapSizeGib: Specifies the size of the swap space in gibibytes (GiB).
+    swapSizePercent: Specifies the size of the swap space as a percentage of
+      the boot disk size.
+  """
+
+  swapSizeGib = _messages.IntegerField(1)
+  swapSizePercent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""CancelOperationRequest cancels a single operation.
 
@@ -1545,6 +1558,8 @@ class ClusterUpdate(_messages.Message):
       will be used for GKE 1.14+ or `logging.googleapis.com` for earlier
       versions.
     desiredManagedConfig: The desired managed config for the cluster.
+    desiredManagedOpentelemetryConfig: The desired managed open telemetry
+      configuration.
     desiredMaster: Configuration for master components.
     desiredMasterAuthorizedNetworksConfig: The desired configuration options
       for master authorized networks feature. Deprecated: Use desired_control_
@@ -1799,59 +1814,60 @@ class ClusterUpdate(_messages.Message):
   desiredLoggingConfig = _messages.MessageField('LoggingConfig', 47)
   desiredLoggingService = _messages.StringField(48)
   desiredManagedConfig = _messages.MessageField('ManagedConfig', 49)
-  desiredMaster = _messages.MessageField('Master', 50)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 51)
-  desiredMasterVersion = _messages.StringField(52)
-  desiredMeshCertificates = _messages.MessageField('MeshCertificates', 53)
-  desiredMonitoringConfig = _messages.MessageField('MonitoringConfig', 54)
-  desiredMonitoringService = _messages.StringField(55)
-  desiredNetworkPerformanceConfig = _messages.MessageField('ClusterNetworkPerformanceConfig', 56)
-  desiredNetworkTierConfig = _messages.MessageField('NetworkTierConfig', 57)
-  desiredNodeKubeletConfig = _messages.MessageField('NodeKubeletConfig', 58)
-  desiredNodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 59)
-  desiredNodePoolAutoConfigKubeletConfig = _messages.MessageField('NodeKubeletConfig', 60)
-  desiredNodePoolAutoConfigLinuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 61)
-  desiredNodePoolAutoConfigNetworkTags = _messages.MessageField('NetworkTags', 62)
-  desiredNodePoolAutoConfigResourceManagerTags = _messages.MessageField('ResourceManagerTags', 63)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 64)
-  desiredNodePoolId = _messages.StringField(65)
-  desiredNodePoolLoggingConfig = _messages.MessageField('NodePoolLoggingConfig', 66)
-  desiredNodeVersion = _messages.StringField(67)
-  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 68)
-  desiredParentProductConfig = _messages.MessageField('ParentProductConfig', 69)
-  desiredPodAutoscaling = _messages.MessageField('PodAutoscaling', 70)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 71)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 72)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 73)
-  desiredPrivilegedAdmissionConfig = _messages.MessageField('PrivilegedAdmissionConfig', 74)
-  desiredProtectConfig = _messages.MessageField('ProtectConfig', 75)
-  desiredRbacBindingConfig = _messages.MessageField('RBACBindingConfig', 76)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 77)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 78)
-  desiredRollbackSafeUpgrade = _messages.MessageField('RollbackSafeUpgrade', 79)
-  desiredRuntimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 80)
-  desiredScheduleUpgradeConfig = _messages.MessageField('ScheduleUpgradeConfig', 81)
-  desiredSecretManagerConfig = _messages.MessageField('SecretManagerConfig', 82)
-  desiredSecretSyncConfig = _messages.MessageField('SecretSyncConfig', 83)
-  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 84)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 85)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 86)
-  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 87)
-  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 88)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 89)
-  desiredUserManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 90)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 91)
-  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 92)
-  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 93)
-  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 94)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 95)
-  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 96)
-  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 97)
-  etag = _messages.StringField(98)
-  gkeAutoUpgradeConfig = _messages.MessageField('GkeAutoUpgradeConfig', 99)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 100)
-  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 101)
-  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 102)
+  desiredManagedOpentelemetryConfig = _messages.MessageField('ManagedOpenTelemetryConfig', 50)
+  desiredMaster = _messages.MessageField('Master', 51)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 52)
+  desiredMasterVersion = _messages.StringField(53)
+  desiredMeshCertificates = _messages.MessageField('MeshCertificates', 54)
+  desiredMonitoringConfig = _messages.MessageField('MonitoringConfig', 55)
+  desiredMonitoringService = _messages.StringField(56)
+  desiredNetworkPerformanceConfig = _messages.MessageField('ClusterNetworkPerformanceConfig', 57)
+  desiredNetworkTierConfig = _messages.MessageField('NetworkTierConfig', 58)
+  desiredNodeKubeletConfig = _messages.MessageField('NodeKubeletConfig', 59)
+  desiredNodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 60)
+  desiredNodePoolAutoConfigKubeletConfig = _messages.MessageField('NodeKubeletConfig', 61)
+  desiredNodePoolAutoConfigLinuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 62)
+  desiredNodePoolAutoConfigNetworkTags = _messages.MessageField('NetworkTags', 63)
+  desiredNodePoolAutoConfigResourceManagerTags = _messages.MessageField('ResourceManagerTags', 64)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 65)
+  desiredNodePoolId = _messages.StringField(66)
+  desiredNodePoolLoggingConfig = _messages.MessageField('NodePoolLoggingConfig', 67)
+  desiredNodeVersion = _messages.StringField(68)
+  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 69)
+  desiredParentProductConfig = _messages.MessageField('ParentProductConfig', 70)
+  desiredPodAutoscaling = _messages.MessageField('PodAutoscaling', 71)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 72)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 73)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 74)
+  desiredPrivilegedAdmissionConfig = _messages.MessageField('PrivilegedAdmissionConfig', 75)
+  desiredProtectConfig = _messages.MessageField('ProtectConfig', 76)
+  desiredRbacBindingConfig = _messages.MessageField('RBACBindingConfig', 77)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 78)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 79)
+  desiredRollbackSafeUpgrade = _messages.MessageField('RollbackSafeUpgrade', 80)
+  desiredRuntimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 81)
+  desiredScheduleUpgradeConfig = _messages.MessageField('ScheduleUpgradeConfig', 82)
+  desiredSecretManagerConfig = _messages.MessageField('SecretManagerConfig', 83)
+  desiredSecretSyncConfig = _messages.MessageField('SecretSyncConfig', 84)
+  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 85)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 86)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 87)
+  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 88)
+  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 89)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 90)
+  desiredUserManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 91)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 92)
+  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 93)
+  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 94)
+  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 95)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 96)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 97)
+  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 98)
+  etag = _messages.StringField(99)
+  gkeAutoUpgradeConfig = _messages.MessageField('GkeAutoUpgradeConfig', 100)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 101)
+  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 102)
+  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 103)
 
 
 class ClusterUpgradeInfo(_messages.Message):
@@ -2738,9 +2754,12 @@ class ContainerdConfig(_messages.Message):
   Fields:
     privateRegistryAccessConfig: PrivateRegistryAccessConfig is used to
       configure access configuration for private container registries.
+    writableCgroups: Optional. WritableCgroups defines writable cgroups
+      configuration for the node pool.
   """
 
   privateRegistryAccessConfig = _messages.MessageField('PrivateRegistryAccessConfig', 1)
+  writableCgroups = _messages.MessageField('WritableCgroups', 2)
 
 
 class ControlPlaneEgress(_messages.Message):
@@ -3133,6 +3152,16 @@ class Date(_messages.Message):
   year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class DedicatedLocalSsdProfile(_messages.Message):
+  r"""Provisions a new, separate local NVMe SSD exclusively for swap.
+
+  Fields:
+    diskCount: The number of physical local NVMe SSD disks to attach.
+  """
+
+  diskCount = _messages.IntegerField(1)
+
+
 class DefaultComputeClassConfig(_messages.Message):
   r"""DefaultComputeClassConfig defines default compute class configuration.
 
@@ -3214,6 +3243,17 @@ class Empty(_messages.Message):
 
 
 
+class EncryptionConfig(_messages.Message):
+  r"""Defines encryption settings for the swap space.
+
+  Fields:
+    disabled: Optional. If true, swap space will not be encrypted. Defaults to
+      false (encrypted).
+  """
+
+  disabled = _messages.BooleanField(1)
+
+
 class EnterpriseConfig(_messages.Message):
   r"""EnterpriseConfig is the cluster enterprise configuration. Deprecated:
   GKE Enterprise features are now available without an Enterprise tier.
@@ -3258,6 +3298,19 @@ class EnterpriseConfig(_messages.Message):
 
   clusterTier = _messages.EnumField('ClusterTierValueValuesEnum', 1)
   desiredTier = _messages.EnumField('DesiredTierValueValuesEnum', 2)
+
+
+class EphemeralLocalSsdProfile(_messages.Message):
+  r"""Swap on the local SSD shared with pod ephemeral storage.
+
+  Fields:
+    swapSizeGib: Specifies the size of the swap space in gibibytes (GiB).
+    swapSizePercent: Specifies the size of the swap space as a percentage of
+      the ephemeral local SSD capacity.
+  """
+
+  swapSizeGib = _messages.IntegerField(1)
+  swapSizePercent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class EphemeralStorageConfig(_messages.Message):
@@ -4428,6 +4481,8 @@ class LinuxNodeConfig(_messages.Message):
     kernelOverrides: Optional. Defines the kernel overrides to be applied to
       the nodes. Note: sysctl changes are defined separately in the sysctls
       fields.
+    swapConfig: Optional. Enables and configures swap space on nodes. If
+      omitted, swap is disabled.
     sysctls: The Linux kernel parameters to be applied to the nodes and all
       pods running on the nodes. The following parameters are supported.
       net.core.busy_poll net.core.busy_read net.core.netdev_max_backlog
@@ -4581,10 +4636,11 @@ class LinuxNodeConfig(_messages.Message):
   customNodeInit = _messages.MessageField('CustomNodeInit', 5)
   hugepages = _messages.MessageField('HugepagesConfig', 6)
   kernelOverrides = _messages.MessageField('KernelOverrides', 7)
-  sysctls = _messages.MessageField('SysctlsValue', 8)
-  timeZone = _messages.StringField(9)
-  transparentHugepageDefrag = _messages.EnumField('TransparentHugepageDefragValueValuesEnum', 10)
-  transparentHugepageEnabled = _messages.EnumField('TransparentHugepageEnabledValueValuesEnum', 11)
+  swapConfig = _messages.MessageField('SwapConfig', 8)
+  sysctls = _messages.MessageField('SysctlsValue', 9)
+  timeZone = _messages.StringField(10)
+  transparentHugepageDefrag = _messages.EnumField('TransparentHugepageDefragValueValuesEnum', 11)
+  transparentHugepageEnabled = _messages.EnumField('TransparentHugepageEnabledValueValuesEnum', 12)
 
 
 class ListClustersResponse(_messages.Message):
@@ -8751,6 +8807,27 @@ class StatusCondition(_messages.Message):
   message = _messages.StringField(3)
 
 
+class SwapConfig(_messages.Message):
+  r"""Configuration for swap memory on a node pool.
+
+  Fields:
+    bootDiskProfile: Swap on the node's boot disk.
+    dedicatedLocalSsdProfile: Provisions a new, separate local NVMe SSD
+      exclusively for swap.
+    enabled: Optional. Enables or disables swap for the node pool.
+    encryptionConfig: Optional. If omitted, swap space is encrypted by
+      default.
+    ephemeralLocalSsdProfile: Swap on the local SSD shared with pod ephemeral
+      storage.
+  """
+
+  bootDiskProfile = _messages.MessageField('BootDiskProfile', 1)
+  dedicatedLocalSsdProfile = _messages.MessageField('DedicatedLocalSsdProfile', 2)
+  enabled = _messages.BooleanField(3)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 4)
+  ephemeralLocalSsdProfile = _messages.MessageField('EphemeralLocalSsdProfile', 5)
+
+
 class SyncRotationConfig(_messages.Message):
   r"""SyncRotationConfig is config for secret manager auto rotation.
 
@@ -9727,6 +9804,16 @@ class WorkloadPolicyConfig(_messages.Message):
 
   allowNetAdmin = _messages.BooleanField(1)
   autopilotCompatibilityAuditingEnabled = _messages.BooleanField(2)
+
+
+class WritableCgroups(_messages.Message):
+  r"""Defines writable cgroups configuration.
+
+  Fields:
+    enabled: Optional. Whether writable cgroups is enabled.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

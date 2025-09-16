@@ -84,23 +84,33 @@ def GetGapicCredentials(enable_resource_quota=True,
   return credentials
 
 
-def MakeBidiRpc(client, start_rpc, initial_request=None):
+def MakeBidiRpc(
+    client,
+    start_rpc,
+    initial_request=None,
+    metadata: list[tuple[str, str]] | None = None,
+):
   """Initializes a BidiRpc instances.
 
   Args:
       client: GAPIC Wrapper client to use.
-      start_rpc (grpc.StreamStreamMultiCallable): The gRPC method used to
-          start the RPC.
-      initial_request: The initial request to
-          yield. This is useful if an initial request is needed to start the
-          stream.
+      start_rpc (grpc.StreamStreamMultiCallable): The gRPC method used to start
+        the RPC.
+      initial_request: The initial request to yield. This is useful if an
+        initial request is needed to start the stream.
+      metadata: The metadata headers to use for the RPC. It is a list of tuples.
+        The first string in the tuple is the header name and the second is the
+        header value.
+
   Returns:
     A bidiRPC instance.
   """
   # pylint: disable=g-import-not-at-top
   from googlecloudsdk.core import gapic_util_internal
-  return gapic_util_internal.BidiRpc(client, start_rpc,
-                                     initial_request=initial_request)
+
+  return gapic_util_internal.BidiRpc(
+      client, start_rpc, initial_request=initial_request, metadata=metadata
+  )
 
 
 def MakeRestClient(client_class,

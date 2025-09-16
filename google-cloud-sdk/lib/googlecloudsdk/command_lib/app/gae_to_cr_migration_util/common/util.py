@@ -15,7 +15,7 @@
 # limitations under the License.
 """This module contains common utility function for GAE to CR migration."""
 import logging
-from typing import Mapping, Sequence, Tuple
+from typing import Mapping, Sequence, Tuple, cast
 from googlecloudsdk.api_lib.app import appengine_api_client
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.app.gae_to_cr_migration_util.config import feature_helper
@@ -206,6 +206,12 @@ def get_input_data_by_input_type(
         'versionUrl': gcloud_output.versionUrl,
         'zones': gcloud_output.zones,
     }
+    if gcloud_output.envVariables is not None:
+      version_data.update(
+          {'envVariables': cast(
+              Mapping[str, str], gcloud_output.envVariables.additionalProperties
+          )}
+      )
     return version_data
 
   # appyaml is input type
