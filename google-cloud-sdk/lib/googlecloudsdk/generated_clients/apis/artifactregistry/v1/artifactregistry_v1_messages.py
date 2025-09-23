@@ -3373,6 +3373,7 @@ class Repository(_messages.Message):
       GO: Go package format.
       GENERIC: Generic package format.
       RUBY: Ruby package format.
+      CONDA: Conda package format.
     """
     FORMAT_UNSPECIFIED = 0
     DOCKER = 1
@@ -3386,6 +3387,7 @@ class Repository(_messages.Message):
     GO = 9
     GENERIC = 10
     RUBY = 11
+    CONDA = 12
 
   class ModeValueValuesEnum(_messages.Enum):
     r"""Optional. The mode of the repository.
@@ -4131,7 +4133,8 @@ class VulnerabilityScanningConfig(_messages.Message):
 
     Values:
       ENABLEMENT_CONFIG_UNSPECIFIED: Not set. This will be treated as
-        INHERITED.
+        INHERITED for Docker repositories and DISABLED for non-Docker
+        repositories.
       INHERITED: Scanning is Enabled, but dependent on API enablement.
       DISABLED: No automatic vulnerability scanning will be performed for this
         repository.

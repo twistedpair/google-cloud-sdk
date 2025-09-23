@@ -343,7 +343,9 @@ class ServerlessOperations(object):
     except api_exceptions.HttpNotFoundError:
       return None
 
-  def WaitService(self, operation_id):
+  def WaitService(
+      self, operation_id, service_ref, release_track=base.ReleaseTrack.GA
+  ):
     """Return the relevant Service from the server, or None if 404."""
     messages = self.messages_module
     project = properties.VALUES.core.project.Get(required=True)
@@ -360,10 +362,27 @@ class ServerlessOperations(object):
             self._client.projects_locations_services,
             self._client.projects_locations_operations,
         )
-        operation = waiter.PollUntilDone(poller, op_ref)
-        as_dict = encoding.MessageToPyValue(operation.response)
-        as_pb = encoding.PyValueToMessage(messages.Service, as_dict)
-        return service.Service(as_pb, self.messages_module)
+        if release_track == base.ReleaseTrack.ALPHA:
+          operation = poller.Poll(op_ref)
+          # operation.response will only be filled if the operation is done.
+          # if the opration isn't done, operation.metadata should have status
+          # information for the tracker.
+          if operation.response:
+            as_dict = encoding.MessageToPyValue(operation.response)
+            as_pb = encoding.PyValueToMessage(messages.Service, as_dict)
+            return service.Service(as_pb, self.messages_module)
+          elif operation.metadata:
+            as_dict = encoding.MessageToPyValue(operation.metadata)
+            as_pb = encoding.PyValueToMessage(messages.Service, as_dict)
+            return service.Service(as_pb, self.messages_module)
+          else:
+            return self.GetService(service_ref)
+        else:
+          operation = waiter.PollUntilDone(poller, op_ref)
+          as_dict = encoding.MessageToPyValue(operation.response)
+          as_pb = encoding.PyValueToMessage(messages.Service, as_dict)
+          return service.Service(as_pb, self.messages_module)
+
     except api_exceptions.InvalidDataFromServerError as e:
       serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
     except api_exceptions.HttpNotFoundError:
@@ -678,7 +697,13 @@ class ServerlessOperations(object):
       )
 
   def UpdateTraffic(
-      self, service_ref, config_changes, tracker, asyn, is_verbose
+      self,
+      service_ref,
+      config_changes,
+      tracker,
+      asyn,
+      is_verbose,
+      release_track,
   ):
     """Update traffic splits for service."""
     if tracker is None:
@@ -700,12 +725,15 @@ class ServerlessOperations(object):
     if not asyn:
       if updated_serv.conditions.IsReady():
         return updated_serv
-
-      getter = (
-          functools.partial(self.GetService, service_ref)
-          if updated_serv.operation_id is None or is_verbose
-          else functools.partial(self.WaitService, updated_serv.operation_id)
-      )
+      if updated_serv.operation_id is None or is_verbose:
+        getter = functools.partial(self.GetService, service_ref)
+      else:
+        getter = functools.partial(
+            self.WaitService,
+            updated_serv.operation_id,
+            service_ref,
+            release_track,
+        )
       poller = op_pollers.ServiceConditionPoller(
           getter, tracker, serv=updated_serv
       )
@@ -1029,11 +1057,15 @@ class ServerlessOperations(object):
     if not asyn and not dry_run:
       if updated_service.conditions.IsReady():
         return updated_service
-      getter = (
-          functools.partial(self.GetService, service_ref)
-          if updated_service.operation_id is None or is_verbose
-          else functools.partial(self.WaitService, updated_service.operation_id)
-      )
+      if updated_service.operation_id is None or is_verbose:
+        getter = functools.partial(self.GetService, service_ref)
+      else:
+        getter = functools.partial(
+            self.WaitService,
+            updated_service.operation_id,
+            service_ref,
+            release_track,
+        )
       poller = op_pollers.ServiceConditionPoller(
           getter,
           tracker,

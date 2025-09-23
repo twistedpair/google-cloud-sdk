@@ -5,6 +5,124 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 540.0.0 (2025-09-23)
+
+### Breaking Changes
+
+*   **(Compute Engine)** Add `--bandwidth-allocation` as a required flag for `gcloud compute interconnects wire-groups create`.
+
+
+### AlloyDB
+
+* Promoted all Managed Connection Pooling related flags on
+`gcloud alloydb instances create`, `gcloud alloydb instances create-secondary`,
+and `gcloud alloydb instances update` to the beta and GA track. The flags that
+are promoted specifically are:
+  * `--enable-connection-pooling`
+  * `--connection-pooling-pool-mode`
+  * `--connection-pooling-min-pool-size`
+  * `--connection-pooling-max-pool-size`
+  * `--connection-pooling-max-client-connections`
+  * `--connection-pooling-server-idle-timeout`
+  * `--connection-pooling-query-wait-timeout`
+  * `--connection-pooling-stats-users`
+  * `--connection-pooling-ignore-startup-parameters`
+  * `--connection-pooling-server-lifetime`
+  * `--connection-pooling-client-connection-idle-timeout`
+  * `--connection-pooling-max-prepared-statements`
+
+### App Engine
+
+* Updated the Java SDK to version 3.0.0 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v3.0.0-beta>.
+* Upgraded all Java SDK jars to Java 17 bytecode level.
+
+### Artifact Registry
+
+* Fixed version annotations field, removed the `additionalProperties`.
+
+### Cloud Build
+
+* Updated `gcloud builds submit` to allow remote `source` in the build config if `--no-source` flag is specified.
+
+### Cloud Location Finder
+
+*   Promoted `gcloud cloudlocationfinder` command group to GA.
+
+### Cloud NetApp
+
+* Add support for 'cache-parameters' in `gcloud netapp volumes create` and
+    `gcloud netapp volumes update` commands.
+* Add support to 'restore-volume' in `gcloud netapp volumes restore-backup-files` command for GA.
+
+### Cloud Run
+
+* Promoted `--max` flag to GA for `gcloud run deploy` and
+`gcloud run services update` which sets a maximum bound for instance scaling at
+ the service level.
+ * Promoted .env support for `--env-vars-file` flag for
+ `gcloud run deploy` from beta to GA.
+* Promoted `mount-options` key for `--add-volume` flag with `type=cloud-storage`
+to GA for `gcloud run deploy`, `gcloud run services update`,
+`gcloud run jobs deploy`, `gcloud run jobs create`, and
+`gcloud run jobs update` to configure flags for GCSFuse in your cloud storage
+volumes.
+
+### Cloud SQL
+
+*   Added the `clear-disk-encryption` flag to `gcloud sql backups restore`
+    operation. If restoring a backup to a project or region that is unique to
+    the one where the source instance is located, then the backup's assigned KMS
+    keys are no longer accessible. This setting lets you clear any existing CMEK
+    configuration.
+* Added `gcloud sql instances execute-sql` to run a SQL query on a Cloud SQL
+    instance in alpha and beta.
+
+### Cloud Storage
+
+* Fixed `gcloud storage ls` to correctly list soft-deleted objects when the URL has a trailing slash.
+* Promoted `gcloud storage diagnose` command to GA.
+
+### Cloud Workstations
+
+* Added support for reservation affinity in `beta workstations config create` and `beta workstations config update` command.
+
+### Compute Engine
+
+* The option to deploy a container during VM creation using the container startup agent is deprecated. Use alternative services to run containers on your VMs. Learn more at <https://cloud.google.com/compute/docs/containers/migrate-containers>.
+* Added `--ip-collection` flag to `gcloud beta compute addresses create` command.
+* Added `--skip-guest-os-shutdown` flag to `gcloud compute instances` in GA.
+* Promoted Percentage-based Request Mirroring in UrlMaps compute API to v1.
+
+### Eventarc
+
+* Added `--organization-subscription` and `--project-subscriptions` in `gcloud eventarc google-api-sources`.
+
+### Identity and Access Management
+
+* Added a new `--sts-location` flag to
+  `gcloud iam workload pools create-cred-config`. This flag enables users to set
+  a locational Security Token Service endpoint, e.g., setting sts-location to
+  us-central1 will point to sts.us-central1.rep.googleapis.com, and thereby
+  regionalize their requests to the Security Token Service API.
+
+### Network Security
+
+* Added command group `network-security security-profiles url-filtering` and promoted it to beta.
+* Added commands `describe`, `export`, `import`, and `list` to command group `network-security security-profiles` and promoted them to beta.
+* Added flag `--url-filtering-profile` to command `network-security security-profile-groups create` in the beta track.
+* Moved flag `--threat-prevention-profile` to a mutex with flag `--clear-threat-prevention-profile` for command `network-security security-profile-groups update` in the beta track.
+* Added mutex with flags `--url-filtering-profile` and `--clear-url-filtering-profile` to command `network-security security-profile-groups update` in the beta track.
+
+### Pubsub Emulator
+
+* Fix bug where dead letter queue and retry policy settings are not respected
+  when ordering is enabled on a subscription.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 539.0.0 (2025-09-16)
 
 ### AI

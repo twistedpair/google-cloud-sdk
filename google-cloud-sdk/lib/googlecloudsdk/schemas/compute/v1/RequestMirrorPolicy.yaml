@@ -33,3 +33,6 @@ properties:
       in the URL map. Serverless NEG backends are not currently supported as a
       mirrored backend service.
     type: string
+  mirrorPercent:
+    description: The percentage of requests to be mirrored to `backend_service`.
+    type: number

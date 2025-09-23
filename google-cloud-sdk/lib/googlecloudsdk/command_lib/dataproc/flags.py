@@ -806,8 +806,8 @@ def ProjectGcsObjectsAccessBoundary(project):
   Returns:
     A JSON formatted access boundary suitable for creating a downscoped token.
   """
-  cab_resource = '//cloudresourcemanager.googleapis.com/projects/{}'.format(
-      project)
+  universe_domain = properties.VALUES.core.universe_domain.Get()
+  cab_resource = f'//cloudresourcemanager.{universe_domain}/projects/{project}'
   access_boundary = {
       'access_boundary': {
           'accessBoundaryRules': [{

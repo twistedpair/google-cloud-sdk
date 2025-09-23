@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import base64
 import json
 
 from apitools.base.protorpclite import protojson
@@ -72,6 +73,31 @@ def ListOccurrences(response, args):
     )
 
   return response
+
+
+def ConvertFingerprint(response, unused_args):
+  """Convert fingerprint and annotations to a dict."""
+  if hasattr(response, "check_initialized"):
+    # It's a protorpc message.
+    resource = json.loads(protojson.encode_message(response))
+  else:
+    # It's a json already.
+    resource = response
+
+  if "fingerprints" in resource and resource["fingerprints"]:
+    for h in resource["fingerprints"]:
+      if isinstance(h.get("value"), str):
+        # In dicts from tests, the value is base64 encoded string.
+        h["value"] = base64.b64decode(h["value"]).hex()
+
+  if "annotations" in resource and resource.get("annotations"):
+    # The value from scenario test is a dict, not a message.
+    if "additionalProperties" in resource["annotations"]:
+      annotations = {}
+      for p in resource["annotations"].get("additionalProperties", []):
+        annotations[p["key"]] = p["value"]
+      resource["annotations"] = annotations
+  return resource
 
 
 def _GenerateMavenResourceFromResponse(response):

@@ -172,3 +172,17 @@ def AddMirroringDeploymentGroupResource(release_track, parser):
       prefixes=True,
   )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
+# The type flag is only supported for Alpha. When not specified, the default
+# type is DIRECT.
+def AddType(parser):
+  """Adds the endpoint group type flag to the parser."""
+  parser.add_argument(
+      "--type",
+      choices=["DIRECT", "BROKER"],
+      help=(
+          "The type of the endpoint group. If not specified, the default type"
+          " is DIRECT."
+      ),
+  )

@@ -22,3 +22,14 @@ job:
   - parameter_name: jobsId
     attribute_name: job
     help: The ID of the job.
+
+
+cmekConfig:
+  name: cmekConfig
+  collection: cloudscheduler.projects.locations.cmekConfig
+  request_id_field: cmekConfig.name
+  attributes:
+  - *location
+  - parameter_name: cmekConfigName
+    attribute_name: cmekConfig
+    help: The ID of the CMEK Config.

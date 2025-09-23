@@ -294,16 +294,14 @@ class _GcsVolume(_VolumeType):
     if release_track == base.ReleaseTrack.ALPHA:
       try:
         bool_parser = arg_parsers.ArgBoolean()
-        dynamic_mounting = bool_parser(
-            volume.get('dynamic-mounting', 'false')
-        )
+        dynamic_mounting = bool_parser(volume.get('dynamic-mounting', 'false'))
       except argparse.ArgumentTypeError:
         raise serverless_exceptions.ConfigurationError(
             'dynamic-mounting must be set to true or false.'
         )
       if (dynamic_mounting and 'bucket' in volume) or (
           not dynamic_mounting and 'bucket' not in volume
-          ):
+      ):
         raise serverless_exceptions.ConfigurationError(
             'Either set bucket or enable dynamic-mounting, not both.'
         )
@@ -321,14 +319,13 @@ class _GcsVolume(_VolumeType):
     fields = {
         'readonly': (
             'A boolean. If true, this volume will be read-only from all mounts.'
-        )
+        ),
+        'mount-options': (
+            'A list of flags to pass to GCSFuse. Flags '
+            + 'should be specified without leading dashes and separated by '
+            + 'semicolons.'
+        ),
     }
-    if release_track in [base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA]:
-      fields['mount-options'] = (
-          'A list of flags to pass to GCSFuse. Flags '
-          + 'should be specified without leading dashes and separated by '
-          + 'semicolons.'
-      )
 
     if release_track == base.ReleaseTrack.ALPHA:
       fields['bucket'] = (
@@ -360,10 +357,7 @@ class _GcsVolume(_VolumeType):
               value=volume['mount-options'].replace(';', ','),
           )
       )
-    if (
-        'dynamic-mounting' in volume
-        and volume['dynamic-mounting']
-    ):
+    if 'dynamic-mounting' in volume and volume['dynamic-mounting']:
       src.volumeAttributes.additionalProperties.append(
           messages.CSIVolumeSource.VolumeAttributesValue.AdditionalProperty(
               key='bucketName', value='_'

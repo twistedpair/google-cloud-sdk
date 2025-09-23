@@ -1010,6 +1010,38 @@ class AutonomousDbVersion(_messages.Message):
   workloadUri = _messages.StringField(4)
 
 
+class BackupDestinationDetails(_messages.Message):
+  r"""The details of the database backup destination.
+
+  Enums:
+    TypeValueValuesEnum: Optional. The type of the database backup
+      destination.
+
+  Fields:
+    type: Optional. The type of the database backup destination.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The type of the database backup destination.
+
+    Values:
+      BACKUP_DESTINATION_TYPE_UNSPECIFIED: Default unspecified value.
+      NFS: Backup destination type is NFS.
+      RECOVERY_APPLIANCE: Backup destination type is Recovery Appliance.
+      OBJECT_STORE: Backup destination type is Object Store.
+      LOCAL: Backup destination type is Local.
+      DBRS: Backup destination type is DBRS.
+    """
+    BACKUP_DESTINATION_TYPE_UNSPECIFIED = 0
+    NFS = 1
+    RECOVERY_APPLIANCE = 2
+    OBJECT_STORE = 3
+    LOCAL = 4
+    DBRS = 5
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -1482,6 +1514,126 @@ class DataCollectionOptions(_messages.Message):
   incidentLogsEnabled = _messages.BooleanField(3)
 
 
+class DataCollectionOptionsDbSystem(_messages.Message):
+  r"""Data collection options for DbSystem.
+
+  Fields:
+    isDiagnosticsEventsEnabled: Optional. Indicates whether to enable data
+      collection for diagnostics.
+    isIncidentLogsEnabled: Optional. Indicates whether to enable incident logs
+      and trace collection.
+  """
+
+  isDiagnosticsEventsEnabled = _messages.BooleanField(1)
+  isIncidentLogsEnabled = _messages.BooleanField(2)
+
+
+class Database(_messages.Message):
+  r"""Details of the Database resource. https://docs.oracle.com/en-
+  us/iaas/api/#/en/database/20160918/Database/
+
+  Enums:
+    OpsInsightsStatusValueValuesEnum: Output only. The Status of Operations
+      Insights for this Database.
+
+  Fields:
+    adminPassword: Required. The password for the default ADMIN user.
+    characterSet: Optional. The character set for the database. The default is
+      AL32UTF8.
+    createTime: Output only. The date and time that the Database was created.
+    databaseId: Optional. The database ID of the Database.
+    dbHomeName: Optional. The name of the DbHome resource associated with the
+      Database.
+    dbName: Optional. The database name. The name must begin with an
+      alphabetic character and can contain a maximum of eight alphanumeric
+      characters. Special characters are not permitted.
+    dbUniqueName: Optional. The DB_UNIQUE_NAME of the Oracle Database being
+      backed up.
+    gcpOracleZone: Output only. The GCP Oracle zone where the Database is
+      created.
+    name: Identifier. The name of the Database resource in the following
+      format: projects/{project}/locations/{region}/databases/{database}
+    ncharacterSet: Optional. The national character set for the database. The
+      default is AL16UTF16.
+    ociUrl: Output only. HTTPS link to OCI resources exposed to Customer via
+      UI Interface.
+    opsInsightsStatus: Output only. The Status of Operations Insights for this
+      Database.
+    properties: Optional. The properties of the Database.
+    tdeWalletPassword: Optional. The TDE wallet password for the database.
+  """
+
+  class OpsInsightsStatusValueValuesEnum(_messages.Enum):
+    r"""Output only. The Status of Operations Insights for this Database.
+
+    Values:
+      OPERATIONS_INSIGHTS_STATUS_UNSPECIFIED: Default unspecified value.
+      ENABLING: Indicates that the operations insights are being enabled.
+      ENABLED: Indicates that the operations insights are enabled.
+      DISABLING: Indicates that the operations insights are being disabled.
+      NOT_ENABLED: Indicates that the operations insights are not enabled.
+      FAILED_ENABLING: Indicates that the operations insights failed to
+        enable.
+      FAILED_DISABLING: Indicates that the operations insights failed to
+        disable.
+    """
+    OPERATIONS_INSIGHTS_STATUS_UNSPECIFIED = 0
+    ENABLING = 1
+    ENABLED = 2
+    DISABLING = 3
+    NOT_ENABLED = 4
+    FAILED_ENABLING = 5
+    FAILED_DISABLING = 6
+
+  adminPassword = _messages.StringField(1)
+  characterSet = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  databaseId = _messages.StringField(4)
+  dbHomeName = _messages.StringField(5)
+  dbName = _messages.StringField(6)
+  dbUniqueName = _messages.StringField(7)
+  gcpOracleZone = _messages.StringField(8)
+  name = _messages.StringField(9)
+  ncharacterSet = _messages.StringField(10)
+  ociUrl = _messages.StringField(11)
+  opsInsightsStatus = _messages.EnumField('OpsInsightsStatusValueValuesEnum', 12)
+  properties = _messages.MessageField('DatabaseProperties', 13)
+  tdeWalletPassword = _messages.StringField(14)
+
+
+class DatabaseCharacterSet(_messages.Message):
+  r"""Details of the Database character set resource.
+
+  Enums:
+    CharacterSetTypeValueValuesEnum: Output only. The character set type for
+      the Database.
+
+  Fields:
+    characterSet: Output only. The character set name for the Database which
+      is the ID in the resource name.
+    characterSetType: Output only. The character set type for the Database.
+    name: Identifier. The name of the Database Character Set resource in the
+      following format: projects/{project}/locations/{region}/databaseCharacte
+      rSets/{database_character_set}
+  """
+
+  class CharacterSetTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The character set type for the Database.
+
+    Values:
+      CHARACTER_SET_TYPE_UNSPECIFIED: Character set type is not specified.
+      DATABASE: Character set type is set to database.
+      NATIONAL: Character set type is set to national.
+    """
+    CHARACTER_SET_TYPE_UNSPECIFIED = 0
+    DATABASE = 1
+    NATIONAL = 2
+
+  characterSet = _messages.StringField(1)
+  characterSetType = _messages.EnumField('CharacterSetTypeValueValuesEnum', 2)
+  name = _messages.StringField(3)
+
+
 class DatabaseConnectionStringProfile(_messages.Message):
   r"""The connection string profile to allow clients to group.
   https://docs.oracle.com/en-
@@ -1608,6 +1760,280 @@ class DatabaseConnectionStringProfile(_messages.Message):
   syntaxFormat = _messages.EnumField('SyntaxFormatValueValuesEnum', 7)
   tlsAuthentication = _messages.EnumField('TlsAuthenticationValueValuesEnum', 8)
   value = _messages.StringField(9)
+
+
+class DatabaseManagementConfig(_messages.Message):
+  r"""The configuration of the Database Management service.
+
+  Enums:
+    ManagementStateValueValuesEnum: Output only. The status of the Database
+      Management service.
+    ManagementTypeValueValuesEnum: Output only. The Database Management type.
+
+  Fields:
+    managementState: Output only. The status of the Database Management
+      service.
+    managementType: Output only. The Database Management type.
+  """
+
+  class ManagementStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The status of the Database Management service.
+
+    Values:
+      MANAGEMENT_STATE_UNSPECIFIED: The status is not specified.
+      ENABLING: The Database Management service is enabling.
+      ENABLED: The Database Management service is enabled.
+      DISABLING: The Database Management service is disabling.
+      DISABLED: The Database Management service is disabled.
+      UPDATING: The Database Management service is updating.
+      FAILED_ENABLING: The Database Management service failed to enable.
+      FAILED_DISABLING: The Database Management service failed to disable.
+      FAILED_UPDATING: The Database Management service failed to update.
+    """
+    MANAGEMENT_STATE_UNSPECIFIED = 0
+    ENABLING = 1
+    ENABLED = 2
+    DISABLING = 3
+    DISABLED = 4
+    UPDATING = 5
+    FAILED_ENABLING = 6
+    FAILED_DISABLING = 7
+    FAILED_UPDATING = 8
+
+  class ManagementTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The Database Management type.
+
+    Values:
+      MANAGEMENT_TYPE_UNSPECIFIED: The type is not specified.
+      BASIC: Basic Database Management.
+      ADVANCED: Advanced Database Management.
+    """
+    MANAGEMENT_TYPE_UNSPECIFIED = 0
+    BASIC = 1
+    ADVANCED = 2
+
+  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 1)
+  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 2)
+
+
+class DatabaseProperties(_messages.Message):
+  r"""The properties of a Database.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the Database.
+
+  Fields:
+    databaseManagementConfig: Output only. The Database Management config.
+    dbBackupConfig: Optional. Backup options for the Database.
+    dbVersion: Required. The Oracle Database version.
+    state: Output only. State of the Database.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the Database.
+
+    Values:
+      DATABASE_LIFECYCLE_STATE_UNSPECIFIED: Default unspecified value.
+      PROVISIONING: Indicates that the resource is in provisioning state.
+      AVAILABLE: Indicates that the resource is in available state.
+      UPDATING: Indicates that the resource is in updating state.
+      BACKUP_IN_PROGRESS: Indicates that the resource is in backup in progress
+        state.
+      UPGRADING: Indicates that the resource is in upgrading state.
+      CONVERTING: Indicates that the resource is in converting state.
+      TERMINATING: Indicates that the resource is in terminating state.
+      TERMINATED: Indicates that the resource is in terminated state.
+      RESTORE_FAILED: Indicates that the resource is in restore failed state.
+      FAILED: Indicates that the resource is in failed state.
+    """
+    DATABASE_LIFECYCLE_STATE_UNSPECIFIED = 0
+    PROVISIONING = 1
+    AVAILABLE = 2
+    UPDATING = 3
+    BACKUP_IN_PROGRESS = 4
+    UPGRADING = 5
+    CONVERTING = 6
+    TERMINATING = 7
+    TERMINATED = 8
+    RESTORE_FAILED = 9
+    FAILED = 10
+
+  databaseManagementConfig = _messages.MessageField('DatabaseManagementConfig', 1)
+  dbBackupConfig = _messages.MessageField('DbBackupConfig', 2)
+  dbVersion = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+
+
+class DbBackupConfig(_messages.Message):
+  r"""Backup Options for the Database.
+
+  Enums:
+    AutoFullBackupDayValueValuesEnum: Optional. The day of the week on which
+      the full backup should be performed on the database. If no value is
+      provided, it will default to Sunday.
+    AutoFullBackupWindowValueValuesEnum: Optional. The window in which the
+      full backup should be performed on the database. If no value is
+      provided, the default is anytime.
+    AutoIncrementalBackupWindowValueValuesEnum: Optional. The window in which
+      the incremental backup should be performed on the database. If no value
+      is provided, the default is anytime except the auto full backup day.
+    BackupDeletionPolicyValueValuesEnum: Optional. This defines when the
+      backups will be deleted after Database termination.
+
+  Fields:
+    autoBackupEnabled: Optional. If set to true, enables automatic backups on
+      the database.
+    autoFullBackupDay: Optional. The day of the week on which the full backup
+      should be performed on the database. If no value is provided, it will
+      default to Sunday.
+    autoFullBackupWindow: Optional. The window in which the full backup should
+      be performed on the database. If no value is provided, the default is
+      anytime.
+    autoIncrementalBackupWindow: Optional. The window in which the incremental
+      backup should be performed on the database. If no value is provided, the
+      default is anytime except the auto full backup day.
+    backupDeletionPolicy: Optional. This defines when the backups will be
+      deleted after Database termination.
+    backupDestinationDetails: Optional. Details of the database backup
+      destinations.
+    retentionPeriodDays: Optional. The number of days an automatic backup is
+      retained before being automatically deleted. This value determines the
+      earliest point in time to which a database can be restored. Min: 1, Max:
+      60.
+  """
+
+  class AutoFullBackupDayValueValuesEnum(_messages.Enum):
+    r"""Optional. The day of the week on which the full backup should be
+    performed on the database. If no value is provided, it will default to
+    Sunday.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
+    """
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  class AutoFullBackupWindowValueValuesEnum(_messages.Enum):
+    r"""Optional. The window in which the full backup should be performed on
+    the database. If no value is provided, the default is anytime.
+
+    Values:
+      BACKUP_WINDOW_UNSPECIFIED: Default unspecified value.
+      SLOT_ONE: 12:00 AM - 2:00 AM
+      SLOT_TWO: 2:00 AM - 4:00 AM
+      SLOT_THREE: 4:00 AM - 6:00 AM
+      SLOT_FOUR: 6:00 AM - 8:00 AM
+      SLOT_FIVE: 8:00 AM - 10:00 AM
+      SLOT_SIX: 10:00 AM - 12:00 PM
+      SLOT_SEVEN: 12:00 PM - 2:00 PM
+      SLOT_EIGHT: 2:00 PM - 4:00 PM
+      SLOT_NINE: 4:00 PM - 6:00 PM
+      SLOT_TEN: 6:00 PM - 8:00 PM
+      SLOT_ELEVEN: 8:00 PM - 10:00 PM
+      SLOT_TWELVE: 10:00 PM - 12:00 AM
+    """
+    BACKUP_WINDOW_UNSPECIFIED = 0
+    SLOT_ONE = 1
+    SLOT_TWO = 2
+    SLOT_THREE = 3
+    SLOT_FOUR = 4
+    SLOT_FIVE = 5
+    SLOT_SIX = 6
+    SLOT_SEVEN = 7
+    SLOT_EIGHT = 8
+    SLOT_NINE = 9
+    SLOT_TEN = 10
+    SLOT_ELEVEN = 11
+    SLOT_TWELVE = 12
+
+  class AutoIncrementalBackupWindowValueValuesEnum(_messages.Enum):
+    r"""Optional. The window in which the incremental backup should be
+    performed on the database. If no value is provided, the default is anytime
+    except the auto full backup day.
+
+    Values:
+      BACKUP_WINDOW_UNSPECIFIED: Default unspecified value.
+      SLOT_ONE: 12:00 AM - 2:00 AM
+      SLOT_TWO: 2:00 AM - 4:00 AM
+      SLOT_THREE: 4:00 AM - 6:00 AM
+      SLOT_FOUR: 6:00 AM - 8:00 AM
+      SLOT_FIVE: 8:00 AM - 10:00 AM
+      SLOT_SIX: 10:00 AM - 12:00 PM
+      SLOT_SEVEN: 12:00 PM - 2:00 PM
+      SLOT_EIGHT: 2:00 PM - 4:00 PM
+      SLOT_NINE: 4:00 PM - 6:00 PM
+      SLOT_TEN: 6:00 PM - 8:00 PM
+      SLOT_ELEVEN: 8:00 PM - 10:00 PM
+      SLOT_TWELVE: 10:00 PM - 12:00 AM
+    """
+    BACKUP_WINDOW_UNSPECIFIED = 0
+    SLOT_ONE = 1
+    SLOT_TWO = 2
+    SLOT_THREE = 3
+    SLOT_FOUR = 4
+    SLOT_FIVE = 5
+    SLOT_SIX = 6
+    SLOT_SEVEN = 7
+    SLOT_EIGHT = 8
+    SLOT_NINE = 9
+    SLOT_TEN = 10
+    SLOT_ELEVEN = 11
+    SLOT_TWELVE = 12
+
+  class BackupDeletionPolicyValueValuesEnum(_messages.Enum):
+    r"""Optional. This defines when the backups will be deleted after Database
+    termination.
+
+    Values:
+      BACKUP_DELETION_POLICY_UNSPECIFIED: Default unspecified value.
+      DELETE_IMMEDIATELY: Keeps the backup for predefined time i.e. 72 hours
+        and then delete permanently.
+      DELETE_AFTER_RETENTION_PERIOD: Keeps the backups as per the policy
+        defined for database backups.
+    """
+    BACKUP_DELETION_POLICY_UNSPECIFIED = 0
+    DELETE_IMMEDIATELY = 1
+    DELETE_AFTER_RETENTION_PERIOD = 2
+
+  autoBackupEnabled = _messages.BooleanField(1)
+  autoFullBackupDay = _messages.EnumField('AutoFullBackupDayValueValuesEnum', 2)
+  autoFullBackupWindow = _messages.EnumField('AutoFullBackupWindowValueValuesEnum', 3)
+  autoIncrementalBackupWindow = _messages.EnumField('AutoIncrementalBackupWindowValueValuesEnum', 4)
+  backupDeletionPolicy = _messages.EnumField('BackupDeletionPolicyValueValuesEnum', 5)
+  backupDestinationDetails = _messages.MessageField('BackupDestinationDetails', 6, repeated=True)
+  retentionPeriodDays = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+
+
+class DbHome(_messages.Message):
+  r"""Details of the Database Home resource.
+
+  Fields:
+    database: Required. The Database resource.
+    dbVersion: Required. A valid Oracle Database version. For a list of
+      supported versions, use the ListDbVersions operation.
+    displayName: Optional. The display name for the Database Home. The name
+      does not have to be unique within your project.
+    isUnifiedAuditingEnabled: Optional. Whether unified auditing is enabled
+      for the Database Home.
+  """
+
+  database = _messages.MessageField('Database', 1)
+  dbVersion = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  isUnifiedAuditingEnabled = _messages.BooleanField(4)
 
 
 class DbNode(_messages.Message):
@@ -1748,6 +2174,285 @@ class DbServerProperties(_messages.Message):
   vmCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
 
 
+class DbSystem(_messages.Message):
+  r"""Details of the DbSystem (BaseDB) resource. https://docs.oracle.com/en-
+  us/iaas/api/#/en/database/20160918/DbSystem/
+
+  Messages:
+    LabelsValue: Optional. The labels or tags associated with the DbSystem.
+
+  Fields:
+    createTime: Output only. The date and time that the DbSystem was created.
+    displayName: Required. The display name for the System db. The name does
+      not have to be unique within your project.
+    entitlementId: Output only. The ID of the subscription entitlement
+      associated with the DbSystem
+    gcpOracleZone: Optional. The GCP Oracle zone where Oracle DbSystem is
+      hosted. Example: us-east4-b-r2. If not specified, the system will pick a
+      zone based on availability.
+    labels: Optional. The labels or tags associated with the DbSystem.
+    name: Identifier. The name of the DbSystem resource in the following
+      format: projects/{project}/locations/{region}/dbSystems/{db_system}
+    ociUrl: Output only. HTTPS link to OCI resources exposed to Customer via
+      UI Interface.
+    odbNetwork: Optional. The name of the OdbNetwork associated with the
+      DbSystem. Format:
+      projects/{project}/locations/{location}/odbNetworks/{odb_network} It is
+      optional but if specified, this should match the parent ODBNetwork of
+      the OdbSubnet.
+    odbSubnet: Required. The name of the OdbSubnet associated with the
+      DbSystem for IP allocation. Format: projects/{project}/locations/{locati
+      on}/odbNetworks/{odb_network}/odbSubnets/{odb_subnet}
+    properties: Optional. The properties of the DbSystem.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels or tags associated with the DbSystem.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  entitlementId = _messages.StringField(3)
+  gcpOracleZone = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  ociUrl = _messages.StringField(7)
+  odbNetwork = _messages.StringField(8)
+  odbSubnet = _messages.StringField(9)
+  properties = _messages.MessageField('DbSystemProperties', 10)
+
+
+class DbSystemInitialStorageSize(_messages.Message):
+  r"""Summary of the DbSystem initial storage size.
+
+  Fields:
+    name: Output only. The name of the resource.
+    properties: Output only. The properties of the DbSystem initial storage
+      size summary.
+  """
+
+  name = _messages.StringField(1)
+  properties = _messages.MessageField('DbSystemInitialStorageSizeProperties', 2)
+
+
+class DbSystemInitialStorageSizeProperties(_messages.Message):
+  r"""The properties of a DbSystem initial storage size summary.
+
+  Enums:
+    ShapeTypeValueValuesEnum: Output only. VM shape platform type
+    StorageManagementValueValuesEnum: Output only. The storage option used in
+      DB system.
+
+  Fields:
+    launchFromBackupStorageSizeDetails: Output only. List of storage disk
+      details available for launches from backup.
+    shapeType: Output only. VM shape platform type
+    storageManagement: Output only. The storage option used in DB system.
+    storageSizeDetails: Output only. List of storage disk details.
+  """
+
+  class ShapeTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. VM shape platform type
+
+    Values:
+      SHAPE_TYPE_UNSPECIFIED: Unspecified shape type.
+      STANDARD_X86: Standard X86.
+    """
+    SHAPE_TYPE_UNSPECIFIED = 0
+    STANDARD_X86 = 1
+
+  class StorageManagementValueValuesEnum(_messages.Enum):
+    r"""Output only. The storage option used in DB system.
+
+    Values:
+      STORAGE_MANAGEMENT_UNSPECIFIED: Unspecified storage management.
+      ASM: Automatic Storage Management.
+      LVM: Logical Volume Management.
+    """
+    STORAGE_MANAGEMENT_UNSPECIFIED = 0
+    ASM = 1
+    LVM = 2
+
+  launchFromBackupStorageSizeDetails = _messages.MessageField('StorageSizeDetails', 1, repeated=True)
+  shapeType = _messages.EnumField('ShapeTypeValueValuesEnum', 2)
+  storageManagement = _messages.EnumField('StorageManagementValueValuesEnum', 3)
+  storageSizeDetails = _messages.MessageField('StorageSizeDetails', 4, repeated=True)
+
+
+class DbSystemOptions(_messages.Message):
+  r"""Details of the DbSystem Options.
+
+  Enums:
+    StorageManagementValueValuesEnum: Optional. The storage option used in DB
+      system.
+
+  Fields:
+    storageManagement: Optional. The storage option used in DB system.
+  """
+
+  class StorageManagementValueValuesEnum(_messages.Enum):
+    r"""Optional. The storage option used in DB system.
+
+    Values:
+      STORAGE_MANAGEMENT_UNSPECIFIED: The storage management is unspecified.
+      ASM: Automatic storage management.
+      LVM: Logical Volume management.
+    """
+    STORAGE_MANAGEMENT_UNSPECIFIED = 0
+    ASM = 1
+    LVM = 2
+
+  storageManagement = _messages.EnumField('StorageManagementValueValuesEnum', 1)
+
+
+class DbSystemProperties(_messages.Message):
+  r"""The properties of a DbSystem.
+
+  Enums:
+    ComputeModelValueValuesEnum: Optional. The compute model of the DbSystem.
+    DatabaseEditionValueValuesEnum: Required. The database edition of the
+      DbSystem.
+    LicenseModelValueValuesEnum: Required. The license model of the DbSystem.
+    LifecycleStateValueValuesEnum: Output only. State of the DbSystem.
+
+  Fields:
+    computeCount: Required. The number of CPU cores to enable for the
+      DbSystem.
+    computeModel: Optional. The compute model of the DbSystem.
+    dataCollectionOptions: Optional. Data collection options for diagnostics.
+    dataStorageSizeGb: Optional. The data storage size in GB that is currently
+      available to DbSystems.
+    databaseEdition: Required. The database edition of the DbSystem.
+    dbHome: Optional. Details for creating a Database Home.
+    dbSystemOptions: Optional. The options for the DbSystem.
+    domain: Optional. The host domain name of the DbSystem.
+    hostname: Output only. The hostname of the DbSystem.
+    hostnamePrefix: Optional. Prefix for DB System host names.
+    initialDataStorageSizeGb: Required. The initial data storage size in GB.
+    licenseModel: Required. The license model of the DbSystem.
+    lifecycleState: Output only. State of the DbSystem.
+    memorySizeGb: Optional. The memory size in GB.
+    nodeCount: Optional. The number of nodes in the DbSystem.
+    ocid: Output only. OCID of the DbSystem.
+    privateIp: Optional. The private IP address of the DbSystem.
+    recoStorageSizeGb: Optional. The reco/redo storage size in GB.
+    shape: Required. Shape of DB System.
+    sshPublicKeys: Required. SSH public keys to be stored with the DbSystem.
+    timeZone: Optional. Time zone of the DbSystem.
+  """
+
+  class ComputeModelValueValuesEnum(_messages.Enum):
+    r"""Optional. The compute model of the DbSystem.
+
+    Values:
+      COMPUTE_MODEL_UNSPECIFIED: The compute model is unspecified.
+      ECPU: The compute model is virtual.
+      OCPU: The compute model is physical.
+    """
+    COMPUTE_MODEL_UNSPECIFIED = 0
+    ECPU = 1
+    OCPU = 2
+
+  class DatabaseEditionValueValuesEnum(_messages.Enum):
+    r"""Required. The database edition of the DbSystem.
+
+    Values:
+      DB_SYSTEM_DATABASE_EDITION_UNSPECIFIED: The database edition is
+        unspecified.
+      STANDARD_EDITION: The database edition is Standard.
+      ENTERPRISE_EDITION: The database edition is Enterprise.
+      ENTERPRISE_EDITION_HIGH_PERFORMANCE: The database edition is Enterprise
+        Edition.
+    """
+    DB_SYSTEM_DATABASE_EDITION_UNSPECIFIED = 0
+    STANDARD_EDITION = 1
+    ENTERPRISE_EDITION = 2
+    ENTERPRISE_EDITION_HIGH_PERFORMANCE = 3
+
+  class LicenseModelValueValuesEnum(_messages.Enum):
+    r"""Required. The license model of the DbSystem.
+
+    Values:
+      LICENSE_MODEL_UNSPECIFIED: The license model is unspecified.
+      LICENSE_INCLUDED: The license model is included.
+      BRING_YOUR_OWN_LICENSE: The license model is bring your own license.
+    """
+    LICENSE_MODEL_UNSPECIFIED = 0
+    LICENSE_INCLUDED = 1
+    BRING_YOUR_OWN_LICENSE = 2
+
+  class LifecycleStateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the DbSystem.
+
+    Values:
+      DB_SYSTEM_LIFECYCLE_STATE_UNSPECIFIED: Default unspecified value.
+      PROVISIONING: Indicates that the resource is in provisioning state.
+      AVAILABLE: Indicates that the resource is in available state.
+      UPDATING: Indicates that the resource is in updating state.
+      TERMINATING: Indicates that the resource is in terminating state.
+      TERMINATED: Indicates that the resource is in terminated state.
+      FAILED: Indicates that the resource is in failed state.
+      MIGRATED: Indicates that the resource has been migrated.
+      MAINTENANCE_IN_PROGRESS: Indicates that the resource is in maintenance
+        in progress state.
+      NEEDS_ATTENTION: Indicates that the resource needs attention.
+      UPGRADING: Indicates that the resource is upgrading.
+    """
+    DB_SYSTEM_LIFECYCLE_STATE_UNSPECIFIED = 0
+    PROVISIONING = 1
+    AVAILABLE = 2
+    UPDATING = 3
+    TERMINATING = 4
+    TERMINATED = 5
+    FAILED = 6
+    MIGRATED = 7
+    MAINTENANCE_IN_PROGRESS = 8
+    NEEDS_ATTENTION = 9
+    UPGRADING = 10
+
+  computeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  computeModel = _messages.EnumField('ComputeModelValueValuesEnum', 2)
+  dataCollectionOptions = _messages.MessageField('DataCollectionOptionsDbSystem', 3)
+  dataStorageSizeGb = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  databaseEdition = _messages.EnumField('DatabaseEditionValueValuesEnum', 5)
+  dbHome = _messages.MessageField('DbHome', 6)
+  dbSystemOptions = _messages.MessageField('DbSystemOptions', 7)
+  domain = _messages.StringField(8)
+  hostname = _messages.StringField(9)
+  hostnamePrefix = _messages.StringField(10)
+  initialDataStorageSizeGb = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  licenseModel = _messages.EnumField('LicenseModelValueValuesEnum', 12)
+  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 13)
+  memorySizeGb = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  nodeCount = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  ocid = _messages.StringField(16)
+  privateIp = _messages.StringField(17)
+  recoStorageSizeGb = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  shape = _messages.StringField(19)
+  sshPublicKeys = _messages.StringField(20, repeated=True)
+  timeZone = _messages.MessageField('TimeZone', 21)
+
+
 class DbSystemShape(_messages.Message):
   r"""Details of the Database System Shapes resource.
   https://docs.oracle.com/en-
@@ -1784,6 +2489,78 @@ class DbSystemShape(_messages.Message):
   minStorageCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
   name = _messages.StringField(11)
   shape = _messages.StringField(12)
+
+
+class DbVersion(_messages.Message):
+  r"""A valid Oracle Database version.
+
+  Fields:
+    name: Output only. The name of the DbVersion resource in the following
+      format: projects/{project}/locations/{region}/dbVersions/{db_version}
+    properties: Output only. The properties of the DbVersion.
+  """
+
+  name = _messages.StringField(1)
+  properties = _messages.MessageField('DbVersionProperties', 2)
+
+
+class DbVersionProperties(_messages.Message):
+  r"""The properties of a DbVersion.
+
+  Fields:
+    isLatestForMajorVersion: Output only. True if this version of the Oracle
+      Database software is the latest version for a release.
+    isPreviewDbVersion: Output only. True if this version of the Oracle
+      Database software is the preview version.
+    isUpgradeSupported: Output only. True if this version of the Oracle
+      Database software is supported for Upgrade.
+    supportsPdb: Output only. True if this version of the Oracle Database
+      software supports pluggable databases.
+    version: Output only. A valid Oracle Database version.
+  """
+
+  isLatestForMajorVersion = _messages.BooleanField(1)
+  isPreviewDbVersion = _messages.BooleanField(2)
+  isUpgradeSupported = _messages.BooleanField(3)
+  supportsPdb = _messages.BooleanField(4)
+  version = _messages.StringField(5)
+
+
+class DefinedTagValue(_messages.Message):
+  r"""Wrapper message for the value of a defined tag.
+
+  Messages:
+    TagsValue: The tags within the namespace.
+
+  Fields:
+    tags: The tags within the namespace.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""The tags within the namespace.
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  tags = _messages.MessageField('TagsValue', 1)
 
 
 class Empty(_messages.Message):
@@ -1833,6 +2610,16 @@ class Entitlement(_messages.Message):
   entitlementId = _messages.StringField(2)
   name = _messages.StringField(3)
   state = _messages.EnumField('StateValueValuesEnum', 4)
+
+
+class FailoverAutonomousDatabaseRequest(_messages.Message):
+  r"""The request for `OracleDatabase.FailoverAutonomousDatabase`.
+
+  Fields:
+    peerAutonomousDatabase: Required. The peer database name to fail over to.
+  """
+
+  peerAutonomousDatabase = _messages.StringField(1)
 
 
 class GenerateAutonomousDatabaseWalletRequest(_messages.Message):
@@ -2010,6 +2797,32 @@ class ListCloudVmClustersResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListDatabaseCharacterSetsResponse(_messages.Message):
+  r"""The response for `DatabaseCharacterSet.List`.
+
+  Fields:
+    databaseCharacterSets: The list of DatabaseCharacterSets.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+  """
+
+  databaseCharacterSets = _messages.MessageField('DatabaseCharacterSet', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListDatabasesResponse(_messages.Message):
+  r"""The response for `Database.List`.
+
+  Fields:
+    databases: The list of Databases.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+  """
+
+  databases = _messages.MessageField('Database', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListDbNodesResponse(_messages.Message):
   r"""The response for `DbNode.List`.
 
@@ -2036,6 +2849,19 @@ class ListDbServersResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListDbSystemInitialStorageSizesResponse(_messages.Message):
+  r"""The response for `DbSystemInitialStorageSizes.List`.
+
+  Fields:
+    dbSystemInitialStorageSizes: The list of DbSystemInitialStorageSizes.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+  """
+
+  dbSystemInitialStorageSizes = _messages.MessageField('DbSystemInitialStorageSize', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListDbSystemShapesResponse(_messages.Message):
   r"""The response for `DbSystemShape.List`.
 
@@ -2046,6 +2872,32 @@ class ListDbSystemShapesResponse(_messages.Message):
   """
 
   dbSystemShapes = _messages.MessageField('DbSystemShape', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListDbSystemsResponse(_messages.Message):
+  r"""The response for `DbSystem.List`.
+
+  Fields:
+    dbSystems: The list of DbSystems.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+  """
+
+  dbSystems = _messages.MessageField('DbSystem', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListDbVersionsResponse(_messages.Message):
+  r"""The response for `DbVersions.List`.
+
+  Fields:
+    dbVersions: The list of DbVersions.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+  """
+
+  dbVersions = _messages.MessageField('DbVersion', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -2131,6 +2983,19 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListPluggableDatabasesResponse(_messages.Message):
+  r"""The response for `PluggableDatabase.List`.
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    pluggableDatabases: The list of PluggableDatabases.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  pluggableDatabases = _messages.MessageField('PluggableDatabase', 2, repeated=True)
 
 
 class Location(_messages.Message):
@@ -2374,6 +3239,9 @@ class OdbNetwork(_messages.Message):
       created.
     entitlementId: Output only. The ID of the subscription entitlement
       associated with the OdbNetwork.
+    gcpOracleZone: Optional. The GCP Oracle zone where OdbNetwork is hosted.
+      Example: us-east4-b-r2. If not specified, the system will pick a zone
+      based on availability.
     labels: Optional. Labels or tags associated with the resource.
     name: Identifier. The name of the OdbNetwork resource in the following
       format: projects/{project}/locations/{region}/odbNetworks/{odb_network}
@@ -2424,10 +3292,11 @@ class OdbNetwork(_messages.Message):
 
   createTime = _messages.StringField(1)
   entitlementId = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  network = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
+  gcpOracleZone = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  network = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
 
 
 class OdbSubnet(_messages.Message):
@@ -2750,6 +3619,22 @@ class OracledatabaseProjectsLocationsAutonomousDatabasesDeleteRequest(_messages.
   requestId = _messages.StringField(2)
 
 
+class OracledatabaseProjectsLocationsAutonomousDatabasesFailoverRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsAutonomousDatabasesFailoverRequest
+  object.
+
+  Fields:
+    failoverAutonomousDatabaseRequest: A FailoverAutonomousDatabaseRequest
+      resource to be passed as the request body.
+    name: Required. The name of the Autonomous Database in the following
+      format: projects/{project}/locations/{location}/autonomousDatabases/{aut
+      onomous_database}.
+  """
+
+  failoverAutonomousDatabaseRequest = _messages.MessageField('FailoverAutonomousDatabaseRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class OracledatabaseProjectsLocationsAutonomousDatabasesGenerateWalletRequest(_messages.Message):
   r"""A
   OracledatabaseProjectsLocationsAutonomousDatabasesGenerateWalletRequest
@@ -2992,6 +3877,8 @@ class OracledatabaseProjectsLocationsCloudExadataInfrastructuresListRequest(_mes
   object.
 
   Fields:
+    filter: Optional. An expression for filtering the results of the request.
+    orderBy: Optional. An expression for ordering the results of the request.
     pageSize: Optional. The maximum number of items to return. If unspecified,
       at most 50 Exadata infrastructures will be returned. The maximum value
       is 1000; values above 1000 will be coerced to 1000.
@@ -3001,9 +3888,11 @@ class OracledatabaseProjectsLocationsCloudExadataInfrastructuresListRequest(_mes
       following format: projects/{project}/locations/{location}.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class OracledatabaseProjectsLocationsCloudVmClustersCreateRequest(_messages.Message):
@@ -3108,10 +3997,96 @@ class OracledatabaseProjectsLocationsCloudVmClustersListRequest(_messages.Messag
   parent = _messages.StringField(4, required=True)
 
 
+class OracledatabaseProjectsLocationsDatabaseCharacterSetsListRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsDatabaseCharacterSetsListRequest
+  object.
+
+  Fields:
+    filter: Optional. An expression for filtering the results of the request.
+      Only the **character_set_type** field is supported in the following
+      format: `character_set_type="{characterSetType}"`. Accepted values
+      include `DATABASE` and `NATIONAL`.
+    pageSize: Optional. The maximum number of DatabaseCharacterSets to return.
+      The service may return fewer than this value. If unspecified, at most 50
+      DatabaseCharacterSets will be returned. The maximum value is 1000;
+      values above 1000 will be coerced to 1000.
+    pageToken: Optional. A page token, received from a previous
+      `ListDatabaseCharacterSets` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListDatabaseCharacterSets` must match the call that provided the page
+      token.
+    parent: Required. The parent value for DatabaseCharacterSets in the
+      following format: projects/{project}/locations/{location}.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class OracledatabaseProjectsLocationsDatabasesGetRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsDatabasesGetRequest object.
+
+  Fields:
+    name: Required. The name of the Database resource in the following format:
+      projects/{project}/locations/{region}/databases/{database}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OracledatabaseProjectsLocationsDatabasesListRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsDatabasesListRequest object.
+
+  Fields:
+    filter: Optional. An expression for filtering the results of the request.
+      list for container databases is supported only with a valid dbSystem
+      (full resource name) filter in this format: `dbSystem="projects/{project
+      }/locations/{location}/dbSystems/{dbSystemId}"`
+    pageSize: Optional. The maximum number of items to return. If unspecified,
+      a maximum of 50 System Versions will be returned. The maximum value is
+      1000; values above 1000 will be reset to 1000.
+    pageToken: Optional. A token identifying the requested page of results to
+      return. All fields except the filter should remain the same as in the
+      request that provided this page token.
+    parent: Required. The parent resource name in the following format:
+      projects/{project}/locations/{region}
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class OracledatabaseProjectsLocationsDbSystemInitialStorageSizesListRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsDbSystemInitialStorageSizesListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. The maximum number of items to return. If unspecified,
+      a maximum of 50 System Versions will be returned. The maximum value is
+      1000; values above 1000 will be reset to 1000.
+    pageToken: Optional. A token identifying the requested page of results to
+      return. All fields except the filter should remain the same as in the
+      request that provided this page token.
+    parent: Required. The parent value for the DbSystemInitialStorageSize
+      resource with the format: projects/{project}/locations/{location}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class OracledatabaseProjectsLocationsDbSystemShapesListRequest(_messages.Message):
   r"""A OracledatabaseProjectsLocationsDbSystemShapesListRequest object.
 
   Fields:
+    filter: Optional. An expression for filtering the results of the request.
+      Only the gcp_oracle_zone_id field is supported in this format:
+      `gcp_oracle_zone_id="{gcp_oracle_zone_id}"`.
     pageSize: Optional. The maximum number of items to return. If unspecified,
       at most 50 database system shapes will be returned. The maximum value is
       1000; values above 1000 will be coerced to 1000.
@@ -3121,9 +4096,117 @@ class OracledatabaseProjectsLocationsDbSystemShapesListRequest(_messages.Message
       following format: projects/{project}/locations/{location}.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class OracledatabaseProjectsLocationsDbSystemsCreateRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsDbSystemsCreateRequest object.
+
+  Fields:
+    dbSystem: A DbSystem resource to be passed as the request body.
+    dbSystemId: Required. The ID of the DbSystem to create. This value is
+      restricted to (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$) and must be a maximum
+      of 63 characters in length. The value must start with a letter and end
+      with a letter or a number.
+    parent: Required. The value for parent of the DbSystem in the following
+      format: projects/{project}/locations/{location}.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  dbSystem = _messages.MessageField('DbSystem', 1)
+  dbSystemId = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class OracledatabaseProjectsLocationsDbSystemsDeleteRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsDbSystemsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the DbSystem in the following format:
+      projects/{project}/locations/{location}/dbSystems/{db_system}.
+    requestId: Optional. An optional ID to identify the request. This value is
+      used to identify duplicate requests. If you make a request with the same
+      request ID and the original request is still in progress or completed,
+      the server ignores the second request. This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class OracledatabaseProjectsLocationsDbSystemsGetRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsDbSystemsGetRequest object.
+
+  Fields:
+    name: Required. The name of the DbSystem in the following format:
+      projects/{project}/locations/{location}/dbSystems/{db_system}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OracledatabaseProjectsLocationsDbSystemsListRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsDbSystemsListRequest object.
+
+  Fields:
+    filter: Optional. An expression for filtering the results of the request.
+    orderBy: Optional. An expression for ordering the results of the request.
+    pageSize: Optional. The maximum number of items to return. If unspecified,
+      at most 50 DbSystems will be returned. The maximum value is 1000; values
+      above 1000 will be coerced to 1000.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. The parent value for DbSystems in the following format:
+      projects/{project}/locations/{location}.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class OracledatabaseProjectsLocationsDbVersionsListRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsDbVersionsListRequest object.
+
+  Fields:
+    filter: Optional. Filter expression that matches a subset of the
+      DbVersions to show. The supported filter for dbSystem creation is
+      `db_system_shape = {db_system_shape} AND storage_management =
+      {storage_management}`. If no filter is provided, all DbVersions will be
+      returned.
+    pageSize: Optional. The maximum number of items to return. If unspecified,
+      a maximum of 50 System Versions will be returned. The maximum value is
+      1000; values above 1000 will be reset to 1000.
+    pageToken: Optional. A token identifying the requested page of results to
+      return. All fields except the filter should remain the same as in the
+      request that provided this page token.
+    parent: Required. The parent value for the DbVersion resource with the
+      format: projects/{project}/locations/{location}
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class OracledatabaseProjectsLocationsEntitlementsListRequest(_messages.Message):
@@ -3159,8 +4242,8 @@ class OracledatabaseProjectsLocationsGiVersionsListRequest(_messages.Message):
 
   Fields:
     filter: Optional. An expression for filtering the results of the request.
-      Only the shape and gi_version fields are supported in this format:
-      `shape="{shape}"`.
+      Only the shape, gcp_oracle_zone and gi_version fields are supported in
+      this format: `shape="{shape}"`.
     pageSize: Optional. The maximum number of items to return. If unspecified,
       a maximum of 50 Oracle Grid Infrastructure (GI) versions will be
       returned. The maximum value is 1000; values above 1000 will be reset to
@@ -3181,8 +4264,8 @@ class OracledatabaseProjectsLocationsListRequest(_messages.Message):
   r"""A OracledatabaseProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Do not use this field. It is unsupported and
-      is ignored unless explicitly documented otherwise. This is primarily for
+    extraLocationTypes: Optional. Unless explicitly documented otherwise,
+      don't use this unsupported field which is primarily intended for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -3413,6 +4496,308 @@ class OracledatabaseProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class OracledatabaseProjectsLocationsPluggableDatabasesGetRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsPluggableDatabasesGetRequest object.
+
+  Fields:
+    name: Required. The name of the PluggableDatabase resource in the
+      following format: projects/{project}/locations/{region}/pluggableDatabas
+      es/{pluggable_database}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OracledatabaseProjectsLocationsPluggableDatabasesListRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsPluggableDatabasesListRequest object.
+
+  Fields:
+    filter: Optional. An expression for filtering the results of the request.
+      List for pluggable databases is supported only with a valid container
+      database (full resource name) filter in this format: `database="projects
+      /{project}/locations/{location}/databases/{database}"`
+    pageSize: Optional. The maximum number of PluggableDatabases to return.
+      The service may return fewer than this value.
+    pageToken: Optional. A page token, received from a previous
+      `ListPluggableDatabases` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `ListPluggableDatabases` must match the call that provided the page
+      token.
+    parent: Required. The parent, which owns this collection of
+      PluggableDatabases. Format: projects/{project}/locations/{location}
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class PluggableDatabase(_messages.Message):
+  r"""The PluggableDatabase resource. https://docs.oracle.com/en-
+  us/iaas/api/#/en/database/20160918/PluggableDatabase/
+
+  Fields:
+    createTime: Output only. The date and time that the PluggableDatabase was
+      created.
+    name: Identifier. The name of the PluggableDatabase resource in the
+      following format: projects/{project}/locations/{region}/pluggableDatabas
+      es/{pluggable_database}
+    ociUrl: Output only. HTTPS link to OCI resources exposed to Customer via
+      UI Interface.
+    properties: Optional. The properties of the PluggableDatabase.
+  """
+
+  createTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  ociUrl = _messages.StringField(3)
+  properties = _messages.MessageField('PluggableDatabaseProperties', 4)
+
+
+class PluggableDatabaseConnectionStrings(_messages.Message):
+  r"""The connection strings used to connect to the Oracle Database.
+
+  Messages:
+    AllConnectionStringsValue: Optional. All connection strings to use to
+      connect to the pluggable database.
+
+  Fields:
+    allConnectionStrings: Optional. All connection strings to use to connect
+      to the pluggable database.
+    pdbDefault: Optional. The default connection string to use to connect to
+      the pluggable database.
+    pdbIpDefault: Optional. The default connection string to use to connect to
+      the pluggable database using IP.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AllConnectionStringsValue(_messages.Message):
+    r"""Optional. All connection strings to use to connect to the pluggable
+    database.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        AllConnectionStringsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AllConnectionStringsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AllConnectionStringsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  allConnectionStrings = _messages.MessageField('AllConnectionStringsValue', 1)
+  pdbDefault = _messages.StringField(2)
+  pdbIpDefault = _messages.StringField(3)
+
+
+class PluggableDatabaseNodeLevelDetails(_messages.Message):
+  r"""The Pluggable Database Node Level Details.
+
+  Enums:
+    OpenModeValueValuesEnum: Required. The mode that the pluggable database is
+      in to open it.
+
+  Fields:
+    nodeName: Required. The Node name of the Database home.
+    openMode: Required. The mode that the pluggable database is in to open it.
+    pluggableDatabaseId: Required. The OCID of the Pluggable Database.
+  """
+
+  class OpenModeValueValuesEnum(_messages.Enum):
+    r"""Required. The mode that the pluggable database is in to open it.
+
+    Values:
+      PLUGGABLE_DATABASE_OPEN_MODE_UNSPECIFIED: The open mode is unspecified.
+      READ_ONLY: The pluggable database is opened in read-only mode.
+      READ_WRITE: The pluggable database is opened in read-write mode.
+      MOUNTED: The pluggable database is mounted.
+      MIGRATE: The pluggable database is migrated.
+    """
+    PLUGGABLE_DATABASE_OPEN_MODE_UNSPECIFIED = 0
+    READ_ONLY = 1
+    READ_WRITE = 2
+    MOUNTED = 3
+    MIGRATE = 4
+
+  nodeName = _messages.StringField(1)
+  openMode = _messages.EnumField('OpenModeValueValuesEnum', 2)
+  pluggableDatabaseId = _messages.StringField(3)
+
+
+class PluggableDatabaseProperties(_messages.Message):
+  r"""The properties of a PluggableDatabase.
+
+  Enums:
+    LifecycleStateValueValuesEnum: Output only. The current state of the
+      pluggable database.
+    OperationsInsightsStateValueValuesEnum: Output only. The status of
+      Operations Insights for this Database.
+
+  Messages:
+    DefinedTagsValue: Optional. Defined tags for this resource. Each key is
+      predefined and scoped to a namespace.
+    FreeformTagsValue: Optional. Free-form tags for this resource. Each tag is
+      a simple key-value pair with no predefined name, type, or namespace.
+
+  Fields:
+    compartmentId: Required. The OCID of the compartment.
+    connectionStrings: Optional. The Connection strings used to connect to the
+      Oracle Database.
+    containerDatabaseOcid: Required. The OCID of the CDB.
+    databaseManagementConfig: Output only. The configuration of the Database
+      Management service.
+    definedTags: Optional. Defined tags for this resource. Each key is
+      predefined and scoped to a namespace.
+    freeformTags: Optional. Free-form tags for this resource. Each tag is a
+      simple key-value pair with no predefined name, type, or namespace.
+    isRestricted: Optional. The restricted mode of the pluggable database. If
+      a pluggable database is opened in restricted mode, the user needs both
+      create a session and have restricted session privileges to connect to
+      it.
+    lifecycleDetails: Output only. Additional information about the current
+      lifecycle state.
+    lifecycleState: Output only. The current state of the pluggable database.
+    ocid: Output only. The OCID of the pluggable database.
+    operationsInsightsState: Output only. The status of Operations Insights
+      for this Database.
+    pdbName: Required. The database name.
+    pdbNodeLevelDetails: Optional. Pluggable Database Node Level Details
+  """
+
+  class LifecycleStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the pluggable database.
+
+    Values:
+      PLUGGABLE_DATABASE_LIFECYCLE_STATE_UNSPECIFIED: The lifecycle state is
+        unspecified.
+      PROVISIONING: The pluggable database is provisioning.
+      AVAILABLE: The pluggable database is available.
+      TERMINATING: The pluggable database is terminating.
+      TERMINATED: The pluggable database is terminated.
+      UPDATING: The pluggable database is updating.
+      FAILED: The pluggable database is in a failed state.
+      RELOCATING: The pluggable database is relocating.
+      RELOCATED: The pluggable database is relocated.
+      REFRESHING: The pluggable database is refreshing.
+      RESTORE_IN_PROGRESS: The pluggable database is restoring.
+      RESTORE_FAILED: The pluggable database restore failed.
+      BACKUP_IN_PROGRESS: The pluggable database is backing up.
+      DISABLED: The pluggable database is disabled.
+    """
+    PLUGGABLE_DATABASE_LIFECYCLE_STATE_UNSPECIFIED = 0
+    PROVISIONING = 1
+    AVAILABLE = 2
+    TERMINATING = 3
+    TERMINATED = 4
+    UPDATING = 5
+    FAILED = 6
+    RELOCATING = 7
+    RELOCATED = 8
+    REFRESHING = 9
+    RESTORE_IN_PROGRESS = 10
+    RESTORE_FAILED = 11
+    BACKUP_IN_PROGRESS = 12
+    DISABLED = 13
+
+  class OperationsInsightsStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The status of Operations Insights for this Database.
+
+    Values:
+      OPERATIONS_INSIGHTS_STATE_UNSPECIFIED: The status is not specified.
+      ENABLING: Operations Insights is enabling.
+      ENABLED: Operations Insights is enabled.
+      DISABLING: Operations Insights is disabling.
+      NOT_ENABLED: Operations Insights is not enabled.
+      FAILED_ENABLING: Operations Insights failed to enable.
+      FAILED_DISABLING: Operations Insights failed to disable.
+    """
+    OPERATIONS_INSIGHTS_STATE_UNSPECIFIED = 0
+    ENABLING = 1
+    ENABLED = 2
+    DISABLING = 3
+    NOT_ENABLED = 4
+    FAILED_ENABLING = 5
+    FAILED_DISABLING = 6
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DefinedTagsValue(_messages.Message):
+    r"""Optional. Defined tags for this resource. Each key is predefined and
+    scoped to a namespace.
+
+    Messages:
+      AdditionalProperty: An additional property for a DefinedTagsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type DefinedTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DefinedTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A DefinedTagValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('DefinedTagValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FreeformTagsValue(_messages.Message):
+    r"""Optional. Free-form tags for this resource. Each tag is a simple key-
+    value pair with no predefined name, type, or namespace.
+
+    Messages:
+      AdditionalProperty: An additional property for a FreeformTagsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type FreeformTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FreeformTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  compartmentId = _messages.StringField(1)
+  connectionStrings = _messages.MessageField('PluggableDatabaseConnectionStrings', 2)
+  containerDatabaseOcid = _messages.StringField(3)
+  databaseManagementConfig = _messages.MessageField('DatabaseManagementConfig', 4)
+  definedTags = _messages.MessageField('DefinedTagsValue', 5)
+  freeformTags = _messages.MessageField('FreeformTagsValue', 6)
+  isRestricted = _messages.BooleanField(7)
+  lifecycleDetails = _messages.StringField(8)
+  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 9)
+  ocid = _messages.StringField(10)
+  operationsInsightsState = _messages.EnumField('OperationsInsightsStateValueValuesEnum', 11)
+  pdbName = _messages.StringField(12)
+  pdbNodeLevelDetails = _messages.MessageField('PluggableDatabaseNodeLevelDetails', 13, repeated=True)
+
+
 class RestartAutonomousDatabaseRequest(_messages.Message):
   r"""The request for `AutonomousDatabase.Restart`."""
 
@@ -3601,6 +4986,21 @@ class Status(_messages.Message):
 
 class StopAutonomousDatabaseRequest(_messages.Message):
   r"""The request for `AutonomousDatabase.Stop`."""
+
+
+class StorageSizeDetails(_messages.Message):
+  r"""The initial storage size, in gigabytes, that is applicable for virtual
+  machine DBSystem.
+
+  Fields:
+    dataStorageSizeInGbs: Output only. The data storage size, in gigabytes,
+      that is applicable for virtual machine DBSystem.
+    recoStorageSizeInGbs: Output only. The RECO/REDO storage size, in
+      gigabytes, that is applicable for virtual machine DBSystem.
+  """
+
+  dataStorageSizeInGbs = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  recoStorageSizeInGbs = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class SwitchoverAutonomousDatabaseRequest(_messages.Message):

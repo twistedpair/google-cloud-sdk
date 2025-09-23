@@ -14,8 +14,8 @@ package = 'lustre'
 
 
 class AccessRule(_messages.Message):
-  r"""AccessRule defines a single policy group with IP-based access rules for
-  the Lustre instance.
+  r"""A single policy group with IP-based access rules for the Managed Lustre
+  instance.
 
   Enums:
     AccessModeValueValuesEnum: Optional. The access mode for the access rule
@@ -25,23 +25,22 @@ class AccessRule(_messages.Message):
   Fields:
     accessMode: Optional. The access mode for the access rule nodemap. Default
       is READ_WRITE.
-    ipRanges: Optional. The IP ranges and addresses that are allowed to access
-      the instance. This can be in the form of a CIDR range (ex:
-      192.168.1.0/24) or a single IP address (ex: 192.168.1.0). This field is
-      OPTIONAL for default, but REQUIRED for all other access rules.
+    ipAddressRanges: Optional. The IP address ranges to which to apply this
+      access rule. Accepts non-overlapping CIDR ranges (e.g.,
+      `192.168.1.0/24`) and IP addresses (e.g., `192.168.1.0`).
     mountableSubdirectories: Optional. The list of non-root directories that
       can be mounted from clients in this NID range subset. Currently, there
       can be only a single directory at most. If no directory is mentioned,
       then the root directory will be accessible.
-    name: Required. The name of the access rule policy group. Access rule name
-      has a mamximum length of 16 characters that must be alphanumeric or '_'.
-    squashGid: Optional. Squash GID for the access rule. If specified to a
-      non-zero value, the root user will be squashed to this GID. Defaults to
-      0 (no root squash).
+    name: Required. The name of the access rule policy group. Must be 16
+      characters or less and include only alphanumeric characters or '_'.
+    squashGid: Optional. Squash GID for the access rule. If the squash mode
+      for this rule is ROOT_SQUASH, root users matching the ip_ranges are
+      squashed to this GID. Defaults to 0 (no root squash).
     squashMode: Required. Squash mode for the access rule.
-    squashUid: Optional. Squash UID for the access rule. If specified to a
-      non-zero value, the root user will be squashed to this UID. Defaults to
-      0 (no root squash).
+    squashUid: Optional. Squash UID for the access rule. If the squash mode
+      for this rule is ROOT_SQUASH, root users matching the ip_ranges are
+      squashed to this UID. Defaults to 0 (no root squash).
   """
 
   class AccessModeValueValuesEnum(_messages.Enum):
@@ -62,12 +61,15 @@ class AccessRule(_messages.Message):
 
     Values:
       SQUASH_MODE_UNSPECIFIED: Unspecified squash mode.
-      NO_SQUASH: No squash done to the squash_uid and squash_gid for the
-        access rule. If this is for the default_squash_mode, then the
-        default_squash_uid and default_squash_gid will not be squashed.
-      ROOT_SQUASH: Root user squashed to the squash_uid and squash_gid for the
-        access rule. If this is for the default_squash_mode, then the
-        default_squash_uid and default_squash_gid will be squashed.
+      NO_SQUASH: Squash is disabled. If set inside an AccessRule, root users
+        matching the ip_ranges are not squashed. If set as the
+        default_squash_mode, root squash is disabled for this instance. If the
+        default squash mode is `NO_SQUASH`, do not set the default_squash_uid
+        or default_squash_gid, or an `invalid argument` error is returned.
+      ROOT_SQUASH: Root user squash is enabled. Not supported inside an
+        AccessRule. If set as the default_squash_mode, root users not matching
+        any of the access_rules are squashed to the default_squash_uid and
+        default_squash_gid.
       ALL_USERS_SQUASH: All users squashed to the squash_uid and squash_gid
         for the access rule. If this is for the default_squash_mode, then the
         default_squash_uid and default_squash_gid will be squashed.
@@ -78,7 +80,7 @@ class AccessRule(_messages.Message):
     ALL_USERS_SQUASH = 3
 
   accessMode = _messages.EnumField('AccessModeValueValuesEnum', 1)
-  ipRanges = _messages.StringField(2, repeated=True)
+  ipAddressRanges = _messages.StringField(2, repeated=True)
   mountableSubdirectories = _messages.StringField(3, repeated=True)
   name = _messages.StringField(4)
   squashGid = _messages.IntegerField(5, variant=_messages.Variant.INT32)
@@ -87,10 +89,8 @@ class AccessRule(_messages.Message):
 
 
 class AccessRulesOptions(_messages.Message):
-  r"""Client NID-based Access Rules Options for the Lustre instance. These
-  options are used to determine which clients are able to access certain
-  subdirectories (filesets) of the Lustre instance, and the root user squash
-  configurations for those clients.
+  r"""IP-based access rules for the Managed Lustre instance. These options
+  define the root user squash configuration.
 
   Enums:
     DefaultSquashModeValueValuesEnum: Required. The squash mode for the
@@ -102,15 +102,15 @@ class AccessRulesOptions(_messages.Message):
       that can be mounted from clients in the default access rule. Currently,
       there can be only a single directory at most. If no directory is
       mentioned, then the root directory will be accessible.
-    defaultSquashGid: Optional. The user squash mode for the default access
-      rule. This user squash GID will apply to all clients that are not
-      matched by any of the access rules. If not set, the default is 0 (no GID
-      squash).
+    defaultSquashGid: Optional. The user squash GID for the default access
+      rule. This user squash GID applies to all root users connecting from
+      clients that are not matched by any of the access rules. If not set, the
+      default is 0 (no GID squash).
     defaultSquashMode: Required. The squash mode for the default access rule.
     defaultSquashUid: Optional. The user squash UID for the default access
-      rule. This user squash UID will apply to all clients that are not
-      matched by any of the access rules. If not set, the default is 0 (no UID
-      squash).
+      rule. This user squash UID applies to all root users connecting from
+      clients that are not matched by any of the access rules. If not set, the
+      default is 0 (no UID squash).
   """
 
   class DefaultSquashModeValueValuesEnum(_messages.Enum):
@@ -118,12 +118,15 @@ class AccessRulesOptions(_messages.Message):
 
     Values:
       SQUASH_MODE_UNSPECIFIED: Unspecified squash mode.
-      NO_SQUASH: No squash done to the squash_uid and squash_gid for the
-        access rule. If this is for the default_squash_mode, then the
-        default_squash_uid and default_squash_gid will not be squashed.
-      ROOT_SQUASH: Root user squashed to the squash_uid and squash_gid for the
-        access rule. If this is for the default_squash_mode, then the
-        default_squash_uid and default_squash_gid will be squashed.
+      NO_SQUASH: Squash is disabled. If set inside an AccessRule, root users
+        matching the ip_ranges are not squashed. If set as the
+        default_squash_mode, root squash is disabled for this instance. If the
+        default squash mode is `NO_SQUASH`, do not set the default_squash_uid
+        or default_squash_gid, or an `invalid argument` error is returned.
+      ROOT_SQUASH: Root user squash is enabled. Not supported inside an
+        AccessRule. If set as the default_squash_mode, root users not matching
+        any of the access_rules are squashed to the default_squash_uid and
+        default_squash_gid.
       ALL_USERS_SQUASH: All users squashed to the squash_uid and squash_gid
         for the access rule. If this is for the default_squash_mode, then the
         default_squash_uid and default_squash_gid will be squashed.
@@ -607,8 +610,8 @@ class LustreProjectsLocationsListRequest(_messages.Message):
   r"""A LustreProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Do not use this field. It is unsupported and
-      is ignored unless explicitly documented otherwise. This is primarily for
+    extraLocationTypes: Optional. Unless explicitly documented otherwise,
+      don't use this unsupported field which is primarily intended for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is

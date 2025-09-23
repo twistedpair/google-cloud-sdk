@@ -1519,6 +1519,33 @@ class EdgecontainerV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListRoles(self, request, global_params=None):
+      r"""ListRoles lists the IAM roles for a project in the zone.
+
+      Args:
+        request: (EdgecontainerProjectsLocationsZonesListRolesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRolesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListRoles')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListRoles.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}:roles',
+        http_method='GET',
+        method_id='edgecontainer.projects.locations.zones.listRoles',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}:roles',
+        request_field='',
+        request_type_name='EdgecontainerProjectsLocationsZonesListRolesRequest',
+        response_type_name='ListRolesResponse',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       r"""SetIamPolicy sets the IAM policy for a project in the infra cluster. It overrides the existing policy with the provided one.
 

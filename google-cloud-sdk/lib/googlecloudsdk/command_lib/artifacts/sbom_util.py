@@ -588,8 +588,21 @@ def _FindAvailableGCSBucket(default_bucket, project_id, location):
       check_ownership=True,
       enable_uniform_level_access=True,
   )
-  # TODO: b/437367532 - Add `goog-managed-by` label to the bucket.
-
+  try:
+    bucket = gcs_client.GetBucket(bucket=bucket_name)
+    labels_dict = encoding.MessageToDict(bucket.labels) if bucket.labels else {}
+    labels_dict['goog-managed-by'] = 'artifact-analysis'
+    bucket.labels = encoding.DictToMessage(
+        labels_dict, gcs_client.messages.Bucket.LabelsValue
+    )
+    request = gcs_client.messages.StorageBucketsPatchRequest(
+        bucket=bucket_name,
+        bucketResource=bucket,
+    )
+    gcs_client.client.buckets.Patch(request)
+  # pylint: disable=broad-exception-caught
+  except Exception as e:
+    log.warning('Failed to add labels to bucket {}: {}'.format(bucket_name, e))
   return bucket_name
 
 
@@ -629,6 +642,25 @@ def UploadSbomToGCS(source, artifact, sbom, gcs_path=None):
           location=bucket_location,
           check_ownership=True,
       )
+      try:
+        bucket = gcs_client.GetBucket(bucket=bucket_name)
+        labels_dict = (
+            encoding.MessageToDict(bucket.labels) if bucket.labels else {}
+        )
+        labels_dict['goog-managed-by'] = 'artifact-analysis'
+        bucket.labels = encoding.DictToMessage(
+            labels_dict, gcs_client.messages.Bucket.LabelsValue
+        )
+        request = gcs_client.messages.StorageBucketsPatchRequest(
+            bucket=bucket_name,
+            bucketResource=bucket,
+        )
+        gcs_client.client.buckets.Patch(request)
+      # pylint: disable=broad-exception-caught
+      except Exception as e:
+        log.warning(
+            'Failed to add labels to bucket {}: {}'.format(bucket_name, e)
+        )
     except storage_api.BucketInWrongProjectError:
       # User is given permission to get and use the bucket, but the bucket is
       # not in the correct project. Will fallback to find a backup bucket.

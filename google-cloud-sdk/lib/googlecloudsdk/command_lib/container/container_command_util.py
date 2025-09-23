@@ -24,7 +24,9 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import iso_duration
 from googlecloudsdk.core.util import text
+from googlecloudsdk.core.util import times
 
 
 class Error(exceptions.Error):
@@ -76,6 +78,44 @@ def _MasterUpgradeMessage(name, server_conf, cluster, new_version):
 
   return ('Master of cluster [{}] will be upgraded from {} to {}.'.format(
       name, version_message, new_version_message))
+
+
+def _RollbackSafeUpgradeMessage(
+    name, server_conf, cluster, new_version, control_plane_soak_duration
+):
+  """Returns the prompt message during a rollback safe upgrade.
+
+  Args:
+    name: str, the name of the cluster being upgraded.
+    server_conf: the server config object.
+    cluster: the cluster object.
+    new_version: str, the name of the new version, if given.
+    control_plane_soak_duration: int, the soak duration in seconds for the
+      control plane upgrade.
+  """
+  if cluster:
+    version_message = 'version [{}]'.format(cluster.currentMasterVersion)
+  else:
+    version_message = 'its current version'
+
+  if not new_version and server_conf:
+    new_version = server_conf.defaultClusterVersion
+
+  if new_version:
+    new_version_message = 'version [{}]'.format(new_version)
+  else:
+    new_version_message = 'the default cluster version'
+
+  soak_duration = times.FormatDurationForJson(
+      iso_duration.Duration(seconds=control_plane_soak_duration)
+  )
+  return (
+      'Control plane of cluster [{}] will be upgraded from {} to {} with a'
+      ' soak duration of {}. You can rollback the cluster to previous version'
+      ' within the soak duration.'.format(
+          name, version_message, new_version_message, soak_duration
+      )
+  )
 
 
 def _NodeUpgradeMessage(name, cluster, node_pool_name, new_version,
@@ -178,6 +218,7 @@ def ClusterUpgradeMessage(name,
                           server_conf=None,
                           cluster=None,
                           master=False,
+                          control_plane_soak_duration=None,
                           node_pool_name=None,
                           new_version=None,
                           new_image_type=None,
@@ -191,6 +232,8 @@ def ClusterUpgradeMessage(name,
     server_conf: the server config object.
     cluster: the cluster object.
     master: bool, if the upgrade applies to the master version.
+    control_plane_soak_duration: int, the soak duration for the control plane
+      upgrade.
     node_pool_name: str, the name of the node pool if the upgrade is for a
       specific node pool.
     new_version: str, the name of the new version, if given.
@@ -207,9 +250,14 @@ def ClusterUpgradeMessage(name,
         to which version.
   """
   if master:
-    upgrade_message = _MasterUpgradeMessage(
-        name, server_conf, cluster, new_version
-    )
+    if control_plane_soak_duration:
+      upgrade_message = _RollbackSafeUpgradeMessage(
+          name, server_conf, cluster, new_version, control_plane_soak_duration
+      )
+    else:
+      upgrade_message = _MasterUpgradeMessage(
+          name, server_conf, cluster, new_version
+      )
   else:
     upgrade_message = _NodeUpgradeMessage(
         name,

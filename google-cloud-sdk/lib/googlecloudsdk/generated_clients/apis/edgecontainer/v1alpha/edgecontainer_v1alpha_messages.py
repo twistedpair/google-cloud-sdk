@@ -627,8 +627,8 @@ class EdgecontainerOrganizationsLocationsListRequest(_messages.Message):
   r"""A EdgecontainerOrganizationsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Do not use this field. It is unsupported and
-      is ignored unless explicitly documented otherwise. This is primarily for
+    extraLocationTypes: Optional. Unless explicitly documented otherwise,
+      don't use this unsupported field which is primarily intended for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -1017,8 +1017,8 @@ class EdgecontainerProjectsLocationsListRequest(_messages.Message):
   r"""A EdgecontainerProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Do not use this field. It is unsupported and
-      is ignored unless explicitly documented otherwise. This is primarily for
+    extraLocationTypes: Optional. Unless explicitly documented otherwise,
+      don't use this unsupported field which is primarily intended for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -1352,6 +1352,21 @@ class EdgecontainerProjectsLocationsZonesGetIamPolicyRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class EdgecontainerProjectsLocationsZonesListRolesRequest(_messages.Message):
+  r"""A EdgecontainerProjectsLocationsZonesListRolesRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of resources to list.
+    pageToken: Optional. A page token received from previous list request.
+    parent: Required. The canonical name of the zone from which the roles are
+      to be listed. E.g. projects/*/locations/*/zones/*
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class EdgecontainerProjectsLocationsZonesSetIamPolicyRequest(_messages.Message):
   r"""A EdgecontainerProjectsLocationsZonesSetIamPolicyRequest object.
 
@@ -1677,6 +1692,18 @@ class ListOperationsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListRolesResponse(_messages.Message):
+  r"""Response proto to list the roles associated with a project in a zone.
+
+  Fields:
+    nextPageToken: A token to retrieve next page of results.
+    roles: A list of roles associated with a project in a zone.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  roles = _messages.MessageField('Role', 2, repeated=True)
+
+
 class ListServiceAccountsResponse(_messages.Message):
   r"""List ServiceAccounts Response.
 
@@ -1756,12 +1783,16 @@ class Local(_messages.Message):
   result in data loss.
 
   Enums:
+    ControlPlaneNodeSystemPartitionSizeValueValuesEnum: Optional. System
+      partition size for control plane nodes in GiB.
     SharedDeploymentPolicyValueValuesEnum: Policy configuration about how user
       applications are deployed.
 
   Fields:
     controlPlaneNodeStorageSchema: Optional. Name for the storage schema of
       control plane nodes.
+    controlPlaneNodeSystemPartitionSize: Optional. System partition size for
+      control plane nodes in GiB.
     machineFilter: Only machines matching this filter will be allowed to host
       control plane nodes. The filtering language accepts strings like
       "name=", and is documented here: [AIP-160](https://google.aip.dev/160).
@@ -1771,6 +1802,23 @@ class Local(_messages.Message):
     sharedDeploymentPolicy: Policy configuration about how user applications
       are deployed.
   """
+
+  class ControlPlaneNodeSystemPartitionSizeValueValuesEnum(_messages.Enum):
+    r"""Optional. System partition size for control plane nodes in GiB.
+
+    Values:
+      SYSTEM_PARTITION_GIB_SIZE_UNSPECIFIED: System partition size is not
+        specified by the user. This will cause the system partition size to be
+        set to the size specified in the system storage schema applicable to
+        that node, which is 100GiB.
+      SYSTEM_PARTITION_GIB_SIZE100: 100GiB system partition size, also the
+        default size.
+      SYSTEM_PARTITION_GIB_SIZE300: 300GiB system partition size. Can be used
+        to override the 100GiB default.
+    """
+    SYSTEM_PARTITION_GIB_SIZE_UNSPECIFIED = 0
+    SYSTEM_PARTITION_GIB_SIZE100 = 1
+    SYSTEM_PARTITION_GIB_SIZE300 = 2
 
   class SharedDeploymentPolicyValueValuesEnum(_messages.Enum):
     r"""Policy configuration about how user applications are deployed.
@@ -1787,10 +1835,11 @@ class Local(_messages.Message):
     DISALLOWED = 2
 
   controlPlaneNodeStorageSchema = _messages.StringField(1)
-  machineFilter = _messages.StringField(2)
-  nodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  nodeLocation = _messages.StringField(4)
-  sharedDeploymentPolicy = _messages.EnumField('SharedDeploymentPolicyValueValuesEnum', 5)
+  controlPlaneNodeSystemPartitionSize = _messages.EnumField('ControlPlaneNodeSystemPartitionSizeValueValuesEnum', 2)
+  machineFilter = _messages.StringField(3)
+  nodeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  nodeLocation = _messages.StringField(5)
+  sharedDeploymentPolicy = _messages.EnumField('SharedDeploymentPolicyValueValuesEnum', 6)
 
 
 class LocalDiskEncryption(_messages.Message):
@@ -2199,13 +2248,36 @@ class MaintenanceWindow(_messages.Message):
 class NodeConfig(_messages.Message):
   r"""Configuration for each node in the NodePool
 
+  Enums:
+    NodeSystemPartitionSizeValueValuesEnum: Optional. System partition size
+      for worker nodes in GiB.
+
   Messages:
     LabelsValue: Optional. The Kubernetes node labels
 
   Fields:
     labels: Optional. The Kubernetes node labels
     nodeStorageSchema: Optional. Name for the storage schema of worker nodes.
+    nodeSystemPartitionSize: Optional. System partition size for worker nodes
+      in GiB.
   """
+
+  class NodeSystemPartitionSizeValueValuesEnum(_messages.Enum):
+    r"""Optional. System partition size for worker nodes in GiB.
+
+    Values:
+      SYSTEM_PARTITION_GIB_SIZE_UNSPECIFIED: System partition size is not
+        specified by the user. This will cause the system partition size to be
+        set to the size specified in the system storage schema applicable to
+        that node, which is 100GiB.
+      SYSTEM_PARTITION_GIB_SIZE100: 100GiB system partition size, also the
+        default size.
+      SYSTEM_PARTITION_GIB_SIZE300: 300GiB system partition size. Can be used
+        to override the 100GiB default.
+    """
+    SYSTEM_PARTITION_GIB_SIZE_UNSPECIFIED = 0
+    SYSTEM_PARTITION_GIB_SIZE100 = 1
+    SYSTEM_PARTITION_GIB_SIZE300 = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2233,6 +2305,7 @@ class NodeConfig(_messages.Message):
 
   labels = _messages.MessageField('LabelsValue', 1)
   nodeStorageSchema = _messages.StringField(2)
+  nodeSystemPartitionSize = _messages.EnumField('NodeSystemPartitionSizeValueValuesEnum', 3)
 
 
 class NodePool(_messages.Message):
@@ -2541,6 +2614,18 @@ class RobinCloudNativeStorage(_messages.Message):
   enable = _messages.BooleanField(1)
 
 
+class Role(_messages.Message):
+  r"""Represents an IAM role.
+
+  Fields:
+    displayName: Optional. The display name of the role.
+    gcpRole: Required. The GCP IAM role.
+  """
+
+  displayName = _messages.StringField(1)
+  gcpRole = _messages.StringField(2)
+
+
 class SdsOperator(_messages.Message):
   r"""Config for the SDS Operator add-on which installs Robin CNS.
 
@@ -2561,6 +2646,7 @@ class ServerConfig(_messages.Message):
   Fields:
     channels: Output only. Mapping from release channel to channel config.
     defaultVersion: Output only. Default version, e.g.: "1.4.0".
+    versionRollouts: Output only. Rollout information for the server config.
     versions: Output only. Supported versions, e.g.: ["1.4.0", "1.5.0"].
   """
 
@@ -2590,7 +2676,8 @@ class ServerConfig(_messages.Message):
 
   channels = _messages.MessageField('ChannelsValue', 1)
   defaultVersion = _messages.StringField(2)
-  versions = _messages.MessageField('Version', 3, repeated=True)
+  versionRollouts = _messages.MessageField('VersionRollout', 3, repeated=True)
+  versions = _messages.MessageField('Version', 4, repeated=True)
 
 
 class ServiceAccount(_messages.Message):
@@ -2895,6 +2982,19 @@ class Version(_messages.Message):
   """
 
   name = _messages.StringField(1)
+
+
+class VersionRollout(_messages.Message):
+  r"""VersionRollout contains the Version rollout information.
+
+  Fields:
+    availableZones: Output only. List of zones in which the version has been
+      rolled out, e.g.: ["us-central1", "us-west1"].
+    version: Output only. Semantic version, e.g.: "1.4.0".
+  """
+
+  availableZones = _messages.StringField(1, repeated=True)
+  version = _messages.StringField(2)
 
 
 class VpcProject(_messages.Message):

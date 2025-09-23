@@ -299,7 +299,7 @@ def _SetBuildSteps(
           '--config', 'Config file path must not be empty.'
       )
     build_config = config.LoadCloudbuildConfigFromPath(
-        arg_config, messages, params=substitutions
+        arg_config, messages, params=substitutions, no_source=no_source,
     )
 
   # If timeout was set by flag, overwrite the config file.
@@ -307,6 +307,14 @@ def _SetBuildSteps(
     build_config.timeout = timeout_str
 
   return build_config
+
+
+def _IsNonDefaultUniverse():
+  """Returns true if the command is running in a non-default universe."""
+  return (
+      properties.VALUES.core.universe_domain.Get()
+      != properties.VALUES.core.universe_domain.default
+  )
 
 
 def SetSource(
@@ -331,11 +339,13 @@ def SetSource(
   default_bucket_location = cloudbuild_util.DEFAULT_REGION
   if gcs_source_staging_dir is None:
     default_gcs_source = True
-    if (
-        build_region != cloudbuild_util.DEFAULT_REGION
-        and arg_bucket_behavior is not None
-        and flags.GetDefaultBuckestBehavior(arg_bucket_behavior)
-        == messages.BuildOptions.DefaultLogsBucketBehaviorValueValuesEnum.REGIONAL_USER_OWNED_BUCKET
+    if build_region != cloudbuild_util.DEFAULT_REGION and (
+        (_IsNonDefaultUniverse() and arg_bucket_behavior is None)
+        or (
+            arg_bucket_behavior is not None
+            and flags.GetDefaultBuckestBehavior(arg_bucket_behavior)
+            == messages.BuildOptions.DefaultLogsBucketBehaviorValueValuesEnum.REGIONAL_USER_OWNED_BUCKET
+        )
     ):
       default_bucket_location = build_region
       default_bucket_name = staging_bucket_util.GetDefaultRegionalStagingBucket(
@@ -587,6 +597,11 @@ def _SetDefaultLogsBucketBehavior(
       to analyze.
   """
   if arg_bucket_behavior is not None:
+    if _IsNonDefaultUniverse() and arg_bucket_behavior == 'legacy-bucket':
+      raise c_exceptions.InvalidArgumentException(
+          '--default-buckets-behavior',
+          'The legacy-bucket option is not supported in this environment.',
+      )
     bucket_behavior = flags.GetDefaultBuckestBehavior(arg_bucket_behavior)
     if not build_config.options:
       build_config.options = messages.BuildOptions()

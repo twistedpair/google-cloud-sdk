@@ -24,9 +24,20 @@ DISK = arg_parsers.ArgObject(
         "boot": bool,
         "sourceImage": str,
     },
-    required_keys=["type", "sizeGb"],
+    required_keys=["type", "boot"],
     enable_shorthand=True,
     repeated=True,
+)
+
+BOOT_DISK = arg_parsers.ArgObject(
+    spec={
+        "type": str,
+        "sizeGb": int,
+        "boot": bool,
+        "sourceImage": str,
+    },
+    required_keys=["type", "boot"],
+    enable_shorthand=True,
 )
 
 LABEL = arg_parsers.ArgObject(
@@ -35,14 +46,7 @@ LABEL = arg_parsers.ArgObject(
     enable_shorthand=True,
 )
 
-SERVICE_ACCOUNT = arg_parsers.ArgObject(
-    spec={
-        "email": str,
-        "scopes": arg_parsers.ArgList(element_type=str),
-    },
-)
-
-V1ALPHA_STORAGE_CONFIG = arg_parsers.ArgObject(
+STORAGE_CONFIG = arg_parsers.ArgObject(
     spec={
         "id": str,
         "localMount": str,
@@ -50,68 +54,69 @@ V1ALPHA_STORAGE_CONFIG = arg_parsers.ArgObject(
     repeated=True,
 )
 
-_V1ALPHA_CLUSTER = {
-    "compute": arg_parsers.ArgObject(
-        spec={
-            "resourceRequests": arg_parsers.ArgObject(
-                spec={
-                    "disks": DISK,
-                    "guestAccelerators": arg_parsers.ArgObject(
-                        spec={"acceleratorType": str, "count": int},
-                        repeated=True,
-                    ),
-                    "id": str,
-                    "machineType": str,
-                    "maxRunDuration": int,
-                    "provisioningModel": str,
-                    "reservationAffinity": arg_parsers.ArgObject(
-                        spec={
-                            "key": str,
-                            "type": str,
-                            "values": arg_parsers.ArgList(),
-                        }
-                    ),
-                    "terminationAction": str,
-                    "zone": str,
-                },
-                repeated=True,
-            ),
-        }
+_CLUSTER = {
+    "computeResources": arg_parsers.ArgObject(
+        key_type=str,
+        value_type=arg_parsers.ArgObject(
+            spec={
+                "newDwsFlexInstances": arg_parsers.ArgObject(
+                    spec={
+                        "machineType": str,
+                        "maxDuration": str,
+                        "zone": str,
+                    }
+                ),
+                "newOnDemandInstances": arg_parsers.ArgObject(
+                    spec={
+                        "machineType": str,
+                        "zone": str,
+                    }
+                ),
+                "newReservedInstances": arg_parsers.ArgObject(
+                    spec={
+                        "machineType": str,
+                        "reservation": str,
+                    }
+                ),
+                "newSpotInstances": arg_parsers.ArgObject(
+                    spec={
+                        "machineType": str,
+                        "zone": str,
+                    }
+                ),
+            }
+        ),
     ),
     "description": str,
     "labels": LABEL,
     "name": str,
-    "networks": arg_parsers.ArgObject(
-        spec={
-            "initializeParams": arg_parsers.ArgObject(
-                spec={
-                    "description": str,
-                    "network": str,
-                }
-            ),
-            "networkSource": arg_parsers.ArgObject(
-                spec={
-                    "network": str,
-                    "subnetwork": str,
-                }
-            ),
-        },
-        repeated=True,
+    "networkResources": arg_parsers.ArgObject(
+        key_type=str,
+        value_type=arg_parsers.ArgObject(
+            spec={
+                "config": arg_parsers.ArgObject(
+                    spec={
+                        "existingNetwork": arg_parsers.ArgObject(
+                            spec={
+                                "network": str,
+                                "subnetwork": str,
+                            }
+                        ),
+                        "newNetwork": arg_parsers.ArgObject(
+                            spec={
+                                "description": str,
+                                "network": str,
+                            }
+                        ),
+                    }
+                ),
+            }
+        ),
     ),
     "orchestrator": arg_parsers.ArgObject(
         spec={
             "slurm": arg_parsers.ArgObject(
                 spec={
-                    "config": arg_parsers.ArgObject(
-                        spec={
-                            "prologEpilogTimeout": str,
-                            "prologFlags": arg_parsers.ArgList(
-                                element_type=str
-                            ),
-                            "requeueExitCodes": arg_parsers.ArgList(),
-                            "requeueHoldExitCodes": arg_parsers.ArgList(),
-                        }
-                    ),
                     "defaultPartition": str,
                     "loginNodes": arg_parsers.ArgObject(
                         spec={
@@ -121,25 +126,21 @@ _V1ALPHA_CLUSTER = {
                             "enablePublicIps": bool,
                             "labels": LABEL,
                             "machineType": str,
-                            "serviceAccount": SERVICE_ACCOUNT,
                             "startupScript": arg_parsers.ArgObject(),
-                            "storageConfigs": V1ALPHA_STORAGE_CONFIG,
+                            "storageConfigs": STORAGE_CONFIG,
                             "zone": str,
                         }
                     ),
                     "nodeSets": arg_parsers.ArgObject(
                         spec={
-                            "canIpForward": bool,
-                            "enableOsLogin": bool,
-                            "enablePublicIps": bool,
+                            "bootDisk": BOOT_DISK,
                             "id": str,
                             "labels": LABEL,
                             "maxDynamicNodeCount": int,
                             "resourceRequestId": str,
-                            "serviceAccount": SERVICE_ACCOUNT,
                             "startupScript": arg_parsers.ArgObject(),
                             "staticNodeCount": int,
-                            "storageConfigs": V1ALPHA_STORAGE_CONFIG,
+                            "storageConfigs": STORAGE_CONFIG,
                         },
                         repeated=True,
                     ),
@@ -153,68 +154,66 @@ _V1ALPHA_CLUSTER = {
                         },
                         repeated=True,
                     ),
-                    "epilogBashScripts": arg_parsers.ArgList(),
-                    "prologBashScripts": arg_parsers.ArgList(),
-                    "taskEpilogBashScripts": arg_parsers.ArgList(),
-                    "taskPrologBashScripts": arg_parsers.ArgList(),
                 }
             ),
         }
     ),
-    "storages": arg_parsers.ArgObject(
-        spec={
-            "id": str,
-            "initializeParams": arg_parsers.ArgObject(
-                spec={
-                    "filestore": arg_parsers.ArgObject(
-                        spec={
-                            "description": str,
-                            "fileShares": arg_parsers.ArgObject(
-                                spec={"capacityGb": int, "fileShare": str},
-                                repeated=True,
-                            ),
-                            "filestore": str,
-                            "protocol": str,
-                            "tier": str,
-                        }
-                    ),
-                    "gcs": arg_parsers.ArgObject(
-                        spec={
-                            "autoclass": arg_parsers.ArgObject(
-                                spec={
-                                    "enabled": bool,
-                                    "terminalStorageClass": str,
-                                }
-                            ),
-                            "bucket": str,
-                            "hierarchicalNamespace": arg_parsers.ArgObject(
-                                spec={"enabled": bool}
-                            ),
-                            "storageClass": str,
-                        }
-                    ),
-                    "lustre": arg_parsers.ArgObject(
-                        spec={
-                            "capacityGb": int,
-                            "description": str,
-                            "filesystem": str,
-                            "lustre": str,
-                        }
-                    ),
-                }
-            ),
-            "storageSource": arg_parsers.ArgObject(
-                spec={
-                    "bucket": str,
-                    "filestore": str,
-                    "lustre": str,
-                }
-            ),
-        },
-        repeated=True,
+    "storageResources": arg_parsers.ArgObject(
+        key_type=str,
+        value_type=arg_parsers.ArgObject(
+            spec={
+                "config": arg_parsers.ArgObject(
+                    spec={
+                        "existingBucket": arg_parsers.ArgObject(
+                            spec={"bucket": str}
+                        ),
+                        "existingFilestore": arg_parsers.ArgObject(
+                            spec={"filestore": str}
+                        ),
+                        "existingLustre": arg_parsers.ArgObject(
+                            spec={"lustre": str}
+                        ),
+                        "newBucket": arg_parsers.ArgObject(
+                            spec={
+                                "autoclass": arg_parsers.ArgObject(
+                                    spec={
+                                        "enabled": bool,
+                                    }
+                                ),
+                                "bucket": str,
+                                "hierarchicalNamespace": arg_parsers.ArgObject(
+                                    spec={"enabled": bool}
+                                ),
+                                "storageClass": str,
+                            }
+                        ),
+                        "newFilestore": arg_parsers.ArgObject(
+                            spec={
+                                "description": str,
+                                "fileShares": arg_parsers.ArgObject(
+                                    spec={"capacityGb": int, "fileShare": str},
+                                    repeated=True,
+                                ),
+                                "filestore": str,
+                                "protocol": str,
+                                "tier": str,
+                            }
+                        ),
+                        "newLustre": arg_parsers.ArgObject(
+                            spec={
+                                "capacityGb": int,
+                                "description": str,
+                                "filesystem": str,
+                                "lustre": str,
+                            }
+                        ),
+                    },
+                )
+            }
+        ),
     ),
 }
 
 API_VERSION_TO_CLUSTER_FLAG_TYPE = {
-    "v1alpha": _V1ALPHA_CLUSTER,
+    "v1alpha": _CLUSTER,
 }

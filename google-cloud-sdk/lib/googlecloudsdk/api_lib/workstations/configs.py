@@ -72,6 +72,13 @@ BOOST_CONFIG_MAP = {
     'pool-size': 'poolSize',
     'boot-disk-size': 'bootDiskSizeGb',
     'enable-nested-virtualization': 'enableNestedVirtualization',
+    'reservation-affinity': 'reservationAffinity',
+}
+
+RESERVATION_AFFINITY_MAP = {
+    'key': 'key',
+    'consume-reservation-type': 'consumeReservationType',
+    'values': 'values',
 }
 
 
@@ -182,9 +189,47 @@ class Configs:
                     count=boost_config.get('accelerator-count', 0),
                 )
             ]
+          elif key == 'reservation-affinity':
+            desired_reservation_affinity = (
+                self.messages.ReservationAffinity()
+            )
+            for key, value in boost_config.get(
+                'reservation-affinity', {}
+            ).items():
+              if key == 'consume-reservation-type':
+                value = self.messages.ReservationAffinity.ConsumeReservationTypeValueValuesEnum(
+                    value
+                )
+              setattr(
+                  desired_reservation_affinity,
+                  RESERVATION_AFFINITY_MAP.get(key),
+                  value,
+              )
+            desired_boost_config.reservationAffinity = (
+                desired_reservation_affinity
+            )
           else:
             setattr(desired_boost_config, BOOST_CONFIG_MAP.get(key), value)
         config.host.gceInstance.boostConfigs.append(desired_boost_config)
+
+    if (
+        self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
+        and args.reservation_affinity
+    ):
+      desired_reservation_affinity = self.messages.ReservationAffinity()
+      for key, value in args.reservation_affinity.items():
+        if key == 'consume-reservation-type':
+          value = self.messages.ReservationAffinity.ConsumeReservationTypeValueValuesEnum(
+              value
+          )
+        setattr(
+            desired_reservation_affinity,
+            RESERVATION_AFFINITY_MAP.get(key),
+            value,
+        )
+      config.host.gceInstance.reservationAffinity = (
+          desired_reservation_affinity
+      )
 
     if args.allowed_ports:
       for port_range in args.allowed_ports:
@@ -384,6 +429,25 @@ class Configs:
       config.host.gceInstance.machineType = args.machine_type
       update_mask.append('host.gce_instance.machine_type')
 
+    if self.api_version != VERSION_MAP.get(
+        base.ReleaseTrack.GA
+    ) and args.IsSpecified('reservation_affinity'):
+      desired_reservation_affinity = self.messages.ReservationAffinity()
+      for key, value in args.reservation_affinity.items():
+        if key == 'consume-reservation-type':
+          value = self.messages.ReservationAffinity.ConsumeReservationTypeValueValuesEnum(
+              value
+          )
+        setattr(
+            desired_reservation_affinity,
+            RESERVATION_AFFINITY_MAP.get(key),
+            value,
+        )
+      config.host.gceInstance.reservationAffinity = (
+          desired_reservation_affinity
+      )
+      update_mask.append('host.gce_instance.reservation_affinity')
+
     if args.IsSpecified('service_account'):
       config.host.gceInstance.serviceAccount = args.service_account
       update_mask.append('host.gce_instance.service_account')
@@ -503,6 +567,21 @@ class Configs:
                     count=boost_config['accelerator-count'],
                 )
             ]
+          elif key == 'reservation-affinity':
+            desired_reservation_affinity = self.messages.ReservationAffinity()
+            for key, value in boost_config['reservation-affinity'].items():
+              if key == 'consume-reservation-type':
+                value = self.messages.ReservationAffinity.ConsumeReservationTypeValueValuesEnum(
+                    value
+                )
+              setattr(
+                  desired_reservation_affinity,
+                  RESERVATION_AFFINITY_MAP.get(key),
+                  value,
+              )
+            desired_boost_config.reservationAffinity = (
+                desired_reservation_affinity
+            )
           else:
             setattr(desired_boost_config, BOOST_CONFIG_MAP.get(key), value)
         config.host.gceInstance.boostConfigs.append(desired_boost_config)

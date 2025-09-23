@@ -642,7 +642,8 @@ def _DownscopeCredentials(token, access_boundary_json):
       'subject_token': token,
       'options': access_boundary_json
   }
-  cab_token_url = 'https://sts.googleapis.com/v1/token'
+  universe_domain = properties.VALUES.core.universe_domain.Get()
+  cab_token_url = f'https://sts.{universe_domain}/v1/token'
   headers = {'Content-Type': 'application/x-www-form-urlencoded'}
   downscope_response = requests.GetSession().post(
       cab_token_url, headers=headers, data=payload)

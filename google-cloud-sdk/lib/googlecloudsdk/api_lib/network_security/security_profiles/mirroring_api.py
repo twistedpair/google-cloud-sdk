@@ -62,6 +62,7 @@ class Client(sp_api.Client):
       description,
       labels,
       mirroring_endpoint_group,
+      mirroring_deployment_groups,
   ):
     """Calls the Create Security Profile API to create a Custom Mirroring Profile."""
     profile = self.messages.SecurityProfile(
@@ -72,6 +73,13 @@ class Client(sp_api.Client):
         description=description,
         labels=labels,
     )
+    # TODO(b/439516438) - remove hasattr check and move into main instantiation
+    # above once all API versions have the field.
+    if hasattr(profile.customMirroringProfile, 'mirroringDeploymentGroups'):
+      profile.customMirroringProfile.mirroringDeploymentGroups = (
+          mirroring_deployment_groups or []
+      )
+
     return self._security_profile_client.Create(
         self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesCreateRequest(
             parent=parent,

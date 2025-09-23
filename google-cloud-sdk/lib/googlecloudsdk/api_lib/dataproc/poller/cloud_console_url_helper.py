@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 import re
 
+from googlecloudsdk.core import properties
 from six.moves.urllib import parse
 
 
@@ -63,9 +64,8 @@ def get_batch_logging_url(batch):
   project_query = f'project={project_id}'
 
   batch_id_filter = f'resource.labels.batch_id="{batch_id}"'
-  driver_output_filter = (
-      f'log_name="projects/{project_id}/logs/dataproc.googleapis.com%2Foutput"'
-  )
+  universe_domain = properties.VALUES.core.universe_domain.Get()
+  driver_output_filter = f'log_name="projects/{project_id}/logs/dataproc.{universe_domain}%2Foutput"'
 
   return '{}?{}&{}'.format(
       logging_base,

@@ -538,6 +538,22 @@ class CloudWildcardIterator(WildcardIterator):
     except api_errors.NotFoundError:
       # Object does not exist. Could be a prefix.
       pass
+    except api_errors.GcsApiError as e:
+      # GET with soft-deleted objects requires generation.
+      if (
+          e.status_code == 400
+          and 'You must specify a generation' in str(e)
+          and self._url.url_string.endswith(self._url.delimiter)
+          and self._soft_deleted
+      ):
+        log.debug(
+            'GET failed with "must specify generation" error. This is'
+            ' expected for a soft-deleted object listed with a trailing'
+            ' slash. Falling back to a LIST call.'
+        )
+        pass
+      else:
+        raise
     return None
 
   def _fetch_sub_bucket_resources(self, bucket_name, is_hns_bucket=False):

@@ -196,6 +196,24 @@ def _ConstructInstanceFromArgs(client, alloydb_messages, args):
         psc_auto_connections=args.psc_auto_connections,
     )
 
+  if args.enable_connection_pooling:
+    instance_resource.connectionPoolConfig = _ConnectionPoolConfig(
+        alloydb_messages=alloydb_messages,
+        enable_connection_pooling=args.enable_connection_pooling,
+        connection_pooling_pool_mode=args.connection_pooling_pool_mode,
+        connection_pooling_min_pool_size=args.connection_pooling_min_pool_size,
+        connection_pooling_max_pool_size=args.connection_pooling_max_pool_size,
+        connection_pooling_max_client_conn=args.connection_pooling_max_client_connections,
+        connection_pooling_server_idle_timeout=args.connection_pooling_server_idle_timeout,
+        connection_pooling_query_wait_timeout=args.connection_pooling_query_wait_timeout,
+        connection_pooling_stats_users=args.connection_pooling_stats_users,
+        connection_pooling_ignore_startup_parameters=args.connection_pooling_ignore_startup_parameters,
+        connection_pooling_server_lifetime=args.connection_pooling_server_lifetime,
+        connection_pooling_client_connection_idle_timeout=args.connection_pooling_client_connection_idle_timeout,
+        connection_pooling_max_prepared_statements=args.connection_pooling_max_prepared_statements,
+        args=args,
+    )
+
   return instance_resource
 
 
@@ -239,24 +257,6 @@ def _ConstructInstanceFromArgsAlpha(client, alloydb_messages, args):
   instance_resource = _ConstructInstanceFromArgsBeta(
       client, alloydb_messages, args
   )
-
-  if args.enable_connection_pooling:
-    instance_resource.connectionPoolConfig = _ConnectionPoolConfig(
-        alloydb_messages=alloydb_messages,
-        enable_connection_pooling=args.enable_connection_pooling,
-        connection_pooling_pool_mode=args.connection_pooling_pool_mode,
-        connection_pooling_min_pool_size=args.connection_pooling_min_pool_size,
-        connection_pooling_max_pool_size=args.connection_pooling_max_pool_size,
-        connection_pooling_max_client_conn=args.connection_pooling_max_client_connections,
-        connection_pooling_server_idle_timeout=args.connection_pooling_server_idle_timeout,
-        connection_pooling_query_wait_timeout=args.connection_pooling_query_wait_timeout,
-        connection_pooling_stats_users=args.connection_pooling_stats_users,
-        connection_pooling_ignore_startup_parameters=args.connection_pooling_ignore_startup_parameters,
-        connection_pooling_server_lifetime=args.connection_pooling_server_lifetime,
-        connection_pooling_client_connection_idle_timeout=args.connection_pooling_client_connection_idle_timeout,
-        connection_pooling_max_prepared_statements=args.connection_pooling_max_prepared_statements,
-        args=args,
-    )
 
   return instance_resource
 
@@ -305,6 +305,25 @@ def _ConstructSecondaryInstanceFromArgs(client, alloydb_messages, args):
         psc_network_attachment_uri=args.psc_network_attachment_uri,
         psc_auto_connections=args.psc_auto_connections,
     )
+
+  if args.enable_connection_pooling:
+    instance_resource.connectionPoolConfig = _ConnectionPoolConfig(
+        alloydb_messages=alloydb_messages,
+        enable_connection_pooling=args.enable_connection_pooling,
+        connection_pooling_pool_mode=args.connection_pooling_pool_mode,
+        connection_pooling_min_pool_size=args.connection_pooling_min_pool_size,
+        connection_pooling_max_pool_size=args.connection_pooling_max_pool_size,
+        connection_pooling_max_client_conn=args.connection_pooling_max_client_connections,
+        connection_pooling_server_idle_timeout=args.connection_pooling_server_idle_timeout,
+        connection_pooling_query_wait_timeout=args.connection_pooling_query_wait_timeout,
+        connection_pooling_stats_users=args.connection_pooling_stats_users,
+        connection_pooling_ignore_startup_parameters=args.connection_pooling_ignore_startup_parameters,
+        connection_pooling_server_lifetime=args.connection_pooling_server_lifetime,
+        connection_pooling_client_connection_idle_timeout=args.connection_pooling_client_connection_idle_timeout,
+        connection_pooling_max_prepared_statements=args.connection_pooling_max_prepared_statements,
+        args=args,
+    )
+
   return instance_resource
 
 
@@ -342,24 +361,6 @@ def _ConstructSecondaryInstanceFromArgsAlpha(client, alloydb_messages, args):
   instance_resource = _ConstructSecondaryInstanceFromArgsBeta(
       client, alloydb_messages, args
   )
-
-  if args.enable_connection_pooling:
-    instance_resource.connectionPoolConfig = _ConnectionPoolConfig(
-        alloydb_messages=alloydb_messages,
-        enable_connection_pooling=args.enable_connection_pooling,
-        connection_pooling_pool_mode=args.connection_pooling_pool_mode,
-        connection_pooling_min_pool_size=args.connection_pooling_min_pool_size,
-        connection_pooling_max_pool_size=args.connection_pooling_max_pool_size,
-        connection_pooling_max_client_conn=args.connection_pooling_max_client_connections,
-        connection_pooling_server_idle_timeout=args.connection_pooling_server_idle_timeout,
-        connection_pooling_query_wait_timeout=args.connection_pooling_query_wait_timeout,
-        connection_pooling_stats_users=args.connection_pooling_stats_users,
-        connection_pooling_ignore_startup_parameters=args.connection_pooling_ignore_startup_parameters,
-        connection_pooling_server_lifetime=args.connection_pooling_server_lifetime,
-        connection_pooling_client_connection_idle_timeout=args.connection_pooling_client_connection_idle_timeout,
-        connection_pooling_max_prepared_statements=args.connection_pooling_max_prepared_statements,
-        args=args,
-    )
 
   return instance_resource
 
@@ -420,7 +421,7 @@ def ConstructPatchRequestFromArgs(alloydb_messages, instance_ref, args):
     Fully-constructed request to update an AlloyDB instance.
   """
   instance_resource, paths = ConstructInstanceAndUpdatePathsFromArgs(
-      alloydb_messages, instance_ref, args
+      alloydb_messages, instance_ref, args, release_track=base.ReleaseTrack.GA
   )
   mask = ','.join(paths) if paths else None
 
@@ -432,7 +433,7 @@ def ConstructPatchRequestFromArgs(alloydb_messages, instance_ref, args):
 
 
 def ConstructInstanceAndUpdatePathsFromArgs(
-    alloydb_messages, instance_ref, args
+    alloydb_messages, instance_ref, args, release_track=base.ReleaseTrack.GA
 ):
   """Validates command line arguments and creates the instance and update paths.
 
@@ -440,6 +441,7 @@ def ConstructInstanceAndUpdatePathsFromArgs(
     alloydb_messages: Messages module for the API client.
     instance_ref: parent resource path of the resource being updated
     args: Command line input arguments.
+    release_track: The release track of the gcloud client.
 
   Returns:
     An AlloyDB instance and paths for update.
@@ -585,6 +587,48 @@ def ConstructInstanceAndUpdatePathsFromArgs(
     paths.append('pscInstanceConfig.allowedConsumerProjects')
   if args.psc_auto_connections is not None or args.clear_psc_auto_connections:
     paths.append('pscInstanceConfig.pscAutoConnections')
+
+  # We update the whole connection pool config if any of the connection pooling
+  # flags are set because we want to preserve any existing flags. But to do so,
+  # we need to check what these existing flag values are, and that requires
+  # calling the AlloyDB API with the same version as the gcloud release track.
+  #
+  # We also need to check that the release track is GA to avoid calling the
+  # GetInstance API more than need be when the Beta/Alpha versions call this
+  # function.
+  if (release_track == base.ReleaseTrack.GA and (
+      args.enable_connection_pooling is not None
+      or args.connection_pooling_pool_mode is not None
+      or args.connection_pooling_min_pool_size is not None
+      or args.connection_pooling_max_pool_size is not None
+      or args.connection_pooling_max_client_connections is not None
+      or args.connection_pooling_server_idle_timeout is not None
+      or args.connection_pooling_query_wait_timeout is not None
+      or args.connection_pooling_stats_users is not None
+      or args.connection_pooling_ignore_startup_parameters is not None
+      or args.connection_pooling_server_lifetime is not None
+      or args.connection_pooling_client_connection_idle_timeout is not None
+      or args.connection_pooling_max_prepared_statements is not None)):
+    paths.append('connectionPoolConfig')
+
+    instance_resource.connectionPoolConfig = _UpdateConnectionPoolConfig(
+        instance_ref,
+        release_track=release_track,
+        alloydb_messages=alloydb_messages,
+        enable_connection_pooling=args.enable_connection_pooling,
+        connection_pooling_pool_mode=args.connection_pooling_pool_mode,
+        connection_pooling_min_pool_size=args.connection_pooling_min_pool_size,
+        connection_pooling_max_pool_size=args.connection_pooling_max_pool_size,
+        connection_pooling_max_client_conn=args.connection_pooling_max_client_connections,
+        connection_pooling_server_idle_timeout=args.connection_pooling_server_idle_timeout,
+        connection_pooling_query_wait_timeout=args.connection_pooling_query_wait_timeout,
+        connection_pooling_stats_users=args.connection_pooling_stats_users,
+        connection_pooling_ignore_startup_parameters=args.connection_pooling_ignore_startup_parameters,
+        connection_pooling_server_lifetime=args.connection_pooling_server_lifetime,
+        connection_pooling_client_connection_idle_timeout=args.connection_pooling_client_connection_idle_timeout,
+        connection_pooling_max_prepared_statements=args.connection_pooling_max_prepared_statements,
+    )
+
   return instance_resource, paths
 
 
@@ -876,7 +920,6 @@ def _ConnectionPoolConfig(**kwargs):
 
   alloydb_messages = kwargs.get('alloydb_messages')
   config = alloydb_messages.ConnectionPoolConfig()
-  config.enable = enable_connection_pooling
   config.enabled = enable_connection_pooling
   flags = {}
   if pool_mode is not None:
@@ -915,11 +958,12 @@ def _ConnectionPoolConfig(**kwargs):
   return config
 
 
-def _UpdateConnectionPoolConfig(instance_ref, **kwargs):
+def _UpdateConnectionPoolConfig(instance_ref, release_track, **kwargs):
   """Updates the connection pooling config for the instance.
 
   Args:
     instance_ref: A reference to the instance to be updated.
+    release_track: The release track of the gcloud client.
     **kwargs: A map of the managed connection pooling flags and their values to
       be updated.
 
@@ -971,14 +1015,14 @@ def _UpdateConnectionPoolConfig(instance_ref, **kwargs):
   # Disabling managed connection pooling should set all other connection pooling
   # settings to None.
   if not enable_connection_pooling and enable_connection_pooling is not None:
-    config.enable = False
     config.enabled = False
     return config
 
   # Build the connection pooling config based on the existing values that are
   # set in the instance, if they aren't specified in the update. If the flag
-  # is set in the update, it will override the existing value.
-  client = api_util.AlloyDBClient(base.ReleaseTrack.ALPHA)
+  # is set in the update, it will override the existing value. We use the same
+  # AlloyDB API version as the gcloud version the update request is coming from.
+  client = api_util.AlloyDBClient(release_track)
   alloydb_client = client.alloydb_client
   req = alloydb_messages.AlloydbProjectsLocationsClustersInstancesGetRequest(
       name=instance_ref.RelativeName()
@@ -1012,10 +1056,8 @@ def _UpdateConnectionPoolConfig(instance_ref, **kwargs):
         flags[f] = value
 
   if enable_connection_pooling is not None:
-    config.enable = enable_connection_pooling
     config.enabled = enable_connection_pooling
   elif has_existing_config:
-    config.enable = existing_instance.connectionPoolConfig.enable
     config.enabled = existing_instance.connectionPoolConfig.enabled
 
   if pool_mode is not None:
@@ -1183,7 +1225,8 @@ def _ParseAuthorizedExternalNetworks(
 def ConstructPatchRequestFromArgsBeta(alloydb_messages, instance_ref, args):
   """Constructs the request to update an AlloyDB instance."""
   instance_resource, paths = ConstructInstanceAndUpdatePathsFromArgsBeta(
-      alloydb_messages, instance_ref, args
+      alloydb_messages, instance_ref, args,
+      release_track=base.ReleaseTrack.BETA,
   )
   mask = ','.join(paths) if paths else None
 
@@ -1197,7 +1240,8 @@ def ConstructPatchRequestFromArgsBeta(alloydb_messages, instance_ref, args):
 def ConstructPatchRequestFromArgsAlpha(alloydb_messages, instance_ref, args):
   """Constructs the request to update an AlloyDB instance."""
   instance_resource, paths = ConstructInstanceAndUpdatePathsFromArgsAlpha(
-      alloydb_messages, instance_ref, args
+      alloydb_messages, instance_ref, args,
+      release_track=base.ReleaseTrack.ALPHA,
   )
 
   mask = ','.join(paths) if paths else None
@@ -1210,7 +1254,7 @@ def ConstructPatchRequestFromArgsAlpha(alloydb_messages, instance_ref, args):
 
 
 def ConstructInstanceAndUpdatePathsFromArgsBeta(
-    alloydb_messages, instance_ref, args
+    alloydb_messages, instance_ref, args, release_track
 ):
   """Validates command line arguments and creates the instance and update paths for beta track.
 
@@ -1218,6 +1262,7 @@ def ConstructInstanceAndUpdatePathsFromArgsBeta(
     alloydb_messages: Messages module for the API client.
     instance_ref: parent resource path of the resource being updated
     args: Command line input arguments.
+    release_track: The release track of the gcloud client.
 
   Returns:
     An AlloyDB instance and paths for update.
@@ -1242,7 +1287,7 @@ def ConstructInstanceAndUpdatePathsFromArgsBeta(
       'observabilityConfig.trackActiveQueries'
   )
   instance_resource, paths = ConstructInstanceAndUpdatePathsFromArgs(
-      alloydb_messages, instance_ref, args
+      alloydb_messages, instance_ref, args, release_track
   )
 
   if args.update_mode:
@@ -1277,11 +1322,52 @@ def ConstructInstanceAndUpdatePathsFromArgsBeta(
       args.observability_config_track_active_queries,
   )
 
+  # We update the whole connection pool config if any of the connection pooling
+  # flags are set because we want to preserve any existing flags. But to do so,
+  # we need to check what these existing flag values are, and that requires
+  # calling the AlloyDB API with the same version as the gcloud release track.
+  #
+  # We also need to check that the release track is Beta to avoid calling the
+  # GetInstance API more than need be when the Alpha versions call this
+  # function.
+  if (release_track == base.ReleaseTrack.BETA and (
+      args.enable_connection_pooling is not None
+      or args.connection_pooling_pool_mode is not None
+      or args.connection_pooling_min_pool_size is not None
+      or args.connection_pooling_max_pool_size is not None
+      or args.connection_pooling_max_client_connections is not None
+      or args.connection_pooling_server_idle_timeout is not None
+      or args.connection_pooling_query_wait_timeout is not None
+      or args.connection_pooling_stats_users is not None
+      or args.connection_pooling_ignore_startup_parameters is not None
+      or args.connection_pooling_server_lifetime is not None
+      or args.connection_pooling_client_connection_idle_timeout is not None
+      or args.connection_pooling_max_prepared_statements is not None)):
+    paths.append('connectionPoolConfig')
+
+    instance_resource.connectionPoolConfig = _UpdateConnectionPoolConfig(
+        instance_ref,
+        release_track=release_track,
+        alloydb_messages=alloydb_messages,
+        enable_connection_pooling=args.enable_connection_pooling,
+        connection_pooling_pool_mode=args.connection_pooling_pool_mode,
+        connection_pooling_min_pool_size=args.connection_pooling_min_pool_size,
+        connection_pooling_max_pool_size=args.connection_pooling_max_pool_size,
+        connection_pooling_max_client_conn=args.connection_pooling_max_client_connections,
+        connection_pooling_server_idle_timeout=args.connection_pooling_server_idle_timeout,
+        connection_pooling_query_wait_timeout=args.connection_pooling_query_wait_timeout,
+        connection_pooling_stats_users=args.connection_pooling_stats_users,
+        connection_pooling_ignore_startup_parameters=args.connection_pooling_ignore_startup_parameters,
+        connection_pooling_server_lifetime=args.connection_pooling_server_lifetime,
+        connection_pooling_client_connection_idle_timeout=args.connection_pooling_client_connection_idle_timeout,
+        connection_pooling_max_prepared_statements=args.connection_pooling_max_prepared_statements,
+    )
+
   return instance_resource, paths
 
 
 def ConstructInstanceAndUpdatePathsFromArgsAlpha(
-    alloydb_messages, instance_ref, args
+    alloydb_messages, instance_ref, args, release_track=base.ReleaseTrack.ALPHA
 ):
   """Validates command line arguments and creates the instance and update paths for alpha track.
 
@@ -1289,17 +1375,19 @@ def ConstructInstanceAndUpdatePathsFromArgsAlpha(
     alloydb_messages: Messages module for the API client.
     instance_ref: parent resource path of the resource being updated
     args: Command line input arguments.
+    release_track: The release track of the gcloud client.
 
   Returns:
     An AlloyDB instance and paths for update.
   """
   instance_resource, paths = ConstructInstanceAndUpdatePathsFromArgsBeta(
-      alloydb_messages, instance_ref, args
+      alloydb_messages, instance_ref, args, release_track
   )
 
   # We update the whole connection pool config if any of the connection pooling
-  # flags are set. Unforunately, we can't update individual fields within the
-  # connection pool config due to a bug in the API so this is a workaround.
+  # flags are set because we want to preserve any existing flags. But to do so,
+  # we need to check what these existing flag values are, and that requires
+  # calling the AlloyDB API with the same version as the gcloud release track.
   if (args.enable_connection_pooling is not None
       or args.connection_pooling_pool_mode is not None
       or args.connection_pooling_min_pool_size is not None
@@ -1316,6 +1404,7 @@ def ConstructInstanceAndUpdatePathsFromArgsAlpha(
 
     instance_resource.connectionPoolConfig = _UpdateConnectionPoolConfig(
         instance_ref,
+        release_track=release_track,
         alloydb_messages=alloydb_messages,
         enable_connection_pooling=args.enable_connection_pooling,
         connection_pooling_pool_mode=args.connection_pooling_pool_mode,

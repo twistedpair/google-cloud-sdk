@@ -85,6 +85,18 @@ class InvalidReleaseNameError(exceptions.Error):
 class CloudDeployConfigError(exceptions.Error):
   """Error raised for errors in the cloud deploy yaml config."""
 
+  @classmethod
+  def for_unnamed_manifest(cls, num, message):
+    return cls(f'Error parsing manifest #{num}: {message}')
+
+  @classmethod
+  def for_resource(cls, kind, name, message):
+    return cls(f'Error parsing {kind} "{name}": {message}')
+
+  @classmethod
+  def for_resource_field(cls, kind, name, field, message):
+    return cls(f'Error parsing {kind} "{name}" field "{field}": {message}')
+
 
 class ListRolloutsError(exceptions.Error):
   """Error when it failed to list the rollouts that belongs to a release."""

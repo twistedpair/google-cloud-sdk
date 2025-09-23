@@ -2554,8 +2554,8 @@ def GetReservationAffinity(args, client):
 
   return None
 
-
-RESERVATION_AFFINITY_KEY = 'compute.googleapis.com/reservation-name'
+universe_domain = properties.VALUES.core.universe_domain.Get()
+RESERVATION_AFFINITY_KEY = f'compute.{universe_domain}/reservation-name'
 
 
 def AddKerberosGroup(parser):

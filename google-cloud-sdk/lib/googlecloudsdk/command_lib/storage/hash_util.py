@@ -15,6 +15,7 @@
 """Hashing utilities for storage commands."""
 
 from __future__ import absolute_import
+from __future__ import annotations
 from __future__ import division
 from __future__ import unicode_literals
 
@@ -51,6 +52,60 @@ def get_base64_hash_digest_string(hash_object):
   return get_base64_string(hash_object.digest())
 
 
+def get_hash_object(hash_algorithm: HashAlgorithm):
+  """Returns a hash object for the given hash algorithm."""
+  if hash_algorithm == HashAlgorithm.MD5:
+    return hashing.get_md5()
+  if hash_algorithm == HashAlgorithm.CRC32C:
+    return fast_crc32c_util.get_crc32c()
+  return None
+
+
+def _get_hash_for_deferred_crc32c(
+    path: str,
+    hash_object: fast_crc32c_util.DeferredCrc32c,
+    start: int|None = None,
+    stop: int|None = None,
+) -> int | None:
+  """Returns the hash for the given path and deferred crc32c object."""
+  if isinstance(hash_object, fast_crc32c_util.DeferredCrc32c):
+    offset = 0 if start is None else start
+    length = 0 if stop is None else stop - offset
+    hash_object.sum_file(path, offset=offset, length=length)
+  return hash_object
+
+
+def get_hash_from_data_chunk_or_file(
+    path: str,
+    data: bytes,
+    hash_algorithm: HashAlgorithm,
+    start: int|None = None,
+    stop: int|None = None):
+  """Returns the hash object for the given data chunk or file.
+
+  For MD5 and FastCRC32C, this function will return a hash object after
+  hashing the given data chunk. For DeferredCRC32C, this function will return
+  the deferred hash object from the given file path.
+
+  Args:
+    path (str): The file path.
+    data (bytes): The data chunk to hash.
+    hash_algorithm (HashAlgorithm): The algorithm to use for hashing.
+    start (int|None): Optional byte index to start hashing from.
+    stop (int|None): Optional byte index to stop hashing at.
+
+  Returns:
+    A hash object or None if the algorithm is not supported.
+  """
+  hash_object = get_hash_object(hash_algorithm)
+  if hash_object is None:
+    return None
+  if isinstance(hash_object, fast_crc32c_util.DeferredCrc32c):
+    return _get_hash_for_deferred_crc32c(path, hash_object, start, stop)
+  hash_object.update(data)
+  return hash_object
+
+
 def get_hash_from_file(path, hash_algorithm, start=None, stop=None):
   """Reads file and returns its hash object.
 
@@ -69,18 +124,12 @@ def get_hash_from_file(path, hash_algorithm, start=None, stop=None):
   Returns:
     Hash object for file.
   """
-  if hash_algorithm == HashAlgorithm.MD5:
-    hash_object = hashing.get_md5()
-  elif hash_algorithm == HashAlgorithm.CRC32C:
-    hash_object = fast_crc32c_util.get_crc32c()
-  else:
-    return
+  hash_object = get_hash_object(hash_algorithm)
+  if hash_object is None:
+    return None
 
   if isinstance(hash_object, fast_crc32c_util.DeferredCrc32c):
-    offset = 0 if start is None else start
-    length = 0 if stop is None else stop - offset
-    hash_object.sum_file(path, offset=offset, length=length)
-    return hash_object
+    return _get_hash_for_deferred_crc32c(path, hash_object, start, stop)
 
   with files.BinaryFileReader(path) as stream:
     if start:

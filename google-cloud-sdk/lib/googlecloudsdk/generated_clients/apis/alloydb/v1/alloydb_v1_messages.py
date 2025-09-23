@@ -848,8 +848,8 @@ class AlloydbProjectsLocationsListRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Do not use this field. It is unsupported and
-      is ignored unless explicitly documented otherwise. This is primarily for
+    extraLocationTypes: Optional. Unless explicitly documented otherwise,
+      don't use this unsupported field which is primarily intended for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -1758,6 +1758,48 @@ class ConnectionInfo(_messages.Message):
   publicIpAddress = _messages.StringField(4)
 
 
+class ConnectionPoolConfig(_messages.Message):
+  r"""Configuration for Managed Connection Pool (MCP).
+
+  Messages:
+    FlagsValue: Optional. Connection Pool flags, as a list of "key": "value"
+      pairs.
+
+  Fields:
+    enabled: Optional. Whether to enable Managed Connection Pool (MCP).
+    flags: Optional. Connection Pool flags, as a list of "key": "value" pairs.
+    poolerCount: Output only. The number of running poolers per instance.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FlagsValue(_messages.Message):
+    r"""Optional. Connection Pool flags, as a list of "key": "value" pairs.
+
+    Messages:
+      AdditionalProperty: An additional property for a FlagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type FlagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FlagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  enabled = _messages.BooleanField(1)
+  flags = _messages.MessageField('FlagsValue', 2)
+  poolerCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class ContinuousBackupConfig(_messages.Message):
   r"""ContinuousBackupConfig describes the continuous backups recovery
   configurations of a cluster.
@@ -2315,6 +2357,8 @@ class Instance(_messages.Message):
       one node will have a node in at least two zones).
     clientConnectionConfig: Optional. Client connection specific
       configurations
+    connectionPoolConfig: Optional. The configuration for Managed Connection
+      Pool (MCP).
     createTime: Output only. Create time stamp
     databaseFlags: Database flags. Set at the instance level. They are copied
       from the primary instance on secondary instance creation. Flags that
@@ -2558,31 +2602,32 @@ class Instance(_messages.Message):
   annotations = _messages.MessageField('AnnotationsValue', 2)
   availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 3)
   clientConnectionConfig = _messages.MessageField('ClientConnectionConfig', 4)
-  createTime = _messages.StringField(5)
-  databaseFlags = _messages.MessageField('DatabaseFlagsValue', 6)
-  deleteTime = _messages.StringField(7)
-  displayName = _messages.StringField(8)
-  etag = _messages.StringField(9)
-  gceZone = _messages.StringField(10)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 11)
-  ipAddress = _messages.StringField(12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  machineConfig = _messages.MessageField('MachineConfig', 14)
-  name = _messages.StringField(15)
-  networkConfig = _messages.MessageField('InstanceNetworkConfig', 16)
-  nodes = _messages.MessageField('Node', 17, repeated=True)
-  observabilityConfig = _messages.MessageField('ObservabilityInstanceConfig', 18)
-  outboundPublicIpAddresses = _messages.StringField(19, repeated=True)
-  pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 20)
-  publicIpAddress = _messages.StringField(21)
-  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 22)
-  readPoolConfig = _messages.MessageField('ReadPoolConfig', 23)
-  reconciling = _messages.BooleanField(24)
-  satisfiesPzs = _messages.BooleanField(25)
-  state = _messages.EnumField('StateValueValuesEnum', 26)
-  uid = _messages.StringField(27)
-  updateTime = _messages.StringField(28)
-  writableNode = _messages.MessageField('Node', 29)
+  connectionPoolConfig = _messages.MessageField('ConnectionPoolConfig', 5)
+  createTime = _messages.StringField(6)
+  databaseFlags = _messages.MessageField('DatabaseFlagsValue', 7)
+  deleteTime = _messages.StringField(8)
+  displayName = _messages.StringField(9)
+  etag = _messages.StringField(10)
+  gceZone = _messages.StringField(11)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 12)
+  ipAddress = _messages.StringField(13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  machineConfig = _messages.MessageField('MachineConfig', 15)
+  name = _messages.StringField(16)
+  networkConfig = _messages.MessageField('InstanceNetworkConfig', 17)
+  nodes = _messages.MessageField('Node', 18, repeated=True)
+  observabilityConfig = _messages.MessageField('ObservabilityInstanceConfig', 19)
+  outboundPublicIpAddresses = _messages.StringField(20, repeated=True)
+  pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 21)
+  publicIpAddress = _messages.StringField(22)
+  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 23)
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 24)
+  reconciling = _messages.BooleanField(25)
+  satisfiesPzs = _messages.BooleanField(26)
+  state = _messages.EnumField('StateValueValuesEnum', 27)
+  uid = _messages.StringField(28)
+  updateTime = _messages.StringField(29)
+  writableNode = _messages.MessageField('Node', 30)
 
 
 class InstanceNetworkConfig(_messages.Message):
@@ -3976,7 +4021,7 @@ class StorageDatabasecenterPartnerapiV1mainCustomMetadataData(_messages.Message)
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Message):
   r"""DatabaseResourceFeed is the top level proto to be used to ingest
-  different database resource level events into Condor platform. Next ID: 11
+  different database resource level events into Condor platform. Next ID: 13
 
   Enums:
     FeedTypeValueValuesEnum: Required. Type feed to be ingested into condor
@@ -3986,6 +4031,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
       BackupDR.
     configBasedSignalData: Config based signal data is used to ingest signals
       that are generated based on the configuration of the database resource.
+    databaseResourceSignalData: Database resource signal data is used to
+      ingest signals from database resource signal feeds.
     feedTimestamp: Required. Timestamp when feed is generated.
     feedType: Required. Type feed to be ingested into condor
     observabilityMetricData: A
@@ -4017,6 +4064,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
       RECOMMENDATION_SIGNAL_DATA: Database resource recommendation signal data
       CONFIG_BASED_SIGNAL_DATA: Database config based signal data
       BACKUPDR_METADATA: Database resource metadata from BackupDR
+      DATABASE_RESOURCE_SIGNAL_DATA: Database resource signal data
     """
     FEEDTYPE_UNSPECIFIED = 0
     RESOURCE_METADATA = 1
@@ -4025,17 +4073,19 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
     RECOMMENDATION_SIGNAL_DATA = 4
     CONFIG_BASED_SIGNAL_DATA = 5
     BACKUPDR_METADATA = 6
+    DATABASE_RESOURCE_SIGNAL_DATA = 7
 
   backupdrMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupDRMetadata', 1)
   configBasedSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainConfigBasedSignalData', 2)
-  feedTimestamp = _messages.StringField(3)
-  feedType = _messages.EnumField('FeedTypeValueValuesEnum', 4)
-  observabilityMetricData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainObservabilityMetricData', 5)
-  recommendationSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData', 6)
-  resourceHealthSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData', 7)
-  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 8)
-  resourceMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata', 9)
-  skipIngestion = _messages.BooleanField(10)
+  databaseResourceSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceSignalData', 3)
+  feedTimestamp = _messages.StringField(4)
+  feedType = _messages.EnumField('FeedTypeValueValuesEnum', 5)
+  observabilityMetricData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainObservabilityMetricData', 6)
+  recommendationSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData', 7)
+  resourceHealthSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData', 8)
+  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 9)
+  resourceMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata', 10)
+  skipIngestion = _messages.BooleanField(11)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_messages.Message):
@@ -4611,7 +4661,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Message):
-  r"""Common model for database resource instance metadata. Next ID: 26
+  r"""Common model for database resource instance metadata. Next ID: 27
 
   Enums:
     CurrentStateValueValuesEnum: Current state of the instance.
@@ -4670,6 +4720,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
     updationTime: The time at which the resource was updated and recorded at
       partner service.
     userLabelSet: User-provided labels associated with the resource
+    zone: The resource zone. This is only applicable for zonal resources and
+      will be empty for regional and multi-regional resources.
   """
 
   class CurrentStateValueValuesEnum(_messages.Enum):
@@ -4700,10 +4752,12 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
         edition enum.
       EDITION_ENTERPRISE: Represents the enterprise edition.
       EDITION_ENTERPRISE_PLUS: Represents the enterprise plus edition.
+      EDITION_STANDARD: Represents the standard edition.
     """
     EDITION_UNSPECIFIED = 0
     EDITION_ENTERPRISE = 1
     EDITION_ENTERPRISE_PLUS = 2
+    EDITION_STANDARD = 3
 
   class ExpectedStateValueValuesEnum(_messages.Enum):
     r"""The state that the instance is expected to be in. For example, an
@@ -4800,6 +4854,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
   tagsSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainTags', 22)
   updationTime = _messages.StringField(23)
   userLabelSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainUserLabels', 24)
+  zone = _messages.StringField(25)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData(_messages.Message):
@@ -5231,6 +5286,70 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
   recommenderSubtype = _messages.StringField(6)
   resourceName = _messages.StringField(7)
   signalType = _messages.EnumField('SignalTypeValueValuesEnum', 8)
+
+
+class StorageDatabasecenterPartnerapiV1mainDatabaseResourceSignalData(_messages.Message):
+  r"""Database resource signal data. This is used to send signals to Condor
+  which are based on the DB/Instance/Fleet level configurations. These will be
+  used to send signals for all inventory types. Next ID: 7
+
+  Enums:
+    SignalStateValueValuesEnum: Required. Output only. Signal state of the
+      signal
+    SignalTypeValueValuesEnum: Required. Signal type of the signal
+
+  Fields:
+    fullResourceName: Required. Full Resource name of the source resource.
+    lastRefreshTime: Required. Last time signal was refreshed
+    resourceId: Database resource id.
+    signalBoolValue: Signal data for boolean signals.
+    signalState: Required. Output only. Signal state of the signal
+    signalType: Required. Signal type of the signal
+  """
+
+  class SignalStateValueValuesEnum(_messages.Enum):
+    r"""Required. Output only. Signal state of the signal
+
+    Values:
+      SIGNAL_STATE_UNSPECIFIED: Unspecified signal state.
+      ACTIVE: Signal is active and requires attention.
+      INACTIVE: Signal is inactive and does not require attention.
+      DISMISSED: Signal is dismissed by the user and should not be shown to
+        the user again.
+    """
+    SIGNAL_STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    INACTIVE = 2
+    DISMISSED = 3
+
+  class SignalTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Signal type of the signal
+
+    Values:
+      SIGNAL_TYPE_UNSPECIFIED: Unspecified signal type.
+      SIGNAL_TYPE_OUTDATED_MINOR_VERSION: Outdated Minor Version
+      SIGNAL_TYPE_DATABASE_AUDITING_DISABLED: Represents database auditing is
+        disabled.
+      SIGNAL_TYPE_NO_ROOT_PASSWORD: Represents if a database has a password
+        configured for the root account or not.
+      SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS: Represents if a resource is
+        exposed to public access.
+      SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS: Represents if a resources requires
+        all incoming connections to use SSL or not.
+    """
+    SIGNAL_TYPE_UNSPECIFIED = 0
+    SIGNAL_TYPE_OUTDATED_MINOR_VERSION = 1
+    SIGNAL_TYPE_DATABASE_AUDITING_DISABLED = 2
+    SIGNAL_TYPE_NO_ROOT_PASSWORD = 3
+    SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS = 4
+    SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS = 5
+
+  fullResourceName = _messages.StringField(1)
+  lastRefreshTime = _messages.StringField(2)
+  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 3)
+  signalBoolValue = _messages.BooleanField(4)
+  signalState = _messages.EnumField('SignalStateValueValuesEnum', 5)
+  signalType = _messages.EnumField('SignalTypeValueValuesEnum', 6)
 
 
 class StorageDatabasecenterPartnerapiV1mainEntitlement(_messages.Message):

@@ -878,10 +878,7 @@ def AddSshArgsAndUserField(parser):
 
     $ {command} --ssh-flag="-vvv" --ssh-flag="-L 80:localhost:80"
   """
-  parser.add_argument(
-      '--ssh-flag',
-      action='append',
-      help=help_text)
+  parser.add_argument('--ssh-flag', action='append', help=help_text)
 
 
 def AddEncryptionKeyFields(parser):
@@ -958,6 +955,15 @@ def AddBoostConfigs(parser):
               'pool-size': int,
               'boot-disk-size': int,
               'enable-nested-virtualization': bool,
+              'reservation-affinity': arg_parsers.ArgObject(
+                  spec={
+                      'key': str,
+                      'values': arg_parsers.ArgList(),
+                      'consume-reservation-type': (
+                          ValidateConsumeReservationType
+                      ),
+                  }
+              ),
           },
           required_keys=['id'],
       ),
@@ -1088,3 +1094,41 @@ def AddMaxUsableWorkstationsCount(parser):
       default=0,
       help=help_text,
   )
+
+
+def AddReservationAffinity(parser):
+  """Adds a --reservation-affinity flag to the given parser."""
+  help_text = """\
+  Reservation Affinity for the VM. This includes key, values, and
+  consumeReservationType.
+
+  Example:
+    $ {command} --reservation-affinity=key=compute.googleapis.com/reservation-name,consumeReservationType=SPECIFIC_RESERVATION,values=my-reservation
+  """
+
+  parser.add_argument(
+      '--reservation-affinity',
+      metavar='RESERVATION_AFFINITY',
+      type=arg_parsers.ArgObject(
+          spec={
+              'key': str,
+              'values': arg_parsers.ArgList(),
+              'consume-reservation-type': ValidateConsumeReservationType,
+          },
+      ),
+      help=help_text,
+  )
+
+
+def ValidateConsumeReservationType(value):
+  """Validates the consume-reservation-type value."""
+  allowed_values = [
+      'ANY_RESERVATION',
+      'NO_RESERVATION',
+      'SPECIFIC_RESERVATION',
+  ]
+  if value not in allowed_values:
+    raise argparse.ArgumentTypeError(
+        f"Invalid choice: '{value}'. Valid choices are {allowed_values}"
+    )
+  return value

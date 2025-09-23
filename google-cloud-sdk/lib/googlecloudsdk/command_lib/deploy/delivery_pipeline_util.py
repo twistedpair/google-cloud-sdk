@@ -25,7 +25,32 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 
 _PIPELINES_WITH_GIVEN_TARGET_FILTER_TEMPLATE = (
-    'serialPipeline.stages.targetId:"{}"')
+    'serialPipeline.stages.targetId:"{}"'
+)
+
+
+def DeliveryPipelineReference(name, project, region):
+  """Creates the delivery pipeline reference base on the parameters.
+
+    Returns the shared delivery pipeline reference.
+
+  Args:
+    name: str, delivery pipeline ID
+    project: str,project number or ID.
+    region: str, region ID.
+
+  Returns:
+    custom target type reference.
+  """
+  return resources.REGISTRY.Parse(
+      name,
+      collection='clouddeploy.projects.locations.deliveryPipelines',
+      params={
+          'projectsId': project,
+          'locationsId': region,
+          'deliveryPipelinesId': name,
+      },
+  )
 
 
 def ListDeliveryPipelinesWithTarget(target_ref, location_ref):
@@ -40,7 +65,8 @@ def ListDeliveryPipelinesWithTarget(target_ref, location_ref):
     a sorted list of delivery pipelines.
   """
   filter_str = _PIPELINES_WITH_GIVEN_TARGET_FILTER_TEMPLATE.format(
-      target_ref.Name())
+      target_ref.Name()
+  )
 
   pipelines = delivery_pipeline.DeliveryPipelinesClient().List(
       location=location_ref.RelativeName(),
@@ -52,13 +78,15 @@ def ListDeliveryPipelinesWithTarget(target_ref, location_ref):
   # so sort result to get the same result you would get by using
   # orderBy = 'createTime desc'
   return sorted(
-      pipelines, key=lambda pipeline: pipeline.createTime, reverse=True)
+      pipelines, key=lambda pipeline: pipeline.createTime, reverse=True
+  )
 
 
 def PipelineToPipelineRef(pipeline):
   pipeline_ref = resources.REGISTRY.ParseRelativeName(
       pipeline.name,
-      collection='clouddeploy.projects.locations.deliveryPipelines')
+      collection='clouddeploy.projects.locations.deliveryPipelines',
+  )
   return pipeline_ref
 
 
@@ -75,11 +103,13 @@ def GetPipeline(pipeline_name):
   """
   try:
     pipeline_obj = delivery_pipeline.DeliveryPipelinesClient().Get(
-        pipeline_name)
+        pipeline_name
+    )
     return pipeline_obj
   except apitools_exceptions.HttpError as error:
-    log.debug('Failed to get pipeline {}: {}'.format(pipeline_name,
-                                                     error.content))
+    log.debug(
+        'Failed to get pipeline {}: {}'.format(pipeline_name, error.content)
+    )
     log.status.Print('Unable to get delivery pipeline {}'.format(pipeline_name))
     raise error
 
@@ -99,7 +129,8 @@ def ThrowIfPipelineSuspended(pipeline_obj, suspended_pipeline_msg):
   if pipeline_obj.suspended:
     raise cd_exceptions.PipelineSuspendedError(
         pipeline_name=pipeline_obj.name,
-        failed_activity_msg=suspended_pipeline_msg)
+        failed_activity_msg=suspended_pipeline_msg,
+    )
 
 
 def CreateRollbackTarget(

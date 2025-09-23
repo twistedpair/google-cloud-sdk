@@ -158,21 +158,24 @@ class ContainerParser(object):
       elif (
           isinstance(value, str)
           and value.startswith(self._PRESET_FLAG_NAME + '=')
-          and value.split(sep='=', maxsplit=1)[1]
-          in flags.INGRESS_CONTAINER_PRESETS
       ):
-        current = containers[value.split(sep='=', maxsplit=1)[1]]
+        preset_arg = value.split(sep='=', maxsplit=1)[1]
+        preset_name = preset_arg.split(':')[0]
+        if preset_name in flags.INGRESS_CONTAINER_PRESETS:
+          current = containers[preset_name]
         remaining.append(value)
       # For case "--preset ollama"
       elif (
           isinstance(value, str)
           and value.startswith(self._PRESET_FLAG_NAME)
           and i < len(args)
-          and args[i] in flags.INGRESS_CONTAINER_PRESETS
       ):
-        current = containers[args[i]]
-        remaining.append(value)
-        remaining.append(args[i])
+        preset_arg = args[i]
+        preset_name = preset_arg.split(':')[0]
+        if preset_name in flags.INGRESS_CONTAINER_PRESETS:
+          current = containers[args[i]]
+          remaining.append(value)
+          remaining.append(args[i])
         i += 1
       elif value == '--':
         remaining.append(value)

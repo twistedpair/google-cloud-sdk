@@ -1455,6 +1455,26 @@ def AddAutoMonitoringScopeFlags(parser, hidden):
   )
 
 
+def AddManagedOTelScopeFlags(parser, hidden):
+  """Adds --managed-otel-scope flags to parser."""
+  help_text = """
+  Specifies the scope of Managed OpenTelemetry within the cluster.
+
+  COLLECTION_AND_INSTRUMENTATION_COMPONENTS: Enables GKE Managed
+  OpenTelemetry Collector and other Instrumentations components like
+  Instrumentation CRD within the cluster.
+  NONE: Disables the GKE Managed OpenTelemetry.
+  """
+  choices = ['COLLECTION_AND_INSTRUMENTATION_COMPONENTS', 'NONE']
+  parser.add_argument(
+      '--managed-otel-scope',
+      choices=choices,
+      default=None,
+      help=help_text,
+      hidden=hidden,
+  )
+
+
 def AddEnableMasterSignalsFlags(parser, for_create=False):
   """Adds --master-logs and --enable-master-metrics flags to parser."""
 
@@ -4471,7 +4491,7 @@ def AddStackTypeFlag(
   """
   help_text = 'IP stack type of the cluster nodes.'
   choices_args = ['ipv4', 'ipv4-ipv6']
-  if release_track == base.ReleaseTrack.ALPHA:
+  if release_track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA):
     choices_args.append('ipv6')
   parser.add_argument(
       '--stack-type',
@@ -7945,13 +7965,59 @@ Example: `123/environment=production,123/costCenter=marketing`
 def AddGpuDirectStrategyFlag(parser):
   """Adds the --gpu-direct-strategy flag to parser."""
   help_text = """\
-  Set the GPU direct strategy for the node pool, possible values are TCPX and
-  RDMA.
+  Set the GPU direct strategy for the node pool, the possible value is RDMA.
   """
   parser.add_argument(
       '--gpu-direct-strategy',
       default=None,
       hidden=True,
-      choices=['TCPX', 'RDMA'],
+      choices=['RDMA'],
       help=help_text,
+  )
+
+
+def AddControlPlaneSoakDurationFlag(parser, hidden):
+  """Adds the --control-plane-soak-duration flag to parser."""
+  help_text = """\
+  The soak duration for the rollback-able control plane upgrade.
+  It only applies to minor version upgrades.
+  Setting this flag will trigger a control plane upgrade with emulated version.
+  The cluster is rollback-able during the soak period. The soak period can be
+  set between 6 hours and 7 days.
+  """
+  parser.add_argument(
+      '--control-plane-soak-duration',
+      default=None,
+      hidden=hidden,
+      help=help_text,
+      type=arg_parsers.Duration(lower_bound='6h', upper_bound='7d'),
+  )
+
+
+def AddAutopilotPrivilegedAdmissionFlag(parser, hidden):
+  """Adds a --autopilot-privileged-admission flag to parser."""
+  help_text = """\
+  Specify Cloud Storage object paths pointing to privileged workload allowlists
+  to be authorized for use in Autopilot mode.
+
+  The value is a comma-separated list of Cloud Storage object paths in the format 'gke://<partner_name>/<app_name>/<allowlist_path>' for GKE-owned allowlists and 'gs://<bucket_name>/<allowlist_path>' for user-owned allowlists.
+  Wildcards are supported to authorize all allowlists under specific
+  paths.
+
+Examples:
+  $ {command} --autopilot-privileged-admission=gke://*
+  $ {command} --autopilot-privileged-admission=gke://my-partner/my-app/my-allowlist.yaml
+  $ {command} --autopilot-privileged-admission=gs://my-bucket/allowlists/my-allowlist.yaml
+  $ {command} --autopilot-privileged-admission=gs://my-bucket/*
+  $ {command} --autopilot-privileged-admission=gke://my-partner/my-app/*,gs://my-bucket/allowlists/my-allowlist.yaml
+  $ {command} --autopilot-privileged-admission=""
+"""
+
+  parser.add_argument(
+      '--autopilot-privileged-admission',
+      type=str,
+      default=None,
+      hidden=hidden,
+      help=help_text,
+      metavar='GCS_PATH',
   )

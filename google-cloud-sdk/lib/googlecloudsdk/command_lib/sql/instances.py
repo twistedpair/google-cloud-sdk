@@ -666,15 +666,14 @@ class _BaseInstances(object):
           sql_messages, STORAGE_TYPE_MAPPING.get(args.storage_type)
       )
 
-    if args.active_directory_domain is not None:
-      settings.activeDirectoryConfig = reducers.ActiveDirectoryConfig(
-          sql_messages,
-          domain=args.active_directory_domain,
-          mode=args.active_directory_mode,
-          dns_servers=args.active_directory_dns_servers,
-          admin_credential_secret_key=args.active_directory_secret_manager_key,
-          organizational_unit=args.active_directory_organizational_unit,
-      )
+    settings.activeDirectoryConfig = reducers.ActiveDirectoryConfig(
+        sql_messages,
+        domain=args.active_directory_domain,
+        mode=args.active_directory_mode,
+        dns_servers=args.active_directory_dns_servers,
+        admin_credential_secret_key=args.active_directory_secret_manager_key,
+        organizational_unit=args.active_directory_organizational_unit,
+    )
 
     if args.IsKnownAndSpecified('password_policy_min_length'):
       settings.passwordValidationPolicy = reducers.PasswordPolicy(
@@ -856,15 +855,14 @@ class _BaseInstances(object):
         insights_config_query_plans_per_minute=args.insights_config_query_plans_per_minute,
     )
 
-    if args.active_directory_domain is not None:
-      settings.activeDirectoryConfig = reducers.ActiveDirectoryConfig(
-          sql_messages,
-          domain=args.active_directory_domain,
-          mode=args.active_directory_mode,
-          dns_servers=args.active_directory_dns_servers,
-          admin_credential_secret_key=args.active_directory_secret_manager_key,
-          organizational_unit=args.active_directory_organizational_unit,
-      )
+    settings.activeDirectoryConfig = reducers.ActiveDirectoryConfig(
+        sql_messages,
+        domain=args.active_directory_domain,
+        mode=args.active_directory_mode,
+        dns_servers=args.active_directory_dns_servers,
+        admin_credential_secret_key=args.active_directory_secret_manager_key,
+        organizational_unit=args.active_directory_organizational_unit,
+    )
 
     settings.passwordValidationPolicy = reducers.PasswordPolicy(
         sql_messages,

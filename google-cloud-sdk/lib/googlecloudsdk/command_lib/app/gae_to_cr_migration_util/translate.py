@@ -20,6 +20,7 @@ from collections.abc import Mapping, Sequence
 from googlecloudsdk.command_lib.app.gae_to_cr_migration_util.common import util
 from googlecloudsdk.command_lib.app.gae_to_cr_migration_util.config import feature_helper
 from googlecloudsdk.command_lib.app.gae_to_cr_migration_util.translation_rules import concurrent_requests
+from googlecloudsdk.command_lib.app.gae_to_cr_migration_util.translation_rules import cpu_memory
 from googlecloudsdk.command_lib.app.gae_to_cr_migration_util.translation_rules import entrypoint
 from googlecloudsdk.command_lib.app.gae_to_cr_migration_util.translation_rules import required_flags
 from googlecloudsdk.command_lib.app.gae_to_cr_migration_util.translation_rules import scaling
@@ -134,6 +135,7 @@ def _get_cloud_run_flags(
       )
       + entrypoint.translate_entrypoint_features(entrypoint_command)
       + required_flags.translate_add_required_flags(input_data)
+      + cpu_memory.translate_app_resources(input_data)
   )
 
 

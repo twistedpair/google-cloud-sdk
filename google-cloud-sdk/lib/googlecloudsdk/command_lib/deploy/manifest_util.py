@@ -16,47 +16,27 @@
 
 
 import collections
+import dataclasses
 import datetime
 import enum
 import re
+from typing import Any, Callable, Optional
 
 from dateutil import parser
-from googlecloudsdk.calliope import exceptions as c_exceptions
+from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.command_lib.deploy import automation_util
-from googlecloudsdk.command_lib.deploy import deploy_util
+from googlecloudsdk.command_lib.deploy import custom_target_type_util
+from googlecloudsdk.command_lib.deploy import delivery_pipeline_util
+from googlecloudsdk.command_lib.deploy import deploy_policy_util
 from googlecloudsdk.command_lib.deploy import exceptions
 from googlecloudsdk.command_lib.deploy import target_util
-from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import properties
-from googlecloudsdk.core import resources
 from googlecloudsdk.core.resource import resource_property
+import jsonschema
 
 PIPELINE_UPDATE_MASK = '*,labels'
-DELIVERY_PIPELINE = 'deliveryPipeline'
-TARGET = 'target'
 API_VERSION_V1BETA1 = 'deploy.cloud.google.com/v1beta1'
 API_VERSION_V1 = 'deploy.cloud.google.com/v1'
-USAGE_CHOICES = ['RENDER', 'DEPLOY']
-ACTION_CHOICES = [
-    'ADVANCE',
-    'APPROVE',
-    'CANCEL',
-    'CREATE',
-    'IGNORE_JOB',
-    'RETRY_JOB',
-    'ROLLBACK',
-    'TERMINATE_JOBRUN',
-]
-DAY_OF_WEEK_CHOICES = [
-    'MONDAY',
-    'TUESDAY',
-    'WEDNESDAY',
-    'THURSDAY',
-    'FRIDAY',
-    'SATURDAY',
-    'SUNDAY',
-]
-INVOKER_CHOICES = ['USER', 'DEPLOY_AUTOMATION']
 # If changing these fields also change them in the UI code.
 NAME_FIELD = 'name'
 ADVANCE_ROLLOUT_FIELD = 'advanceRollout'
@@ -67,12 +47,10 @@ LABELS_FIELD = 'labels'
 ANNOTATIONS_FIELD = 'annotations'
 SELECTOR_FIELD = 'selector'
 RULES_FIELD = 'rules'
-TARGET_ID_FIELD = 'targetId'
 ID_FIELD = 'id'
 ADVANCE_ROLLOUT_RULE_FIELD = 'advanceRolloutRule'
 PROMOTE_RELEASE_RULE_FIELD = 'promoteReleaseRule'
 REPAIR_ROLLOUT_RULE_FIELD = 'repairRolloutRule'
-ROLLOUT_RESTRICTIONS_FIELD = 'rolloutRestriction'
 TIMED_PROMOTE_RELEASE_RULE_FIELD = 'timedPromoteReleaseRule'
 DESTINATION_TARGET_ID_FIELD = 'destinationTargetId'
 SOURCE_PHASES_FIELD = 'sourcePhases'
@@ -94,32 +72,9 @@ ATTEMPTS_FIELD = 'attempts'
 ROLLBACK_FIELD = 'rollback'
 REPAIR_PHASES_FIELD = 'repairPhases'
 BACKOFF_MODE_FIELD = 'backoffMode'
-BACKOFF_CHOICES = ['BACKOFF_MODE_LINEAR', 'BACKOFF_MODE_EXPONENTIAL']
-BACKOFF_CHOICES_SHORT = ['LINEAR', 'EXPONENTIAL']
-TARGETS_FIELD = 'targets'
 SCHEDULE_FIELD = 'schedule'
 TIME_ZONE_FIELD = 'timeZone'
-STRATEGY_FIELD = 'strategy'
-STANDARD_FIELD = 'standard'
-CANARY_FIELD = 'canary'
-CANARY_DEPLOYMENT_FIELD = 'canaryDeployment'
-CUSTOM_CANARY_DEPLOYMENT_FIELD = 'customCanaryDeployment'
-PHASE_CONFIGS_FIELD = 'phaseConfigs'
-VERIFY_CONFIG_FIELD = 'verifyConfig'
-PREDEPLOY_FIELD = 'predeploy'
-POSTDEPLOY_FIELD = 'postdeploy'
-ANALYSIS_FIELD = 'analysis'
-CUSTOM_CHECKS_FIELD = 'customChecks'
-GOOGLE_CLOUD_FIELD = 'googleCloud'
-ALERT_POLICY_CHECKS_FIELD = 'alertPolicyChecks'
-TASKS_FIELD = 'tasks'
-CONFIG_TASK_FIELD = 'config'
-CONTAINERS_TASK_FIELD = 'containersTask'
-CONTAINERS_FIELD = 'containers'
-ENV_FIELD = 'env'
 LABELS_FIELD = 'labels'
-DEPLOY_FIELD = 'deploy'
-RENDER_FIELD = 'render'
 
 
 @enum.unique
@@ -134,7 +89,19 @@ class ResourceKind(enum.Enum):
     return self.value
 
 
-def ParseDeployConfig(messages, manifests, region):
+@dataclasses.dataclass
+class _ParseContext:
+  kind: ResourceKind
+  name: str
+  project: str
+  region: str
+  manifest: dict[str, Any]
+  field: str
+
+
+def ParseDeployConfig(
+    messages: list[Any], manifests: list[dict[str, Any]], region: str
+) -> dict[ResourceKind, list[Any]]:
   """Parses the declarative definition of the resources into message.
 
   Args:
@@ -143,707 +110,558 @@ def ParseDeployConfig(messages, manifests, region):
     region: str, location ID.
 
   Returns:
-    A dictionary of resource kind and message.
+    A dictionary of ResourceKind and list of messages.
   Raises:
     exceptions.CloudDeployConfigError, if the declarative definition is
     incorrect.
   """
-  resource_dict = collections.defaultdict(list)
   project = properties.VALUES.core.project.GetOrFail()
-  _ValidateConfig(manifests)
-  for manifest in manifests:
-    kind = ResourceKind(manifest['kind'])
-    resource_dict[kind].append(
-        _ParseV1Config(messages, kind, manifest, project, region)
+
+  manifests_with_metadata = collections.defaultdict(list)
+  for i, manifest in enumerate(manifests):
+    kind = _GetKind(manifest, i)
+    name = _GetName(manifest, i)
+    manifests_with_metadata[(kind, name)].append(manifest)
+
+  _CheckDuplicateResourceNames(manifests_with_metadata)
+
+  resources_by_kind = collections.defaultdict(list)
+  for (kind, name), manifests in manifests_with_metadata.items():
+    resources_by_kind[kind].append(
+        # Thanks to _CheckDuplicateResourceNames(), we know manifests has
+        # exactly one element.
+        _ParseManifest(kind, name, manifests[0], project, region, messages)
     )
-
-  return resource_dict
-
-
-def _ValidateConfig(manifests):
-  """Validates the manifests.
-
-  Args:
-     manifests: [str], the list of parsed resource yaml definitions.
-
-  Raises:
-    exceptions.CloudDeployConfigError, if there are errors in the manifests
-    (e.g. required field is missing, duplicate resource names).
-  """
-  resource_type_to_names = collections.defaultdict(list)
-  for manifest in manifests:
-    api_version = manifest.get('apiVersion')
-    if not api_version:
-      raise exceptions.CloudDeployConfigError(
-          'missing required field .apiVersion'
-      )
-    resource_type = manifest.get('kind')
-    if resource_type is None:
-      raise exceptions.CloudDeployConfigError('missing required field .kind')
-    if resource_type not in ResourceKind:
-      raise exceptions.CloudDeployConfigError(
-          'kind {} not supported'.format(resource_type)
-      )
-    kind = ResourceKind(resource_type)
-    api_version = manifest['apiVersion']
-    if api_version not in {API_VERSION_V1BETA1, API_VERSION_V1}:
-      raise exceptions.CloudDeployConfigError(
-          'api version {} not supported'.format(api_version)
-      )
-    metadata = manifest.get('metadata')
-    if not metadata or not metadata.get(NAME_FIELD):
-      raise exceptions.CloudDeployConfigError(
-          'missing required field .metadata.name in {}'.format(
-              manifest.get('kind')
-          )
-      )
-    # Populate a dictionary with resource_type: [names].
-    # E.g. {TARGET: ["target1", "target2"]}
-    resource_type_to_names[kind].append(metadata.get(NAME_FIELD))
-  _CheckDuplicateResourceNames(resource_type_to_names)
+  return resources_by_kind
 
 
-def _CheckDuplicateResourceNames(resource_type_to_names):
-  """Checks if there are any duplicate resource names per resource type.
+def _GetKind(manifest: dict[str, Any], doc_index: int) -> ResourceKind:
+  """Parses the kind of a resource."""
+  api_version = manifest.get('apiVersion')
+  if not api_version:
+    raise exceptions.CloudDeployConfigError.for_unnamed_manifest(
+        doc_index, 'missing required field "apiVersion"'
+    )
+  if api_version not in {API_VERSION_V1BETA1, API_VERSION_V1}:
+    raise exceptions.CloudDeployConfigError.for_unnamed_manifest(
+        doc_index, f'api version "{api_version}" not supported'
+    )
+  kind = manifest.get('kind')
+  if kind is None:
+    raise exceptions.CloudDeployConfigError.for_unnamed_manifest(
+        doc_index, 'missing required field "kind"'
+    )
+  # In Python 3.12+ we can just use `if kind not in ResourceKind`
+  if kind not in [str(r) for r in ResourceKind]:
+    raise exceptions.CloudDeployConfigError.for_unnamed_manifest(
+        doc_index, f'kind "{kind}" not supported'
+    )
+  return ResourceKind(kind)
 
-  Args:
-     resource_type_to_names: dict[str,[str]], dict of resource type and names.
 
-  Raises:
-    exceptions.CloudDeployConfigError, if there are duplicate names for a given
-    resource type.
-  """
+def _GetName(manifest: dict[str, Any], doc_index: int) -> str:
+  """Parses the name of a resource."""
+  metadata = manifest.get('metadata')
+  if not metadata or not metadata.get(NAME_FIELD):
+    raise exceptions.CloudDeployConfigError.for_unnamed_manifest(
+        doc_index, 'missing required field "metadata.name"'
+    )
+  return metadata['name']
+
+
+def _CheckDuplicateResourceNames(
+    manifests_by_name_and_kind: dict[tuple[ResourceKind, str], list[Any]],
+) -> None:
+  """Checks if there are any duplicate resource names per resource type."""
+  dups = collections.defaultdict(list)
+  for (kind, name), manifests in manifests_by_name_and_kind.items():
+    if len(manifests) > 1:
+      dups[kind].append(name)
   errors = []
-  for k, names in resource_type_to_names.items():
-    dups = set()
-    # For a given resource type, iterate through the resource names and check
-    # for duplicates.
-    for name in names:
-      if names.count(name) > 1:
-        dups.add(name)
-    if dups:
-      errors.append('{} has duplicate name(s): {}'.format(k, dups))
+  for kind, names in dups.items():
+    errors.append(f'{kind} has duplicate name(s): {names}')
   if errors:
     raise exceptions.CloudDeployConfigError(errors)
 
 
-def _ParseV1Config(messages, kind, manifest, project, region):
-  """Parses the Cloud Deploy resource specifications into a proto message.
+def _RemoveApiVersionAndKind(
+    value: dict[str, Any], parse_context: _ParseContext
+) -> None:
+  """Removes the apiVersion and kind fields from the manifest."""
+  del value
+  del parse_context.manifest['apiVersion']
+  del parse_context.manifest['kind']
 
-  Args:
-     messages: module containing the definitions of messages for Cloud Deploy.
-     kind: str, name of the resource schema.
-     manifest: dict[str,str], cloud deploy resource yaml definition.
-     project: str, gcp project.
-     region: str, ID of the location.
 
-  Returns:
-    The parsed resource as a message.
-
-  Raises:
-    exceptions.CloudDeployConfigError, if the declarative definition is
-    incorrect.
-  """
-  metadata = manifest.get('metadata')
-  # Once gcloud drops Python 3.9 support, this should be converted to a match
-  # statement.
-  if kind == ResourceKind.DELIVERY_PIPELINE:
-    resource_type = deploy_util.ResourceType.DELIVERY_PIPELINE
-    resource, resource_ref = _CreateDeliveryPipelineResource(
-        messages, metadata[NAME_FIELD], project, region
-    )
-  elif kind == ResourceKind.TARGET:
-    resource_type = deploy_util.ResourceType.TARGET
-    resource, resource_ref = _CreateTargetResource(
-        messages, metadata[NAME_FIELD], project, region
-    )
-  elif kind == ResourceKind.AUTOMATION:
-    resource_type = deploy_util.ResourceType.AUTOMATION
-    resource, resource_ref = _CreateAutomationResource(
-        messages, metadata[NAME_FIELD], project, region
-    )
-  elif kind == ResourceKind.CUSTOM_TARGET_TYPE:
-    resource_type = deploy_util.ResourceType.CUSTOM_TARGET_TYPE
-    resource, resource_ref = _CreateCustomTargetTypeResource(
-        messages, metadata[NAME_FIELD], project, region
-    )
-  elif kind == ResourceKind.DEPLOY_POLICY:
-    resource_type = deploy_util.ResourceType.DEPLOY_POLICY
-    resource, resource_ref = _CreateDeployPolicyResource(
-        messages, metadata[NAME_FIELD], project, region
-    )
-  else:
-    # InternalError because we already validated the kind in _ValidateConfig.
-    raise exceptions.InternalError('kind {} not supported'.format(kind))
-
-  if '/' in resource_ref.Name():
-    raise exceptions.CloudDeployConfigError(
-        'resource ID "{}" contains /.'.format(resource_ref.Name())
-    )
-
-  for field in manifest:
-    if field not in ['apiVersion', 'kind', 'metadata', 'deliveryPipeline']:
-      value = manifest.get(field)
-      if field == 'executionConfigs':
-        SetExecutionConfig(messages, resource, resource_ref, value)
-        continue
-      if field == 'deployParameters' and kind == ResourceKind.TARGET:
-        SetDeployParametersForTarget(messages, resource, resource_ref, value)
-        continue
-      if field == 'customTarget' and kind == ResourceKind.TARGET:
-        SetCustomTarget(resource, value, project, region)
-        continue
-      if field == TASKS_FIELD and kind == ResourceKind.CUSTOM_TARGET_TYPE:
-        SetCustomTargetTasks(messages, resource, value)
-        continue
-      if field == 'associatedEntities' and kind == ResourceKind.TARGET:
-        SetAssociatedEntities(messages, resource, resource_ref, value)
-        continue
-      if field == 'serialPipeline' and kind == ResourceKind.DELIVERY_PIPELINE:
-        serial_pipeline = manifest.get('serialPipeline')
-        _EnsureIsType(
-            serial_pipeline,
-            dict,
-            'failed to parse pipeline {}, serialPipeline is defined incorrectly'
-            .format(resource_ref.Name()),
-        )
-        stages = serial_pipeline.get('stages')
-        _EnsureIsType(
-            stages,
-            list,
-            'failed to parse pipeline {}, stages are defined incorrectly'
-            .format(resource_ref.Name()),
-        )
-        for stage in stages:
-          SetDeployParametersForPipelineStage(messages, resource_ref, stage)
-          SetMapFieldsForPipelineStage(messages, stage)
-
-      if field == SELECTOR_FIELD and kind == ResourceKind.AUTOMATION:
-        SetAutomationSelector(messages, resource, value)
-        continue
-      if field == RULES_FIELD and kind == ResourceKind.AUTOMATION:
-        SetAutomationRules(messages, resource, resource_ref, value)
-        continue
-      if field == RULES_FIELD and kind == ResourceKind.DEPLOY_POLICY:
-        rules = manifest.get('rules')
-        _EnsureIsType(
-            rules,
-            list,
-            'failed to parse deploy policy {}, rules are defined incorrectly'
-            .format(resource_ref.Name()),
-        )
-        SetPolicyRules(messages, resource, rules)
-        continue
-      if field == 'selectors' and kind == ResourceKind.DEPLOY_POLICY:
-        selectors = manifest.get('selectors')
-        _EnsureIsType(
-            selectors,
-            list,
-            'failed to parse deploy policy {}, selectors are defined'
-            ' incorrectly'.format(resource_ref.Name()),
-        )
-        SetDeployPolicySelector(messages, resource, selectors)
-        continue
-      setattr(resource, field, value)
-
-  # Sets the properties in metadata.
-  for field in metadata:
-    if field not in [NAME_FIELD, ANNOTATIONS_FIELD, LABELS_FIELD]:
-      setattr(resource, field, metadata.get(field))
-  deploy_util.SetMetadata(
-      messages,
-      resource,
-      resource_type,
-      metadata.get(ANNOTATIONS_FIELD),
-      metadata.get(LABELS_FIELD),
+def _MetadataYamlToProto(
+    metadata: dict[str, Any], parse_context: _ParseContext
+) -> None:
+  """Moves the fields in metadata to the top level of the manifest."""
+  manifest = parse_context.manifest
+  manifest[ANNOTATIONS_FIELD] = metadata.get(ANNOTATIONS_FIELD)
+  manifest[LABELS_FIELD] = metadata.get(LABELS_FIELD)
+  # I think allowing description in metadata was an accident, not intentional...
+  # It's supposed to be a top level field. But even some of our own tests do
+  # this, so I think we have to assume customers might have too.
+  if 'description' in metadata:
+    manifest['description'] = metadata['description']
+  name = metadata.get(NAME_FIELD)
+  resource_ref = _ref_creators[parse_context.kind](
+      name, parse_context.project, parse_context.region
   )
-
-  return resource
-
-
-def SetMapFieldsForPipelineStage(messages, stage):
-  """Sets any map fields on a pipeline stage.
-
-  This includes environment variables defined on a Task and labels defined on an
-  Analysis Alert Policy Check.
-
-  Args:
-   messages: module containing the definitions of messages for Cloud Deploy.
-   stage: Cloud Deploy Stage message.
-  """
-  stage_strategy = stage.get(STRATEGY_FIELD)
-  if not stage_strategy:
-    return
-
-  if STANDARD_FIELD in stage_strategy:
-    SetMapFieldsOnStrategy(messages, stage_strategy.get(STANDARD_FIELD))
-
-  elif CANARY_FIELD in stage_strategy:
-    # Canary deployment
-    if stage_strategy.get(CANARY_FIELD).get(CANARY_DEPLOYMENT_FIELD):
-      SetMapFieldsOnStrategy(
-          messages,
-          stage_strategy.get(CANARY_FIELD).get(CANARY_DEPLOYMENT_FIELD),
-      )
-    # Custom canary deployment
-    else:
-      for phase_config in (
-          stage_strategy.get(CANARY_FIELD)
-          .get(CUSTOM_CANARY_DEPLOYMENT_FIELD)
-          .get(PHASE_CONFIGS_FIELD)
-      ):
-        SetMapFieldsOnStrategy(messages, phase_config)
-
-
-def SetMapFieldsOnStrategy(messages, strategy):
-  """Sets any map fields on a strategy or phase config.
-
-  Args:
-   messages: module containing the definitions of messages for Cloud Deploy.
-   strategy: Cloud Deploy Strategy or PhaseConfig message.
-  """
-  if strategy.get(VERIFY_CONFIG_FIELD):
-    for task in strategy.get(VERIFY_CONFIG_FIELD).get(TASKS_FIELD):
-      SetEnvForTask(messages, task)
-
-  if strategy.get(PREDEPLOY_FIELD) and strategy.get(PREDEPLOY_FIELD).get(
-      TASKS_FIELD
-  ):
-    for task in strategy.get(PREDEPLOY_FIELD).get(TASKS_FIELD):
-      SetEnvForTask(messages, task)
-
-  if strategy.get(POSTDEPLOY_FIELD) and strategy.get(POSTDEPLOY_FIELD).get(
-      TASKS_FIELD
-  ):
-    for task in strategy.get(POSTDEPLOY_FIELD).get(TASKS_FIELD):
-      SetEnvForTask(messages, task)
-
-  if strategy.get(ANALYSIS_FIELD):
-    if strategy.get(ANALYSIS_FIELD).get(CUSTOM_CHECKS_FIELD):
-      for custom_check in strategy.get(ANALYSIS_FIELD).get(CUSTOM_CHECKS_FIELD):
-        SetEnvForTask(messages, custom_check.get('task'))
-    if strategy.get(ANALYSIS_FIELD).get(GOOGLE_CLOUD_FIELD):
-      for alert_policy_check in (
-          strategy.get(ANALYSIS_FIELD)
-          .get(GOOGLE_CLOUD_FIELD)
-          .get(ALERT_POLICY_CHECKS_FIELD)
-      ):
-        SetLabelsForAlertPolicyCheck(messages, alert_policy_check)
-
-
-def SetEnvForTask(messages, task):
-  """Sets environment variables for a Task.
-
-  Args:
-   messages: module containing the definitions of messages for Cloud Deploy.
-   task: Cloud Deploy Task message.
-  """
-
-  # For each task type (ConfigTask or ContainersTask), turn the provided string
-  # map into an EnvValue message.
-  if task.get(CONFIG_TASK_FIELD):
-    config_task = task.get(CONFIG_TASK_FIELD)
-    if not config_task.get(ENV_FIELD):
-      return
-    config_task_message = getattr(messages, 'ConfigTask')
-    env_message = config_task_message.EnvValue
-    env_dict = env_message()
-    for key, value in config_task.get(ENV_FIELD).items():
-      env_dict.additionalProperties.append(
-          env_message.AdditionalProperty(key=key, value=value)
-      )
-    config_task[ENV_FIELD] = env_dict
-  elif task.get(CONTAINERS_TASK_FIELD):
-    containers_task = task.get(CONTAINERS_TASK_FIELD)
-    for container in containers_task.get(CONTAINERS_FIELD):
-      if not container.get(ENV_FIELD):
-        continue
-      container_message = getattr(messages, 'Container')
-      env_message = container_message.EnvValue
-      env_dict = env_message()
-      for key, value in container.get(ENV_FIELD).items():
-        env_dict.additionalProperties.append(
-            env_message.AdditionalProperty(key=key, value=value)
-        )
-      container[ENV_FIELD] = env_dict
-
-
-def SetLabelsForAlertPolicyCheck(messages, alert_policy_check):
-  """Sets labels defined on an Analysis Google Cloud Alert Policy Check.
-
-  Args:
-    messages: module containing the definitions of messages for Cloud Deploy.
-    alert_policy_check: Cloud Deploy Alert Policy Check message for an Analysis
-      with Google Cloud.
-  """
-  if alert_policy_check is None:
-    return
-
-  labels = alert_policy_check.get(LABELS_FIELD)
-  if labels is None:
-    return
-
-  labels_message = getattr(messages, 'AlertPolicyCheck').LabelsValue
-  labels_dict = labels_message()
-  for key, value in labels.items():
-    labels_dict.additionalProperties.append(
-        labels_message.AdditionalProperty(
-            key=resource_property.ConvertToSnakeCase(key), value=value
-        )
+  # Name() does _not_ return the resource name. It returns the part of the name
+  # after the resource type. For example, for targets, it returns everything
+  # after `/targets/`. So this tells us if the user provided an invalid resource
+  # ID, which would lead to a confusing error when we try to call the API.
+  if '/' in resource_ref.Name():
+    raise exceptions.CloudDeployConfigError.for_resource_field(
+        parse_context.kind,
+        name,
+        'metadata.name',
+        f'invalid resource ID "{resource_ref.Name()}"',
     )
-  alert_policy_check[LABELS_FIELD] = labels_dict
+  manifest[NAME_FIELD] = resource_ref.RelativeName()
+  del manifest['metadata']
 
 
-def SetPolicyRules(messages, policy, rules):
-  """Sets the rules field of cloud deploy policy message.
+def _ConvertLabelsToSnakeCase(
+    labels: dict[str, str], parse_context: _ParseContext
+) -> dict[str, str]:
+  """Convert labels from camelCase to snake_case."""
+  del parse_context
+  # See go/unified-cloud-labels-proposal.
+  return {resource_property.ConvertToSnakeCase(k): v for k, v in labels.items()}
 
-  Args:
-    messages: module containing the definitions of messages for Cloud Deploy.
-    policy:  googlecloudsdk.generated_clients.apis.clouddeploy.DeployPolicy
-      message.
-    rules: [googlecloudsdk.generated_clients.apis.clouddeploy.PolicyRule], list
-      of PolicyRule messages.
 
-  Raises:
-    arg_parsers.ArgumentTypeError: if usage is not a valid enum.
-  """
-  # Go through each rule and parse the rolloutRestriction field.
-  for pv_rule in rules:
-    rollout_restriction_message = messages.RolloutRestriction()
-    if pv_rule.get(ROLLOUT_RESTRICTIONS_FIELD):
-      rollout_restriction = pv_rule.get(ROLLOUT_RESTRICTIONS_FIELD)
-      _SetRolloutRestriction(
-          messages, rollout_restriction_message, rollout_restriction, policy
+def _UpdateOldAutomationSelector(
+    selector: dict[str, Any], parse_context: _ParseContext
+) -> dict[str, Any]:
+  """Converts an old automation selector to the new format."""
+  targets = []
+  for target in selector:
+    targets.append(target[TARGET_FIELD])
+  parse_context.manifest['selector'] = {'targets': targets}
+
+
+def _RenameOldAutomationRules(
+    rule: dict[str, Any], parse_context: _ParseContext
+) -> dict[str, Any]:
+  """Renames the old automation rule fields to the new format."""
+  del parse_context
+  if PROMOTE_RELEASE_FIELD in rule:
+    rule[PROMOTE_RELEASE_RULE_FIELD] = rule[PROMOTE_RELEASE_FIELD]
+    del rule[PROMOTE_RELEASE_FIELD]
+  if ADVANCE_ROLLOUT_FIELD in rule:
+    rule[ADVANCE_ROLLOUT_RULE_FIELD] = rule[ADVANCE_ROLLOUT_FIELD]
+    del rule[ADVANCE_ROLLOUT_FIELD]
+  if REPAIR_ROLLOUT_FIELD in rule:
+    rule[REPAIR_ROLLOUT_RULE_FIELD] = rule[REPAIR_ROLLOUT_FIELD]
+    del rule[REPAIR_ROLLOUT_FIELD]
+  return rule
+
+
+def _ConvertAutomationRuleNameFieldToId(
+    rule: dict[str, Any], parse_context: _ParseContext
+) -> dict[str, Any]:
+  """Move the name field to the id field."""
+  if rule is not None and NAME_FIELD in rule:
+    if ID_FIELD in rule:
+      raise exceptions.CloudDeployConfigError.for_resource(
+          parse_context.kind,
+          parse_context.name,
+          'automation rule has both name and id fields',
       )
-    else:
-      policy.rules.append(pv_rule)
+    rule[ID_FIELD] = rule[NAME_FIELD]
+    del rule[NAME_FIELD]
+  return rule
 
 
-def _SetRolloutRestriction(
-    messages, rollout_restriction_message, rollout_restriction, policy
-):
-  """Sets the rolloutRestriction field of cloud deploy policy message.
-
-  Args:
-    messages: module containing the definitions of messages for Cloud Deploy.
-    rollout_restriction_message:
-      googlecloudsdk.generated_clients.apis.clouddeploy.RolloutRestriction
-      message.
-    rollout_restriction: value of the rolloutRestriction field in the manifest.
-    policy:  googlecloudsdk.generated_clients.apis.clouddeploy.DeployPolicy
-      message.
-
-  Raises:
-    arg_parsers.ArgumentTypeError: if usage is not a valid enum.
-  """
-  for field in rollout_restriction:
-    # The value of actions and invokers are enums, so they need special
-    # treatment. timeWindow also needs special treatment because it has an
-    # enum within it.
-    if field != 'actions' and field != 'invokers' and field != 'timeWindows':
-      # If the field doesn't need special treatment (e.g. id) set it
-      # on the rolloutRestriction message.
-      setattr(
-          rollout_restriction_message, field, rollout_restriction.get(field)
-      )
-
-  actions = rollout_restriction.get('actions', [])
-  for action in actions:
-    rollout_restriction_message.actions.append(
-        # converts a string literal in rolloutRestriction.actions to an Enum.
-        arg_utils.ChoiceToEnum(
-            action,
-            messages.RolloutRestriction.ActionsValueListEntryValuesEnum,
-            valid_choices=ACTION_CHOICES,
-        )
-    )
-
-  invokers = rollout_restriction.get('invokers', [])
-  for invoker in invokers:
-    rollout_restriction_message.invokers.append(
-        # converts a string literal in rolloutRestriction.invokers to an Enum.
-        arg_utils.ChoiceToEnum(
-            invoker,
-            messages.RolloutRestriction.InvokersValueListEntryValuesEnum,
-            valid_choices=INVOKER_CHOICES,
-        )
-    )
-  # Parse and set the timeWindow field on the rolloutRestriction message.
-  time_windows = rollout_restriction.get('timeWindows')
-  time_windows_message = messages.TimeWindows()
-  _SetTimeWindows(messages, time_windows_message, time_windows)
-  rollout_restriction_message.timeWindows = time_windows_message
-  # Set the rolloutRestriction field on the policy rule message.
-  policy_rule_message = messages.PolicyRule()
-  policy_rule_message.rolloutRestriction = rollout_restriction_message
-  policy.rules.append(policy_rule_message)
+def _AddEmptyRepairAutomationRetryMessage(
+    repair_phase: dict[str, Any], parse_context: _ParseContext
+) -> dict[str, Any]:
+  """Add an empty retry field if it's defined in the manifest but set to None."""
+  del parse_context
+  if RETRY_FIELD in repair_phase and repair_phase[RETRY_FIELD] is None:
+    repair_phase[RETRY_FIELD] = {}
+  return repair_phase
 
 
-def _SetTimeWindows(messages, time_windows_message, time_windows):
-  """Sets the timeWindow field of cloud deploy resource message.
+def _ConvertRepairAutomationBackoffModeEnumValuesToProtoFormat(
+    value: str, parse_context
+) -> str:
+  """Converts the backoffMode values to the proto enum names."""
+  del parse_context
 
-  Args:
-    messages: module containing the definitions of messages for Cloud Deploy.
-    time_windows_message:
-      googlecloudsdk.generated_clients.apis.clouddeploy.TimeWindows message.
-    time_windows: value of the timeWindows field.
-
-  Raises:
-    arg_parsers.ArgumentTypeError: if usage is not a valid enum.
-  """
-  setattr(time_windows_message, 'timeZone', time_windows.get('timeZone'))
-
-  # Go through each oneTimeWindow and parse the fields.
-  one_time_windows = time_windows.get('oneTimeWindows', [])
-  for one_time_window in one_time_windows:
-    _SetOneTimeWindow(messages, one_time_window, time_windows_message)
-
-  # Go through each weeklyWindow and parse the fields.
-  weekly_windows = time_windows.get('weeklyWindows', [])
-  for weekly_window in weekly_windows:
-    _SetWeeklyWindow(messages, weekly_window, time_windows_message)
+  if not value.startswith('BACKOFF_MODE_'):
+    return 'BACKOFF_MODE_' + value
 
 
-def _SetOneTimeWindow(messages, one_time_window, time_windows_message):
-  """Sets the oneTimeWindow field of a timeWindows message.
+def _ConvertAutomationWaitMinToSec(
+    wait: str, parse_context: _ParseContext
+) -> str:
+  """Converts the wait time from (for example) "5m" to "300s"."""
+  del parse_context
+  if not re.fullmatch(r'\d+m', wait):
+    raise exceptions.AutomationWaitFormatError()
+  mins = wait[:-1]
+  # convert the minute to second
+  seconds = int(mins) * 60
+  return '%ss' % seconds
 
-  Args:
-    messages: module containing the definitions of messages for Cloud Deploy.
-    one_time_window: value of the oneTimeWindow field.
-    time_windows_message:
-      googlecloudsdk.generated_clients.apis.clouddeploy.TimeWindows message.
 
-  Raises:
-    c_exceptions.InvalidArgumentException: if the start or end field is not a
-    valid ISO 8601 string.
-  """
-  one_time_window_message = messages.OneTimeWindow()
-  for field in one_time_window:
-    if field not in ['start', 'end']:
-      raise c_exceptions.InvalidArgumentException(
-          field,
-          'invalid input in a one-time window: {}. Use "start" and "end" to'
-          ' specify the date/times. For example: "start: 2024-12-24 17:00"'
-          .format(one_time_window.get(field)),
-      )
-  # Parse the ISO 8601 string from YAML into the date and time fields in the
-  # API.
-  if one_time_window.get('start'):
-    _SetDateTimeFields(
-        one_time_window, one_time_window_message, messages, 'start'
-    )
-  if one_time_window.get('end'):
-    _SetDateTimeFields(
-        one_time_window, one_time_window_message, messages, 'end'
-    )
-  time_windows_message.oneTimeWindows.append(one_time_window_message)
+def _ConvertPolicyOneTimeWindowToProtoFormat(
+    value: dict[str, Any], parse_context: _ParseContext
+) -> dict[str, Any]:
+  """Converts the one time window to proto format."""
+  proto_format = {}
+  if value.get('start'):
+    _SetDateTimeFields(value['start'], 'start', proto_format, parse_context)
+  if value.get('end'):
+    _SetDateTimeFields(value['end'], 'end', proto_format, parse_context)
+  # Any other (unknown) fields will cause errors in the proto conversion so we
+  # don't need to check for them here.
+  return proto_format
 
 
 def _SetDateTimeFields(
-    one_time_window, one_time_window_message, messages, field_name
-):
-  """Sets the start/end date time fields on the oneTimeWindow message.
-
-  Args:
-    one_time_window: value of the oneTimeWindow field.
-    one_time_window_message:
-      googlecloudsdk.generated_clients.apis.clouddeploy.OneTimeWindow message.
-    messages: module containing the definitions of messages for Cloud Deploy.
-    field_name: the field to set (start or end).
-
-  Raises:
-    c_exceptions.InvalidArgumentException: if the start or end field is not a
-    valid ISO 8601 string or contains a timezone offset or UTC.
-  """
-  date_str = one_time_window.get(field_name)
+    date_str: str,
+    field_name: str,
+    proto_format: dict[str, str],
+    parse_context: _ParseContext,
+) -> None:
+  """Convert the date string to proto format and set those fields in proto_format."""
   try:
     date_time = parser.isoparse(date_str)
   except ValueError:
-    raise c_exceptions.InvalidArgumentException(
+    raise exceptions.CloudDeployConfigError.for_resource_field(
+        parse_context.kind,
+        parse_context.name,
         field_name,
-        'invalid date string: "{}". Must be a valid date in ISO 8601 format'
-        ' (e.g. {}: 2024-12-24 17:00)'.format(date_str, field_name),
+        'invalid date string: "{date_str}". Must be a valid date in ISO 8601'
+        ' format (e.g. {field_name}: "2024-12-24 17:00)',
     )
   except TypeError:
-    raise c_exceptions.InvalidArgumentException(
+    raise exceptions.CloudDeployConfigError.for_resource_field(
+        parse_context.kind,
+        parse_context.name,
         field_name,
-        'invalid date string: {}. Make sure to put quotes around the date'
-        " string (e.g. {}: '2024-09-27 18:30:31.123') so that it is interpreted"
-        ' as a string and not a yaml timestamp.'.format(date_str, field_name),
+        'invalid date string: {date_str}. Make sure to put quotes around the'
+        ' date string (e.g. {field_name}: "2024-09-27 18:30:31.123") so that it'
+        ' is interpreted as a string and not a yaml timestamp.',
     )
   if date_time.tzinfo is not None:
-    raise c_exceptions.InvalidArgumentException(
+    raise exceptions.CloudDeployConfigError.for_resource_field(
+        parse_context.kind,
+        parse_context.name,
         field_name,
-        'invalid date string: {}. Do not include a timezone or timezone offset'
-        ' in the date string. Specify the timezone in the timeZone field.'
-        .format(date_str),
+        'invalid date string: {date_str}. Do not include a timezone or timezone'
+        ' offset in the date string. Specify the timezone in the timeZone'
+        ' field.',
     )
-  # Set the date field (e.g. startDate or endDate).
-  date_obj = _ConvertDate(date_time, messages)
-  date_field = '{}Date'.format(field_name)
-  setattr(one_time_window_message, date_field, date_obj)
-  # Set the time field (e.g. startTime or endTime)
-  time_obj = _ConvertTime(date_time, messages)
-  time_field = '{}Time'.format(field_name)
-  setattr(one_time_window_message, time_field, time_obj)
+  date_obj = {
+      'year': date_time.year,
+      'month': date_time.month,
+      'day': date_time.day,
+  }
+  time_obj = {
+      'hours': date_time.hour,
+      'minutes': date_time.minute,
+      'seconds': date_time.second,
+      'nanos': date_time.microsecond * 1000,
+  }
+  date_field = f'{field_name}Date'
+  proto_format[date_field] = date_obj
+  time_field = f'{field_name}Time'
+  proto_format[time_field] = time_obj
 
 
-def _ConvertDate(date_time_obj, messages):
-  """Converts a dateTime object to a Date message."""
-  return messages.Date(
-      year=date_time_obj.year, month=date_time_obj.month, day=date_time_obj.day
-  )
+def _ConvertPolicyWeeklyWindowTimes(
+    value: str, parse_context: _ParseContext
+) -> dict[str, str]:
+  """Convert the weekly window times to proto format."""
+  # First, check if the hour is 24. If so replace with 00, because
+  # fromisoformat() doesn't support 24.
+  hour_24 = False
+  if value.startswith('24:'):
+    hour_24 = True
+    value = value.replace('24', '00', 1)
+  try:
+    time_obj = datetime.time.fromisoformat(value)
+  except ValueError:
+    raise exceptions.CloudDeployConfigError.for_resource_field(
+        parse_context.kind,
+        parse_context.name,
+        parse_context.field,
+        f'invalid time string: "{value}"',
+    )
+  hour_value = time_obj.hour
+  if hour_24:
+    hour_value = 24
+  return {
+      'hours': hour_value,
+      'minutes': time_obj.minute,
+      'seconds': time_obj.second,
+      'nanos': time_obj.microsecond * 1000,
+  }
 
 
-def _ConvertTime(date_time_obj, messages):
-  """Converts a dateTime object to a TimeOfDay message."""
-  return messages.TimeOfDay(
-      hours=date_time_obj.hour,
-      minutes=date_time_obj.minute,
-      seconds=date_time_obj.second,
-      nanos=date_time_obj.microsecond * 1000,
-  )
+def _ReplaceCustomTargetType(value: str, parse_context: _ParseContext) -> str:
+  """Converts a custom target type ID or name to a resource name.
 
-
-def _SetWeeklyWindow(messages, weekly_window, time_windows_message):
-  """Sets the weeklyWindow field of a timeWindows message.
+  This is handled specially because we allow providing either the ID or name for
+  the custom target type referenced. When the ID is provided we need to
+  construct the name.
 
   Args:
-    messages: module containing the definitions of messages for Cloud Deploy.
-    weekly_window: value of the weeklyWindow field.
-    time_windows_message:
-      googlecloudsdk.generated_clients.apis.clouddeploy.TimeWindows message.
+    value: the current value of the customTargetType field.
+    parse_context: _ParseContext, data about the current parsing context.
+
+  Returns:
+    The custom target type resource name.
+  """
+  # If field contains '/' then we assume it's the name instead of the ID. No
+  # adjustments required.
+  if '/' in value:
+    return value
+
+  return custom_target_type_util.CustomTargetTypeReference(
+      value, parse_context.project, parse_context.region
+  ).RelativeName()
+
+
+@dataclasses.dataclass
+class _ParseTransform:
+  """Represents a field that needs transformation during parsing.
+
+  Attributes:
+    kinds: The ResourceKinds that this transformation applies to.
+    fields: A dot separated list of fields that require special handling. These
+      are relative to the top level of the manifest and can contain `[]` to
+      represent an array field.
+    replace: A function that is called when the field is encountered. The return
+      value will be used in place of the original value.
+    move: A function that is called when the field is encountered. This is used
+      for fields that should be moved to a different location in the manifest.
+      The function should modify the parse_context.manifest in place.
+    schema: An optional JSON schema that is used to validate the field.
+  """
+
+  kinds: set[ResourceKind]
+  # A dot separated list of fields that require special handling.
+  fields: dict[str]
+  # One of `replace` or `move` must be set. The first argument is the value of
+  # the field specified in `fields`.
+  # If `replace` is set, the function should return the new value and the
+  # parsing code will handle the substitution.
+  # If `move` is set, the function should modify the parse_context.manifest
+  # in place and the parsing code will skip the field.
+  replace: Optional[Callable[[Any, _ParseContext], Any]] = None
+  move: Optional[Callable[[Any, _ParseContext], None]] = None
+  schema: Optional[dict[str, Any]] = None
+
+
+_PARSE_TRANSFORMS = [
+    _ParseTransform(
+        kinds=set(ResourceKind),
+        fields=['apiVersion'],
+        move=_RemoveApiVersionAndKind,
+    ),
+    _ParseTransform(
+        kinds=set(ResourceKind),
+        fields=['metadata'],
+        move=_MetadataYamlToProto,
+        schema={
+            'type': 'object',
+            'required': ['name'],
+            'properties': {
+                'name': {'type': 'string'},
+                'description': {'type': 'string'},
+                'annotations': {
+                    'type': 'object',
+                    'additionalProperties': {'type': 'string'},
+                },
+                'labels': {
+                    'type': 'object',
+                    'additionalProperties': {'type': 'string'},
+                },
+            },
+            'additionalProperties': False,
+        },
+    ),
+    _ParseTransform(
+        kinds=set(ResourceKind),
+        fields=['labels'],
+        replace=_ConvertLabelsToSnakeCase,
+        schema={'type': 'object', 'additionalProperties': {'type': 'string'}},
+    ),
+    _ParseTransform(
+        kinds=[ResourceKind.AUTOMATION],
+        fields=['selector[]'],
+        move=_UpdateOldAutomationSelector,
+        schema={
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {'target': {'type': 'object'}},
+                'required': ['target'],
+                'additionalProperties': True,
+            },
+        },
+    ),
+    _ParseTransform(
+        kinds=[ResourceKind.AUTOMATION],
+        fields=['rules[]'],
+        replace=_RenameOldAutomationRules,
+    ),
+    _ParseTransform(
+        kinds=[ResourceKind.AUTOMATION],
+        fields=[
+            'rules[].repairRolloutRule',
+            'rules[].advanceRolloutRule',
+            'rules[].promoteReleaseRule',
+            'rules[].timedPromoteReleaseRule',
+        ],
+        replace=_ConvertAutomationRuleNameFieldToId,
+    ),
+    _ParseTransform(
+        kinds=[ResourceKind.AUTOMATION],
+        fields=['rules[].repairRolloutRule.repairPhases[]'],
+        replace=_AddEmptyRepairAutomationRetryMessage,
+    ),
+    _ParseTransform(
+        kinds=[ResourceKind.AUTOMATION],
+        fields=['rules[].repairRolloutRule.repairPhases[].retry.backoffMode'],
+        replace=_ConvertRepairAutomationBackoffModeEnumValuesToProtoFormat,
+        schema={'type': 'string'},
+    ),
+    _ParseTransform(
+        kinds=[ResourceKind.AUTOMATION],
+        fields=[
+            'rules[].repairRolloutRule.repairPhases[].retry.wait',
+            'rules[].advanceRolloutRule.wait',
+            'rules[].promoteReleaseRule.wait',
+        ],
+        replace=_ConvertAutomationWaitMinToSec,
+        schema={'type': 'string'},
+    ),
+    _ParseTransform(
+        kinds=[ResourceKind.DEPLOY_POLICY],
+        fields=['rules[].rolloutRestriction.timeWindows.oneTimeWindows[]'],
+        replace=_ConvertPolicyOneTimeWindowToProtoFormat,
+    ),
+    _ParseTransform(
+        kinds=[ResourceKind.DEPLOY_POLICY],
+        fields=[
+            'rules[].rolloutRestriction.timeWindows.weeklyWindows[].startTime',
+            'rules[].rolloutRestriction.timeWindows.weeklyWindows[].endTime',
+        ],
+        replace=_ConvertPolicyWeeklyWindowTimes,
+        schema={'type': 'string'},
+    ),
+    _ParseTransform(
+        kinds=[ResourceKind.TARGET],
+        fields=['customTarget.customTargetType'],
+        replace=_ReplaceCustomTargetType,
+        schema={'type': 'string'},
+    ),
+]
+
+
+_ref_creators = {
+    ResourceKind.AUTOMATION: automation_util.AutomationReference,
+    ResourceKind.CUSTOM_TARGET_TYPE: (
+        custom_target_type_util.CustomTargetTypeReference
+    ),
+    ResourceKind.DELIVERY_PIPELINE: (
+        delivery_pipeline_util.DeliveryPipelineReference
+    ),
+    ResourceKind.DEPLOY_POLICY: deploy_policy_util.DeployPolicyReference,
+    ResourceKind.TARGET: target_util.TargetReference,
+}
+
+_message_types = {
+    ResourceKind.AUTOMATION: lambda messages: messages.Automation,
+    ResourceKind.CUSTOM_TARGET_TYPE: lambda messages: messages.CustomTargetType,
+    ResourceKind.DELIVERY_PIPELINE: lambda messages: messages.DeliveryPipeline,
+    ResourceKind.DEPLOY_POLICY: lambda messages: messages.DeployPolicy,
+    ResourceKind.TARGET: lambda messages: messages.Target,
+}
+
+
+def _ParseManifest(
+    kind: ResourceKind,
+    name: str,
+    manifest: dict[str, Any],
+    project: str,
+    region: str,
+    messages: list[Any],
+) -> Any:
+  """Parses a v1beta1/v1 config manifest into a message using proto transforms.
+
+  The parser calls a series of transforms on the manifest dictionary to convert
+  it into a form expected by the proto message definitions. This transformed
+  dictionary is then passed to `messages_util.DictToMessageWithErrorCheck` to
+  convert it into the actual proto message.
+
+  Args:
+    kind: str, The kind of the resource (e.g., 'Target').
+    name: str, The name of the resource.
+    manifest: dict[str, Any], The cloud deploy resource YAML definition as a
+      dict.
+    project: str, The GCP project ID.
+    region: str, The ID of the location.
+    messages: The module containing the definitions of messages for Cloud
+      Deploy.
+
+  Returns:
+    The parsed resource as a message object (e.g., messages.Target), or an
+    empty dictionary if the kind is not TARGET_KIND_V1BETA1.
 
   Raises:
-    arg_parsers.ArgumentTypeError: if day of week is not a valid enum.
-    c_exceptions.InvalidArgumentException: if the startTime or endTime field is
-    not a
-    valid ISO 8601 string.
+    exceptions.CloudDeployConfigError: If there are errors during parsing,
+      such as an invalid structure for special handling fields.
   """
-  weekly_window_message = messages.WeeklyWindow()
-  for field in weekly_window:
-
-    if field == 'startTime' or field == 'endTime':
-      # The startTime and endTime fields need to be set with a string.
-      if not isinstance(weekly_window.get(field), str):
-        raise c_exceptions.InvalidArgumentException(
-            field,
-            'invalid input in a weekly window: {}. Use "startTime" and'
-            ' "endTime" to specify the times. For example: "startTime: 17:00"'
-            .format(weekly_window.get(field)),
-        )
-      _SetTime(messages, weekly_window_message, weekly_window.get(field), field)
-  days_of_week = weekly_window.get('daysOfWeek') or []
-  for d in days_of_week:
-    weekly_window_message.daysOfWeek.append(
-        # converts a string literal in weeklyWindow.daysOfWeek to an Enum.
-        arg_utils.ChoiceToEnum(
-            d,
-            messages.WeeklyWindow.DaysOfWeekValueListEntryValuesEnum,
-            valid_choices=DAY_OF_WEEK_CHOICES,
-        )
+  for field in _PARSE_TRANSFORMS:
+    if kind in field.kinds:
+      for field_name in field.fields:
+        value = _GetValue(field_name, manifest)
+        if value:
+          parse_context = _ParseContext(
+              kind,
+              name,
+              project,
+              region,
+              manifest,
+              _GetFinalFieldName(field_name),
+          )
+          if field.replace:
+            new_value = _TransformNestedListData(
+                value,
+                lambda data, current_field=field, current_parse_context=parse_context: current_field.replace(
+                    data, current_parse_context
+                ),
+                parse_context,
+                field.schema,
+            )
+            _SetValue(manifest, field_name, new_value)
+          else:
+            if field.schema:
+              try:
+                jsonschema.validate(schema=field.schema, instance=value)
+              except jsonschema.exceptions.ValidationError as e:
+                raise exceptions.CloudDeployConfigError.for_resource_field(
+                    kind, name, field_name, e.message
+                ) from e
+            field.move(value, parse_context)
+  try:
+    resource = messages_util.DictToMessageWithErrorCheck(
+        manifest, _message_types[kind](messages)
     )
-  time_windows_message.weeklyWindows.append(weekly_window_message)
-
-
-def _SetTime(messages, weekly_window_message, value, field):
-  """Sets the time field of a weeklyWindow message."""
-  if isinstance(value, str):
-    # First, check if the hour is 24. If so replace with 00, because
-    # fromisoformat() doesn't support 24.
-    hour_24 = False
-    if value.startswith('24:'):
-      hour_24 = True
-      value = value.replace('24', '00', 1)
-    try:
-      time_obj = datetime.time.fromisoformat(value)
-    except ValueError:
-      raise c_exceptions.InvalidArgumentException(
-          field,
-          'invalid time string: "{}" for field {}'.format(value, field),
-      )
-    hour_value = time_obj.hour
-    if hour_24:
-      hour_value = 24
-    time_of_day = messages.TimeOfDay(
-        hours=hour_value,
-        minutes=time_obj.minute,
-        seconds=time_obj.second,
-        nanos=time_obj.microsecond * 1000,
-    )
-    setattr(weekly_window_message, field, time_of_day)
-  else:
-    setattr(weekly_window_message, field, value)
-
-
-def _CreateTargetResource(messages, target_name_or_id, project, region):
-  """Creates target resource with full target name and the resource reference."""
-  resource = messages.Target()
-  resource_ref = target_util.TargetReference(target_name_or_id, project, region)
-  resource.name = resource_ref.RelativeName()
-
-  return resource, resource_ref
-
-
-def _CreateDeliveryPipelineResource(
-    messages, delivery_pipeline_name, project, region
-):
-  """Creates delivery pipeline resource with full delivery pipeline name and the resource reference."""
-  resource = messages.DeliveryPipeline()
-  resource_ref = resources.REGISTRY.Parse(
-      delivery_pipeline_name,
-      collection='clouddeploy.projects.locations.deliveryPipelines',
-      params={
-          'projectsId': project,
-          'locationsId': region,
-          'deliveryPipelinesId': delivery_pipeline_name,
-      },
-  )
-  resource.name = resource_ref.RelativeName()
-
-  return resource, resource_ref
-
-
-def _CreateAutomationResource(messages, name, project, region):
-  resource = messages.Automation()
-  resource_ref = automation_util.AutomationReference(name, project, region)
-  resource.name = resource_ref.RelativeName()
-
-  return resource, resource_ref
-
-
-def _CreateCustomTargetTypeResource(messages, name, project, region):
-  """Creates custom target type resource with full name and the resource reference."""
-  resource = messages.CustomTargetType()
-  resource_ref = resources.REGISTRY.Parse(
-      name,
-      collection='clouddeploy.projects.locations.customTargetTypes',
-      params={
-          'projectsId': project,
-          'locationsId': region,
-          'customTargetTypesId': name,
-      },
-  )
-  resource.name = resource_ref.RelativeName()
-
-  return resource, resource_ref
-
-
-def _CreateDeployPolicyResource(messages, name, project, region):
-  """Creates deploy policy resource with full name and the resource reference."""
-  resource = messages.DeployPolicy()
-  resource_ref = resources.REGISTRY.Parse(
-      name,
-      collection='clouddeploy.projects.locations.deployPolicies',
-      params={
-          'projectsId': project,
-          'locationsId': region,
-          'deployPoliciesId': name,
-      },
-  )
-  resource.name = resource_ref.RelativeName()
-
-  return resource, resource_ref
+  except messages_util.DecodeError as e:
+    raise exceptions.CloudDeployConfigError.for_resource(
+        kind, name, str(e)
+    ) from e
+  return resource
 
 
 def ProtoToManifest(resource, resource_ref, kind):
@@ -897,363 +715,6 @@ def ProtoToManifest(resource, resource_ref, kind):
       manifest[f.name] = v
 
   return manifest
-
-
-def SetExecutionConfig(messages, target, target_ref, execution_configs):
-  """Sets the executionConfigs field of cloud deploy resource message.
-
-  Args:
-    messages: module containing the definitions of messages for Cloud Deploy.
-    target:  googlecloudsdk.generated_clients.apis.clouddeploy.Target message.
-    target_ref: protorpc.messages.Message, target resource object.
-    execution_configs:
-      [googlecloudsdk.generated_clients.apis.clouddeploy.ExecutionConfig], list
-      of ExecutionConfig messages.
-
-  Raises:
-    arg_parsers.ArgumentTypeError: if usage is not a valid enum.
-  """
-  _EnsureIsType(
-      execution_configs,
-      list,
-      'failed to parse target {}, executionConfigs are defined incorrectly'
-      .format(target_ref.Name()),
-  )
-  for config in execution_configs:
-    execution_config_message = messages.ExecutionConfig()
-    for field in config:
-      # the value of usages field has enum, which needs special treatment.
-      if field != 'usages':
-        setattr(execution_config_message, field, config.get(field))
-    usages = config.get('usages') or []
-    for usage in usages:
-      execution_config_message.usages.append(
-          # converts a string literal in executionConfig.usages to an Enum.
-          arg_utils.ChoiceToEnum(
-              usage,
-              messages.ExecutionConfig.UsagesValueListEntryValuesEnum,
-              valid_choices=USAGE_CHOICES,
-          )
-      )
-
-    target.executionConfigs.append(execution_config_message)
-
-
-def SetDeployParametersForPipelineStage(messages, pipeline_ref, stage):
-  """Sets the deployParameter field of cloud deploy delivery pipeline stage message.
-
-  Args:
-   messages: module containing the definitions of messages for Cloud Deploy.
-   pipeline_ref: protorpc.messages.Message, delivery pipeline resource object.
-   stage: dict[str,str], cloud deploy stage yaml definition.
-  """
-
-  deploy_parameters = stage.get('deployParameters')
-  if deploy_parameters is None:
-    return
-
-  _EnsureIsType(
-      deploy_parameters,
-      list,
-      'failed to parse stages of pipeline {}, deployParameters are defined'
-      ' incorrectly'.format(pipeline_ref.Name()),
-  )
-  dps_message = getattr(messages, 'DeployParameters')
-  dps_values = []
-
-  for dp in deploy_parameters:
-    dps_value = dps_message()
-    values = dp.get('values')
-    if values:
-      values_message = dps_message.ValuesValue
-      values_dict = values_message()
-      _EnsureIsType(
-          values,
-          dict,
-          'failed to parse stages of pipeline {}, deployParameter values are'
-          'defined incorrectly'.format(pipeline_ref.Name()),
-      )
-      for key, value in values.items():
-        values_dict.additionalProperties.append(
-            values_message.AdditionalProperty(key=key, value=value)
-        )
-      dps_value.values = values_dict
-
-    match_target_labels = dp.get('matchTargetLabels')
-    if match_target_labels:
-      mtls_message = dps_message.MatchTargetLabelsValue
-      mtls_dict = mtls_message()
-
-      for key, value in match_target_labels.items():
-        mtls_dict.additionalProperties.append(
-            mtls_message.AdditionalProperty(key=key, value=value)
-        )
-      dps_value.matchTargetLabels = mtls_dict
-
-    dps_values.append(dps_value)
-
-  stage['deployParameters'] = dps_values
-
-
-def SetDeployParametersForTarget(
-    messages, target, target_ref, deploy_parameters
-):
-  """Sets the deployParameters field of cloud deploy target message.
-
-  Args:
-   messages: module containing the definitions of messages for Cloud Deploy.
-   target: googlecloudsdk.generated_clients.apis.clouddeploy.Target message.
-   target_ref: protorpc.messages.Message, target resource object.
-   deploy_parameters: dict[str,str], a dict of deploy parameters (key,value)
-     pairs.
-  """
-
-  _EnsureIsType(
-      deploy_parameters,
-      dict,
-      'failed to parse target {}, deployParameters are defined incorrectly'
-      .format(target_ref.Name()),
-  )
-
-  dps_message = getattr(
-      messages, deploy_util.ResourceType.TARGET.value
-  ).DeployParametersValue
-  dps_value = dps_message()
-  for key, value in deploy_parameters.items():
-    dps_value.additionalProperties.append(
-        dps_message.AdditionalProperty(key=key, value=value)
-    )
-  target.deployParameters = dps_value
-
-
-def SetAssociatedEntities(messages, target, target_ref, associated_entities):
-  """Sets the associatedEntities field in the cloud deploy target message.
-
-  Args:
-    messages: module containing the definitions of messages for Cloud Deploy.
-    target: googlecloudsdk.generated_clients.apis.clouddeploy.Target message.
-    target_ref: protorpc.messages.Message, target resource object.
-    associated_entities: dict[str, associated_entities], a dict of associated
-      entities (key,value) pairs.
-  """
-
-  _EnsureIsType(
-      associated_entities,
-      dict,
-      'failed to parse target {}, associatedEntities are defined incorrectly'
-      .format(target_ref.Name()),
-  )
-
-  aes_message = getattr(
-      messages, deploy_util.ResourceType.TARGET.value
-  ).AssociatedEntitiesValue
-  aes_value = aes_message()
-  for key, value in associated_entities.items():
-    aes_value.additionalProperties.append(
-        aes_message.AdditionalProperty(key=key, value=value)
-    )
-  target.associatedEntities = aes_value
-
-
-def SetCustomTarget(target, custom_target, project, region):
-  """Sets the customTarget field of cloud deploy target message.
-
-  This is handled specially because we allow providing either the ID or name for
-  the custom target type referenced. When the ID is provided we need to
-  construct the name.
-
-  Args:
-    target: googlecloudsdk.generated_clients.apis.clouddeploy.Target message.
-    custom_target:
-      googlecloudsdk.generated_clients.apis.clouddeploy.CustomTarget message.
-    project: str, gcp project.
-    region: str, ID of the location.
-  """
-  custom_target_type = custom_target.get('customTargetType')
-  # If field contains '/' then we assume it's the name instead of the ID. No
-  # adjustments required.
-  if '/' in custom_target_type:
-    target.customTarget = custom_target
-    return
-
-  custom_target_type_resource_ref = resources.REGISTRY.Parse(
-      None,
-      collection='clouddeploy.projects.locations.customTargetTypes',
-      params={
-          'projectsId': project,
-          'locationsId': region,
-          'customTargetTypesId': custom_target_type,
-      },
-  )
-  custom_target['customTargetType'] = (
-      custom_target_type_resource_ref.RelativeName()
-  )
-  target.customTarget = custom_target
-
-
-def SetCustomTargetTasks(messages, custom_target_type, tasks):
-  """Sets the tasks field of cloud deploy custom target type message.
-
-  This is handled specially because we allow providing either the ID or name for
-  the custom target type referenced. When the ID is provided we need to
-  construct the name.
-
-  Args:
-    messages: module containing the definitions of messages for Cloud Deploy.
-    custom_target_type: custom target type resource.
-    tasks: googlecloudsdk.generated_clients.apis.clouddeploy.CustomTargetTasks
-      message.
-  """
-  # Set any env variables defined on CustomTargetTasks.
-  if tasks.get(DEPLOY_FIELD):
-    SetEnvForTask(messages, tasks.get(DEPLOY_FIELD))
-  if tasks.get(RENDER_FIELD):
-    SetEnvForTask(messages, tasks.get(RENDER_FIELD))
-  custom_target_type.tasks = tasks
-
-
-def SetAutomationSelector(messages, automation, selectors):
-  """Sets the selectors field of cloud deploy automation resource message.
-
-  Args:
-    messages: module containing the definitions of messages for Cloud Deploy.
-    automation:  googlecloudsdk.generated_clients.apis.clouddeploy.Automation
-      message.
-    selectors:
-      [googlecloudsdk.generated_clients.apis.clouddeploy.TargetAttributes], list
-      of TargetAttributes messages.
-  """
-
-  automation.selector = messages.AutomationResourceSelector()
-  # check this first because it's the recommended format for selector.
-  if not isinstance(selectors, list):
-    for target_attribute in selectors.get(TARGETS_FIELD):
-      _AddTargetAttribute(messages, automation.selector, target_attribute)
-  else:
-    for selector in selectors:
-      message = selector.get(TARGET_FIELD)
-      _AddTargetAttribute(messages, automation.selector, message)
-
-
-def SetDeployPolicySelector(messages, deploy_policy, selectors):
-  """Sets the selectors field of cloud deploy deploy policy resource message.
-
-  Args:
-    messages: module containing the definitions of messages for Cloud Deploy.
-    deploy_policy:
-      googlecloudsdk.generated_clients.apis.clouddeploy.DeployPolicy message.
-    selectors:
-      [googlecloudsdk.generated_clients.apis.clouddeploy.DeployPolicyResourceSelector],
-      list of DeployPolicyResourceSelector messages.
-  """
-  for selector in selectors:
-    selector_message = messages.DeployPolicyResourceSelector()
-    for field in selector:
-      if field == DELIVERY_PIPELINE:
-        dp_attribute_value = selector.get(field)
-        dp_attribute_msg = messages.DeliveryPipelineAttribute()
-        dp_attribute_populated = _SetSelectorAttributes(
-            messages,
-            dp_attribute_value,
-            dp_attribute_msg,
-            deploy_util.ResourceType.PIPELINE_ATTRIBUTE,
-        )
-        setattr(selector_message, DELIVERY_PIPELINE, dp_attribute_populated)
-      if field == TARGET:
-        target_attribute_value = selector.get(field)
-        target_attribute_msg = messages.TargetAttribute()
-        target_attribute_populated = _SetSelectorAttributes(
-            messages,
-            target_attribute_value,
-            target_attribute_msg,
-            deploy_util.ResourceType.TARGET_ATTRIBUTE,
-        )
-        setattr(selector_message, TARGET, target_attribute_populated)
-    deploy_policy.selectors.append(selector_message)
-
-
-def _SetSelectorAttributes(messages, attribute, attribute_msg, resource_type):
-  """Sets the attribute message within a selector."""
-  for field in attribute:
-    if field == ID_FIELD:
-      setattr(attribute_msg, field, attribute.get(field))
-    if field == LABELS_FIELD:
-      deploy_util.SetMetadata(
-          messages,
-          attribute_msg,
-          resource_type,
-          None,
-          attribute.get(field),
-      )
-  return attribute_msg
-
-
-def SetAutomationRules(messages, automation, automation_ref, rules):
-  """Sets the rules field of cloud deploy automation resource message.
-
-  Args:
-    messages: module containing the definitions of messages for Cloud Deploy.
-    automation:  googlecloudsdk.generated_clients.apis.clouddeploy.Automation
-      message.
-    automation_ref: protorpc.messages.Message, automation resource object.
-    rules: [automation rule message], list of messages that are usd to create
-      googlecloudsdk.generated_clients.apis.clouddeploy.AutomationRule messages.
-  """
-  _EnsureIsType(
-      rules,
-      list,
-      'failed to parse automation {}, rules are defined incorrectly'.format(
-          automation_ref.Name()
-      ),
-  )
-
-  for rule in rules:
-    automation_rule = messages.AutomationRule()
-    if rule.get(PROMOTE_RELEASE_RULE_FIELD) or rule.get(PROMOTE_RELEASE_FIELD):
-      message = rule.get(PROMOTE_RELEASE_RULE_FIELD) or rule.get(
-          PROMOTE_RELEASE_FIELD
-      )
-      promote_release = messages.PromoteReleaseRule(
-          id=message.get(ID_FIELD) or message.get(NAME_FIELD),
-          wait=_WaitMinToSec(message.get(WAIT_FIELD)),
-          destinationTargetId=message.get(DESTINATION_TARGET_ID_FIELD),
-          destinationPhase=message.get(DESTINATION_PHASE_FIELD),
-      )
-      automation_rule.promoteReleaseRule = promote_release
-    if rule.get(ADVANCE_ROLLOUT_RULE_FIELD) or rule.get(ADVANCE_ROLLOUT_FIELD):
-      message = rule.get(ADVANCE_ROLLOUT_RULE_FIELD) or rule.get(
-          ADVANCE_ROLLOUT_FIELD
-      )
-      advance_rollout = messages.AdvanceRolloutRule(
-          id=message.get(ID_FIELD) or message.get(NAME_FIELD),
-          wait=_WaitMinToSec(message.get(WAIT_FIELD)),
-          sourcePhases=message.get(SOURCE_PHASES_FIELD) or [],
-      )
-      automation_rule.advanceRolloutRule = advance_rollout
-    if rule.get(REPAIR_ROLLOUT_RULE_FIELD) or rule.get(REPAIR_ROLLOUT_FIELD):
-      message = rule.get(REPAIR_ROLLOUT_RULE_FIELD) or rule.get(
-          REPAIR_ROLLOUT_FIELD
-      )
-      automation_rule.repairRolloutRule = messages.RepairRolloutRule(
-          id=message.get(ID_FIELD) or message.get(NAME_FIELD),
-          phases=message.get(PHASES_FIELD) or [],
-          jobs=message.get(JOBS_FIELD) or [],
-          repairPhases=_ParseRepairPhases(
-              messages, message.get(REPAIR_PHASES_FIELD) or []
-          ),
-      )
-    if rule.get(TIMED_PROMOTE_RELEASE_RULE_FIELD):
-      message = rule.get(TIMED_PROMOTE_RELEASE_RULE_FIELD)
-      automation_rule.timedPromoteReleaseRule = (
-          messages.TimedPromoteReleaseRule(
-              id=message.get(ID_FIELD) or message.get(NAME_FIELD),
-              schedule=message.get(SCHEDULE_FIELD),
-              timeZone=message.get(TIME_ZONE_FIELD),
-              destinationTargetId=message.get(DESTINATION_TARGET_ID_FIELD),
-              destinationPhase=message.get(DESTINATION_PHASE_FIELD),
-          )
-      )
-    automation.rules.append(automation_rule)
 
 
 def ExportAutomationSelector(manifest, resource_selector):
@@ -1457,17 +918,6 @@ def _FormatTime(time_obj):
   return time_str
 
 
-def _WaitMinToSec(wait):
-  if not wait:
-    return wait
-  if not re.fullmatch(r'\d+m', wait):
-    raise exceptions.AutomationWaitFormatError()
-  mins = wait[:-1]
-  # convert the minute to second
-  seconds = int(mins) * 60
-  return '%ss' % seconds
-
-
 def _WaitSecToMin(wait):
   if not wait:
     return wait
@@ -1475,51 +925,6 @@ def _WaitSecToMin(wait):
   # convert the minute to second
   mins = int(seconds) // 60
   return '%sm' % mins
-
-
-def _EnsureIsType(value, t, msg):
-  if not isinstance(value, t):
-    raise exceptions.CloudDeployConfigError(msg)
-
-
-def _ParseRepairPhases(messages, phases):
-  """Parses RepairMode of the Automation resource."""
-  modes_pb = []
-  for p in phases:
-    phase = messages.RepairPhaseConfig()
-    if RETRY_FIELD in p:
-      phase.retry = messages.Retry()
-      retry = p.get(RETRY_FIELD)
-      if retry:
-        phase.retry.attempts = retry.get(ATTEMPTS_FIELD)
-        phase.retry.wait = _WaitMinToSec(retry.get(WAIT_FIELD))
-        phase.retry.backoffMode = _ParseBackoffMode(
-            messages, retry.get(BACKOFF_MODE_FIELD)
-        )
-    if ROLLBACK_FIELD in p:
-      phase.rollback = messages.Rollback()
-      rollback = p.get(ROLLBACK_FIELD)
-      if rollback:
-        phase.rollback.destinationPhase = rollback.get(DESTINATION_PHASE_FIELD)
-        phase.rollback.disableRollbackIfRolloutPending = rollback.get(
-            DISABLE_ROLLBACK_IF_ROLLOUT_PENDING
-        )
-    modes_pb.append(phase)
-
-  return modes_pb
-
-
-def _ParseBackoffMode(messages, backoff):
-  """Parses BackoffMode of the Automation resource."""
-  if not backoff:
-    return backoff
-  if backoff in BACKOFF_CHOICES_SHORT:
-    backoff = 'BACKOFF_MODE_' + backoff
-  return arg_utils.ChoiceToEnum(
-      backoff,
-      messages.Retry.BackoffModeValueValuesEnum,
-      valid_choices=BACKOFF_CHOICES_SHORT,
-  )
 
 
 def _ExportRepairPhases(repair_phases):
@@ -1556,19 +961,170 @@ def _ExportRepairPhases(repair_phases):
   return phases
 
 
-def _AddTargetAttribute(messages, resource_selector, message):
-  """Add a new TargetAttribute to the resource selector resource."""
-  target_attribute = messages.TargetAttribute()
-  for field in message:
-    value = message.get(field)
-    if field == ID_FIELD:
-      setattr(target_attribute, field, value)
-    if field == LABELS_FIELD:
-      deploy_util.SetMetadata(
-          messages,
-          target_attribute,
-          deploy_util.ResourceType.TARGET_ATTRIBUTE,
-          None,
-          value,
+def _GetValue(path: str, manifest: dict[str, Any]) -> Any:
+  """Gets the value at a dot-separated path in a dictionary.
+
+  If the path contains [], it returns a list of values at the path. If the path
+  contains multiple [], it will return nested lists. None values will appear
+  where there are missing values.
+
+  Args:
+    path: str, The dot-separated path to the value.
+    manifest: dict, The dictionary to search.
+
+  Returns:
+    The value at the path, or None if it doesn't exist.
+  """
+  if '[]' in path:
+    pre, post = path.split('[]', 1)
+    post = post.lstrip('.')
+    current_list = _GetValue(pre, manifest)
+    if not isinstance(current_list, list):
+      return None  # Path before [] did not lead to a list
+
+    results = []
+    if not post:  # If there's no path after [], return the list items
+      return current_list
+
+    for item in current_list:
+      result = _GetValue(post, item)
+      results.append(result)
+    return results
+
+  keys = path.split('.')
+  current = manifest
+  for key in keys:
+    if isinstance(current, dict) and key in current:
+      current = current[key]
+    elif isinstance(current, list):
+      # Handle cases where a list is encountered but not specified with []
+      return [_GetValue(key, item) for item in current]
+    else:
+      return None
+  return current
+
+
+def _TransformNestedListData(
+    data: Any,
+    func: Callable[[Any], Any],
+    parse_context: _ParseContext = None,
+    schema: Optional[Any] = None,
+) -> Any:
+  """Recursively applies a function to elements in a nested structure (lists or single items).
+
+  Args:
+    data: The nested structure to process.
+    func: The callable to apply to non-list, non-None elements.
+    parse_context: The parse context for the data.
+    schema: the schema for the data
+
+  Returns:
+    A new nested structure with the function applied.
+  """
+  if data is None:
+    return None
+  if isinstance(data, list):
+    new_list = []
+    for item in data:
+      new_list.append(
+          _TransformNestedListData(item, func, parse_context, schema)
       )
-    resource_selector.targets.append(target_attribute)
+    return new_list
+  else:
+    if schema:
+      try:
+        jsonschema.validate(schema=schema, instance=data)
+      except jsonschema.exceptions.ValidationError as e:
+        raise exceptions.CloudDeployConfigError.for_resource_field(
+            parse_context.kind,
+            parse_context.name,
+            parse_context.field,
+            e.message,
+        ) from e
+    return func(data)
+
+
+def _SetValue(manifest: dict[str, Any], path: str, value: Any) -> None:
+  """Sets the value at a dot-separated path in a dictionary.
+
+  If value is None, deletes the value at path.
+  If path contains [], it updates elements within the list. Since this is a
+  companion to _GetValue, it processes nested lists the same way.
+
+  Args:
+    manifest: dict, The dictionary to update.
+    path: str, The dot-separated path to the value.
+    value: Any, The value to set, or None to delete.
+
+  Raises:
+    exceptions.CloudDeployConfigError: if an intermediate value in path is not
+      a dictionary, or if list lengths don't match when using [].
+  """
+  if '[]' in path:
+    pre, post = path.split('[]', 1)
+    post = post.lstrip('.')
+    current_list = _GetValue(pre, manifest)
+
+    if not isinstance(current_list, list):
+      raise exceptions.CloudDeployConfigError(
+          f'Path "{pre}" did not lead to a list in _SetValue for path "{path}"'
+      )
+
+    if not post:
+      # If post is empty, replace the current list with the new value
+      if not isinstance(value, list):
+        raise exceptions.CloudDeployConfigError(
+            f'New value must be a list to replace list at "{pre}"'
+        )
+      # This is tricky. We need to replace the list in the parent.
+      keys = pre.split('.')
+      parent = manifest
+      for key in keys[:-1]:
+        parent = parent[key]
+      parent[keys[-1]] = value
+      return
+
+    if not isinstance(value, list):
+      raise exceptions.CloudDeployConfigError(
+          f'New value must be a list when path "{path}" contains []'
+      )
+    if len(current_list) != len(value):
+      raise exceptions.CloudDeployConfigError(
+          f'List length mismatch: len(current_list)={len(current_list)},'
+          f' len(value)={len(value)} for path "{path}"'
+      )
+
+    for i, item in enumerate(current_list):
+      current_value = value[i]
+      if current_value is None:
+        continue
+      _SetValue(item, post, current_value)
+    return
+
+  keys = path.split('.')
+  current = manifest
+  for key in keys[:-1]:
+    if key not in current:
+      # Path doesn't exist, do nothing.
+      return
+    if not isinstance(current[key], dict):
+      raise exceptions.CloudDeployConfigError(
+          f'Value at key "{key}" is not a dictionary for path "{path}"'
+      )
+    current = current[key]
+
+  last_key = keys[-1]
+  if value is None:
+    if last_key in current:
+      del current[last_key]
+  else:
+    current[last_key] = value
+
+
+def _GetFinalFieldName(path: str) -> str:
+  """Returns the final field name from a dot-separated path."""
+  keys = path.split('.')
+  final_field_name = keys[-1]
+  if final_field_name.endswith('[]'):
+    final_field_name = final_field_name.removesuffix('[]')
+  return final_field_name

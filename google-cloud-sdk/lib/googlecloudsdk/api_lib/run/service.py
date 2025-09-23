@@ -43,20 +43,17 @@ MANUAL_INSTANCE_COUNT_ANNOTATION = 'run.googleapis.com/manualInstanceCount'
 SERVICE_SCALING_MODE_ANNOTATION = 'run.googleapis.com/scalingMode'
 OPERATION_ID_ANNOTATION = 'run.googleapis.com/operation-id'
 PRESETS_ANNOTATION = 'run.googleapis.com/presets'
+RUN_FUNCTIONS_BUILD_IMAGE_URI_ANNOTATION = 'run.googleapis.com/build-image-uri'
+RUN_FUNCTIONS_BUILD_ID_ANNOTATION = 'run.googleapis.com/build-id'
+RUN_FUNCTIONS_BUILD_ENV_VARS_ANNOTATION = (
+    'run.googleapis.com/build-environment-variables'
+)
 RUN_FUNCTIONS_BUILD_SOURCE_LOCATION_ANNOTATION = (
     'run.googleapis.com/build-source-location'
 )
 RUN_FUNCTIONS_BUILD_FUNCTION_TARGET_ANNOTATION = (
     'run.googleapis.com/build-function-target'
 )
-RUN_FUNCTIONS_BUILD_IMAGE_URI_ANNOTATION = 'run.googleapis.com/build-image-uri'
-RUN_FUNCTIONS_BUILD_ID_ANNOTATION = 'run.googleapis.com/build-id'
-RUN_FUNCTIONS_BUILD_ENV_VARS_ANNOTATION = (
-    'run.googleapis.com/build-environment-variables'
-)
-RUN_FUNCTIONS_BUILD_SOURCE_LOCATION_ANNOTATION = 'run.googleapis.com/build-source-location'
-RUN_FUNCTIONS_BUILD_FUNCTION_TARGET_ANNOTATION = 'run.googleapis.com/build-function-target'
-RUN_FUNCTIONS_BUILD_IMAGE_URI_ANNOTATION = 'run.googleapis.com/build-image-uri'
 RUN_FUNCTIONS_BUILD_WORKER_POOL_ANNOTATION = (
     'run.googleapis.com/build-worker-pool'
 )
@@ -79,6 +76,10 @@ RUN_FUNCTIONS_IMAGE_URI_ANNOTATION_DEPRECATED = 'run.googleapis.com/image-uri'
 RUN_FUNCTIONS_ENABLE_AUTOMATIC_UPDATES_DEPRECATED = (
     'run.googleapis.com/enable-automatic-updates'
 )
+
+# zip deploy source location annotation.
+# A json map string from container to GCS source location.
+SOURCE_DEPLOY_NO_BUILD_SOURCE_LOCATION_ANNOTATION = 'run.googleapis.com/sources'
 
 
 class Service(k8s_object.KubernetesObject):
@@ -260,9 +261,17 @@ class Service(k8s_object.KubernetesObject):
 
   @property
   def source_location(self):
+    """Returns the build source location from the service annotations."""
     return self.annotations.get(
         RUN_FUNCTIONS_BUILD_SOURCE_LOCATION_ANNOTATION,
         self.annotations.get(
             RUN_FUNCTIONS_SOURCE_LOCATION_ANNOTATION_DEPRECATED
         ),
+    )
+
+  @property
+  def source_deploy_no_build_source_location_map(self):
+    """Returns the function target from the service annotations."""
+    return self.template_annotations.get(
+        SOURCE_DEPLOY_NO_BUILD_SOURCE_LOCATION_ANNOTATION, None
     )

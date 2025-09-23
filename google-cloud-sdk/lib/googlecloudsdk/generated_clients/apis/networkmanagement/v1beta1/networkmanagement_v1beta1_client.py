@@ -951,6 +951,33 @@ class NetworkmanagementV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ShowEffectiveFlowLogsConfigs(self, request, global_params=None):
+      r"""ShowEffectiveFlowLogsConfigs returns a list of all VPC Flow Logs configurations applicable to a specified resource.
+
+      Args:
+        request: (NetworkmanagementProjectsLocationsVpcFlowLogsConfigsShowEffectiveFlowLogsConfigsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ShowEffectiveFlowLogsConfigsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ShowEffectiveFlowLogsConfigs')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ShowEffectiveFlowLogsConfigs.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/vpcFlowLogsConfigs:showEffectiveFlowLogsConfigs',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.vpcFlowLogsConfigs.showEffectiveFlowLogsConfigs',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken', 'resource'],
+        relative_path='v1beta1/{+parent}/vpcFlowLogsConfigs:showEffectiveFlowLogsConfigs',
+        request_field='',
+        request_type_name='NetworkmanagementProjectsLocationsVpcFlowLogsConfigsShowEffectiveFlowLogsConfigsRequest',
+        response_type_name='ShowEffectiveFlowLogsConfigsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 

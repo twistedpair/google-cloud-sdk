@@ -10,6 +10,7 @@ presets:
     CPU: 4 vCPUs
     Memory: 16 GiB
     GPU: 1 NVIDIA L4
+  example_gcloud_usage: gcloud alpha run deploy <service-name> --preset=ai-inference
 - name: ollama
   version: 0.0.1 (latest)
   category: CATEGORY_QUICKSTART
@@ -36,6 +37,7 @@ presets:
   - SERVICE
   config_values:
     Ingress: internal
+  example_gcloud_usage: gcloud alpha run deploy <service-name> --preset=private-service
 - name: public-service
   category: CATEGORY_QUICKSTART
   description: Publicly accessible endpoint, exposing your service to anyone on the internet, without any authentication.
@@ -44,6 +46,7 @@ presets:
   config_values:
     Ingress: all
     Authentication: Allow public access
+  example_gcloud_usage: gcloud alpha run deploy <service-name> --preset=public-service
 - name: single-concurrency
   category: CATEGORY_QUICKSTART
   description: Create a service where requests are handled strictly one at a time.
@@ -51,3 +54,4 @@ presets:
   - SERVICE
   config_values:
     Container Concurrency: 1
+  example_gcloud_usage: gcloud alpha run deploy <service-name> --preset=single-concurrency

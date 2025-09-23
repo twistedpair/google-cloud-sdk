@@ -40,6 +40,7 @@ class NetworkmanagementV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.organizations_locations_operations = self.OrganizationsLocationsOperationsService(self)
+    self.organizations_locations_vpcFlowLogsConfigs = self.OrganizationsLocationsVpcFlowLogsConfigsService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations = self.OrganizationsService(self)
     self.projects_locations_global_connectivityTests = self.ProjectsLocationsGlobalConnectivityTestsService(self)
@@ -168,6 +169,151 @@ class NetworkmanagementV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='NetworkmanagementOrganizationsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsVpcFlowLogsConfigsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_vpcFlowLogsConfigs resource."""
+
+    _NAME = 'organizations_locations_vpcFlowLogsConfigs'
+
+    def __init__(self, client):
+      super(NetworkmanagementV1.OrganizationsLocationsVpcFlowLogsConfigsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new `VpcFlowLogsConfig`. If a configuration with the exact same settings already exists (even if the ID is different), the creation fails. Notes: 1. Creating a configuration with `state=DISABLED` will fail 2. The following fields are not considered as settings for the purpose of the check mentioned above, therefore - creating another configuration with the same fields but different values for the following fields will fail as well: * name * create_time * update_time * labels * description.
+
+      Args:
+        request: (NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/vpcFlowLogsConfigs',
+        http_method='POST',
+        method_id='networkmanagement.organizations.locations.vpcFlowLogsConfigs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['vpcFlowLogsConfigId'],
+        relative_path='v1/{+parent}/vpcFlowLogsConfigs',
+        request_field='vpcFlowLogsConfig',
+        request_type_name='NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a specific `VpcFlowLogsConfig`.
+
+      Args:
+        request: (NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/vpcFlowLogsConfigs/{vpcFlowLogsConfigsId}',
+        http_method='DELETE',
+        method_id='networkmanagement.organizations.locations.vpcFlowLogsConfigs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the details of a specific `VpcFlowLogsConfig`.
+
+      Args:
+        request: (NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VpcFlowLogsConfig) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/vpcFlowLogsConfigs/{vpcFlowLogsConfigsId}',
+        http_method='GET',
+        method_id='networkmanagement.organizations.locations.vpcFlowLogsConfigs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsGetRequest',
+        response_type_name='VpcFlowLogsConfig',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all `VpcFlowLogsConfigs` in a given organization.
+
+      Args:
+        request: (NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListVpcFlowLogsConfigsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/vpcFlowLogsConfigs',
+        http_method='GET',
+        method_id='networkmanagement.organizations.locations.vpcFlowLogsConfigs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/vpcFlowLogsConfigs',
+        request_field='',
+        request_type_name='NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsListRequest',
+        response_type_name='ListVpcFlowLogsConfigsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing `VpcFlowLogsConfig`. If a configuration with the exact same settings already exists (even if the ID is different), the creation fails. Notes: 1. Updating a configuration with `state=DISABLED` will fail 2. The following fields are not considered as settings for the purpose of the check mentioned above, therefore - updating another configuration with the same fields but different values for the following fields will fail as well: * name * create_time * update_time * labels * description.
+
+      Args:
+        request: (NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/vpcFlowLogsConfigs/{vpcFlowLogsConfigsId}',
+        http_method='PATCH',
+        method_id='networkmanagement.organizations.locations.vpcFlowLogsConfigs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='vpcFlowLogsConfig',
+        request_type_name='NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1078,6 +1224,60 @@ class NetworkmanagementV1(base_api.BaseApiClient):
         request_field='vpcFlowLogsConfig',
         request_type_name='NetworkmanagementProjectsLocationsVpcFlowLogsConfigsPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def QueryOrgVpcFlowLogsConfigs(self, request, global_params=None):
+      r"""QueryOrgVpcFlowLogsConfigs returns a list of all organization-level VPC Flow Logs configurations applicable to the specified project.
+
+      Args:
+        request: (NetworkmanagementProjectsLocationsVpcFlowLogsConfigsQueryOrgVpcFlowLogsConfigsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (QueryOrgVpcFlowLogsConfigsResponse) The response message.
+      """
+      config = self.GetMethodConfig('QueryOrgVpcFlowLogsConfigs')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    QueryOrgVpcFlowLogsConfigs.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vpcFlowLogsConfigs:queryOrgVpcFlowLogsConfigs',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.vpcFlowLogsConfigs.queryOrgVpcFlowLogsConfigs',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/vpcFlowLogsConfigs:queryOrgVpcFlowLogsConfigs',
+        request_field='',
+        request_type_name='NetworkmanagementProjectsLocationsVpcFlowLogsConfigsQueryOrgVpcFlowLogsConfigsRequest',
+        response_type_name='QueryOrgVpcFlowLogsConfigsResponse',
+        supports_download=False,
+    )
+
+    def ShowEffectiveFlowLogsConfigs(self, request, global_params=None):
+      r"""ShowEffectiveFlowLogsConfigs returns a list of all VPC Flow Logs configurations applicable to a specified resource.
+
+      Args:
+        request: (NetworkmanagementProjectsLocationsVpcFlowLogsConfigsShowEffectiveFlowLogsConfigsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ShowEffectiveFlowLogsConfigsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ShowEffectiveFlowLogsConfigs')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ShowEffectiveFlowLogsConfigs.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vpcFlowLogsConfigs:showEffectiveFlowLogsConfigs',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.vpcFlowLogsConfigs.showEffectiveFlowLogsConfigs',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken', 'resource'],
+        relative_path='v1/{+parent}/vpcFlowLogsConfigs:showEffectiveFlowLogsConfigs',
+        request_field='',
+        request_type_name='NetworkmanagementProjectsLocationsVpcFlowLogsConfigsShowEffectiveFlowLogsConfigsRequest',
+        response_type_name='ShowEffectiveFlowLogsConfigsResponse',
         supports_download=False,
     )
 

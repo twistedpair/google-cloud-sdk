@@ -1118,7 +1118,10 @@ class ArgumentParser(argparse.ArgumentParser):
         # Provide "Maybe you meant" suggestions if we are dealing with an
         # invalid command.
         suggestions = None
-        if 'Invalid choice' in message:
+        # "Valid choices" would imply this is an arg issue not a command issue.
+        is_invalid_command = ('Invalid choice' in message and
+                              'Valid choices' not in message)
+        if is_invalid_command:
           suggestions = suggest_commands.GetCommandSuggestions(
               self._GetOriginalArgs())
           self._ClearOriginalArgs()

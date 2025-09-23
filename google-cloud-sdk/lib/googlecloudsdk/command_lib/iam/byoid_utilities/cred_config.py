@@ -35,21 +35,41 @@ class ConfigType(enum.Enum):
 
 
 class ByoidEndpoints(object):
-  """Base class for BYOID endpoints.
-  """
+  """Base class for BYOID endpoints."""
 
   def __init__(
-      self, service, enable_mtls=False, universe_domain='googleapis.com'
+      self,
+      service,
+      enable_mtls=False,
+      universe_domain='googleapis.com',
+      sts_location='',
   ):
-    self._sts_template = 'https://{service}.{mtls}{universe}'
+    # TODO: b/444042857 - Remove this check and add support for mTLS with
+    # locational STS endpoints when it is GA-ed.
+    if enable_mtls and sts_location and sts_location != 'global':
+      raise GeneratorError(
+          'mTLS is not supported with locational Security Token Service'
+          ' endpoints.'
+      )
+    self._sts_global_template = 'https://{service}.{mtls}{universe}'
+    self._sts_locational_template = (
+        'https://{service}.{sts_location}.rep.{universe}'
+    )
     self._service = service
     self._mtls = 'mtls.' if enable_mtls else ''
     self._universe_domain = universe_domain
+    self._sts_location = sts_location
 
   @property
   def _base_url(self):
-    return self._sts_template.format(
-        service=self._service, mtls=self._mtls, universe=self._universe_domain
+    if not self._sts_location or self._sts_location == 'global':
+      return self._sts_global_template.format(
+          service=self._service, mtls=self._mtls, universe=self._universe_domain
+      )
+    return self._sts_locational_template.format(
+        service=self._service,
+        sts_location=self._sts_location,
+        universe=self._universe_domain,
     )
 
 
@@ -99,6 +119,8 @@ def create_credential_config(args, config_type):
   is_cert = getattr(args, 'credential_cert_path', None) is not None
   enable_mtls = getattr(args, 'enable_mtls', False)
 
+  sts_location = getattr(args, 'sts_location', '')
+
   # If a certificate path was provided, mtls must be enabled.
   if is_cert:
     if not enable_mtls and hasattr(args, 'enable_mtls'):
@@ -118,7 +140,9 @@ def create_credential_config(args, config_type):
     universe_domain = properties.VALUES.core.universe_domain.default
 
   token_endpoint_builder = StsEndpoints(
-      enable_mtls=enable_mtls, universe_domain=universe_domain
+      enable_mtls=enable_mtls,
+      universe_domain=universe_domain,
+      sts_location=sts_location,
   )
 
   try:

@@ -663,6 +663,32 @@ class SqladminV1beta4(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def AddReplicationSource(self, request, global_params=None):
+      r"""Add source instance names to replicate from. Only applicable to external server writable destinations.
+
+      Args:
+        request: (SqlInstancesAddReplicationSourceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddReplicationSource')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddReplicationSource.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='sql.instances.addReplicationSource',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
+        query_params=[],
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/addReplicationSource',
+        request_field='sqlInstancesAddReplicationSourceRequest',
+        request_type_name='SqlInstancesAddReplicationSourceRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def AddServerCa(self, request, global_params=None):
       r"""Add a new trusted Certificate Authority (CA) version for the specified instance. Required to prepare for a certificate rotation. If a CA version was previously added but never used in a certificate rotation, this operation replaces that version. There cannot be more than one CA version waiting to be rotated in. For instances that have enabled Certificate Authority Service (CAS) based server CA, use AddServerCertificate to add a new server certificate.
 
@@ -1184,6 +1210,32 @@ class SqladminV1beta4(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RemoveReplicationSource(self, request, global_params=None):
+      r"""Remove source instance name to replicate from. Instance must not already be replicating from the designated source. Only applicable to external server writable destinations.
+
+      Args:
+        request: (SqlInstancesRemoveReplicationSourceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RemoveReplicationSource')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveReplicationSource.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='sql.instances.removeReplicationSource',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
+        query_params=[],
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/removeReplicationSource',
+        request_field='sqlInstancesRemoveReplicationSourceRequest',
+        request_type_name='SqlInstancesRemoveReplicationSourceRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def ResetSslConfig(self, request, global_params=None):
       r"""Deletes all client certificates and generates a new server SSL certificate for the instance.
 
@@ -1429,7 +1481,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Cancels an instance operation that has been performed on an instance.
+      r"""Cancels an instance operation that has been performed on an instance. Ordinarily, this method name should be `CancelSqlOperation`.
 
       Args:
         request: (SqlOperationsCancelRequest) input message

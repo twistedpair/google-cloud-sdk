@@ -115,7 +115,7 @@ class AvailableDatabaseVersion(_messages.Message):
 
 
 class Backup(_messages.Message):
-  r"""A backup resource. Next ID: 30
+  r"""A backup resource.
 
   Enums:
     BackupKindValueValuesEnum: Output only. Specifies the kind of backup,
@@ -1696,12 +1696,14 @@ class DatabaseInstance(_messages.Message):
         that is not managed by Cloud SQL.
       READ_REPLICA_INSTANCE: A Cloud SQL instance acting as a read-replica.
       READ_POOL_INSTANCE: A Cloud SQL read pool.
+      CLOUD_SQL_HA_CLUSTER: A Cloud SQL HA cluster.
     """
     SQL_INSTANCE_TYPE_UNSPECIFIED = 0
     CLOUD_SQL_INSTANCE = 1
     ON_PREMISES_INSTANCE = 2
     READ_REPLICA_INSTANCE = 3
     READ_POOL_INSTANCE = 4
+    CLOUD_SQL_HA_CLUSTER = 5
 
   class SqlNetworkArchitectureValueValuesEnum(_messages.Enum):
     r"""The SQL network architecture for the instance.
@@ -1757,12 +1759,15 @@ class DatabaseInstance(_messages.Message):
         example:, causing the database to crash).
       KMS_KEY_ISSUE: The KMS key used by the instance is either revoked or
         denied access to
+      CLOUD_SQL_FREE_TRIAL_EXPIRED: The Cloud SQL free trial for the instance
+        has expired.
     """
     SQL_SUSPENSION_REASON_UNSPECIFIED = 0
     BILLING_ISSUE = 1
     LEGAL_ISSUE = 2
     OPERATIONAL_ISSUE = 3
     KMS_KEY_ISSUE = 4
+    CLOUD_SQL_FREE_TRIAL_EXPIRED = 5
 
   class FailoverReplicaValue(_messages.Message):
     r"""The name and status of the failover replica.
@@ -2073,18 +2078,25 @@ class ExecuteSqlPayload(_messages.Message):
   r"""The request payload used to execute SQL statements.
 
   Enums:
-    OutputFormatValueValuesEnum: Optional. The requested format of the SQL
-      response.
+    OutputFormatValueValuesEnum: Optional. Deprecated field. The requested
+      format of the SQL response.
+    PartialResultModeValueValuesEnum: Optional. Controls how the API should
+      respond when the SQL execution result exceeds 10 MB. The default mode is
+      to throw an error.
 
   Fields:
-    accessToken: Optional. The access token required for IAM user
-      authentication.
+    accessToken: Optional. Deprecated field. The access token required for IAM
+      user authentication.
     autoIamAuthn: Optional. When set to true, the API caller identity
       associated with the request is used for database authentication. The API
       caller must be an IAM user in the database.
     database: Optional. Name of the database on which the statement will be
       executed.
-    outputFormat: Optional. The requested format of the SQL response.
+    outputFormat: Optional. Deprecated field. The requested format of the SQL
+      response.
+    partialResultMode: Optional. Controls how the API should respond when the
+      SQL execution result exceeds 10 MB. The default mode is to throw an
+      error.
     password: Optional. The database user's password.
     rowLimit: Optional. The maximum number of rows returned per SQL statement.
     secretPath: Optional. The resource ID of a secret in secret manager which
@@ -2092,11 +2104,13 @@ class ExecuteSqlPayload(_messages.Message):
       projects/{project}/secrets/{secret}/versions/{version}.
     sqlStatement: Required. SQL statements to run on the database. It can be a
       single statement or a sequence of statements separated by semicolons.
-    user: Optional. The name of an existing database user.
+    user: Optional. The name of an existing database user to connect to the
+      database. When `auto_iam_authn` is set to true, this field is ignored
+      and the API caller's IAM user is used.
   """
 
   class OutputFormatValueValuesEnum(_messages.Enum):
-    r"""Optional. The requested format of the SQL response.
+    r"""Optional. Deprecated field. The requested format of the SQL response.
 
     Values:
       OUTPUT_FORMAT_UNSPECIFIED: Output format is not specified. This is the
@@ -2106,15 +2120,32 @@ class ExecuteSqlPayload(_messages.Message):
     OUTPUT_FORMAT_UNSPECIFIED = 0
     JSON = 1
 
+  class PartialResultModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Controls how the API should respond when the SQL execution
+    result exceeds 10 MB. The default mode is to throw an error.
+
+    Values:
+      PARTIAL_RESULT_MODE_UNSPECIFIED: Unspecified mode, effectively the same
+        as `FAIL_PARTIAL_RESULT`.
+      FAIL_PARTIAL_RESULT: Throw an error if the result exceeds 10 MB. Don't
+        return the result.
+      ALLOW_PARTIAL_RESULT: Return a truncated result and set `partial_result`
+        to true if the result exceeds 10 MB. Don't throw an error.
+    """
+    PARTIAL_RESULT_MODE_UNSPECIFIED = 0
+    FAIL_PARTIAL_RESULT = 1
+    ALLOW_PARTIAL_RESULT = 2
+
   accessToken = _messages.StringField(1)
   autoIamAuthn = _messages.BooleanField(2)
   database = _messages.StringField(3)
   outputFormat = _messages.EnumField('OutputFormatValueValuesEnum', 4)
-  password = _messages.StringField(5)
-  rowLimit = _messages.IntegerField(6)
-  secretPath = _messages.StringField(7)
-  sqlStatement = _messages.StringField(8)
-  user = _messages.StringField(9)
+  partialResultMode = _messages.EnumField('PartialResultModeValueValuesEnum', 5)
+  password = _messages.StringField(6)
+  rowLimit = _messages.IntegerField(7)
+  secretPath = _messages.StringField(8)
+  sqlStatement = _messages.StringField(9)
+  user = _messages.StringField(10)
 
 
 class ExportContext(_messages.Message):
@@ -3484,6 +3515,21 @@ class ManagementConfig(_messages.Message):
   backupdrTransactionLogRetentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class Message(_messages.Message):
+  r"""Represents a notice or warning message from the database.
+
+  Fields:
+    message: The full message string. For PostgreSQL, this is a formatted
+      string that may include severity, code, and the notice/warning message.
+      For MySQL, this contains the warning message.
+    severity: The severity of the message (e.g., "NOTICE" for PostgreSQL,
+      "WARNING" for MySQL).
+  """
+
+  message = _messages.StringField(1)
+  severity = _messages.StringField(2)
+
+
 class Metadata(_messages.Message):
   r"""The additional metadata information regarding the execution of the SQL
   statements.
@@ -3642,7 +3688,11 @@ class Operation(_messages.Message):
       * `RESTORE_VOLUME` * `CREATE_USER` * `DELETE_USER` * `CREATE_DATABASE` *
       `DELETE_DATABASE`
     preCheckMajorVersionUpgradeContext: The context for pre-check major
-      version upgrade operation, if applicable.
+      version upgrade operation, if applicable. This field is only populated
+      when the operation_type is PRE_CHECK_MAJOR_VERSION_UPGRADE. The
+      PreCheckMajorVersionUpgradeContext message itself contains the details
+      for that pre-check, such as the target database version for the upgrade
+      and the results of the check (including any warnings or errors found).
     selfLink: The URI of this resource.
     startTime: The time this operation actually started in UTC timezone in
       [RFC 3339](https://tools.ietf.org/html/rfc3339) format, for example
@@ -4024,6 +4074,9 @@ class PointInTimeRestoreContext(_messages.Message):
       the source instance is deleted. If this instance is deleted, then you
       must set the timestamp.
     targetInstance: Target instance name.
+    targetInstanceSettings: Optional. Specifies the instance settings that
+      will be overridden from the source instance. This field is only
+      applicable for cross project PITRs.
   """
 
   allocatedIpRange = _messages.StringField(1)
@@ -4035,6 +4088,7 @@ class PointInTimeRestoreContext(_messages.Message):
   privateNetwork = _messages.StringField(7)
   sourceInstanceDeletionTime = _messages.StringField(8)
   targetInstance = _messages.StringField(9)
+  targetInstanceSettings = _messages.MessageField('DatabaseInstance', 10)
 
 
 class PoolNodeConfig(_messages.Message):
@@ -4354,6 +4408,8 @@ class ReadPoolAutoScaleConfig(_messages.Message):
     enabled: Indicates whether read pool auto scaling is enabled.
     maxNodeCount: Maximum number of read pool nodes to be maintained.
     minNodeCount: Minimum number of read pool nodes to be maintained.
+    scaleInCooldownSeconds: The cooldown period for scale in operations.
+    scaleOutCooldownSeconds: The cooldown period for scale out operations.
     targetMetrics: Optional. Target metrics for read pool auto scaling.
   """
 
@@ -4361,7 +4417,9 @@ class ReadPoolAutoScaleConfig(_messages.Message):
   enabled = _messages.BooleanField(2)
   maxNodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   minNodeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  targetMetrics = _messages.MessageField('TargetMetric', 5, repeated=True)
+  scaleInCooldownSeconds = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  scaleOutCooldownSeconds = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  targetMetrics = _messages.MessageField('TargetMetric', 7, repeated=True)
 
 
 class ReplicaConfiguration(_messages.Message):
@@ -5309,6 +5367,9 @@ class SqlExternalSyncSettingError(_messages.Message):
         replica; replica_overwrite_enabled was set in the request
         acknowledging this. This is a warning rather than an error. MySQL
         only.
+      PG_DDL_REPLICATION_INSUFFICIENT_PRIVILEGE: The replication user is
+        missing specific privileges to setup DDL replication. (e.g. CREATE
+        EVENT TRIGGER, CREATE SCHEMA) for PostgreSQL.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -5368,6 +5429,7 @@ class SqlExternalSyncSettingError(_messages.Message):
     SELECTED_OBJECTS_REFERENCE_UNSELECTED_OBJECTS = 55
     PROMPT_DELETE_EXISTING = 56
     WILL_DELETE_EXISTING = 57
+    PG_DDL_REPLICATION_INSUFFICIENT_PRIVILEGE = 58
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)
@@ -5434,6 +5496,17 @@ class SqlInstancesAcquireSsrsLeaseResponse(_messages.Message):
   """
 
   operationId = _messages.StringField(1)
+
+
+class SqlInstancesAddReplicationSourceRequest(_messages.Message):
+  r"""Instance add replication source request.
+
+  Fields:
+    replicationSource: Required. The name of the source metadata instance to
+      add for replication.
+  """
+
+  replicationSource = _messages.StringField(1)
 
 
 class SqlInstancesAddServerCaRequest(_messages.Message):
@@ -5562,9 +5635,14 @@ class SqlInstancesExecuteSqlResponse(_messages.Message):
 
   Fields:
     columns: Deprecated field. Use results.columns instead.
-    formattedRows: If output format was set to JSON, then this field will
-      contain the response in JSON format.
+    formattedRows: Deprecated field. If output format was set to JSON, then
+      this field will contain the response in JSON format.
     message: Deprecated field. Use results.message instead.
+    messages: A list of notices and warnings generated during query execution.
+      For PostgreSQL, this includes all notices and warnings. For MySQL, this
+      includes warnings generated by the last executed statement. To retrieve
+      all warnings for a multi-statement query, `SHOW WARNINGS` must be
+      executed after each statement.
     metadata: The additional metadata information regarding the execution of
       the SQL statements.
     partialResult: Deprecated field. Use results.partial_result instead.
@@ -5575,10 +5653,11 @@ class SqlInstancesExecuteSqlResponse(_messages.Message):
   columns = _messages.MessageField('Column', 1, repeated=True)
   formattedRows = _messages.StringField(2)
   message = _messages.StringField(3)
-  metadata = _messages.MessageField('Metadata', 4)
-  partialResult = _messages.BooleanField(5)
-  results = _messages.MessageField('QueryResult', 6, repeated=True)
-  rows = _messages.MessageField('Row', 7, repeated=True)
+  messages = _messages.MessageField('Message', 4, repeated=True)
+  metadata = _messages.MessageField('Metadata', 5)
+  partialResult = _messages.BooleanField(6)
+  results = _messages.MessageField('QueryResult', 7, repeated=True)
+  rows = _messages.MessageField('Row', 8, repeated=True)
 
 
 class SqlInstancesExportRequest(_messages.Message):
@@ -5844,6 +5923,17 @@ class SqlInstancesReleaseSsrsLeaseResponse(_messages.Message):
   """
 
   operationId = _messages.StringField(1)
+
+
+class SqlInstancesRemoveReplicationSourceRequest(_messages.Message):
+  r"""Instance remove replication source request.
+
+  Fields:
+    replicationSource: Required. The name of the source metadata instance to
+      remove from replication.
+  """
+
+  replicationSource = _messages.StringField(1)
 
 
 class SqlInstancesRescheduleMaintenanceRequestBody(_messages.Message):
@@ -6923,8 +7013,8 @@ class User(_messages.Message):
 
   Enums:
     DualPasswordTypeValueValuesEnum: Dual password status for the user.
-    IamStatusValueValuesEnum: Indicates if user is active for IAM
-      Authentication.
+    IamStatusValueValuesEnum: Indicates if a group is active or inactive for
+      IAM database authentication.
     TypeValueValuesEnum: The user type. It determines the method to
       authenticate the user during login. The default is the database's built-
       in user type.
@@ -6941,7 +7031,8 @@ class User(_messages.Message):
       PostgreSQL or SQL Server instance, it's optional.
     iamEmail: The full email for an IAM user. For normal database users, this
       will not be filled. Only applicable to MySQL database users.
-    iamStatus: Indicates if user is active for IAM Authentication.
+    iamStatus: Indicates if a group is active or inactive for IAM database
+      authentication.
     instance: The name of the Cloud SQL instance. This does not include the
       project ID. Can be omitted for *update* because it is already specified
       on the URL.
@@ -6974,14 +7065,19 @@ class User(_messages.Message):
     DUAL_PASSWORD = 3
 
   class IamStatusValueValuesEnum(_messages.Enum):
-    r"""Indicates if user is active for IAM Authentication.
+    r"""Indicates if a group is active or inactive for IAM database
+    authentication.
 
     Values:
       IAM_STATUS_UNSPECIFIED: The default value for users that are not of type
-        CLOUD_IAM_GROUP. Only CLOUD_IAM_GROUP users will be inactive/active.
-        Will not display any value in UI.
-      INACTIVE: User is not available for IAM Authentication.
-      ACTIVE: User is available for IAM Authentication.
+        CLOUD_IAM_GROUP. Only CLOUD_IAM_GROUP users will be inactive or
+        active. Users with an IamStatus of IAM_STATUS_UNSPECIFIED will not
+        display whether they are active or inactive as that is not applicable
+        to them.
+      INACTIVE: INACTIVE indicates a group is not available for IAM database
+        authentication.
+      ACTIVE: ACTIVE indicates a group is available for IAM database
+        authentication.
     """
     IAM_STATUS_UNSPECIFIED = 0
     INACTIVE = 1

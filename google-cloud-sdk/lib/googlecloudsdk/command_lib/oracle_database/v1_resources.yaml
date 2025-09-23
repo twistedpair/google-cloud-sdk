@@ -53,7 +53,7 @@ projects_locations_cloud_exadata_infrastructures:
     parameter_name: cloudExadataInfrastructuresId
     attribute_name: cloud_exadata_infrastructure
     help: The cloudExadataInfrastructure id of the {resource} resource.
-  disable_auto_completers: false
+  disable_auto_completers: true
 projects_locations_cloud_vm_clusters:
   name: cloudVmCluster
   plural_name: cloudVmClusters
@@ -66,6 +66,30 @@ projects_locations_cloud_vm_clusters:
     attribute_name: cloud_vm_cluster
     help: The cloudVmCluster id of the {resource} resource.
   disable_auto_completers: true
+projects_locations_databases:
+  name: database
+  plural_name: databases
+  collection: oracledatabase.projects.locations.databases
+  attributes:
+  - *project
+  - *location
+  - &database
+    parameter_name: databasesId
+    attribute_name: database
+    help: The database id of the {resource} resource.
+  disable_auto_completers: false
+projects_locations_db_systems:
+  name: dbSystem
+  plural_name: dbSystems
+  collection: oracledatabase.projects.locations.dbSystems
+  attributes:
+  - *project
+  - *location
+  - &dbSystem
+    parameter_name: dbSystemsId
+    attribute_name: db_system
+    help: The dbSystem id of the {resource} resource.
+  disable_auto_completers: false
 projects_locations_odb_networks:
   name: odbNetwork
   plural_name: odbNetworks
@@ -77,6 +101,18 @@ projects_locations_odb_networks:
     parameter_name: odbNetworksId
     attribute_name: odb_network
     help: The odbNetwork id of the {resource} resource.
+  disable_auto_completers: false
+projects_locations_pluggable_databases:
+  name: pluggableDatabase
+  plural_name: pluggableDatabases
+  collection: oracledatabase.projects.locations.pluggableDatabases
+  attributes:
+  - *project
+  - *location
+  - &pluggableDatabase
+    parameter_name: pluggableDatabasesId
+    attribute_name: pluggable_database
+    help: The pluggableDatabase id of the {resource} resource.
   disable_auto_completers: false
 projects_none_networks:
   name: network

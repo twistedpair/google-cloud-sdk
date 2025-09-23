@@ -496,6 +496,107 @@ class BackupVault(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 12)
 
 
+class CacheConfig(_messages.Message):
+  r"""Configuration of the cache volume.
+
+  Fields:
+    atimeScrubDays: Optional. Duration in days after which inactive files can
+      be scrubbed from FlexCache volume.
+    atimeScrubEnabled: Optional. Flag indicating whether the atime based scrub
+      is enabled for the FlexCache volume.
+    cachePrePopulate: Optional. Pre-populate cache volume with data from the
+      origin volume.
+    cifsChangeNotifyEnabled: Optional. Flag indicating whether a CIFS change
+      notification is enabled for the FlexCache volume.
+    writeBackEnabled: Optional. Flag indicating whether writeback is enabled
+      for the FlexCache volume.
+  """
+
+  atimeScrubDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  atimeScrubEnabled = _messages.BooleanField(2)
+  cachePrePopulate = _messages.MessageField('CachePrePopulate', 3)
+  cifsChangeNotifyEnabled = _messages.BooleanField(4)
+  writeBackEnabled = _messages.BooleanField(5)
+
+
+class CacheParameters(_messages.Message):
+  r"""Cache Parameters for the volume.
+
+  Enums:
+    CacheStateValueValuesEnum: Output only. State of the cache volume
+      indicating the peering status.
+
+  Fields:
+    cacheConfig: Optional. Configuration of the cache volume.
+    cacheState: Output only. State of the cache volume indicating the peering
+      status.
+    command: Output only. Copy-paste-able commands to be used on user's ONTAP
+      to accept peering requests.
+    enableGlobalFileLock: Optional. Field indicating whether cache volume as
+      global file lock enabled.
+    passphrase: Output only. Temporary passphrase generated to accept cluster
+      peering command.
+    peerClusterName: Required. Name of the origin volume's ONTAP cluster.
+    peerIpAddresses: Required. List of IC LIF addresses of the origin volume's
+      ONTAP cluster.
+    peerSvmName: Required. Name of the origin volume's SVM.
+    peerVolumeName: Required. Name of the origin volume for the cache volume.
+    peeringCommandExpiryTime: Optional. Expiration time for the peering
+      command to be executed on user's ONTAP.
+    stateDetails: Output only. Detailed description of the current cache
+      state.
+  """
+
+  class CacheStateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the cache volume indicating the peering status.
+
+    Values:
+      CACHE_STATE_UNSPECIFIED: Default unspecified state.
+      PENDING_CLUSTER_PEERING: State indicating waiting for cluster peering to
+        be established.
+      PENDING_SVM_PEERING: State indicating waiting for SVM peering to be
+        established.
+      PEERED: State indicating successful establishment of peering with origin
+        volumes's ONTAP cluster.
+      ERROR: Terminal state wherein peering with origin volume's ONTAP cluster
+        has failed.
+    """
+    CACHE_STATE_UNSPECIFIED = 0
+    PENDING_CLUSTER_PEERING = 1
+    PENDING_SVM_PEERING = 2
+    PEERED = 3
+    ERROR = 4
+
+  cacheConfig = _messages.MessageField('CacheConfig', 1)
+  cacheState = _messages.EnumField('CacheStateValueValuesEnum', 2)
+  command = _messages.StringField(3)
+  enableGlobalFileLock = _messages.BooleanField(4)
+  passphrase = _messages.StringField(5)
+  peerClusterName = _messages.StringField(6)
+  peerIpAddresses = _messages.StringField(7, repeated=True)
+  peerSvmName = _messages.StringField(8)
+  peerVolumeName = _messages.StringField(9)
+  peeringCommandExpiryTime = _messages.StringField(10)
+  stateDetails = _messages.StringField(11)
+
+
+class CachePrePopulate(_messages.Message):
+  r"""Pre-populate cache volume with data from the origin volume.
+
+  Fields:
+    excludePathList: Optional. List of directory-paths to be excluded for pre-
+      population for the FlexCache volume.
+    pathList: Optional. List of directory-paths to be pre-populated for the
+      FlexCache volume.
+    recursion: Optional. Flag indicating whether the directories listed with
+      the pathList need to be recursively pre-populated.
+  """
+
+  excludePathList = _messages.StringField(1, repeated=True)
+  pathList = _messages.StringField(2, repeated=True)
+  recursion = _messages.BooleanField(3)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -1635,8 +1736,8 @@ class NetappProjectsLocationsListRequest(_messages.Message):
   r"""A NetappProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Do not use this field. It is unsupported and
-      is ignored unless explicitly documented otherwise. This is primarily for
+    extraLocationTypes: Optional. Unless explicitly documented otherwise,
+      don't use this unsupported field which is primarily intended for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -2117,6 +2218,20 @@ class NetappProjectsLocationsVolumesReplicationsSyncRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   syncReplicationRequest = _messages.MessageField('SyncReplicationRequest', 2)
+
+
+class NetappProjectsLocationsVolumesRestoreRequest(_messages.Message):
+  r"""A NetappProjectsLocationsVolumesRestoreRequest object.
+
+  Fields:
+    name: Required. The volume resource name, in the format
+      `projects/{project_id}/locations/{location}/volumes/{volume_id}`
+    restoreBackupFilesRequest: A RestoreBackupFilesRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  restoreBackupFilesRequest = _messages.MessageField('RestoreBackupFilesRequest', 2)
 
 
 class NetappProjectsLocationsVolumesRevertRequest(_messages.Message):
@@ -2637,6 +2752,24 @@ class Replication(_messages.Message):
   transferStats = _messages.MessageField('TransferStats', 18)
 
 
+class RestoreBackupFilesRequest(_messages.Message):
+  r"""RestoreBackupFilesRequest restores files from a backup to a volume.
+
+  Fields:
+    backup: Required. The backup resource name, in the format `projects/{proje
+      ct_id}/locations/{location}/backupVaults/{backup_vault_id}/backups/{back
+      up_id}`
+    fileList: Required. List of files to be restored in the form of their
+      absolute path as in source volume.
+    restoreDestinationPath: Optional. Absolute directory path in the
+      destination volume.
+  """
+
+  backup = _messages.StringField(1)
+  fileList = _messages.StringField(2, repeated=True)
+  restoreDestinationPath = _messages.StringField(3)
+
+
 class RestoreParameters(_messages.Message):
   r"""The RestoreParameters if volume is created from a snapshot or backup.
 
@@ -2680,10 +2813,16 @@ class SimpleExportPolicyRule(_messages.Message):
 
   Enums:
     AccessTypeValueValuesEnum: Access type (ReadWrite, ReadOnly, None)
+    SquashModeValueValuesEnum: Optional. Defines how user identity squashing
+      is applied for this export rule. This field is the preferred way to
+      configure squashing behavior and takes precedence over `has_root_access`
+      if both are provided.
 
   Fields:
     accessType: Access type (ReadWrite, ReadOnly, None)
     allowedClients: Comma separated list of allowed clients IP addresses
+    anonUid: Optional. An integer representing the anonymous user ID. Range is
+      0 to 4294967295. Required when squash_mode is ROOT_SQUASH or ALL_SQUASH.
     hasRootAccess: Whether Unix root access will be granted.
     kerberos5ReadOnly: If enabled (true) the rule defines a read only access
       for clients matching the 'allowedClients' specification. It enables nfs
@@ -2708,6 +2847,10 @@ class SimpleExportPolicyRule(_messages.Message):
       'kerberos5pReadOnly' value be ignored if this is enabled.
     nfsv3: NFS V3 protocol.
     nfsv4: NFS V4 protocol.
+    squashMode: Optional. Defines how user identity squashing is applied for
+      this export rule. This field is the preferred way to configure squashing
+      behavior and takes precedence over `has_root_access` if both are
+      provided.
   """
 
   class AccessTypeValueValuesEnum(_messages.Enum):
@@ -2724,17 +2867,37 @@ class SimpleExportPolicyRule(_messages.Message):
     READ_WRITE = 2
     READ_NONE = 3
 
+  class SquashModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Defines how user identity squashing is applied for this
+    export rule. This field is the preferred way to configure squashing
+    behavior and takes precedence over `has_root_access` if both are provided.
+
+    Values:
+      SQUASH_MODE_UNSPECIFIED: Defaults to NO_ROOT_SQUASH.
+      NO_ROOT_SQUASH: The root user (UID 0) retains full access. Other users
+        are unaffected.
+      ROOT_SQUASH: The root user (UID 0) is squashed to anonymous user ID.
+        Other users are unaffected.
+      ALL_SQUASH: All users are squashed to anonymous user ID.
+    """
+    SQUASH_MODE_UNSPECIFIED = 0
+    NO_ROOT_SQUASH = 1
+    ROOT_SQUASH = 2
+    ALL_SQUASH = 3
+
   accessType = _messages.EnumField('AccessTypeValueValuesEnum', 1)
   allowedClients = _messages.StringField(2)
-  hasRootAccess = _messages.StringField(3)
-  kerberos5ReadOnly = _messages.BooleanField(4)
-  kerberos5ReadWrite = _messages.BooleanField(5)
-  kerberos5iReadOnly = _messages.BooleanField(6)
-  kerberos5iReadWrite = _messages.BooleanField(7)
-  kerberos5pReadOnly = _messages.BooleanField(8)
-  kerberos5pReadWrite = _messages.BooleanField(9)
-  nfsv3 = _messages.BooleanField(10)
-  nfsv4 = _messages.BooleanField(11)
+  anonUid = _messages.IntegerField(3)
+  hasRootAccess = _messages.StringField(4)
+  kerberos5ReadOnly = _messages.BooleanField(5)
+  kerberos5ReadWrite = _messages.BooleanField(6)
+  kerberos5iReadOnly = _messages.BooleanField(7)
+  kerberos5iReadWrite = _messages.BooleanField(8)
+  kerberos5pReadOnly = _messages.BooleanField(9)
+  kerberos5pReadWrite = _messages.BooleanField(10)
+  nfsv3 = _messages.BooleanField(11)
+  nfsv4 = _messages.BooleanField(12)
+  squashMode = _messages.EnumField('SquashModeValueValuesEnum', 13)
 
 
 class Snapshot(_messages.Message):
@@ -3308,6 +3471,7 @@ class Volume(_messages.Message):
     activeDirectory: Output only. Specifies the ActiveDirectory name of a SMB
       volume.
     backupConfig: BackupConfig of the volume.
+    cacheParameters: Optional. Cache parameters for the volume.
     capacityGib: Required. Capacity in GIB of the volume
     coldTierSizeGib: Output only. Size of the volume cold tier data rounded
       down to the nearest GiB.
@@ -3520,44 +3684,45 @@ class Volume(_messages.Message):
 
   activeDirectory = _messages.StringField(1)
   backupConfig = _messages.MessageField('BackupConfig', 2)
-  capacityGib = _messages.IntegerField(3)
-  coldTierSizeGib = _messages.IntegerField(4)
-  createTime = _messages.StringField(5)
-  description = _messages.StringField(6)
-  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 7)
-  exportPolicy = _messages.MessageField('ExportPolicy', 8)
-  hasReplication = _messages.BooleanField(9)
-  hotTierSizeUsedGib = _messages.IntegerField(10)
-  hybridReplicationParameters = _messages.MessageField('HybridReplicationParameters', 11)
-  kerberosEnabled = _messages.BooleanField(12)
-  kmsConfig = _messages.StringField(13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  largeCapacity = _messages.BooleanField(15)
-  ldapEnabled = _messages.BooleanField(16)
-  mountOptions = _messages.MessageField('MountOption', 17, repeated=True)
-  multipleEndpoints = _messages.BooleanField(18)
-  name = _messages.StringField(19)
-  network = _messages.StringField(20)
-  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 21, repeated=True)
-  psaRange = _messages.StringField(22)
-  replicaZone = _messages.StringField(23)
-  restoreParameters = _messages.MessageField('RestoreParameters', 24)
-  restrictedActions = _messages.EnumField('RestrictedActionsValueListEntryValuesEnum', 25, repeated=True)
-  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 26)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 27)
-  shareName = _messages.StringField(28)
-  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 29, repeated=True)
-  snapReserve = _messages.FloatField(30)
-  snapshotDirectory = _messages.BooleanField(31)
-  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 32)
-  state = _messages.EnumField('StateValueValuesEnum', 33)
-  stateDetails = _messages.StringField(34)
-  storagePool = _messages.StringField(35)
-  throughputMibps = _messages.FloatField(36)
-  tieringPolicy = _messages.MessageField('TieringPolicy', 37)
-  unixPermissions = _messages.StringField(38)
-  usedGib = _messages.IntegerField(39)
-  zone = _messages.StringField(40)
+  cacheParameters = _messages.MessageField('CacheParameters', 3)
+  capacityGib = _messages.IntegerField(4)
+  coldTierSizeGib = _messages.IntegerField(5)
+  createTime = _messages.StringField(6)
+  description = _messages.StringField(7)
+  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 8)
+  exportPolicy = _messages.MessageField('ExportPolicy', 9)
+  hasReplication = _messages.BooleanField(10)
+  hotTierSizeUsedGib = _messages.IntegerField(11)
+  hybridReplicationParameters = _messages.MessageField('HybridReplicationParameters', 12)
+  kerberosEnabled = _messages.BooleanField(13)
+  kmsConfig = _messages.StringField(14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  largeCapacity = _messages.BooleanField(16)
+  ldapEnabled = _messages.BooleanField(17)
+  mountOptions = _messages.MessageField('MountOption', 18, repeated=True)
+  multipleEndpoints = _messages.BooleanField(19)
+  name = _messages.StringField(20)
+  network = _messages.StringField(21)
+  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 22, repeated=True)
+  psaRange = _messages.StringField(23)
+  replicaZone = _messages.StringField(24)
+  restoreParameters = _messages.MessageField('RestoreParameters', 25)
+  restrictedActions = _messages.EnumField('RestrictedActionsValueListEntryValuesEnum', 26, repeated=True)
+  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 27)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 28)
+  shareName = _messages.StringField(29)
+  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 30, repeated=True)
+  snapReserve = _messages.FloatField(31)
+  snapshotDirectory = _messages.BooleanField(32)
+  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 33)
+  state = _messages.EnumField('StateValueValuesEnum', 34)
+  stateDetails = _messages.StringField(35)
+  storagePool = _messages.StringField(36)
+  throughputMibps = _messages.FloatField(37)
+  tieringPolicy = _messages.MessageField('TieringPolicy', 38)
+  unixPermissions = _messages.StringField(39)
+  usedGib = _messages.IntegerField(40)
+  zone = _messages.StringField(41)
 
 
 class WeeklySchedule(_messages.Message):

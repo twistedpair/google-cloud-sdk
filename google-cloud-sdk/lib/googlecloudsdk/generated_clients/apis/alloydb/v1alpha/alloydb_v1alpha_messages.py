@@ -848,8 +848,8 @@ class AlloydbProjectsLocationsListRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Do not use this field. It is unsupported and
-      is ignored unless explicitly documented otherwise. This is primarily for
+    extraLocationTypes: Optional. Unless explicitly documented otherwise,
+      don't use this unsupported field which is primarily intended for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -1126,6 +1126,7 @@ class Backup(_messages.Message):
       POSTGRES_15: The database version is Postgres 15.
       POSTGRES_16: The database version is Postgres 16.
       POSTGRES_17: The database version is Postgres 17.
+      POSTGRES_18: The database version is Postgres 18.
     """
     DATABASE_VERSION_UNSPECIFIED = 0
     POSTGRES_13 = 1
@@ -1133,6 +1134,7 @@ class Backup(_messages.Message):
     POSTGRES_15 = 3
     POSTGRES_16 = 4
     POSTGRES_17 = 5
+    POSTGRES_18 = 6
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of the backup.
@@ -1532,6 +1534,7 @@ class Cluster(_messages.Message):
       POSTGRES_15: The database version is Postgres 15.
       POSTGRES_16: The database version is Postgres 16.
       POSTGRES_17: The database version is Postgres 17.
+      POSTGRES_18: The database version is Postgres 18.
     """
     DATABASE_VERSION_UNSPECIFIED = 0
     POSTGRES_13 = 1
@@ -1539,6 +1542,7 @@ class Cluster(_messages.Message):
     POSTGRES_15 = 3
     POSTGRES_16 = 4
     POSTGRES_17 = 5
+    POSTGRES_18 = 6
 
   class MaintenanceVersionSelectionPolicyValueValuesEnum(_messages.Enum):
     r"""Input only. Policy to use to automatically select the maintenance
@@ -1767,6 +1771,7 @@ class ClusterUpgradeDetails(_messages.Message):
       POSTGRES_15: The database version is Postgres 15.
       POSTGRES_16: The database version is Postgres 16.
       POSTGRES_17: The database version is Postgres 17.
+      POSTGRES_18: The database version is Postgres 18.
     """
     DATABASE_VERSION_UNSPECIFIED = 0
     POSTGRES_13 = 1
@@ -1774,6 +1779,7 @@ class ClusterUpgradeDetails(_messages.Message):
     POSTGRES_15 = 3
     POSTGRES_16 = 4
     POSTGRES_17 = 5
+    POSTGRES_18 = 6
 
   class UpgradeStatusValueValuesEnum(_messages.Enum):
     r"""Upgrade status of the cluster.
@@ -4251,7 +4257,7 @@ class StorageDatabasecenterPartnerapiV1mainCustomMetadataData(_messages.Message)
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Message):
   r"""DatabaseResourceFeed is the top level proto to be used to ingest
-  different database resource level events into Condor platform. Next ID: 11
+  different database resource level events into Condor platform. Next ID: 13
 
   Enums:
     FeedTypeValueValuesEnum: Required. Type feed to be ingested into condor
@@ -4261,6 +4267,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
       BackupDR.
     configBasedSignalData: Config based signal data is used to ingest signals
       that are generated based on the configuration of the database resource.
+    databaseResourceSignalData: Database resource signal data is used to
+      ingest signals from database resource signal feeds.
     feedTimestamp: Required. Timestamp when feed is generated.
     feedType: Required. Type feed to be ingested into condor
     observabilityMetricData: A
@@ -4292,6 +4300,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
       RECOMMENDATION_SIGNAL_DATA: Database resource recommendation signal data
       CONFIG_BASED_SIGNAL_DATA: Database config based signal data
       BACKUPDR_METADATA: Database resource metadata from BackupDR
+      DATABASE_RESOURCE_SIGNAL_DATA: Database resource signal data
     """
     FEEDTYPE_UNSPECIFIED = 0
     RESOURCE_METADATA = 1
@@ -4300,17 +4309,19 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
     RECOMMENDATION_SIGNAL_DATA = 4
     CONFIG_BASED_SIGNAL_DATA = 5
     BACKUPDR_METADATA = 6
+    DATABASE_RESOURCE_SIGNAL_DATA = 7
 
   backupdrMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupDRMetadata', 1)
   configBasedSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainConfigBasedSignalData', 2)
-  feedTimestamp = _messages.StringField(3)
-  feedType = _messages.EnumField('FeedTypeValueValuesEnum', 4)
-  observabilityMetricData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainObservabilityMetricData', 5)
-  recommendationSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData', 6)
-  resourceHealthSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData', 7)
-  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 8)
-  resourceMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata', 9)
-  skipIngestion = _messages.BooleanField(10)
+  databaseResourceSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceSignalData', 3)
+  feedTimestamp = _messages.StringField(4)
+  feedType = _messages.EnumField('FeedTypeValueValuesEnum', 5)
+  observabilityMetricData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainObservabilityMetricData', 6)
+  recommendationSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData', 7)
+  resourceHealthSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData', 8)
+  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 9)
+  resourceMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata', 10)
+  skipIngestion = _messages.BooleanField(11)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_messages.Message):
@@ -4886,7 +4897,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Message):
-  r"""Common model for database resource instance metadata. Next ID: 26
+  r"""Common model for database resource instance metadata. Next ID: 27
 
   Enums:
     CurrentStateValueValuesEnum: Current state of the instance.
@@ -4945,6 +4956,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
     updationTime: The time at which the resource was updated and recorded at
       partner service.
     userLabelSet: User-provided labels associated with the resource
+    zone: The resource zone. This is only applicable for zonal resources and
+      will be empty for regional and multi-regional resources.
   """
 
   class CurrentStateValueValuesEnum(_messages.Enum):
@@ -4975,10 +4988,12 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
         edition enum.
       EDITION_ENTERPRISE: Represents the enterprise edition.
       EDITION_ENTERPRISE_PLUS: Represents the enterprise plus edition.
+      EDITION_STANDARD: Represents the standard edition.
     """
     EDITION_UNSPECIFIED = 0
     EDITION_ENTERPRISE = 1
     EDITION_ENTERPRISE_PLUS = 2
+    EDITION_STANDARD = 3
 
   class ExpectedStateValueValuesEnum(_messages.Enum):
     r"""The state that the instance is expected to be in. For example, an
@@ -5075,6 +5090,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
   tagsSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainTags', 22)
   updationTime = _messages.StringField(23)
   userLabelSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainUserLabels', 24)
+  zone = _messages.StringField(25)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData(_messages.Message):
@@ -5506,6 +5522,70 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
   recommenderSubtype = _messages.StringField(6)
   resourceName = _messages.StringField(7)
   signalType = _messages.EnumField('SignalTypeValueValuesEnum', 8)
+
+
+class StorageDatabasecenterPartnerapiV1mainDatabaseResourceSignalData(_messages.Message):
+  r"""Database resource signal data. This is used to send signals to Condor
+  which are based on the DB/Instance/Fleet level configurations. These will be
+  used to send signals for all inventory types. Next ID: 7
+
+  Enums:
+    SignalStateValueValuesEnum: Required. Output only. Signal state of the
+      signal
+    SignalTypeValueValuesEnum: Required. Signal type of the signal
+
+  Fields:
+    fullResourceName: Required. Full Resource name of the source resource.
+    lastRefreshTime: Required. Last time signal was refreshed
+    resourceId: Database resource id.
+    signalBoolValue: Signal data for boolean signals.
+    signalState: Required. Output only. Signal state of the signal
+    signalType: Required. Signal type of the signal
+  """
+
+  class SignalStateValueValuesEnum(_messages.Enum):
+    r"""Required. Output only. Signal state of the signal
+
+    Values:
+      SIGNAL_STATE_UNSPECIFIED: Unspecified signal state.
+      ACTIVE: Signal is active and requires attention.
+      INACTIVE: Signal is inactive and does not require attention.
+      DISMISSED: Signal is dismissed by the user and should not be shown to
+        the user again.
+    """
+    SIGNAL_STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    INACTIVE = 2
+    DISMISSED = 3
+
+  class SignalTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Signal type of the signal
+
+    Values:
+      SIGNAL_TYPE_UNSPECIFIED: Unspecified signal type.
+      SIGNAL_TYPE_OUTDATED_MINOR_VERSION: Outdated Minor Version
+      SIGNAL_TYPE_DATABASE_AUDITING_DISABLED: Represents database auditing is
+        disabled.
+      SIGNAL_TYPE_NO_ROOT_PASSWORD: Represents if a database has a password
+        configured for the root account or not.
+      SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS: Represents if a resource is
+        exposed to public access.
+      SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS: Represents if a resources requires
+        all incoming connections to use SSL or not.
+    """
+    SIGNAL_TYPE_UNSPECIFIED = 0
+    SIGNAL_TYPE_OUTDATED_MINOR_VERSION = 1
+    SIGNAL_TYPE_DATABASE_AUDITING_DISABLED = 2
+    SIGNAL_TYPE_NO_ROOT_PASSWORD = 3
+    SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS = 4
+    SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS = 5
+
+  fullResourceName = _messages.StringField(1)
+  lastRefreshTime = _messages.StringField(2)
+  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 3)
+  signalBoolValue = _messages.BooleanField(4)
+  signalState = _messages.EnumField('SignalStateValueValuesEnum', 5)
+  signalType = _messages.EnumField('SignalTypeValueValuesEnum', 6)
 
 
 class StorageDatabasecenterPartnerapiV1mainEntitlement(_messages.Message):
@@ -6047,6 +6127,7 @@ class SupportedDatabaseFlag(_messages.Message):
       POSTGRES_15: The database version is Postgres 15.
       POSTGRES_16: The database version is Postgres 16.
       POSTGRES_17: The database version is Postgres 17.
+      POSTGRES_18: The database version is Postgres 18.
     """
     DATABASE_VERSION_UNSPECIFIED = 0
     POSTGRES_13 = 1
@@ -6054,6 +6135,7 @@ class SupportedDatabaseFlag(_messages.Message):
     POSTGRES_15 = 3
     POSTGRES_16 = 4
     POSTGRES_17 = 5
+    POSTGRES_18 = 6
 
   class ValueTypeValueValuesEnum(_messages.Enum):
     r"""ValueTypeValueValuesEnum enum type.
@@ -6199,6 +6281,7 @@ class UpgradeClusterRequest(_messages.Message):
       POSTGRES_15: The database version is Postgres 15.
       POSTGRES_16: The database version is Postgres 16.
       POSTGRES_17: The database version is Postgres 17.
+      POSTGRES_18: The database version is Postgres 18.
     """
     DATABASE_VERSION_UNSPECIFIED = 0
     POSTGRES_13 = 1
@@ -6206,6 +6289,7 @@ class UpgradeClusterRequest(_messages.Message):
     POSTGRES_15 = 3
     POSTGRES_16 = 4
     POSTGRES_17 = 5
+    POSTGRES_18 = 6
 
   etag = _messages.StringField(1)
   requestId = _messages.StringField(2)
@@ -6281,6 +6365,7 @@ class UpgradeClusterStatus(_messages.Message):
       POSTGRES_15: The database version is Postgres 15.
       POSTGRES_16: The database version is Postgres 16.
       POSTGRES_17: The database version is Postgres 17.
+      POSTGRES_18: The database version is Postgres 18.
     """
     DATABASE_VERSION_UNSPECIFIED = 0
     POSTGRES_13 = 1
@@ -6288,6 +6373,7 @@ class UpgradeClusterStatus(_messages.Message):
     POSTGRES_15 = 3
     POSTGRES_16 = 4
     POSTGRES_17 = 5
+    POSTGRES_18 = 6
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Cluster Major Version Upgrade state.
@@ -6321,6 +6407,7 @@ class UpgradeClusterStatus(_messages.Message):
       POSTGRES_15: The database version is Postgres 15.
       POSTGRES_16: The database version is Postgres 16.
       POSTGRES_17: The database version is Postgres 17.
+      POSTGRES_18: The database version is Postgres 18.
     """
     DATABASE_VERSION_UNSPECIFIED = 0
     POSTGRES_13 = 1
@@ -6328,6 +6415,7 @@ class UpgradeClusterStatus(_messages.Message):
     POSTGRES_15 = 3
     POSTGRES_16 = 4
     POSTGRES_17 = 5
+    POSTGRES_18 = 6
 
   cancellable = _messages.BooleanField(1)
   sourceVersion = _messages.EnumField('SourceVersionValueValuesEnum', 2)

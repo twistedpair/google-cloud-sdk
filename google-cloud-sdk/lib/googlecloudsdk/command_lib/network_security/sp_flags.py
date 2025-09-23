@@ -15,6 +15,7 @@
 """Flags for Security Profile Threat Prevention commands."""
 
 from __future__ import absolute_import
+from __future__ import annotations
 from __future__ import division
 from __future__ import unicode_literals
 
@@ -181,3 +182,20 @@ def AddLocationResourceArg(
       group_help=help_text,
       required=required,
   ).AddToParser(parser)
+
+
+def AddCustomMirroringDeploymentGroupsArg(
+    parser: parser_arguments.ArgumentInterceptor,
+    help_text: str = "List of comma-separated full names of mirroring-deployment-group resources.",
+    required: bool = False,
+    default: list[str] | None = None,
+):
+  """Adds the `mirroringDeploymentGroups` arg for CustomMirroring SPs (Broker)."""
+  parser.add_argument(
+      "--mirroring-deployment-groups",
+      type=arg_parsers.ArgList(),
+      metavar="MIRRORING_DEPLOYMENT_GROUPS",
+      help=help_text,
+      required=required,
+      default=default,
+  )

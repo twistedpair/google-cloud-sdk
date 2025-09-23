@@ -39,7 +39,7 @@ def ActiveDirectoryConfig(
     mode=None,
     dns_servers=None,
     admin_credential_secret_key=None,
-    organizational_unit=None
+    organizational_unit=None,
 ):
   """Generates the Active Directory configuration for the instance.
 
@@ -51,16 +51,24 @@ def ActiveDirectoryConfig(
     admin_credential_secret_key: string, the name of the admin credential secret
       manager key.
     organizational_unit: string, the organizational unit value.
+
   Returns:
     sql_messages.SqlActiveDirectoryConfig object.
   """
-  config = sql_messages.SqlActiveDirectoryConfig(
-      domain=domain,
-  )
-  if not domain:
-    config.mode = (
-        sql_messages.SqlActiveDirectoryConfig.ModeValueValuesEnum.ACTIVE_DIRECTORY_MODE_UNSPECIFIED
-    )
+
+  should_generate_config = any([
+      domain is not None,
+      mode is not None,
+      dns_servers is not None,
+      admin_credential_secret_key is not None,
+      organizational_unit is not None,
+  ])
+  if not should_generate_config:
+    return None
+
+  config = sql_messages.SqlActiveDirectoryConfig()
+  if domain is not None:
+    config.domain = domain
   if admin_credential_secret_key is not None:
     config.adminCredentialSecretName = admin_credential_secret_key
   if mode is not None:

@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import argparse
+
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
@@ -67,6 +69,14 @@ def AddArgNetworkPolicyCreation(parser):
   )
 
 
+def AddArgsUpdateNetworkPolicy(parser: argparse.ArgumentParser) -> None:
+  """Adds the arguments for network policy update."""
+  parser.add_argument(
+      '--description',
+      help='An optional, textual description for the network policy.',
+  )
+
+
 def NetworkArgumentForOtherResource(short_help, required=True):
   return compute_flags.ResourceArgument(
       name='--network',
@@ -91,6 +101,15 @@ def AddArgsCreateAssociation(parser):
       '--network',
       required=True,
       help='Name of the network with which the association is created.',
+  )
+
+
+def AddArgsRemoveAssociation(parser):
+  """Adds the arguments for network policy association removal."""
+  parser.add_argument(
+      '--name',
+      required=True,
+      help='Name of the association to remove.',
   )
 
 

@@ -58,6 +58,7 @@ def CreateNetworkInterfaceMessage(
     network_queue_count=None,
     vlan=None,
     igmp_query=None,
+    enable_vpc_scoped_dns=None,
 ):
   """Creates and returns a new NetworkInterface message.
 
@@ -108,6 +109,8 @@ def CreateNetworkInterfaceMessage(
     network_queue_count: the number of queues assigned to the network interface.
     vlan: the VLAN tag of the network interface.
     igmp_query: the IGMP query mode of the network interface.
+    enable_vpc_scoped_dns: If True, indicates that this network interface can be
+      used to send DNS queries to the VPC network's scope.
 
   Returns:
     network_interface: a NetworkInterface message object
@@ -230,11 +233,20 @@ def CreateNetworkInterfaceMessage(
         messages.NetworkInterface.IgmpQueryValueValuesEnum(igmp_query)
     )
 
+  if enable_vpc_scoped_dns:
+    network_interface.enableVpcScopedDns = enable_vpc_scoped_dns
+
   return network_interface
 
 
-def CreateNetworkInterfaceMessages(resources, scope_lister, messages,
-                                   network_interface_arg, subnet_region):
+def CreateNetworkInterfaceMessages(
+    resources,
+    scope_lister,
+    messages,
+    network_interface_arg,
+    subnet_region,
+    support_enable_vpc_scoped_dns=False,
+):
   """Create network interface messages.
 
   Args:
@@ -243,6 +255,8 @@ def CreateNetworkInterfaceMessages(resources, scope_lister, messages,
     messages: creates resources.
     network_interface_arg: CLI argument specifying network interfaces.
     subnet_region: region of the subnetwork.
+    support_enable_vpc_scoped_dns: Indicates whether setting enable vpc scoped
+      dns on network interfaces is supported.
 
   Returns:
     list, items are NetworkInterfaceMessages.
@@ -261,6 +275,9 @@ def CreateNetworkInterfaceMessages(resources, scope_lister, messages,
 
       network_tier = interface.get('network-tier', None)
       nic_type = interface.get('nic-type', None)
+      enable_vpc_scoped_dns = None
+      if support_enable_vpc_scoped_dns:
+        enable_vpc_scoped_dns = 'enable-vpc-scoped-dns' in interface
 
       result.append(
           CreateNetworkInterfaceMessage(
@@ -298,6 +315,7 @@ def CreateNetworkInterfaceMessages(resources, scope_lister, messages,
               network_queue_count=interface.get('queue-count', None),
               vlan=interface.get('vlan', None),
               igmp_query=interface.get('igmp-query', None),
+              enable_vpc_scoped_dns=enable_vpc_scoped_dns,
           )
       )
   return result

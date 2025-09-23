@@ -45,9 +45,9 @@ runcmd:
 """
 
 MANIFEST_DISCLAIMER = """# DISCLAIMER:
-# This container declaration format is not a public API and may change without
-# notice. Please use gcloud command-line tool or Google Cloud Console to run
-# Containers on Google Compute Engine.
+# The option to deploy a container during VM creation using the container
+# startup agent is deprecated. Use alternative services to run containers on
+# your VMs. Learn more at https://cloud.google.com/compute/docs/containers/migrate-containers.
 
 """
 

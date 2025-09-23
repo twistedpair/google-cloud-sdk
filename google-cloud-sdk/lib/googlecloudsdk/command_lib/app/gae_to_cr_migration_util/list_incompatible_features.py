@@ -182,9 +182,8 @@ def _generate_output(
       minor_features.append(feature)
   if minor_features:
     print(
-        'Summary:\nminor: %s\nincompatible_features\n%s',
-        len(minor_features),
-        yaml.dump(_get_display_features(minor_features, input_type)),
+        f'Summary:\nminor: {len(minor_features)}\n'
+        f'incompatible_features\n{yaml.dump(_get_display_features(minor_features, input_type))}\n'
     )
     logging.info(
         'Summary:\nminor: %s\nincompatible_features\n%s',

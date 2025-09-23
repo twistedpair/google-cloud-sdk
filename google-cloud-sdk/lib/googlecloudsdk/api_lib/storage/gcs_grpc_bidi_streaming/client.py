@@ -14,8 +14,12 @@
 # limitations under the License.
 
 """Client for Google Cloud Storage data plane API using gRPC bidi streaming."""
+
 from googlecloudsdk.api_lib.storage import cloud_api
+from googlecloudsdk.api_lib.storage.gcs_grpc_bidi_streaming import download
 from googlecloudsdk.api_lib.storage.gcs_json import client as gcs_json_client
+from googlecloudsdk.api_lib.util import apis as core_apis
+from googlecloudsdk.command_lib.storage.tasks.cp import download_util
 
 
 class GcsGrpcBidiStreamingClient(cloud_api.CloudApi):
@@ -38,6 +42,40 @@ class GcsGrpcBidiStreamingClient(cloud_api.CloudApi):
     # appropriate client.
     self._delegator = gcs_json_client.JsonClient()
 
+  def _get_gapic_client(self, redact_request_body_reason=None):
+    # Not using @property because the side-effect is non-trivial and
+    # might not be obvious. Someone might accidentally access the
+    # property and end up creating the gapic client.
+    # Creating the gapic client before "fork" will lead to a deadlock.
+    if self._gapic_client is None:
+      self._gapic_client = core_apis.GetGapicClientInstance(
+          'storage',
+          'v2',
+          attempt_direct_path=True,
+          redact_request_body_reason=redact_request_body_reason,
+      )
+    return self._gapic_client
+
+  def get_object_metadata(
+      self,
+      bucket_name,
+      object_name,
+      request_config=None,
+      generation=None,
+      fields_scope=None,
+      soft_deleted=False,
+  ):
+    """See super class."""
+    object_metadata = self._delegator.get_object_metadata(
+        bucket_name=bucket_name,
+        object_name=object_name,
+        request_config=request_config,
+        generation=generation,
+        fields_scope=fields_scope,
+        soft_deleted=soft_deleted,
+    )
+    return object_metadata
+
   def download_object(
       self,
       cloud_resource,
@@ -51,7 +89,34 @@ class GcsGrpcBidiStreamingClient(cloud_api.CloudApi):
       end_byte=None,
   ):
     """See super class."""
-    raise NotImplementedError()
+    if download_util.return_and_report_if_nothing_to_download(
+        cloud_resource, progress_callback
+    ):
+      return None
+
+    decryption_key = None
+    if request_config.resource_args:
+      decryption_key = getattr(
+          request_config.resource_args, 'decryption_key', None
+      )
+
+    downloader = download.BidiGrpcDownload(
+        gapic_client=self._get_gapic_client(),
+        cloud_resource=cloud_resource,
+        download_stream=download_stream,
+        start_byte=start_byte,
+        end_byte=end_byte,
+        digesters=digesters,
+        progress_callback=progress_callback,
+        download_strategy=download_strategy,
+        decryption_key=decryption_key
+    )
+    downloader.run()
+
+    # Unlike JSON, the response message for gRPC does not hold any
+    # content-encoding information. Hence, we do not have to return the
+    # server encoding here.
+    return None
 
   def upload_object(
       self,

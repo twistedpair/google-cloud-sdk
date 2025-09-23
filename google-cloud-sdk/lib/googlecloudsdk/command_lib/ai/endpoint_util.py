@@ -27,13 +27,6 @@ from googlecloudsdk.core import properties
 from six.moves.urllib import parse
 
 
-def _IsDefaultUniverse():
-  return (
-      properties.VALUES.core.universe_domain.Get()
-      == properties.VALUES.core.universe_domain.default
-  )
-
-
 def DeriveAiplatformRegionalEndpoint(endpoint, region, is_prediction=False):
   """Adds region as a prefix of the base url."""
   scheme, netloc, path, params, query, fragment = parse.urlparse(endpoint)
@@ -60,9 +53,8 @@ def AiplatformEndpointOverrides(version, region, is_prediction=False):
   Yields:
     None
   """
-  used_endpoint = GetEffectiveEndpoint(
-      version=version, region=region, is_prediction=is_prediction
-  )
+  used_endpoint = GetEffectiveEndpoint(version=version, region=region,
+                                       is_prediction=is_prediction)
   log.status.Print('Using endpoint [{}]'.format(used_endpoint))
   properties.VALUES.api_endpoint_overrides.aiplatform.Set(used_endpoint)
   yield
@@ -71,18 +63,7 @@ def AiplatformEndpointOverrides(version, region, is_prediction=False):
 def GetEffectiveEndpoint(version, region, is_prediction=False):
   """Returns regional AI Platform endpoint, or raise an error if the region not set."""
   endpoint = apis.GetEffectiveApiEndpoint(
-      constants.AI_PLATFORM_API_NAME, constants.AI_PLATFORM_API_VERSION[version]
-  )
-  if _IsDefaultUniverse():
-    # Only apply GDU-specific regionalization if in the default universe.
-    return DeriveAiplatformRegionalEndpoint(
-        endpoint, region, is_prediction=is_prediction
-    )
-  else:
-    # In non-default universes, return the universe-aware base endpoint from
-    # GetEffectiveApiEndpoint. No regional prefixing.
-    return endpoint
-
-
-# AiplatformEndpointOverrides will now use the non-default
-# universe-aware GetEffectiveEndpoint
+      constants.AI_PLATFORM_API_NAME,
+      constants.AI_PLATFORM_API_VERSION[version])
+  return DeriveAiplatformRegionalEndpoint(
+      endpoint, region, is_prediction=is_prediction)

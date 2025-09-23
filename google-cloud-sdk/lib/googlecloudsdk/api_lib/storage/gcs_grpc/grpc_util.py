@@ -33,7 +33,7 @@ def get_full_bucket_name(bucket_name):
   return 'projects/_/buckets/{}'.format(bucket_name)
 
 
-def _get_encryption_request_params(gapic_client, decryption_key):
+def get_encryption_request_params(gapic_client, decryption_key):
   if (decryption_key is not None
       and decryption_key.type == encryption_util.KeyType.CSEK):
     return gapic_client.types.CommonObjectRequestParams(
@@ -68,7 +68,7 @@ def download_object(gapic_client,
       ),
       read_offset=start_byte,
       read_limit=end_byte - start_byte + 1 if end_byte is not None else 0,
-      common_object_request_params=_get_encryption_request_params(
+      common_object_request_params=get_encryption_request_params(
           gapic_client, decryption_key
       ),
   )

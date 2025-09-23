@@ -640,8 +640,8 @@ class CacheParameters(_messages.Message):
         be established.
       PENDING_SVM_PEERING: State indicating waiting for SVM peering to be
         established.
-      PEERED: State indiciating successful establishment of peering with
-        origin volumes's ONTAP cluster.
+      PEERED: State indicating successful establishment of peering with origin
+        volumes's ONTAP cluster.
       ERROR: Terminal state wherein peering with origin volume's ONTAP cluster
         has failed.
     """
@@ -2038,8 +2038,8 @@ class NetappProjectsLocationsListRequest(_messages.Message):
   r"""A NetappProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Do not use this field. It is unsupported and
-      is ignored unless explicitly documented otherwise. This is primarily for
+    extraLocationTypes: Optional. Unless explicitly documented otherwise,
+      don't use this unsupported field which is primarily intended for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -3077,7 +3077,7 @@ class RestoreBackupFilesRequest(_messages.Message):
       up_id}`
     fileList: Required. List of files to be restored in the form of their
       absolute path as in source volume.
-    restoreDestinationPath: Required. Absolute directory path in the
+    restoreDestinationPath: Optional. Absolute directory path in the
       destination volume.
   """
 

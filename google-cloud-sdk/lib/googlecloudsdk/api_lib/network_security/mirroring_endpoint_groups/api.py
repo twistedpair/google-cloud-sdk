@@ -34,6 +34,8 @@ _API_VERSION_FOR_TRACK = {
 }
 _API_NAME = 'networksecurity'
 
+_PACKET_BROKER_SUPPORTED = (base.ReleaseTrack.ALPHA,)
+
 
 def GetMessagesModule(release_track=base.ReleaseTrack.ALPHA):
   api_version = GetApiVersion(release_track)
@@ -62,6 +64,7 @@ class Client:
   """
 
   def __init__(self, release_track):
+    self._release_track = release_track
     self._client = GetClientInstance(release_track)
     self._endpoint_group_client = (
         self._client.projects_locations_mirroringEndpointGroups
@@ -79,6 +82,7 @@ class Client:
       parent,
       mirroring_deployment_group,
       description,
+      endpoint_group_type=None,
       labels=None,
   ):
     """Calls the CreateEndpointGroup API.
@@ -89,6 +93,7 @@ class Client:
       mirroring_deployment_group: The Mirroring Deployment Group to associate
         with the Endpoint Group.
       description: Description of the Endpoint Group.
+      endpoint_group_type: Type of the Endpoint Group (DIRECT or BROKER).
       labels: Labels to apply to the Endpoint Group.
 
     Returns:
@@ -100,6 +105,12 @@ class Client:
         mirroringDeploymentGroup=mirroring_deployment_group,
         description=description,
     )
+    if self._release_track in _PACKET_BROKER_SUPPORTED and endpoint_group_type:
+      endpoint_group.type = (
+          self.messages.MirroringEndpointGroup.TypeValueValuesEnum(
+              endpoint_group_type
+          )
+      )
 
     create_request = self.messages.NetworksecurityProjectsLocationsMirroringEndpointGroupsCreateRequest(
         mirroringEndpointGroup=endpoint_group,

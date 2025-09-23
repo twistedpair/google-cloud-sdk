@@ -185,7 +185,13 @@ def AddCreateCatalogTemplateRevisionFlags(parser):
       required=True,
   ).AddToParser(parser)
   parser.add_argument('--description', help='A description for the revision.')
-  parser.add_argument(
+
+  source_group = parser.add_group(mutex=True, required=True)
+
+  dev_connect_group = source_group.add_group(
+      help='Flags for Developer Connect source.'
+  )
+  dev_connect_group.add_argument(
       '--developer-connect-repo',
       help=(
           'The Developer Connect repository to use as a source. Example: '
@@ -194,7 +200,7 @@ def AddCreateCatalogTemplateRevisionFlags(parser):
       ),
       required=True,
   )
-  parser.add_argument(
+  dev_connect_group.add_argument(
       '--developer-connect-repo-ref',
       help=(
           'The Git ref (branch or tag) within the repository to use. Example:'
@@ -203,7 +209,7 @@ def AddCreateCatalogTemplateRevisionFlags(parser):
       ),
       required=True,
   )
-  parser.add_argument(
+  dev_connect_group.add_argument(
       '--developer-connect-repo-dir',
       help=(
           'The directory within the repository to use. Example:'
@@ -212,9 +218,70 @@ def AddCreateCatalogTemplateRevisionFlags(parser):
       required=True,
   )
 
-  # The --metadata flag is now optional.
+  git_source_group = source_group.add_group(
+      help='Flags for Git source.'
+  )
+  git_source_group.add_argument(
+      '--git-source-repo',
+      help='Git repository for Git source. Example:'
+      ' GoogleCloudPlatform/terraform-google-cloud-run',
+      required=True,
+  )
+  git_source_group.add_argument(
+      '--git-source-ref-tag',
+      help='Git reference tag for Git source. Example: "v1.0.0"',
+      required=True,
+  )
+  git_source_group.add_argument(
+      '--git-source-dir',
+      help=(
+          'Git directory for Git source. Example: "modules/my-product".'
+          ' This field is optional.'
+      ),
+      required=False,
+  )
+
+  source_group.add_argument(
+      '--application-template-revision-source',
+      help=(
+          'Application template revision to use as source. Example:'
+          ' projects/my-project/locations/us-central1/spaces/my-space/catalogs/my-catalog/templates/my-template/revisions/r1'
+      ),
+      required=False,
+  )
+
+  source_group.add_argument(
+      '--gcs-source-uri',
+      help=(
+          'Google Cloud Storage URI for source. Example:'
+          ' gs://my-bucket/my-template.'
+      ),
+      required=False,
+  )
+
+  oci_repo_group = source_group.add_group(help='Flags for OCI Repo source.')
+  oci_repo_group.add_argument(
+      '--oci-repo-uri',
+      help=(
+          'OCI Repo URI for OCI Repo source. Example:'
+          ' oci://us-west1-docker.pkg.dev/my-project/my-repo/my-chart'
+      ),
+      required=True,
+  )
+  oci_repo_group.add_argument(
+      '--oci-repo-version',
+      help=(
+          'OCI Repo version for OCI Repo source. Example: "1.0.0". This field'
+          ' is optional.'
+      ),
+      required=False,
+  )
+
   parser.add_argument(
       '--metadata',
       type=arg_parsers.YAMLFileContents(),
-      help='Path to a local YAML file containing the template metadata.',
+      help=(
+          'Path to a local YAML file containing the template metadata. Example:'
+          ' "path/to/metadata.yaml".'
+      ),
   )

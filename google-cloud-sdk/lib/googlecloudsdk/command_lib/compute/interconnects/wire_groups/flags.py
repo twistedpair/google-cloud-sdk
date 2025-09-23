@@ -34,10 +34,7 @@ _BANDWIDTH_ALLOCATION_CHOICES = {
         'Configures one unmetered bandwidth allocation for the wire group. The'
         ' unmetered bandwidth is divided equally across each wire in the group,'
         ' but dynamic throttling reallocates unused unmetered bandwidth from'
-        ' unused or underused wires to other wires in the group. For example,'
-        ' with a four-wire box-and-cross group, when one Interconnect'
-        ' connection is down, the unmetered bandwidth of the two down wires is'
-        ' reallocated to the remaining up wires.'
+        ' unused or underused wires to other wires in the group.'
     ),
 }
 
@@ -165,12 +162,13 @@ def AddNetworkServiceClass(parser):
   )
 
 
-def AddBandwidthAllocation(parser):
+def AddBandwidthAllocation(parser, required=True):
   """Adds bandwidth-allocation flag to the argparse.ArgumentParser."""
   parser.add_argument(
       '--bandwidth-allocation',
       choices=_BANDWIDTH_ALLOCATION_CHOICES,
       help='The bandwidth allocation for the wire group.',
+      required=required,
   )
 
 

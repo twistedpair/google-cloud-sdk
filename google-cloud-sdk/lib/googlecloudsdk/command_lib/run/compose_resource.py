@@ -535,6 +535,42 @@ class ResourcesConfig:
     return json.dumps(self.to_dict())
 
 
+class TranslateResult:
+  """Represents the translate command result from runcompose go binary."""
+
+  def __init__(
+      self,
+      services: Optional[Dict[str, str]] = None,
+      models: Optional[Dict[str, str]] = None,
+  ):
+    self.services = services if services is not None else {}
+    self.models = models if models is not None else {}
+
+  @classmethod
+  def from_json(cls, json_data: str) -> 'TranslateResult':
+    """Parses the JSON string to create a TranslateResult instance."""
+    data = json.loads(json_data)
+    return cls.from_dict(data)
+
+  @classmethod
+  def from_dict(cls, data: Dict[str, Any]) -> 'TranslateResult':
+    """Creates a TranslateResult instance from a dictionary."""
+    services = data.get('services', {})
+    models = data.get('models', {})
+    return cls(services=services, models=models)
+
+  def to_json(self) -> str:
+    """Serializes the TranslateResult instance to a JSON string."""
+    return json.dumps(self.to_dict())
+
+  def to_dict(self) -> Dict[str, Any]:
+    """Serializes the TranslateResult instance to a dictionary."""
+    return {
+        'services': self.services,
+        'models': self.models,
+    }
+
+
 def perform_source_build(
     source_build: Dict[str, BuildConfig],
     repo: str,

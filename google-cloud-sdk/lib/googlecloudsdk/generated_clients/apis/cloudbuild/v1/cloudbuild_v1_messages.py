@@ -155,6 +155,11 @@ class Artifacts(_messages.Message):
       generation of the uploaded objects will be stored in the Build
       resource's results field. If any objects fail to be pushed, the build is
       marked FAILURE.
+    oci: Optional. A list of OCI images to be uploaded to Artifact Registry
+      upon successful completion of all build steps. OCI images in the
+      specified paths will be uploaded to the specified Artifact Registry
+      repository using the builder service account's credentials. If any
+      images fail to be pushed, the build is marked FAILURE.
     pythonPackages: A list of Python packages to be uploaded to Artifact
       Registry upon successful completion of all build steps. The build
       service account credentials will be used to perform the upload. If any
@@ -166,7 +171,8 @@ class Artifacts(_messages.Message):
   mavenArtifacts = _messages.MessageField('MavenArtifact', 3, repeated=True)
   npmPackages = _messages.MessageField('NpmPackage', 4, repeated=True)
   objects = _messages.MessageField('ArtifactObjects', 5)
-  pythonPackages = _messages.MessageField('PythonPackage', 6, repeated=True)
+  oci = _messages.MessageField('Oci', 6, repeated=True)
+  pythonPackages = _messages.MessageField('PythonPackage', 7, repeated=True)
 
 
 class BatchCreateBitbucketServerConnectedRepositoriesRequest(_messages.Message):
@@ -4117,6 +4123,23 @@ class OAuthRegistrationURI(_messages.Message):
   """
 
   registrationUri = _messages.StringField(1)
+
+
+class Oci(_messages.Message):
+  r"""OCI image to upload to Artifact Registry upon successful completion of
+  all build steps.
+
+  Fields:
+    file: Required. Path on the local file system where to find the container
+      to upload. e.g. /workspace/my-image.tar
+    registryPath: Required. Registry path to upload the container to. e.g. us-
+      east1-docker.pkg.dev/my-project/my-repo/my-image
+    tags: Optional. Tags to apply to the uploaded image. e.g. latest, 1.0.0
+  """
+
+  file = _messages.StringField(1)
+  registryPath = _messages.StringField(2)
+  tags = _messages.StringField(3, repeated=True)
 
 
 class Operation(_messages.Message):

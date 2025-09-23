@@ -2623,6 +2623,23 @@ def AddActiveDirectoryOrganizationalUnit(parser, hidden=False):
   )
 
 
+def AddClearActiveDirectory(parser, hidden=False):
+  """Adds the '--clear-active-directory' flag to the parser.
+
+  Args:
+    parser: The current argparse parser to add this to.
+    hidden: if the field needs to be hidden.
+  """
+  kwargs = _GetKwargsForBoolFlag(False)
+  parser.add_argument(
+      '--clear-active-directory',
+      required=False,
+      help='This will clear the Active Directory configuration.',
+      hidden=hidden,
+      **kwargs
+  )
+
+
 def AddDeletionProtection(parser, hidden=False):
   """Adds the '--deletion-protection' flag to the parser for instances patch action.
 

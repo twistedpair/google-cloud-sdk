@@ -989,6 +989,7 @@ def CreateNetworkInterfaceMessages(
     scope,
     network_interface_json=None,
     support_internal_ipv6_reservation=False,
+    support_enable_vpc_scoped_dns=False,
 ):
   """Create network interface messages.
 
@@ -1005,6 +1006,8 @@ def CreateNetworkInterfaceMessages(
       a JSON string directly in the command or in a file.
     support_internal_ipv6_reservation: The flag indicates whether internal IPv6
       reservation is supported.
+    support_enable_vpc_scoped_dns: The flag indicates whether VPC scoped DNS is
+      supported.
 
   Returns:
     list, items are NetworkInterfaceMessages.
@@ -1023,6 +1026,9 @@ def CreateNetworkInterfaceMessages(
         internal_ipv6_prefix_length = interface.get(
             'internal-ipv6-prefix-length', None
         )
+      enable_vpc_scoped_dns = None
+      if support_enable_vpc_scoped_dns:
+        enable_vpc_scoped_dns = 'enable-vpc-scoped-dns' in interface
 
       result.append(
           instances_utils.CreateNetworkInterfaceMessage(
@@ -1046,6 +1052,7 @@ def CreateNetworkInterfaceMessages(
               ),
               queue_count=interface.get('queue-count', None),
               network_attachment=interface.get('network-attachment', None),
+              enable_vpc_scoped_dns=enable_vpc_scoped_dns,
               internal_ipv6_address=internal_ipv6_address,
               internal_ipv6_prefix_length=internal_ipv6_prefix_length,
               external_ipv6_address=interface.get(
@@ -1084,6 +1091,7 @@ def GetNetworkInterfacesWithValidation(
     support_public_dns=False,
     support_ipv6_assignment=False,
     support_internal_ipv6_reservation=False,
+    support_enable_vpc_scoped_dns=False,
 ):
   """Validates and retrieves the network interface message."""
   network_interface_from_file = getattr(args, 'network_interface_from_file',
@@ -1103,6 +1111,7 @@ def GetNetworkInterfacesWithValidation(
         location=location,
         scope=scope,
         support_internal_ipv6_reservation=support_internal_ipv6_reservation,
+        support_enable_vpc_scoped_dns=support_enable_vpc_scoped_dns,
     )
   else:
     instances_flags.ValidatePublicPtrFlags(args)

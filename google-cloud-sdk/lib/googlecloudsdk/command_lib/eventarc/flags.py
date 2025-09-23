@@ -1142,7 +1142,7 @@ def AddLoggingConfigArg(parser, help_text):
 
 def AddWideScopeSubscriptionArg(parser, with_clear=True):
   """Adds an argument for the wide scope subscription of the resource."""
-  group = parser.add_mutually_exclusive_group(required=False, hidden=True)
+  group = parser.add_mutually_exclusive_group(required=False)
 
   group.add_argument(
       '--project-subscriptions',

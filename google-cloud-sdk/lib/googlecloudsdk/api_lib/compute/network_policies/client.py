@@ -72,6 +72,23 @@ class NetworkPolicy:
         ),
     )
 
+  def Update(self, network_policy):
+    """Sends request to update a network policy."""
+    requests = [self._MakePatchRequestTuple(network_policy=network_policy)]
+    return self._compute_client.MakeRequests(requests)
+
+  def _MakePatchRequestTuple(self, network_policy):
+    return (
+        self._client.regionNetworkPolicies,
+        'Patch',
+        self._messages.ComputeRegionNetworkPoliciesPatchRequest(
+            networkPolicy=self.ref.Name(),
+            networkPolicyResource=network_policy,
+            project=self.ref.project,
+            region=self.ref.region,
+        ),
+    )
+
   def Delete(self, only_generate_request=False):
     """Sends request to create a network policy."""
     requests = [self._MakeDeleteRequestTuple(network_policy=self.ref.Name())]
@@ -110,6 +127,37 @@ class NetworkPolicy:
         self._messages.ComputeRegionNetworkPoliciesAddAssociationRequest(
             networkPolicy=network_policy,
             networkPolicyAssociation=association,
+            project=self.ref.project,
+            region=self.ref.region,
+        ),
+    )
+
+  def RemoveAssociation(
+      self,
+      *,
+      association: str,
+      network_policy: str,
+      only_generate_request=False
+  ):
+    """Sends request to delete an association to a network policy."""
+    requests = [
+        self._MakeRemoveAssociationRequestTuple(
+            association=association, network_policy=network_policy
+        )
+    ]
+    if only_generate_request:
+      return requests
+    return self._compute_client.MakeRequests(requests)
+
+  def _MakeRemoveAssociationRequestTuple(
+      self, association: str, network_policy: str
+  ):
+    return (
+        self._client.regionNetworkPolicies,
+        'RemoveAssociation',
+        self._messages.ComputeRegionNetworkPoliciesRemoveAssociationRequest(
+            networkPolicy=network_policy,
+            name=association,
             project=self.ref.project,
             region=self.ref.region,
         ),

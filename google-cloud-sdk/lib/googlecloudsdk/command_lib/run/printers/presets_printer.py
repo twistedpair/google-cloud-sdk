@@ -29,7 +29,7 @@ _REQ_COL_WIDTH = 7
 _INFO_INDENT_WIDTH = 16
 _MAX_WIDTH = 80
 
-_ENUM_MAP = {
+PRESETS_ENUM_MAP = {
     'KIND_UNSPECIFIED': 'Unspecified',
     'CATEGORY_UNSPECIFIED': 'Unspecified',
     'CATEGORY_QUICKSTART': 'Quickstart',
@@ -42,8 +42,8 @@ def _format_enum(enum_string):
   """Formats a generic enum string into a title."""
   if not enum_string:
     return ''
-  if enum_string in _ENUM_MAP:
-    return _ENUM_MAP[enum_string]
+  if enum_string in PRESETS_ENUM_MAP:
+    return PRESETS_ENUM_MAP[enum_string]
   return enum_string.replace('_', ' ').title()
 
 

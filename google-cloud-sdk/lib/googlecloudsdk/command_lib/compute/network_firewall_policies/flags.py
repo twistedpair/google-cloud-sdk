@@ -63,12 +63,12 @@ def AddArgNetworkFirewallPolicyCreation(parser):
   )
 
 
-def AddPolicyType(parser):
+def AddPolicyType(parser, additional_choices):
   """Adds policy type argument."""
   parser.add_argument(
       '--policy-type',
       required=False,
-      choices=['VPC_POLICY', 'RDMA_ROCE_POLICY'],
+      choices=['VPC_POLICY', 'RDMA_ROCE_POLICY'] + additional_choices,
       help='Network firewall policy type.',
   )
 

@@ -42,6 +42,7 @@ _DEPENDENCY_GROUP = '/groups/dependencies'
 _REVERSE_CLOSURE = '/reverseClosure'
 _CONSUMER_SERVICE_RESOURCE = '%s/services/%s'
 _CONSUMER_POLICY_DEFAULT = '/consumerPolicies/%s'
+_MCP_POLICY_DEFAULT = '/mcpPolicies/%s'
 _EFFECTIVE_POLICY = '/effectivePolicy'
 _GOOGLE_CATEGORY_RESOURCE = 'categories/google'
 _LIMIT_OVERRIDE_RESOURCE = '%s/consumerOverrides/%s'
@@ -133,6 +134,74 @@ def GetConsumerPolicyV2Alpha(policy_name):
       apitools_exceptions.HttpNotFoundError,
   ) as e:
     exceptions.ReraiseError(e, exceptions.GetConsumerPolicyException)
+
+
+def GetMcpPolicy(policy_name):
+  """Make API call to get a MCP policy.
+
+  Args:
+    policy_name: The name of a MCP policy. Currently supported format
+      '{resource_type}/{resource_name}/mcpPolicies/default'. For example,
+      'projects/100/mcpPolicies/default'.
+
+  Raises:
+    exceptions.GetMcpPolicyException: when getting a
+      MCP policy fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    The MCP policy
+  """
+  client = _GetClientInstance(_V2BETA_VERSION)
+  messages = client.MESSAGES_MODULE
+
+  request = messages.ServiceusageMcpPoliciesGetRequest(name=policy_name)
+
+  try:
+    return client.mcpPolicies.Get(request)
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(e, exceptions.GetMcpPolicyException)
+
+
+def TestMcpEnabled(name: str, service: str):
+  """Make API call to test MCP enabled.
+
+  Args:
+    name: Parent resource to test a value against the result of merging MCP
+      policies in the resource hierarchy. Format: "projects/{PROJECT_ID}" (e.g.,
+      "projects/foo-bar"), "projects/{PROJECT_NUMBER}" (e.g.,
+      "projects/12345678"), "folders/{FOLDER_NUMBER}" (e.g., "folders/1234567")
+      , "organizations/{ORGANIZATION_NUMBER}" (e.g., "organizations/123456").
+    service: Service name to check if the targeted resource can use this service
+      for MCP. Current supported value: services/{SERVICE_NAME} (format:
+      "services/{service}").
+
+  Raises:
+    exceptions.TestMcpEnabledException: when testing value for a
+      service and resource.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    Message.State: The state of the service.
+  """
+  client = _GetClientInstance(_V2BETA_VERSION)
+  messages = client.MESSAGES_MODULE
+
+  request = messages.ServiceusageTestMcpEnabledRequest(
+      name=name,
+      testMcpEnabledRequest=messages.TestMcpEnabledRequest(serviceName=service),
+  )
+
+  try:
+    return client.v2beta.TestMcpEnabled(request)
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(e, exceptions.TestMcpEnabledException)
 
 
 def TestEnabled(name: str, service: str):

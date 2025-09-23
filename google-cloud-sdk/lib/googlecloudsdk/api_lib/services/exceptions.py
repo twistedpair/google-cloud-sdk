@@ -149,6 +149,14 @@ class AnalyzeConsumerPolicyException(Error):
   """Analyze consumer policy."""
 
 
+class TestMcpEnabledException(Error):
+  """Exception for test MCP enabled."""
+
+
+class GetMcpPolicyException(Error):
+  """Exception for get MCP policy."""
+
+
 class OperationErrorException(Error):
   """Operation error."""
 

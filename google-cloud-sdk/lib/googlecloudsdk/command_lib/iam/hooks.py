@@ -391,3 +391,16 @@ def ClearFlag(args):
   """Clear the value for a flag."""
   del args
   return None
+
+
+def ModifyHardDeleteFlagInRequest(ref, args, request):
+  """Remove the flag from the request when it is not specified."""
+  del ref
+  if not args.hard_delete:
+    arg_utils.SetFieldInMessage(
+        request,
+        'hardDelete',
+        None,
+    )
+  return request
+

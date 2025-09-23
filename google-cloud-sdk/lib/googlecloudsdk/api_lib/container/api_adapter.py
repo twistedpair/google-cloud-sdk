@@ -788,6 +788,7 @@ class CreateClusterOptions(object):
       monitoring=None,
       enable_managed_prometheus=None,
       auto_monitoring_scope=None,
+      managed_otel_scope=None,
       maintenance_interval=None,
       disable_pod_cidr_overprovision=None,
       stack_type=None,
@@ -862,6 +863,7 @@ class CreateClusterOptions(object):
       boot_disk_provisioned_throughput=None,
       network_tier=None,
       control_plane_egress_mode=None,
+      autopilot_privileged_admission=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -1061,6 +1063,7 @@ class CreateClusterOptions(object):
     self.monitoring = monitoring
     self.enable_managed_prometheus = enable_managed_prometheus
     self.auto_monitoring_scope = auto_monitoring_scope
+    self.managed_otel_scope = managed_otel_scope
     self.maintenance_interval = maintenance_interval
     self.disable_pod_cidr_overprovision = disable_pod_cidr_overprovision
     self.stack_type = stack_type
@@ -1160,6 +1163,7 @@ class CreateClusterOptions(object):
     self.boot_disk_provisioned_throughput = boot_disk_provisioned_throughput
     self.network_tier = network_tier
     self.control_plane_egress_mode = control_plane_egress_mode
+    self.autopilot_privileged_admission = autopilot_privileged_admission
 
 
 class UpdateClusterOptions(object):
@@ -1265,6 +1269,7 @@ class UpdateClusterOptions(object):
       enable_managed_prometheus=None,
       disable_managed_prometheus=None,
       auto_monitoring_scope=None,
+      managed_otel_scope=None,
       maintenance_interval=None,
       dataplane_v2=None,
       enable_dataplane_v2_metrics=None,
@@ -1347,6 +1352,8 @@ class UpdateClusterOptions(object):
       boot_disk_provisioned_throughput=None,
       network_tier=None,
       control_plane_egress_mode=None,
+      control_plane_soak_duration=None,
+      autopilot_privileged_admission=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1458,6 +1465,7 @@ class UpdateClusterOptions(object):
     self.enable_managed_prometheus = enable_managed_prometheus
     self.disable_managed_prometheus = disable_managed_prometheus
     self.auto_monitoring_scope = auto_monitoring_scope
+    self.managed_otel_scope = managed_otel_scope
     self.maintenance_interval = maintenance_interval
     self.dataplane_v2 = dataplane_v2
     self.enable_dataplane_v2_metrics = enable_dataplane_v2_metrics
@@ -1558,6 +1566,7 @@ class UpdateClusterOptions(object):
     self.enable_authorized_networks_on_private_endpoint = (
         enable_authorized_networks_on_private_endpoint
     )
+    self.autopilot_privileged_admission = autopilot_privileged_admission
     self.enable_autopilot_compatibility_auditing = (
         enable_autopilot_compatibility_auditing
     )
@@ -1576,6 +1585,8 @@ class UpdateClusterOptions(object):
     self.boot_disk_provisioned_throughput = boot_disk_provisioned_throughput
     self.network_tier = network_tier
     self.control_plane_egress_mode = control_plane_egress_mode
+    self.control_plane_soak_duration = control_plane_soak_duration
+    self.autopilot_privileged_admission = autopilot_privileged_admission
 
 
 class SetMasterAuthOptions(object):
@@ -2854,6 +2865,10 @@ class APIAdapter(object):
     cluster.monitoringConfig = _GetMonitoringConfig(
         options, self.messages, False, None
     )
+    if options.managed_otel_scope:
+      cluster.managedOpentelemetryConfig = _GetManagedOpenTelemetryConfig(
+          options, self.messages
+      )
 
     if options.enable_service_externalips is not None:
       if cluster.networkConfig is None:
@@ -3189,6 +3204,15 @@ class APIAdapter(object):
           options.enable_insecure_binding_system_unauthenticated
       )
 
+    if options.autopilot_privileged_admission is not None:
+      if cluster.autopilot is None:
+        cluster.autopilot = self.messages.Autopilot()
+        cluster.autopilot.enabled = False
+      if cluster.autopilot.privilegedAdmissionConfig is None:
+        admission_values = options.autopilot_privileged_admission.split(',')
+        cluster.autopilot.privilegedAdmissionConfig = self.messages.PrivilegedAdmissionConfig(
+            allowlistPaths=admission_values
+        )
     if options.cluster_ca is not None:
       if cluster.userManagedKeysConfig is None:
         cluster.userManagedKeysConfig = self.messages.UserManagedKeysConfig()
@@ -4412,6 +4436,12 @@ class APIAdapter(object):
         update.securityProfile = self.messages.SecurityProfile(
             name=options.security_profile
         )
+      # control_plane_soak_duration may be set in upgrade command for rollback
+      # safe upgrades
+      if options.control_plane_soak_duration is not None:
+        update.desiredRollbackSafeUpgrade = self.messages.RollbackSafeUpgrade(
+            controlPlaneSoakDuration=options.control_plane_soak_duration
+        )
     elif options.enable_stackdriver_kubernetes:
       update = self.messages.ClusterUpdate()
       update.desiredLoggingService = 'logging.googleapis.com/kubernetes'
@@ -4665,6 +4695,12 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredIntraNodeVisibilityConfig=intra_node_visibility_config
       )
+    elif options.managed_otel_scope:
+      managed_otel_config = _GetManagedOpenTelemetryConfig(
+          options, self.messages
+      )
+      update = self.messages.ClusterUpdate(
+          desiredManagedOpentelemetryConfig=managed_otel_config)
 
     if (
         options.security_profile is not None
@@ -5229,6 +5265,19 @@ class APIAdapter(object):
             options.enable_insecure_binding_system_unauthenticated
         )
       update = self.messages.ClusterUpdate(desiredRBACBindingConfig=confg)
+
+    if options.autopilot_privileged_admission is not None:
+      allowlist_paths = options.autopilot_privileged_admission
+      if isinstance(allowlist_paths, str):
+        allowlist_paths = [
+            p.strip() for p in allowlist_paths.split(',') if p.strip()
+        ]
+
+      update = self.messages.ClusterUpdate(
+          desiredPrivilegedAdmissionConfig=self.messages.PrivilegedAdmissionConfig(
+              allowlistPaths=allowlist_paths
+          )
+      )
 
     if options.enable_private_nodes is not None:
       update = self.messages.ClusterUpdate(
@@ -7964,9 +8013,12 @@ class V1Beta1Adapter(V1Adapter):
       )
 
     if options.stack_type is not None:
-      cluster.ipAllocationPolicy.stackType = util.GetCreateStackTypeMapper(
-          self.messages
-      ).GetEnumForChoice(options.stack_type)
+      if options.stack_type.lower() == 'ipv6':
+        self._ParseIPv6Options(options, cluster)
+      else:
+        cluster.ipAllocationPolicy.stackType = util.GetCreateStackTypeMapper(
+            self.messages
+        ).GetEnumForChoice(options.stack_type)
     if options.ipv6_access_type is not None:
       cluster.ipAllocationPolicy.ipv6AccessType = util.GetIpv6AccessTypeMapper(
           self.messages
@@ -8468,6 +8520,50 @@ class V1Beta1Adapter(V1Adapter):
       raise util.Error('Unhandled node pool update mode')
 
     return self.ParseOperation(operation.name, node_pool_ref.zone)
+
+  def _ParseIPv6Options(self, options, cluster):
+    """Converts options for IPv6-only clusters."""
+    if options.enable_ip_alias is not None and not options.enable_ip_alias:
+      raise util.Error(ROUTE_BASED_CLUSTERS_NOT_SUPPORTED_WITH_STACK_TYPE_IPV6)
+
+    if options.subnetwork and options.create_subnetwork is not None:
+      raise util.Error(CREATE_SUBNETWORK_WITH_SUBNETWORK_ERROR_MSG)
+
+    subnetwork_name = None
+    node_ipv4_cidr = None
+
+    if options.create_subnetwork is not None:
+      for key in options.create_subnetwork:
+        if key not in ['name', 'range']:
+          raise util.Error(
+              CREATE_SUBNETWORK_INVALID_KEY_ERROR_MSG.format(key=key)
+          )
+      subnetwork_name = options.create_subnetwork.get('name', None)
+      node_ipv4_cidr = options.create_subnetwork.get('range', None)
+
+    policy = self.messages.IPAllocationPolicy(
+        createSubnetwork=options.create_subnetwork is not None,
+        subnetworkName=subnetwork_name,
+        nodeIpv4CidrBlock=node_ipv4_cidr,
+        stackType=(
+            self.messages.IPAllocationPolicy.StackTypeValueValuesEnum.IPV6
+        ),
+        clusterSecondaryRangeName=options.cluster_secondary_range_name,
+        servicesSecondaryRangeName=options.services_secondary_range_name,
+    )
+    if options.disable_pod_cidr_overprovision is not None:
+      policy.podCidrOverprovisionConfig = (
+          self.messages.PodCIDROverprovisionConfig(
+              disable=options.disable_pod_cidr_overprovision
+          )
+      )
+    if options.ipv6_access_type is not None:
+      policy.ipv6AccessType = util.GetIpv6AccessTypeMapper(
+          self.messages
+      ).GetEnumForChoice(options.ipv6_access_type)
+
+    cluster.ipAllocationPolicy = policy
+    return cluster
 
 
 class V1Alpha1Adapter(V1Beta1Adapter):
@@ -9198,48 +9294,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         )
     )
 
-  def _ParseIPv6Options(self, options, cluster):
-    """Converts options for IPv6-only clusters."""
-    if options.enable_ip_alias is not None and not options.enable_ip_alias:
-      raise util.Error(ROUTE_BASED_CLUSTERS_NOT_SUPPORTED_WITH_STACK_TYPE_IPV6)
-
-    if options.subnetwork and options.create_subnetwork is not None:
-      raise util.Error(CREATE_SUBNETWORK_WITH_SUBNETWORK_ERROR_MSG)
-
-    subnetwork_name = None
-    node_ipv4_cidr = None
-
-    if options.create_subnetwork is not None:
-      for key in options.create_subnetwork:
-        if key not in ['name', 'range']:
-          raise util.Error(
-              CREATE_SUBNETWORK_INVALID_KEY_ERROR_MSG.format(key=key)
-          )
-      subnetwork_name = options.create_subnetwork.get('name', None)
-      node_ipv4_cidr = options.create_subnetwork.get('range', None)
-
-    policy = self.messages.IPAllocationPolicy(
-        createSubnetwork=options.create_subnetwork is not None,
-        subnetworkName=subnetwork_name,
-        nodeIpv4CidrBlock=node_ipv4_cidr,
-        stackType=self.messages.IPAllocationPolicy.StackTypeValueValuesEnum.IPV6,
-        clusterSecondaryRangeName=options.cluster_secondary_range_name,
-        servicesSecondaryRangeName=options.services_secondary_range_name,
-    )
-    if options.disable_pod_cidr_overprovision is not None:
-      policy.podCidrOverprovisionConfig = (
-          self.messages.PodCIDROverprovisionConfig(
-              disable=options.disable_pod_cidr_overprovision
-          )
-      )
-    if options.ipv6_access_type is not None:
-      policy.ipv6AccessType = util.GetIpv6AccessTypeMapper(
-          self.messages
-      ).GetEnumForChoice(options.ipv6_access_type)
-
-    cluster.ipAllocationPolicy = policy
-    return cluster
-
 
 def _GetCloudRunLoadBalancerType(options, messages):
   """Gets the Cloud Run load balancer type."""
@@ -9701,6 +9755,20 @@ def _GetHostMaintenancePolicy(options, messages, op_type):
       maintenanceInterval=parsed_maintenance_interval,
       opportunisticMaintenanceStrategy=parsed_opportunistic_maintenance,
   )
+
+
+def _GetManagedOpenTelemetryConfig(options, messages):
+  """Gets the ManagedOpenTelemetryConfig from create and update options."""
+  scope = None
+  otel_scope = options.managed_otel_scope
+  scope_value_enum = (
+      messages.ManagedOpenTelemetryConfig.ScopeValueValuesEnum
+  )
+  if otel_scope == 'NONE':
+    scope = scope_value_enum.NONE
+  elif otel_scope == 'COLLECTION_AND_INSTRUMENTATION_COMPONENTS':
+    scope = scope_value_enum.COLLECTION_AND_INSTRUMENTATION_COMPONENTS
+  return messages.ManagedOpenTelemetryConfig(scope=scope)
 
 
 def _GetMonitoringConfig(options, messages, is_update, is_prometheus_enabled):

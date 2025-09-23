@@ -93,7 +93,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new grant in a given project, folder, or organization and location.
+      r"""Creates a grant in a given project, folder, or organization and location.
 
       Args:
         request: (PrivilegedaccessmanagerFoldersLocationsEntitlementsGrantsCreateRequest) input message
@@ -581,29 +581,29 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def EffectiveSettings(self, request, global_params=None):
+    def FetchEffectiveSettings(self, request, global_params=None):
       r"""`FetchEffectiveSettings` returns the effective PAM Settings for the given project, folder, or organization.
 
       Args:
-        request: (PrivilegedaccessmanagerFoldersLocationsEffectiveSettingsRequest) input message
+        request: (PrivilegedaccessmanagerFoldersLocationsFetchEffectiveSettingsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (FetchEffectiveSettingsResponse) The response message.
       """
-      config = self.GetMethodConfig('EffectiveSettings')
+      config = self.GetMethodConfig('FetchEffectiveSettings')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    EffectiveSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta/folders/{foldersId}/locations/{locationsId}:effectiveSettings',
+    FetchEffectiveSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/folders/{foldersId}/locations/{locationsId}:fetchEffectiveSettings',
         http_method='GET',
-        method_id='privilegedaccessmanager.folders.locations.effectiveSettings',
+        method_id='privilegedaccessmanager.folders.locations.fetchEffectiveSettings',
         ordered_params=['parent'],
         path_params=['parent'],
         query_params=[],
-        relative_path='v1beta/{+parent}:effectiveSettings',
+        relative_path='v1beta/{+parent}:fetchEffectiveSettings',
         request_field='',
-        request_type_name='PrivilegedaccessmanagerFoldersLocationsEffectiveSettingsRequest',
+        request_type_name='PrivilegedaccessmanagerFoldersLocationsFetchEffectiveSettingsRequest',
         response_type_name='FetchEffectiveSettingsResponse',
         supports_download=False,
     )
@@ -764,7 +764,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new grant in a given project, folder, or organization and location.
+      r"""Creates a grant in a given project, folder, or organization and location.
 
       Args:
         request: (PrivilegedaccessmanagerOrganizationsLocationsEntitlementsGrantsCreateRequest) input message
@@ -1252,29 +1252,29 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def EffectiveSettings(self, request, global_params=None):
+    def FetchEffectiveSettings(self, request, global_params=None):
       r"""`FetchEffectiveSettings` returns the effective PAM Settings for the given project, folder, or organization.
 
       Args:
-        request: (PrivilegedaccessmanagerOrganizationsLocationsEffectiveSettingsRequest) input message
+        request: (PrivilegedaccessmanagerOrganizationsLocationsFetchEffectiveSettingsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (FetchEffectiveSettingsResponse) The response message.
       """
-      config = self.GetMethodConfig('EffectiveSettings')
+      config = self.GetMethodConfig('FetchEffectiveSettings')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    EffectiveSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta/organizations/{organizationsId}/locations/{locationsId}:effectiveSettings',
+    FetchEffectiveSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/organizations/{organizationsId}/locations/{locationsId}:fetchEffectiveSettings',
         http_method='GET',
-        method_id='privilegedaccessmanager.organizations.locations.effectiveSettings',
+        method_id='privilegedaccessmanager.organizations.locations.fetchEffectiveSettings',
         ordered_params=['parent'],
         path_params=['parent'],
         query_params=[],
-        relative_path='v1beta/{+parent}:effectiveSettings',
+        relative_path='v1beta/{+parent}:fetchEffectiveSettings',
         request_field='',
-        request_type_name='PrivilegedaccessmanagerOrganizationsLocationsEffectiveSettingsRequest',
+        request_type_name='PrivilegedaccessmanagerOrganizationsLocationsFetchEffectiveSettingsRequest',
         response_type_name='FetchEffectiveSettingsResponse',
         supports_download=False,
     )
@@ -1435,7 +1435,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new grant in a given project, folder, or organization and location.
+      r"""Creates a grant in a given project, folder, or organization and location.
 
       Args:
         request: (PrivilegedaccessmanagerProjectsLocationsEntitlementsGrantsCreateRequest) input message
@@ -1923,29 +1923,29 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def EffectiveSettings(self, request, global_params=None):
+    def FetchEffectiveSettings(self, request, global_params=None):
       r"""`FetchEffectiveSettings` returns the effective PAM Settings for the given project, folder, or organization.
 
       Args:
-        request: (PrivilegedaccessmanagerProjectsLocationsEffectiveSettingsRequest) input message
+        request: (PrivilegedaccessmanagerProjectsLocationsFetchEffectiveSettingsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (FetchEffectiveSettingsResponse) The response message.
       """
-      config = self.GetMethodConfig('EffectiveSettings')
+      config = self.GetMethodConfig('FetchEffectiveSettings')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    EffectiveSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}:effectiveSettings',
+    FetchEffectiveSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}:fetchEffectiveSettings',
         http_method='GET',
-        method_id='privilegedaccessmanager.projects.locations.effectiveSettings',
+        method_id='privilegedaccessmanager.projects.locations.fetchEffectiveSettings',
         ordered_params=['parent'],
         path_params=['parent'],
         query_params=[],
-        relative_path='v1beta/{+parent}:effectiveSettings',
+        relative_path='v1beta/{+parent}:fetchEffectiveSettings',
         request_field='',
-        request_type_name='PrivilegedaccessmanagerProjectsLocationsEffectiveSettingsRequest',
+        request_type_name='PrivilegedaccessmanagerProjectsLocationsFetchEffectiveSettingsRequest',
         response_type_name='FetchEffectiveSettingsResponse',
         supports_download=False,
     )

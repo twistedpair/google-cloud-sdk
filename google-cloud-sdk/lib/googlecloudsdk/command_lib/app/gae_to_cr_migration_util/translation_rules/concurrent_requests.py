@@ -44,19 +44,19 @@ def translate_concurrent_requests_features(
     return util.generate_output_flags(feature.flags, default_value)
   feature = range_limited_features[feature_key]
   input_value = input_data[feature_key]
-  if input_value < feature.range.min:
+  if input_value < feature.range['min']:
     logging.warning(
         '%s has invalid value of %s, minimum value is %s',
-        feature_key, input_value, feature.range.min
+        feature_key, input_value, feature.range['min']
     )
     return []
-  if input_value > feature.range.max:
+  if input_value > feature.range['max']:
     logging.warning(
         '%s has invalid value of %s, maximum value is %s.',
-        feature_key, input_value, feature.range.max
+        feature_key, input_value, feature.range['max']
     )
-    return util.generate_output_flags(feature.flags, feature.range.max)
+    return util.generate_output_flags(feature.flags, feature.range['max'])
   target_value = (
-      input_value if feature.validate(input_value) else feature.range.max
+      input_value if feature.validate(input_value) else feature.range['max']
   )
   return util.generate_output_flags(feature.flags, target_value)

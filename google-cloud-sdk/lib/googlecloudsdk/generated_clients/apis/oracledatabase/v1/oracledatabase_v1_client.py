@@ -47,12 +47,18 @@ class OracledatabaseV1(base_api.BaseApiClient):
     self.projects_locations_cloudExadataInfrastructures = self.ProjectsLocationsCloudExadataInfrastructuresService(self)
     self.projects_locations_cloudVmClusters_dbNodes = self.ProjectsLocationsCloudVmClustersDbNodesService(self)
     self.projects_locations_cloudVmClusters = self.ProjectsLocationsCloudVmClustersService(self)
+    self.projects_locations_databaseCharacterSets = self.ProjectsLocationsDatabaseCharacterSetsService(self)
+    self.projects_locations_databases = self.ProjectsLocationsDatabasesService(self)
+    self.projects_locations_dbSystemInitialStorageSizes = self.ProjectsLocationsDbSystemInitialStorageSizesService(self)
     self.projects_locations_dbSystemShapes = self.ProjectsLocationsDbSystemShapesService(self)
+    self.projects_locations_dbSystems = self.ProjectsLocationsDbSystemsService(self)
+    self.projects_locations_dbVersions = self.ProjectsLocationsDbVersionsService(self)
     self.projects_locations_entitlements = self.ProjectsLocationsEntitlementsService(self)
     self.projects_locations_giVersions = self.ProjectsLocationsGiVersionsService(self)
     self.projects_locations_odbNetworks_odbSubnets = self.ProjectsLocationsOdbNetworksOdbSubnetsService(self)
     self.projects_locations_odbNetworks = self.ProjectsLocationsOdbNetworksService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_pluggableDatabases = self.ProjectsLocationsPluggableDatabasesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -190,6 +196,33 @@ class OracledatabaseV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='OracledatabaseProjectsLocationsAutonomousDatabasesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Failover(self, request, global_params=None):
+      r"""Initiates a failover to target autonomous database from the associated primary database.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsAutonomousDatabasesFailoverRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Failover')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Failover.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/autonomousDatabases/{autonomousDatabasesId}:failover',
+        http_method='POST',
+        method_id='oracledatabase.projects.locations.autonomousDatabases.failover',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:failover',
+        request_field='failoverAutonomousDatabaseRequest',
+        request_type_name='OracledatabaseProjectsLocationsAutonomousDatabasesFailoverRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -594,7 +627,7 @@ class OracledatabaseV1(base_api.BaseApiClient):
         method_id='oracledatabase.projects.locations.cloudExadataInfrastructures.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
         relative_path='v1/{+parent}/cloudExadataInfrastructures',
         request_field='',
         request_type_name='OracledatabaseProjectsLocationsCloudExadataInfrastructuresListRequest',
@@ -757,6 +790,144 @@ class OracledatabaseV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsDatabaseCharacterSetsService(base_api.BaseApiService):
+    """Service class for the projects_locations_databaseCharacterSets resource."""
+
+    _NAME = 'projects_locations_databaseCharacterSets'
+
+    def __init__(self, client):
+      super(OracledatabaseV1.ProjectsLocationsDatabaseCharacterSetsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""List DatabaseCharacterSets for the given project and location.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsDatabaseCharacterSetsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDatabaseCharacterSetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/databaseCharacterSets',
+        http_method='GET',
+        method_id='oracledatabase.projects.locations.databaseCharacterSets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/databaseCharacterSets',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsDatabaseCharacterSetsListRequest',
+        response_type_name='ListDatabaseCharacterSetsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsDatabasesService(base_api.BaseApiService):
+    """Service class for the projects_locations_databases resource."""
+
+    _NAME = 'projects_locations_databases'
+
+    def __init__(self, client):
+      super(OracledatabaseV1.ProjectsLocationsDatabasesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single Database.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsDatabasesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Database) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/databases/{databasesId}',
+        http_method='GET',
+        method_id='oracledatabase.projects.locations.databases.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsDatabasesGetRequest',
+        response_type_name='Database',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all the Databases for the given project, location and DbSystem.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsDatabasesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDatabasesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/databases',
+        http_method='GET',
+        method_id='oracledatabase.projects.locations.databases.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/databases',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsDatabasesListRequest',
+        response_type_name='ListDatabasesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsDbSystemInitialStorageSizesService(base_api.BaseApiService):
+    """Service class for the projects_locations_dbSystemInitialStorageSizes resource."""
+
+    _NAME = 'projects_locations_dbSystemInitialStorageSizes'
+
+    def __init__(self, client):
+      super(OracledatabaseV1.ProjectsLocationsDbSystemInitialStorageSizesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists all the DbSystemInitialStorageSizes for the given project and location.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsDbSystemInitialStorageSizesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDbSystemInitialStorageSizesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dbSystemInitialStorageSizes',
+        http_method='GET',
+        method_id='oracledatabase.projects.locations.dbSystemInitialStorageSizes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/dbSystemInitialStorageSizes',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsDbSystemInitialStorageSizesListRequest',
+        response_type_name='ListDbSystemInitialStorageSizesResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsDbSystemShapesService(base_api.BaseApiService):
     """Service class for the projects_locations_dbSystemShapes resource."""
 
@@ -786,11 +957,166 @@ class OracledatabaseV1(base_api.BaseApiClient):
         method_id='oracledatabase.projects.locations.dbSystemShapes.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v1/{+parent}/dbSystemShapes',
         request_field='',
         request_type_name='OracledatabaseProjectsLocationsDbSystemShapesListRequest',
         response_type_name='ListDbSystemShapesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsDbSystemsService(base_api.BaseApiService):
+    """Service class for the projects_locations_dbSystems resource."""
+
+    _NAME = 'projects_locations_dbSystems'
+
+    def __init__(self, client):
+      super(OracledatabaseV1.ProjectsLocationsDbSystemsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new DbSystem in a given project and location.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsDbSystemsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dbSystems',
+        http_method='POST',
+        method_id='oracledatabase.projects.locations.dbSystems.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['dbSystemId', 'requestId'],
+        relative_path='v1/{+parent}/dbSystems',
+        request_field='dbSystem',
+        request_type_name='OracledatabaseProjectsLocationsDbSystemsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single DbSystem.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsDbSystemsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dbSystems/{dbSystemsId}',
+        http_method='DELETE',
+        method_id='oracledatabase.projects.locations.dbSystems.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsDbSystemsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single DbSystem.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsDbSystemsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DbSystem) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dbSystems/{dbSystemsId}',
+        http_method='GET',
+        method_id='oracledatabase.projects.locations.dbSystems.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsDbSystemsGetRequest',
+        response_type_name='DbSystem',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all the DbSystems for the given project and location.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsDbSystemsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDbSystemsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dbSystems',
+        http_method='GET',
+        method_id='oracledatabase.projects.locations.dbSystems.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/dbSystems',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsDbSystemsListRequest',
+        response_type_name='ListDbSystemsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsDbVersionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_dbVersions resource."""
+
+    _NAME = 'projects_locations_dbVersions'
+
+    def __init__(self, client):
+      super(OracledatabaseV1.ProjectsLocationsDbVersionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""List DbVersions for the given project and location.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsDbVersionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDbVersionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dbVersions',
+        http_method='GET',
+        method_id='oracledatabase.projects.locations.dbVersions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/dbVersions',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsDbVersionsListRequest',
+        response_type_name='ListDbVersionsResponse',
         supports_download=False,
     )
 
@@ -1219,6 +1545,70 @@ class OracledatabaseV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='OracledatabaseProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPluggableDatabasesService(base_api.BaseApiService):
+    """Service class for the projects_locations_pluggableDatabases resource."""
+
+    _NAME = 'projects_locations_pluggableDatabases'
+
+    def __init__(self, client):
+      super(OracledatabaseV1.ProjectsLocationsPluggableDatabasesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single PluggableDatabase.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsPluggableDatabasesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PluggableDatabase) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/pluggableDatabases/{pluggableDatabasesId}',
+        http_method='GET',
+        method_id='oracledatabase.projects.locations.pluggableDatabases.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsPluggableDatabasesGetRequest',
+        response_type_name='PluggableDatabase',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all the PluggableDatabases for the given project, location and Container Database.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsPluggableDatabasesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPluggableDatabasesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/pluggableDatabases',
+        http_method='GET',
+        method_id='oracledatabase.projects.locations.pluggableDatabases.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/pluggableDatabases',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsPluggableDatabasesListRequest',
+        response_type_name='ListPluggableDatabasesResponse',
         supports_download=False,
     )
 

@@ -21,34 +21,46 @@ from googlecloudsdk.core import properties
 
 # Rerouted regions are regions that don't have a regional endpoint
 # and must be redirected to global region.
+# go/rep-deployment-roadmap, go/rep-dashboards
 _CONTAINER_ANALYSIS_REROUTED_LOCATIONS = frozenset([
-    "africa-south1",
-    "asia-northeast2",
-    "australia-southeast2",
-    "europe-west10",
-    "europe-west12",
-    "us-west8",
-    "us",
+    # TODO(b/445909332): REP is available. Turn up CA API RSLB.
+    # go/keep-sorted start
     "eu",
+    "europe-north2",
+    "europe-west12",
+    "northamerica-south1",
+    "us",
+    "us-west8",
+    # go/keep-sorted end
+    # No REP available.
+    # go/keep-sorted start
     "asia",
+    "asia-southeast3",
+    "europe-west15",
     "global"
+    # go/keep-sorted end
 ])
 
 # Direct locations are regions and multi-regions that have regional endpoints.
 _CONTAINER_ANALYSIS_DIRECT_LOCATIONS = frozenset([
+    # go/keep-sorted start
+    "africa-south1",
     "asia-east1",
     "asia-east2",
     "asia-northeast1",
+    "asia-northeast2",
     "asia-northeast3",
     "asia-south1",
     "asia-south2",
     "asia-southeast1",
     "asia-southeast2",
     "australia-southeast1",
+    "australia-southeast2",
     "europe-central2",
     "europe-north1",
     "europe-southwest1",
     "europe-west1",
+    "europe-west10",
     "europe-west2",
     "europe-west3",
     "europe-west4",
@@ -57,7 +69,8 @@ _CONTAINER_ANALYSIS_DIRECT_LOCATIONS = frozenset([
     "europe-west9",
     "me-central1",
     "me-central2",
-    "me-west1northamerica-northeast1",
+    "me-west1",
+    "northamerica-northeast1",
     "northamerica-northeast2",
     "southamerica-east1",
     "southamerica-west1",
@@ -72,6 +85,7 @@ _CONTAINER_ANALYSIS_DIRECT_LOCATIONS = frozenset([
     "us-west2",
     "us-west3",
     "us-west4",
+    # go/keep-sorted end
 ])
 
 _CONTAINER_ANALYSIS_REP_STRUCTURE = "https://containeranalysis.{}.rep.{}/"

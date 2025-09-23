@@ -36,6 +36,7 @@ from googlecloudsdk.command_lib.functions.v2.deploy import env_vars_util
 from googlecloudsdk.command_lib.run import config_changes
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.run import platforms
+from googlecloudsdk.command_lib.run import preset_arg
 from googlecloudsdk.command_lib.run import pretty_print
 from googlecloudsdk.command_lib.run import resource_args
 from googlecloudsdk.command_lib.run import secrets_mapping
@@ -91,6 +92,14 @@ MESH_DATAPLANE_FLAG = base.Argument(
 INGRESS_CONTAINER_PRESETS = frozenset([
     'ollama',
     'tagmanager',
+])
+
+PRIVATE_ACCESS_PRESETS = frozenset([
+    'private-service',
+])
+
+PUBLIC_ACCESS_PRESETS = frozenset([
+    'public-service',
 ])
 
 _VISIBILITY_MODES = {
@@ -894,58 +903,38 @@ def AddSetEnvVarsFlag(parser):
 
 def MutexEnvVarsFlags(release_track=base.ReleaseTrack.GA):
   """Return argument group for setting, updating and deleting env vars."""
+  del release_track  # Unused in this function.
   group = MapFlagsNoFile(
       'env-vars',
       long_name='environment variables',
       key_type=env_vars_util.EnvVarKeyType,
       value_type=env_vars_util.EnvVarValueType,
   )
-  if release_track in [base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA]:
-    group.AddArgument(
-        base.Argument(
-            '--env-vars-file',
-            metavar='FILE_PATH',
-            type=map_util.ArgDictWithYAMLOrEnv(
-                key_type=env_vars_util.EnvVarKeyType,
-                value_type=env_vars_util.EnvVarValueType,
-            ),
-            help="""Path to a local YAML or ENV file with definitions for all environment
-              variables. All existing environment variables will be removed before
-              the new environment variables are added. Example YAML content:
+  group.AddArgument(
+      base.Argument(
+          '--env-vars-file',
+          metavar='FILE_PATH',
+          type=map_util.ArgDictWithYAMLOrEnv(
+              key_type=env_vars_util.EnvVarKeyType,
+              value_type=env_vars_util.EnvVarValueType,
+          ),
+          help="""Path to a local YAML or ENV file with definitions for all environment
+            variables. All existing environment variables will be removed before
+            the new environment variables are added. Example YAML content:
 
-                ```
-                KEY_1: "value1"
-                KEY_2: "value 2"
-                ```
-                Example ENV content:
+              ```
+              KEY_1: "value1"
+              KEY_2: "value 2"
+              ```
+              Example ENV content:
 
-                ```
-                KEY_1="value1"
-                KEY_2="value 2"
-                ```
-              """,
-        )
-    )
-  else:
-    group.AddArgument(
-        base.Argument(
-            '--env-vars-file',
-            metavar='FILE_PATH',
-            type=map_util.ArgDictFile(
-                key_type=env_vars_util.EnvVarKeyType,
-                value_type=env_vars_util.EnvVarValueType,
-            ),
-            help="""Path to a local YAML file with definitions for all environment
-              variables. All existing environment variables will be removed before
-              the new environment variables are added. Example YAML content:
-
-                ```
-                KEY_1: "value1"
-                KEY_2: "value 2"
-                ```
-              """,
-        )
-    )
+              ```
+              KEY_1="value1"
+              KEY_2="value 2"
+              ```
+            """,
+      )
+  )
   return group
 
 
@@ -1518,7 +1507,7 @@ def AddMinInstancesFlag(parser, resource_kind='service'):
   )
 
 
-def AddServiceMinInstancesFlag(parser):
+def AddServiceMinMaxInstancesFlag(parser):
   """Add service-level min scaling flag."""
   parser.add_argument(
       '--min',
@@ -1543,9 +1532,6 @@ def AddServiceMinInstancesFlag(parser):
       ),
   )
 
-
-def AddServiceMaxInstancesFlag(parser):
-  """Add service-level max scaling flag."""
   parser.add_argument(
       '--max',
       type=ScaleValue,
@@ -2999,7 +2985,11 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
         )
     )
   if FlagIsExplicitlySet(args, 'preset'):
-    changes.append(config_changes.PresetChange(type=args.preset))
+    changes.append(
+        config_changes.PresetChange(
+            type=args.preset['name'], config=args.preset['params']
+        )
+    )
 
   if FlagIsExplicitlySet(args, 'clear_presets'):
     changes.append(
@@ -4753,6 +4743,8 @@ def PresetFlag():
   """Create a --preset flag."""
   return base.Argument(
       '--preset',
+      type=preset_arg.PresetArg(),
+      metavar='PRESET',
       help='Specifies a preset to be used for the deployment.',
       hidden=True,
   )

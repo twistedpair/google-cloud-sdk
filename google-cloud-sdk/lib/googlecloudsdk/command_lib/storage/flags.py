@@ -888,10 +888,10 @@ def add_soft_deleted_flag(parser, hidden=False):
   )
 
 
-def add_server_filter_flag(parser):
+def add_metadata_filter_flag(parser):
   """Adds flag for filtering objects by server side filtering."""
   parser.add_argument(
-      '--server-filter',
+      '--metadata-filter',
       type=str,
       hidden=True,
       help=(

@@ -231,21 +231,14 @@ class VolumesClient(object):
             restoreDestinationPath=restore_destination_path,
         ),
     )
-    # TODO(b/409505431): Remove this check once the restore backup files
-    # is GA.
-    if self.release_track in [base.ReleaseTrack.BETA, base.ReleaseTrack.ALPHA]:
-      restore_op = self.client.projects_locations_volumes.Restore(request)
-      if async_:
-        return restore_op
-      operation_ref = resources.REGISTRY.ParseRelativeName(
-          restore_op.name, collection=constants.OPERATIONS_COLLECTION
-      )
-      return self.WaitForOperation(operation_ref)
-    raise ValueError(
-        '[{}] is not a valid API version.'.format(
-            util.VERSION_MAP[self.release_track]
-        )
+
+    restore_op = self.client.projects_locations_volumes.Restore(request)
+    if async_:
+      return restore_op
+    operation_ref = resources.REGISTRY.ParseRelativeName(
+        restore_op.name, collection=constants.OPERATIONS_COLLECTION
     )
+    return self.WaitForOperation(operation_ref)
 
   def ParseUpdatedVolumeConfig(
       self,

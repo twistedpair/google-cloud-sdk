@@ -915,6 +915,13 @@ class DropInfo(_messages.Message):
         to the destination IP address.
       CLOUD_NAT_PROTOCOL_UNSUPPORTED: Packet is dropped by Cloud NAT due to
         using an unsupported protocol.
+      L2_INTERCONNECT_UNSUPPORTED_PROTOCOL: Packet is dropped due to using an
+        unsupported protocol (any other than UDP) for L2 Interconnect.
+      L2_INTERCONNECT_UNSUPPORTED_PORT: Packet is dropped due to using an
+        unsupported port (any other than 6081) for L2 Interconnect.
+      L2_INTERCONNECT_DESTINATION_IP_MISMATCH: Packet is dropped due to
+        destination IP not matching the appliance mapping IPs configured on
+        the L2 Interconnect attachment.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -1010,6 +1017,9 @@ class DropInfo(_messages.Message):
     LOAD_BALANCER_BACKEND_IP_VERSION_MISMATCH = 91
     NO_KNOWN_ROUTE_FROM_NCC_NETWORK_TO_DESTINATION = 92
     CLOUD_NAT_PROTOCOL_UNSUPPORTED = 93
+    L2_INTERCONNECT_UNSUPPORTED_PROTOCOL = 94
+    L2_INTERCONNECT_UNSUPPORTED_PORT = 95
+    L2_INTERCONNECT_DESTINATION_IP_MISMATCH = 96
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   destinationGeolocationCode = _messages.StringField(2)
@@ -1029,6 +1039,176 @@ class EdgeLocation(_messages.Message):
   """
 
   metropolitanArea = _messages.StringField(1)
+
+
+class EffectiveVpcFlowLogsConfig(_messages.Message):
+  r"""A configuration to generate a response for GetEffectiveVpcFlowLogsConfig
+  request.
+
+  Enums:
+    AggregationIntervalValueValuesEnum: The aggregation interval for the logs.
+      Default value is INTERVAL_5_SEC.
+    CrossProjectMetadataValueValuesEnum: Determines whether to include cross
+      project annotations in the logs. This field is available only for
+      organization configurations. If not specified in org configs will be set
+      to CROSS_PROJECT_METADATA_ENABLED.
+    MetadataValueValuesEnum: Configures whether all, none or a subset of
+      metadata fields should be added to the reported VPC flow logs. Default
+      value is INCLUDE_ALL_METADATA.
+    ScopeValueValuesEnum: Specifies the scope of the config (e.g., SUBNET,
+      NETWORK, ORGANIZATION..).
+    StateValueValuesEnum: The state of the VPC Flow Log configuration. Default
+      value is ENABLED. When creating a new configuration, it must be enabled.
+      Setting state=DISABLED will pause the log generation for this config.
+
+  Fields:
+    aggregationInterval: The aggregation interval for the logs. Default value
+      is INTERVAL_5_SEC.
+    crossProjectMetadata: Determines whether to include cross project
+      annotations in the logs. This field is available only for organization
+      configurations. If not specified in org configs will be set to
+      CROSS_PROJECT_METADATA_ENABLED.
+    filterExpr: Export filter used to define which VPC Flow Logs should be
+      logged.
+    flowSampling: The value of the field must be in (0, 1]. The sampling rate
+      of VPC Flow Logs where 1.0 means all collected logs are reported.
+      Setting the sampling rate to 0.0 is not allowed. If you want to disable
+      VPC Flow Logs, use the state field instead. Default value is 1.0.
+    interconnectAttachment: Traffic will be logged from the Interconnect
+      Attachment. Format:
+      projects/{project_id}/regions/{region}/interconnectAttachments/{name}
+    metadata: Configures whether all, none or a subset of metadata fields
+      should be added to the reported VPC flow logs. Default value is
+      INCLUDE_ALL_METADATA.
+    metadataFields: Custom metadata fields to include in the reported VPC flow
+      logs. Can only be specified if "metadata" was set to CUSTOM_METADATA.
+    name: Unique name of the configuration. The name can have one of the
+      following forms: - For project-level configurations: `projects/{project_
+      id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs_config_id}` - For
+      organization-level configurations: `organizations/{organization_id}/loca
+      tions/global/vpcFlowLogsConfigs/{vpc_flow_logs_config_id}` - For a
+      Compute config, the name will be the path of the subnet:
+      `projects/{project_id}/regions/{region}/subnetworks/{subnet_id}`
+    network: Traffic will be logged from VMs, VPN tunnels and Interconnect
+      Attachments within the network. Format:
+      projects/{project_id}/global/networks/{name}
+    scope: Specifies the scope of the config (e.g., SUBNET, NETWORK,
+      ORGANIZATION..).
+    state: The state of the VPC Flow Log configuration. Default value is
+      ENABLED. When creating a new configuration, it must be enabled. Setting
+      state=DISABLED will pause the log generation for this config.
+    subnet: Traffic will be logged from VMs within the subnetwork. Format:
+      projects/{project_id}/regions/{region}/subnetworks/{name}
+    vpnTunnel: Traffic will be logged from the VPN Tunnel. Format:
+      projects/{project_id}/regions/{region}/vpnTunnels/{name}
+  """
+
+  class AggregationIntervalValueValuesEnum(_messages.Enum):
+    r"""The aggregation interval for the logs. Default value is
+    INTERVAL_5_SEC.
+
+    Values:
+      AGGREGATION_INTERVAL_UNSPECIFIED: If not specified, will default to
+        INTERVAL_5_SEC.
+      INTERVAL_5_SEC: Aggregate logs in 5s intervals.
+      INTERVAL_30_SEC: Aggregate logs in 30s intervals.
+      INTERVAL_1_MIN: Aggregate logs in 1m intervals.
+      INTERVAL_5_MIN: Aggregate logs in 5m intervals.
+      INTERVAL_10_MIN: Aggregate logs in 10m intervals.
+      INTERVAL_15_MIN: Aggregate logs in 15m intervals.
+    """
+    AGGREGATION_INTERVAL_UNSPECIFIED = 0
+    INTERVAL_5_SEC = 1
+    INTERVAL_30_SEC = 2
+    INTERVAL_1_MIN = 3
+    INTERVAL_5_MIN = 4
+    INTERVAL_10_MIN = 5
+    INTERVAL_15_MIN = 6
+
+  class CrossProjectMetadataValueValuesEnum(_messages.Enum):
+    r"""Determines whether to include cross project annotations in the logs.
+    This field is available only for organization configurations. If not
+    specified in org configs will be set to CROSS_PROJECT_METADATA_ENABLED.
+
+    Values:
+      CROSS_PROJECT_METADATA_UNSPECIFIED: If not specified, the default is
+        CROSS_PROJECT_METADATA_ENABLED.
+      CROSS_PROJECT_METADATA_ENABLED: When CROSS_PROJECT_METADATA_ENABLED,
+        metadata from other projects will be included in the logs.
+      CROSS_PROJECT_METADATA_DISABLED: When CROSS_PROJECT_METADATA_DISABLED,
+        metadata from other projects will not be included in the logs.
+    """
+    CROSS_PROJECT_METADATA_UNSPECIFIED = 0
+    CROSS_PROJECT_METADATA_ENABLED = 1
+    CROSS_PROJECT_METADATA_DISABLED = 2
+
+  class MetadataValueValuesEnum(_messages.Enum):
+    r"""Configures whether all, none or a subset of metadata fields should be
+    added to the reported VPC flow logs. Default value is
+    INCLUDE_ALL_METADATA.
+
+    Values:
+      METADATA_UNSPECIFIED: If not specified, will default to
+        INCLUDE_ALL_METADATA.
+      INCLUDE_ALL_METADATA: Include all metadata fields.
+      EXCLUDE_ALL_METADATA: Exclude all metadata fields.
+      CUSTOM_METADATA: Include only custom fields (specified in
+        metadata_fields).
+    """
+    METADATA_UNSPECIFIED = 0
+    INCLUDE_ALL_METADATA = 1
+    EXCLUDE_ALL_METADATA = 2
+    CUSTOM_METADATA = 3
+
+  class ScopeValueValuesEnum(_messages.Enum):
+    r"""Specifies the scope of the config (e.g., SUBNET, NETWORK,
+    ORGANIZATION..).
+
+    Values:
+      SCOPE_UNSPECIFIED: Scope is unspecified.
+      SUBNET: Target resource is a subnet (Network Management API).
+      COMPUTE_API_SUBNET: Target resource is a subnet, and the config
+        originates from the Compute API.
+      NETWORK: Target resource is a network.
+      VPN_TUNNEL: Target resource is a VPN tunnel.
+      INTERCONNECT_ATTACHMENT: Target resource is an interconnect attachment.
+      ORGANIZATION: Configuration applies to an entire organization.
+    """
+    SCOPE_UNSPECIFIED = 0
+    SUBNET = 1
+    COMPUTE_API_SUBNET = 2
+    NETWORK = 3
+    VPN_TUNNEL = 4
+    INTERCONNECT_ATTACHMENT = 5
+    ORGANIZATION = 6
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The state of the VPC Flow Log configuration. Default value is ENABLED.
+    When creating a new configuration, it must be enabled. Setting
+    state=DISABLED will pause the log generation for this config.
+
+    Values:
+      STATE_UNSPECIFIED: If not specified, will default to ENABLED.
+      ENABLED: When ENABLED, this configuration will generate logs.
+      DISABLED: When DISABLED, this configuration will not generate logs.
+    """
+    STATE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  aggregationInterval = _messages.EnumField('AggregationIntervalValueValuesEnum', 1)
+  crossProjectMetadata = _messages.EnumField('CrossProjectMetadataValueValuesEnum', 2)
+  filterExpr = _messages.StringField(3)
+  flowSampling = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  interconnectAttachment = _messages.StringField(5)
+  metadata = _messages.EnumField('MetadataValueValuesEnum', 6)
+  metadataFields = _messages.StringField(7, repeated=True)
+  name = _messages.StringField(8)
+  network = _messages.StringField(9)
+  scope = _messages.EnumField('ScopeValueValuesEnum', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  subnet = _messages.StringField(12)
+  vpnTunnel = _messages.StringField(13)
 
 
 class Empty(_messages.Message):
@@ -1533,6 +1713,21 @@ class GoogleServiceInfo(_messages.Message):
   sourceIp = _messages.StringField(2)
 
 
+class HybridSubnetInfo(_messages.Message):
+  r"""For display only. Metadata associated with a hybrid subnet.
+
+  Fields:
+    displayName: Name of a hybrid subnet.
+    region: Name of a Google Cloud region where the hybrid subnet is
+      configured.
+    uri: URI of a hybrid subnet.
+  """
+
+  displayName = _messages.StringField(1)
+  region = _messages.StringField(2)
+  uri = _messages.StringField(3)
+
+
 class InstanceInfo(_messages.Message):
   r"""For display only. Metadata associated with a Compute Engine instance.
 
@@ -1583,21 +1778,46 @@ class InstanceInfo(_messages.Message):
 class InterconnectAttachmentInfo(_messages.Message):
   r"""For display only. Metadata associated with an Interconnect attachment.
 
+  Enums:
+    TypeValueValuesEnum: The type of interconnect attachment this is.
+
   Fields:
     cloudRouterUri: URI of the Cloud Router to be used for dynamic routing.
     displayName: Name of an Interconnect attachment.
     interconnectUri: URI of the Interconnect where the Interconnect attachment
       is configured.
+    l2AttachmentMatchedIpAddress: Appliance IP address that was matched for
+      L2_DEDICATED attachments.
     region: Name of a Google Cloud region where the Interconnect attachment is
       configured.
+    type: The type of interconnect attachment this is.
     uri: URI of an Interconnect attachment.
   """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of interconnect attachment this is.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified type.
+      DEDICATED: Attachment to a dedicated interconnect.
+      PARTNER: Attachment to a partner interconnect, created by the customer.
+      PARTNER_PROVIDER: Attachment to a partner interconnect, created by the
+        partner.
+      L2_DEDICATED: Attachment to a L2 interconnect, created by the customer.
+    """
+    TYPE_UNSPECIFIED = 0
+    DEDICATED = 1
+    PARTNER = 2
+    PARTNER_PROVIDER = 3
+    L2_DEDICATED = 4
 
   cloudRouterUri = _messages.StringField(1)
   displayName = _messages.StringField(2)
   interconnectUri = _messages.StringField(3)
-  region = _messages.StringField(4)
-  uri = _messages.StringField(5)
+  l2AttachmentMatchedIpAddress = _messages.StringField(4)
+  region = _messages.StringField(5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  uri = _messages.StringField(7)
 
 
 class LatencyDistribution(_messages.Message):
@@ -2093,8 +2313,8 @@ class NetworkmanagementOrganizationsLocationsListRequest(_messages.Message):
   r"""A NetworkmanagementOrganizationsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Do not use this field. It is unsupported and
-      is ignored unless explicitly documented otherwise. This is primarily for
+    extraLocationTypes: Optional. Unless explicitly documented otherwise,
+      don't use this unsupported field which is primarily intended for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -2450,8 +2670,8 @@ class NetworkmanagementProjectsLocationsListRequest(_messages.Message):
   r"""A NetworkmanagementProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Do not use this field. It is unsupported and
-      is ignored unless explicitly documented otherwise. This is primarily for
+    extraLocationTypes: Optional. Unless explicitly documented otherwise,
+      don't use this unsupported field which is primarily intended for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -2589,6 +2809,34 @@ class NetworkmanagementProjectsLocationsVpcFlowLogsConfigsQueryOrgVpcFlowLogsCon
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class NetworkmanagementProjectsLocationsVpcFlowLogsConfigsShowEffectiveFlowLogsConfigsRequest(_messages.Message):
+  r"""A NetworkmanagementProjectsLocationsVpcFlowLogsConfigsShowEffectiveFlowL
+  ogsConfigsRequest object.
+
+  Fields:
+    filter: Optional. Lists the `EffectiveVpcFlowLogsConfigs` that match the
+      filter expression. A filter expression must use the supported [CEL logic
+      operators] (https://cloud.google.com/vpc/docs/about-flow-logs-
+      records#supported_cel_logic_operators).
+    pageSize: Optional. Number of `EffectiveVpcFlowLogsConfigs` to return.
+      Default is 30.
+    pageToken: Optional. Page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource of the VpcFlowLogsConfig, specified
+      in the following format: `projects/{project_id}/locations/global`
+    resource: Required. The resource to get the effective VPC Flow Logs
+      configuration for. The resource must belong to the same project as the
+      parent. The resource must be a network, subnetwork, interconnect
+      attachment, VPN tunnel, or a project.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  resource = _messages.StringField(5)
 
 
 class Operation(_messages.Message):
@@ -3241,6 +3489,21 @@ class SetIamPolicyRequest(_messages.Message):
   updateMask = _messages.StringField(2)
 
 
+class ShowEffectiveFlowLogsConfigsResponse(_messages.Message):
+  r"""Response for the `ShowEffectiveFlowLogsConfigs` method.
+
+  Fields:
+    effectiveFlowLogsConfigs: List of Effective Vpc Flow Logs configurations.
+    nextPageToken: Page token to fetch the next set of configurations.
+    unreachable: Locations that could not be reached (when querying all
+      locations with `-`).
+  """
+
+  effectiveFlowLogsConfigs = _messages.MessageField('EffectiveVpcFlowLogsConfig', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class SingleEdgeResponse(_messages.Message):
   r"""Probing results for a single edge device.
 
@@ -3435,6 +3698,7 @@ class Step(_messages.Message):
     gkeMaster: Display information of a Google Kubernetes Engine cluster
       master.
     googleService: Display information of a Google service
+    hybridSubnet: Display information of a hybrid subnet.
     instance: Display information of a Compute Engine instance.
     interconnectAttachment: Display information of an interconnect attachment.
     loadBalancer: Display information of the load balancers. Deprecated in
@@ -3525,6 +3789,8 @@ class Step(_messages.Message):
       ARRIVE_AT_EXTERNAL_LOAD_BALANCER: Forwarding state: arriving at a
         Compute Engine external load balancer. Deprecated in favor of the
         `ANALYZE_LOAD_BALANCER_BACKEND` state, not used in new tests.
+      ARRIVE_AT_HYBRID_SUBNET: Forwarding state: arriving at a hybrid subnet.
+        Appropriate routing configuration will be determined here.
       ARRIVE_AT_VPN_GATEWAY: Forwarding state: arriving at a Cloud VPN
         gateway.
       ARRIVE_AT_VPN_TUNNEL: Forwarding state: arriving at a Cloud VPN tunnel.
@@ -3536,7 +3802,8 @@ class Step(_messages.Message):
       SERVERLESS_EXTERNAL_CONNECTION: Forwarding state: for packets
         originating from a serverless endpoint forwarded through public
         (external) connectivity.
-      NAT: Transition state: packet header translated.
+      NAT: Transition state: packet header translated. The `nat` field is
+        populated with the translation information.
       PROXY_CONNECTION: Transition state: original connection is terminated
         and a new proxied connection is initiated.
       DELIVER: Final state: packet could be delivered.
@@ -3571,19 +3838,20 @@ class Step(_messages.Message):
     ARRIVE_AT_INSTANCE = 21
     ARRIVE_AT_INTERNAL_LOAD_BALANCER = 22
     ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 23
-    ARRIVE_AT_VPN_GATEWAY = 24
-    ARRIVE_AT_VPN_TUNNEL = 25
-    ARRIVE_AT_INTERCONNECT_ATTACHMENT = 26
-    ARRIVE_AT_VPC_CONNECTOR = 27
-    DIRECT_VPC_EGRESS_CONNECTION = 28
-    SERVERLESS_EXTERNAL_CONNECTION = 29
-    NAT = 30
-    PROXY_CONNECTION = 31
-    DELIVER = 32
-    DROP = 33
-    FORWARD = 34
-    ABORT = 35
-    VIEWER_PERMISSION_MISSING = 36
+    ARRIVE_AT_HYBRID_SUBNET = 24
+    ARRIVE_AT_VPN_GATEWAY = 25
+    ARRIVE_AT_VPN_TUNNEL = 26
+    ARRIVE_AT_INTERCONNECT_ATTACHMENT = 27
+    ARRIVE_AT_VPC_CONNECTOR = 28
+    DIRECT_VPC_EGRESS_CONNECTION = 29
+    SERVERLESS_EXTERNAL_CONNECTION = 30
+    NAT = 31
+    PROXY_CONNECTION = 32
+    DELIVER = 33
+    DROP = 34
+    FORWARD = 35
+    ABORT = 36
+    VIEWER_PERMISSION_MISSING = 37
 
   abort = _messages.MessageField('AbortInfo', 1)
   appEngineVersion = _messages.MessageField('AppEngineVersionInfo', 2)
@@ -3601,24 +3869,25 @@ class Step(_messages.Message):
   forwardingRule = _messages.MessageField('ForwardingRuleInfo', 14)
   gkeMaster = _messages.MessageField('GKEMasterInfo', 15)
   googleService = _messages.MessageField('GoogleServiceInfo', 16)
-  instance = _messages.MessageField('InstanceInfo', 17)
-  interconnectAttachment = _messages.MessageField('InterconnectAttachmentInfo', 18)
-  loadBalancer = _messages.MessageField('LoadBalancerInfo', 19)
-  loadBalancerBackendInfo = _messages.MessageField('LoadBalancerBackendInfo', 20)
-  nat = _messages.MessageField('NatInfo', 21)
-  network = _messages.MessageField('NetworkInfo', 22)
-  projectId = _messages.StringField(23)
-  proxyConnection = _messages.MessageField('ProxyConnectionInfo', 24)
-  redisCluster = _messages.MessageField('RedisClusterInfo', 25)
-  redisInstance = _messages.MessageField('RedisInstanceInfo', 26)
-  route = _messages.MessageField('RouteInfo', 27)
-  serverlessExternalConnection = _messages.MessageField('ServerlessExternalConnectionInfo', 28)
-  serverlessNeg = _messages.MessageField('ServerlessNegInfo', 29)
-  state = _messages.EnumField('StateValueValuesEnum', 30)
-  storageBucket = _messages.MessageField('StorageBucketInfo', 31)
-  vpcConnector = _messages.MessageField('VpcConnectorInfo', 32)
-  vpnGateway = _messages.MessageField('VpnGatewayInfo', 33)
-  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 34)
+  hybridSubnet = _messages.MessageField('HybridSubnetInfo', 17)
+  instance = _messages.MessageField('InstanceInfo', 18)
+  interconnectAttachment = _messages.MessageField('InterconnectAttachmentInfo', 19)
+  loadBalancer = _messages.MessageField('LoadBalancerInfo', 20)
+  loadBalancerBackendInfo = _messages.MessageField('LoadBalancerBackendInfo', 21)
+  nat = _messages.MessageField('NatInfo', 22)
+  network = _messages.MessageField('NetworkInfo', 23)
+  projectId = _messages.StringField(24)
+  proxyConnection = _messages.MessageField('ProxyConnectionInfo', 25)
+  redisCluster = _messages.MessageField('RedisClusterInfo', 26)
+  redisInstance = _messages.MessageField('RedisInstanceInfo', 27)
+  route = _messages.MessageField('RouteInfo', 28)
+  serverlessExternalConnection = _messages.MessageField('ServerlessExternalConnectionInfo', 29)
+  serverlessNeg = _messages.MessageField('ServerlessNegInfo', 30)
+  state = _messages.EnumField('StateValueValuesEnum', 31)
+  storageBucket = _messages.MessageField('StorageBucketInfo', 32)
+  vpcConnector = _messages.MessageField('VpcConnectorInfo', 33)
+  vpnGateway = _messages.MessageField('VpnGatewayInfo', 34)
+  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 35)
 
 
 class StorageBucketInfo(_messages.Message):

@@ -1538,15 +1538,18 @@ def ValidateNetworkInterfaceNicType(nic_type_input):
         '--network-interface', 'Invalid value for nic-type [%s]' % nic_type)
 
 
-def AddAddressArgs(parser,
-                   instances=True,
-                   support_subinterface=False,
-                   instance_create=False,
-                   containers=False,
-                   support_network_queue_count=False,
-                   support_vlan_nic=False,
-                   support_ipv6_only=False,
-                   support_igmp_query=False):
+def AddAddressArgs(
+    parser,
+    instances=True,
+    support_subinterface=False,
+    instance_create=False,
+    containers=False,
+    support_network_queue_count=False,
+    support_vlan_nic=False,
+    support_ipv6_only=False,
+    support_igmp_query=False,
+    support_enable_vpc_scoped_dns=False,
+):
   """Adds address arguments for instances and instance-templates.
 
   Args:
@@ -1564,6 +1567,8 @@ def AddAddressArgs(parser,
     support_ipv6_only: indicates whether IPV6_ONLY stack type is supported.
     support_igmp_query: indicates whether setting igmp query on network
       interfaces is supported.
+    support_enable_vpc_scoped_dns: indicates whether setting enable vpc scoped
+      dns on network interfaces is supported.
   """
   addresses = parser.add_mutually_exclusive_group()
   AddNoAddressArg(addresses)
@@ -1592,7 +1597,8 @@ def AddAddressArgs(parser,
       'external-ipv6-address': str,
       'external-ipv6-prefix-length': int,
       'internal-ipv6-address': str,
-      'internal-ipv6-prefix-length': int
+      'internal-ipv6-prefix-length': int,
+      'enable-vpc-scoped-dns': None,
   }
 
   multiple_network_interface_cards_spec['network-tier'] = _ValidateNetworkTier
@@ -1772,6 +1778,12 @@ def AddAddressArgs(parser,
       *network-attachment*::: Specifies the network attachment that this
         interface should connect to. Mutually exclusive with *--network* and
         *--subnet* flags.
+      """)
+
+  if support_enable_vpc_scoped_dns:
+    network_interface_help_texts.append("""
+      *enable-vpc-scoped-dns*::: If specified with network_attachment, DNS
+      resolution will be enabled over this interface.
       """)
 
   if support_vlan_nic:

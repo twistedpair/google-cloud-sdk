@@ -477,3 +477,28 @@ def CopyRepository(source_repo, dest_repo_name):
       ),
   )
   return client.projects_locations_repositories.CopyRepository(req)
+
+
+def ExportArtifact(version, tag, gcs_destination):
+  """Exports an artifact by version or tag."""
+  client = GetClient()
+  messages = GetMessages()
+  if version:
+    req = messages.ArtifactregistryProjectsLocationsRepositoriesExportArtifactRequest(
+        repository=version.Parent().Parent().RelativeName(),
+        exportArtifactRequest=messages.ExportArtifactRequest(
+            gcsPath=gcs_destination,
+            sourceVersion=version.RelativeName(),
+        ),
+    )
+  elif tag:
+    req = messages.ArtifactregistryProjectsLocationsRepositoriesExportArtifactRequest(
+        repository=tag.Parent().Parent().RelativeName(),
+        exportArtifactRequest=messages.ExportArtifactRequest(
+            gcsPath=gcs_destination,
+            sourceTag=tag.RelativeName(),
+        ),
+    )
+  else:
+    raise ValueError("Either version or tag must be specified.")
+  return client.projects_locations_repositories.ExportArtifact(req)

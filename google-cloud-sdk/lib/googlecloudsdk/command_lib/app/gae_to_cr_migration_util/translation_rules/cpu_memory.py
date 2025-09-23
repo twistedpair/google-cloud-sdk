@@ -97,7 +97,7 @@ def _get_cpu_memory_default_based_on_scaling_method(
     return []
   if len(scaling_features_used) > 1:
     logging.warning(
-        'Warning: More than one scaling option is defined,             only one'
+        'Warning: More than one scaling option is defined, only one'
         ' scaling option should be used.'
     )
     return []

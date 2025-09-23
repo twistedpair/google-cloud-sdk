@@ -2405,28 +2405,28 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def UpdateKmskey(self, request, global_params=None):
+    def UpdateKmsKey(self, request, global_params=None):
       r"""Rotates the customer-managed encryption key to the latest version for the specified persistent disk.
 
       Args:
-        request: (ComputeDisksUpdateKmskeyRequest) input message
+        request: (ComputeDisksUpdateKmsKeyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
       """
-      config = self.GetMethodConfig('UpdateKmskey')
+      config = self.GetMethodConfig('UpdateKmsKey')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    UpdateKmskey.method_config = lambda: base_api.ApiMethodInfo(
+    UpdateKmsKey.method_config = lambda: base_api.ApiMethodInfo(
         http_method='POST',
-        method_id='compute.disks.updateKmskey',
+        method_id='compute.disks.updateKmsKey',
         ordered_params=['project', 'zone', 'disk'],
         path_params=['disk', 'project', 'zone'],
         query_params=['requestId'],
         relative_path='projects/{project}/zones/{zone}/disks/{disk}/updateKmsKey',
         request_field='',
-        request_type_name='ComputeDisksUpdateKmskeyRequest',
+        request_type_name='ComputeDisksUpdateKmsKeyRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -20650,7 +20650,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of network policies. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of network policies. To prevent failure, it's recommended that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeRegionNetworkPoliciesAggregatedListRequest) input message

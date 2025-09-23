@@ -399,7 +399,7 @@ class WaitOperationPoller(waiter.CloudOperationPoller):
     """
     request_type = self.operation_service.GetRequestType('Wait')
     wait_req = self._messages_module.GoogleLongrunningWaitOperationRequest(
-        timeout='30s'
+        timeout='10s'
     )
     return self.operation_service.Wait(
         request_type(

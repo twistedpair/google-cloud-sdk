@@ -19,6 +19,30 @@ from googlecloudsdk.api_lib.clouddeploy import deploy_policy
 from googlecloudsdk.core import resources
 
 
+def DeployPolicyReference(name, project, region):
+  """Creates the deploy policy reference base on the parameters.
+
+    Returns the shared deploy policy reference.
+
+  Args:
+    name: str, deploy policy ID
+    project: str,project number or ID.
+    region: str, region ID.
+
+  Returns:
+    custom target type reference.
+  """
+  return resources.REGISTRY.Parse(
+      name,
+      collection='clouddeploy.projects.locations.deployPolicies',
+      params={
+          'projectsId': project,
+          'locationsId': region,
+          'deployPoliciesId': name,
+      },
+  )
+
+
 def PatchDeployPolicy(resource):
   """Patches a deploy policy resource.
 

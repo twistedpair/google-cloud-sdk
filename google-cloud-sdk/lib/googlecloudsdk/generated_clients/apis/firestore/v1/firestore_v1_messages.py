@@ -1834,8 +1834,8 @@ class FirestoreProjectsLocationsListRequest(_messages.Message):
   r"""A FirestoreProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Do not use this field. It is unsupported and
-      is ignored unless explicitly documented otherwise. This is primarily for
+    extraLocationTypes: Optional. Unless explicitly documented otherwise,
+      don't use this unsupported field which is primarily intended for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -2197,8 +2197,19 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
     DatabaseEditionValueValuesEnum: Immutable. The edition of the database.
     DeleteProtectionStateValueValuesEnum: State of delete protection for the
       database.
+    FirestoreDataAccessModeValueValuesEnum: Optional. The Firestore API data
+      access mode to use for this database. If not set on write: - the default
+      value is DATA_ACCESS_MODE_DISABLED for Enterprise Edition. - the default
+      value is DATA_ACCESS_MODE_ENABLED for Standard Edition.
+    MongodbCompatibleDataAccessModeValueValuesEnum: Optional. The MongoDB
+      compatible API data access mode to use for this database. If not set on
+      write, the default value is DATA_ACCESS_MODE_ENABLED for Enterprise
+      Edition. The value is always DATA_ACCESS_MODE_DISABLED for Standard
+      Edition.
     PointInTimeRecoveryEnablementValueValuesEnum: Whether to enable the PITR
       feature on this database.
+    RealtimeUpdatesModeValueValuesEnum: Immutable. The default Realtime
+      Updates mode to use for this database.
     TypeValueValuesEnum: The type of the database. See
       https://cloud.google.com/datastore/docs/firestore-or-datastore for
       information about how to choose.
@@ -2230,6 +2241,10 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
     etag: This checksum is computed by the server based on the value of other
       fields, and may be sent on update and delete requests to ensure the
       client has an up-to-date value before proceeding.
+    firestoreDataAccessMode: Optional. The Firestore API data access mode to
+      use for this database. If not set on write: - the default value is
+      DATA_ACCESS_MODE_DISABLED for Enterprise Edition. - the default value is
+      DATA_ACCESS_MODE_ENABLED for Standard Edition.
     freeTier: Output only. Background: Free tier is the ability of a Firestore
       database to use a small amount of resources every day without being
       charged. Once usage exceeds the free tier limit further usage is
@@ -2247,12 +2262,18 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
       instead of v~foo).
     locationId: The location of the database. Available locations are listed
       at https://cloud.google.com/firestore/docs/locations.
+    mongodbCompatibleDataAccessMode: Optional. The MongoDB compatible API data
+      access mode to use for this database. If not set on write, the default
+      value is DATA_ACCESS_MODE_ENABLED for Enterprise Edition. The value is
+      always DATA_ACCESS_MODE_DISABLED for Standard Edition.
     name: The resource name of the Database. Format:
       `projects/{project}/databases/{database}`
     pointInTimeRecoveryEnablement: Whether to enable the PITR feature on this
       database.
     previousId: Output only. The database resource's prior database ID. This
       field is only populated for deleted databases.
+    realtimeUpdatesMode: Immutable. The default Realtime Updates mode to use
+      for this database.
     sourceInfo: Output only. Information about the provenance of this
       database.
     tags: Optional. Input only. Immutable. Tag keys/values directly bound to
@@ -2335,6 +2356,40 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
     DELETE_PROTECTION_DISABLED = 1
     DELETE_PROTECTION_ENABLED = 2
 
+  class FirestoreDataAccessModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The Firestore API data access mode to use for this database.
+    If not set on write: - the default value is DATA_ACCESS_MODE_DISABLED for
+    Enterprise Edition. - the default value is DATA_ACCESS_MODE_ENABLED for
+    Standard Edition.
+
+    Values:
+      DATA_ACCESS_MODE_UNSPECIFIED: Not Used.
+      DATA_ACCESS_MODE_ENABLED: Accessing the database through the API is
+        allowed.
+      DATA_ACCESS_MODE_DISABLED: Accessing the database through the API is
+        disallowed.
+    """
+    DATA_ACCESS_MODE_UNSPECIFIED = 0
+    DATA_ACCESS_MODE_ENABLED = 1
+    DATA_ACCESS_MODE_DISABLED = 2
+
+  class MongodbCompatibleDataAccessModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The MongoDB compatible API data access mode to use for this
+    database. If not set on write, the default value is
+    DATA_ACCESS_MODE_ENABLED for Enterprise Edition. The value is always
+    DATA_ACCESS_MODE_DISABLED for Standard Edition.
+
+    Values:
+      DATA_ACCESS_MODE_UNSPECIFIED: Not Used.
+      DATA_ACCESS_MODE_ENABLED: Accessing the database through the API is
+        allowed.
+      DATA_ACCESS_MODE_DISABLED: Accessing the database through the API is
+        disallowed.
+    """
+    DATA_ACCESS_MODE_UNSPECIFIED = 0
+    DATA_ACCESS_MODE_ENABLED = 1
+    DATA_ACCESS_MODE_DISABLED = 2
+
   class PointInTimeRecoveryEnablementValueValuesEnum(_messages.Enum):
     r"""Whether to enable the PITR feature on this database.
 
@@ -2352,6 +2407,22 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
     POINT_IN_TIME_RECOVERY_ENABLEMENT_UNSPECIFIED = 0
     POINT_IN_TIME_RECOVERY_ENABLED = 1
     POINT_IN_TIME_RECOVERY_DISABLED = 2
+
+  class RealtimeUpdatesModeValueValuesEnum(_messages.Enum):
+    r"""Immutable. The default Realtime Updates mode to use for this database.
+
+    Values:
+      REALTIME_UPDATES_MODE_UNSPECIFIED: The Realtime Updates feature is not
+        specified.
+      REALTIME_UPDATES_ENABLED: The Realtime Updates feature is enabled by
+        default. This could potentially degrade write performance for the
+        database.
+      REALTIME_UPDATES_DISABLED: The Realtime Updates feature is disabled by
+        default.
+    """
+    REALTIME_UPDATES_MODE_UNSPECIFIED = 0
+    REALTIME_UPDATES_ENABLED = 1
+    REALTIME_UPDATES_DISABLED = 2
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the database. See
@@ -2402,18 +2473,21 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
   deleteTime = _messages.StringField(7)
   earliestVersionTime = _messages.StringField(8)
   etag = _messages.StringField(9)
-  freeTier = _messages.BooleanField(10)
-  keyPrefix = _messages.StringField(11)
-  locationId = _messages.StringField(12)
-  name = _messages.StringField(13)
-  pointInTimeRecoveryEnablement = _messages.EnumField('PointInTimeRecoveryEnablementValueValuesEnum', 14)
-  previousId = _messages.StringField(15)
-  sourceInfo = _messages.MessageField('GoogleFirestoreAdminV1SourceInfo', 16)
-  tags = _messages.MessageField('TagsValue', 17)
-  type = _messages.EnumField('TypeValueValuesEnum', 18)
-  uid = _messages.StringField(19)
-  updateTime = _messages.StringField(20)
-  versionRetentionPeriod = _messages.StringField(21)
+  firestoreDataAccessMode = _messages.EnumField('FirestoreDataAccessModeValueValuesEnum', 10)
+  freeTier = _messages.BooleanField(11)
+  keyPrefix = _messages.StringField(12)
+  locationId = _messages.StringField(13)
+  mongodbCompatibleDataAccessMode = _messages.EnumField('MongodbCompatibleDataAccessModeValueValuesEnum', 14)
+  name = _messages.StringField(15)
+  pointInTimeRecoveryEnablement = _messages.EnumField('PointInTimeRecoveryEnablementValueValuesEnum', 16)
+  previousId = _messages.StringField(17)
+  realtimeUpdatesMode = _messages.EnumField('RealtimeUpdatesModeValueValuesEnum', 18)
+  sourceInfo = _messages.MessageField('GoogleFirestoreAdminV1SourceInfo', 19)
+  tags = _messages.MessageField('TagsValue', 20)
+  type = _messages.EnumField('TypeValueValuesEnum', 21)
+  uid = _messages.StringField(22)
+  updateTime = _messages.StringField(23)
+  versionRetentionPeriod = _messages.StringField(24)
 
 
 class GoogleFirestoreAdminV1DeleteDatabaseMetadata(_messages.Message):

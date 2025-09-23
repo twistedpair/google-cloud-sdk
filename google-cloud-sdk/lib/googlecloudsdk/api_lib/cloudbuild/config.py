@@ -52,13 +52,15 @@ class InvalidBuildConfigException(exceptions.Error):
     super(InvalidBuildConfigException, self).__init__(msg)
 
 
-def FinalizeCloudbuildConfig(build, path, params=None):
+def FinalizeCloudbuildConfig(build, path, params=None, no_source=None):
   """Validate the given build message, and merge substitutions.
 
   Args:
     build: The build message to finalize.
     path: The path of the original build config, for error messages.
     params: Any additional substitution parameters as a dict.
+    no_source: CLI flag value for --no-source. If set, the build config can
+      provide a remote build source.
 
   Raises:
     InvalidBuildConfigException: If the build config is invalid.
@@ -102,15 +104,25 @@ def FinalizeCloudbuildConfig(build, path, params=None):
     build.substitutions = subst_value
 
   # Some problems can be caught before talking to the cloudbuild service.
-  if build.source:
-    raise InvalidBuildConfigException(path, 'config cannot specify source')
-  if not build.steps:
-    raise InvalidBuildConfigException(path,
-                                      'config must list at least one step')
+  if not no_source and build.source:
+    raise InvalidBuildConfigException(
+        path, 'config cannot specify source without the flag --no-source'
+    )
+  if not build.source and not build.steps:
+    raise InvalidBuildConfigException(
+        path,
+        'config must list at least one step or specify source with the flag'
+        ' --no-source',
+    )
   return build
 
 
-def LoadCloudbuildConfigFromStream(stream, messages, params=None, path=None):
+def LoadCloudbuildConfigFromStream(
+    stream,
+    messages,
+    params=None,
+    path=None,
+):
   """Load a cloudbuild config file into a Build message.
 
   Args:
@@ -135,13 +147,15 @@ def LoadCloudbuildConfigFromStream(stream, messages, params=None, path=None):
   return build
 
 
-def LoadCloudbuildConfigFromPath(path, messages, params=None):
+def LoadCloudbuildConfigFromPath(path, messages, params=None, no_source=None):
   """Load a cloudbuild config file into a Build message.
 
   Args:
     path: str. Path to the JSON or YAML data to be decoded.
     messages: module, The messages module that has a Build type.
     params: dict, parameters to substitute into a templated Build spec.
+    no_source: CLI flag value for --no-source. If set, the build config can
+      provide a remote build source.
 
   Raises:
     files.MissingFileError: If the file does not exist.
@@ -155,5 +169,5 @@ def LoadCloudbuildConfigFromPath(path, messages, params=None):
   """
   build = cloudbuild_util.LoadMessageFromPath(
       path, messages.Build, _BUILD_CONFIG_FRIENDLY_NAME, _SKIP_CAMEL_CASE)
-  build = FinalizeCloudbuildConfig(build, path, params)
+  build = FinalizeCloudbuildConfig(build, path, params, no_source)
   return build

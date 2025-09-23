@@ -1177,8 +1177,6 @@ def AddRestoreClusterSourceFlags(parser, release_track):
             ' form'
             ' projects/myProject/locations/us-central1/backupVaults/myBackupVault/dataSources/myDataSource/backups/myBackup.'
         ),
-        # TODO(b/400420101): Remove hidden flag once the feature is ready.
-        hidden=True,
     )
 
   pitr_group = group.add_group(
@@ -1211,8 +1209,6 @@ def AddRestoreClusterSourceFlags(parser, release_track):
             ' the form'
             ' projects/myProject/locations/us-central1/backupVaults/myBackupVault/dataSources/myDataSource.'
         ),
-        # TODO(b/400420101): Remove hidden flag once the feature is ready.
-        hidden=True,
     )
   pitr_group.add_argument(
       '--point-in-time',

@@ -6214,11 +6214,11 @@ class WorkforcePoolProvider(_messages.Message):
 
     Values:
       SCIM_USAGE_UNSPECIFIED: Do not use SCIM data.
-      ENABLED: SCIM sync is enabled and SCIM-managed groups are used for
-        authorization checks.
+      ENABLED_FOR_GROUPS: SCIM sync is enabled and SCIM-managed groups are
+        used for authorization checks.
     """
     SCIM_USAGE_UNSPECIFIED = 0
-    ENABLED = 1
+    ENABLED_FOR_GROUPS = 1
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of the provider.

@@ -1920,6 +1920,12 @@ apis:
           path: projects/{projectsId}/locations/{locationsId}/autonomousDatabaseBackups/{autonomousDatabaseBackupsId}
         projects.networks:
           path: projects/{projectsId}/global/networks/{networksId}
+        projects.locations.databaseCharacterSets:
+          path: projects/{projectsId}/locations/{locationsId}/databaseCharacterSets/{databaseCharacterSetsId}
+        projects.locations.dbSystemInitialStorageSizes:
+          path: projects/{projectsId}/locations/{locationsId}/dbSystemInitialStorageSizes/{dbSystemInitialStorageSizesId}
+        projects.locations.dbVersions:
+          path: projects/{projectsId}/locations/{locationsId}/dbVersions/{dbVersionsId}
     v1alpha:
       discovery_doc: oracledatabase_v1alpha.json
       resources:
