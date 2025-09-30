@@ -472,6 +472,14 @@ class Collections(enum.Enum):
       ['project', 'region', 'commitment'],
       True
   )
+  REGIONCOMPOSITEHEALTHCHECKS = (
+      'regionCompositeHealthChecks',
+      'projects/{project}/regions/{region}/compositeHealthChecks/'
+      '{compositeHealthCheck}',
+      {},
+      ['project', 'region', 'compositeHealthCheck'],
+      True
+  )
   REGIONDISKSETTINGS = (
       'regionDiskSettings',
       'projects/{project}/regions/{region}/diskSettings',
@@ -506,6 +514,13 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}/healthChecks/{healthCheck}',
       {},
       ['project', 'region', 'healthCheck'],
+      True
+  )
+  REGIONHEALTHSOURCES = (
+      'regionHealthSources',
+      'projects/{project}/regions/{region}/healthSources/{healthSource}',
+      {},
+      ['project', 'region', 'healthSource'],
       True
   )
   REGIONINSTANCEGROUPMANAGERRESIZEREQUESTS = (
@@ -566,6 +581,13 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}/firewallPolicies/{firewallPolicy}',
       {},
       ['project', 'region', 'firewallPolicy'],
+      True
+  )
+  REGIONNETWORKPOLICIES = (
+      'regionNetworkPolicies',
+      'projects/{project}/regions/{region}/networkPolicies/{networkPolicy}',
+      {},
+      ['project', 'region', 'networkPolicy'],
       True
   )
   REGIONNOTIFICATIONENDPOINTS = (

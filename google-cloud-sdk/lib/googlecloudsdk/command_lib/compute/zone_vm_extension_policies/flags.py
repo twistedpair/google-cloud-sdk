@@ -23,6 +23,7 @@ import functools
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.util.args import labels_util
+from googlecloudsdk.core.util import files
 
 
 def AddPolicyDescription(parser):
@@ -116,6 +117,25 @@ def AddExtensionConfigs(parser):
       """)
 
 
+def AddExtensionConfigsFromFile(parser):
+  """Adds the --config-from-file flag."""
+  parser.add_argument(
+      '--config-from-file',
+      type=arg_parsers.ArgDict(min_length=1),
+      default={},
+      metavar='KEY=FILE_PATH',
+      action=arg_parsers.StoreOnceAction,
+      required=False,
+      help="""
+      Same as --config except that the value for the entry will be read from a
+      local file. The extension name must be one of the extensions specified in
+      the --extensions flag.
+
+      It is an error to specify the same extension in both --config and
+      --config-from-file.
+      """)
+
+
 def AddPolicyInclusionLabels(parser):
   """Adds the InclusionLabels flag."""
   parser.add_argument(
@@ -170,20 +190,35 @@ def AddExtensionPolicyArgs(parser):
   AddExtensions(parser)
   AddExtensionVersion(parser)
   AddExtensionConfigs(parser)
+  AddExtensionConfigsFromFile(parser)
 
 
-def ParseExtensionConfigs(extensions, configs):
+def ParseExtensionConfigs(extensions, configs, config_from_file=None):
   """Parses the extension configs."""
-  if not configs:
-    return
   extensions_set = set(extensions)
-  config_extensions_set = set(configs.keys())
-  extra_extensions = config_extensions_set - extensions_set
-  if extra_extensions:
-    raise ValueError(
-        f'Extensions {extra_extensions} from --config are not specified in the \
-        --extensions flag. {extensions}'
-    )
+  if configs:
+    config_extensions_set = set(configs.keys())
+    extra_extensions = config_extensions_set - extensions_set
+    if extra_extensions:
+      raise ValueError(
+          f'Extensions {extra_extensions} from --config are not specified in the'
+          f' --extensions flag. {extensions}'
+      )
+  if config_from_file:
+    config_from_file_extensions_set = set(config_from_file.keys())
+    extra_extensions = config_from_file_extensions_set - extensions_set
+    if extra_extensions:
+      raise ValueError(
+          f'Extensions {extra_extensions} from --config-from-file are not'
+          f' specified in the --extensions flag. {extensions}'
+      )
+  if configs and config_from_file:
+    common_extensions = set(configs.keys()) & set(config_from_file.keys())
+    if common_extensions:
+      raise ValueError(
+          f'Extensions {common_extensions} are specified in both --config and'
+          ' --config-from-file.'
+      )
 
 
 def ParseExtensionVersions(extensions, versions):
@@ -198,6 +233,23 @@ def ParseExtensionVersions(extensions, versions):
         f'Extensions {extra_extensions} from --version are not specified in \
         the --extensions flag. {extensions}'
     )
+
+
+def _GetConfigs(args):
+  """Returns a dictionary of extension configs."""
+  configs = {}
+  if args.config:
+    configs.update(args.config)
+  if getattr(args, 'config_from_file', None):
+    for extension, file_path in args.config_from_file.items():
+      try:
+        configs[extension] = files.ReadFileContents(file_path)
+      except files.Error as e:
+        raise ValueError(
+            f'Could not read config file [{file_path}] for extension'
+            f' [{extension}]: {e}'
+        )
+  return configs
 
 
 def BuildZoneVmExtensionPolicy(resource_ref, args, messages):
@@ -216,11 +268,12 @@ def BuildZoneVmExtensionPolicy(resource_ref, args, messages):
     ]
 
   def BuildExtensionPoliciesValue():
+    configs = _GetConfigs(args)
     return [
         messages.VmExtensionPolicy.ExtensionPoliciesValue.AdditionalProperty(
             key=extension,
             value=messages.VmExtensionPolicyExtensionPolicy(
-                stringConfig=(args.config or {}).get(extension),
+                stringConfig=configs.get(extension),
                 pinnedVersion=(args.version or {}).get(extension),
             ),
         )

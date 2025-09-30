@@ -532,6 +532,8 @@ def ReadPoolAutoScaleConfig(
     auto_scale_max_node_count=None,
     auto_scale_target_metrics=None,
     auto_scale_disable_scale_in=None,
+    auto_scale_in_cooldown_seconds=None,
+    auto_scale_out_cooldown_seconds=None,
     current_config=None,
 ):
   """Generates the read pool auto-scale config for the instance."""
@@ -541,6 +543,8 @@ def ReadPoolAutoScaleConfig(
       auto_scale_max_node_count is None,
       auto_scale_target_metrics is None,
       auto_scale_disable_scale_in is None,
+      auto_scale_in_cooldown_seconds is None,
+      auto_scale_out_cooldown_seconds is None,
   ]):
     return None
   read_pool_auto_scale_config = (
@@ -570,6 +574,14 @@ def ReadPoolAutoScaleConfig(
       )
   if auto_scale_disable_scale_in is not None:
     read_pool_auto_scale_config.disableScaleIn = auto_scale_disable_scale_in
+  if auto_scale_in_cooldown_seconds is not None:
+    read_pool_auto_scale_config.scaleInCooldownSeconds = (
+        auto_scale_in_cooldown_seconds
+    )
+  if auto_scale_out_cooldown_seconds is not None:
+    read_pool_auto_scale_config.scaleOutCooldownSeconds = (
+        auto_scale_out_cooldown_seconds
+    )
   return read_pool_auto_scale_config
 
 

@@ -292,6 +292,7 @@ class TopicsClient(object):
       ingestion_log_severity=None,
       message_transforms_file=None,
       tags=None,
+      enable_vertex_ai_smt=False,
   ):
     """Creates a Topic.
 
@@ -371,6 +372,8 @@ class TopicsClient(object):
       message_transforms_file (str): The file path to the JSON or YAML file
         containing the message transforms.
       tags (TagsValue): The tag Keys/Values to be bound to the topic.
+      enable_vertex_ai_smt (bool): Whether or not to enable Vertex AI message
+        transforms.
 
     Returns:
       Topic: The created topic.
@@ -436,7 +439,9 @@ class TopicsClient(object):
     if message_transforms_file:
       try:
         topic.messageTransforms = utils.GetMessageTransformsFromFile(
-            self.messages.MessageTransform, message_transforms_file
+            self.messages.MessageTransform,
+            message_transforms_file,
+            enable_vertex_ai_smt,
         )
       except (
           utils.MessageTransformsInvalidFormatError,
@@ -718,6 +723,7 @@ class TopicsClient(object):
       ingestion_log_severity=None,
       message_transforms_file=None,
       clear_message_transforms=False,
+      enable_vertex_ai_smt=False,
   ):
     """Updates a Topic.
 
@@ -804,8 +810,10 @@ class TopicsClient(object):
         ingestion.
       message_transforms_file (str): The file path to the JSON or YAML file
         containing the message transforms.
-      clear_message_transforms (bool): If set, clears all message
-        transforms from the topic.
+      clear_message_transforms (bool): If set, clears all message transforms
+        from the topic.
+      enable_vertex_ai_smt (bool): If set, enables Vertex AI message
+        transforms.
 
     Returns:
       Topic: The updated topic.
@@ -911,6 +919,7 @@ class TopicsClient(object):
                 utils.GetMessageTransformsFromFile(
                     self.messages.MessageTransform,
                     message_transforms_file,
+                    enable_vertex_ai_smt=enable_vertex_ai_smt,
                 ),
             )
         )

@@ -59,6 +59,13 @@ class Collections(enum.Enum):
       ['project', 'backendService'],
       True
   )
+  CROSSSITENETWORKS = (
+      'crossSiteNetworks',
+      'projects/{project}/global/crossSiteNetworks/{crossSiteNetwork}',
+      {},
+      ['project', 'crossSiteNetwork'],
+      True
+  )
   DISKTYPES = (
       'diskTypes',
       'projects/{project}/zones/{zone}/diskTypes/{diskType}',
@@ -376,11 +383,25 @@ class Collections(enum.Enum):
       ['project', 'zone', 'nodeType'],
       True
   )
+  ORGANIZATIONSECURITYPOLICIES = (
+      'organizationSecurityPolicies',
+      'locations/global/securityPolicies/{securityPolicy}',
+      {},
+      ['securityPolicy'],
+      True
+  )
   PACKETMIRRORINGS = (
       'packetMirrorings',
       'projects/{project}/regions/{region}/packetMirrorings/{packetMirroring}',
       {},
       ['project', 'region', 'packetMirroring'],
+      True
+  )
+  PREVIEWFEATURES = (
+      'previewFeatures',
+      'projects/{project}/global/previewFeatures/{previewFeature}',
+      {},
+      ['project', 'previewFeature'],
       True
   )
   PROJECTS = (
@@ -774,6 +795,14 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}/vpnTunnels/{vpnTunnel}',
       {},
       ['project', 'region', 'vpnTunnel'],
+      True
+  )
+  WIREGROUPS = (
+      'wireGroups',
+      'projects/{project}/global/crossSiteNetworks/{crossSiteNetwork}/'
+      'wireGroups/{wireGroup}',
+      {},
+      ['project', 'crossSiteNetwork', 'wireGroup'],
       True
   )
   ZONEOPERATIONS = (

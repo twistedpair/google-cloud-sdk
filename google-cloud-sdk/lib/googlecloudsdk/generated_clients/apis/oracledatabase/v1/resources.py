@@ -177,12 +177,42 @@ class Collections(enum.Enum):
       ['projectsId', 'locationsId', 'entitlementsId'],
       True
   )
+  PROJECTS_LOCATIONS_EXADBVMCLUSTERS = (
+      'projects.locations.exadbVmClusters',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/exadbVmClusters/'
+              '{exadbVmClustersId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_EXASCALEDBSTORAGEVAULTS = (
+      'projects.locations.exascaleDbStorageVaults',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'exascaleDbStorageVaults/{exascaleDbStorageVaultsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_GIVERSIONS = (
       'projects.locations.giVersions',
       'projects/{projectsId}/locations/{locationsId}/giVersions/'
       '{giVersionsId}',
       {},
       ['projectsId', 'locationsId', 'giVersionsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_GIVERSIONS_MINORVERSIONS = (
+      'projects.locations.giVersions.minorVersions',
+      'projects/{projectsId}/locations/{locationsId}/giVersions/'
+      '{giVersionsId}/minorVersions/{minorVersionsId}',
+      {},
+      ['projectsId', 'locationsId', 'giVersionsId', 'minorVersionsId'],
       True
   )
   PROJECTS_LOCATIONS_ODBNETWORKS = (

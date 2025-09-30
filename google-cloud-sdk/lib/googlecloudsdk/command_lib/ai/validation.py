@@ -90,6 +90,17 @@ def ValidateAutoscalingMetricSpecs(specs):
       )
 
 
+def ValidateRequiredReplicaCount(required_replica_count, min_replica_count):
+  """Value validation for required replica count."""
+  if required_replica_count is not None:
+    min_replica_count = min_replica_count or 1
+    if required_replica_count > min_replica_count:
+      raise exceptions.InvalidArgumentException(
+          '--required-replica-count',
+          'Value must be less than or equal to min-replica-count.'
+      )
+
+
 def ValidateScaleToZeroArgs(
     min_replica_count=None,
     initial_replica_count=None,
@@ -156,6 +167,7 @@ def ValidateSharedResourceArgs(
     accelerator_dict=None,
     min_replica_count=None,
     max_replica_count=None,
+    required_replica_count=None,
     autoscaling_metric_specs=None,
 ):
   """Value validation for dedicated resource args while making a shared resource command call.
@@ -170,6 +182,8 @@ def ValidateSharedResourceArgs(
         deployed model will be always deployed on.
       max_replica_count: int or None, the maximum number of replicas the
         deployed model may be deployed on.
+      required_replica_count: int or None, the required number of replicas the
+        deployed model will be considered successfully deployed.
       autoscaling_metric_specs: dict or None, the metric specification that
         defines the target resource utilization for calculating the desired
         replica count.
@@ -200,6 +214,12 @@ def ValidateSharedResourceArgs(
         '--max-replica-count',
         """Cannot
     use max replica count and shared resources in the same command.""",
+    )
+  if required_replica_count is not None:
+    raise exceptions.InvalidArgumentException(
+        '--required-replica-count',
+        """Cannot
+    use required replica count and shared resources in the same command.""",
     )
   if autoscaling_metric_specs is not None:
     raise exceptions.InvalidArgumentException(

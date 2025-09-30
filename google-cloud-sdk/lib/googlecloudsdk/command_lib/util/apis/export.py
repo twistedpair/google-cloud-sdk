@@ -216,9 +216,13 @@ class ExportSchemasGenerator(object):
         d = items
         depth += 2
 
+      # When generating the message spec, we set 'type' to the name of the
+      # message type for message fields; otherwise it will be the apitools
+      # variant type.
+      is_message_field = isinstance(value.get('type'), str)
       type_name = value.get('type', 'boolean')
-      subfields = value.get('fields')
-      if subfields:
+      subfields = value.get('fields', {})
+      if is_message_field:
         if name == 'additionalProperties':
           # This is proto 'additionalProperties', not JSON schema.
           del spec[name]

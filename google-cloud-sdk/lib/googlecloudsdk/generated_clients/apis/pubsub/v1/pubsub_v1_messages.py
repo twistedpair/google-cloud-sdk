@@ -14,6 +14,30 @@ from apitools.base.py import extra_types
 package = 'pubsub'
 
 
+class AIInference(_messages.Message):
+  r"""Configuration for making inference requests against Vertex AI models.
+
+  Fields:
+    endpoint: Required. An endpoint to a Vertex AI model of the form
+      `projects/{project}/locations/{location}/endpoints/{endpoint}` or `proje
+      cts/{project}/locations/{location}/publishers/{publisher}/models/{model}
+      `. Vertex AI API requests will be sent to this endpoint.
+    serviceAccountEmail: Optional. The service account to use to make
+      prediction requests against endpoints. The resource creator or updater
+      that specifies this field must have `iam.serviceAccounts.actAs`
+      permission on the service account. If not specified, the Pub/Sub
+      [service agent]({$universe.dns_names.final_documentation_domain}/iam/doc
+      s/service-agents), service-{project_number}@gcp-sa-
+      pubsub.iam.gserviceaccount.com, is used.
+    unstructuredInference: Optional. Requests and responses can be any
+      arbitrary JSON object.
+  """
+
+  endpoint = _messages.StringField(1)
+  serviceAccountEmail = _messages.StringField(2)
+  unstructuredInference = _messages.MessageField('UnstructuredInference', 3)
+
+
 class AcknowledgeRequest(_messages.Message):
   r"""Request for the Acknowledge method.
 
@@ -982,6 +1006,7 @@ class MessageTransform(_messages.Message):
   r"""All supported message transforms types.
 
   Fields:
+    aiInference: Optional. AI Inference.
     disabled: Optional. If true, the transform is disabled and will not be
       applied to messages. Defaults to `false`.
     enabled: Optional. This field is deprecated, use the `disabled` field to
@@ -993,10 +1018,11 @@ class MessageTransform(_messages.Message):
       optionally transforms between JSON and BINARY format.
   """
 
-  disabled = _messages.BooleanField(1)
-  enabled = _messages.BooleanField(2)
-  javascriptUdf = _messages.MessageField('JavaScriptUDF', 3)
-  schemaEncoding = _messages.MessageField('SchemaEncoding', 4)
+  aiInference = _messages.MessageField('AIInference', 1)
+  disabled = _messages.BooleanField(2)
+  enabled = _messages.BooleanField(3)
+  javascriptUdf = _messages.MessageField('JavaScriptUDF', 4)
+  schemaEncoding = _messages.MessageField('SchemaEncoding', 5)
 
 
 class MessageTransforms(_messages.Message):
@@ -3253,6 +3279,49 @@ class TransformedMessage(_messages.Message):
   failedMessage = _messages.MessageField('FailedMessage', 1)
   filteredMessage = _messages.MessageField('FilteredMessage', 2)
   transformedMessage = _messages.MessageField('PubsubMessage', 3)
+
+
+class UnstructuredInference(_messages.Message):
+  r"""Configuration for making inferences using arbitrary JSON payloads.
+
+  Messages:
+    ParametersValue: Optional. A parameters object to be included in each
+      inference request. The parameters object is combined with the data field
+      of the Pub/Sub message to form the inference request.
+
+  Fields:
+    parameters: Optional. A parameters object to be included in each inference
+      request. The parameters object is combined with the data field of the
+      Pub/Sub message to form the inference request.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    r"""Optional. A parameters object to be included in each inference
+    request. The parameters object is combined with the data field of the
+    Pub/Sub message to form the inference request.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParametersValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  parameters = _messages.MessageField('ParametersValue', 1)
 
 
 class UpdateSnapshotRequest(_messages.Message):

@@ -186,3 +186,16 @@ node:
     attribute_name: node
     help: Resource ID of the Node
   disable_auto_completers: false
+
+upgrade:
+  name: upgrade
+  collection: vmwareengine.projects.locations.privateClouds.upgrades
+  attributes:
+  - *project
+  - *location
+  - *private_cloud
+  - &upgrade
+    parameter_name: upgradesId
+    attribute_name: upgrade
+    help: Resource ID of the upgrade
+  disable_auto_completers: false

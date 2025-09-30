@@ -33,6 +33,8 @@ from googlecloudsdk.api_lib.storage import errors as api_errors
 from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import errors as command_errors
+from googlecloudsdk.command_lib.storage import fast_crc32c_util
+from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.resources import resource_reference
@@ -137,7 +139,12 @@ class FilePartUploadTask(file_part_task.FilePartTask):
         self._source_resource, self._destination_resource)
     destination_url = self._destination_resource.storage_url
     provider = destination_url.scheme
-    api = api_factory.get_api(provider)
+    if properties.VALUES.storage.enable_zonal_buckets_bidi_streaming.GetBool():
+      api = api_factory.get_api(
+          provider, bucket_name=destination_url.bucket_name
+      )
+    else:
+      api = api_factory.get_api(provider)
     request_config = request_config_factory.get_request_config(
         destination_url,
         content_type=upload_util.get_content_type(
@@ -164,7 +171,24 @@ class FilePartUploadTask(file_part_task.FilePartTask):
         component_number=self._component_number,
         total_components=self._total_components) as source_stream:
       upload_strategy = upload_util.get_upload_strategy(api, self._length)
-      if upload_strategy == cloud_api.UploadStrategy.RESUMABLE:
+      if cloud_api.Capability.APPENDABLE_UPLOAD in api.capabilities:
+        destination_resource = api.upload_object(
+            source_stream,
+            self._destination_resource,
+            request_config,
+            posix_to_set=self._posix_to_set,
+            source_resource=source_resource_for_metadata,
+            upload_strategy=upload_strategy,
+        )
+        # DeferredCrc32c does not hash on-the-fly and needs a summation call.
+        if digesters.get(hash_util.HashAlgorithm.CRC32C, None) and isinstance(
+            digesters[hash_util.HashAlgorithm.CRC32C],
+            fast_crc32c_util.DeferredCrc32c,
+        ):
+          digesters[hash_util.HashAlgorithm.CRC32C].sum_file(
+              self._source_path, self._offset, self._length
+          )
+      elif upload_strategy == cloud_api.UploadStrategy.RESUMABLE:
         tracker_file_path = tracker_file_util.get_tracker_file_path(
             self._destination_resource.storage_url,
             tracker_file_util.TrackerFileType.UPLOAD,

@@ -105,37 +105,6 @@ def GetConsumerPolicyV2Beta(policy_name):
     exceptions.ReraiseError(e, exceptions.GetConsumerPolicyException)
 
 
-# TODO(b/393195807) Remove after the migration is completed.
-def GetConsumerPolicyV2Alpha(policy_name):
-  """Make API call to get a consumer policy.
-
-  Args:
-    policy_name: The name of a consumer policy. Currently supported format
-      '{resource_type}/{resource_name}/consumerPolicies/default'. For example,
-      'projects/100/consumerPolicies/default'.
-
-  Raises:
-    exceptions.GetConsumerPolicyPermissionDeniedException: when getting a
-      consumer policy fails.
-    apitools_exceptions.HttpError: Another miscellaneous error with the service.
-
-  Returns:
-    The consumer policy
-  """
-  client = _GetClientInstance(_V2ALPHA_VERSION)
-  messages = client.MESSAGES_MODULE
-
-  request = messages.ServiceusageConsumerPoliciesGetRequest(name=policy_name)
-
-  try:
-    return client.consumerPolicies.Get(request)
-  except (
-      apitools_exceptions.HttpForbiddenError,
-      apitools_exceptions.HttpNotFoundError,
-  ) as e:
-    exceptions.ReraiseError(e, exceptions.GetConsumerPolicyException)
-
-
 def GetMcpPolicy(policy_name):
   """Make API call to get a MCP policy.
 
@@ -249,7 +218,7 @@ def GetEffectivePolicyV2Beta(name: str, view: str = 'BASIC'):
     view: The view of the effective policy to use. The default view is 'BASIC'.
 
   Raises:
-    exceptions.GetEffectiverPolicyException: when getting a
+    exceptions.GetEffectivePolicyException: when getting a
       effective policy fails.
     apitools_exceptions.HttpError: Another miscellaneous error with the service.
 
@@ -277,51 +246,49 @@ def GetEffectivePolicyV2Beta(name: str, view: str = 'BASIC'):
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
   ) as e:
-    exceptions.ReraiseError(e, exceptions.GetEffectiverPolicyException)
+    exceptions.ReraiseError(e, exceptions.GetEffectivePolicyException)
 
 
-# TODO(b/393195807) Remove after the migration is completed.
-def GetEffectivePolicyV2Alpha(name: str, view: str = 'BASIC'):
-  """Make API call to get a effective policy.
+def GetEffectiveMcpPolicy(name: str, view: str = 'BASIC'):
+  """Make API call to get a effective MCP policy.
 
   Args:
-    name: The name of the effective policy. Currently supported format
-      '{resource_type}/{resource_name}/effectivePolicy'. For example,
+    name: The name of the effective MCP policy. Currently supported format
+      '{resource_type}/{resource_name}/effectiveMcpPolicy'. For example,
       'projects/100/effectivePolicy'.
-    view: The view of the effective policy to use. The default view is 'BASIC'.
+    view: The view of the effective MCP policy to use. The default view is
+      'BASIC'.
 
   Raises:
-    exceptions.GetEffectiverPolicyPermissionDeniedException: when getting a
+    exceptions.GetEffectiveMcpPolicyException: when getting a
       effective policy fails.
     apitools_exceptions.HttpError: Another miscellaneous error with the service.
 
   Returns:
-    The Effective Policy
+    message.EffectiveMcpPolicy: The effective MCP policy
   """
-  client = _GetClientInstance(_V2ALPHA_VERSION)
+  client = _GetClientInstance(version=_V2BETA_VERSION)
   messages = client.MESSAGES_MODULE
   if view == 'BASIC':
     view_type = (
-        messages.ServiceusageGetEffectivePolicyRequest.ViewValueValuesEnum.EFFECTIVE_POLICY_VIEW_BASIC
+        messages.ServiceusageGetEffectiveMcpPolicyRequest.ViewValueValuesEnum.EFFECTIVE_MCP_POLICY_VIEW_BASIC
     )
   else:
     view_type = (
-        messages.ServiceusageGetEffectivePolicyRequest.ViewValueValuesEnum.EFFECTIVE_POLICY_VIEW_FULL
+        messages.ServiceusageGetEffectiveMcpPolicyRequest.ViewValueValuesEnum.EFFECTIVE_MCP_POLICY_VIEW_FULL
     )
 
-  request = messages.ServiceusageGetEffectivePolicyRequest(
+  request = messages.ServiceusageGetEffectiveMcpPolicyRequest(
       name=name, view=view_type
   )
 
   try:
-    return client.v2alpha.GetEffectivePolicy(request)
+    return client.v2beta.GetEffectiveMcpPolicy(request)
   except (
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
   ) as e:
-    exceptions.ReraiseError(
-        e, exceptions.GetEffectiverPolicyPermissionDeniedException
-    )
+    exceptions.ReraiseError(e, exceptions.GetEffectiveMcpPolicyException)
 
 
 def BatchGetService(parent, services):
@@ -543,7 +510,10 @@ def ListGroupMembers(
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
   ) as e:
-    exceptions.ReraiseError(e, exceptions.ListGroupMembersException)
+    if 'SU_GROUP_NOT_FOUND' in str(e):
+      return []
+    else:
+      exceptions.ReraiseError(e, exceptions.ListGroupMembersException)
 
 
 def ListDescendantServices(
@@ -630,7 +600,10 @@ def ListExpandedMembers(resource: str, service_group: str, page_size: int = 50):
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
   ) as e:
-    exceptions.ReraiseError(e, exceptions.ListExpandedMembersException)
+    if 'SU_GROUP_NOT_FOUND' in str(e):
+      return []
+    else:
+      exceptions.ReraiseError(e, exceptions.ListExpandedMembersException)
 
 
 def ListAncestorGroups(resource: str, service: str, page_size: int = 50):
@@ -710,6 +683,93 @@ def AnalyzeConsumerPolicy(
       apitools_exceptions.HttpNotFoundError,
   ) as e:
     exceptions.ReraiseError(e, exceptions.AnalyzeConsumerPolicyException)
+
+
+def UpdateConsumerPolicy(
+    consumerpolicy,
+    validate_only: bool = False,
+    bypass_dependency_check: bool = False,
+    force: bool = False,
+):
+  """Make API call to update a consumer policy.
+
+  Args:
+    consumerpolicy: The consumer policy to update.
+    validate_only: If True, the action will be validated and result will be
+      preview but not exceuted.
+    bypass_dependency_check: If True, dependencies check will be bypassed.
+    force: If True, the system will bypass usage checks for services that are
+      being removed.
+
+  Raises:
+    exceptions.UpdateConsumerPolicyException: when updating policy API fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    The result of the operation
+  """
+
+  client = _GetClientInstance(version=_V2BETA_VERSION)
+  messages = client.MESSAGES_MODULE
+
+  try:
+
+    policy = messages.GoogleApiServiceusageV2betaConsumerPolicy(
+        name=consumerpolicy['name']
+    )
+
+    if (
+        'enableRules' in consumerpolicy.keys()
+        and consumerpolicy['enableRules'] is not None
+    ):
+      for enable_rule in consumerpolicy['enableRules']:
+        if 'services' in enable_rule:
+          policy.enableRules.append(
+              messages.GoogleApiServiceusageV2betaEnableRule(
+                  services=enable_rule['services']
+              )
+          )
+
+    if not bypass_dependency_check:
+      op = AnalyzeConsumerPolicy(policy)
+
+      op = services_util.WaitOperation(op.name, GetOperationV2Beta)
+
+      analysis_reponse = encoding.MessageToDict(op.response)
+
+      missing_dependencies = {}
+
+      if 'analysis' in analysis_reponse:
+        for analysis in analysis_reponse['analysis']:
+          for warning in analysis['analysisResult']['warnings']:
+            # using missing_dependencies field to retrive the missing
+            # dependencies for each service.
+            if analysis['service'] not in missing_dependencies.keys():
+              missing_dependencies[analysis['service']] = [warning['detail']]
+            else:
+              missing_dependencies[analysis['service']].append(
+                  warning['detail']
+              )
+
+      if missing_dependencies:
+        error_message = 'Policy cannot be updated as \n'
+        for service in missing_dependencies:
+          for dependency in missing_dependencies[service]:
+            error_message += service + ' is ' + dependency + '\n'
+
+        raise exceptions.ConfigError(error_message)
+
+    return UpdateConsumerPolicyV2Beta(
+        policy,
+        policy.name,
+        validateonly=validate_only,
+        force=force,
+    )
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(e, exceptions.UpdateConsumerPolicyException)
 
 
 def AddEnableRule(

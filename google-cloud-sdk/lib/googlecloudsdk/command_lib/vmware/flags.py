@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import argparse
+
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.apis import yaml_data
@@ -328,3 +330,20 @@ def AddAutoscalingSettingsFlagsToParser(parser):
           ' the cluster'
       ),
   )
+
+
+def AddUpgradeArgToParser(
+    parser: argparse.ArgumentParser,
+) -> None:
+  """Sets up an argument for the upgrade resource."""
+  upgrade_data = yaml_data.ResourceYAMLData.FromPath('vmware.upgrade')
+
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name='upgrade',
+      concept_spec=concepts.ResourceSpec.FromYaml(upgrade_data.GetData()),
+      required=True,
+      group_help='upgrade.',
+      flag_name_overrides=None,
+  )
+
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)

@@ -44,6 +44,7 @@ class ComputeV1(base_api.BaseApiClient):
     self.autoscalers = self.AutoscalersService(self)
     self.backendBuckets = self.BackendBucketsService(self)
     self.backendServices = self.BackendServicesService(self)
+    self.crossSiteNetworks = self.CrossSiteNetworksService(self)
     self.diskTypes = self.DiskTypesService(self)
     self.disks = self.DisksService(self)
     self.externalVpnGateways = self.ExternalVpnGatewaysService(self)
@@ -87,7 +88,9 @@ class ComputeV1(base_api.BaseApiClient):
     self.nodeGroups = self.NodeGroupsService(self)
     self.nodeTemplates = self.NodeTemplatesService(self)
     self.nodeTypes = self.NodeTypesService(self)
+    self.organizationSecurityPolicies = self.OrganizationSecurityPoliciesService(self)
     self.packetMirrorings = self.PacketMirroringsService(self)
+    self.previewFeatures = self.PreviewFeaturesService(self)
     self.projects = self.ProjectsService(self)
     self.publicAdvertisedPrefixes = self.PublicAdvertisedPrefixesService(self)
     self.publicDelegatedPrefixes = self.PublicDelegatedPrefixesService(self)
@@ -142,6 +145,7 @@ class ComputeV1(base_api.BaseApiClient):
     self.urlMaps = self.UrlMapsService(self)
     self.vpnGateways = self.VpnGatewaysService(self)
     self.vpnTunnels = self.VpnTunnelsService(self)
+    self.wireGroups = self.WireGroupsService(self)
     self.zoneOperations = self.ZoneOperationsService(self)
     self.zones = self.ZonesService(self)
 
@@ -1105,6 +1109,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetEffectiveSecurityPolicies(self, request, global_params=None):
+      r"""Returns effective security policies applied to this backend service.
+
+      Args:
+        request: (ComputeBackendServicesGetEffectiveSecurityPoliciesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ComputeBackendServicesGetEffectiveSecurityPoliciesResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetEffectiveSecurityPolicies')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetEffectiveSecurityPolicies.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.backendServices.getEffectiveSecurityPolicies',
+        ordered_params=['project', 'backendService'],
+        path_params=['backendService', 'project'],
+        query_params=[],
+        relative_path='projects/{project}/global/backendServices/{backendService}/getEffectiveSecurityPolicies',
+        request_field='',
+        request_type_name='ComputeBackendServicesGetEffectiveSecurityPoliciesRequest',
+        response_type_name='ComputeBackendServicesGetEffectiveSecurityPoliciesResponse',
+        supports_download=False,
+    )
+
     def GetHealth(self, request, global_params=None):
       r"""Gets the most recent health check results for this BackendService. Example request body: { "group": "/zones/us-east1-b/instanceGroups/lb-backend-example" }.
 
@@ -1387,6 +1417,146 @@ class ComputeV1(base_api.BaseApiClient):
         relative_path='projects/{project}/global/backendServices/{backendService}',
         request_field='backendServiceResource',
         request_type_name='ComputeBackendServicesUpdateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class CrossSiteNetworksService(base_api.BaseApiService):
+    """Service class for the crossSiteNetworks resource."""
+
+    _NAME = 'crossSiteNetworks'
+
+    def __init__(self, client):
+      super(ComputeV1.CrossSiteNetworksService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified cross-site network in the given scope.
+
+      Args:
+        request: (ComputeCrossSiteNetworksDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.crossSiteNetworks.delete',
+        ordered_params=['project', 'crossSiteNetwork'],
+        path_params=['crossSiteNetwork', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/crossSiteNetworks/{crossSiteNetwork}',
+        request_field='',
+        request_type_name='ComputeCrossSiteNetworksDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified cross-site network in the given scope.
+
+      Args:
+        request: (ComputeCrossSiteNetworksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CrossSiteNetwork) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.crossSiteNetworks.get',
+        ordered_params=['project', 'crossSiteNetwork'],
+        path_params=['crossSiteNetwork', 'project'],
+        query_params=[],
+        relative_path='projects/{project}/global/crossSiteNetworks/{crossSiteNetwork}',
+        request_field='',
+        request_type_name='ComputeCrossSiteNetworksGetRequest',
+        response_type_name='CrossSiteNetwork',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a cross-site network in the specified project in the given scope using the parameters that are included in the request.
+
+      Args:
+        request: (ComputeCrossSiteNetworksInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.crossSiteNetworks.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId', 'validateOnly'],
+        relative_path='projects/{project}/global/crossSiteNetworks',
+        request_field='crossSiteNetwork',
+        request_type_name='ComputeCrossSiteNetworksInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the cross-site networks for a project in the given scope.
+
+      Args:
+        request: (ComputeCrossSiteNetworksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CrossSiteNetworkList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.crossSiteNetworks.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/global/crossSiteNetworks',
+        request_field='',
+        request_type_name='ComputeCrossSiteNetworksListRequest',
+        response_type_name='CrossSiteNetworkList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified cross-site network with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+
+      Args:
+        request: (ComputeCrossSiteNetworksPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.crossSiteNetworks.patch',
+        ordered_params=['project', 'crossSiteNetwork'],
+        path_params=['crossSiteNetwork', 'project'],
+        query_params=['requestId', 'updateMask', 'validateOnly'],
+        relative_path='projects/{project}/global/crossSiteNetworks/{crossSiteNetwork}',
+        request_field='crossSiteNetworkResource',
+        request_type_name='ComputeCrossSiteNetworksPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -11623,6 +11793,432 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class OrganizationSecurityPoliciesService(base_api.BaseApiService):
+    """Service class for the organizationSecurityPolicies resource."""
+
+    _NAME = 'organizationSecurityPolicies'
+
+    def __init__(self, client):
+      super(ComputeV1.OrganizationSecurityPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AddAssociation(self, request, global_params=None):
+      r"""Inserts an association for the specified security policy. This has billing implications. Projects in the hierarchy with effective hierarchical security policies will be automatically enrolled into Cloud Armor Enterprise if not already enrolled. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.addAssociation instead if possible.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesAddAssociationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddAssociation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddAssociation.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.organizationSecurityPolicies.addAssociation',
+        ordered_params=['securityPolicy'],
+        path_params=['securityPolicy'],
+        query_params=['replaceExistingAssociation', 'requestId'],
+        relative_path='locations/global/securityPolicies/{securityPolicy}/addAssociation',
+        request_field='securityPolicyAssociation',
+        request_type_name='ComputeOrganizationSecurityPoliciesAddAssociationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def AddRule(self, request, global_params=None):
+      r"""Inserts a rule into a security policy.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesAddRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.organizationSecurityPolicies.addRule',
+        ordered_params=['securityPolicy'],
+        path_params=['securityPolicy'],
+        query_params=['requestId'],
+        relative_path='locations/global/securityPolicies/{securityPolicy}/addRule',
+        request_field='securityPolicyRule',
+        request_type_name='ComputeOrganizationSecurityPoliciesAddRuleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def CopyRules(self, request, global_params=None):
+      r"""Copies rules to the specified security policy. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.copyRules instead.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesCopyRulesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CopyRules')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CopyRules.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.organizationSecurityPolicies.copyRules',
+        ordered_params=['securityPolicy'],
+        path_params=['securityPolicy'],
+        query_params=['requestId', 'sourceSecurityPolicy'],
+        relative_path='locations/global/securityPolicies/{securityPolicy}/copyRules',
+        request_field='',
+        request_type_name='ComputeOrganizationSecurityPoliciesCopyRulesRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified policy. Use of this API to remove firewall policies is deprecated. Use firewallPolicies.delete instead.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.organizationSecurityPolicies.delete',
+        ordered_params=['securityPolicy'],
+        path_params=['securityPolicy'],
+        query_params=['requestId'],
+        relative_path='locations/global/securityPolicies/{securityPolicy}',
+        request_field='',
+        request_type_name='ComputeOrganizationSecurityPoliciesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""List all of the ordered rules present in a single specified policy. Use of this API to read firewall policies is deprecated. Use firewallPolicies.get instead.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.organizationSecurityPolicies.get',
+        ordered_params=['securityPolicy'],
+        path_params=['securityPolicy'],
+        query_params=[],
+        relative_path='locations/global/securityPolicies/{securityPolicy}',
+        request_field='',
+        request_type_name='ComputeOrganizationSecurityPoliciesGetRequest',
+        response_type_name='SecurityPolicy',
+        supports_download=False,
+    )
+
+    def GetAssociation(self, request, global_params=None):
+      r"""Gets an association with the specified name. Use of this API to read firewall policies is deprecated. Use firewallPolicies.getAssociation instead if possible.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesGetAssociationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityPolicyAssociation) The response message.
+      """
+      config = self.GetMethodConfig('GetAssociation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetAssociation.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.organizationSecurityPolicies.getAssociation',
+        ordered_params=['securityPolicy'],
+        path_params=['securityPolicy'],
+        query_params=['name'],
+        relative_path='locations/global/securityPolicies/{securityPolicy}/getAssociation',
+        request_field='',
+        request_type_name='ComputeOrganizationSecurityPoliciesGetAssociationRequest',
+        response_type_name='SecurityPolicyAssociation',
+        supports_download=False,
+    )
+
+    def GetRule(self, request, global_params=None):
+      r"""Gets a rule at the specified priority. Use of this API to read firewall policies is deprecated. Use firewallPolicies.getRule instead.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesGetRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityPolicyRule) The response message.
+      """
+      config = self.GetMethodConfig('GetRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.organizationSecurityPolicies.getRule',
+        ordered_params=['securityPolicy'],
+        path_params=['securityPolicy'],
+        query_params=['priority'],
+        relative_path='locations/global/securityPolicies/{securityPolicy}/getRule',
+        request_field='',
+        request_type_name='ComputeOrganizationSecurityPoliciesGetRuleRequest',
+        response_type_name='SecurityPolicyRule',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a new policy in the specified project using the data included in the request. Use of this API to insert firewall policies is deprecated. Use firewallPolicies.insert instead.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.organizationSecurityPolicies.insert',
+        ordered_params=[],
+        path_params=[],
+        query_params=['parentId', 'requestId'],
+        relative_path='locations/global/securityPolicies',
+        request_field='securityPolicy',
+        request_type_name='ComputeOrganizationSecurityPoliciesInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List all the policies that have been configured for the specified project. Use of this API to read firewall policies is deprecated. Use firewallPolicies.list instead.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityPolicyList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.organizationSecurityPolicies.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'parentId', 'returnPartialSuccess'],
+        relative_path='locations/global/securityPolicies',
+        request_field='',
+        request_type_name='ComputeOrganizationSecurityPoliciesListRequest',
+        response_type_name='SecurityPolicyList',
+        supports_download=False,
+    )
+
+    def ListAssociations(self, request, global_params=None):
+      r"""Lists associations of a specified target, i.e., organization or folder. Use of this API to read firewall policies is deprecated. Use firewallPolicies.listAssociations instead if possible.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesListAssociationsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (OrganizationSecurityPoliciesListAssociationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListAssociations')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListAssociations.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.organizationSecurityPolicies.listAssociations',
+        ordered_params=[],
+        path_params=[],
+        query_params=['targetResource'],
+        relative_path='locations/global/securityPolicies/listAssociations',
+        request_field='',
+        request_type_name='ComputeOrganizationSecurityPoliciesListAssociationsRequest',
+        response_type_name='OrganizationSecurityPoliciesListAssociationsResponse',
+        supports_download=False,
+    )
+
+    def ListPreconfiguredExpressionSets(self, request, global_params=None):
+      r"""Gets the current list of preconfigured Web Application Firewall (WAF) expressions.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesListPreconfiguredExpressionSetsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityPoliciesListPreconfiguredExpressionSetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListPreconfiguredExpressionSets')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListPreconfiguredExpressionSets.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.organizationSecurityPolicies.listPreconfiguredExpressionSets',
+        ordered_params=[],
+        path_params=[],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'parentId', 'returnPartialSuccess'],
+        relative_path='locations/global/securityPolicies/listPreconfiguredExpressionSets',
+        request_field='',
+        request_type_name='ComputeOrganizationSecurityPoliciesListPreconfiguredExpressionSetsRequest',
+        response_type_name='SecurityPoliciesListPreconfiguredExpressionSetsResponse',
+        supports_download=False,
+    )
+
+    def Move(self, request, global_params=None):
+      r"""Moves the specified security policy. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.move instead.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesMoveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Move')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Move.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.organizationSecurityPolicies.move',
+        ordered_params=['securityPolicy'],
+        path_params=['securityPolicy'],
+        query_params=['parentId', 'requestId'],
+        relative_path='locations/global/securityPolicies/{securityPolicy}/move',
+        request_field='',
+        request_type_name='ComputeOrganizationSecurityPoliciesMoveRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patches the specified policy with the data included in the request. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.patch instead.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.organizationSecurityPolicies.patch',
+        ordered_params=['securityPolicy'],
+        path_params=['securityPolicy'],
+        query_params=['requestId'],
+        relative_path='locations/global/securityPolicies/{securityPolicy}',
+        request_field='securityPolicyResource',
+        request_type_name='ComputeOrganizationSecurityPoliciesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def PatchRule(self, request, global_params=None):
+      r"""Patches a rule at the specified priority. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.patchRule instead.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesPatchRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PatchRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PatchRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.organizationSecurityPolicies.patchRule',
+        ordered_params=['securityPolicy'],
+        path_params=['securityPolicy'],
+        query_params=['priority', 'requestId'],
+        relative_path='locations/global/securityPolicies/{securityPolicy}/patchRule',
+        request_field='securityPolicyRule',
+        request_type_name='ComputeOrganizationSecurityPoliciesPatchRuleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def RemoveAssociation(self, request, global_params=None):
+      r"""Removes an association for the specified security policy. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.removeAssociation instead if possible.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesRemoveAssociationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RemoveAssociation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveAssociation.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.organizationSecurityPolicies.removeAssociation',
+        ordered_params=['securityPolicy'],
+        path_params=['securityPolicy'],
+        query_params=['name', 'requestId'],
+        relative_path='locations/global/securityPolicies/{securityPolicy}/removeAssociation',
+        request_field='',
+        request_type_name='ComputeOrganizationSecurityPoliciesRemoveAssociationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def RemoveRule(self, request, global_params=None):
+      r"""Deletes a rule at the specified priority.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesRemoveRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RemoveRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.organizationSecurityPolicies.removeRule',
+        ordered_params=['securityPolicy'],
+        path_params=['securityPolicy'],
+        query_params=['priority', 'requestId'],
+        relative_path='locations/global/securityPolicies/{securityPolicy}/removeRule',
+        request_field='',
+        request_type_name='ComputeOrganizationSecurityPoliciesRemoveRuleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class PacketMirroringsService(base_api.BaseApiService):
     """Service class for the packetMirrorings resource."""
 
@@ -11812,6 +12408,94 @@ class ComputeV1(base_api.BaseApiClient):
         request_field='testPermissionsRequest',
         request_type_name='ComputePacketMirroringsTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class PreviewFeaturesService(base_api.BaseApiService):
+    """Service class for the previewFeatures resource."""
+
+    _NAME = 'previewFeatures'
+
+    def __init__(self, client):
+      super(ComputeV1.PreviewFeaturesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Returns the details of the given PreviewFeature.
+
+      Args:
+        request: (ComputePreviewFeaturesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PreviewFeature) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.previewFeatures.get',
+        ordered_params=['project', 'previewFeature'],
+        path_params=['previewFeature', 'project'],
+        query_params=[],
+        relative_path='projects/{project}/global/previewFeatures/{previewFeature}',
+        request_field='',
+        request_type_name='ComputePreviewFeaturesGetRequest',
+        response_type_name='PreviewFeature',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns the details of the given PreviewFeature.
+
+      Args:
+        request: (ComputePreviewFeaturesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PreviewFeatureList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.previewFeatures.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/global/previewFeatures',
+        request_field='',
+        request_type_name='ComputePreviewFeaturesListRequest',
+        response_type_name='PreviewFeatureList',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Patches the given PreviewFeature. This method is used to enable or disable a PreviewFeature.
+
+      Args:
+        request: (ComputePreviewFeaturesUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.previewFeatures.update',
+        ordered_params=['project', 'previewFeature'],
+        path_params=['previewFeature', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/previewFeatures/{previewFeature}',
+        request_field='previewFeatureResource',
+        request_type_name='ComputePreviewFeaturesUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -17497,6 +18181,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ReportFaulty(self, request, global_params=None):
+      r"""Allows customers to report a faulty subBlock.
+
+      Args:
+        request: (ComputeReservationSubBlocksReportFaultyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ReportFaulty')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReportFaulty.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.reservationSubBlocks.reportFaulty',
+        ordered_params=['project', 'zone', 'parentName', 'reservationSubBlock'],
+        path_params=['parentName', 'project', 'reservationSubBlock', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/{parentName}/reservationSubBlocks/{reservationSubBlock}/reportFaulty',
+        request_field='reservationSubBlocksReportFaultyRequest',
+        request_type_name='ComputeReservationSubBlocksReportFaultyRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ReservationsService(base_api.BaseApiService):
     """Service class for the reservations resource."""
 
@@ -22855,6 +23565,146 @@ class ComputeV1(base_api.BaseApiClient):
         relative_path='projects/{project}/regions/{region}/vpnTunnels/{resource}/setLabels',
         request_field='regionSetLabelsRequest',
         request_type_name='ComputeVpnTunnelsSetLabelsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class WireGroupsService(base_api.BaseApiService):
+    """Service class for the wireGroups resource."""
+
+    _NAME = 'wireGroups'
+
+    def __init__(self, client):
+      super(ComputeV1.WireGroupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified wire group in the given scope.
+
+      Args:
+        request: (ComputeWireGroupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.wireGroups.delete',
+        ordered_params=['project', 'crossSiteNetwork', 'wireGroup'],
+        path_params=['crossSiteNetwork', 'project', 'wireGroup'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/crossSiteNetworks/{crossSiteNetwork}/wireGroups/{wireGroup}',
+        request_field='',
+        request_type_name='ComputeWireGroupsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the specified wire group resource in the given scope.
+
+      Args:
+        request: (ComputeWireGroupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WireGroup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.wireGroups.get',
+        ordered_params=['project', 'crossSiteNetwork', 'wireGroup'],
+        path_params=['crossSiteNetwork', 'project', 'wireGroup'],
+        query_params=[],
+        relative_path='projects/{project}/global/crossSiteNetworks/{crossSiteNetwork}/wireGroups/{wireGroup}',
+        request_field='',
+        request_type_name='ComputeWireGroupsGetRequest',
+        response_type_name='WireGroup',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a wire group in the specified project in the given scope using the parameters that are included in the request.
+
+      Args:
+        request: (ComputeWireGroupsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.wireGroups.insert',
+        ordered_params=['project', 'crossSiteNetwork'],
+        path_params=['crossSiteNetwork', 'project'],
+        query_params=['requestId', 'validateOnly'],
+        relative_path='projects/{project}/global/crossSiteNetworks/{crossSiteNetwork}/wireGroups',
+        request_field='wireGroup',
+        request_type_name='ComputeWireGroupsInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the wire groups for a project in the given scope.
+
+      Args:
+        request: (ComputeWireGroupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WireGroupList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.wireGroups.list',
+        ordered_params=['project', 'crossSiteNetwork'],
+        path_params=['crossSiteNetwork', 'project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/global/crossSiteNetworks/{crossSiteNetwork}/wireGroups',
+        request_field='',
+        request_type_name='ComputeWireGroupsListRequest',
+        response_type_name='WireGroupList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified wire group resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+
+      Args:
+        request: (ComputeWireGroupsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.wireGroups.patch',
+        ordered_params=['project', 'crossSiteNetwork', 'wireGroup'],
+        path_params=['crossSiteNetwork', 'project', 'wireGroup'],
+        query_params=['requestId', 'updateMask', 'validateOnly'],
+        relative_path='projects/{project}/global/crossSiteNetworks/{crossSiteNetwork}/wireGroups/{wireGroup}',
+        request_field='wireGroupResource',
+        request_type_name='ComputeWireGroupsPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )

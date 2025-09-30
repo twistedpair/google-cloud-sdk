@@ -82,7 +82,7 @@ class Client:
       parent,
       mirroring_deployment_group,
       description,
-      endpoint_group_type=None,
+      endpoint_group_type='DIRECT',
       labels=None,
   ):
     """Calls the CreateEndpointGroup API.
@@ -102,15 +102,28 @@ class Client:
 
     endpoint_group = self.messages.MirroringEndpointGroup(
         labels=labels,
-        mirroringDeploymentGroup=mirroring_deployment_group,
         description=description,
     )
-    if self._release_track in _PACKET_BROKER_SUPPORTED and endpoint_group_type:
+
+    if self._release_track in _PACKET_BROKER_SUPPORTED:
+      if not endpoint_group_type:
+        endpoint_group_type = 'DIRECT'
+
       endpoint_group.type = (
           self.messages.MirroringEndpointGroup.TypeValueValuesEnum(
               endpoint_group_type
           )
       )
+      if endpoint_group_type == 'BROKER':
+        endpoint_group.mirroringDeploymentGroups = [mirroring_deployment_group]
+      elif endpoint_group_type == 'DIRECT':
+        endpoint_group.mirroringDeploymentGroup = mirroring_deployment_group
+      else:
+        raise ValueError(
+            f'Unsupported endpoint group type: {endpoint_group_type}'
+        )
+    else:
+      endpoint_group.mirroringDeploymentGroup = mirroring_deployment_group
 
     create_request = self.messages.NetworksecurityProjectsLocationsMirroringEndpointGroupsCreateRequest(
         mirroringEndpointGroup=endpoint_group,

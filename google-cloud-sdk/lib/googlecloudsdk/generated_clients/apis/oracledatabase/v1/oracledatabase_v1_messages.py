@@ -1514,6 +1514,24 @@ class DataCollectionOptions(_messages.Message):
   incidentLogsEnabled = _messages.BooleanField(3)
 
 
+class DataCollectionOptionsCommon(_messages.Message):
+  r"""Data collection options for diagnostics. https://docs.oracle.com/en-
+  us/iaas/api/#/en/database/20160918/datatypes/DataCollectionOptions
+
+  Fields:
+    isDiagnosticsEventsEnabled: Optional. Indicates whether to enable data
+      collection for diagnostics.
+    isHealthMonitoringEnabled: Optional. Indicates whether to enable health
+      monitoring.
+    isIncidentLogsEnabled: Optional. Indicates whether to enable incident logs
+      and trace collection.
+  """
+
+  isDiagnosticsEventsEnabled = _messages.BooleanField(1)
+  isHealthMonitoringEnabled = _messages.BooleanField(2)
+  isIncidentLogsEnabled = _messages.BooleanField(3)
+
+
 class DataCollectionOptionsDbSystem(_messages.Message):
   r"""Data collection options for DbSystem.
 
@@ -2612,6 +2630,377 @@ class Entitlement(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
+class ExadbVmCluster(_messages.Message):
+  r"""ExadbVmCluster represents a cluster of VMs that are used to run Exadata
+  workloads. https://docs.oracle.com/en-
+  us/iaas/api/#/en/database/20160918/ExadbVmCluster/
+
+  Messages:
+    LabelsValue: Optional. The labels or tags associated with the
+      ExadbVmCluster.
+
+  Fields:
+    backupOdbSubnet: Required. Immutable. The name of the backup OdbSubnet
+      associated with the ExadbVmCluster. Format: projects/{project}/locations
+      /{location}/odbNetworks/{odb_network}/odbSubnets/{odb_subnet}
+    createTime: Output only. The date and time that the ExadbVmCluster was
+      created.
+    displayName: Required. Immutable. The display name for the ExadbVmCluster.
+      The name does not have to be unique within your project. The name must
+      be 1-255 characters long and can only contain alphanumeric characters.
+    entitlementId: Output only. The ID of the subscription entitlement
+      associated with the ExadbVmCluster.
+    gcpOracleZone: Output only. Immutable. The GCP Oracle zone where Oracle
+      ExadbVmCluster is hosted. Example: us-east4-b-r2. During creation, the
+      system will pick the zone assigned to the ExascaleDbStorageVault.
+    labels: Optional. The labels or tags associated with the ExadbVmCluster.
+    name: Identifier. The name of the ExadbVmCluster resource in the following
+      format:
+      projects/{project}/locations/{region}/exadbVmClusters/{exadb_vm_cluster}
+    odbNetwork: Optional. Immutable. The name of the OdbNetwork associated
+      with the ExadbVmCluster. Format:
+      projects/{project}/locations/{location}/odbNetworks/{odb_network} It is
+      optional but if specified, this should match the parent ODBNetwork of
+      the OdbSubnet.
+    odbSubnet: Required. Immutable. The name of the OdbSubnet associated with
+      the ExadbVmCluster for IP allocation. Format: projects/{project}/locatio
+      ns/{location}/odbNetworks/{odb_network}/odbSubnets/{odb_subnet}
+    properties: Required. The properties of the ExadbVmCluster.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels or tags associated with the ExadbVmCluster.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  backupOdbSubnet = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  entitlementId = _messages.StringField(4)
+  gcpOracleZone = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  odbNetwork = _messages.StringField(8)
+  odbSubnet = _messages.StringField(9)
+  properties = _messages.MessageField('ExadbVmClusterProperties', 10)
+
+
+class ExadbVmClusterProperties(_messages.Message):
+  r"""The properties of an ExadbVmCluster.
+
+  Enums:
+    LicenseModelValueValuesEnum: Optional. Immutable. The license type of the
+      ExadbVmCluster.
+    LifecycleStateValueValuesEnum: Output only. State of the cluster.
+    ShapeAttributeValueValuesEnum: Required. Immutable. The shape attribute of
+      the VM cluster. The type of Exascale storage used for Exadata VM
+      cluster. The default is SMART_STORAGE which supports Oracle Database
+      23ai and later
+
+  Fields:
+    additionalEcpuCountPerNode: Optional. Immutable. The number of additional
+      ECPUs per node for an Exadata VM cluster on exascale infrastructure.
+    clusterName: Optional. Immutable. The cluster name for Exascale vm
+      cluster. The cluster name must begin with an alphabetic character and
+      may contain hyphens(-) but can not contain underscores(_). It should be
+      not more than 11 characters and is not case sensitive. OCI Cluster name.
+    dataCollectionOptions: Optional. Immutable. Indicates user preference for
+      data collection options.
+    enabledEcpuCountPerNode: Required. Immutable. The number of ECPUs enabled
+      per node for an exadata vm cluster on exascale infrastructure.
+    exascaleDbStorageVault: Required. Immutable. The name of
+      ExascaleDbStorageVault associated with the ExadbVmCluster. It can refer
+      to an existing ExascaleDbStorageVault. Or a new one can be created
+      during the ExadbVmCluster creation (requires storage_vault_properties to
+      be set). Format: projects/{project}/locations/{location}/exascaleDbStora
+      geVaults/{exascale_db_storage_vault}
+    giVersion: Output only. The Oracle Grid Infrastructure (GI) software
+      version.
+    gridImageId: Required. Immutable. Grid Infrastructure Version.
+    hostname: Output only. The hostname of the ExadbVmCluster.
+    hostnamePrefix: Required. Immutable. Prefix for VM cluster host names.
+    licenseModel: Optional. Immutable. The license type of the ExadbVmCluster.
+    lifecycleState: Output only. State of the cluster.
+    memorySizeGb: Output only. Memory per VM (GB) (Read-only): Shows the
+      amount of memory allocated to each VM. Memory is calculated based on
+      2.75 GB per Total ECPUs.
+    nodeCount: Required. The number of nodes/VMs in the ExadbVmCluster.
+    ociUri: Output only. Deep link to the OCI console to view this resource.
+    scanListenerPortTcp: Optional. Immutable. SCAN listener port - TCP
+    shapeAttribute: Required. Immutable. The shape attribute of the VM
+      cluster. The type of Exascale storage used for Exadata VM cluster. The
+      default is SMART_STORAGE which supports Oracle Database 23ai and later
+    sshPublicKeys: Required. Immutable. The SSH public keys for the
+      ExadbVmCluster.
+    timeZone: Optional. Immutable. The time zone of the ExadbVmCluster.
+    vmFileSystemStorage: Required. Immutable. Total storage details for the
+      ExadbVmCluster.
+  """
+
+  class LicenseModelValueValuesEnum(_messages.Enum):
+    r"""Optional. Immutable. The license type of the ExadbVmCluster.
+
+    Values:
+      LICENSE_MODEL_UNSPECIFIED: Unspecified.
+      LICENSE_INCLUDED: Default is license included.
+      BRING_YOUR_OWN_LICENSE: Bring your own license.
+    """
+    LICENSE_MODEL_UNSPECIFIED = 0
+    LICENSE_INCLUDED = 1
+    BRING_YOUR_OWN_LICENSE = 2
+
+  class LifecycleStateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the cluster.
+
+    Values:
+      EXADB_VM_CLUSTER_LIFECYCLE_STATE_UNSPECIFIED: Default unspecified value.
+      PROVISIONING: Indicates that the resource is in provisioning state.
+      AVAILABLE: Indicates that the resource is in available state.
+      UPDATING: Indicates that the resource is in updating state.
+      TERMINATING: Indicates that the resource is in terminating state.
+      TERMINATED: Indicates that the resource is in terminated state.
+      FAILED: Indicates that the resource is in failed state.
+      MAINTENANCE_IN_PROGRESS: Indicates that the resource is in maintenance
+        in progress state.
+    """
+    EXADB_VM_CLUSTER_LIFECYCLE_STATE_UNSPECIFIED = 0
+    PROVISIONING = 1
+    AVAILABLE = 2
+    UPDATING = 3
+    TERMINATING = 4
+    TERMINATED = 5
+    FAILED = 6
+    MAINTENANCE_IN_PROGRESS = 7
+
+  class ShapeAttributeValueValuesEnum(_messages.Enum):
+    r"""Required. Immutable. The shape attribute of the VM cluster. The type
+    of Exascale storage used for Exadata VM cluster. The default is
+    SMART_STORAGE which supports Oracle Database 23ai and later
+
+    Values:
+      SHAPE_ATTRIBUTE_UNSPECIFIED: Default unspecified value.
+      SMART_STORAGE: Indicates that the resource is in smart storage.
+      BLOCK_STORAGE: Indicates that the resource is in block storage.
+    """
+    SHAPE_ATTRIBUTE_UNSPECIFIED = 0
+    SMART_STORAGE = 1
+    BLOCK_STORAGE = 2
+
+  additionalEcpuCountPerNode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  clusterName = _messages.StringField(2)
+  dataCollectionOptions = _messages.MessageField('DataCollectionOptionsCommon', 3)
+  enabledEcpuCountPerNode = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  exascaleDbStorageVault = _messages.StringField(5)
+  giVersion = _messages.StringField(6)
+  gridImageId = _messages.StringField(7)
+  hostname = _messages.StringField(8)
+  hostnamePrefix = _messages.StringField(9)
+  licenseModel = _messages.EnumField('LicenseModelValueValuesEnum', 10)
+  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 11)
+  memorySizeGb = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  nodeCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  ociUri = _messages.StringField(14)
+  scanListenerPortTcp = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  shapeAttribute = _messages.EnumField('ShapeAttributeValueValuesEnum', 16)
+  sshPublicKeys = _messages.StringField(17, repeated=True)
+  timeZone = _messages.MessageField('TimeZone', 18)
+  vmFileSystemStorage = _messages.MessageField('ExadbVmClusterStorageDetails', 19)
+
+
+class ExadbVmClusterStorageDetails(_messages.Message):
+  r"""The storage allocation for the exadbvmcluster, in gigabytes (GB).
+
+  Fields:
+    sizeInGbsPerNode: Required. The storage allocation for the exadbvmcluster
+      per node, in gigabytes (GB). This field is used to calculate the total
+      storage allocation for the exadbvmcluster.
+  """
+
+  sizeInGbsPerNode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class ExascaleDbStorageDetails(_messages.Message):
+  r"""The storage details of the ExascaleDbStorageVault.
+
+  Fields:
+    availableSizeGbs: Output only. The available storage capacity for the
+      ExascaleDbStorageVault, in gigabytes (GB).
+    totalSizeGbs: Required. The total storage allocation for the
+      ExascaleDbStorageVault, in gigabytes (GB).
+  """
+
+  availableSizeGbs = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  totalSizeGbs = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class ExascaleDbStorageVault(_messages.Message):
+  r"""ExascaleDbStorageVault represents a storage vault exadb vm cluster
+  resource. https://docs.oracle.com/en-
+  us/iaas/api/#/en/database/20160918/ExascaleDbStorageVault/
+
+  Messages:
+    LabelsValue: Optional. The labels or tags associated with the
+      ExascaleDbStorageVault.
+
+  Fields:
+    createTime: Output only. The date and time when the ExascaleDbStorageVault
+      was created.
+    displayName: Required. The display name for the ExascaleDbStorageVault.
+      The name does not have to be unique within your project. The name must
+      be 1-255 characters long and can only contain alphanumeric characters.
+    entitlementId: Output only. The ID of the subscription entitlement
+      associated with the ExascaleDbStorageVault.
+    gcpOracleZone: Optional. The GCP Oracle zone where Oracle
+      ExascaleDbStorageVault is hosted. Example: us-east4-b-r2. If not
+      specified, the system will pick a zone based on availability.
+    labels: Optional. The labels or tags associated with the
+      ExascaleDbStorageVault.
+    name: Identifier. The resource name of the ExascaleDbStorageVault. Format:
+      projects/{project}/locations/{location}/exascaleDbStorageVaults/{exascal
+      e_db_storage_vault}
+    properties: Required. The properties of the ExascaleDbStorageVault.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels or tags associated with the
+    ExascaleDbStorageVault.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  entitlementId = _messages.StringField(3)
+  gcpOracleZone = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  properties = _messages.MessageField('ExascaleDbStorageVaultProperties', 7)
+
+
+class ExascaleDbStorageVaultProperties(_messages.Message):
+  r"""The properties of the ExascaleDbStorageVault. next ID: 12
+
+  Enums:
+    AttachedShapeAttributesValueListEntryValuesEnum:
+    AvailableShapeAttributesValueListEntryValuesEnum:
+    StateValueValuesEnum: Output only. The state of the
+      ExascaleDbStorageVault.
+
+  Fields:
+    additionalFlashCachePercent: Optional. The size of additional flash cache
+      in percentage of high capacity database storage.
+    attachedShapeAttributes: Output only. The shape attributes of the VM
+      clusters attached to the ExascaleDbStorageVault.
+    availableShapeAttributes: Output only. The shape attributes available for
+      the VM clusters to be attached to the ExascaleDbStorageVault.
+    description: Optional. The description of the ExascaleDbStorageVault.
+    exascaleDbStorageDetails: Required. The storage details of the
+      ExascaleDbStorageVault.
+    ociUri: Output only. Deep link to the OCI console to view this resource.
+    ocid: Output only. The OCID for the ExascaleDbStorageVault.
+    state: Output only. The state of the ExascaleDbStorageVault.
+    timeZone: Output only. The time zone of the ExascaleDbStorageVault.
+    vmClusterCount: Output only. The number of VM clusters associated with the
+      ExascaleDbStorageVault.
+    vmClusterIds: Output only. The list of VM cluster OCIDs associated with
+      the ExascaleDbStorageVault.
+  """
+
+  class AttachedShapeAttributesValueListEntryValuesEnum(_messages.Enum):
+    r"""AttachedShapeAttributesValueListEntryValuesEnum enum type.
+
+    Values:
+      SHAPE_ATTRIBUTE_UNSPECIFIED: Default unspecified value.
+      SMART_STORAGE: Indicates that the resource is in smart storage.
+      BLOCK_STORAGE: Indicates that the resource is in block storage.
+    """
+    SHAPE_ATTRIBUTE_UNSPECIFIED = 0
+    SMART_STORAGE = 1
+    BLOCK_STORAGE = 2
+
+  class AvailableShapeAttributesValueListEntryValuesEnum(_messages.Enum):
+    r"""AvailableShapeAttributesValueListEntryValuesEnum enum type.
+
+    Values:
+      SHAPE_ATTRIBUTE_UNSPECIFIED: Default unspecified value.
+      SMART_STORAGE: Indicates that the resource is in smart storage.
+      BLOCK_STORAGE: Indicates that the resource is in block storage.
+    """
+    SHAPE_ATTRIBUTE_UNSPECIFIED = 0
+    SMART_STORAGE = 1
+    BLOCK_STORAGE = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the ExascaleDbStorageVault.
+
+    Values:
+      STATE_UNSPECIFIED: The state of the ExascaleDbStorageVault is
+        unspecified.
+      PROVISIONING: The ExascaleDbStorageVault is being provisioned.
+      AVAILABLE: The ExascaleDbStorageVault is available.
+      UPDATING: The ExascaleDbStorageVault is being updated.
+      TERMINATING: The ExascaleDbStorageVault is being deleted.
+      TERMINATED: The ExascaleDbStorageVault has been deleted.
+      FAILED: The ExascaleDbStorageVault has failed.
+    """
+    STATE_UNSPECIFIED = 0
+    PROVISIONING = 1
+    AVAILABLE = 2
+    UPDATING = 3
+    TERMINATING = 4
+    TERMINATED = 5
+    FAILED = 6
+
+  additionalFlashCachePercent = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  attachedShapeAttributes = _messages.EnumField('AttachedShapeAttributesValueListEntryValuesEnum', 2, repeated=True)
+  availableShapeAttributes = _messages.EnumField('AvailableShapeAttributesValueListEntryValuesEnum', 3, repeated=True)
+  description = _messages.StringField(4)
+  exascaleDbStorageDetails = _messages.MessageField('ExascaleDbStorageDetails', 5)
+  ociUri = _messages.StringField(6)
+  ocid = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  timeZone = _messages.MessageField('TimeZone', 9)
+  vmClusterCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  vmClusterIds = _messages.StringField(11, repeated=True)
+
+
 class FailoverAutonomousDatabaseRequest(_messages.Message):
   r"""The request for `OracleDatabase.FailoverAutonomousDatabase`.
 
@@ -2914,6 +3303,34 @@ class ListEntitlementsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListExadbVmClustersResponse(_messages.Message):
+  r"""The response for `ExadbVmCluster.List`.
+
+  Fields:
+    exadbVmClusters: The list of ExadbVmClusters.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+  """
+
+  exadbVmClusters = _messages.MessageField('ExadbVmCluster', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListExascaleDbStorageVaultsResponse(_messages.Message):
+  r"""The response for `ExascaleDbStorageVault.List`.
+
+  Fields:
+    exascaleDbStorageVaults: The ExascaleDbStorageVaults.
+    nextPageToken: A token identifying a page of results the server should
+      return. If present, the next page token can be provided to a subsequent
+      ListExascaleDbStorageVaults call to list the next page. If empty, there
+      are no more pages.
+  """
+
+  exascaleDbStorageVaults = _messages.MessageField('ExascaleDbStorageVault', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListGiVersionsResponse(_messages.Message):
   r"""The response for `GiVersion.List`.
 
@@ -2937,6 +3354,19 @@ class ListLocationsResponse(_messages.Message):
   """
 
   locations = _messages.MessageField('Location', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListMinorVersionsResponse(_messages.Message):
+  r"""The response for `MinorVersion.List`.
+
+  Fields:
+    minorVersions: The list of MinorVersions.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+  """
+
+  minorVersions = _messages.MessageField('MinorVersion', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -3223,6 +3653,24 @@ class MaintenanceWindow(_messages.Message):
   patchingMode = _messages.EnumField('PatchingModeValueValuesEnum', 7)
   preference = _messages.EnumField('PreferenceValueValuesEnum', 8)
   weeksOfMonth = _messages.IntegerField(9, repeated=True, variant=_messages.Variant.INT32)
+
+
+class MinorVersion(_messages.Message):
+  r"""MinorVersion represents a minor version of a GI.
+  https://docs.oracle.com/en-
+  us/iaas/api/#/en/database/20160918/GiMinorVersionSummary/
+
+  Fields:
+    gridImageId: Optional. The ID of the Grid Image.
+    name: Identifier. The name of the MinorVersion resource with the format: p
+      rojects/{project}/locations/{region}/giVersions/{gi_version}/minorVersio
+      ns/{minor_version}
+    version: Optional. The valid Oracle grid infrastructure software version.
+  """
+
+  gridImageId = _messages.StringField(1)
+  name = _messages.StringField(2)
+  version = _messages.StringField(3)
 
 
 class OdbNetwork(_messages.Message):
@@ -4227,6 +4675,229 @@ class OracledatabaseProjectsLocationsEntitlementsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class OracledatabaseProjectsLocationsExadbVmClustersCreateRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsExadbVmClustersCreateRequest object.
+
+  Fields:
+    exadbVmCluster: A ExadbVmCluster resource to be passed as the request
+      body.
+    exadbVmClusterId: Required. The ID of the ExadbVmCluster to create. This
+      value is restricted to (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$) and must be a
+      maximum of 63 characters in length. The value must start with a letter
+      and end with a letter or a number.
+    parent: Required. The value for parent of the ExadbVmCluster in the
+      following format: projects/{project}/locations/{location}.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  exadbVmCluster = _messages.MessageField('ExadbVmCluster', 1)
+  exadbVmClusterId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class OracledatabaseProjectsLocationsExadbVmClustersDeleteRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsExadbVmClustersDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the ExadbVmCluster in the following format: pr
+      ojects/{project}/locations/{location}/exadbVmClusters/{exadb_vm_cluster}
+      .
+    requestId: Optional. An optional ID to identify the request. This value is
+      used to identify duplicate requests. If you make a request with the same
+      request ID and the original request is still in progress or completed,
+      the server ignores the second request. This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class OracledatabaseProjectsLocationsExadbVmClustersGetRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsExadbVmClustersGetRequest object.
+
+  Fields:
+    name: Required. The name of the ExadbVmCluster in the following format: pr
+      ojects/{project}/locations/{location}/exadbVmClusters/{exadb_vm_cluster}
+      .
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OracledatabaseProjectsLocationsExadbVmClustersListRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsExadbVmClustersListRequest object.
+
+  Fields:
+    filter: Optional. An expression for filtering the results of the request.
+    orderBy: Optional. An expression for ordering the results of the request.
+    pageSize: Optional. The maximum number of items to return. If unspecified,
+      at most 50 ExadbVmClusters will be returned. The maximum value is 1000;
+      values above 1000 will be coerced to 1000.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. The parent value for ExadbVmClusters in the following
+      format: projects/{project}/locations/{location}.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class OracledatabaseProjectsLocationsExadbVmClustersPatchRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsExadbVmClustersPatchRequest object.
+
+  Fields:
+    exadbVmCluster: A ExadbVmCluster resource to be passed as the request
+      body.
+    name: Identifier. The name of the ExadbVmCluster resource in the following
+      format:
+      projects/{project}/locations/{region}/exadbVmClusters/{exadb_vm_cluster}
+    requestId: Optional. An optional ID to identify the request. This value is
+      used to identify duplicate requests. If you make a request with the same
+      request ID and the original request is still in progress or completed,
+      the server ignores the second request. This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. A mask specifying which fields in th VM Cluster
+      should be updated. A field specified in the mask is overwritten. If a
+      mask isn't provided then all the fields in the VM Cluster are
+      overwritten.
+  """
+
+  exadbVmCluster = _messages.MessageField('ExadbVmCluster', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class OracledatabaseProjectsLocationsExadbVmClustersRemoveVirtualMachineRequest(_messages.Message):
+  r"""A
+  OracledatabaseProjectsLocationsExadbVmClustersRemoveVirtualMachineRequest
+  object.
+
+  Fields:
+    name: Required. The name of the ExadbVmCluster in the following format: pr
+      ojects/{project}/locations/{location}/exadbVmClusters/{exadb_vm_cluster}
+      .
+    removeVirtualMachineExadbVmClusterRequest: A
+      RemoveVirtualMachineExadbVmClusterRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  removeVirtualMachineExadbVmClusterRequest = _messages.MessageField('RemoveVirtualMachineExadbVmClusterRequest', 2)
+
+
+class OracledatabaseProjectsLocationsExascaleDbStorageVaultsCreateRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsExascaleDbStorageVaultsCreateRequest
+  object.
+
+  Fields:
+    exascaleDbStorageVault: A ExascaleDbStorageVault resource to be passed as
+      the request body.
+    exascaleDbStorageVaultId: Required. The ID of the ExascaleDbStorageVault
+      to create. This value is restricted to
+      (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$) and must be a maximum of 63
+      characters in length. The value must start with a letter and end with a
+      letter or a number.
+    parent: Required. The value for parent of the ExascaleDbStorageVault in
+      the following format: projects/{project}/locations/{location}.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  exascaleDbStorageVault = _messages.MessageField('ExascaleDbStorageVault', 1)
+  exascaleDbStorageVaultId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class OracledatabaseProjectsLocationsExascaleDbStorageVaultsDeleteRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsExascaleDbStorageVaultsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the ExascaleDbStorageVault in the following
+      format: projects/{project}/locations/{location}/exascaleDbStorageVaults/
+      {exascale_db_storage_vault}.
+    requestId: Optional. An optional ID to identify the request. This value is
+      used to identify duplicate requests. If you make a request with the same
+      request ID and the original request is still in progress or completed,
+      the server ignores the second request. This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class OracledatabaseProjectsLocationsExascaleDbStorageVaultsGetRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsExascaleDbStorageVaultsGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the ExascaleDbStorageVault in the following
+      format: projects/{project}/locations/{location}/exascaleDbStorageVaults/
+      {exascale_db_storage_vault}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OracledatabaseProjectsLocationsExascaleDbStorageVaultsListRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsExascaleDbStorageVaultsListRequest
+  object.
+
+  Fields:
+    filter: Optional. An expression for filtering the results of the request.
+      Filter the list as specified in https://google.aip.dev/160.
+    orderBy: Optional. An expression for ordering the results of the request.
+      Order results as specified in https://google.aip.dev/132.
+    pageSize: Optional. The maximum number of items to return. If unspecified,
+      at most 50 ExascaleDbStorageVaults will be returned. The maximum value
+      is 1000; values above 1000 will be coerced to 1000.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. The parent value for ExascaleDbStorageVault in the
+      following format: projects/{project}/locations/{location}.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class OracledatabaseProjectsLocationsGetRequest(_messages.Message):
   r"""A OracledatabaseProjectsLocationsGetRequest object.
 
@@ -4252,6 +4923,31 @@ class OracledatabaseProjectsLocationsGiVersionsListRequest(_messages.Message):
       should return.
     parent: Required. The parent value for Grid Infrastructure Version in the
       following format: Format: projects/{project}/locations/{location}.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class OracledatabaseProjectsLocationsGiVersionsMinorVersionsListRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsGiVersionsMinorVersionsListRequest
+  object.
+
+  Fields:
+    filter: Optional. An expression for filtering the results of the request.
+      Only shapeFamily and gcp_oracle_zone_id are supported in this format:
+      `shape_family="{shapeFamily}" AND
+      gcp_oracle_zone_id="{gcp_oracle_zone_id}"`.
+    pageSize: Optional. The maximum number of items to return. If unspecified,
+      a maximum of 50 System Versions will be returned. The maximum value is
+      1000; values above 1000 will be reset to 1000.
+    pageToken: Optional. A token identifying the requested page of results to
+      return. All fields except the filter should remain the same as in the
+      request that provided this page token.
+    parent: Required. The parent value for the MinorVersion resource with the
+      format: projects/{project}/locations/{location}/giVersions/{gi_version}
   """
 
   filter = _messages.StringField(1)
@@ -4796,6 +5492,25 @@ class PluggableDatabaseProperties(_messages.Message):
   operationsInsightsState = _messages.EnumField('OperationsInsightsStateValueValuesEnum', 11)
   pdbName = _messages.StringField(12)
   pdbNodeLevelDetails = _messages.MessageField('PluggableDatabaseNodeLevelDetails', 13, repeated=True)
+
+
+class RemoveVirtualMachineExadbVmClusterRequest(_messages.Message):
+  r"""The request for `ExadbVmCluster.RemoveVirtualMachine`.
+
+  Fields:
+    hostnames: Required. The list of host names of db nodes to be removed from
+      the ExadbVmCluster.
+    requestId: Optional. An optional ID to identify the request. This value is
+      used to identify duplicate requests. If you make a request with the same
+      request ID and the original request is still in progress or completed,
+      the server ignores the second request. This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  hostnames = _messages.StringField(1, repeated=True)
+  requestId = _messages.StringField(2)
 
 
 class RestartAutonomousDatabaseRequest(_messages.Message):

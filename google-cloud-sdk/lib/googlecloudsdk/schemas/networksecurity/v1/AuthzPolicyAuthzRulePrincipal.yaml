@@ -1,0 +1,46 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networksecurity v1 AuthzPolicyAuthzRulePrincipal export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- principal
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  principal:
+    description: |-
+      A non-empty string whose value is matched against the principal value
+      based on the principal_selector. Only exact match can be applied for
+      CLIENT_CERT_URI_SAN, CLIENT_CERT_DNS_NAME_SAN, CLIENT_CERT_COMMON_NAME
+      selectors.
+    $ref: AuthzPolicyAuthzRuleStringMatch.yaml
+  principalSelector:
+    description: |-
+      An enum to decide what principal value the principal rule will match
+      against. If not specified, the PrincipalSelector is CLIENT_CERT_URI_SAN.
+    type: string
+    enum:
+    - CLIENT_CERT_COMMON_NAME
+    - CLIENT_CERT_DNS_NAME_SAN
+    - CLIENT_CERT_URI_SAN
+    - PRINCIPAL_SELECTOR_UNSPECIFIED

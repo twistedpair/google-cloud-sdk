@@ -5,9 +5,126 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 541.0.0 (2025-09-30)
+
+### AI
+
+* Added `--required-replica-count` flag to `gcloud ai endpoints deploy-model` and `gcloud ai deployment-resource-pools create`.
+
+### BigQuery
+
+* Added support for reading IAM policies for slots reservations `bq get-iam-policy --reservation`.
+* Added support for setting IAM policies for slots reservations `bq set-iam-policy --reservation`.
+* Removed client-side validation for `--target_dataset` in `bq update --transfer_config`.
+*   Added support for creation of reservation assignments for specific types of
+    background jobs using new job type values `BACKGROUND_CHANGE_DATA_CAPTURE`,
+    `BACKGROUND_COLUMN_METADATA_INDEX`, and `BACKGROUND_SEARCH_INDEX_REFRESH`.
+* Added support for limiting the rate of slot usage for a query job using `--max_slots` flag (preview).
+
+### Cloud Bigtable
+
+* `gcloud bigtable logical-views update` command can now be used with either `--query` flag or `--deletion-protection` flag, or both.
+
+### Cloud Build
+
+* Use `mtls` storage endpoint if `CLOUDSDK_CONTEXT_AWARE_USE_CLIENT_CERTIFICATE` is set to `true`.
+
+### Cloud DNS
+
+*   Fix an issue where `gcloud dns managed-zones create` did not correctly
+    support the --locations flag with DNSSEC configurations. The command now
+    properly handles uppercase enum values for `--dnssec-state` (ON, OFF,
+    TRANSFER) and KSK/ZSK algorithms.
+
+### Cloud Firestore Emulator
+
+* Released Cloud Firestore emulator v1.20.2
+  * Minor bug fixes.
+
+### Cloud Identity-Aware Proxy
+
+* Updated deprecation warning for `gcloud iap oauth-brands` and `gcloud iap oauth-clients` to include a turndown date.
+
+### Cloud Managed Kafka
+
+* Promoted managed kafka connect surface (connect-cluster, connectors) to GA.
+
+### Cloud Run
+
+* Removed `--mesh` flag from `gcloud run alpha worker-pools deploy` and
+`gcloud run alpha worker-pools update`.
+
+### Cloud SQL
+
+* Added `gcloud sql instances pre-check-major-version-upgrade`, which performs
+ prechecks for a major version upgrade of a Cloud SQL for PostgreSQL instance.
+
+### Cloud Spanner
+
+* The `spanner-cli` component is generally available(GA).
+* `spanner-cli` may be installed with `gcloud components install spanner-cli`.
+* You can use the Spanner command-line interface to open an interactive session or automate SQL executions from the shell or an input file.
+
+### Cloud TPU
+
+* Mark `gcloud compute tpus exeuction-groups` commands as deprecated.
+
+### Compute Engine
+
+* Promoted `--phase1-encryption`, `--phase1-integrity`, `--phase1-prf`,
+    `--phase1-dh`, `--phase2-encryption`, `--phase2-integrity`, `--phase2-pfs`
+    flags in `gcloud compute vpn-tunnels create` to v1.
+* The `gcloud compute instances network-interfaces add` command is now generally available (GA).
+* The `gcloud compute instances network-interfaces delete` command is now generally available (GA).
+* VLAN field support is now available in the GA track for `gcloud compute instances create` command.
+* VLAN field support is now available in the GA track for `gcloud compute instance-templates create` command.
+* Promoted `--scheduling-type` flag in `gcloud compute reservations update` to GA.
+*  Added `--view` flag to
+  `gcloud compute networks subnets describe` and
+  `gcloud compute networks subnets list` to allow users to retrieve the
+  subnetwork utilization.
+
+### Kubernetes Engine
+
+* Additional kubectl versions:
+  * kubectl.1.28 (1.28.15)
+  * kubectl.1.29 (1.29.15)
+  * kubectl.1.30 (1.30.14)
+  * kubectl.1.31 (1.31.13)
+  * kubectl.1.32 (1.32.9)
+  * kubectl.1.33 (1.33.5)
+  * kubectl.1.34 (1.34.1)
+* Updated `gcloud alpha|beta container clusters create|update` to support
+configuring auto-provisioning settings without enabling NAP.
+
+### Network Security
+
+* Promoted `gcloud network-security authz-policies` to GA.
+
+### Privileged Access Manager
+
+*   Added `gcloud beta pam grants withdraw` command to withdraw a Privileged
+    Access Manager grant.
+*   Added support for specifying grant scope via file or resource name in
+   `gcloud beta pam grants create`.
+*   Added `gcloud beta pam settings` command group which helps manage Privileged
+    Access Manager (PAM) settings.
+
+### Service Extensions
+
+* Promoted `gcloud service-extensions authz-extensions` to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 540.0.0 (2025-09-23)
 
 ### Breaking Changes
+
+*   **(Cloud Deploy)** `gcloud deploy apply` now has a more strict YAML parser.
+    The old parser would sometimes silently ignore unknown fields in a YAML
+    file. The new parser will reject them with an error message.
 
 *   **(Compute Engine)** Add `--bandwidth-allocation` as a required flag for `gcloud compute interconnects wire-groups create`.
 

@@ -78,6 +78,7 @@ class InsightsApi:
       destination_project: str,
       organization_number: int,
       retention_period: int,
+      activity_data_retention_period: Optional[int] = None,
       organization_scope: bool = False,
       source_projects_list: Optional[Sequence[int]] = None,
       source_folders_list: Optional[Sequence[int]] = None,
@@ -103,6 +104,9 @@ class InsightsApi:
         which all source projects / folders must belong.
       retention_period: No of days for which insights data is to be
         retained in BigQuery instance.
+      activity_data_retention_period: No of days for which activity data is to
+        be retained in BigQuery instance. If not set, retention period will be
+        used by the API.
       organization_scope: If True, Insights data will be collected for
         all resources in the given organization.
       source_projects_list: List of source project numbers. Insights
@@ -168,6 +172,11 @@ class InsightsApi:
         sourceFolders=source_folders,
         organizationScope=organization_scope if organization_scope else None,
     )
+
+    if activity_data_retention_period is not None:
+      dataset_config.activityDataRetentionPeriodDays = (
+          activity_data_retention_period
+      )
 
     # Exclude and Include options are marked as mutex flags,
     # hence we can make the below assumption about only being available
@@ -292,6 +301,7 @@ class InsightsApi:
       exclude_source_locations: Optional[Sequence[str]] = None,
       auto_add_new_buckets: bool = None,
       retention_period: int = None,
+      activity_data_retention_period: Optional[int] = None,
       description: str = None,
   ):
     """Returns the update_mask list."""
@@ -315,6 +325,10 @@ class InsightsApi:
         ('excludeCloudStorageLocations', exclude_source_locations is not None),
         ('includeNewlyCreatedBuckets', auto_add_new_buckets is not None),
         ('retentionPeriodDays', retention_period is not None),
+        (
+            'activityDataRetentionPeriodDays',
+            activity_data_retention_period is not None,
+        ),
         ('description', description is not None),
     ]
 
@@ -338,6 +352,7 @@ class InsightsApi:
       exclude_source_locations: Optional[Sequence[str]] = None,
       auto_add_new_buckets: bool = None,
       retention_period: int = None,
+      activity_data_retention_period: Optional[int] = None,
       description: str = None,
   ):
     """Updates the dataset config.
@@ -381,6 +396,8 @@ class InsightsApi:
         to source projects that satisfy the include/exclude criterias.
       retention_period: No of days for which insights data is to be
         retained in BigQuery instance.
+      activity_data_retention_period: No of days for which activity data is to
+        be retained in BigQuery instance.
       description: Human readable description text for the given dataset
         config.
 
@@ -401,6 +418,7 @@ class InsightsApi:
         exclude_source_locations=exclude_source_locations,
         auto_add_new_buckets=auto_add_new_buckets,
         retention_period=retention_period,
+        activity_data_retention_period=activity_data_retention_period,
         description=description,
     )
 
@@ -429,6 +447,11 @@ class InsightsApi:
 
     if organization_scope:
       dataset_config.organizationScope = True
+
+    if activity_data_retention_period is not None:
+      dataset_config.activityDataRetentionPeriodDays = (
+          activity_data_retention_period
+      )
 
     # Exclude and Include options are marked as mutex flags,
     # hence can make the below assumption about only one of the options being

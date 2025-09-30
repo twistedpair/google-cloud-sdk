@@ -98,6 +98,10 @@ class CloudDeployConfigError(exceptions.Error):
     return cls(f'Error parsing {kind} "{name}" field "{field}": {message}')
 
 
+class ManifestTransformException(exceptions.Error):
+  """Error raised when a manifest transform fails due to a bug."""
+
+
 class ListRolloutsError(exceptions.Error):
   """Error when it failed to list the rollouts that belongs to a release."""
 
@@ -177,7 +181,7 @@ class AutomationNameFormatError(exceptions.Error):
   def __init__(self, automation_name):
     super(AutomationNameFormatError, self).__init__(
         'Automation name {} in the configuration should be in the format'
-        'of pipeline_id/automation_id.'.format(automation_name)
+        ' of pipeline_id/automation_id.'.format(automation_name)
     )
 
 

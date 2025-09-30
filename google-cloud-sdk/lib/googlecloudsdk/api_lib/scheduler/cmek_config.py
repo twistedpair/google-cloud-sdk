@@ -44,3 +44,17 @@ class CmekConfig(object):
     )
 
     return self.cmek_config_service.GetCmekConfig(request)
+
+  def UpdateCmekConfig(self, project_id, location_id, cmek_config):
+    """Prepares and sends an UpdateCmekConfig request for the given CmekConfig."""
+    cmek_config_name = (
+        'projects/{project_id}/locations/{location_id}/cmekConfig'.format(
+            project_id=project_id, location_id=location_id
+        )
+    )
+    request = (
+        self.messages.CloudschedulerProjectsLocationsUpdateCmekConfigRequest(
+            name=cmek_config_name, cmekConfig=cmek_config
+        )
+    )
+    return self.cmek_config_service.UpdateCmekConfig(request)

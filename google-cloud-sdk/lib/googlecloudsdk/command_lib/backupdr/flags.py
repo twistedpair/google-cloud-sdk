@@ -307,13 +307,25 @@ def AddTriggerBackupFlags(parser):
       ],
   ).AddToParser(parser)
 
-  parser.add_argument(
+  group = parser.add_mutually_exclusive_group()
+  group.add_argument(
       '--backup-rule-id',
-      required=True,
+      required=False,
       type=str,
       help=(
           'Name of an existing backup rule to use for creating an on-demand'
           ' backup.'
+      ),
+  )
+
+  group.add_argument(
+      '--custom-retention-days',
+      required=False,
+      hidden=True,
+      type=int,
+      help=(
+          'Duration for which backup data will be retained.'
+          'If not specified, the default retention period will be used.'
       ),
   )
 
@@ -707,6 +719,20 @@ def AddForceUpdateAccessRestriction(parser):
       '--force-update-access-restriction',
       action='store_true',
       help=help_text,
+  )
+
+
+def AddKmsKey(parser):
+  """Adds the --kms-key flag to the given parser."""
+  parser.add_argument(
+      '--kms-key',
+      required=False,
+      hidden=True,
+      type=str,
+      help=(
+          'The Cloud KMS key resource name to be used for encryption. Format:'
+          ' projects/{project}/locations/{location}/keyRings/{ring}/cryptoKeys/{key}'
+      ),
   )
 
 

@@ -168,6 +168,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.vpnGateways = self.VpnGatewaysService(self)
     self.vpnTunnels = self.VpnTunnelsService(self)
     self.wireGroups = self.WireGroupsService(self)
+    self.zoneFolderOperations = self.ZoneFolderOperationsService(self)
     self.zoneOperations = self.ZoneOperationsService(self)
     self.zoneQueuedResources = self.ZoneQueuedResourcesService(self)
     self.zoneVmExtensionPolicies = self.ZoneVmExtensionPoliciesService(self)
@@ -29490,6 +29491,70 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='wireGroupResource',
         request_type_name='ComputeWireGroupsPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ZoneFolderOperationsService(base_api.BaseApiService):
+    """Service class for the zoneFolderOperations resource."""
+
+    _NAME = 'zoneFolderOperations'
+
+    def __init__(self, client):
+      super(ComputeAlpha.ZoneFolderOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves the specified Operations resource.
+
+      Args:
+        request: (ComputeZoneFolderOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='folders/{foldersId}/zones/{zone}/operations/{operation}',
+        http_method='GET',
+        method_id='compute.zoneFolderOperations.get',
+        ordered_params=['folder', 'zone', 'operation'],
+        path_params=['folder', 'operation', 'zone'],
+        query_params=[],
+        relative_path='{+folder}/zones/{zone}/operations/{operation}',
+        request_field='',
+        request_type_name='ComputeZoneFolderOperationsGetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of Operation resources contained within the specified folder.
+
+      Args:
+        request: (ComputeZoneFolderOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (OperationList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='folders/{foldersId}/zones/{zone}/operations',
+        http_method='GET',
+        method_id='compute.zoneFolderOperations.list',
+        ordered_params=['folder', 'zone'],
+        path_params=['folder', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='{+folder}/zones/{zone}/operations',
+        request_field='',
+        request_type_name='ComputeZoneFolderOperationsListRequest',
+        response_type_name='OperationList',
         supports_download=False,
     )
 

@@ -500,6 +500,16 @@ deployed on.
   ).AddToParser(parser)
 
   base.Argument(
+      '--required-replica-count',
+      type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
+      help=("""\
+  Required number of machine replicas for the deployment resources the model will
+  be considered successfully deployed. This value must be greater than or equal
+  to 1 and less than or equal to min-replica-count.
+  """),
+  ).AddToParser(parser)
+
+  base.Argument(
       '--machine-type',
       help="""\
 The machine resources to be used for each node of this deployment.

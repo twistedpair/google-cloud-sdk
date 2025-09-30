@@ -20,6 +20,7 @@ from typing import Any, Optional, Mapping, Sequence
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.backupdr import util
 from googlecloudsdk.command_lib.backupdr import util as command_util
+from googlecloudsdk.generated_clients.apis.backupdr.v1 import backupdr_v1_messages
 
 
 class AccessRestriction(enum.Enum):
@@ -46,6 +47,7 @@ class BackupVaultsClient(util.BackupDrClientBase):
       effective_time: Optional[str],
       access_restriction: Optional[str],
       backup_retention_inheritance: Optional[str],
+      encryption_config: Optional[backupdr_v1_messages.EncryptionConfig],
   ) -> Any:
 
     parent = resource.Parent().RelativeName()
@@ -56,6 +58,7 @@ class BackupVaultsClient(util.BackupDrClientBase):
         labels=labels,
         effectiveTime=effective_time,
         accessRestriction=self.ParseAccessRestrictionEnum(access_restriction),
+        encryptionConfig=encryption_config,
     )
     if support_backup_retention_inheritance:
       backup_vault.backupRetentionInheritance = (

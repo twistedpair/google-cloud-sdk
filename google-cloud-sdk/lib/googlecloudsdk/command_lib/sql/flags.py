@@ -572,6 +572,7 @@ def AddDatabaseVersion(
       'POSTGRES_15',
       'POSTGRES_16',
       'POSTGRES_17',
+      'POSTGRES_18',
       'SQLSERVER_2017_EXPRESS',
       'SQLSERVER_2017_WEB',
       'SQLSERVER_2017_STANDARD',
@@ -584,6 +585,9 @@ def AddDatabaseVersion(
       'SQLSERVER_2022_WEB',
       'SQLSERVER_2022_STANDARD',
       'SQLSERVER_2022_ENTERPRISE',
+  ]
+  hidden_choices = [
+      'POSTGRES_18',
   ]
   # End of engine-specific content.
 
@@ -614,6 +618,9 @@ def AddDatabaseVersion(
       if support_default_version
       else None,
       choices=_MajorVersionMatchList(choices) if restrict_choices else None,
+      hidden_choices=_MajorVersionMatchList(hidden_choices)
+      if restrict_choices
+      else None,
       help=help_text,
       hidden=hidden,
   )
@@ -2947,12 +2954,12 @@ def AddReadPoolAutoScaleConfig(parser, hidden=False):
   )
   read_pool_auto_scale_group.add_argument(
       '--auto-scale-min-node-count',
-      type=arg_parsers.BoundedInt(lower_bound=1, unlimited=True),
+      type=arg_parsers.BoundedInt(lower_bound=1),
       help='Minimum number of read pool nodes to be maintained.',
   )
   read_pool_auto_scale_group.add_argument(
       '--auto-scale-max-node-count',
-      type=arg_parsers.BoundedInt(lower_bound=1, unlimited=True),
+      type=arg_parsers.BoundedInt(lower_bound=1),
       help='Maximum number of read pool nodes to be maintained.',
   )
   read_pool_auto_scale_group.add_argument(
@@ -2975,6 +2982,22 @@ def AddReadPoolAutoScaleConfig(parser, hidden=False):
           'Disable automatic read pool scale-in. Auto scale will only add nodes'
           ' to the read pool. Automatic read pool scale-in is enabled by'
           ' default.'
+      ),
+  )
+  read_pool_auto_scale_group.add_argument(
+      '--auto-scale-in-cooldown-seconds',
+      type=arg_parsers.BoundedInt(lower_bound=60),
+      help=(
+          'The cooldown period for automatic read pool scale-in. '
+          'Minimum time between scale-in events.'
+      ),
+  )
+  read_pool_auto_scale_group.add_argument(
+      '--auto-scale-out-cooldown-seconds',
+      type=arg_parsers.BoundedInt(lower_bound=60),
+      help=(
+          'The cooldown period for automatic read pool scale-out. '
+          'Minimum time between scale-out events.'
       ),
   )
 
@@ -3468,7 +3491,7 @@ def AddNodeCount(parser):
       '--node-count',
       required=False,
       default=None,
-      type=arg_parsers.BoundedInt(lower_bound=1, unlimited=True),
+      type=arg_parsers.BoundedInt(lower_bound=1),
       help=(
           'The number of nodes in the pool. This option is only available for'
           ' read pools.'

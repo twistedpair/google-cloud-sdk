@@ -397,18 +397,18 @@ def GetEnableEmergentMaintenanceFlag():
 def GetSchedulingTypeFlag():
   """--scheduling-type flag."""
   help_text = """\
-  Maintenance for the reserved capacity.
+  How Compute Engine schedules maintenance events for your reserved hosts.
   """
   return base.Argument(
       '--scheduling-type',
       choices={
           'GROUPED': (
-              'In GROUPED mode, maintenance on all reserved instances is'
-              ' synchronized.'
+              'In GROUPED mode, maintenance is synchronized across all your'
+              ' VMs.'
           ),
           'INDEPENDENT': (
-              'In INDEPENDENT mode, maintenance is not synchronized for this'
-              ' reservation, and each instance has its own maintenance window.'
+              'In INDEPENDENT mode, your VMs have different, unsynchronized'
+              ' maintenance schedules.'
           ),
       },
       help=help_text,

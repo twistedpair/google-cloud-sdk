@@ -207,8 +207,16 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
         )) as download_stream:
       download_stream.seek(start_byte)
       provider = self._source_resource.storage_url.scheme
+      enable_zonal_buckets_bidi_streaming = (
+          properties.VALUES.storage.enable_zonal_buckets_bidi_streaming.GetBool()
+      )
+      if enable_zonal_buckets_bidi_streaming:
+        bucket_name = self._source_resource.storage_url.bucket_name
+        api = api_factory.get_api(provider, bucket_name=bucket_name)
+      else:
+        api = api_factory.get_api(provider)
       # TODO(b/162264437): Support all of download_object's parameters.
-      api_download_result = api_factory.get_api(provider).download_object(
+      api_download_result = api.download_object(
           self._source_resource,
           download_stream,
           request_config,

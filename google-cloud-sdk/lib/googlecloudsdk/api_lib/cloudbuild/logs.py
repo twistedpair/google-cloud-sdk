@@ -265,18 +265,22 @@ class GCSLogTailer(TailerBase):
   """Helper class to tail a GCS logfile, printing content as available."""
 
   LOG_OUTPUT_INCOMPLETE = ' (possibly incomplete) '
-  GCS_URL_PATTERN = (
-      'https://www.googleapis.com/storage/v1/b/{bucket}/o/{obj}?alt=media')
 
-  def __init__(self, bucket, obj, out=log.status, url_pattern=None):
+  def __init__(self, bucket, obj, out=log.status):
     self.transport = RequestsLogTailer()
-    url_pattern = url_pattern or self.GCS_URL_PATTERN
-    self.url = url_pattern.format(bucket=bucket, obj=obj)
+    self.url = self._StorageUrl(bucket, obj)
     log.debug('GCS logfile url is ' + self.url)
     # position in the file being read
     self.cursor = 0
     self.out = out
     self.stop = False
+
+  def _StorageUrl(self, bucket, obj):
+    url_pattern = 'https://storage.googleapis.com/{bucket}/{obj}'
+    if properties.VALUES.context_aware.use_client_certificate.GetBool():
+      # mTLS is enabled.
+      url_pattern = 'https://storage.mtls.googleapis.com/{bucket}/{obj}'
+    return url_pattern.format(bucket=bucket, obj=obj)
 
   @classmethod
   def FromBuild(cls, build, out=log.out):
@@ -316,8 +320,7 @@ class GCSLogTailer(TailerBase):
     return cls(
         bucket=log_bucket,
         obj=log_object,
-        out=out,
-        url_pattern='https://storage.googleapis.com/{bucket}/{obj}')
+        out=out)
 
   def Poll(self, is_last=False):
     """Poll the GCS object and print any new bytes to the console.

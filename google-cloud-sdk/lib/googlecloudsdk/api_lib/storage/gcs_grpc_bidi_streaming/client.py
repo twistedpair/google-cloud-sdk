@@ -17,9 +17,12 @@
 
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage.gcs_grpc_bidi_streaming import download
+from googlecloudsdk.api_lib.storage.gcs_grpc_bidi_streaming import upload
 from googlecloudsdk.api_lib.storage.gcs_json import client as gcs_json_client
 from googlecloudsdk.api_lib.util import apis as core_apis
+from googlecloudsdk.command_lib.storage import gzip_util
 from googlecloudsdk.command_lib.storage.tasks.cp import download_util
+from googlecloudsdk.core import exceptions as core_exceptions
 
 
 class GcsGrpcBidiStreamingClient(cloud_api.CloudApi):
@@ -33,7 +36,10 @@ class GcsGrpcBidiStreamingClient(cloud_api.CloudApi):
   added for all bucket types.
   """
 
-  capabilities = []
+  capabilities = [
+      cloud_api.Capability.APPENDABLE_UPLOAD,
+      cloud_api.Capability.RESUMABLE_UPLOAD,
+  ]
 
   def __init__(self):
     super(GcsGrpcBidiStreamingClient, self).__init__()
@@ -55,6 +61,21 @@ class GcsGrpcBidiStreamingClient(cloud_api.CloudApi):
           redact_request_body_reason=redact_request_body_reason,
       )
     return self._gapic_client
+
+  def _get_source_path(self, source_resource):
+    """Get source path from source_resource.
+
+    Args:
+      source_resource (FileObjectResource|None): Contains the
+        source StorageUrl. Can be None if source is pure stream.
+
+    Returns:
+      (str|None) Source path.
+    """
+    if source_resource:
+      return source_resource.storage_url.versionless_url_string
+
+    return None
 
   def get_object_metadata(
       self,
@@ -130,4 +151,45 @@ class GcsGrpcBidiStreamingClient(cloud_api.CloudApi):
       upload_strategy=cloud_api.UploadStrategy.SIMPLE,
   ):
     """See super class."""
-    raise NotImplementedError()
+    client = self._get_gapic_client(
+        redact_request_body_reason=(
+            'Object data is not displayed to keep the log output clean.'
+            ' Set log_http_show_request_body property to True to print the'
+            ' body of this request.'
+        )
+    )
+
+    source_path = self._get_source_path(source_resource)
+    should_gzip_in_flight = gzip_util.should_gzip_in_flight(
+        request_config.gzip_settings, source_path
+    )
+
+    if should_gzip_in_flight:
+      raise core_exceptions.InternalError(
+          'Gzip transport encoding is not supported with Zonal Buckets.'
+      )
+
+    if upload_strategy == cloud_api.UploadStrategy.SIMPLE:
+      uploader = upload.SimpleUpload(
+          client=client,
+          source_stream=source_stream,
+          destination_resource=destination_resource,
+          request_config=request_config,
+          source_resource=source_resource,
+          delegator=self._delegator,
+      )
+    elif upload_strategy == cloud_api.UploadStrategy.RESUMABLE:
+      uploader = upload.ResumableUpload(
+          client=client,
+          source_stream=source_stream,
+          destination_resource=destination_resource,
+          request_config=request_config,
+          source_resource=source_resource,
+          delegator=self._delegator,
+      )
+    else:
+      raise core_exceptions.InternalError(
+          'Only simple/resumable upload strategy is supported for Zonal Buckets'
+          ' with bidi streaming API.'
+      )
+    return uploader.run()

@@ -380,6 +380,7 @@ def AddCommonBulkInsertArgs(
     support_flex_start=False,
     support_source_snapshot_region=False,
     support_skip_guest_os_shutdown=False,
+    support_preemption_notice_duration=False,
 ):
   """Register parser args common to all tracks."""
   metadata_utils.AddMetadataArgs(parser)
@@ -405,6 +406,9 @@ def AddCommonBulkInsertArgs(
   )
   if support_graceful_shutdown:
     instances_flags.AddGracefulShutdownArgs(parser, is_create=True)
+
+  if support_preemption_notice_duration:
+    instances_flags.AddPreemptionNoticeDurationArgs(parser)
   instances_flags.AddNetworkPerformanceConfigsArgs(parser)
   instances_flags.AddInstanceTerminationActionVmArgs(parser)
   instances_flags.AddServiceAccountAndScopeArgs(

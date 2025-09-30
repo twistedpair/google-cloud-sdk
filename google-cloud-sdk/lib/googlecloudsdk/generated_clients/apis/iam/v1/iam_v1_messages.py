@@ -6400,6 +6400,8 @@ class WorkforcePoolProviderScimTenant(_messages.Message):
       {workforce_pool_provider}/scimTenants/{scim_tenant}`
     purgeTime: Output only. The timestamp when the scim tenant is going to be
       purged.
+    serviceAgent: Output only. Service Agent created by SCIM Tenant API. SCIM
+      tokens created under this tenant will be attached to this service agent.
     state: Output only. The state of the tenant.
   """
 
@@ -6448,7 +6450,8 @@ class WorkforcePoolProviderScimTenant(_messages.Message):
   displayName = _messages.StringField(4)
   name = _messages.StringField(5)
   purgeTime = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
+  serviceAgent = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
 
 
 class WorkforcePoolProviderScimToken(_messages.Message):

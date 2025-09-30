@@ -1821,8 +1821,8 @@ class ManagedkafkaProjectsLocationsListRequest(_messages.Message):
   r"""A ManagedkafkaProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Do not use this field. It is unsupported and
-      is ignored unless explicitly documented otherwise. This is primarily for
+    extraLocationTypes: Optional. Unless explicitly documented otherwise,
+      don't use this unsupported field which is primarily intended for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -3285,13 +3285,16 @@ class StopConnectorResponse(_messages.Message):
 
 
 class TaskRetryPolicy(_messages.Message):
-  r"""Task Retry Policy is implemented on a best-effort basis. Retry delay
-  will be exponential based on provided minimum and maximum backoffs.
+  r"""Task Retry Policy is implemented on a best-effort basis. The default
+  policy retries tasks with a minimum_backoff of 60 seconds, and a
+  maximum_backoff of 12 hours. You can disable the policy by setting the
+  task_retry_disabled field to true. Retry delay will be exponential based on
+  provided minimum and maximum backoffs.
   https://en.wikipedia.org/wiki/Exponential_backoff. Note that the delay
   between consecutive task restarts may not always precisely match the
   configured settings. This can happen when the ConnectCluster is in
   rebalancing state or if the ConnectCluster is unresponsive etc. The default
-  values for minimum and maximum backoffs are 60 seconds and 30 minutes
+  values for minimum and maximum backoffs are 60 seconds and 12 hours
   respectively.
 
   Fields:
@@ -3299,10 +3302,12 @@ class TaskRetryPolicy(_messages.Message):
       retrying a failed task. This sets an upper bound for the backoff delay.
     minimumBackoff: Optional. The minimum amount of time to wait before
       retrying a failed task. This sets a lower bound for the backoff delay.
+    taskRetryDisabled: Optional. If true, task retry is disabled.
   """
 
   maximumBackoff = _messages.StringField(1)
   minimumBackoff = _messages.StringField(2)
+  taskRetryDisabled = _messages.BooleanField(3)
 
 
 class TlsConfig(_messages.Message):

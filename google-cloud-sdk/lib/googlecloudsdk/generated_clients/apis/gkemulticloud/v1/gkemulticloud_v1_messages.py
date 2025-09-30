@@ -1334,10 +1334,26 @@ class GoogleCloudGkemulticloudV1AttachedPlatformVersionInfo(_messages.Message):
   r"""Information about a supported Attached Clusters platform version.
 
   Fields:
+    enabled: Optional. True if the version is available for attachedcluster
+      creation. If a version is enabled, it can be used to attach new
+      clusters.
+    endOfLife: Optional. True if this cluster version belongs to a minor
+      version that has reached its end of life and is no longer in scope to
+      receive security and bug fixes.
+    endOfLifeDate: Optional. The estimated date (in Pacific Time) when this
+      cluster version will reach its end of life. Or if this version is no
+      longer supported (the `end_of_life` field is true), this is the actual
+      date (in Pacific time) when the version reached its end of life.
+    releaseDate: Optional. The date (in Pacific Time) when the cluster version
+      was released.
     version: Platform version name.
   """
 
-  version = _messages.StringField(1)
+  enabled = _messages.BooleanField(1)
+  endOfLife = _messages.BooleanField(2)
+  endOfLifeDate = _messages.MessageField('GoogleTypeDate', 3)
+  releaseDate = _messages.MessageField('GoogleTypeDate', 4)
+  version = _messages.StringField(5)
 
 
 class GoogleCloudGkemulticloudV1AttachedProxyConfig(_messages.Message):

@@ -456,7 +456,7 @@ class CatalogTemplate(_messages.Message):
   r"""A template inside a catalog.
 
   Enums:
-    TemplateCategoryValueValuesEnum: Optional. The category of the ADC
+    TemplateCategoryValueValuesEnum: Required. The category of the ADC
       template.
     TypeValueValuesEnum: Optional. The Application Design Center assembly
       template type.
@@ -469,14 +469,14 @@ class CatalogTemplate(_messages.Message):
     name: Identifier. The catalog template name in following format: projects/
       $project/locations/$location/spaces/$space/catalogs/$catalog/templates/$
       template
-    templateCategory: Optional. The category of the ADC template.
+    templateCategory: Required. The category of the ADC template.
     type: Optional. The Application Design Center assembly template type.
     updateTime: Output only. The catalog template update timestamp.
     uuid: Output only. The template revisions UUID.
   """
 
   class TemplateCategoryValueValuesEnum(_messages.Enum):
-    r"""Optional. The category of the ADC template.
+    r"""Required. The category of the ADC template.
 
     Values:
       TEMPLATE_CATEGORY_UNSPECIFIED: Unspecified category.
@@ -2614,11 +2614,14 @@ class ImportApplicationTemplateRequest(_messages.Message):
   Fields:
     applicationTemplateRevisionUri: Optional. The source URI for application
       template revision.
+    serializedApplicationTemplate: Optional. The serialized application
+      template to be imported.
     sharedTemplateRevisionUri: Optional. The source URI for catalog template.
   """
 
   applicationTemplateRevisionUri = _messages.StringField(1)
-  sharedTemplateRevisionUri = _messages.StringField(2)
+  serializedApplicationTemplate = _messages.MessageField('SerializedApplicationTemplate', 2)
+  sharedTemplateRevisionUri = _messages.StringField(3)
 
 
 class InferConnectionsRequest(_messages.Message):
@@ -3496,7 +3499,7 @@ class SharedTemplate(_messages.Message):
   r"""A read-only template that is shared with a space.
 
   Enums:
-    TemplateCategoryValueValuesEnum: Optional. The category of the ADC
+    TemplateCategoryValueValuesEnum: Required. The category of the ADC
       template.
     TypeValueValuesEnum: Optional. The Application Design Center assembly
       template type.
@@ -3509,13 +3512,13 @@ class SharedTemplate(_messages.Message):
     name: Identifier. The shared template name. projects/$project/locations/$l
       ocation/spaces/$space/sharedTemplates/$sharedTemplate
     originTemplate: Output only. The origin template of the shared template.
-    templateCategory: Optional. The category of the ADC template.
+    templateCategory: Required. The category of the ADC template.
     type: Optional. The Application Design Center assembly template type.
     updateTime: Output only. The shared template update timestamp.
   """
 
   class TemplateCategoryValueValuesEnum(_messages.Enum):
-    r"""Optional. The category of the ADC template.
+    r"""Required. The category of the ADC template.
 
     Values:
       TEMPLATE_CATEGORY_UNSPECIFIED: Unspecified category.

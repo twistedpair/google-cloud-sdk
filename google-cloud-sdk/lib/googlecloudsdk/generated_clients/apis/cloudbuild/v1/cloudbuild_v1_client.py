@@ -421,7 +421,7 @@ class CloudbuildV1(base_api.BaseApiClient):
           }
 
     def Approve(self, request, global_params=None):
-      r"""Approves or rejects a pending build. If approved, the returned LRO will be analogous to the LRO returned from a CreateBuild call. If rejected, the returned LRO will be immediately done.
+      r"""Approves or rejects a pending build. If approved, the returned long-running operation (LRO) will be analogous to the LRO returned from a CreateBuild call. If rejected, the returned LRO will be immediately done.
 
       Args:
         request: (CloudbuildProjectsBuildsApproveRequest) input message
@@ -1244,7 +1244,7 @@ class CloudbuildV1(base_api.BaseApiClient):
           }
 
     def Approve(self, request, global_params=None):
-      r"""Approves or rejects a pending build. If approved, the returned LRO will be analogous to the LRO returned from a CreateBuild call. If rejected, the returned LRO will be immediately done.
+      r"""Approves or rejects a pending build. If approved, the returned long-running operation (LRO) will be analogous to the LRO returned from a CreateBuild call. If rejected, the returned LRO will be immediately done.
 
       Args:
         request: (CloudbuildProjectsLocationsBuildsApproveRequest) input message

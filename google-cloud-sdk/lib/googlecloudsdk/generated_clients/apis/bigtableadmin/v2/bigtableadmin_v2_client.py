@@ -665,6 +665,33 @@ class BigtableadminV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetMemoryLayer(self, request, global_params=None):
+      r"""Gets information about the memory layer of a cluster.
+
+      Args:
+        request: (BigtableadminProjectsInstancesClustersGetMemoryLayerRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MemoryLayer) The response message.
+      """
+      config = self.GetMethodConfig('GetMemoryLayer')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetMemoryLayer.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/memoryLayer',
+        http_method='GET',
+        method_id='bigtableadmin.projects.instances.clusters.getMemoryLayer',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='BigtableadminProjectsInstancesClustersGetMemoryLayerRequest',
+        response_type_name='MemoryLayer',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists information about clusters in an instance.
 
@@ -742,6 +769,33 @@ class BigtableadminV2(base_api.BaseApiClient):
         relative_path='v2/{+name}',
         request_field='<request>',
         request_type_name='Cluster',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def UpdateMemoryLayer(self, request, global_params=None):
+      r"""Updates the memory layer of a cluster. To enable the memory layer, set the memory_config. To disable the memory layer, unset the memory_config.
+
+      Args:
+        request: (BigtableadminProjectsInstancesClustersUpdateMemoryLayerRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateMemoryLayer')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateMemoryLayer.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/memoryLayer',
+        http_method='PATCH',
+        method_id='bigtableadmin.projects.instances.clusters.updateMemoryLayer',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='memoryLayer',
+        request_type_name='BigtableadminProjectsInstancesClustersUpdateMemoryLayerRequest',
         response_type_name='Operation',
         supports_download=False,
     )

@@ -131,7 +131,9 @@ class MessageTransformsClient(object):
     if message_transforms_file:
       try:
         message_transforms = utils.GetMessageTransformsFromFile(
-            self.messages.MessageTransform, message_transforms_file
+            self.messages.MessageTransform,
+            message_transforms_file,
+            enable_vertex_ai_smt=False,
         )
       except (
           utils.MessageTransformsInvalidFormatError,

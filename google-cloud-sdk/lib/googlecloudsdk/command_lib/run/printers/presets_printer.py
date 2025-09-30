@@ -157,8 +157,13 @@ class PresetsPrinter(cp.CustomPrinterBase):
     usage_lines = preset.get('example_gcloud_usage', [])
     if not usage_lines:
       return None
-    full_usage_string = ''.join(usage_lines)
 
+    if isinstance(usage_lines, str):
+      usage_lines = [usage_lines]
+
+    full_usage_string = [' ']
+    full_usage_string.extend(usage_lines)
+    full_usage_string.append(' ')
     return cp.Section(
-        [cp.Labeled([('Usage', cp.Lines([' ', full_usage_string, ' ']))])]
+        [cp.Labeled([('Usage', cp.Lines(full_usage_string))])]
     )

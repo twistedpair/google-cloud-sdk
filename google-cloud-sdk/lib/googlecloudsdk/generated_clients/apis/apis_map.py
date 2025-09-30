@@ -36,7 +36,7 @@ class APIDef(object):
                apitools=None,
                gapic=None,
                default_version=False,
-               enable_mtls=False,
+               enable_mtls=True,
                mtls_endpoint_override=''):
     self.apitools = apitools
     self.gapic = gapic
@@ -564,7 +564,7 @@ MAP = {
                     base_url='https://baremetalsolution.googleapis.com/',
                     messages_modulepath='baremetalsolution_v1_messages'),
                 default_version=False,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
         'v2':
             APIDef(
@@ -574,7 +574,7 @@ MAP = {
                     base_url='https://baremetalsolution.googleapis.com/',
                     messages_modulepath='baremetalsolution_v2_messages'),
                 default_version=True,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
     },
     'batch': {
@@ -627,6 +627,18 @@ MAP = {
                     client_classpath='beyondcorp_v1alpha_client.BeyondcorpV1alpha',
                     base_url='https://beyondcorp.googleapis.com/',
                     messages_modulepath='beyondcorp_v1alpha_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
+    'biglake': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.biglake.v1',
+                    client_classpath='biglake_v1_client.BiglakeV1',
+                    base_url='https://biglake.googleapis.com/',
+                    messages_modulepath='biglake_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
@@ -1230,7 +1242,7 @@ MAP = {
                     base_url='https://cloudshell.googleapis.com/',
                     messages_modulepath='cloudshell_v1_messages'),
                 default_version=False,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
@@ -1240,7 +1252,7 @@ MAP = {
                     base_url='https://cloudshell.googleapis.com/',
                     messages_modulepath='cloudshell_v1alpha1_messages'),
                 default_version=True,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
     },
     'cloudtasks': {
@@ -1590,7 +1602,7 @@ MAP = {
                     base_url='https://datafusion.googleapis.com/',
                     messages_modulepath='datafusion_v1beta1_messages'),
                 default_version=True,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
     },
     'datamigration': {
@@ -1882,7 +1894,7 @@ MAP = {
                     base_url='https://domains.googleapis.com/',
                     messages_modulepath='domains_v1_messages'),
                 default_version=True,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
         'v1alpha2':
             APIDef(
@@ -1892,7 +1904,7 @@ MAP = {
                     base_url='https://domains.googleapis.com/',
                     messages_modulepath='domains_v1alpha2_messages'),
                 default_version=False,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
         'v1beta1':
             APIDef(
@@ -1902,7 +1914,7 @@ MAP = {
                     base_url='https://domains.googleapis.com/',
                     messages_modulepath='domains_v1beta1_messages'),
                 default_version=False,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
     },
     'edgecontainer': {
@@ -1914,7 +1926,7 @@ MAP = {
                     base_url='https://edgecontainer.googleapis.com/',
                     messages_modulepath='edgecontainer_v1_messages'),
                 default_version=False,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
         'v1alpha':
             APIDef(
@@ -1924,7 +1936,7 @@ MAP = {
                     base_url='https://edgecontainer.googleapis.com/',
                     messages_modulepath='edgecontainer_v1alpha_messages'),
                 default_version=True,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
         'v1beta':
             APIDef(
@@ -1934,7 +1946,7 @@ MAP = {
                     base_url='https://edgecontainer.googleapis.com/',
                     messages_modulepath='edgecontainer_v1beta_messages'),
                 default_version=False,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
     },
     'edgenetwork': {
@@ -1946,7 +1958,7 @@ MAP = {
                     base_url='https://edgenetwork.googleapis.com/',
                     messages_modulepath='edgenetwork_v1_messages'),
                 default_version=False,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
@@ -1956,7 +1968,7 @@ MAP = {
                     base_url='https://edgenetwork.googleapis.com/',
                     messages_modulepath='edgenetwork_v1alpha1_messages'),
                 default_version=True,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
     },
     'essentialcontacts': {
@@ -2500,7 +2512,7 @@ MAP = {
                     base_url='https://ids.googleapis.com/',
                     messages_modulepath='ids_v1_messages'),
                 default_version=True,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
     },
     'kmsinventory': {
@@ -2990,7 +3002,7 @@ MAP = {
                     base_url='https://networksecurity.googleapis.com/',
                     messages_modulepath='networksecurity_v1_messages'),
                 default_version=True,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
@@ -3000,7 +3012,7 @@ MAP = {
                     base_url='https://networksecurity.googleapis.com/',
                     messages_modulepath='networksecurity_v1alpha1_messages'),
                 default_version=False,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
         'v1beta1':
             APIDef(
@@ -3010,7 +3022,7 @@ MAP = {
                     base_url='https://networksecurity.googleapis.com/',
                     messages_modulepath='networksecurity_v1beta1_messages'),
                 default_version=False,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
     },
     'networkservices': {
@@ -3022,7 +3034,7 @@ MAP = {
                     base_url='https://networkservices.googleapis.com/',
                     messages_modulepath='networkservices_v1_messages'),
                 default_version=True,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
@@ -3032,7 +3044,7 @@ MAP = {
                     base_url='https://networkservices.googleapis.com/',
                     messages_modulepath='networkservices_v1alpha1_messages'),
                 default_version=False,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
         'v1beta1':
             APIDef(
@@ -3042,7 +3054,7 @@ MAP = {
                     base_url='https://networkservices.googleapis.com/',
                     messages_modulepath='networkservices_v1beta1_messages'),
                 default_version=False,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
     },
     'notebooks': {
@@ -3358,7 +3370,7 @@ MAP = {
                     base_url='https://policytroubleshooter.googleapis.com/',
                     messages_modulepath='policytroubleshooter_v1_messages'),
                 default_version=True,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
         'v1beta':
             APIDef(
@@ -3368,7 +3380,7 @@ MAP = {
                     base_url='https://policytroubleshooter.googleapis.com/',
                     messages_modulepath='policytroubleshooter_v1beta_messages'),
                 default_version=False,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
         'v2alpha1':
             APIDef(
@@ -3378,7 +3390,7 @@ MAP = {
                     base_url='https://policytroubleshooter.googleapis.com/',
                     messages_modulepath='policytroubleshooter_v2alpha1_messages'),
                 default_version=False,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
         'v3':
             APIDef(
@@ -3388,7 +3400,7 @@ MAP = {
                     base_url='https://policytroubleshooter.googleapis.com/',
                     messages_modulepath='policytroubleshooter_v3_messages'),
                 default_version=False,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
         'v3alpha':
             APIDef(
@@ -3398,7 +3410,7 @@ MAP = {
                     base_url='https://policytroubleshooter.googleapis.com/',
                     messages_modulepath='policytroubleshooter_v3alpha_messages'),
                 default_version=False,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
         'v3beta':
             APIDef(
@@ -3408,7 +3420,7 @@ MAP = {
                     base_url='https://policytroubleshooter.googleapis.com/',
                     messages_modulepath='policytroubleshooter_v3beta_messages'),
                 default_version=False,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
     },
     'privateca': {
@@ -3464,7 +3476,7 @@ MAP = {
                     base_url='https://publicca.googleapis.com/',
                     messages_modulepath='publicca_v1_messages'),
                 default_version=True,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
@@ -3474,7 +3486,7 @@ MAP = {
                     base_url='https://publicca.googleapis.com/',
                     messages_modulepath='publicca_v1alpha1_messages'),
                 default_version=False,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
         'v1beta1':
             APIDef(
@@ -3484,7 +3496,7 @@ MAP = {
                     base_url='https://publicca.googleapis.com/',
                     messages_modulepath='publicca_v1beta1_messages'),
                 default_version=False,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
     },
     'pubsub': {

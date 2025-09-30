@@ -192,6 +192,57 @@ class AllocationAffinity(_messages.Message):
   values = _messages.StringField(3, repeated=True)
 
 
+class AlloyDBClusterDataSourceProperties(_messages.Message):
+  r"""AlloyDBClusterDataSourceProperties represents the properties of a
+  AlloyDB cluster resource that are stored in the DataSource. .
+
+  Fields:
+    name: Output only. Name of the AlloyDB cluster backed up by the
+      datasource.
+    pitrWindows: Output only. Point in time recovery windows. This is not
+      intended to be exposed to the customers yet. The order is guaranteed to
+      be ascending by start time.
+  """
+
+  name = _messages.StringField(1)
+  pitrWindows = _messages.MessageField('AlloyDbPitrWindow', 2, repeated=True)
+
+
+class AlloyDbClusterBackupProperties(_messages.Message):
+  r"""AlloyDbClusterBackupProperties represents AlloyDB cluster backup
+  properties. .
+
+  Fields:
+    chainId: Output only. The chain id of this backup. Backups belonging to
+      the same chain are sharing the same chain id. This property is
+      calculated and maintained by BackupDR.
+    databaseVersion: Output only. The PostgreSQL major version of the AlloyDB
+      cluster when the backup was taken.
+    description: An optional text description for the backup.
+    storedBytes: Output only. Storage usage of this particular backup
+  """
+
+  chainId = _messages.StringField(1)
+  databaseVersion = _messages.StringField(2)
+  description = _messages.StringField(3)
+  storedBytes = _messages.IntegerField(4)
+
+
+class AlloyDbPitrWindow(_messages.Message):
+  r"""Point in time recovery window for an AlloyDB cluster.
+
+  Fields:
+    endTime: Output only. The end time of the PITR window. It is not set if
+      the corresponding Backup Plan Association is active.
+    logRetentionDays: Output only. Log retention days for the PITR window.
+    startTime: Output only. The start time of the PITR window.
+  """
+
+  endTime = _messages.StringField(1)
+  logRetentionDays = _messages.IntegerField(2)
+  startTime = _messages.StringField(3)
+
+
 class AttachedDisk(_messages.Message):
   r"""An instance-attached disk resource.
 
@@ -398,6 +449,7 @@ class Backup(_messages.Message):
       metadata. No labels currently defined.
 
   Fields:
+    alloyDbBackupProperties: Output only. AlloyDB specific backup properties.
     backupApplianceBackupProperties: Output only. Backup Appliance specific
       backup properties.
     backupApplianceLocks: Optional. The list of BackupLocks taken by the
@@ -496,28 +548,29 @@ class Backup(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  backupApplianceBackupProperties = _messages.MessageField('BackupApplianceBackupProperties', 1)
-  backupApplianceLocks = _messages.MessageField('BackupLock', 2, repeated=True)
-  backupType = _messages.EnumField('BackupTypeValueValuesEnum', 3)
-  cloudSqlInstanceBackupProperties = _messages.MessageField('CloudSqlInstanceBackupProperties', 4)
-  computeInstanceBackupProperties = _messages.MessageField('ComputeInstanceBackupProperties', 5)
-  consistencyTime = _messages.StringField(6)
-  createTime = _messages.StringField(7)
-  description = _messages.StringField(8)
-  diskBackupProperties = _messages.MessageField('DiskBackupProperties', 9)
-  enforcedRetentionEndTime = _messages.StringField(10)
-  etag = _messages.StringField(11)
-  expireTime = _messages.StringField(12)
-  gcpBackupPlanInfo = _messages.MessageField('GCPBackupPlanInfo', 13)
-  kmsKeyVersions = _messages.StringField(14, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 15)
-  name = _messages.StringField(16)
-  resourceSizeBytes = _messages.IntegerField(17)
-  satisfiesPzi = _messages.BooleanField(18)
-  satisfiesPzs = _messages.BooleanField(19)
-  serviceLocks = _messages.MessageField('BackupLock', 20, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 21)
-  updateTime = _messages.StringField(22)
+  alloyDbBackupProperties = _messages.MessageField('AlloyDbClusterBackupProperties', 1)
+  backupApplianceBackupProperties = _messages.MessageField('BackupApplianceBackupProperties', 2)
+  backupApplianceLocks = _messages.MessageField('BackupLock', 3, repeated=True)
+  backupType = _messages.EnumField('BackupTypeValueValuesEnum', 4)
+  cloudSqlInstanceBackupProperties = _messages.MessageField('CloudSqlInstanceBackupProperties', 5)
+  computeInstanceBackupProperties = _messages.MessageField('ComputeInstanceBackupProperties', 6)
+  consistencyTime = _messages.StringField(7)
+  createTime = _messages.StringField(8)
+  description = _messages.StringField(9)
+  diskBackupProperties = _messages.MessageField('DiskBackupProperties', 10)
+  enforcedRetentionEndTime = _messages.StringField(11)
+  etag = _messages.StringField(12)
+  expireTime = _messages.StringField(13)
+  gcpBackupPlanInfo = _messages.MessageField('GCPBackupPlanInfo', 14)
+  kmsKeyVersions = _messages.StringField(15, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 16)
+  name = _messages.StringField(17)
+  resourceSizeBytes = _messages.IntegerField(18)
+  satisfiesPzi = _messages.BooleanField(19)
+  satisfiesPzs = _messages.BooleanField(20)
+  serviceLocks = _messages.MessageField('BackupLock', 21, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  updateTime = _messages.StringField(23)
 
 
 class BackupApplianceBackupConfig(_messages.Message):
@@ -2326,6 +2379,39 @@ class BackupdrProjectsLocationsDataSourceReferencesGetRequest(_messages.Message)
   name = _messages.StringField(1, required=True)
 
 
+class BackupdrProjectsLocationsDataSourceReferencesListRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsDataSourceReferencesListRequest object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the results listed in
+      the response. The expression must specify the field name, a comparison
+      operator, and the value that you want to use for filtering. The
+      following field and operator combinations are supported: *
+      data_source_gcp_resource_info.gcp_resourcename with `=`, `!=` *
+      data_source_gcp_resource_info.type with `=`, `!=`
+    orderBy: Optional. A comma-separated list of fields to order by, sorted in
+      ascending order. Use "desc" after a field name for descending. Supported
+      fields: * data_source * data_source_gcp_resource_info.gcp_resourcename
+    pageSize: Optional. The maximum number of DataSourceReferences to return.
+      The service may return fewer than this value. If unspecified, at most 50
+      DataSourceReferences will be returned. The maximum value is 100; values
+      above 100 will be coerced to 100.
+    pageToken: Optional. A page token, received from a previous
+      `ListDataSourceReferences` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `ListDataSourceReferences` must match the call that provided the page
+      token.
+    parent: Required. The parent resource name. Format:
+      projects/{project}/locations/{location}
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class BackupdrProjectsLocationsGetRequest(_messages.Message):
   r"""A BackupdrProjectsLocationsGetRequest object.
 
@@ -2340,7 +2426,9 @@ class BackupdrProjectsLocationsGetTrialRequest(_messages.Message):
   r"""A BackupdrProjectsLocationsGetTrialRequest object.
 
   Fields:
-    name: Required. The name of the trial to retrieve.
+    name: Required. The project for which trial details need to be retrieved.
+      Format: projects/{project}/locations/{location} Supported Locations are
+      - us, eu and asia.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2350,8 +2438,8 @@ class BackupdrProjectsLocationsListRequest(_messages.Message):
   r"""A BackupdrProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Do not use this field. It is unsupported and
-      is ignored unless explicitly documented otherwise. This is primarily for
+    extraLocationTypes: Optional. Unless explicitly documented otherwise,
+      don't use this unsupported field which is primarily intended for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -2627,7 +2715,9 @@ class BackupdrProjectsLocationsTrialSubscribeRequest(_messages.Message):
   r"""A BackupdrProjectsLocationsTrialSubscribeRequest object.
 
   Fields:
-    parent: Required. The parent resource where this trial will be created.
+    parent: Required. The project where this trial will be created. Format:
+      projects/{project}/locations/{location} Supported Locations are - us, eu
+      and asia.
     subscribeTrialRequest: A SubscribeTrialRequest resource to be passed as
       the request body.
   """
@@ -2746,6 +2836,7 @@ class CloudSqlInstanceBackupProperties(_messages.Message):
       the Cloud SQL instance when the backup was taken.
     finalBackup: Output only. Whether the backup is a final backup.
     instanceCreateTime: Output only. The instance creation timestamp.
+    instanceDeleteTime: Output only. The instance delete timestamp.
     instanceTier: Output only. The tier (or machine type) for this instance.
       Example: `db-custom-1-3840`
     sourceInstance: Output only. The source instance of the backup. Format:
@@ -2755,8 +2846,9 @@ class CloudSqlInstanceBackupProperties(_messages.Message):
   databaseInstalledVersion = _messages.StringField(1)
   finalBackup = _messages.BooleanField(2)
   instanceCreateTime = _messages.StringField(3)
-  instanceTier = _messages.StringField(4)
-  sourceInstance = _messages.StringField(5)
+  instanceDeleteTime = _messages.StringField(4)
+  instanceTier = _messages.StringField(5)
+  sourceInstance = _messages.StringField(6)
 
 
 class CloudSqlInstanceDataSourceProperties(_messages.Message):
@@ -3350,6 +3442,11 @@ class DataSourceGcpResource(_messages.Message):
   GcpResourceDataSource or GcpDataSourceResource
 
   Fields:
+    alloyDbClusterDatasourceProperties: Output only.
+      AlloyDBClusterDataSourceProperties has a subset of AlloyDB cluster
+      properties that are useful at the Datasource level. Currently none of
+      its child properties are auditable. If new auditable properties are
+      added, the AUDIT annotation should be added.
     cloudSqlInstanceDatasourceProperties: Output only.
       CloudSqlInstanceDataSourceProperties has a subset of Cloud SQL Instance
       properties that are useful at the Datasource level.
@@ -3365,12 +3462,13 @@ class DataSourceGcpResource(_messages.Message):
       Type, eg. compute.googleapis.com/Instance.
   """
 
-  cloudSqlInstanceDatasourceProperties = _messages.MessageField('CloudSqlInstanceDataSourceProperties', 1)
-  computeInstanceDatasourceProperties = _messages.MessageField('ComputeInstanceDataSourceProperties', 2)
-  diskDatasourceProperties = _messages.MessageField('DiskDataSourceProperties', 3)
-  gcpResourcename = _messages.StringField(4)
-  location = _messages.StringField(5)
-  type = _messages.StringField(6)
+  alloyDbClusterDatasourceProperties = _messages.MessageField('AlloyDBClusterDataSourceProperties', 1)
+  cloudSqlInstanceDatasourceProperties = _messages.MessageField('CloudSqlInstanceDataSourceProperties', 2)
+  computeInstanceDatasourceProperties = _messages.MessageField('ComputeInstanceDataSourceProperties', 3)
+  diskDatasourceProperties = _messages.MessageField('DiskDataSourceProperties', 4)
+  gcpResourcename = _messages.StringField(5)
+  location = _messages.StringField(6)
+  type = _messages.StringField(7)
 
 
 class DataSourceGcpResourceInfo(_messages.Message):
@@ -4324,6 +4422,19 @@ class ListBackupsResponse(_messages.Message):
   backups = _messages.MessageField('Backup', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListDataSourceReferencesResponse(_messages.Message):
+  r"""Response for the ListDataSourceReferences method.
+
+  Fields:
+    dataSourceReferences: The DataSourceReferences from the specified parent.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  dataSourceReferences = _messages.MessageField('DataSourceReference', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListDataSourcesResponse(_messages.Message):

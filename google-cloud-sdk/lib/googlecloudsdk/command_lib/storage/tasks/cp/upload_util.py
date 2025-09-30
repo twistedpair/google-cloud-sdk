@@ -30,11 +30,13 @@ from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import buffered_upload_stream
 from googlecloudsdk.command_lib.storage import component_stream
 from googlecloudsdk.command_lib.storage import errors
+from googlecloudsdk.command_lib.storage import fast_crc32c_util
 from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage import upload_stream
 from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.command_lib.storage.tasks.rm import delete_task
+from googlecloudsdk.command_lib.util import crc32c
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import hashing
@@ -120,9 +122,24 @@ def get_digesters(source_resource, destination_resource):
     updated with uploaded bytes.
   """
   provider = destination_resource.storage_url.scheme
-  capabilities = api_factory.get_capabilities(provider)
+  bucket_name = (
+      destination_resource.storage_url.bucket_name
+      if properties.VALUES.storage.enable_zonal_buckets_bidi_streaming.GetBool()
+      else None
+  )
+  capabilities = api_factory.get_capabilities(provider, bucket_name)
   check_hashes = properties.CheckHashes(
       properties.VALUES.storage.check_hashes.Get())
+
+  # If the API supports appendable uploads, we should use CRC32C only.
+  if cloud_api.Capability.APPENDABLE_UPLOAD in capabilities:
+    fast_crc32c_util.log_or_raise_crc32c_issues()
+    if (
+        check_hashes == properties.CheckHashes.ALWAYS
+        or fast_crc32c_util.check_if_will_use_fast_crc32c()
+    ):
+      return {hash_util.HashAlgorithm.CRC32C: fast_crc32c_util.get_crc32c()}
+    return {}
 
   if (source_resource.md5_hash or
       cloud_api.Capability.CLIENT_SIDE_HASH_VALIDATION in capabilities or
@@ -206,12 +223,25 @@ def validate_uploaded_object(digesters, uploaded_resource, task_status_queue):
   """Raises error if hashes for uploaded_resource and digesters do not match."""
   if not digesters:
     return
-  calculated_digest = hash_util.get_base64_hash_digest_string(
-      digesters[hash_util.HashAlgorithm.MD5])
+  if hash_util.HashAlgorithm.MD5 in digesters:
+    calculated_digest = hash_util.get_base64_hash_digest_string(
+        digesters[hash_util.HashAlgorithm.MD5])
+    destination_hash = uploaded_resource.md5_hash
+  elif hash_util.HashAlgorithm.CRC32C in digesters:
+    calculated_digest = crc32c.get_hash(
+        digesters[hash_util.HashAlgorithm.CRC32C]
+    )
+    destination_hash = uploaded_resource.crc32c_hash
+  else:
+    raise errors.Error(
+        'Unsupported hash algorithm(s) found in digesters: {}'.format(
+            ', '.join(digesters.keys())
+        )
+    )
   try:
     hash_util.validate_object_hashes_match(
         uploaded_resource.storage_url.url_string, calculated_digest,
-        uploaded_resource.md5_hash)
+        destination_hash)
   except errors.HashMismatchError:
     delete_task.DeleteObjectTask(uploaded_resource.storage_url).execute(
         task_status_queue=task_status_queue

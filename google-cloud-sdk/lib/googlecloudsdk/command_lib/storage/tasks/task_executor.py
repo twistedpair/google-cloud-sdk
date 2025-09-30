@@ -20,12 +20,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import optimize_parameters_util
 from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
 from googlecloudsdk.command_lib.storage.tasks import task_graph_executor
 from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.command_lib.storage.tasks import task_util
-from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
@@ -59,11 +59,15 @@ def _execute_tasks_sequential(task_iterator,
     task_execution_error = None
     try:
       task_output = task.execute(task_status_queue=task_status_queue)
-    except core_exceptions.Error as e:
+    except Exception as e:  # pylint: disable=broad-except
       task_execution_error = e
-      if continue_on_error:
-        log.warning(str(e))
-        exit_code = 1
+      if (
+          not isinstance(task_execution_error, errors.FatalError)
+          and continue_on_error
+      ):
+        log.error(str(e))
+        if task.change_exit_code:
+          exit_code = 1
         continue
       else:
         raise

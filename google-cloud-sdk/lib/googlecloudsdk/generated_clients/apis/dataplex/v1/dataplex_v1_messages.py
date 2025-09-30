@@ -3801,8 +3801,8 @@ class DataplexProjectsLocationsListRequest(_messages.Message):
   r"""A DataplexProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Do not use this field. It is unsupported and
-      is ignored unless explicitly documented otherwise. This is primarily for
+    extraLocationTypes: Optional. Unless explicitly documented otherwise,
+      don't use this unsupported field which is primarily intended for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like "displayName=tokyo", and is
@@ -5420,6 +5420,75 @@ class GoogleCloudDataplexV1DataDiscoverySpecStorageConfigJsonOptions(_messages.M
   typeInferenceDisabled = _messages.BooleanField(2)
 
 
+class GoogleCloudDataplexV1DataDocumentationResult(_messages.Message):
+  r"""The output of a DataDocumentation scan.
+
+  Fields:
+    tableResult: Output only. Table result for insights.
+  """
+
+  tableResult = _messages.MessageField('GoogleCloudDataplexV1DataDocumentationResultTableResult', 1)
+
+
+class GoogleCloudDataplexV1DataDocumentationResultField(_messages.Message):
+  r"""Column of a table with generated metadata and nested fields.
+
+  Fields:
+    description: Output only. Generated description for columns and fields.
+    fields: Output only. Nested fields.
+    name: Output only. The name of the column.
+  """
+
+  description = _messages.StringField(1)
+  fields = _messages.MessageField('GoogleCloudDataplexV1DataDocumentationResultField', 2, repeated=True)
+  name = _messages.StringField(3)
+
+
+class GoogleCloudDataplexV1DataDocumentationResultQuery(_messages.Message):
+  r"""A sample SQL query in data documentation.
+
+  Fields:
+    description: Output only. The description for the query.
+    sql: Output only. The SQL query string which can be executed.
+  """
+
+  description = _messages.StringField(1)
+  sql = _messages.StringField(2)
+
+
+class GoogleCloudDataplexV1DataDocumentationResultSchema(_messages.Message):
+  r"""Schema of the table with generated metadata of columns.
+
+  Fields:
+    fields: Output only. The list of columns.
+  """
+
+  fields = _messages.MessageField('GoogleCloudDataplexV1DataDocumentationResultField', 1, repeated=True)
+
+
+class GoogleCloudDataplexV1DataDocumentationResultTableResult(_messages.Message):
+  r"""Generated metadata about the table.
+
+  Fields:
+    name: Output only. The service-qualified full resource name of the cloud
+      resource. Ex: //bigquery.googleapis.com/projects/PROJECT_ID/datasets/DAT
+      ASET_ID/tables/TABLE_ID
+    overview: Output only. Generated description of the table.
+    queries: Output only. Sample SQL queries for the table.
+    schema: Output only. Schema of the table with generated metadata of the
+      columns in the schema.
+  """
+
+  name = _messages.StringField(1)
+  overview = _messages.StringField(2)
+  queries = _messages.MessageField('GoogleCloudDataplexV1DataDocumentationResultQuery', 3, repeated=True)
+  schema = _messages.MessageField('GoogleCloudDataplexV1DataDocumentationResultSchema', 4)
+
+
+class GoogleCloudDataplexV1DataDocumentationSpec(_messages.Message):
+  r"""DataDocumentation scan related spec."""
+
+
 class GoogleCloudDataplexV1DataProfileResult(_messages.Message):
   r"""DataProfileResult defines the output of DataProfileScan. Each field of
   the table will have field type specific profile result.
@@ -6289,7 +6358,11 @@ class GoogleCloudDataplexV1DataScan(_messages.Message):
   (https://cloud.google.com/dataplex/docs/data-profiling-overview). Data
   discovery: scans data in Cloud Storage buckets to extract and then catalog
   metadata. For more information, see Discover and catalog Cloud Storage data
-  (https://cloud.google.com/bigquery/docs/automatic-discovery).
+  (https://cloud.google.com/bigquery/docs/automatic-discovery). Data
+  documentation: analyzes the table details and generates insights including
+  descriptions and sample SQL queries for the table. For more information, see
+  Generate data insights in BigQuery
+  (https://cloud.google.com/bigquery/docs/data-insights).
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the DataScan.
@@ -6303,6 +6376,9 @@ class GoogleCloudDataplexV1DataScan(_messages.Message):
     data: Required. The data source for DataScan.
     dataDiscoveryResult: Output only. The result of a data discovery scan.
     dataDiscoverySpec: Settings for a data discovery scan.
+    dataDocumentationResult: Output only. The result of a data documentation
+      scan.
+    dataDocumentationSpec: Settings for a data documentation scan.
     dataProfileResult: Output only. The result of a data profile scan.
     dataProfileSpec: Settings for a data profile scan.
     dataQualityResult: Output only. The result of a data quality scan.
@@ -6352,11 +6428,13 @@ class GoogleCloudDataplexV1DataScan(_messages.Message):
       DATA_QUALITY: Data quality scan.
       DATA_PROFILE: Data profile scan.
       DATA_DISCOVERY: Data discovery scan.
+      DATA_DOCUMENTATION: Data documentation scan.
     """
     DATA_SCAN_TYPE_UNSPECIFIED = 0
     DATA_QUALITY = 1
     DATA_PROFILE = 2
     DATA_DISCOVERY = 3
+    DATA_DOCUMENTATION = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -6386,20 +6464,22 @@ class GoogleCloudDataplexV1DataScan(_messages.Message):
   data = _messages.MessageField('GoogleCloudDataplexV1DataSource', 2)
   dataDiscoveryResult = _messages.MessageField('GoogleCloudDataplexV1DataDiscoveryResult', 3)
   dataDiscoverySpec = _messages.MessageField('GoogleCloudDataplexV1DataDiscoverySpec', 4)
-  dataProfileResult = _messages.MessageField('GoogleCloudDataplexV1DataProfileResult', 5)
-  dataProfileSpec = _messages.MessageField('GoogleCloudDataplexV1DataProfileSpec', 6)
-  dataQualityResult = _messages.MessageField('GoogleCloudDataplexV1DataQualityResult', 7)
-  dataQualitySpec = _messages.MessageField('GoogleCloudDataplexV1DataQualitySpec', 8)
-  description = _messages.StringField(9)
-  displayName = _messages.StringField(10)
-  executionSpec = _messages.MessageField('GoogleCloudDataplexV1DataScanExecutionSpec', 11)
-  executionStatus = _messages.MessageField('GoogleCloudDataplexV1DataScanExecutionStatus', 12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  name = _messages.StringField(14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  type = _messages.EnumField('TypeValueValuesEnum', 16)
-  uid = _messages.StringField(17)
-  updateTime = _messages.StringField(18)
+  dataDocumentationResult = _messages.MessageField('GoogleCloudDataplexV1DataDocumentationResult', 5)
+  dataDocumentationSpec = _messages.MessageField('GoogleCloudDataplexV1DataDocumentationSpec', 6)
+  dataProfileResult = _messages.MessageField('GoogleCloudDataplexV1DataProfileResult', 7)
+  dataProfileSpec = _messages.MessageField('GoogleCloudDataplexV1DataProfileSpec', 8)
+  dataQualityResult = _messages.MessageField('GoogleCloudDataplexV1DataQualityResult', 9)
+  dataQualitySpec = _messages.MessageField('GoogleCloudDataplexV1DataQualitySpec', 10)
+  description = _messages.StringField(11)
+  displayName = _messages.StringField(12)
+  executionSpec = _messages.MessageField('GoogleCloudDataplexV1DataScanExecutionSpec', 13)
+  executionStatus = _messages.MessageField('GoogleCloudDataplexV1DataScanExecutionStatus', 14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  name = _messages.StringField(16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  type = _messages.EnumField('TypeValueValuesEnum', 18)
+  uid = _messages.StringField(19)
+  updateTime = _messages.StringField(20)
 
 
 class GoogleCloudDataplexV1DataScanCatalogPublishingStatus(_messages.Message):
@@ -6497,10 +6577,12 @@ class GoogleCloudDataplexV1DataScanEvent(_messages.Message):
       TRIGGER_UNSPECIFIED: An unspecified trigger type.
       ON_DEMAND: Data scan triggers on demand.
       SCHEDULE: Data scan triggers as per schedule.
+      ONE_TIME: Data scan is run one time on creation.
     """
     TRIGGER_UNSPECIFIED = 0
     ON_DEMAND = 1
     SCHEDULE = 2
+    ONE_TIME = 3
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the data scan.
@@ -6784,6 +6866,10 @@ class GoogleCloudDataplexV1DataScanJob(_messages.Message):
     createTime: Output only. The time when the DataScanJob was created.
     dataDiscoveryResult: Output only. The result of a data discovery scan.
     dataDiscoverySpec: Output only. Settings for a data discovery scan.
+    dataDocumentationResult: Output only. The result of a data documentation
+      scan.
+    dataDocumentationSpec: Output only. Settings for a data documentation
+      scan.
     dataProfileResult: Output only. The result of a data profile scan.
     dataProfileSpec: Output only. Settings for a data profile scan.
     dataQualityResult: Output only. The result of a data quality scan.
@@ -6828,26 +6914,30 @@ class GoogleCloudDataplexV1DataScanJob(_messages.Message):
       DATA_QUALITY: Data quality scan.
       DATA_PROFILE: Data profile scan.
       DATA_DISCOVERY: Data discovery scan.
+      DATA_DOCUMENTATION: Data documentation scan.
     """
     DATA_SCAN_TYPE_UNSPECIFIED = 0
     DATA_QUALITY = 1
     DATA_PROFILE = 2
     DATA_DISCOVERY = 3
+    DATA_DOCUMENTATION = 4
 
   createTime = _messages.StringField(1)
   dataDiscoveryResult = _messages.MessageField('GoogleCloudDataplexV1DataDiscoveryResult', 2)
   dataDiscoverySpec = _messages.MessageField('GoogleCloudDataplexV1DataDiscoverySpec', 3)
-  dataProfileResult = _messages.MessageField('GoogleCloudDataplexV1DataProfileResult', 4)
-  dataProfileSpec = _messages.MessageField('GoogleCloudDataplexV1DataProfileSpec', 5)
-  dataQualityResult = _messages.MessageField('GoogleCloudDataplexV1DataQualityResult', 6)
-  dataQualitySpec = _messages.MessageField('GoogleCloudDataplexV1DataQualitySpec', 7)
-  endTime = _messages.StringField(8)
-  message = _messages.StringField(9)
-  name = _messages.StringField(10)
-  startTime = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  type = _messages.EnumField('TypeValueValuesEnum', 13)
-  uid = _messages.StringField(14)
+  dataDocumentationResult = _messages.MessageField('GoogleCloudDataplexV1DataDocumentationResult', 4)
+  dataDocumentationSpec = _messages.MessageField('GoogleCloudDataplexV1DataDocumentationSpec', 5)
+  dataProfileResult = _messages.MessageField('GoogleCloudDataplexV1DataProfileResult', 6)
+  dataProfileSpec = _messages.MessageField('GoogleCloudDataplexV1DataProfileSpec', 7)
+  dataQualityResult = _messages.MessageField('GoogleCloudDataplexV1DataQualityResult', 8)
+  dataQualitySpec = _messages.MessageField('GoogleCloudDataplexV1DataQualitySpec', 9)
+  endTime = _messages.StringField(10)
+  message = _messages.StringField(11)
+  name = _messages.StringField(12)
+  startTime = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  type = _messages.EnumField('TypeValueValuesEnum', 15)
+  uid = _messages.StringField(16)
 
 
 class GoogleCloudDataplexV1DataSource(_messages.Message):
@@ -6862,9 +6952,9 @@ class GoogleCloudDataplexV1DataSource(_messages.Message):
       resource for a DataScan job to scan against. The field could either be:
       Cloud Storage bucket for DataDiscoveryScan Format:
       //storage.googleapis.com/projects/PROJECT_ID/buckets/BUCKET_ID or
-      BigQuery table of type "TABLE" for DataProfileScan/DataQualityScan
-      Format: //bigquery.googleapis.com/projects/PROJECT_ID/datasets/DATASET_I
-      D/tables/TABLE_ID
+      BigQuery table of type "TABLE" for
+      DataProfileScan/DataQualityScan/DataDocumentationScan Format: //bigquery
+      .googleapis.com/projects/PROJECT_ID/datasets/DATASET_ID/tables/TABLE_ID
   """
 
   entity = _messages.StringField(1)
@@ -7158,6 +7248,8 @@ class GoogleCloudDataplexV1EncryptionConfig(_messages.Message):
   Fields:
     createTime: Output only. The time when the Encryption configuration was
       created.
+    enableMetastoreEncryption: Optional. Represent the state of CMEK opt-in
+      for metastore.
     encryptionState: Output only. The state of encryption of the databases.
     etag: Etag of the EncryptionConfig. This is a strong etag.
     failureDetails: Output only. Details of the failure if anything related to
@@ -7191,12 +7283,13 @@ class GoogleCloudDataplexV1EncryptionConfig(_messages.Message):
     FAILED = 3
 
   createTime = _messages.StringField(1)
-  encryptionState = _messages.EnumField('EncryptionStateValueValuesEnum', 2)
-  etag = _messages.StringField(3)
-  failureDetails = _messages.MessageField('GoogleCloudDataplexV1EncryptionConfigFailureDetails', 4)
-  key = _messages.StringField(5)
-  name = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  enableMetastoreEncryption = _messages.BooleanField(2)
+  encryptionState = _messages.EnumField('EncryptionStateValueValuesEnum', 3)
+  etag = _messages.StringField(4)
+  failureDetails = _messages.MessageField('GoogleCloudDataplexV1EncryptionConfigFailureDetails', 5)
+  key = _messages.StringField(6)
+  name = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class GoogleCloudDataplexV1EncryptionConfigFailureDetails(_messages.Message):
@@ -9544,12 +9637,12 @@ class GoogleCloudDataplexV1MetadataJobImportJobSpecImportJobScope(_messages.Mess
       included in this list, the import job is halted before modifying any
       entries or aspects.The location of an aspect type must either match the
       location of the job, or the aspect type must be global.
-    entryGroups: Required. The entry group that is in scope for the import
-      job, specified as a relative resource name in the format projects/{proje
-      ct_number_or_id}/locations/{location_id}/entryGroups/{entry_group_id}.
-      Only entries and aspects that belong to the specified entry group are
-      affected by the job.Must contain exactly one element. The entry group
-      and the job must be in the same location.
+    entryGroups: Required. The entry groups that are in scope for the import
+      job, specified as relative resource names in the format projects/{projec
+      t_number_or_id}/locations/{location_id}/entryGroups/{entry_group_id}.
+      Only entries and aspects that belong to the specified entry groups are
+      affected by the job.The entry groups and the job must be in the same
+      location.
     entryLinkTypes: Optional. The entry link types that are in scope for the
       import job, specified as relative resource names in the format projects/
       {project_number_or_id}/locations/{location_id}/entryLinkTypes/{entry_lin

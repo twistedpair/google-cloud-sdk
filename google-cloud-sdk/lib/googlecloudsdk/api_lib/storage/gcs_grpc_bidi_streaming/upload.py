@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import abc
+import collections
 import io
 import os
 
@@ -28,6 +29,7 @@ from googlecloudsdk.api_lib.storage import errors as api_errors
 from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.api_lib.storage.gcs_grpc import grpc_util
 from googlecloudsdk.api_lib.storage.gcs_grpc import metadata_util
+from googlecloudsdk.api_lib.storage.gcs_grpc import retry_util
 from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage import fast_crc32c_util
 from googlecloudsdk.command_lib.storage import hash_util
@@ -44,7 +46,11 @@ _DEFAULT_FLUSH_SIZE = 50 * 1024 * 1024
 
 
 class _Upload(six.with_metaclass(abc.ABCMeta, object)):
-  """Base class shared by different upload strategies."""
+  """Base class shared by different upload strategies.
+
+  This class is not thread-safe due to the state maintained in instance
+  variables like `_uploaded_so_far`, `_buffer`, and `_initial_request`.
+  """
 
   def __init__(
       self,
@@ -88,6 +94,23 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
     self._should_use_crc32c = (
         fast_crc32c_util.check_if_will_use_fast_crc32c(install_if_missing=True)
     )
+    self._buffer = collections.deque(maxlen=self._get_max_buffer_size())
+    self._initial_request = None
+
+  def _get_max_buffer_size(self):
+    """Returns the maximum buffer size."""
+    # The buffer size is calculated as follows:
+    # 1. The default flush size is 50MiB.
+    # 2. The maximum size of a single request is 2MiB.
+    # 4. The maximum size of the buffer is calculated as:
+    #    (50MiB + (2MiB)) // (2MiB) = 26
+    # 5. Similarily for buffer size of odd flush size:
+    #    (51MiB + (2MiB)) // (2MiB) = 26
+    # 6. The maximum number of requests that can be buffered is 13.
+    chunk_size = (
+        self._client.types.ServiceConstants.Values.MAX_WRITE_CHUNK_BYTES
+    )
+    return (_DEFAULT_FLUSH_SIZE + (chunk_size)) // (chunk_size)
 
   def _initialize_bidi_write(self):
     """Initializes the generator for the upload."""
@@ -103,21 +126,93 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
         data,
         hash_util.HashAlgorithm.CRC32C,
         self._uploaded_so_far,
-        self._uploaded_so_far+length,
+        self._uploaded_so_far + length,
     )
     return int.from_bytes(crc32c_hash.digest(), byteorder='big')
 
+  def _send_buffer_to_bidi_write_rpc(self, bidi_write_rpc) -> None:
+    """Sends the buffer to the bidi write RPC."""
+    if not self._buffer:
+      return
+
+    for request in self._buffer:
+      bidi_write_rpc.send(request)
+    while True:
+      response = bidi_write_rpc.recv()
+      if response.write_handle:
+        self._initial_request.append_object_spec.write_handle = (
+            response.write_handle
+        )
+      if (
+          response.persisted_size is not None
+          and response.persisted_size == self._uploaded_so_far
+      ):
+        self._start_offset = response.persisted_size
+        break
+    self._buffer.clear()
+
+  def _update_initial_request(self, response):
+    """Updates the initial request for the bidi write RPC."""
+    if self._initial_request is not None:
+      return
+    self._initial_request = self._client.types.BidiWriteObjectRequest(
+        append_object_spec=self._client.types.AppendObjectSpec(
+            bucket=response.resource.bucket,
+            object=response.resource.name,
+            generation=response.resource.generation,
+            if_metageneration_match=(
+                self._request_config.precondition_metageneration_match
+            ),
+            write_handle=response.write_handle,
+        ),
+    )
+
+  def _get_updated_bidi_write_rpc_if_retrying(self, bidi_write_rpc):
+    """Returns the updated bidi write RPC for resuming an upload."""
+    # If the call is None, it means that the RPC was not initialized, and its a
+    # new upload. In this case we need not initialize the RPC again. As it is
+    # already done by the caller.
+    if bidi_write_rpc.call is not None:
+      # If the call is not None, it means that the RPC was initialized before
+      # and we need to create a new RPC with the updated initial request for
+      # retrying the upload.
+      bidi_write_rpc = gapic_util.MakeBidiRpc(
+          self._client,
+          self._client.storage.bidi_write_object,
+          initial_request=self._initial_request,
+          metadata=metadata_util.get_bucket_name_routing_header(
+              grpc_util.get_full_bucket_name(
+                  self._destination_resource.storage_url.bucket_name
+              )
+          ),
+      )
+    return bidi_write_rpc
+
+  @retry_util.grpc_default_retryer
   def _bidi_write_appendable_object(
       self, bidi_write_rpc, resuming_upload: bool = False
   ):
-    """Yields the responses from the bidi write RPC for an appendable object."""
+    """Performs the bidi write RPC for an appendable object."""
+    bidi_write_rpc = self._get_updated_bidi_write_rpc_if_retrying(
+        bidi_write_rpc
+    )
     try:
       bidi_write_rpc.open()
+      # TODO: b/440507899 - Add support for retrying an upload with a token.
+      # (Redirected token error handling) and/or error handling/retries
+      # with the first response.
       response = bidi_write_rpc.recv()
+      self._update_initial_request(response)
+
       if resuming_upload:
         self._check_existing_destination_is_valid(response.resource)
         self._start_offset = response.resource.size
-      yield response
+
+      # If the upload is being retried, we need to send the existing buffer to
+      # the bidi write RPC before initializing the upload. This is because the
+      # buffer contains the data that was written before the upload was
+      # interrupted. We will be retrying on the entire buffer.
+      self._send_buffer_to_bidi_write_rpc(bidi_write_rpc)
       self._initialize_bidi_write()
       flush_interval = self._start_offset + _DEFAULT_FLUSH_SIZE
 
@@ -138,10 +233,7 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
           # Handles final request case.
           should_flush = True
 
-        # TODO: b/441012774 - Send the request to the bidi write RPC in a
-        # controlled manner. This is to avoid sending too much data at once and
-        # causing excessive throttling, which can lead to errors.
-        bidi_write_rpc.send(
+        self._buffer.append(
             self._client.types.BidiWriteObjectRequest(
                 write_offset=self._uploaded_so_far,
                 checksummed_data=self._client.types.ChecksummedData(
@@ -149,15 +241,14 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
                     crc32c=self._get_crc32c_hash(data, length_of_data),
                 ),
                 flush=should_flush,
-                state_lookup=finish_write,
+                state_lookup=should_flush,
             )
         )
         self._uploaded_so_far += length_of_data
+        if should_flush:
+          self._send_buffer_to_bidi_write_rpc(bidi_write_rpc)
 
         if finish_write:
-          # TODO: b/441012774 - Add support for handling server side errors or
-          # additional responses.
-          yield bidi_write_rpc.recv()
           break
     finally:
       bidi_write_rpc.close()
@@ -242,6 +333,7 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
           self._destination_resource.storage_url.resource_name,
       )
 
+  @retry_util.grpc_default_retryer
   def _get_object_if_exists(self) -> resource_reference.ObjectResource | None:
     """Returns the destination object if it exists."""
     try:
@@ -256,6 +348,35 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
           self._destination_resource.storage_url.resource_name,
       )
       return None
+
+  @retry_util.grpc_default_retryer
+  def _get_object_metadata_after_upload(
+      self,
+  ) -> resource_reference.ObjectResource:
+    """Returns the object metadata after the upload."""
+    read_request = self._client.types.BidiReadObjectRequest(
+        read_object_spec=self._client.types.BidiReadObjectSpec(
+            bucket=self._initial_request.append_object_spec.bucket,
+            object=self._initial_request.append_object_spec.object,
+            generation=self._initial_request.append_object_spec.generation,
+        )
+    )
+    bidi_rpc = gapic_util.MakeBidiRpc(
+        self._client,
+        self._client.storage.bidi_read_object,
+        initial_request=read_request,
+        metadata=metadata_util.get_bucket_name_routing_header(
+            grpc_util.get_full_bucket_name(
+                self._destination_resource.storage_url.bucket_name
+            )
+        ),
+    )
+    try:
+      bidi_rpc.open()
+      response = bidi_rpc.recv()
+    finally:
+      bidi_rpc.close()
+    return metadata_util.get_object_resource_from_grpc_object(response.metadata)
 
   @abc.abstractmethod
   def run(self):
@@ -287,17 +408,9 @@ class SimpleUpload(_Upload):
         ),
     )
 
-    # The method returns a generator, so we need to consume it. To avoid early
-    # exit. The response is additionally required in future implementations
-    # for b/440505603.
-    _ = list(self._bidi_write_appendable_object(bidi_write_rpc))
+    self._bidi_write_appendable_object(bidi_write_rpc)
 
-    # TODO: b/440505603 - Replace this call with bidi api call since the object
-    # metadata is synchronised periodically.
-    return self._delegator.get_object_metadata(
-        self._destination_resource.storage_url.bucket_name,
-        self._destination_resource.storage_url.resource_name,
-    )
+    return self._get_object_metadata_after_upload()
 
 
 class ResumableUpload(_Upload):
@@ -335,37 +448,17 @@ class ResumableUpload(_Upload):
           destination_object.size,
       )
       try:
-        list(
-            self._bidi_write_appendable_object(
-                bidi_write_rpc,
-                resuming_upload=True,
-            )
-        )
-        # TODO: b/440505603 - Replace this call with bidi api call since the
-        # object metadata is synchronised periodically.
-        return self._delegator.get_object_metadata(
-            self._destination_resource.storage_url.bucket_name,
-            self._destination_resource.storage_url.resource_name,
-        )
+        self._bidi_write_appendable_object(bidi_write_rpc, resuming_upload=True)
+        return self._get_object_metadata_after_upload()
       except command_errors.HashMismatchError as e:
         log.info(e)
-        return SimpleUpload(
-            client=self._client,
-            source_stream=self._source_stream,
-            destination_resource=self._destination_resource,
-            request_config=self._request_config,
-            source_resource=self._source_resource,
-            start_offset=0,
-            delegator=self._delegator,
-        ).run()
 
-    else:
-      return SimpleUpload(
-          client=self._client,
-          source_stream=self._source_stream,
-          destination_resource=self._destination_resource,
-          request_config=self._request_config,
-          source_resource=self._source_resource,
-          start_offset=self._start_offset,
-          delegator=self._delegator,
-      ).run()
+    return SimpleUpload(
+        client=self._client,
+        source_stream=self._source_stream,
+        destination_resource=self._destination_resource,
+        request_config=self._request_config,
+        source_resource=self._source_resource,
+        start_offset=0,
+        delegator=self._delegator,
+    ).run()

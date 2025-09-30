@@ -1911,7 +1911,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets an Entry.
+      r"""Gets an Entry. Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc Metastore metadata that is stored in Dataplex Universal Catalog is changing. For more information, see Changes to metadata stored in Dataplex Universal Catalog (https://cloud.google.com/dataplex/docs/metadata-changes).
 
       Args:
         request: (DataplexProjectsLocationsEntryGroupsEntriesGetRequest) input message
@@ -1938,7 +1938,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Entries within an EntryGroup.
+      r"""Lists Entries within an EntryGroup. Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc Metastore metadata that is stored in Dataplex Universal Catalog is changing. For more information, see Changes to metadata stored in Dataplex Universal Catalog (https://cloud.google.com/dataplex/docs/metadata-changes).
 
       Args:
         request: (DataplexProjectsLocationsEntryGroupsEntriesListRequest) input message
@@ -5941,7 +5941,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def LookupEntry(self, request, global_params=None):
-      r"""Looks up an entry by name using the permission on the source system.
+      r"""Looks up an entry by name using the permission on the source system. Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc Metastore metadata that is stored in Dataplex Universal Catalog is changing. For more information, see Changes to metadata stored in Dataplex Universal Catalog (https://cloud.google.com/dataplex/docs/metadata-changes).
 
       Args:
         request: (DataplexProjectsLocationsLookupEntryRequest) input message

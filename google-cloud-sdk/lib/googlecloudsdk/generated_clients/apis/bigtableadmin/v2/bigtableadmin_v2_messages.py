@@ -659,6 +659,18 @@ class BigtableadminProjectsInstancesClustersDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class BigtableadminProjectsInstancesClustersGetMemoryLayerRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesClustersGetMemoryLayerRequest object.
+
+  Fields:
+    name: Required. The unique name of the requested cluster's memory layer.
+      Values are of the form `projects/{project}/instances/{instance}/clusters
+      /{cluster}/memoryLayer`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class BigtableadminProjectsInstancesClustersGetRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesClustersGetRequest object.
 
@@ -731,6 +743,22 @@ class BigtableadminProjectsInstancesClustersPartialUpdateClusterRequest(_message
   """
 
   cluster = _messages.MessageField('Cluster', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class BigtableadminProjectsInstancesClustersUpdateMemoryLayerRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesClustersUpdateMemoryLayerRequest object.
+
+  Fields:
+    memoryLayer: A MemoryLayer resource to be passed as the request body.
+    name: Identifier. Name of the memory layer. This is always:
+      "projects/{project}/instances/{instance}/clusters/{cluster}/memoryLayer"
+      .
+    updateMask: Optional. The list of fields to update.
+  """
+
+  memoryLayer = _messages.MessageField('MemoryLayer', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
 
@@ -2649,6 +2677,21 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class FixedCapacity(_messages.Message):
+  r"""Configuration of a memory layer with a fixed capacity.
+
+  Fields:
+    maxRequestUnitsPerSecond: Required. The maximum request units per second
+      that the memory layer can serve before being throttled. A request unit
+      is approximately equivalent to a 1 KiB point read.
+    storageSizeGib: Required. The provisioned storage size of the memory layer
+      in GiB.
+  """
+
+  maxRequestUnitsPerSecond = _messages.IntegerField(1)
+  storageSizeGib = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class GcRule(_messages.Message):
   r"""Rule for determining which cells to delete during garbage collection.
 
@@ -3652,6 +3695,67 @@ class MaterializedView(_messages.Message):
   etag = _messages.StringField(2)
   name = _messages.StringField(3)
   query = _messages.StringField(4)
+
+
+class MemoryConfig(_messages.Message):
+  r"""Configuration of a memory layer.
+
+  Fields:
+    fixedCapacity: A memory layer with a fixed capacity.
+  """
+
+  fixedCapacity = _messages.MessageField('FixedCapacity', 1)
+
+
+class MemoryLayer(_messages.Message):
+  r"""The memory layer of a cluster. A memory layer serves reads from memory
+  without hitting the backing persistent data store.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the memory layer.
+
+  Fields:
+    etag: Optional. The etag for this memory configuration. This may be sent
+      on update requests to ensure that the client has an up-to-date value
+      before proceeding. The server returns an ABORTED error on a mismatched
+      etag.
+    memoryConfig: The configuration of this memory layer. Set this to enable
+      the memory layer. Unset this to disable the memory layer.
+    name: Identifier. Name of the memory layer. This is always:
+      "projects/{project}/instances/{instance}/clusters/{cluster}/memoryLayer"
+      .
+    state: Output only. The current state of the memory layer.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the memory layer.
+
+    Values:
+      STATE_NOT_KNOWN: The state of the memory layer could not be determined.
+      READY: The memory layer has been successfully enabled and is ready to
+        serve requests.
+      ENABLING: The memory layer is currently being enabled, and may be
+        disabled if the enablement process encounters an error. A cluster may
+        not be able to serve requests from the memory layer while being
+        enabled.
+      RESIZING: The memory layer is currently being resized, and may revert to
+        its previous storage size if the process encounters an error. The
+        memory layer is still capable of serving requests while being resized,
+        but may exhibit performance as if its number of allocated nodes is
+        between the starting and requested states.
+      DISABLED: The memory layer is disabled. The default state for a cluster
+        without a memory layer.
+    """
+    STATE_NOT_KNOWN = 0
+    READY = 1
+    ENABLING = 2
+    RESIZING = 3
+    DISABLED = 4
+
+  etag = _messages.StringField(1)
+  memoryConfig = _messages.MessageField('MemoryConfig', 2)
+  name = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
 class Modification(_messages.Message):
@@ -4791,6 +4895,36 @@ class UpdateLogicalViewRequest(_messages.Message):
   """
 
   logicalView = _messages.MessageField('LogicalView', 1)
+  updateMask = _messages.StringField(2)
+
+
+class UpdateMemoryLayerMetadata(_messages.Message):
+  r"""The metadata for the Operation returned by UpdateMemoryLayer.
+
+  Fields:
+    finishTime: The time at which the operation failed or was completed
+      successfully.
+    originalRequest: The request that prompted the initiation of this
+      UpdateMemoryLayer operation.
+    requestTime: The time at which the original request was received.
+  """
+
+  finishTime = _messages.StringField(1)
+  originalRequest = _messages.MessageField('UpdateMemoryLayerRequest', 2)
+  requestTime = _messages.StringField(3)
+
+
+class UpdateMemoryLayerRequest(_messages.Message):
+  r"""Request message for BigtableInstanceAdmin.UpdateMemoryLayer.
+
+  Fields:
+    memoryLayer: Required. The memory layer to update. The memory layer's
+      `name` format is as follows: `projects/{project}/instances/{instance}/cl
+      usters/{cluster}/memoryLayer`.
+    updateMask: Optional. The list of fields to update.
+  """
+
+  memoryLayer = _messages.MessageField('MemoryLayer', 1)
   updateMask = _messages.StringField(2)
 
 

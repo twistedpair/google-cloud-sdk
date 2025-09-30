@@ -13,14 +13,37 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for working with volumes."""
+
 import abc
 import argparse
+from typing import TypedDict
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
+from googlecloudsdk.generated_clients.gapic_clients.run_v2 import types
+
 
 _supported_volume_types = {}
+
+VolumeDict = TypedDict(
+    'VolumeDict',
+    {
+        'name': str,
+        'type': str,
+        'read-only': str,
+        'bucket': str,
+        'location': str,
+        'size-limit': str,
+        'dynamic-mounting': str,
+        'mount-options': str,
+        'secret': str,
+        'version': str,
+        'path': str,
+        'instances': str,
+    },
+    total=False,
+)
 
 
 def _registered_volume_type(cls):
@@ -40,26 +63,27 @@ def _registered_volume_type(cls):
 
 def add_volume(volume, volumes, messages, release_track):
   """Add the volume described by the given volume dict to the resource."""
-  if 'name' not in volume or 'type' not in volume:
-    raise serverless_exceptions.ConfigurationError(
-        'All added volumes must have a name and type'
-    )
-
-  if volume['type'] not in _supported_volume_types:
-    raise serverless_exceptions.ConfigurationError(
-        'Volume type {} not supported'.format(volume['type'])
-    )
+  _validate_volume_name_and_type(volume, release_track)
   new_vol = messages.Volume(name=volume['name'])
   vol_type = _supported_volume_types[volume['type']]
-  if release_track not in vol_type.release_tracks():
-    raise serverless_exceptions.ConfigurationError(
-        'Volume type {} not supported'.format(volume['type'])
-    )
-  vol_type.validate_fields(volume, release_track)
   vol_type.validate_volume_add(volume, release_track)
+  vol_type.validate_fields(volume, release_track)
   vol_type.fill_volume(volume, new_vol, messages)
 
   volumes[volume['name']] = new_vol
+
+
+def create_volume_v2(
+    volume: VolumeDict,
+    release_track: base.ReleaseTrack = base.ReleaseTrack.ALPHA,
+):
+  """Create the volume described by the given volume dict to the resource."""
+  _validate_volume_name_and_type(volume, release_track)
+  vol_type = _supported_volume_types[volume['type']]
+  vol_type.validate_volume_add(volume, release_track)
+  vol_type.validate_fields(volume, release_track)
+
+  return vol_type.create_volume_v2(volume)
 
 
 def volume_help(release_track):
@@ -124,7 +148,13 @@ class _VolumeType(abc.ABC):
   @classmethod
   @abc.abstractmethod
   def fill_volume(cls, volume, new_vol, messages):
-    """Fills in the Volume message from the provided volume dict."""
+    """Fills in the Volume message (V1) from the provided volume dict."""
+    pass
+
+  @classmethod
+  @abc.abstractmethod
+  def create_volume_v2(cls, volume):
+    """Creates the volume (V2) from the provided volume dict."""
     pass
 
   @classmethod
@@ -229,6 +259,18 @@ class _InMemoryVolume(_VolumeType):
       src = messages.EmptyDirVolumeSource(medium='Memory')
     new_vol.emptyDir = src
 
+  @classmethod
+  def create_volume_v2(cls, volume):
+    source = types.EmptyDirVolumeSource(
+        medium=types.EmptyDirVolumeSource.Medium.MEMORY
+    )
+    if 'size-limit' in volume:
+      source.size_limit = volume['size-limit']
+    return types.Volume(
+        name=volume['name'],
+        empty_dir=source,
+    )
+
 
 @_registered_volume_type
 class _NfsVolume(_VolumeType):
@@ -257,19 +299,38 @@ class _NfsVolume(_VolumeType):
     }
 
   @classmethod
-  def fill_volume(cls, volume, new_vol, messages):
-    readonly = _is_readonly(volume)
+  def validate_fields(cls, volume, release_track):
     location = volume['location']
     if ':/' not in location:
       raise serverless_exceptions.ConfigurationError(
           "Volume {}: field 'location' must be of the form"
           ' IP_ADDRESS:/DIRECTORY'.format(volume['name'])
       )
-    server, path = location.split(':/', 1)
+
+  @classmethod
+  def fill_volume(cls, volume, new_vol, messages):
+    readonly = _is_readonly(volume)
+    server, path = volume['location'].split(':/', 1)
     # need to re-add leading slash
     path = '/' + path
     src = messages.NFSVolumeSource(server=server, path=path, readOnly=readonly)
     new_vol.nfs = src
+
+  @classmethod
+  def create_volume_v2(cls, volume):
+    readonly = _is_readonly(volume)
+    location = volume['location']
+    server, path = str(location).split(':/', 1)
+    # need to re-add leading slash
+    path = '/' + path
+    return types.Volume(
+        name=volume['name'],
+        nfs=types.NFSVolumeSource(
+            server=server,
+            path=path,
+            read_only=readonly,
+        ),
+    )
 
 
 @_registered_volume_type
@@ -365,6 +426,27 @@ class _GcsVolume(_VolumeType):
       )
     new_vol.csi = src
 
+  @classmethod
+  def create_volume_v2(cls, volume):
+    if 'mount-options' in volume:
+      mount_options = volume['mount-options'].split(';')
+    else:
+      mount_options = []
+    source = types.GCSVolumeSource(
+        read_only=_is_readonly(volume),
+        mount_options=mount_options,
+    )
+    # If dynamic mounting is enabled, we need to set the bucket to a special
+    # value to indicate that the bucket should be dynamically mounted.
+    if 'dynamic-mounting' in volume and volume['dynamic-mounting']:
+      source.bucket = '_'
+    else:
+      source.bucket = volume['bucket']
+    return types.Volume(
+        name=volume['name'],
+        gcs=source,
+    )
+
 
 @_registered_volume_type
 class SecretVolume(_VolumeType):
@@ -405,6 +487,20 @@ class SecretVolume(_VolumeType):
     src.items.append(item)
     new_vol.secret = src
 
+  @classmethod
+  def create_volume_v2(cls, volume):
+    return types.Volume(
+        name=volume['name'],
+        secret=types.SecretVolumeSource(
+            secret=volume['secret'],
+            items=[
+                types.VersionToPath(
+                    version=volume['version'], path=volume['path']
+                )
+            ],
+        ),
+    )
+
 
 @_registered_volume_type
 class CloudSqlInstance(_VolumeType):
@@ -424,10 +520,6 @@ class CloudSqlInstance(_VolumeType):
 
   @classmethod
   def validate_fields(cls, volume, release_track):
-    if 'instances' not in volume:
-      raise serverless_exceptions.ConfigurationError(
-          'Cloud SQL volumes must have at least one instance specified'
-      )
     for instance in volume['instances'].split(';'):
       instance = instance.strip().split(':')
       if len(instance) != 3:
@@ -462,6 +554,35 @@ class CloudSqlInstance(_VolumeType):
       )
     new_vol.csi = src
 
+  @classmethod
+  def create_volume_v2(cls, volume):
+    return types.Volume(
+        name=volume['name'],
+        cloud_sql_instance=types.CloudSqlInstance(
+            instances=[
+                instance.strip() for instance in volume['instances'].split(';')
+            ]
+        ),
+    )
+
 
 def _is_readonly(volume):
   return 'readonly' in volume and volume['readonly'].lower() == 'true'
+
+
+def _validate_volume_name_and_type(volume, release_track):
+  """Validates the volume name and type."""
+  if 'name' not in volume or 'type' not in volume:
+    raise serverless_exceptions.ConfigurationError(
+        'All added volumes must have a name and type'
+    )
+
+  if volume['type'] not in _supported_volume_types:
+    raise serverless_exceptions.ConfigurationError(
+        'Volume type {} not supported'.format(volume['type'])
+    )
+  vol_type = _supported_volume_types[volume['type']]
+  if release_track not in vol_type.release_tracks():
+    raise serverless_exceptions.ConfigurationError(
+        'Volume type {} not supported'.format(volume['type'])
+    )

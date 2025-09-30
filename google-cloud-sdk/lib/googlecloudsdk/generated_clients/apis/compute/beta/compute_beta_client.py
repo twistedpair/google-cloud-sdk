@@ -100,11 +100,13 @@ class ComputeBeta(base_api.BaseApiClient):
     self.regionAutoscalers = self.RegionAutoscalersService(self)
     self.regionBackendServices = self.RegionBackendServicesService(self)
     self.regionCommitments = self.RegionCommitmentsService(self)
+    self.regionCompositeHealthChecks = self.RegionCompositeHealthChecksService(self)
     self.regionDiskSettings = self.RegionDiskSettingsService(self)
     self.regionDiskTypes = self.RegionDiskTypesService(self)
     self.regionDisks = self.RegionDisksService(self)
     self.regionHealthCheckServices = self.RegionHealthCheckServicesService(self)
     self.regionHealthChecks = self.RegionHealthChecksService(self)
+    self.regionHealthSources = self.RegionHealthSourcesService(self)
     self.regionInstanceGroupManagerResizeRequests = self.RegionInstanceGroupManagerResizeRequestsService(self)
     self.regionInstanceGroupManagers = self.RegionInstanceGroupManagersService(self)
     self.regionInstanceGroups = self.RegionInstanceGroupsService(self)
@@ -114,6 +116,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.regionMultiMigs = self.RegionMultiMigsService(self)
     self.regionNetworkEndpointGroups = self.RegionNetworkEndpointGroupsService(self)
     self.regionNetworkFirewallPolicies = self.RegionNetworkFirewallPoliciesService(self)
+    self.regionNetworkPolicies = self.RegionNetworkPoliciesService(self)
     self.regionNotificationEndpoints = self.RegionNotificationEndpointsService(self)
     self.regionOperations = self.RegionOperationsService(self)
     self.regionSecurityPolicies = self.RegionSecurityPoliciesService(self)
@@ -14937,6 +14940,198 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class RegionCompositeHealthChecksService(base_api.BaseApiService):
+    """Service class for the regionCompositeHealthChecks resource."""
+
+    _NAME = 'regionCompositeHealthChecks'
+
+    def __init__(self, client):
+      super(ComputeBeta.RegionCompositeHealthChecksService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves the list of all CompositeHealthCheck resources (all regional) available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+
+      Args:
+        request: (ComputeRegionCompositeHealthChecksAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CompositeHealthCheckAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionCompositeHealthChecks.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
+        relative_path='projects/{project}/aggregated/compositeHealthChecks',
+        request_field='',
+        request_type_name='ComputeRegionCompositeHealthChecksAggregatedListRequest',
+        response_type_name='CompositeHealthCheckAggregatedList',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified CompositeHealthCheck in the given region.
+
+      Args:
+        request: (ComputeRegionCompositeHealthChecksDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.regionCompositeHealthChecks.delete',
+        ordered_params=['project', 'region', 'compositeHealthCheck'],
+        path_params=['compositeHealthCheck', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/compositeHealthChecks/{compositeHealthCheck}',
+        request_field='',
+        request_type_name='ComputeRegionCompositeHealthChecksDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified CompositeHealthCheck resource in the given region.
+
+      Args:
+        request: (ComputeRegionCompositeHealthChecksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CompositeHealthCheck) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionCompositeHealthChecks.get',
+        ordered_params=['project', 'region', 'compositeHealthCheck'],
+        path_params=['compositeHealthCheck', 'project', 'region'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/compositeHealthChecks/{compositeHealthCheck}',
+        request_field='',
+        request_type_name='ComputeRegionCompositeHealthChecksGetRequest',
+        response_type_name='CompositeHealthCheck',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Create a CompositeHealthCheck in the specified project in the given region using the parameters that are included in the request.
+
+      Args:
+        request: (ComputeRegionCompositeHealthChecksInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionCompositeHealthChecks.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/compositeHealthChecks',
+        request_field='compositeHealthCheck',
+        request_type_name='ComputeRegionCompositeHealthChecksInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the CompositeHealthChecks for a project in the given region.
+
+      Args:
+        request: (ComputeRegionCompositeHealthChecksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CompositeHealthCheckList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionCompositeHealthChecks.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/compositeHealthChecks',
+        request_field='',
+        request_type_name='ComputeRegionCompositeHealthChecksListRequest',
+        response_type_name='CompositeHealthCheckList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified regional CompositeHealthCheck resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+
+      Args:
+        request: (ComputeRegionCompositeHealthChecksPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.regionCompositeHealthChecks.patch',
+        ordered_params=['project', 'region', 'compositeHealthCheck'],
+        path_params=['compositeHealthCheck', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/compositeHealthChecks/{compositeHealthCheck}',
+        request_field='compositeHealthCheckResource',
+        request_type_name='ComputeRegionCompositeHealthChecksPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRegionCompositeHealthChecksTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionCompositeHealthChecks.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/compositeHealthChecks/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeRegionCompositeHealthChecksTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
   class RegionDiskSettingsService(base_api.BaseApiService):
     """Service class for the regionDiskSettings resource."""
 
@@ -15868,6 +16063,198 @@ class ComputeBeta(base_api.BaseApiClient):
         request_field='healthCheckResource',
         request_type_name='ComputeRegionHealthChecksUpdateRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class RegionHealthSourcesService(base_api.BaseApiService):
+    """Service class for the regionHealthSources resource."""
+
+    _NAME = 'regionHealthSources'
+
+    def __init__(self, client):
+      super(ComputeBeta.RegionHealthSourcesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves the list of all HealthSource resources (all regional) available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+
+      Args:
+        request: (ComputeRegionHealthSourcesAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HealthSourceAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionHealthSources.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
+        relative_path='projects/{project}/aggregated/healthSources',
+        request_field='',
+        request_type_name='ComputeRegionHealthSourcesAggregatedListRequest',
+        response_type_name='HealthSourceAggregatedList',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified HealthSource in the given region.
+
+      Args:
+        request: (ComputeRegionHealthSourcesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.regionHealthSources.delete',
+        ordered_params=['project', 'region', 'healthSource'],
+        path_params=['healthSource', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/healthSources/{healthSource}',
+        request_field='',
+        request_type_name='ComputeRegionHealthSourcesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified HealthSource resource in the given region.
+
+      Args:
+        request: (ComputeRegionHealthSourcesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HealthSource) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionHealthSources.get',
+        ordered_params=['project', 'region', 'healthSource'],
+        path_params=['healthSource', 'project', 'region'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/healthSources/{healthSource}',
+        request_field='',
+        request_type_name='ComputeRegionHealthSourcesGetRequest',
+        response_type_name='HealthSource',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Create a HealthSource in the specified project in the given region using the parameters that are included in the request.
+
+      Args:
+        request: (ComputeRegionHealthSourcesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionHealthSources.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/healthSources',
+        request_field='healthSource',
+        request_type_name='ComputeRegionHealthSourcesInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the HealthSources for a project in the given region.
+
+      Args:
+        request: (ComputeRegionHealthSourcesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HealthSourceList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionHealthSources.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/healthSources',
+        request_field='',
+        request_type_name='ComputeRegionHealthSourcesListRequest',
+        response_type_name='HealthSourceList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified regional HealthSource resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+
+      Args:
+        request: (ComputeRegionHealthSourcesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.regionHealthSources.patch',
+        ordered_params=['project', 'region', 'healthSource'],
+        path_params=['healthSource', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/healthSources/{healthSource}',
+        request_field='healthSourceResource',
+        request_type_name='ComputeRegionHealthSourcesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRegionHealthSourcesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionHealthSources.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/healthSources/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeRegionHealthSourcesTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -18012,6 +18399,354 @@ class ComputeBeta(base_api.BaseApiClient):
         request_field='testPermissionsRequest',
         request_type_name='ComputeRegionNetworkFirewallPoliciesTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class RegionNetworkPoliciesService(base_api.BaseApiService):
+    """Service class for the regionNetworkPolicies resource."""
+
+    _NAME = 'regionNetworkPolicies'
+
+    def __init__(self, client):
+      super(ComputeBeta.RegionNetworkPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AddAssociation(self, request, global_params=None):
+      r"""Inserts an association for the specified network policy.
+
+      Args:
+        request: (ComputeRegionNetworkPoliciesAddAssociationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddAssociation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddAssociation.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionNetworkPolicies.addAssociation',
+        ordered_params=['project', 'region', 'networkPolicy'],
+        path_params=['networkPolicy', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/networkPolicies/{networkPolicy}/addAssociation',
+        request_field='networkPolicyAssociation',
+        request_type_name='ComputeRegionNetworkPoliciesAddAssociationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def AddTrafficClassificationRule(self, request, global_params=None):
+      r"""Inserts a rule into a network policy.
+
+      Args:
+        request: (ComputeRegionNetworkPoliciesAddTrafficClassificationRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddTrafficClassificationRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddTrafficClassificationRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionNetworkPolicies.addTrafficClassificationRule',
+        ordered_params=['project', 'region', 'networkPolicy'],
+        path_params=['networkPolicy', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/networkPolicies/{networkPolicy}/addTrafficClassificationRule',
+        request_field='networkPolicyTrafficClassificationRule',
+        request_type_name='ComputeRegionNetworkPoliciesAddTrafficClassificationRuleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves an aggregated list of network policies. To prevent failure, it's recommended that you set the `returnPartialSuccess` parameter to `true`.
+
+      Args:
+        request: (ComputeRegionNetworkPoliciesAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkPolicyAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionNetworkPolicies.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
+        relative_path='projects/{project}/aggregated/networkPolicies',
+        request_field='',
+        request_type_name='ComputeRegionNetworkPoliciesAggregatedListRequest',
+        response_type_name='NetworkPolicyAggregatedList',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified policy.
+
+      Args:
+        request: (ComputeRegionNetworkPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.regionNetworkPolicies.delete',
+        ordered_params=['project', 'region', 'networkPolicy'],
+        path_params=['networkPolicy', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/networkPolicies/{networkPolicy}',
+        request_field='',
+        request_type_name='ComputeRegionNetworkPoliciesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified network policy.
+
+      Args:
+        request: (ComputeRegionNetworkPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionNetworkPolicies.get',
+        ordered_params=['project', 'region', 'networkPolicy'],
+        path_params=['networkPolicy', 'project', 'region'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/networkPolicies/{networkPolicy}',
+        request_field='',
+        request_type_name='ComputeRegionNetworkPoliciesGetRequest',
+        response_type_name='NetworkPolicy',
+        supports_download=False,
+    )
+
+    def GetAssociation(self, request, global_params=None):
+      r"""Gets an association with the specified name.
+
+      Args:
+        request: (ComputeRegionNetworkPoliciesGetAssociationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkPolicyAssociation) The response message.
+      """
+      config = self.GetMethodConfig('GetAssociation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetAssociation.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionNetworkPolicies.getAssociation',
+        ordered_params=['project', 'region', 'networkPolicy'],
+        path_params=['networkPolicy', 'project', 'region'],
+        query_params=['name'],
+        relative_path='projects/{project}/regions/{region}/networkPolicies/{networkPolicy}/getAssociation',
+        request_field='',
+        request_type_name='ComputeRegionNetworkPoliciesGetAssociationRequest',
+        response_type_name='NetworkPolicyAssociation',
+        supports_download=False,
+    )
+
+    def GetTrafficClassificationRule(self, request, global_params=None):
+      r"""Gets a rule of the specified priority.
+
+      Args:
+        request: (ComputeRegionNetworkPoliciesGetTrafficClassificationRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkPolicyTrafficClassificationRule) The response message.
+      """
+      config = self.GetMethodConfig('GetTrafficClassificationRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetTrafficClassificationRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionNetworkPolicies.getTrafficClassificationRule',
+        ordered_params=['project', 'region', 'networkPolicy'],
+        path_params=['networkPolicy', 'project', 'region'],
+        query_params=['priority'],
+        relative_path='projects/{project}/regions/{region}/networkPolicies/{networkPolicy}/getTrafficClassificationRule',
+        request_field='',
+        request_type_name='ComputeRegionNetworkPoliciesGetTrafficClassificationRuleRequest',
+        response_type_name='NetworkPolicyTrafficClassificationRule',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a new policy in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeRegionNetworkPoliciesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionNetworkPolicies.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/networkPolicies',
+        request_field='networkPolicy',
+        request_type_name='ComputeRegionNetworkPoliciesInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all the policies that have been configured for the specified project in the given region.
+
+      Args:
+        request: (ComputeRegionNetworkPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkPolicyList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionNetworkPolicies.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/networkPolicies',
+        request_field='',
+        request_type_name='ComputeRegionNetworkPoliciesListRequest',
+        response_type_name='NetworkPolicyList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patches the specified policy with the data included in the request.
+
+      Args:
+        request: (ComputeRegionNetworkPoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.regionNetworkPolicies.patch',
+        ordered_params=['project', 'region', 'networkPolicy'],
+        path_params=['networkPolicy', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/networkPolicies/{networkPolicy}',
+        request_field='networkPolicyResource',
+        request_type_name='ComputeRegionNetworkPoliciesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def PatchTrafficClassificationRule(self, request, global_params=None):
+      r"""Patches a rule of the specified priority.
+
+      Args:
+        request: (ComputeRegionNetworkPoliciesPatchTrafficClassificationRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PatchTrafficClassificationRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PatchTrafficClassificationRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionNetworkPolicies.patchTrafficClassificationRule',
+        ordered_params=['project', 'region', 'networkPolicy'],
+        path_params=['networkPolicy', 'project', 'region'],
+        query_params=['priority', 'requestId'],
+        relative_path='projects/{project}/regions/{region}/networkPolicies/{networkPolicy}/patchTrafficClassificationRule',
+        request_field='networkPolicyTrafficClassificationRule',
+        request_type_name='ComputeRegionNetworkPoliciesPatchTrafficClassificationRuleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def RemoveAssociation(self, request, global_params=None):
+      r"""Removes an association for the specified network policy.
+
+      Args:
+        request: (ComputeRegionNetworkPoliciesRemoveAssociationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RemoveAssociation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveAssociation.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionNetworkPolicies.removeAssociation',
+        ordered_params=['project', 'region', 'networkPolicy'],
+        path_params=['networkPolicy', 'project', 'region'],
+        query_params=['name', 'requestId'],
+        relative_path='projects/{project}/regions/{region}/networkPolicies/{networkPolicy}/removeAssociation',
+        request_field='',
+        request_type_name='ComputeRegionNetworkPoliciesRemoveAssociationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def RemoveTrafficClassificationRule(self, request, global_params=None):
+      r"""Deletes a rule of the specified priority.
+
+      Args:
+        request: (ComputeRegionNetworkPoliciesRemoveTrafficClassificationRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RemoveTrafficClassificationRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveTrafficClassificationRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionNetworkPolicies.removeTrafficClassificationRule',
+        ordered_params=['project', 'region', 'networkPolicy'],
+        path_params=['networkPolicy', 'project', 'region'],
+        query_params=['priority', 'requestId'],
+        relative_path='projects/{project}/regions/{region}/networkPolicies/{networkPolicy}/removeTrafficClassificationRule',
+        request_field='',
+        request_type_name='ComputeRegionNetworkPoliciesRemoveTrafficClassificationRuleRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -20189,6 +20924,32 @@ class ComputeBeta(base_api.BaseApiClient):
         relative_path='projects/{project}/zones/{zone}/{parentName}/reservationSubBlocks/{reservationSubBlock}/performMaintenance',
         request_field='',
         request_type_name='ComputeReservationSubBlocksPerformMaintenanceRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def ReportFaulty(self, request, global_params=None):
+      r"""Allows customers to report a faulty subBlock.
+
+      Args:
+        request: (ComputeReservationSubBlocksReportFaultyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ReportFaulty')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReportFaulty.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.reservationSubBlocks.reportFaulty',
+        ordered_params=['project', 'zone', 'parentName', 'reservationSubBlock'],
+        path_params=['parentName', 'project', 'reservationSubBlock', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/{parentName}/reservationSubBlocks/{reservationSubBlock}/reportFaulty',
+        request_field='reservationSubBlocksReportFaultyRequest',
+        request_type_name='ComputeReservationSubBlocksReportFaultyRequest',
         response_type_name='Operation',
         supports_download=False,
     )

@@ -35,6 +35,7 @@ class Capability(enum.Enum):
   STORAGE_LAYOUT = 'STORAGE_LAYOUT'
   RESUMABLE_UPLOAD = 'RESUMABLE_UPLOAD'
   SLICED_DOWNLOAD = 'SLICED_DOWNLOAD'
+  APPENDABLE_UPLOAD = 'APPENDABLE_UPLOAD'
   # For daisy chain operations, the upload stream is not purely seekable.
   # For certain seek calls, we raise errors to avoid re-downloading the object.
   # We do not want the "seekable" method for the upload stream to always return
@@ -63,6 +64,7 @@ class UploadStrategy(enum.Enum):
   SIMPLE = 'simple'
   RESUMABLE = 'resumable'
   STREAMING = 'streaming'
+  APPENDABLE = 'appendable'
 
 
 class FieldsScope(enum.Enum):

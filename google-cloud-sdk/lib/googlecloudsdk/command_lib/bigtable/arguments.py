@@ -326,12 +326,12 @@ class ArgAdder(object):
     )
     return self
 
-  def AddViewQuery(self):
+  def AddViewQuery(self, required: bool = False):
     """Add argument for view query to the parser."""
     self.parser.add_argument(
         '--query',
         help='The query of the view.',
-        required=True,
+        required=required,
     )
     return self
 

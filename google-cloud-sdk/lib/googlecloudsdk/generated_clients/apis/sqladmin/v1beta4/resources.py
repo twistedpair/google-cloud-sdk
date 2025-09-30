@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://sqladmin.googleapis.com/sql/v1beta4/'
-DOCS_URL = 'https://developers.google.com/cloud-sql/'
+DOCS_URL = 'https://cloud.google.com/sql/docs'
 
 
 class Collections(enum.Enum):

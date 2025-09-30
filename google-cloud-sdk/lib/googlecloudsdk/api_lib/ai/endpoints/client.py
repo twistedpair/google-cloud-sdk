@@ -739,6 +739,7 @@ class EndpointsClient(object):
       accelerator_dict=None,
       min_replica_count=None,
       max_replica_count=None,
+      required_replica_count=None,
       reservation_affinity=None,
       autoscaling_metric_specs=None,
       spot=False,
@@ -765,6 +766,8 @@ class EndpointsClient(object):
         deployed model will be always deployed on.
       max_replica_count: int or None, the maximum number of replicas the
         deployed model may be deployed on.
+      required_replica_count: int or None, the required number of replicas the
+        deployed model will be considered successfully deployed.
       reservation_affinity: dict or None, the reservation affinity of the
         deployed model which specifies which reservations the deployed model can
         use.
@@ -813,6 +816,8 @@ class EndpointsClient(object):
       dedicated.minReplicaCount = min_replica_count or 1
       if max_replica_count is not None:
         dedicated.maxReplicaCount = max_replica_count
+      if required_replica_count is not None:
+        dedicated.requiredReplicaCount = required_replica_count
 
       if autoscaling_metric_specs is not None:
         autoscaling_metric_specs_list = []
@@ -889,6 +894,7 @@ class EndpointsClient(object):
       accelerator_dict=None,
       min_replica_count=None,
       max_replica_count=None,
+      required_replica_count=None,
       reservation_affinity=None,
       autoscaling_metric_specs=None,
       spot=False,
@@ -920,6 +926,8 @@ class EndpointsClient(object):
         deployed model will be always deployed on.
       max_replica_count: int or None, the maximum number of replicas the
         deployed model may be deployed on.
+      required_replica_count: int or None, the required number of replicas the
+        deployed model will be considered successfully deployed.
       reservation_affinity: dict or None, the reservation affinity of the
         deployed model which specifies which reservations the deployed model can
         use.
@@ -1011,6 +1019,8 @@ class EndpointsClient(object):
         else:
           if max_replica_count is not None:
             dedicated.maxReplicaCount = max_replica_count
+        if required_replica_count is not None:
+          dedicated.requiredReplicaCount = required_replica_count
 
         # if not specified and min-replica-count is 0, default to 1.
         if initial_replica_count is None and dedicated.minReplicaCount == 0:

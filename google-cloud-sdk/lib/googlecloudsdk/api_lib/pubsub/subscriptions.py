@@ -139,6 +139,7 @@ class SubscriptionsClient(object):
       pubsub_export_topic_region=None,
       message_transforms_file=None,
       tags=None,
+      enable_vertex_ai_smt=False,
   ):
     """Creates a Subscription.
 
@@ -204,6 +205,8 @@ class SubscriptionsClient(object):
       message_transforms_file (str): The file path to the JSON or YAML file
         containing the message transforms.
       tags (TagsValue): The tags Keys/Values to be bound to the subscription.
+      enable_vertex_ai_smt (bool): Whether or not to enable Vertex AI message
+        transforms.
 
     Returns:
       Subscription: the created subscription
@@ -254,7 +257,9 @@ class SubscriptionsClient(object):
     if message_transforms_file:
       try:
         subscription.messageTransforms = utils.GetMessageTransformsFromFile(
-            self.messages.MessageTransform, message_transforms_file
+            self.messages.MessageTransform,
+            message_transforms_file,
+            enable_vertex_ai_smt,
         )
       except (
           utils.MessageTransformsInvalidFormatError,
@@ -625,6 +630,7 @@ class SubscriptionsClient(object):
       clear_pubsub_export_config=False,
       message_transforms_file=None,
       clear_message_transforms=False,
+      enable_vertex_ai_smt=False,
   ):
     """Updates a Subscription.
 
@@ -698,6 +704,8 @@ class SubscriptionsClient(object):
         containing the message transforms.
       clear_message_transforms (bool): If set, clears all message transforms
         from the subscription.
+      enable_vertex_ai_smt (bool): If set, enables Vertex AI message
+        transforms.
 
     Returns:
       Subscription: The updated subscription.
@@ -760,7 +768,9 @@ class SubscriptionsClient(object):
     if message_transforms_file:
       try:
         message_transforms = utils.GetMessageTransformsFromFile(
-            self.messages.MessageTransform, message_transforms_file
+            self.messages.MessageTransform,
+            message_transforms_file,
+            enable_vertex_ai_smt,
         )
       except (
           utils.MessageTransformsInvalidFormatError,

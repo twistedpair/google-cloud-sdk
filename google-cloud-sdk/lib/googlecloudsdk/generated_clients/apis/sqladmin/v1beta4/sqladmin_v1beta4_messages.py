@@ -8,6 +8,7 @@ from __future__ import absolute_import
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 
 
 package = 'sqladmin'
@@ -257,6 +258,7 @@ class Backup(_messages.Message):
       POSTGRES_15: The database version is PostgreSQL 15.
       POSTGRES_16: The database version is PostgreSQL 16.
       POSTGRES_17: The database version is PostgreSQL 17.
+      POSTGRES_18: The database version is PostgreSQL 18.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -311,14 +313,15 @@ class Backup(_messages.Message):
     POSTGRES_15 = 38
     POSTGRES_16 = 39
     POSTGRES_17 = 40
-    SQLSERVER_2019_STANDARD = 41
-    SQLSERVER_2019_ENTERPRISE = 42
-    SQLSERVER_2019_EXPRESS = 43
-    SQLSERVER_2019_WEB = 44
-    SQLSERVER_2022_STANDARD = 45
-    SQLSERVER_2022_ENTERPRISE = 46
-    SQLSERVER_2022_EXPRESS = 47
-    SQLSERVER_2022_WEB = 48
+    POSTGRES_18 = 41
+    SQLSERVER_2019_STANDARD = 42
+    SQLSERVER_2019_ENTERPRISE = 43
+    SQLSERVER_2019_EXPRESS = 44
+    SQLSERVER_2019_WEB = 45
+    SQLSERVER_2022_STANDARD = 46
+    SQLSERVER_2022_ENTERPRISE = 47
+    SQLSERVER_2022_EXPRESS = 48
+    SQLSERVER_2022_WEB = 49
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of this backup.
@@ -672,6 +675,7 @@ class BackupRun(_messages.Message):
       POSTGRES_15: The database version is PostgreSQL 15.
       POSTGRES_16: The database version is PostgreSQL 16.
       POSTGRES_17: The database version is PostgreSQL 17.
+      POSTGRES_18: The database version is PostgreSQL 18.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -726,14 +730,15 @@ class BackupRun(_messages.Message):
     POSTGRES_15 = 38
     POSTGRES_16 = 39
     POSTGRES_17 = 40
-    SQLSERVER_2019_STANDARD = 41
-    SQLSERVER_2019_ENTERPRISE = 42
-    SQLSERVER_2019_EXPRESS = 43
-    SQLSERVER_2019_WEB = 44
-    SQLSERVER_2022_STANDARD = 45
-    SQLSERVER_2022_ENTERPRISE = 46
-    SQLSERVER_2022_EXPRESS = 47
-    SQLSERVER_2022_WEB = 48
+    POSTGRES_18 = 41
+    SQLSERVER_2019_STANDARD = 42
+    SQLSERVER_2019_ENTERPRISE = 43
+    SQLSERVER_2019_EXPRESS = 44
+    SQLSERVER_2019_WEB = 45
+    SQLSERVER_2022_STANDARD = 46
+    SQLSERVER_2022_ENTERPRISE = 47
+    SQLSERVER_2022_EXPRESS = 48
+    SQLSERVER_2022_WEB = 49
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""The status of this run.
@@ -1062,6 +1067,7 @@ class ConnectSettings(_messages.Message):
       POSTGRES_15: The database version is PostgreSQL 15.
       POSTGRES_16: The database version is PostgreSQL 16.
       POSTGRES_17: The database version is PostgreSQL 17.
+      POSTGRES_18: The database version is PostgreSQL 18.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -1116,14 +1122,15 @@ class ConnectSettings(_messages.Message):
     POSTGRES_15 = 38
     POSTGRES_16 = 39
     POSTGRES_17 = 40
-    SQLSERVER_2019_STANDARD = 41
-    SQLSERVER_2019_ENTERPRISE = 42
-    SQLSERVER_2019_EXPRESS = 43
-    SQLSERVER_2019_WEB = 44
-    SQLSERVER_2022_STANDARD = 45
-    SQLSERVER_2022_ENTERPRISE = 46
-    SQLSERVER_2022_EXPRESS = 47
-    SQLSERVER_2022_WEB = 48
+    POSTGRES_18 = 41
+    SQLSERVER_2019_STANDARD = 42
+    SQLSERVER_2019_ENTERPRISE = 43
+    SQLSERVER_2019_EXPRESS = 44
+    SQLSERVER_2019_WEB = 45
+    SQLSERVER_2022_STANDARD = 46
+    SQLSERVER_2022_ENTERPRISE = 47
+    SQLSERVER_2022_EXPRESS = 48
+    SQLSERVER_2022_WEB = 49
 
   class MdxProtocolSupportValueListEntryValuesEnum(_messages.Enum):
     r"""MdxProtocolSupportValueListEntryValuesEnum enum type.
@@ -1489,6 +1496,7 @@ class DatabaseInstance(_messages.Message):
       POSTGRES_15: The database version is PostgreSQL 15.
       POSTGRES_16: The database version is PostgreSQL 16.
       POSTGRES_17: The database version is PostgreSQL 17.
+      POSTGRES_18: The database version is PostgreSQL 18.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -1543,14 +1551,15 @@ class DatabaseInstance(_messages.Message):
     POSTGRES_15 = 38
     POSTGRES_16 = 39
     POSTGRES_17 = 40
-    SQLSERVER_2019_STANDARD = 41
-    SQLSERVER_2019_ENTERPRISE = 42
-    SQLSERVER_2019_EXPRESS = 43
-    SQLSERVER_2019_WEB = 44
-    SQLSERVER_2022_STANDARD = 45
-    SQLSERVER_2022_ENTERPRISE = 46
-    SQLSERVER_2022_EXPRESS = 47
-    SQLSERVER_2022_WEB = 48
+    POSTGRES_18 = 41
+    SQLSERVER_2019_STANDARD = 42
+    SQLSERVER_2019_ENTERPRISE = 43
+    SQLSERVER_2019_EXPRESS = 44
+    SQLSERVER_2019_WEB = 45
+    SQLSERVER_2022_STANDARD = 46
+    SQLSERVER_2022_ENTERPRISE = 47
+    SQLSERVER_2022_EXPRESS = 48
+    SQLSERVER_2022_WEB = 49
 
   class InstalledVersionValueValuesEnum(_messages.Enum):
     r"""Stores the current database version including minor version such as
@@ -1621,6 +1630,7 @@ class DatabaseInstance(_messages.Message):
       POSTGRES_15: The database version is PostgreSQL 15.
       POSTGRES_16: The database version is PostgreSQL 16.
       POSTGRES_17: The database version is PostgreSQL 17.
+      POSTGRES_18: The database version is PostgreSQL 18.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -1675,14 +1685,15 @@ class DatabaseInstance(_messages.Message):
     POSTGRES_15 = 38
     POSTGRES_16 = 39
     POSTGRES_17 = 40
-    SQLSERVER_2019_STANDARD = 41
-    SQLSERVER_2019_ENTERPRISE = 42
-    SQLSERVER_2019_EXPRESS = 43
-    SQLSERVER_2019_WEB = 44
-    SQLSERVER_2022_STANDARD = 45
-    SQLSERVER_2022_ENTERPRISE = 46
-    SQLSERVER_2022_EXPRESS = 47
-    SQLSERVER_2022_WEB = 48
+    POSTGRES_18 = 41
+    SQLSERVER_2019_STANDARD = 42
+    SQLSERVER_2019_ENTERPRISE = 43
+    SQLSERVER_2019_EXPRESS = 44
+    SQLSERVER_2019_WEB = 45
+    SQLSERVER_2022_STANDARD = 46
+    SQLSERVER_2022_ENTERPRISE = 47
+    SQLSERVER_2022_EXPRESS = 48
+    SQLSERVER_2022_WEB = 49
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type.
@@ -2081,8 +2092,8 @@ class ExecuteSqlPayload(_messages.Message):
     OutputFormatValueValuesEnum: Optional. Deprecated field. The requested
       format of the SQL response.
     PartialResultModeValueValuesEnum: Optional. Controls how the API should
-      respond when the SQL execution result exceeds 10 MB. The default mode is
-      to throw an error.
+      respond when the SQL execution result is incomplete due to the size
+      limit or another error. The default mode is to throw an error.
 
   Fields:
     accessToken: Optional. Deprecated field. The access token required for IAM
@@ -2095,8 +2106,8 @@ class ExecuteSqlPayload(_messages.Message):
     outputFormat: Optional. Deprecated field. The requested format of the SQL
       response.
     partialResultMode: Optional. Controls how the API should respond when the
-      SQL execution result exceeds 10 MB. The default mode is to throw an
-      error.
+      SQL execution result is incomplete due to the size limit or another
+      error. The default mode is to throw an error.
     password: Optional. The database user's password.
     rowLimit: Optional. The maximum number of rows returned per SQL statement.
     secretPath: Optional. The resource ID of a secret in secret manager which
@@ -2122,15 +2133,17 @@ class ExecuteSqlPayload(_messages.Message):
 
   class PartialResultModeValueValuesEnum(_messages.Enum):
     r"""Optional. Controls how the API should respond when the SQL execution
-    result exceeds 10 MB. The default mode is to throw an error.
+    result is incomplete due to the size limit or another error. The default
+    mode is to throw an error.
 
     Values:
       PARTIAL_RESULT_MODE_UNSPECIFIED: Unspecified mode, effectively the same
         as `FAIL_PARTIAL_RESULT`.
-      FAIL_PARTIAL_RESULT: Throw an error if the result exceeds 10 MB. Don't
-        return the result.
+      FAIL_PARTIAL_RESULT: Throw an error if the result exceeds 10 MB or if a
+        partial result can be retrieved. Don't return the result.
       ALLOW_PARTIAL_RESULT: Return a truncated result and set `partial_result`
-        to true if the result exceeds 10 MB. Don't throw an error.
+        to true if the result exceeds 10 MB or if only a partial result can be
+        retrieved due to error. Don't throw an error.
     """
     PARTIAL_RESULT_MODE_UNSPECIFIED = 0
     FAIL_PARTIAL_RESULT = 1
@@ -2542,6 +2555,7 @@ class Flag(_messages.Message):
       POSTGRES_15: The database version is PostgreSQL 15.
       POSTGRES_16: The database version is PostgreSQL 16.
       POSTGRES_17: The database version is PostgreSQL 17.
+      POSTGRES_18: The database version is PostgreSQL 18.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -2596,14 +2610,15 @@ class Flag(_messages.Message):
     POSTGRES_15 = 38
     POSTGRES_16 = 39
     POSTGRES_17 = 40
-    SQLSERVER_2019_STANDARD = 41
-    SQLSERVER_2019_ENTERPRISE = 42
-    SQLSERVER_2019_EXPRESS = 43
-    SQLSERVER_2019_WEB = 44
-    SQLSERVER_2022_STANDARD = 45
-    SQLSERVER_2022_ENTERPRISE = 46
-    SQLSERVER_2022_EXPRESS = 47
-    SQLSERVER_2022_WEB = 48
+    POSTGRES_18 = 41
+    SQLSERVER_2019_STANDARD = 42
+    SQLSERVER_2019_ENTERPRISE = 43
+    SQLSERVER_2019_EXPRESS = 44
+    SQLSERVER_2019_WEB = 45
+    SQLSERVER_2022_STANDARD = 46
+    SQLSERVER_2022_ENTERPRISE = 47
+    SQLSERVER_2022_EXPRESS = 48
+    SQLSERVER_2022_WEB = 49
 
   class FlagScopeValueValuesEnum(_messages.Enum):
     r"""Scope of flag.
@@ -4226,6 +4241,7 @@ class PreCheckMajorVersionUpgradeContext(_messages.Message):
       POSTGRES_15: The database version is PostgreSQL 15.
       POSTGRES_16: The database version is PostgreSQL 16.
       POSTGRES_17: The database version is PostgreSQL 17.
+      POSTGRES_18: The database version is PostgreSQL 18.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -4280,14 +4296,15 @@ class PreCheckMajorVersionUpgradeContext(_messages.Message):
     POSTGRES_15 = 38
     POSTGRES_16 = 39
     POSTGRES_17 = 40
-    SQLSERVER_2019_STANDARD = 41
-    SQLSERVER_2019_ENTERPRISE = 42
-    SQLSERVER_2019_EXPRESS = 43
-    SQLSERVER_2019_WEB = 44
-    SQLSERVER_2022_STANDARD = 45
-    SQLSERVER_2022_ENTERPRISE = 46
-    SQLSERVER_2022_EXPRESS = 47
-    SQLSERVER_2022_WEB = 48
+    POSTGRES_18 = 41
+    SQLSERVER_2019_STANDARD = 42
+    SQLSERVER_2019_ENTERPRISE = 43
+    SQLSERVER_2019_EXPRESS = 44
+    SQLSERVER_2019_WEB = 45
+    SQLSERVER_2022_STANDARD = 46
+    SQLSERVER_2022_ENTERPRISE = 47
+    SQLSERVER_2022_EXPRESS = 48
+    SQLSERVER_2022_WEB = 49
 
   kind = _messages.StringField(1)
   preCheckResponse = _messages.MessageField('PreCheckResponse', 2, repeated=True)
@@ -4389,14 +4406,16 @@ class QueryResult(_messages.Message):
       data type of the column.
     message: Message related to the SQL execution result.
     partialResult: Set to true if the SQL execution's result is truncated due
-      to size limits.
+      to size limits or an error retrieving results.
     rows: Rows returned by the SQL statement.
+    status: If results were truncated due to an error, details of that error.
   """
 
   columns = _messages.MessageField('Column', 1, repeated=True)
   message = _messages.StringField(2)
   partialResult = _messages.BooleanField(3)
   rows = _messages.MessageField('Row', 4, repeated=True)
+  status = _messages.MessageField('Status', 5)
 
 
 class ReadPoolAutoScaleConfig(_messages.Message):
@@ -4967,11 +4986,15 @@ class SqlActiveDirectoryConfig(_messages.Message):
       ACTIVE_DIRECTORY_MODE_UNSPECIFIED: Unspecified mode.
       MANAGED_ACTIVE_DIRECTORY: Managed Active Directory mode. This is the
         fallback option to maintain backward compatibility.
-      SELF_MANAGED_ACTIVE_DIRECTORY: Self-managed Active Directory mode.
+      SELF_MANAGED_ACTIVE_DIRECTORY: Deprecated: Use
+        CUSTOMER_MANAGED_ACTIVE_DIRECTORY instead.
+      CUSTOMER_MANAGED_ACTIVE_DIRECTORY: Customer-managed Active Directory
+        mode.
     """
     ACTIVE_DIRECTORY_MODE_UNSPECIFIED = 0
     MANAGED_ACTIVE_DIRECTORY = 1
     SELF_MANAGED_ACTIVE_DIRECTORY = 2
+    CUSTOMER_MANAGED_ACTIVE_DIRECTORY = 3
 
   adminCredentialSecretName = _messages.StringField(1)
   dnsServers = _messages.StringField(2, repeated=True)
@@ -5648,6 +5671,7 @@ class SqlInstancesExecuteSqlResponse(_messages.Message):
     partialResult: Deprecated field. Use results.partial_result instead.
     results: The list of results after executing all the SQL statements.
     rows: Deprecated field. Use results.rows instead.
+    status: Contains the error from the database if the SQL execution failed.
   """
 
   columns = _messages.MessageField('Column', 1, repeated=True)
@@ -5658,6 +5682,7 @@ class SqlInstancesExecuteSqlResponse(_messages.Message):
   partialResult = _messages.BooleanField(6)
   results = _messages.MessageField('QueryResult', 7, repeated=True)
   rows = _messages.MessageField('Row', 8, repeated=True)
+  status = _messages.MessageField('Status', 9)
 
 
 class SqlInstancesExportRequest(_messages.Message):
@@ -6405,11 +6430,6 @@ class SqlProjectsInstancesGetLatestRecoveryTimeRequest(_messages.Message):
   r"""A SqlProjectsInstancesGetLatestRecoveryTimeRequest object.
 
   Fields:
-    datasource: The Backup and Disaster Recovery Datasource URI. Format: proje
-      cts/{project}/locations/{region}/backupVaults/{backupvault}/dataSources/
-      {datasource}. Note: This field is used for Backup and DR managed
-      instance only. If this field is set, users should not set the instance
-      name or source_instance_deletion_time fields.
     instance: Cloud SQL instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance.
     sourceInstanceDeletionTime: The timestamp used to identify the time when
@@ -6417,10 +6437,9 @@ class SqlProjectsInstancesGetLatestRecoveryTimeRequest(_messages.Message):
       must set the timestamp.
   """
 
-  datasource = _messages.StringField(1)
-  instance = _messages.StringField(2, required=True)
-  project = _messages.StringField(3, required=True)
-  sourceInstanceDeletionTime = _messages.StringField(4)
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  sourceInstanceDeletionTime = _messages.StringField(3)
 
 
 class SqlProjectsInstancesPerformDiskShrinkRequest(_messages.Message):
@@ -6907,6 +6926,57 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class Status(_messages.Message):
+  r"""The `Status` type defines a logical error model that is suitable for
+  different programming environments, including REST APIs and RPC APIs. It is
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details. You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    code: The status code, which should be an enum value of google.rpc.Code.
+    details: A list of messages that carry the error details. There is a
+      common set of message types for APIs to use.
+    message: A developer-facing error message, which should be in English. Any
+      user-facing error message should be localized and sent in the
+      google.rpc.Status.details field, or localized by the client.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  message = _messages.StringField(3)
+
+
 class SyncFlags(_messages.Message):
   r"""Initial sync flags for certain Cloud SQL APIs. Currently used for the
   MySQL external server initial dump.
@@ -7029,8 +7099,8 @@ class User(_messages.Message):
       host is specified as part of the request URL. The host name cannot be
       updated after insertion. For a MySQL instance, it's required; for a
       PostgreSQL or SQL Server instance, it's optional.
-    iamEmail: The full email for an IAM user. For normal database users, this
-      will not be filled. Only applicable to MySQL database users.
+    iamEmail: Optional. The full email for an IAM user. For normal database
+      users, this will not be filled. Only applicable to MySQL database users.
     iamStatus: Indicates if a group is active or inactive for IAM database
       authentication.
     instance: The name of the Cloud SQL instance. This does not include the

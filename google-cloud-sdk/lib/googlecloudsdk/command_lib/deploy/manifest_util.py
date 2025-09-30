@@ -22,6 +22,7 @@ import enum
 import re
 from typing import Any, Callable, Optional
 
+from apitools.base.py import encoding
 from dateutil import parser
 from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.command_lib.deploy import automation_util
@@ -31,6 +32,7 @@ from googlecloudsdk.command_lib.deploy import deploy_policy_util
 from googlecloudsdk.command_lib.deploy import exceptions
 from googlecloudsdk.command_lib.deploy import target_util
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 from googlecloudsdk.core.resource import resource_property
 import jsonschema
 
@@ -58,13 +60,14 @@ PHASES_FIELD = 'phases'
 DESTINATION_PHASE_FIELD = 'destinationPhase'
 DISABLE_ROLLBACK_IF_ROLLOUT_PENDING = 'disableRollbackIfRolloutPending'
 TARGET_FIELD = 'target'
-METADATA_FIELDS = [ANNOTATIONS_FIELD, LABELS_FIELD]
+METADATA_FIELDS = [ANNOTATIONS_FIELD, LABELS_FIELD, NAME_FIELD]
 EXCLUDE_FIELDS = [
     'createTime',
+    'customTargetTypeId',
     'etag',
+    'targetId',
     'uid',
     'updateTime',
-    NAME_FIELD,
 ] + METADATA_FIELDS
 JOBS_FIELD = 'jobs'
 RETRY_FIELD = 'retry'
@@ -90,7 +93,7 @@ class ResourceKind(enum.Enum):
 
 
 @dataclasses.dataclass
-class _ParseContext:
+class _TransformContext:
   kind: ResourceKind
   name: str
   project: str
@@ -185,19 +188,19 @@ def _CheckDuplicateResourceNames(
 
 
 def _RemoveApiVersionAndKind(
-    value: dict[str, Any], parse_context: _ParseContext
+    value: dict[str, Any], transform_context: _TransformContext
 ) -> None:
   """Removes the apiVersion and kind fields from the manifest."""
   del value
-  del parse_context.manifest['apiVersion']
-  del parse_context.manifest['kind']
+  del transform_context.manifest['apiVersion']
+  del transform_context.manifest['kind']
 
 
 def _MetadataYamlToProto(
-    metadata: dict[str, Any], parse_context: _ParseContext
+    metadata: dict[str, Any], transform_context: _TransformContext
 ) -> None:
   """Moves the fields in metadata to the top level of the manifest."""
-  manifest = parse_context.manifest
+  manifest = transform_context.manifest
   manifest[ANNOTATIONS_FIELD] = metadata.get(ANNOTATIONS_FIELD)
   manifest[LABELS_FIELD] = metadata.get(LABELS_FIELD)
   # I think allowing description in metadata was an accident, not intentional...
@@ -206,8 +209,8 @@ def _MetadataYamlToProto(
   if 'description' in metadata:
     manifest['description'] = metadata['description']
   name = metadata.get(NAME_FIELD)
-  resource_ref = _ref_creators[parse_context.kind](
-      name, parse_context.project, parse_context.region
+  resource_ref = _ref_creators[transform_context.kind](
+      name, transform_context.project, transform_context.region
   )
   # Name() does _not_ return the resource name. It returns the part of the name
   # after the resource type. For example, for targets, it returns everything
@@ -215,7 +218,7 @@ def _MetadataYamlToProto(
   # ID, which would lead to a confusing error when we try to call the API.
   if '/' in resource_ref.Name():
     raise exceptions.CloudDeployConfigError.for_resource_field(
-        parse_context.kind,
+        transform_context.kind,
         name,
         'metadata.name',
         f'invalid resource ID "{resource_ref.Name()}"',
@@ -225,29 +228,29 @@ def _MetadataYamlToProto(
 
 
 def _ConvertLabelsToSnakeCase(
-    labels: dict[str, str], parse_context: _ParseContext
+    labels: dict[str, str], transform_context: _TransformContext
 ) -> dict[str, str]:
   """Convert labels from camelCase to snake_case."""
-  del parse_context
+  del transform_context
   # See go/unified-cloud-labels-proposal.
   return {resource_property.ConvertToSnakeCase(k): v for k, v in labels.items()}
 
 
 def _UpdateOldAutomationSelector(
-    selector: dict[str, Any], parse_context: _ParseContext
+    selector: dict[str, Any], transform_context: _TransformContext
 ) -> dict[str, Any]:
   """Converts an old automation selector to the new format."""
   targets = []
   for target in selector:
     targets.append(target[TARGET_FIELD])
-  parse_context.manifest['selector'] = {'targets': targets}
+  transform_context.manifest['selector'] = {'targets': targets}
 
 
 def _RenameOldAutomationRules(
-    rule: dict[str, Any], parse_context: _ParseContext
+    rule: dict[str, Any], transform_context: _TransformContext
 ) -> dict[str, Any]:
   """Renames the old automation rule fields to the new format."""
-  del parse_context
+  del transform_context
   if PROMOTE_RELEASE_FIELD in rule:
     rule[PROMOTE_RELEASE_RULE_FIELD] = rule[PROMOTE_RELEASE_FIELD]
     del rule[PROMOTE_RELEASE_FIELD]
@@ -261,14 +264,14 @@ def _RenameOldAutomationRules(
 
 
 def _ConvertAutomationRuleNameFieldToId(
-    rule: dict[str, Any], parse_context: _ParseContext
+    rule: dict[str, Any], transform_context: _TransformContext
 ) -> dict[str, Any]:
   """Move the name field to the id field."""
   if rule is not None and NAME_FIELD in rule:
     if ID_FIELD in rule:
       raise exceptions.CloudDeployConfigError.for_resource(
-          parse_context.kind,
-          parse_context.name,
+          transform_context.kind,
+          transform_context.name,
           'automation rule has both name and id fields',
       )
     rule[ID_FIELD] = rule[NAME_FIELD]
@@ -277,30 +280,30 @@ def _ConvertAutomationRuleNameFieldToId(
 
 
 def _AddEmptyRepairAutomationRetryMessage(
-    repair_phase: dict[str, Any], parse_context: _ParseContext
+    repair_phase: dict[str, Any], transform_context: _TransformContext
 ) -> dict[str, Any]:
   """Add an empty retry field if it's defined in the manifest but set to None."""
-  del parse_context
+  del transform_context
   if RETRY_FIELD in repair_phase and repair_phase[RETRY_FIELD] is None:
     repair_phase[RETRY_FIELD] = {}
   return repair_phase
 
 
 def _ConvertRepairAutomationBackoffModeEnumValuesToProtoFormat(
-    value: str, parse_context
+    value: str, transform_context
 ) -> str:
   """Converts the backoffMode values to the proto enum names."""
-  del parse_context
+  del transform_context
 
   if not value.startswith('BACKOFF_MODE_'):
     return 'BACKOFF_MODE_' + value
 
 
 def _ConvertAutomationWaitMinToSec(
-    wait: str, parse_context: _ParseContext
+    wait: str, transform_context: _TransformContext
 ) -> str:
   """Converts the wait time from (for example) "5m" to "300s"."""
-  del parse_context
+  del transform_context
   if not re.fullmatch(r'\d+m', wait):
     raise exceptions.AutomationWaitFormatError()
   mins = wait[:-1]
@@ -310,14 +313,14 @@ def _ConvertAutomationWaitMinToSec(
 
 
 def _ConvertPolicyOneTimeWindowToProtoFormat(
-    value: dict[str, Any], parse_context: _ParseContext
+    value: dict[str, Any], transform_context: _TransformContext
 ) -> dict[str, Any]:
   """Converts the one time window to proto format."""
   proto_format = {}
   if value.get('start'):
-    _SetDateTimeFields(value['start'], 'start', proto_format, parse_context)
+    _SetDateTimeFields(value['start'], 'start', proto_format, transform_context)
   if value.get('end'):
-    _SetDateTimeFields(value['end'], 'end', proto_format, parse_context)
+    _SetDateTimeFields(value['end'], 'end', proto_format, transform_context)
   # Any other (unknown) fields will cause errors in the proto conversion so we
   # don't need to check for them here.
   return proto_format
@@ -327,23 +330,23 @@ def _SetDateTimeFields(
     date_str: str,
     field_name: str,
     proto_format: dict[str, str],
-    parse_context: _ParseContext,
+    transform_context: _TransformContext,
 ) -> None:
   """Convert the date string to proto format and set those fields in proto_format."""
   try:
     date_time = parser.isoparse(date_str)
   except ValueError:
     raise exceptions.CloudDeployConfigError.for_resource_field(
-        parse_context.kind,
-        parse_context.name,
+        transform_context.kind,
+        transform_context.name,
         field_name,
         'invalid date string: "{date_str}". Must be a valid date in ISO 8601'
         ' format (e.g. {field_name}: "2024-12-24 17:00)',
     )
   except TypeError:
     raise exceptions.CloudDeployConfigError.for_resource_field(
-        parse_context.kind,
-        parse_context.name,
+        transform_context.kind,
+        transform_context.name,
         field_name,
         'invalid date string: {date_str}. Make sure to put quotes around the'
         ' date string (e.g. {field_name}: "2024-09-27 18:30:31.123") so that it'
@@ -351,8 +354,8 @@ def _SetDateTimeFields(
     )
   if date_time.tzinfo is not None:
     raise exceptions.CloudDeployConfigError.for_resource_field(
-        parse_context.kind,
-        parse_context.name,
+        transform_context.kind,
+        transform_context.name,
         field_name,
         'invalid date string: {date_str}. Do not include a timezone or timezone'
         ' offset in the date string. Specify the timezone in the timeZone'
@@ -376,7 +379,7 @@ def _SetDateTimeFields(
 
 
 def _ConvertPolicyWeeklyWindowTimes(
-    value: str, parse_context: _ParseContext
+    value: str, transform_context: _TransformContext
 ) -> dict[str, str]:
   """Convert the weekly window times to proto format."""
   # First, check if the hour is 24. If so replace with 00, because
@@ -389,9 +392,9 @@ def _ConvertPolicyWeeklyWindowTimes(
     time_obj = datetime.time.fromisoformat(value)
   except ValueError:
     raise exceptions.CloudDeployConfigError.for_resource_field(
-        parse_context.kind,
-        parse_context.name,
-        parse_context.field,
+        transform_context.kind,
+        transform_context.name,
+        transform_context.field,
         f'invalid time string: "{value}"',
     )
   hour_value = time_obj.hour
@@ -405,7 +408,9 @@ def _ConvertPolicyWeeklyWindowTimes(
   }
 
 
-def _ReplaceCustomTargetType(value: str, parse_context: _ParseContext) -> str:
+def _ReplaceCustomTargetType(
+    value: str, transform_context: _TransformContext
+) -> str:
   """Converts a custom target type ID or name to a resource name.
 
   This is handled specially because we allow providing either the ID or name for
@@ -414,7 +419,8 @@ def _ReplaceCustomTargetType(value: str, parse_context: _ParseContext) -> str:
 
   Args:
     value: the current value of the customTargetType field.
-    parse_context: _ParseContext, data about the current parsing context.
+    transform_context: _TransformContext, data about the current parsing
+      context.
 
   Returns:
     The custom target type resource name.
@@ -425,12 +431,12 @@ def _ReplaceCustomTargetType(value: str, parse_context: _ParseContext) -> str:
     return value
 
   return custom_target_type_util.CustomTargetTypeReference(
-      value, parse_context.project, parse_context.region
+      value, transform_context.project, transform_context.region
   ).RelativeName()
 
 
 @dataclasses.dataclass
-class _ParseTransform:
+class TransformConfig:
   """Represents a field that needs transformation during parsing.
 
   Attributes:
@@ -442,7 +448,7 @@ class _ParseTransform:
       value will be used in place of the original value.
     move: A function that is called when the field is encountered. This is used
       for fields that should be moved to a different location in the manifest.
-      The function should modify the parse_context.manifest in place.
+      The function should modify the transform_context.manifest in place.
     schema: An optional JSON schema that is used to validate the field.
   """
 
@@ -453,20 +459,20 @@ class _ParseTransform:
   # the field specified in `fields`.
   # If `replace` is set, the function should return the new value and the
   # parsing code will handle the substitution.
-  # If `move` is set, the function should modify the parse_context.manifest
+  # If `move` is set, the function should modify the transform_context.manifest
   # in place and the parsing code will skip the field.
-  replace: Optional[Callable[[Any, _ParseContext], Any]] = None
-  move: Optional[Callable[[Any, _ParseContext], None]] = None
+  replace: Optional[Callable[[Any, _TransformContext], Any]] = None
+  move: Optional[Callable[[Any, _TransformContext], None]] = None
   schema: Optional[dict[str, Any]] = None
 
 
 _PARSE_TRANSFORMS = [
-    _ParseTransform(
+    TransformConfig(
         kinds=set(ResourceKind),
         fields=['apiVersion'],
         move=_RemoveApiVersionAndKind,
     ),
-    _ParseTransform(
+    TransformConfig(
         kinds=set(ResourceKind),
         fields=['metadata'],
         move=_MetadataYamlToProto,
@@ -488,13 +494,13 @@ _PARSE_TRANSFORMS = [
             'additionalProperties': False,
         },
     ),
-    _ParseTransform(
+    TransformConfig(
         kinds=set(ResourceKind),
         fields=['labels'],
         replace=_ConvertLabelsToSnakeCase,
         schema={'type': 'object', 'additionalProperties': {'type': 'string'}},
     ),
-    _ParseTransform(
+    TransformConfig(
         kinds=[ResourceKind.AUTOMATION],
         fields=['selector[]'],
         move=_UpdateOldAutomationSelector,
@@ -508,12 +514,12 @@ _PARSE_TRANSFORMS = [
             },
         },
     ),
-    _ParseTransform(
+    TransformConfig(
         kinds=[ResourceKind.AUTOMATION],
         fields=['rules[]'],
         replace=_RenameOldAutomationRules,
     ),
-    _ParseTransform(
+    TransformConfig(
         kinds=[ResourceKind.AUTOMATION],
         fields=[
             'rules[].repairRolloutRule',
@@ -523,18 +529,18 @@ _PARSE_TRANSFORMS = [
         ],
         replace=_ConvertAutomationRuleNameFieldToId,
     ),
-    _ParseTransform(
+    TransformConfig(
         kinds=[ResourceKind.AUTOMATION],
         fields=['rules[].repairRolloutRule.repairPhases[]'],
         replace=_AddEmptyRepairAutomationRetryMessage,
     ),
-    _ParseTransform(
+    TransformConfig(
         kinds=[ResourceKind.AUTOMATION],
         fields=['rules[].repairRolloutRule.repairPhases[].retry.backoffMode'],
         replace=_ConvertRepairAutomationBackoffModeEnumValuesToProtoFormat,
         schema={'type': 'string'},
     ),
-    _ParseTransform(
+    TransformConfig(
         kinds=[ResourceKind.AUTOMATION],
         fields=[
             'rules[].repairRolloutRule.repairPhases[].retry.wait',
@@ -544,12 +550,12 @@ _PARSE_TRANSFORMS = [
         replace=_ConvertAutomationWaitMinToSec,
         schema={'type': 'string'},
     ),
-    _ParseTransform(
+    TransformConfig(
         kinds=[ResourceKind.DEPLOY_POLICY],
         fields=['rules[].rolloutRestriction.timeWindows.oneTimeWindows[]'],
         replace=_ConvertPolicyOneTimeWindowToProtoFormat,
     ),
-    _ParseTransform(
+    TransformConfig(
         kinds=[ResourceKind.DEPLOY_POLICY],
         fields=[
             'rules[].rolloutRestriction.timeWindows.weeklyWindows[].startTime',
@@ -558,7 +564,7 @@ _PARSE_TRANSFORMS = [
         replace=_ConvertPolicyWeeklyWindowTimes,
         schema={'type': 'string'},
     ),
-    _ParseTransform(
+    TransformConfig(
         kinds=[ResourceKind.TARGET],
         fields=['customTarget.customTargetType'],
         replace=_ReplaceCustomTargetType,
@@ -618,41 +624,10 @@ def _ParseManifest(
     empty dictionary if the kind is not TARGET_KIND_V1BETA1.
 
   Raises:
-    exceptions.CloudDeployConfigError: If there are errors during parsing,
-      such as an invalid structure for special handling fields.
+    exceptions.CloudDeployConfigError: If there are errors in the manifest
+      because of invalid data.
   """
-  for field in _PARSE_TRANSFORMS:
-    if kind in field.kinds:
-      for field_name in field.fields:
-        value = _GetValue(field_name, manifest)
-        if value:
-          parse_context = _ParseContext(
-              kind,
-              name,
-              project,
-              region,
-              manifest,
-              _GetFinalFieldName(field_name),
-          )
-          if field.replace:
-            new_value = _TransformNestedListData(
-                value,
-                lambda data, current_field=field, current_parse_context=parse_context: current_field.replace(
-                    data, current_parse_context
-                ),
-                parse_context,
-                field.schema,
-            )
-            _SetValue(manifest, field_name, new_value)
-          else:
-            if field.schema:
-              try:
-                jsonschema.validate(schema=field.schema, instance=value)
-              except jsonschema.exceptions.ValidationError as e:
-                raise exceptions.CloudDeployConfigError.for_resource_field(
-                    kind, name, field_name, e.message
-                ) from e
-            field.move(value, parse_context)
+  ApplyTransforms(manifest, _PARSE_TRANSFORMS, kind, name, project, region)
   try:
     resource = messages_util.DictToMessageWithErrorCheck(
         manifest, _message_types[kind](messages)
@@ -664,7 +639,181 @@ def _ParseManifest(
   return resource
 
 
-def ProtoToManifest(resource, resource_ref, kind):
+def AddApiVersionAndKind(
+    value: Any, transform_context: _TransformContext
+) -> None:
+  """Adds the API version and kind to the manifest."""
+  del value
+  transform_context.manifest['apiVersion'] = API_VERSION_V1
+  transform_context.manifest['kind'] = transform_context.kind.value
+
+
+def _RemoveField(value: Any, transform_context: _TransformContext) -> None:
+  """Removes the field from the manifest."""
+  del value
+  del transform_context.manifest[transform_context.field]
+
+
+def _MetadataProtoToYaml(
+    value: Any, transform_context: _TransformContext
+) -> None:
+  """Converts the metadata proto to YAML."""
+  del value
+  transform_context.manifest['metadata'] = {}
+  for k in METADATA_FIELDS:
+    if k in transform_context.manifest:
+      transform_context.manifest['metadata'][k] = (
+          transform_context.manifest.get(k)
+      )
+
+
+def _ConvertAutomationWaitSecToMin(
+    wait: str, transform_context: _TransformContext
+) -> str:
+  del transform_context
+  if not wait:
+    return wait
+  seconds = wait[:-1]
+  # convert the minute to second
+  mins = int(seconds) // 60
+  return '%sm' % mins
+
+
+def ConvertPolicyOneTimeWindowToYamlFormat(
+    one_time_window: dict[str, Any], transform_context: _TransformContext
+) -> dict[str, Any]:
+  """Exports the oneTimeWindows field of the Deploy Policy resource."""
+  one_time = {}
+  start_date_time = _DateTimeIsoString(
+      one_time_window['startDate'],
+      one_time_window['startTime'],
+      transform_context,
+  )
+  end_date_time = _DateTimeIsoString(
+      one_time_window['endDate'], one_time_window['endTime'], transform_context
+  )
+  one_time['start'] = start_date_time
+  one_time['end'] = end_date_time
+  return one_time
+
+
+def _DateTimeIsoString(
+    date_obj: dict[str, str],
+    time_obj: dict[str, str],
+    transform_context: _TransformContext,
+) -> str:
+  """Converts a date and time to a string."""
+  date_str = _FormatDate(date_obj)
+  time_str = ConvertTimeProtoToString(time_obj, transform_context)
+  return f'{date_str} {time_str}'
+
+
+def _FormatDate(date: dict[str, str]) -> str:
+  """Converts a date object to a string."""
+  return f"{date['year']:04}-{date['month']:02}-{date['day']:02}"
+
+
+def ConvertTimeProtoToString(
+    time_obj: dict[str, str], transform_context: _TransformContext
+) -> str:
+  """Converts a time object to a string."""
+  del transform_context
+  hours = time_obj.get('hours') or 0
+  minutes = time_obj.get('minutes') or 0
+  time_str = f'{hours:02}:{minutes:02}'
+  if time_obj.get('seconds') or time_obj.get('nanos'):
+    seconds = time_obj.get('seconds') or 0
+    time_str += f':{seconds:02}'
+  if time_obj.get('nanos'):
+    millis = time_obj.get('nanos') / 1000000
+    time_str += f'.{millis:03.0f}'
+  return time_str
+
+
+_EXPORT_TRANSFORMS = [
+    TransformConfig(
+        kinds=set(ResourceKind),
+        # Using the always-present `name` field to make sure this transform is
+        # always applied.
+        fields=['name'],
+        move=AddApiVersionAndKind,
+    ),
+    TransformConfig(
+        kinds=set(ResourceKind) - set([ResourceKind.AUTOMATION]),
+        fields=['name'],
+        # Strip everything before the last `/` character
+        replace=lambda value, transform_context: re.sub(r'.*/', '', value),
+    ),
+    TransformConfig(
+        kinds=[ResourceKind.AUTOMATION],
+        fields=['name'],
+        replace=lambda value, transform_context: re.sub(
+            # Keep only the deliveryPipeline ID and the automation ID:
+            #   projects/.../locations/.../deliveryPipelines/foo/automations/bar
+            # becomes:
+            #   foo/bar
+            r'.*/deliveryPipelines/([^/]+)/automations/',
+            '\\1/',
+            value,
+        ),
+    ),
+    TransformConfig(
+        kinds=set(ResourceKind),
+        fields=['name'],
+        move=_MetadataProtoToYaml,
+    ),
+    TransformConfig(
+        kinds=set(ResourceKind),
+        fields=EXCLUDE_FIELDS,
+        move=_RemoveField,
+    ),
+    TransformConfig(
+        kinds=[ResourceKind.AUTOMATION],
+        fields=[
+            'rules[].advanceRolloutRule.wait',
+            'rules[].promoteReleaseRule.wait',
+            'rules[].repairRolloutRule.repairPhases[].retry.wait',
+        ],
+        replace=_ConvertAutomationWaitSecToMin,
+    ),
+    TransformConfig(
+        kinds=[ResourceKind.AUTOMATION],
+        fields=[
+            'rules[].repairRolloutRule.repairPhases[].retry.backoffMode',
+        ],
+        replace=lambda value, transform_context: value.removeprefix(
+            'BACKOFF_MODE_'
+        ),
+    ),
+    TransformConfig(
+        kinds=[ResourceKind.AUTOMATION],
+        fields=[
+            'rules[].repairRolloutRule.repairPhases[].retry.attempts',
+        ],
+        # apitools converts this to a string, annoyingly. Presumably because
+        # it's an int64 field and Python doesn't support ints that big? But the
+        # server caps it at 10 anyway.
+        replace=lambda value, transform_context: int(value),
+    ),
+    TransformConfig(
+        kinds=[ResourceKind.DEPLOY_POLICY],
+        fields=['rules[].rolloutRestriction.timeWindows.oneTimeWindows[]'],
+        replace=ConvertPolicyOneTimeWindowToYamlFormat,
+    ),
+    TransformConfig(
+        kinds=[ResourceKind.DEPLOY_POLICY],
+        fields=[
+            'rules[].rolloutRestriction.timeWindows.weeklyWindows[].startTime',
+            'rules[].rolloutRestriction.timeWindows.weeklyWindows[].endTime',
+        ],
+        replace=ConvertTimeProtoToString,
+    ),
+]
+
+
+def ProtoToManifest(
+    resource: Any, resource_ref: resources.Resource, kind: ResourceKind
+) -> dict[str, Any]:
   """Converts a resource message to a cloud deploy resource manifest.
 
   The manifest can be applied by 'deploy apply' command.
@@ -677,288 +826,60 @@ def ProtoToManifest(resource, resource_ref, kind):
   Returns:
     A dictionary that represents the cloud deploy resource.
   """
-  manifest = collections.OrderedDict(
-      apiVersion=API_VERSION_V1, kind=kind.value, metadata={}
+  manifest = encoding.MessageToDict(resource)
+  ApplyTransforms(
+      manifest,
+      _EXPORT_TRANSFORMS,
+      kind,
+      resource_ref.Name(),
+      resource_ref.projectsId,
+      resource_ref.locationsId,
   )
-
-  for k in METADATA_FIELDS:
-    v = getattr(resource, k)
-    # Skips the 'zero' values in the message.
-    if v:
-      manifest['metadata'][k] = v
-  # Sets the name to resource ID instead of the full name.
-  if kind == ResourceKind.AUTOMATION:
-    manifest['metadata'][NAME_FIELD] = (
-        resource_ref.AsDict()['deliveryPipelinesId'] + '/' + resource_ref.Name()
-    )
-  else:
-    manifest['metadata'][NAME_FIELD] = resource_ref.Name()
-
-  for f in resource.all_fields():
-    if f.name in EXCLUDE_FIELDS:
-      continue
-    v = getattr(resource, f.name)
-    # Skips the 'zero' values in the message.
-    if v:
-      if f.name == SELECTOR_FIELD and kind == ResourceKind.AUTOMATION:
-        ExportAutomationSelector(manifest, v)
-        continue
-      if f.name == RULES_FIELD and kind == ResourceKind.AUTOMATION:
-        ExportAutomationRules(manifest, v)
-        continue
-      # Special handling for the deploy policy rules field.
-      # The rollout restriction rule accepts date/time strings in YAML which
-      # then need to be parsed into the correct fields in the API.
-      if f.name == RULES_FIELD and kind == ResourceKind.DEPLOY_POLICY:
-        ExportDeployPolicyRules(manifest, v)
-        continue
-      manifest[f.name] = v
-
   return manifest
 
 
-def ExportAutomationSelector(manifest, resource_selector):
-  """Exports the selector field of the Automation resource.
-
-  Args:
-    manifest: A dictionary that represents the cloud deploy Automation resource.
-    resource_selector:
-      googlecloudsdk.generated_clients.apis.clouddeploy.AutomationResourceSelector
-      message.
-  """
-  manifest[SELECTOR_FIELD] = []
-  for selector in getattr(resource_selector, 'targets'):
-    manifest[SELECTOR_FIELD].append({TARGET_FIELD: selector})
-
-
-def ExportAutomationRules(manifest, rules):
-  """Exports the selector field of the Automation resource.
-
-  Args:
-    manifest: A dictionary that represents the cloud deploy Automation resource.
-    rules: [googlecloudsdk.generated_clients.apis.clouddeploy.AutomationRule],
-      list of AutomationRule message.
-  """
-  manifest[RULES_FIELD] = []
-  for rule in rules:
-    resource = {}
-    if getattr(rule, PROMOTE_RELEASE_RULE_FIELD):
-      message = getattr(rule, PROMOTE_RELEASE_RULE_FIELD)
-      promote = {}
-      resource[PROMOTE_RELEASE_RULE_FIELD] = promote
-      promote[ID_FIELD] = getattr(message, ID_FIELD)
-      if getattr(message, DESTINATION_TARGET_ID_FIELD):
-        promote[DESTINATION_TARGET_ID_FIELD] = getattr(
-            message, DESTINATION_TARGET_ID_FIELD
+def ApplyTransforms(
+    manifest: dict[str, Any],
+    transforms: list[TransformConfig],
+    kind: str,
+    name: str,
+    project: str,
+    region: str,
+) -> None:
+  """Applies a set of transformations to the manifest."""
+  for transform in transforms:
+    if kind not in transform.kinds:
+      continue
+    for field_name in transform.fields:
+      value = _GetValue(field_name, manifest)
+      if value:
+        transform_context = _TransformContext(
+            kind,
+            name,
+            project,
+            region,
+            manifest,
+            _GetFinalFieldName(field_name),
         )
-      if getattr(message, DESTINATION_PHASE_FIELD):
-        promote[DESTINATION_PHASE_FIELD] = getattr(
-            message, DESTINATION_PHASE_FIELD
-        )
-      if getattr(message, WAIT_FIELD):
-        promote[WAIT_FIELD] = _WaitSecToMin(getattr(message, WAIT_FIELD))
-    if getattr(rule, ADVANCE_ROLLOUT_RULE_FIELD):
-      advance = {}
-      resource[ADVANCE_ROLLOUT_RULE_FIELD] = advance
-      message = getattr(rule, ADVANCE_ROLLOUT_RULE_FIELD)
-      advance[ID_FIELD] = getattr(message, ID_FIELD)
-      if getattr(message, SOURCE_PHASES_FIELD):
-        advance[SOURCE_PHASES_FIELD] = getattr(message, SOURCE_PHASES_FIELD)
-      if getattr(message, WAIT_FIELD):
-        advance[WAIT_FIELD] = _WaitSecToMin(getattr(message, WAIT_FIELD))
-    if getattr(rule, REPAIR_ROLLOUT_RULE_FIELD):
-      repair = {}
-      resource[REPAIR_ROLLOUT_RULE_FIELD] = repair
-      message = getattr(rule, REPAIR_ROLLOUT_RULE_FIELD)
-      repair[ID_FIELD] = getattr(message, ID_FIELD)
-      if getattr(message, PHASES_FIELD):
-        repair[PHASES_FIELD] = getattr(message, PHASES_FIELD)
-      if getattr(message, JOBS_FIELD):
-        repair[JOBS_FIELD] = getattr(message, JOBS_FIELD)
-      if getattr(message, REPAIR_PHASES_FIELD):
-        repair[REPAIR_PHASES_FIELD] = _ExportRepairPhases(
-            getattr(message, REPAIR_PHASES_FIELD)
-        )
-    if getattr(rule, TIMED_PROMOTE_RELEASE_RULE_FIELD):
-      message = getattr(rule, TIMED_PROMOTE_RELEASE_RULE_FIELD)
-      timed_promote = {}
-      resource[TIMED_PROMOTE_RELEASE_RULE_FIELD] = timed_promote
-      timed_promote[ID_FIELD] = getattr(message, ID_FIELD)
-      if getattr(message, SCHEDULE_FIELD):
-        timed_promote[SCHEDULE_FIELD] = getattr(message, SCHEDULE_FIELD)
-      if getattr(message, TIME_ZONE_FIELD):
-        timed_promote[TIME_ZONE_FIELD] = getattr(message, TIME_ZONE_FIELD)
-      if getattr(message, DESTINATION_TARGET_ID_FIELD):
-        timed_promote[DESTINATION_TARGET_ID_FIELD] = getattr(
-            message, DESTINATION_TARGET_ID_FIELD
-        )
-      if getattr(message, DESTINATION_PHASE_FIELD):
-        timed_promote[DESTINATION_PHASE_FIELD] = getattr(
-            message, DESTINATION_PHASE_FIELD
-        )
-    manifest[RULES_FIELD].append(resource)
-
-
-def ExportDeployPolicyRules(manifest, rules):
-  """Exports the policy rules field of the Deploy Policy resource.
-
-  Args:
-    manifest: A dictionary that represents the Deploy Policy rules resource.
-    rules: [googlecloudsdk.generated_clients.apis.clouddeploy.PolicyRule], list
-      of PolicyRule messages.
-  """
-  manifest['rules'] = []
-  for rule in rules:
-    if getattr(rule, 'rolloutRestriction'):
-      rollout_restriction_rule = _ExportRolloutRestriction(rule)
-      manifest['rules'].append(rollout_restriction_rule)
-
-
-def _ExportRolloutRestriction(rule):
-  """Exports the rolloutRestriction field of the Deploy Policy resource."""
-  # This is a map of all the fields within the rolloutRestriction rule. It gets
-  # populated as we parse the rolloutRestriction rule.
-  rollout_restriction = {}
-  # This is a map of rolloutRestriction: map of all the key/value pairs.
-  rollout_restriction_rule = {}
-  # Get the value of the rolloutRestriction rule.
-  rollout_restriction_value = getattr(rule, 'rolloutRestriction')
-  # id is required for the rolloutRestriction rule.
-  rollout_restriction['id'] = rollout_restriction_value.id
-
-  # Actions and invokers are optional for the rolloutRestriction rule. If not
-  # specified, it implies all actions and all invokers are subject to the
-  # Deploy Policy.
-  if rollout_restriction_value.actions:
-    rollout_restriction['actions'] = rollout_restriction_value.actions
-  if rollout_restriction_value.invokers:
-    rollout_restriction['invokers'] = rollout_restriction_value.invokers
-
-  # Special handling needed for the timeWindows field. Specifically to
-  # export the oneTimeWindows as a datetime string (e.g. '2024-01-01 00:00:00')
-  # instead of the individual fields stored in the db. This is becuase a string
-  # is much easier to read and adjust.
-  time_windows_value = rollout_restriction_value.timeWindows
-  # Populate the timeWindows field of the rolloutRestriction
-  time_windows = {}
-  _ExportTimeWindows(time_windows_value, time_windows)
-  rollout_restriction['timeWindows'] = time_windows
-  rollout_restriction_rule['rolloutRestriction'] = rollout_restriction
-  return rollout_restriction_rule
-
-
-def _ExportTimeWindows(time_windows_value, time_windows):
-  """Exports the timeWindows field of the Deploy Policy resource."""
-  time_windows['timeZone'] = time_windows_value.timeZone
-  if time_windows_value.oneTimeWindows:
-    _ExportOneTimeWindows(time_windows_value.oneTimeWindows, time_windows)
-  if time_windows_value.weeklyWindows:
-    _ExportWeeklyWindows(time_windows_value.weeklyWindows, time_windows)
-
-
-def _ExportOneTimeWindows(one_time_windows, time_windows):
-  """Exports the oneTimeWindows field of the Deploy Policy resource."""
-  time_windows['oneTimeWindows'] = []
-  for one_time_window in one_time_windows:
-    one_time = {}
-    start_date_time = _DateTimeIsoString(
-        one_time_window.startDate, one_time_window.startTime
-    )
-    end_date_time = _DateTimeIsoString(
-        one_time_window.endDate, one_time_window.endTime
-    )
-    one_time['start'] = start_date_time
-    one_time['end'] = end_date_time
-    time_windows['oneTimeWindows'].append(one_time)
-
-
-def _DateTimeIsoString(date_obj, time_obj):
-  """Converts a date and time to a string."""
-  date_str = _FormatDate(date_obj)
-  time_str = _FormatTime(time_obj)
-  return f'{date_str} {time_str}'
-
-
-def _FormatDate(date):
-  """Converts a date object to a string."""
-  return f'{date.year:04}-{date.month:02}-{date.day:02}'
-
-
-def _ExportWeeklyWindows(weekly_windows, time_windows):
-  """Exports the weeklyWindows field of the Deploy Policy resource."""
-  time_windows['weeklyWindows'] = []
-  for weekly_window in weekly_windows:
-    weekly = {}
-    start_time = weekly_window.startTime
-    start = _FormatTime(start_time)
-    weekly['startTime'] = start
-
-    end_time = weekly_window.endTime
-    end = _FormatTime(end_time)
-    weekly['endTime'] = end
-    if weekly_window.daysOfWeek:
-      days = []
-      for day in weekly_window.daysOfWeek:
-        days.append(day.name)
-      weekly['daysOfWeek'] = days
-    time_windows['weeklyWindows'].append(weekly)
-
-
-def _FormatTime(time_obj):
-  """Converts a time object to a string."""
-  hours = time_obj.hours or 0
-  minutes = time_obj.minutes or 0
-  time_str = f'{hours:02}:{minutes:02}'
-  if time_obj.seconds or time_obj.nanos:
-    seconds = time_obj.seconds or 0
-    time_str += f':{seconds:02}'
-  if time_obj.nanos:
-    millis = time_obj.nanos / 1000000
-    time_str += f'.{millis:03.0f}'
-  return time_str
-
-
-def _WaitSecToMin(wait):
-  if not wait:
-    return wait
-  seconds = wait[:-1]
-  # convert the minute to second
-  mins = int(seconds) // 60
-  return '%sm' % mins
-
-
-def _ExportRepairPhases(repair_phases):
-  """Exports RepairMode of the Automation resource."""
-  phases = []
-  for p in repair_phases:
-    phase = {}
-    if getattr(p, RETRY_FIELD):
-      retry = {}
-      phase[RETRY_FIELD] = retry
-      message = getattr(p, RETRY_FIELD)
-      if getattr(message, WAIT_FIELD):
-        retry[WAIT_FIELD] = _WaitSecToMin(getattr(message, WAIT_FIELD))
-      if getattr(message, ATTEMPTS_FIELD):
-        retry[ATTEMPTS_FIELD] = getattr(message, ATTEMPTS_FIELD)
-      if getattr(message, BACKOFF_MODE_FIELD):
-        retry[BACKOFF_MODE_FIELD] = getattr(
-            message, BACKOFF_MODE_FIELD
-        ).name.split('_')[2]
-    if getattr(p, ROLLBACK_FIELD):
-      message = getattr(p, ROLLBACK_FIELD)
-      rollback = {}
-      phase[ROLLBACK_FIELD] = rollback
-      if getattr(message, DESTINATION_PHASE_FIELD):
-        rollback[DESTINATION_PHASE_FIELD] = getattr(
-            message, DESTINATION_PHASE_FIELD
-        )
-      if getattr(message, DISABLE_ROLLBACK_IF_ROLLOUT_PENDING):
-        rollback[DISABLE_ROLLBACK_IF_ROLLOUT_PENDING] = getattr(
-            message, DISABLE_ROLLBACK_IF_ROLLOUT_PENDING
-        )
-    phases.append(phase)
-
-  return phases
+        if transform.replace:
+          new_value = _TransformNestedListData(
+              value,
+              lambda data, current_field=transform, current_transform_context=transform_context: current_field.replace(
+                  data, current_transform_context
+              ),
+              transform_context,
+              transform.schema,
+          )
+          _SetValue(manifest, field_name, new_value)
+        else:
+          if transform.schema:
+            try:
+              jsonschema.validate(schema=transform.schema, instance=value)
+            except jsonschema.exceptions.ValidationError as e:
+              raise exceptions.CloudDeployConfigError.for_resource_field(
+                  kind, name, field_name, e.message
+              ) from e
+          transform.move(value, transform_context)
 
 
 def _GetValue(path: str, manifest: dict[str, Any]) -> Any:
@@ -1007,7 +928,7 @@ def _GetValue(path: str, manifest: dict[str, Any]) -> Any:
 def _TransformNestedListData(
     data: Any,
     func: Callable[[Any], Any],
-    parse_context: _ParseContext = None,
+    transform_context: _TransformContext = None,
     schema: Optional[Any] = None,
 ) -> Any:
   """Recursively applies a function to elements in a nested structure (lists or single items).
@@ -1015,7 +936,7 @@ def _TransformNestedListData(
   Args:
     data: The nested structure to process.
     func: The callable to apply to non-list, non-None elements.
-    parse_context: The parse context for the data.
+    transform_context: The parse context for the data.
     schema: the schema for the data
 
   Returns:
@@ -1027,7 +948,7 @@ def _TransformNestedListData(
     new_list = []
     for item in data:
       new_list.append(
-          _TransformNestedListData(item, func, parse_context, schema)
+          _TransformNestedListData(item, func, transform_context, schema)
       )
     return new_list
   else:
@@ -1036,9 +957,9 @@ def _TransformNestedListData(
         jsonschema.validate(schema=schema, instance=data)
       except jsonschema.exceptions.ValidationError as e:
         raise exceptions.CloudDeployConfigError.for_resource_field(
-            parse_context.kind,
-            parse_context.name,
-            parse_context.field,
+            transform_context.kind,
+            transform_context.name,
+            transform_context.field,
             e.message,
         ) from e
     return func(data)
@@ -1057,8 +978,8 @@ def _SetValue(manifest: dict[str, Any], path: str, value: Any) -> None:
     value: Any, The value to set, or None to delete.
 
   Raises:
-    exceptions.CloudDeployConfigError: if an intermediate value in path is not
-      a dictionary, or if list lengths don't match when using [].
+    exceptions.ManifestTransformException: a mismatch between the provided path
+      and the structure of the manifest or the value being set.
   """
   if '[]' in path:
     pre, post = path.split('[]', 1)
@@ -1066,14 +987,14 @@ def _SetValue(manifest: dict[str, Any], path: str, value: Any) -> None:
     current_list = _GetValue(pre, manifest)
 
     if not isinstance(current_list, list):
-      raise exceptions.CloudDeployConfigError(
+      raise exceptions.ManifestTransformException(
           f'Path "{pre}" did not lead to a list in _SetValue for path "{path}"'
       )
 
     if not post:
       # If post is empty, replace the current list with the new value
       if not isinstance(value, list):
-        raise exceptions.CloudDeployConfigError(
+        raise exceptions.ManifestTransformException(
             f'New value must be a list to replace list at "{pre}"'
         )
       # This is tricky. We need to replace the list in the parent.
@@ -1085,11 +1006,11 @@ def _SetValue(manifest: dict[str, Any], path: str, value: Any) -> None:
       return
 
     if not isinstance(value, list):
-      raise exceptions.CloudDeployConfigError(
+      raise exceptions.ManifestTransformException(
           f'New value must be a list when path "{path}" contains []'
       )
     if len(current_list) != len(value):
-      raise exceptions.CloudDeployConfigError(
+      raise exceptions.ManifestTransformException(
           f'List length mismatch: len(current_list)={len(current_list)},'
           f' len(value)={len(value)} for path "{path}"'
       )
@@ -1108,7 +1029,7 @@ def _SetValue(manifest: dict[str, Any], path: str, value: Any) -> None:
       # Path doesn't exist, do nothing.
       return
     if not isinstance(current[key], dict):
-      raise exceptions.CloudDeployConfigError(
+      raise exceptions.ManifestTransformException(
           f'Value at key "{key}" is not a dictionary for path "{path}"'
       )
     current = current[key]

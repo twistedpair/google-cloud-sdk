@@ -30,7 +30,8 @@ class DeploymentResourcePoolsClient(object):
   def __init__(self, client=None, messages=None, version=None):
     self.client = client or apis.GetClientInstance(
         constants.AI_PLATFORM_API_NAME,
-        constants.AI_PLATFORM_API_VERSION[version])
+        constants.AI_PLATFORM_API_VERSION[version]
+    )
     self.messages = messages or self.client.MESSAGES_MODULE
 
   def CreateBeta(
@@ -46,6 +47,7 @@ class DeploymentResourcePoolsClient(object):
       multihost_gpu_node_count=None,
       reservation_affinity=None,
       spot=False,
+      required_replica_count=None,
   ):
     """Creates a new deployment resource pool using v1beta1 API.
 
@@ -74,6 +76,10 @@ class DeploymentResourcePoolsClient(object):
         deployed model which specifies which reservations the deployed model can
         use.
       spot: bool, whether or not deploy the model on spot resources.
+      required_replica_count: int or None, The required number of replicas this
+        deployment resource pool will be considered successfully deployed. This
+        value must be greater than or equal to 1 and less than or equal to
+        min_replica_count.
 
     Returns:
       A long-running operation for Create.
@@ -86,8 +92,9 @@ class DeploymentResourcePoolsClient(object):
       machine_spec.tpuTopology = tpu_topology
     if multihost_gpu_node_count is not None:
       machine_spec.multihostGpuNodeCount = multihost_gpu_node_count
-    accelerator = flags.ParseAcceleratorFlag(accelerator_dict,
-                                             constants.BETA_VERSION)
+    accelerator = flags.ParseAcceleratorFlag(
+        accelerator_dict, constants.BETA_VERSION
+    )
     if accelerator is not None:
       machine_spec.acceleratorType = accelerator.acceleratorType
       machine_spec.acceleratorCount = accelerator.acceleratorCount
@@ -98,11 +105,14 @@ class DeploymentResourcePoolsClient(object):
       )
 
     dedicated = self.messages.GoogleCloudAiplatformV1beta1DedicatedResources(
-        machineSpec=machine_spec, spot=spot)
+        machineSpec=machine_spec, spot=spot
+    )
 
     dedicated.minReplicaCount = min_replica_count or 1
     if max_replica_count is not None:
       dedicated.maxReplicaCount = max_replica_count
+    if required_replica_count is not None:
+      dedicated.requiredReplicaCount = required_replica_count
 
     if autoscaling_metric_specs is not None:
       autoscaling_metric_specs_list = []
@@ -110,22 +120,27 @@ class DeploymentResourcePoolsClient(object):
         autoscaling_metric_specs_list.append(
             self.messages.GoogleCloudAiplatformV1beta1AutoscalingMetricSpec(
                 metricName=constants.OP_AUTOSCALING_METRIC_NAME_MAPPER[name],
-                target=target))
+                target=target
+            )
+        )
       dedicated.autoscalingMetricSpecs = autoscaling_metric_specs_list
 
     pool = self.messages.GoogleCloudAiplatformV1beta1DeploymentResourcePool(
-        dedicatedResources=dedicated)
+        dedicatedResources=dedicated
+    )
     pool_request = self.messages.GoogleCloudAiplatformV1beta1CreateDeploymentResourcePoolRequest(
         deploymentResourcePool=pool,
-        deploymentResourcePoolId=deployment_resource_pool_id)
+        deploymentResourcePoolId=deployment_resource_pool_id
+    )
 
     req = self.messages.AiplatformProjectsLocationsDeploymentResourcePoolsCreateRequest(
         parent=location_ref.RelativeName(),
-        googleCloudAiplatformV1beta1CreateDeploymentResourcePoolRequest=
-        pool_request)
+        googleCloudAiplatformV1beta1CreateDeploymentResourcePoolRequest=pool_request
+    )
 
     operation = self.client.projects_locations_deploymentResourcePools.Create(
-        req)
+        req
+    )
 
     return operation
 
@@ -140,10 +155,12 @@ class DeploymentResourcePoolsClient(object):
     """
 
     req = self.messages.AiplatformProjectsLocationsDeploymentResourcePoolsDeleteRequest(
-        name=deployment_resource_pool_ref.RelativeName())
+        name=deployment_resource_pool_ref.RelativeName()
+    )
 
     operation = self.client.projects_locations_deploymentResourcePools.Delete(
-        req)
+        req
+    )
 
     return operation
 
@@ -157,7 +174,8 @@ class DeploymentResourcePoolsClient(object):
       GoogleCloudAiplatformV1beta1DeploymentResourcePool response message.
     """
     req = self.messages.AiplatformProjectsLocationsDeploymentResourcePoolsGetRequest(
-        name=deployment_resource_pool_ref.RelativeName())
+        name=deployment_resource_pool_ref.RelativeName()
+    )
 
     response = self.client.projects_locations_deploymentResourcePools.Get(req)
 
@@ -167,20 +185,22 @@ class DeploymentResourcePoolsClient(object):
     """Lists deployment resource pools using v1beta1 API.
 
     Args:
-      location_ref: Resource, the parsed location to list deployment
-        resource pools.
+      location_ref: Resource, the parsed location to list deployment resource
+        pools.
 
     Returns:
       Nested attribute containing list of deployment resource pools.
     """
     req = self.messages.AiplatformProjectsLocationsDeploymentResourcePoolsListRequest(
-        parent=location_ref.RelativeName())
+        parent=location_ref.RelativeName()
+    )
 
     return list_pager.YieldFromList(
         self.client.projects_locations_deploymentResourcePools,
         req,
         field='deploymentResourcePools',
-        batch_size_attribute='pageSize')
+        batch_size_attribute='pageSize'
+    )
 
   def QueryDeployedModelsBeta(self, deployment_resource_pool_ref):
     """Queries deployed models sharing a specified deployment resource pool using v1beta1 API.
@@ -192,9 +212,11 @@ class DeploymentResourcePoolsClient(object):
       GoogleCloudAiplatformV1beta1QueryDeployedModelsResponse message.
     """
     req = self.messages.AiplatformProjectsLocationsDeploymentResourcePoolsQueryDeployedModelsRequest(
-        deploymentResourcePool=deployment_resource_pool_ref.RelativeName())
+        deploymentResourcePool=deployment_resource_pool_ref.RelativeName()
+    )
 
     response = self.client.projects_locations_deploymentResourcePools.QueryDeployedModels(
-        req)
+        req
+    )
 
     return response

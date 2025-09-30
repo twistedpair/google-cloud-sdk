@@ -1,0 +1,51 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: privilegedaccessmanager v1beta Settings export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  emailNotificationSettings:
+    description: |-
+      `EmailNotificationSettings` defines node-wide email notification
+      preferences for various PAM events.
+    $ref: SettingsEmailNotificationSettings.yaml
+  etag:
+    description: |-
+      Fingerprint for optimistic concurrency returned in the response of
+      `GetSettings`. Must be provided in the requests to `UpdateSettings`. If
+      the value provided does not match the value known to the server, ABORTED
+      will be thrown, and the client should retry the read-modify-write cycle.
+    type: string
+  name:
+    description: |-
+      Identifier. Name of the settings resource. Possible formats:
+      projects/{project-id|project-number}/locations/{location}/settings
+      folders/{folder-number}/locations/{location}/settings
+      organizations/{organization-number}/locations/{location}/settings
+    type: string
+  serviceAccountApproverSettings:
+    description: |-
+      This controls the node-level settings for allowing service accounts as
+      approvers.
+    $ref: SettingsServiceAccountApproverSettings.yaml

@@ -16,7 +16,7 @@ region:
     parameter_name: region
     attribute_name: region
     help: |
-      The name of the Google Compute Engine region.
+      The name of the Google Compute Engine region where the HA Controller exists.
 
       Overrides the default compute/region property value for this command invocation.
     property: compute/region
@@ -29,4 +29,4 @@ ha_controller:
   - *region
   - parameter_name: haController
     attribute_name: ha_controller
-    help: The name of the Google Compute Engine HA controller
+    help: The name of the Google Compute Engine HA Controller.

@@ -173,18 +173,40 @@ def GetManagedZonesDescriptionArg():
   )
 
 
-def GetDnsSecStateFlagMapper(messages):
+def GetDnsSecStateFlagMapper(messages, api_version='v1'):
+  """Returns a ChoiceEnumMapper for the --dnssec-state flag.
+
+  The v2 DNS API uses uppercase enum values for dnssec-state (e.g. 'ON'),
+  while v1 uses lowercase. To maintain a consistent user experience, gcloud
+  accepts lowercase values for all API versions. The `ChoiceEnumMapper`
+  validates that custom mapping keys are valid API enum values. For v2, this
+  requires mapping the uppercase API enum to the lowercase, user-facing
+  choice. The mapper then handles translating the user's input to the
+  correct value for the API request.
+
+  Args:
+    messages: The messages module for the API version.
+    api_version: The API version to use (e.g., 'v1', 'v2').
+
+  Returns:
+    A ChoiceEnumMapper for the --dnssec-state flag.
+  """
+  v1_mappings = {
+      'off': ('off', 'Disable DNSSEC for the managed zone.'),
+      'on': ('on', 'Enable DNSSEC for the managed zone.'),
+      'transfer': (
+          'transfer',
+          'Enable DNSSEC and allow transferring a signed zone in or out.',
+      ),
+  }
+  if api_version == 'v2':
+    custom_mappings = {k.upper(): v for k, v in v1_mappings.items()}
+  else:
+    custom_mappings = v1_mappings
   return arg_utils.ChoiceEnumMapper(
       '--dnssec-state',
       messages.ManagedZoneDnsSecConfig.StateValueValuesEnum,
-      custom_mappings={
-          'off': ('off', 'Disable DNSSEC for the managed zone.'),
-          'on': ('on', 'Enable DNSSEC for the managed zone.'),
-          'transfer': (
-              'transfer',
-              'Enable DNSSEC and allow transferring a signed zone in or out.',
-          ),
-      },
+      custom_mappings=custom_mappings,
       help_str='The DNSSEC state for this managed zone.',
   )
 
@@ -197,7 +219,7 @@ def GetDoeFlagMapper(messages):
   )
 
 
-def GetKeyAlgorithmFlag(key_type, messages):
+def GetKeyAlgorithmFlagMapper(key_type, messages):
   return arg_utils.ChoiceEnumMapper(
       '--{}-algorithm'.format(key_type),
       messages.DnsKeySpec.AlgorithmValueValuesEnum,
@@ -208,12 +230,12 @@ def GetKeyAlgorithmFlag(key_type, messages):
   )
 
 
-def AddCommonManagedZonesDnssecArgs(parser, messages):
+def AddCommonManagedZonesDnssecArgs(parser, messages, api_version='v1'):
   """Add Common DNSSEC flags for the managed-zones group."""
-  GetDnsSecStateFlagMapper(messages).choice_arg.AddToParser(parser)
+  GetDnsSecStateFlagMapper(messages, api_version).choice_arg.AddToParser(parser)
   GetDoeFlagMapper(messages).choice_arg.AddToParser(parser)
-  GetKeyAlgorithmFlag('ksk', messages).choice_arg.AddToParser(parser)
-  GetKeyAlgorithmFlag('zsk', messages).choice_arg.AddToParser(parser)
+  GetKeyAlgorithmFlagMapper('ksk', messages).choice_arg.AddToParser(parser)
+  GetKeyAlgorithmFlagMapper('zsk', messages).choice_arg.AddToParser(parser)
   parser.add_argument(
       '--ksk-key-length',
       type=int,

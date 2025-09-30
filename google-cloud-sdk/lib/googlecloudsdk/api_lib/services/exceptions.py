@@ -113,7 +113,7 @@ class FetchValueInfoPermissionDeniedException(Error):
   """Permission denied exception for fetch value info group members."""
 
 
-class GetEffectiverPolicyException(Error):
+class GetEffectivePolicyException(Error):
   """Exception for get effective policy."""
 
 
@@ -155,6 +155,10 @@ class TestMcpEnabledException(Error):
 
 class GetMcpPolicyException(Error):
   """Exception for get MCP policy."""
+
+
+class GetEffectiveMcpPolicyException(Error):
+  """Exception for get effective MCP policy."""
 
 
 class OperationErrorException(Error):

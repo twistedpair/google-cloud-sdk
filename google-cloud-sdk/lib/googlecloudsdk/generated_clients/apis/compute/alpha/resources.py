@@ -990,6 +990,16 @@ class Collections(enum.Enum):
       ['project', 'crossSiteNetwork', 'wireGroup'],
       True
   )
+  ZONEFOLDEROPERATIONS = (
+      'zoneFolderOperations',
+      '{+folder}/zones/{zone}/operations/{operation}',
+      {
+          '':
+              'folders/{foldersId}/zones/{zone}/operations/{operation}',
+      },
+      ['folder', 'zone', 'operation'],
+      True
+  )
   ZONEOPERATIONS = (
       'zoneOperations',
       'projects/{project}/zones/{zone}/operations/{operation}',

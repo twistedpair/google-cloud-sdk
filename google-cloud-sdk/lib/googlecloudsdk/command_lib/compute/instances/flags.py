@@ -1545,7 +1545,7 @@ def AddAddressArgs(
     instance_create=False,
     containers=False,
     support_network_queue_count=False,
-    support_vlan_nic=False,
+    support_vlan_nic=True,
     support_ipv6_only=False,
     support_igmp_query=False,
     support_enable_vpc_scoped_dns=False,
@@ -1788,7 +1788,7 @@ def AddAddressArgs(
 
   if support_vlan_nic:
     network_interface_help_texts.append("""
-      *vlan*::: VLAN tag of a dynamic network interface, must be  an integer in
+      *vlan*::: VLAN ID of a Dynamic Network Interface, must be  an integer in
       the range from 2 to 255 inclusively.
       """)
     multiple_network_interface_cards_spec['vlan'] = int

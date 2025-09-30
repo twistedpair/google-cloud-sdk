@@ -1150,6 +1150,33 @@ class BackupdrV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def List(self, request, global_params=None):
+      r"""Lists DataSourceReferences for a given project and location.
+
+      Args:
+        request: (BackupdrProjectsLocationsDataSourceReferencesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDataSourceReferencesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataSourceReferences',
+        http_method='GET',
+        method_id='backupdr.projects.locations.dataSourceReferences.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/dataSourceReferences',
+        request_field='',
+        request_type_name='BackupdrProjectsLocationsDataSourceReferencesListRequest',
+        response_type_name='ListDataSourceReferencesResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsManagementServersService(base_api.BaseApiService):
     """Service class for the projects_locations_managementServers resource."""
 

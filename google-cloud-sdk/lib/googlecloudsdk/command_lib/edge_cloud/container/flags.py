@@ -341,6 +341,23 @@ def AddControlPlaneNodeStorageSchema(parser):
   )
 
 
+def AddControlPlaneNodeSystemPartitionSize(parser):
+  parser.add_argument(
+      '--control-plane-node-system-partition-size-gib',
+      hidden=True,
+      type=int,
+      choices=[100, 300],
+      help="""
+      Specifies the system partition size in GiB for the control plane nodes.
+      This parameter is optional. Valid values are 100 and 300 to set the system
+      partition size to 100GiB and 300GiB, respectively. If this parameter is
+      not specified, the system partition is created using the default size
+      specified in the system storage schema applicable to the control plane
+      nodes.
+      """,
+  )
+
+
 def AddLROMaximumTimeout(parser):
   parser.add_argument(
       '--lro-timeout',
@@ -493,6 +510,22 @@ def AddNodeStorageSchema(parser):
       '--node-storage-schema',
       help="""
       Name for the storage schema of worker nodes.
+      """,
+  )
+
+
+def AddNodeSystemPartitionSize(parser):
+  parser.add_argument(
+      '--node-system-partition-size-gib',
+      hidden=True,
+      type=int,
+      choices=[100, 300],
+      help="""
+      Specifies the system partition size in GiB for the worker nodes. This
+      parameter is optional. Valid values are 100 and 300 to set the system
+      partition size to 100GiB and 300GiB, respectively. If this parameter is
+      not specified, the system partition is created using the default size
+      specified in the system storage schema applicable to the worker nodes.
       """,
   )
 

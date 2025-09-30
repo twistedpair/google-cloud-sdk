@@ -36,9 +36,12 @@ class AlertsClient(object):
     )
     return self._service.Get(request)
 
-  def List(self, project_ref, a_filter=None, order_by=None):
+  def List(self, project_ref, a_filter=None, order_by=None, page_size=None):
     """Lists Monitoring Alerts."""
     request = self.messages.MonitoringProjectsAlertsListRequest(
-        parent=project_ref.RelativeName(), filter=a_filter, orderBy=order_by
+        parent=project_ref.RelativeName(),
+        filter=a_filter,
+        orderBy=order_by,
+        pageSize=page_size,
     )
     return self._service.List(request)

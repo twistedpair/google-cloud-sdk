@@ -210,6 +210,12 @@ def PopulateClusterAlphaMessage(req, args):
   if flags.FlagIsExplicitlySet(args, 'enable_robin_cns'):
     robin.EnableRobinCNSInRequest(req, args)
 
+  messages = util.GetMessagesModule(base.ReleaseTrack.ALPHA)
+  if flags.FlagIsExplicitlySet(
+      args, 'control_plane_node_system_partition_size_gib'
+  ):
+    SetControlPlaneNodeSystemPartitionSize(req, args, messages)
+
 
 def IsLCPCluster(args):
   """Identify if the command is creating LCP cluster.
@@ -356,3 +362,27 @@ def EnableRemoteBackupConfig(req, args):
 
   if flags.FlagIsExplicitlySet(args, 'enable_remote_backup'):
     req.cluster.enableRemoteBackup = args.enable_remote_backup
+
+
+def SetControlPlaneNodeSystemPartitionSize(req, args, messages):
+  """Set control plane node system partition size in the cluster request message.
+
+  Args:
+   req: Create cluster request message.
+   args: Command line arguments.
+   messages: Message module of edgecontainer cluster.
+  """
+  if args.control_plane_node_system_partition_size_gib == 100:
+    req.cluster.controlPlane.local.controlPlaneNodeSystemPartitionSize = (
+        messages.Local.ControlPlaneNodeSystemPartitionSizeValueValuesEnum.SYSTEM_PARTITION_GIB_SIZE100
+    )
+  elif args.control_plane_node_system_partition_size_gib == 300:
+    req.cluster.controlPlane.local.controlPlaneNodeSystemPartitionSize = (
+        messages.Local.ControlPlaneNodeSystemPartitionSizeValueValuesEnum.SYSTEM_PARTITION_GIB_SIZE300
+    )
+  else:
+    raise ValueError(
+        'Unsupported --control_plane_node_system_partition_size_gib value: '
+        + args.control_plane_node_system_partition_size_gib
+        + '; valid values are 100 and 300.'
+    )

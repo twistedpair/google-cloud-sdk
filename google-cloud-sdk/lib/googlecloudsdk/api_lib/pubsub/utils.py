@@ -99,7 +99,7 @@ def GetErrorMessage(err):
     return str(err)
 
 
-def ValidateMessageTransformMessage(message, path):
+def ValidateMessageTransformMessage(message, path, enable_vertex_ai_smt=False):
   """Validate all parsed message from file are valid."""
   errors = encoding.UnrecognizedFieldIter(message)
   unrecognized_field_paths = []
@@ -114,6 +114,12 @@ def ValidateMessageTransformMessage(message, path):
         path,
         ErrorCause.UNRECOGNIZED_FIELDS,
         '\n'.join(unrecognized_field_paths),
+    )
+  if not enable_vertex_ai_smt and message.aiInference:
+    raise MessageTransformsInvalidFormatError(
+        path,
+        ErrorCause.UNRECOGNIZED_FIELDS,
+        '.aiInference',
     )
 
 
@@ -141,7 +147,7 @@ def ReadFileFromPath(path):
   return contents
 
 
-def GetMessageTransformsFromFile(message, path):
+def GetMessageTransformsFromFile(message, path, enable_vertex_ai_smt=False):
   """Reads a YAML or JSON object of type message from local path.
 
   Parses a list of message transforms.
@@ -149,6 +155,8 @@ def GetMessageTransformsFromFile(message, path):
   Args:
     message: The message type to be parsed from the file.
     path: A local path to an object specification in YAML or JSON format.
+    enable_vertex_ai_smt: Whether or not to enable Vertex AI message
+      transforms.
 
   Returns:
     Sequence of objects of type message, if successful.
@@ -171,7 +179,7 @@ def GetMessageTransformsFromFile(message, path):
     result = []
     for py_value in message_transforms:
       transform = encoding.PyValueToMessage(message, py_value)
-      ValidateMessageTransformMessage(transform, path)
+      ValidateMessageTransformMessage(transform, path, enable_vertex_ai_smt)
       result.append(transform)
   except (
       TypeError,
@@ -183,7 +191,9 @@ def GetMessageTransformsFromFile(message, path):
   return result
 
 
-def GetMessageTransformFromFileForValidation(message, path):
+def GetMessageTransformFromFileForValidation(
+    message, path, enable_vertex_ai_smt=False
+):
   """Reads a YAML or JSON object of type message from local path.
 
   Parses a single message transform.
@@ -191,6 +201,8 @@ def GetMessageTransformFromFileForValidation(message, path):
   Args:
     message: The message type to be parsed from the file.
     path: A local path to an object specification in YAML or JSON format.
+    enable_vertex_ai_smt: Whether or not to enable Vertex AI message
+      transforms.
 
   Returns:
     Object of type message, if successful.
@@ -214,7 +226,7 @@ def GetMessageTransformFromFileForValidation(message, path):
             path, ErrorCause.MULTIPLE_SMTS_VALIDATE
         )
     result = encoding.PyValueToMessage(message, message_transform)
-    ValidateMessageTransformMessage(result, path)
+    ValidateMessageTransformMessage(result, path, enable_vertex_ai_smt)
   except (
       TypeError,
       ValueError,

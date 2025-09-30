@@ -113,7 +113,7 @@ properties:
   wireFormat:
     description: |-
       The format of communication supported by the callout extension. If not
-      specified, the default is `EXT_PROC_GRPC`.
+      specified, the default value `EXT_PROC_GRPC` is used.
     type: string
     enum:
     - EXT_PROC_GRPC

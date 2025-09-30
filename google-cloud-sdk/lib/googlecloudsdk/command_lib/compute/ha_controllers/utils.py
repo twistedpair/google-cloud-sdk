@@ -14,7 +14,9 @@
 # limitations under the License.
 """Flags for the compute ha-controllers commands."""
 
+from apitools.base.protorpclite import messages
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.apis import yaml_data
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
@@ -23,7 +25,7 @@ from googlecloudsdk.generated_clients.apis.compute.alpha import compute_alpha_me
 
 
 def AddHaControllerNameArgToParser(parser, api_version=None):
-  """Adds an HA controller name resource argument."""
+  """Adds an HA Controller name resource argument."""
   ha_controller_data = yaml_data.ResourceYAMLData.FromPath(
       "compute.ha_controllers.ha_controller"
   )
@@ -34,7 +36,7 @@ def AddHaControllerNameArgToParser(parser, api_version=None):
       name="ha_controller",
       concept_spec=resource_spec,
       required=True,
-      group_help="Name of an HA controller.",
+      group_help="Name of an HA Controller.",
   )
   concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
@@ -103,3 +105,13 @@ def SetResourceName(unused_ref, unused_args, request):
   if hasattr(request.haControllerResource, "name"):
     request.haControllerResource.name = request.haController
   return request
+
+
+def EnumTypeToChoices(enum_type: messages.Enum) -> str:
+  """Converts an enum type to a comma-separated list of choices."""
+  return ", ".join(
+      c
+      for c in sorted(
+          [arg_utils.EnumNameToChoice(n) for n in enum_type.names()]
+      )
+  )

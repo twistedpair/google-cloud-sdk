@@ -760,6 +760,9 @@ class _BaseInstances(object):
           auto_scale_min_node_count=args.auto_scale_min_node_count,
           auto_scale_max_node_count=args.auto_scale_max_node_count,
           auto_scale_target_metrics=args.auto_scale_target_metrics,
+          auto_scale_disable_scale_in=args.auto_scale_disable_scale_in,
+          auto_scale_in_cooldown_seconds=args.auto_scale_in_cooldown_seconds,
+          auto_scale_out_cooldown_seconds=args.auto_scale_out_cooldown_seconds,
       )
       if read_pool_auto_scale_config is not None:
         settings.readPoolAutoScaleConfig = read_pool_auto_scale_config
@@ -954,6 +957,8 @@ class _BaseInstances(object):
           auto_scale_max_node_count=args.auto_scale_max_node_count,
           auto_scale_target_metrics=args.auto_scale_target_metrics,
           auto_scale_disable_scale_in=args.auto_scale_disable_scale_in,
+          auto_scale_in_cooldown_seconds=args.auto_scale_in_cooldown_seconds,
+          auto_scale_out_cooldown_seconds=args.auto_scale_out_cooldown_seconds,
           current_config=original_settings.readPoolAutoScaleConfig,
       )
       if read_pool_auto_scale_config is not None:

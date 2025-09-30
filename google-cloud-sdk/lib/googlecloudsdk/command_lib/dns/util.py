@@ -95,16 +95,34 @@ def ParseDnssecConfigArgs(args, messages, api_version='v1'):
   dnssec_config = None
   key_specs = []
 
-  key_enum = messages.DnsKeySpec.KeyTypeValueValuesEnum.KEY_SIGNING if api_version == 'v2' else messages.DnsKeySpec.KeyTypeValueValuesEnum.keySigning
-  ksk_key = ParseKey(args.ksk_algorithm, args.ksk_key_length, key_enum,
-                     messages)
+  ksk_algorithm = None
+  if args.ksk_algorithm:
+    ksk_algorithm = flags.GetKeyAlgorithmFlagMapper(
+        'ksk',
+        messages,
+    ).GetEnumForChoice(args.ksk_algorithm)
+  zsk_algorithm = None
+  if args.zsk_algorithm:
+    zsk_algorithm = flags.GetKeyAlgorithmFlagMapper(
+        'zsk',
+        messages,
+    ).GetEnumForChoice(args.zsk_algorithm)
+
+  if api_version == 'v2':
+    key_enum = messages.DnsKeySpec.KeyTypeValueValuesEnum.KEY_SIGNING
+  else:
+    key_enum = messages.DnsKeySpec.KeyTypeValueValuesEnum.keySigning
+
+  ksk_key = ParseKey(ksk_algorithm, args.ksk_key_length, key_enum, messages)
   if ksk_key is not None:
     key_specs.append(ksk_key)
 
-  key_enum = messages.DnsKeySpec.KeyTypeValueValuesEnum.ZONE_SIGNING if api_version == 'v2' else messages.DnsKeySpec.KeyTypeValueValuesEnum.zoneSigning
+  if api_version == 'v2':
+    key_enum = messages.DnsKeySpec.KeyTypeValueValuesEnum.ZONE_SIGNING
+  else:
+    key_enum = messages.DnsKeySpec.KeyTypeValueValuesEnum.zoneSigning
 
-  zsk_key = ParseKey(args.zsk_algorithm, args.zsk_key_length, key_enum,
-                     messages)
+  zsk_key = ParseKey(zsk_algorithm, args.zsk_key_length, key_enum, messages)
   if zsk_key is not None:
     key_specs.append(zsk_key)
 
@@ -116,10 +134,9 @@ def ParseDnssecConfigArgs(args, messages, api_version='v1'):
         flags.GetDoeFlagMapper(messages).GetEnumForChoice(
             args.denial_of_existence))
   if args.dnssec_state is not None:
-    dnssec_config_args['state'] = (
-        flags.GetDnsSecStateFlagMapper(messages)
-        .GetEnumForChoice(args.dnssec_state))
-
+    dnssec_config_args['state'] = flags.GetDnsSecStateFlagMapper(
+        messages, api_version
+    ).GetEnumForChoice(args.dnssec_state)
   if dnssec_config_args:
     dnssec_config = messages.ManagedZoneDnsSecConfig(**dnssec_config_args)
 

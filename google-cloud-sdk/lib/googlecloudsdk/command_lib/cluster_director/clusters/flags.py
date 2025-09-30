@@ -24,11 +24,11 @@ from googlecloudsdk.command_lib.cluster_director.clusters import flag_types
 from googlecloudsdk.command_lib.cluster_director.clusters import utils
 
 
-def AddConfig(group, api_version=None, required=False, hidden=False):
+def AddConfig(parser, api_version=None, required=False, hidden=False):
   """Adds a config flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
-  group.add_argument(
+  parser.add_argument(
       "--config",
       help="Configuration of the cluster specs in the form of a JSON object.",
       type=arg_parsers.ArgObject(
@@ -40,11 +40,11 @@ def AddConfig(group, api_version=None, required=False, hidden=False):
   )
 
 
-def AddUpdateMask(group, api_version=None, required=False, hidden=False):
+def AddUpdateMask(parser, api_version=None, required=False, hidden=False):
   """Adds an update mask flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
-  group.add_argument(
+  parser.add_argument(
       "--update-mask",
       help=textwrap.dedent("""
         Update mask to specify the fields to update.
@@ -57,11 +57,11 @@ def AddUpdateMask(group, api_version=None, required=False, hidden=False):
   )
 
 
-def AddDescription(group, api_version=None, hidden=False):
+def AddDescription(parser, api_version=None, hidden=False):
   """Adds a description flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
-  group.add_argument(
+  parser.add_argument(
       "--description",
       help=textwrap.dedent("""
         Description of the cluster.
@@ -74,7 +74,7 @@ def AddDescription(group, api_version=None, hidden=False):
 
 
 def AddLabels(
-    group,
+    parser,
     name="labels",
     api_version=None,
     hidden=False,
@@ -86,7 +86,7 @@ def AddLabels(
   remove_flag_name = f"remove-{name}"
   if include_update_flags:
     name = f"add-{name}"
-  group.add_argument(
+  parser.add_argument(
       f"--{name}",
       help=textwrap.dedent(f"""
         Cluster labels as key value pairs.
@@ -97,7 +97,7 @@ def AddLabels(
       hidden=hidden,
   )
   if include_update_flags:
-    group.add_argument(
+    parser.add_argument(
         f"--{remove_flag_name}",
         help=textwrap.dedent(f"""
           Parameters to remove cluster label by key.
@@ -110,11 +110,11 @@ def AddLabels(
     )
 
 
-def AddCreateNetwork(group, api_version=None, hidden=False):
+def AddCreateNetwork(parser, api_version=None, hidden=False):
   """Adds a create network flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
-  group.add_argument(
+  parser.add_argument(
       "--create-network",
       help=textwrap.dedent("""
         Parameters to create a network.
@@ -133,11 +133,11 @@ def AddCreateNetwork(group, api_version=None, hidden=False):
   )
 
 
-def AddNetworkSource(group, api_version=None, required=False, hidden=False):
+def AddNetworkSource(parser, api_version=None, required=False, hidden=False):
   """Adds a network flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
-  group.add_argument(
+  parser.add_argument(
       "--network",
       help=textwrap.dedent("""
         Reference of existing network name.
@@ -150,11 +150,11 @@ def AddNetworkSource(group, api_version=None, required=False, hidden=False):
   )
 
 
-def AddSubnetSource(group, api_version=None, required=False, hidden=False):
+def AddSubnetSource(parser, api_version=None, required=False, hidden=False):
   """Adds a subnet flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
-  group.add_argument(
+  parser.add_argument(
       "--subnet",
       help=textwrap.dedent("""
         Reference of existing subnetwork name.
@@ -167,12 +167,12 @@ def AddSubnetSource(group, api_version=None, required=False, hidden=False):
   )
 
 
-def AddCreateFilestores(group, api_version=None, hidden=False):
+def AddCreateFilestores(parser, api_version=None, hidden=False):
   """Adds a create filestores flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
   messages = api_utils.GetMessagesModule(api_utils.GetReleaseTrack(api_version))
-  group.add_argument(
+  parser.add_argument(
       "--create-filestores",
       help=textwrap.dedent("""
         Parameters to create a filestore instance.
@@ -213,11 +213,11 @@ def AddCreateFilestores(group, api_version=None, hidden=False):
   )
 
 
-def AddFilestores(group, api_version=None, hidden=False):
+def AddFilestores(parser, api_version=None, hidden=False):
   """Adds a filestores flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
-  group.add_argument(
+  parser.add_argument(
       "--filestores",
       help=textwrap.dedent("""
         Reference of existing filestore instance.
@@ -230,12 +230,12 @@ def AddFilestores(group, api_version=None, hidden=False):
   )
 
 
-def AddCreateGcsBuckets(group, api_version=None, hidden=False):
+def AddCreateGcsBuckets(parser, api_version=None, hidden=False):
   """Adds a create Google Cloud Storage buckets flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
   messages = api_utils.GetMessagesModule(api_utils.GetReleaseTrack(api_version))
-  group.add_argument(
+  parser.add_argument(
       "--create-buckets",
       help=textwrap.dedent("""
         Parameters to create a Google Cloud Storage bucket.
@@ -274,11 +274,11 @@ def AddCreateGcsBuckets(group, api_version=None, hidden=False):
   )
 
 
-def AddGcsBuckets(group, api_version=None, hidden=False):
+def AddGcsBuckets(parser, api_version=None, hidden=False):
   """Adds a Google Cloud Storage buckets flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
-  group.add_argument(
+  parser.add_argument(
       "--buckets",
       help=textwrap.dedent("""
         Reference of existing Google Cloud Storage bucket.
@@ -291,11 +291,11 @@ def AddGcsBuckets(group, api_version=None, hidden=False):
   )
 
 
-def AddCreateLustres(group, api_version=None, hidden=False):
+def AddCreateLustres(parser, api_version=None, hidden=False):
   """Adds a create lustres flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
-  group.add_argument(
+  parser.add_argument(
       "--create-lustres",
       help=textwrap.dedent("""
         Parameters to create a Lustre instance.
@@ -318,11 +318,11 @@ def AddCreateLustres(group, api_version=None, hidden=False):
   )
 
 
-def AddLustres(group, api_version=None, hidden=False):
+def AddLustres(parser, api_version=None, hidden=False):
   """Adds a lustres flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
-  group.add_argument(
+  parser.add_argument(
       "--lustres",
       help=textwrap.dedent("""
         Reference of existing Lustre instance.
@@ -336,7 +336,7 @@ def AddLustres(group, api_version=None, hidden=False):
 
 
 def AddOnDemandInstances(
-    group,
+    parser,
     name="on-demand-instances",
     api_version=None,
     hidden=False,
@@ -348,7 +348,7 @@ def AddOnDemandInstances(
   remove_flag_name = f"remove-{name}"
   if include_update_flags:
     name = f"add-{name}"
-  group.add_argument(
+  parser.add_argument(
       f"--{name}",
       help=textwrap.dedent(f"""
         Parameters to define cluster on demand instances.
@@ -369,7 +369,7 @@ def AddOnDemandInstances(
       hidden=hidden,
   )
   if include_update_flags:
-    group.add_argument(
+    parser.add_argument(
         f"--{remove_flag_name}",
         help=textwrap.dedent(f"""
           Parameters to remove on demand instances config by compute id.
@@ -383,7 +383,7 @@ def AddOnDemandInstances(
 
 
 def AddSpotInstances(
-    group,
+    parser,
     name="spot-instances",
     api_version=None,
     hidden=False,
@@ -395,7 +395,7 @@ def AddSpotInstances(
   remove_flag_name = f"remove-{name}"
   if include_update_flags:
     name = f"add-{name}"
-  group.add_argument(
+  parser.add_argument(
       f"--{name}",
       help=textwrap.dedent(f"""
         Parameters to define cluster spot instances.
@@ -416,7 +416,7 @@ def AddSpotInstances(
       hidden=hidden,
   )
   if include_update_flags:
-    group.add_argument(
+    parser.add_argument(
         f"--{remove_flag_name}",
         help=textwrap.dedent(f"""
           Parameters to remove spot instance config by compute id.
@@ -430,7 +430,7 @@ def AddSpotInstances(
 
 
 def AddReservedInstances(
-    group,
+    parser,
     name="reserved-instances",
     api_version=None,
     hidden=False,
@@ -442,7 +442,7 @@ def AddReservedInstances(
   remove_flag_name = f"remove-{name}"
   if include_update_flags:
     name = f"add-{name}"
-  group.add_argument(
+  parser.add_argument(
       f"--{name}",
       help=textwrap.dedent(f"""
         Parameters to define cluster reserved instances.
@@ -463,7 +463,7 @@ def AddReservedInstances(
       hidden=hidden,
   )
   if include_update_flags:
-    group.add_argument(
+    parser.add_argument(
         f"--{remove_flag_name}",
         help=textwrap.dedent(f"""
           Parameters to remove reserved instance config by compute id.
@@ -477,7 +477,7 @@ def AddReservedInstances(
 
 
 def AddDwsFlexInstances(
-    group,
+    parser,
     name="dws-flex-instances",
     api_version=None,
     hidden=False,
@@ -489,7 +489,7 @@ def AddDwsFlexInstances(
   remove_flag_name = f"remove-{name}"
   if include_update_flags:
     name = f"add-{name}"
-  group.add_argument(
+  parser.add_argument(
       f"--{name}",
       help=textwrap.dedent(f"""
         Parameters to define cluster DWS Flex instances.
@@ -511,7 +511,7 @@ def AddDwsFlexInstances(
       hidden=hidden,
   )
   if include_update_flags:
-    group.add_argument(
+    parser.add_argument(
         f"--{remove_flag_name}",
         help=textwrap.dedent(f"""
           Parameters to remove DWS Flex instance config by compute id.
@@ -525,7 +525,7 @@ def AddDwsFlexInstances(
 
 
 def AddSlurmNodeSets(
-    group,
+    parser,
     name="slurm-node-sets",
     api_version=None,
     required=False,
@@ -539,7 +539,7 @@ def AddSlurmNodeSets(
   remove_flag_name = f"remove-{name}"
   if include_update_flags:
     name = f"add-{name}"
-  group.add_argument(
+  parser.add_argument(
       f"--{name}",
       help=textwrap.dedent(f"""
         Parameters to define slurm cluster nodeset config.
@@ -573,7 +573,7 @@ def AddSlurmNodeSets(
       hidden=hidden,
   )
   if include_update_flags:
-    group.add_argument(
+    parser.add_argument(
         f"--{update_flag_name}",
         help=textwrap.dedent(f"""
           Parameters to define and update slurm cluster nodeset config.
@@ -594,7 +594,7 @@ def AddSlurmNodeSets(
         required=required,
         hidden=hidden,
     )
-    group.add_argument(
+    parser.add_argument(
         f"--{remove_flag_name}",
         help=textwrap.dedent(f"""
           Parameters to remove slurm nodeset config by nodeset id.
@@ -609,7 +609,7 @@ def AddSlurmNodeSets(
 
 
 def AddSlurmPartitions(
-    group,
+    parser,
     name="slurm-partitions",
     api_version=None,
     required=False,
@@ -623,7 +623,7 @@ def AddSlurmPartitions(
   remove_flag_name = f"remove-{name}"
   if include_update_flags:
     name = f"add-{name}"
-  group.add_argument(
+  parser.add_argument(
       f"--{name}",
       help=textwrap.dedent(f"""
         Parameters to define slurm cluster partitions.
@@ -647,7 +647,7 @@ def AddSlurmPartitions(
       hidden=hidden,
   )
   if include_update_flags:
-    group.add_argument(
+    parser.add_argument(
         f"--{update_flag_name}",
         help=textwrap.dedent(f"""
           Parameters to define and update slurm cluster partition config.
@@ -670,7 +670,7 @@ def AddSlurmPartitions(
         required=required,
         hidden=hidden,
     )
-    group.add_argument(
+    parser.add_argument(
         f"--{remove_flag_name}",
         help=textwrap.dedent(f"""
           Parameters to remove slurm partition config by partition id.
@@ -684,11 +684,11 @@ def AddSlurmPartitions(
     )
 
 
-def AddSlurmDefaultPartition(group, api_version=None, hidden=False):
+def AddSlurmDefaultPartition(parser, api_version=None, hidden=False):
   """Adds a slurm default partition flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
-  group.add_argument(
+  parser.add_argument(
       "--slurm-default-partition",
       help=textwrap.dedent("""
         Parameters to define slurm cluster default partition.
@@ -700,11 +700,11 @@ def AddSlurmDefaultPartition(group, api_version=None, hidden=False):
   )
 
 
-def AddSlurmLoginNode(group, api_version=None, required=False, hidden=False):
+def AddSlurmLoginNode(parser, api_version=None, required=False, hidden=False):
   """Adds a slurm login node flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
-  group.add_argument(
+  parser.add_argument(
       "--slurm-login-node",
       help=textwrap.dedent("""
         Parameters to define slurm cluster login node.

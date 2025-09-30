@@ -202,6 +202,10 @@ apis:
     v1:
       discovery_doc: batch_v1.json
       default: true
+  biglake:
+    v1:
+      discovery_doc: biglake_v1.json
+      default: true
   bigtableadmin:
     v2:
       discovery_doc: bigtableadmin_v2.json
@@ -431,11 +435,11 @@ apis:
   cloudshell:
     v1alpha1:
       discovery_doc: cloudshell_v1alpha1.json
-      enable_mtls: false
+      enable_mtls: true
       default: true
     v1:
       discovery_doc: cloudshell_v1.json
-      enable_mtls: false
+      enable_mtls: true
   cloudtasks:
     v2beta2:
       discovery_doc: cloudtasks_v2beta2.json
@@ -622,7 +626,7 @@ apis:
   datafusion:
     v1beta1:
       discovery_doc: datafusion_v1beta1.json
-      enable_mtls: false
+      enable_mtls: true
       resources:
         projects.locations.keyRings.cryptoKeys:
           path: projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}
@@ -773,24 +777,24 @@ apis:
   domains:
     v1:
       discovery_doc: domains_v1.json
-      enable_mtls: false
+      enable_mtls: true
       default: true
     v1beta1:
       discovery_doc: domains_v1beta1.json
-      enable_mtls: false
+      enable_mtls: true
     v1alpha2:
       discovery_doc: domains_v1alpha2.json
-      enable_mtls: false
+      enable_mtls: true
   edgecontainer:
     v1:
       discovery_doc: edgecontainer_v1.json
-      enable_mtls: false
+      enable_mtls: true
     v1beta:
       discovery_doc: edgecontainer_v1beta.json
-      enable_mtls: false
+      enable_mtls: true
     v1alpha:
       discovery_doc: edgecontainer_v1alpha.json
-      enable_mtls: false
+      enable_mtls: true
       default: true
       resources:
         projects.locations.zones:
@@ -798,10 +802,10 @@ apis:
   edgenetwork:
     v1:
       discovery_doc: edgenetwork_v1.json
-      enable_mtls: false
+      enable_mtls: true
     v1alpha1:
       discovery_doc: edgenetwork_v1alpha1.json
-      enable_mtls: false
+      enable_mtls: true
       default: true
   essentialcontacts:
     v1alpha1:
@@ -1071,7 +1075,7 @@ apis:
   ids:
     v1:
       discovery_doc: ids_v1.json
-      enable_mtls: false
+      enable_mtls: true
       resources:
         projects:
           path: projects/{projectId}
@@ -1246,25 +1250,25 @@ apis:
   networkservices:
     v1alpha1:
       discovery_doc: networkservices_v1alpha1.json
-      enable_mtls: false
+      enable_mtls: true
     v1beta1:
       discovery_doc: networkservices_v1beta1.json
-      enable_mtls: false
+      enable_mtls: true
     v1:
       discovery_doc: networkservices_v1.json
-      enable_mtls: false
+      enable_mtls: true
       default: true
   networksecurity:
     v1:
       discovery_doc: networksecurity_v1.json
-      enable_mtls: false
+      enable_mtls: true
       default: true
     v1beta1:
       discovery_doc: networksecurity_v1beta1.json
-      enable_mtls: false
+      enable_mtls: true
     v1alpha1:
       discovery_doc: networksecurity_v1alpha1.json
-      enable_mtls: false
+      enable_mtls: true
   notebooks:
     v1:
       discovery_doc: notebooks_v1.json
@@ -1317,38 +1321,38 @@ apis:
           path: projects/{projectsId}/serviceAccounts/{serviceAccountsId}
   policytroubleshooter:
     v1beta:
-      enable_mtls: false
+      enable_mtls: true
       resources:
         iam:
           path: iam
       discovery_doc: policytroubleshooter_v1beta.json
     v1:
       default: true
-      enable_mtls: false
+      enable_mtls: true
       resources:
         iam:
           path: iam
       discovery_doc: policytroubleshooter_v1.json
     v2alpha1:
-      enable_mtls: false
+      enable_mtls: true
       resources:
         iam:
           path: iam
       discovery_doc: policytroubleshooter_v2alpha1.json
     v3alpha:
-      enable_mtls: false
+      enable_mtls: true
       resources:
         iam:
           path: iam
       discovery_doc: policytroubleshooter_v3alpha.json
     v3beta:
-      enable_mtls: false
+      enable_mtls: true
       resources:
         iam:
           path: iam
       discovery_doc: policytroubleshooter_v3beta.json
     v3:
-      enable_mtls: false
+      enable_mtls: true
       resources:
         iam:
           path: iam
@@ -1392,13 +1396,13 @@ apis:
     v1:
       default: true
       discovery_doc: publicca_v1.json
-      enable_mtls: false
+      enable_mtls: true
     v1beta1:
       discovery_doc: publicca_v1beta1.json
-      enable_mtls: false
+      enable_mtls: true
     v1alpha1:
       discovery_doc: publicca_v1alpha1.json
-      enable_mtls: false
+      enable_mtls: true
   pubsub:
     v1:
       discovery_doc: pubsub_v1.json
@@ -1823,11 +1827,11 @@ apis:
   baremetalsolution:
     v1:
       discovery_doc: baremetalsolution_v1.json
-      enable_mtls: false
+      enable_mtls: true
     v2:
       discovery_doc: baremetalsolution_v2.json
       default: true
-      enable_mtls: false
+      enable_mtls: true
       resources:
         projects.locations.sshKeys:
           path: projects/{projectsId}/locations/{locationsId}/sshKeys/{sshKeysId}
@@ -1926,6 +1930,8 @@ apis:
           path: projects/{projectsId}/locations/{locationsId}/dbSystemInitialStorageSizes/{dbSystemInitialStorageSizesId}
         projects.locations.dbVersions:
           path: projects/{projectsId}/locations/{locationsId}/dbVersions/{dbVersionsId}
+        projects.locations.giVersions.minorVersions:
+          path: projects/{projectsId}/locations/{locationsId}/giVersions/{giVersionsId}/minorVersions/{minorVersionsId}
     v1alpha:
       discovery_doc: oracledatabase_v1alpha.json
       resources:
@@ -2006,6 +2012,10 @@ canonical_surfaces:
   beyondcorp:
     name: beyondcorp
     command: beyondcorp
+    hidden: true
+  biglake:
+    name: biglake
+    command: biglake
     hidden: true
   bigquery:
     name: bigquery

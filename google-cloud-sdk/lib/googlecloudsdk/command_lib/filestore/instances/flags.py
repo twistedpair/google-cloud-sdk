@@ -324,7 +324,6 @@ def GetBackendTypeArg(messages):
                   ('filestore-backend',
                    'Filestore backend.'),
           },
-          default='COMPUTE_BASED_BACKEND',
           # This flag stays hidden in v1beta1 throughout its whole lifecycle.
           hidden=True))
   return backend_type_arg

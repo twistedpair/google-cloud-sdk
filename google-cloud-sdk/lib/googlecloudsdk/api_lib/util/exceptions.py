@@ -172,6 +172,10 @@ class FormattableErrorPayload(string.Formatter):
     parts = field_name.split('?', 1)
     subparts = parts.pop(0).split(':', 1)
     name = subparts.pop(0)
+    # Remove the leading 0. from the name if it exists to keep formatter in sync
+    # with resoruce lexers expecations. Needed for python 3.14 compatibility.
+    if (name.startswith('0.') and len(name) > 1) or name == '0.':
+      name = name[1:]
     printer_format = subparts.pop(0) if subparts else None
     recursive_format = parts.pop(0) if parts else None
     name, value = self._GetField(name)

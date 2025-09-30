@@ -656,7 +656,12 @@ def AddHPAProfilesFlag(parser, hidden=False):
   )
 
 
-def AddAutoprovisioningFlags(parser, hidden=False, for_create=False):
+def AddAutoprovisioningFlags(
+    parser,
+    hidden=False,
+    for_create=False,
+    napless=False,
+):
   """Adds node autoprovisioning related flags to parser.
 
   Autoprovisioning related flags are: --enable-autoprovisioning
@@ -667,12 +672,14 @@ def AddAutoprovisioningFlags(parser, hidden=False, for_create=False):
     parser: A given parser.
     hidden: If true, suppress help text for added options.
     for_create: Add flags for create request.
+    napless: If true, allows to configure NAP settings without NAP being
+      enabled.
   """
 
   group = parser.add_argument_group('Node autoprovisioning', hidden=hidden)
   group.add_argument(
       '--enable-autoprovisioning',
-      required=True,
+      required=not napless,
       default=None,
       help="""\
 Enables  node autoprovisioning for a cluster.
@@ -761,7 +768,7 @@ can be specified in the 'bootDiskKmsKey' field.
   )
   from_flags_group.add_argument(
       '--max-cpu',
-      required=for_create,
+      required=for_create and not napless,
       help="""\
 Maximum number of cores in the cluster.
 
@@ -780,7 +787,7 @@ Minimum number of cores to which the cluster can scale.""",
   )
   from_flags_group.add_argument(
       '--max-memory',
-      required=for_create,
+      required=for_create and not napless,
       help="""\
 Maximum memory in the cluster.
 
@@ -893,6 +900,7 @@ https://cloud.google.com/sdk/gcloud/reference/container/clusters/create#--scopes
   upgrade_option_enablement_group.add_argument(
       '--enable-autoprovisioning-surge-upgrade',
       action='store_true',
+      default=None,
       hidden=hidden,
       help="""\
 Whether to use surge upgrade for the autoprovisioned node pool.
@@ -901,6 +909,7 @@ Whether to use surge upgrade for the autoprovisioned node pool.
   upgrade_option_enablement_group.add_argument(
       '--enable-autoprovisioning-blue-green-upgrade',
       action='store_true',
+      default=None,
       hidden=hidden,
       help="""\
 Whether to use blue-green upgrade for the autoprovisioned node pool.
@@ -5400,11 +5409,11 @@ KEY                                  | VALUE
 ------------------------------------ | ------------------------------------------------------------------------------------------
 cpuManagerPolicy                     | either 'static' or 'none'
 cpuCFSQuota                          | true or false (enabled by default)
-cpuCFSQuotaPeriod                    | interval (e.g., '100ms')
+cpuCFSQuotaPeriod                    | interval (e.g., '100ms'. The value must be between 1ms and 1 second, inclusive.)
 memoryManager                        | specify memory manager policy
 topologyManager                      | specify topology manager policy and scope
 podPidsLimit                         | integer (The value must be greater than or equal to 1024 and less than 4194304.)
-containerLogMaxSize                  | positive number plus unit suffix (e.g., '100Mi', '0.2Gi'. The value must be between 10Mi and 500Mi.)
+containerLogMaxSize                  | positive number plus unit suffix (e.g., '100Mi', '0.2Gi'. The value must be between 10Mi and 500Mi, inclusive.)
 containerLogMaxFiles                 | integer (The value must be between [2, 10].)
 imageGcLowThresholdPercent           | integer (The value must be between [10, 85], and lower than imageGcHighThresholdPercent.)
 imageGcHighThresholdPercent          | integer (The value must be between [10, 85], and greater than imageGcLowThresholdPercent.)
@@ -7963,15 +7972,16 @@ Example: `123/environment=production,123/costCenter=marketing`
 
 
 def AddGpuDirectStrategyFlag(parser):
-  """Adds the --gpu-direct-strategy flag to parser."""
+  """Adds the --gpudirect-strategy flag to parser."""
   help_text = """\
-  Set the GPU direct strategy for the node pool, the possible value is RDMA.
+  Set the GPUDirect strategy for the node pool, the possible value is RDMA.
   """
   parser.add_argument(
-      '--gpu-direct-strategy',
+      '--gpudirect-strategy',
       default=None,
       hidden=True,
       choices=['RDMA'],
+      type=lambda x: x.upper(),
       help=help_text,
   )
 

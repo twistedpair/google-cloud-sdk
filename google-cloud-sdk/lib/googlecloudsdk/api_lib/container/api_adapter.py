@@ -738,7 +738,7 @@ class CreateClusterOptions(object):
       maintenance_window_end=None,
       maintenance_window_recurrence=None,
       enable_cost_allocation=None,
-      gpu_direct_strategy=None,
+      gpudirect_strategy=None,
       max_surge_upgrade=None,
       max_unavailable_upgrade=None,
       enable_autoprovisioning=None,
@@ -1003,7 +1003,7 @@ class CreateClusterOptions(object):
     self.maintenance_window_end = maintenance_window_end
     self.maintenance_window_recurrence = maintenance_window_recurrence
     self.enable_cost_allocation = enable_cost_allocation
-    self.gpu_direct_strategy = gpu_direct_strategy
+    self.gpudirect_strategy = gpudirect_strategy
     self.max_surge_upgrade = max_surge_upgrade
     self.max_unavailable_upgrade = max_unavailable_upgrade
     self.enable_autoprovisioning = enable_autoprovisioning
@@ -1660,7 +1660,7 @@ class CreateNodePoolOptions(object):
       sandbox=None,
       metadata=None,
       linux_sysctls=None,
-      gpu_direct_strategy=None,
+      gpudirect_strategy=None,
       max_surge_upgrade=None,
       max_unavailable_upgrade=None,
       node_locations=None,
@@ -1760,7 +1760,7 @@ class CreateNodePoolOptions(object):
     self.sandbox = sandbox
     self.metadata = metadata
     self.linux_sysctls = linux_sysctls
-    self.gpu_direct_strategy = gpu_direct_strategy
+    self.gpudirect_strategy = gpudirect_strategy
     self.max_surge_upgrade = max_surge_upgrade
     self.max_unavailable_upgrade = max_unavailable_upgrade
     self.node_locations = node_locations
@@ -3397,14 +3397,14 @@ class APIAdapter(object):
       gvnic = self.messages.VirtualNIC(enabled=options.gvnic)
       node_config.gvnic = gvnic
 
-    if options.gpu_direct_strategy is not None:
-      if options.gpu_direct_strategy == 'RDMA':
+    if options.gpudirect_strategy is not None:
+      if options.gpudirect_strategy == 'RDMA':
         node_config.gpuDirectConfig = self.messages.GPUDirectConfig(
             gpuDirectStrategy=(
                 self.messages.GPUDirectConfig.GpuDirectStrategyValueValuesEnum.RDMA
             )
         )
-      elif options.gpu_direct_strategy == 'TCPX':
+      elif options.gpudirect_strategy == 'TCPX':
         node_config.gpuDirectConfig = self.messages.GPUDirectConfig(
             gpuDirectStrategy=(
                 self.messages.GPUDirectConfig.GpuDirectStrategyValueValuesEnum.TCPX
@@ -6238,14 +6238,14 @@ class APIAdapter(object):
     if options.placement_policy is not None:
       pool.placementPolicy.policyName = options.placement_policy
 
-    if options.gpu_direct_strategy is not None:
-      if options.gpu_direct_strategy == 'RDMA':
+    if options.gpudirect_strategy is not None:
+      if options.gpudirect_strategy == 'RDMA':
         node_config.gpuDirectConfig = self.messages.GPUDirectConfig(
             gpuDirectStrategy=(
                 self.messages.GPUDirectConfig.GpuDirectStrategyValueValuesEnum.RDMA
             )
         )
-      elif options.gpu_direct_strategy == 'TCPX':
+      elif options.gpudirect_strategy == 'TCPX':
         node_config.gpuDirectConfig = self.messages.GPUDirectConfig(
             gpuDirectStrategy=(
                 self.messages.GPUDirectConfig.GpuDirectStrategyValueValuesEnum.TCPX
@@ -7893,6 +7893,25 @@ class V1Beta1Adapter(V1Adapter):
         )
     if (
         options.enable_autoprovisioning is not None
+        or options.max_cpu is not None
+        or options.min_cpu is not None
+        or options.max_memory is not None
+        or options.min_memory is not None
+        or options.autoprovisioning_image_type is not None
+        or options.max_accelerator is not None
+        or options.min_accelerator is not None
+        or options.autoprovisioning_service_account is not None
+        or options.autoprovisioning_scopes is not None
+        or options.enable_autoprovisioning_surge_upgrade is not None
+        or options.enable_autoprovisioning_blue_green_upgrade is not None
+        or options.autoprovisioning_max_surge_upgrade is not None
+        or options.autoprovisioning_max_unavailable_upgrade is not None
+        or options.autoprovisioning_standard_rollout_policy is not None
+        or options.autoprovisioning_node_pool_soak_duration is not None
+        or options.enable_autoprovisioning_autoupgrade is not None
+        or options.enable_autoprovisioning_autorepair is not None
+        or options.autoprovisioning_locations is not None
+        or options.autoprovisioning_min_cpu_platform is not None
         or options.autoscaling_profile is not None
         or options.enable_default_compute_class is not None
     ):
@@ -8041,6 +8060,1068 @@ class V1Beta1Adapter(V1Adapter):
     )
     operation = self.client.projects_locations_clusters_nodePools.Create(req)
     return self.ParseOperation(operation.name, node_pool_ref.zone)
+
+  def UpdateClusterCommon(self, cluster_ref, options):
+    """Returns an UpdateCluster operation."""
+    update = None
+    if not options.version:
+      options.version = '-'
+    if options.update_nodes:
+      update = self.messages.ClusterUpdate(
+          desiredNodeVersion=options.version,
+          desiredNodePoolId=options.node_pool,
+          desiredImageType=options.image_type,
+          desiredImage=options.image,
+          desiredImageProject=options.image_project,
+      )
+      # security_profile may be set in upgrade command
+      if options.security_profile is not None:
+        update.securityProfile = self.messages.SecurityProfile(
+            name=options.security_profile
+        )
+    elif options.update_master:
+      update = self.messages.ClusterUpdate(desiredMasterVersion=options.version)
+      # security_profile may be set in upgrade command
+      if options.security_profile is not None:
+        update.securityProfile = self.messages.SecurityProfile(
+            name=options.security_profile
+        )
+      # control_plane_soak_duration may be set in upgrade command for rollback
+      # safe upgrades
+      if options.control_plane_soak_duration is not None:
+        update.desiredRollbackSafeUpgrade = self.messages.RollbackSafeUpgrade(
+            controlPlaneSoakDuration=options.control_plane_soak_duration
+        )
+    elif options.enable_stackdriver_kubernetes:
+      update = self.messages.ClusterUpdate()
+      update.desiredLoggingService = 'logging.googleapis.com/kubernetes'
+      update.desiredMonitoringService = 'monitoring.googleapis.com/kubernetes'
+    elif options.enable_stackdriver_kubernetes is not None:
+      update = self.messages.ClusterUpdate()
+      update.desiredLoggingService = 'none'
+      update.desiredMonitoringService = 'none'
+    elif options.monitoring_service or options.logging_service:
+      update = self.messages.ClusterUpdate()
+      if options.monitoring_service:
+        update.desiredMonitoringService = options.monitoring_service
+      if options.logging_service:
+        update.desiredLoggingService = options.logging_service
+    elif (
+        options.logging
+        or options.monitoring
+        or options.enable_managed_prometheus
+        or options.disable_managed_prometheus
+        or options.auto_monitoring_scope
+        or options.enable_dataplane_v2_metrics
+        or options.disable_dataplane_v2_metrics
+        or options.enable_dataplane_v2_flow_observability
+        or options.disable_dataplane_v2_flow_observability
+        or options.dataplane_v2_observability_mode
+    ):
+      logging = _GetLoggingConfig(options, self.messages)
+      # Fix incorrectly omitting required field.
+      if (
+          (
+              options.dataplane_v2_observability_mode
+              or options.enable_dataplane_v2_flow_observability
+              or options.disable_dataplane_v2_flow_observability
+          )
+          and options.enable_dataplane_v2_metrics is None
+          and options.disable_dataplane_v2_metrics is None
+      ):
+        cluster = self.GetCluster(cluster_ref)
+        if (
+            cluster
+            and cluster.monitoringConfig
+            and cluster.monitoringConfig.advancedDatapathObservabilityConfig
+        ):
+          if (
+              cluster.monitoringConfig.advancedDatapathObservabilityConfig.enableMetrics
+          ):
+            options.enable_dataplane_v2_metrics = True
+          else:
+            options.disable_dataplane_v2_metrics = True
+
+      monitoring = None
+      if options.auto_monitoring_scope:
+        cluster = self.GetCluster(cluster_ref)
+
+        if cluster is None:
+          raise util.Error(
+              'Cannot enable Auto Monitoring. The cluster does not exist.'
+          )
+
+        if (
+            cluster.monitoringConfig.managedPrometheusConfig is None
+            or not cluster.monitoringConfig.managedPrometheusConfig.enabled
+        ) and options.auto_monitoring_scope == 'ALL':
+
+          raise util.Error(
+              AUTO_MONITORING_NOT_SUPPORTED_WITHOUT_MANAGED_PROMETHEUS
+          )
+
+        if cluster.monitoringConfig.managedPrometheusConfig.enabled:
+          monitoring = _GetMonitoringConfig(options, self.messages, True, True)
+        else:
+          monitoring = _GetMonitoringConfig(options, self.messages, True, False)
+      else:
+        monitoring = _GetMonitoringConfig(options, self.messages, False, None)
+
+      update = self.messages.ClusterUpdate()
+      if logging:
+        update.desiredLoggingConfig = logging
+      if monitoring:
+        update.desiredMonitoringConfig = monitoring
+    elif options.disable_addons:
+      disable_node_local_dns = options.disable_addons.get(NODELOCALDNS)
+      addons = self._AddonsConfig(
+          disable_ingress=options.disable_addons.get(INGRESS),
+          disable_hpa=options.disable_addons.get(HPA),
+          disable_dashboard=options.disable_addons.get(DASHBOARD),
+          disable_network_policy=options.disable_addons.get(NETWORK_POLICY),
+          enable_node_local_dns=not disable_node_local_dns
+          if disable_node_local_dns is not None
+          else None,
+      )
+      if options.disable_addons.get(CONFIGCONNECTOR) is not None:
+        addons.configConnectorConfig = self.messages.ConfigConnectorConfig(
+            enabled=(not options.disable_addons.get(CONFIGCONNECTOR))
+        )
+      if options.disable_addons.get(GCEPDCSIDRIVER) is not None:
+        addons.gcePersistentDiskCsiDriverConfig = (
+            self.messages.GcePersistentDiskCsiDriverConfig(
+                enabled=not options.disable_addons.get(GCEPDCSIDRIVER)
+            )
+        )
+      if options.disable_addons.get(GCPFILESTORECSIDRIVER) is not None:
+        addons.gcpFilestoreCsiDriverConfig = (
+            self.messages.GcpFilestoreCsiDriverConfig(
+                enabled=not options.disable_addons.get(GCPFILESTORECSIDRIVER)
+            )
+        )
+      if options.disable_addons.get(GCSFUSECSIDRIVER) is not None:
+        addons.gcsFuseCsiDriverConfig = self.messages.GcsFuseCsiDriverConfig(
+            enabled=not options.disable_addons.get(GCSFUSECSIDRIVER)
+        )
+      if options.disable_addons.get(STATEFULHA) is not None:
+        addons.statefulHaConfig = self.messages.StatefulHAConfig(
+            enabled=not options.disable_addons.get(STATEFULHA)
+        )
+      if options.disable_addons.get(PARALLELSTORECSIDRIVER) is not None:
+        addons.parallelstoreCsiDriverConfig = (
+            self.messages.ParallelstoreCsiDriverConfig(
+                enabled=not options.disable_addons.get(PARALLELSTORECSIDRIVER)
+            )
+        )
+      if options.disable_addons.get(HIGHSCALECHECKPOINTING) is not None:
+        addons.highScaleCheckpointingConfig = (
+            self.messages.HighScaleCheckpointingConfig(
+                enabled=not options.disable_addons.get(HIGHSCALECHECKPOINTING)
+            )
+        )
+      if options.disable_addons.get(LUSTRECSIDRIVER) is not None:
+        addons.lustreCsiDriverConfig = self.messages.LustreCsiDriverConfig(
+            enabled=not options.disable_addons.get(LUSTRECSIDRIVER)
+        )
+      if options.disable_addons.get(BACKUPRESTORE) is not None:
+        addons.gkeBackupAgentConfig = self.messages.GkeBackupAgentConfig(
+            enabled=not options.disable_addons.get(BACKUPRESTORE)
+        )
+      if options.disable_addons.get(RAYOPERATOR) is not None:
+        addons.rayOperatorConfig = self.messages.RayOperatorConfig(
+            enabled=not options.disable_addons.get(RAYOPERATOR)
+        )
+      update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
+    elif (
+        options.enable_ray_cluster_logging is not None
+        or options.enable_ray_cluster_monitoring is not None
+        or options.enable_legacy_lustre_port is not None
+    ):
+      addons = self._AddonsConfig(options, self.messages)
+
+      if options.enable_ray_cluster_logging is not None:
+        addons.rayOperatorConfig.rayClusterLoggingConfig = (
+            self.messages.RayClusterLoggingConfig(
+                enabled=options.enable_ray_cluster_logging
+            )
+        )
+
+      if options.enable_ray_cluster_monitoring is not None:
+        addons.rayOperatorConfig.rayClusterMonitoringConfig = (
+            self.messages.RayClusterMonitoringConfig(
+                enabled=options.enable_ray_cluster_monitoring
+            )
+        )
+
+      if options.enable_legacy_lustre_port is not None:
+        addons.lustreCsiDriverConfig.enableLegacyLustrePort = (
+            options.enable_legacy_lustre_port
+        )
+
+      update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
+    elif options.enable_autoscaling is not None:
+      # For update, we can either enable or disable.
+      autoscaling = self.messages.NodePoolAutoscaling(
+          enabled=options.enable_autoscaling
+      )
+      if options.enable_autoscaling:
+        autoscaling.minNodeCount = options.min_nodes
+        autoscaling.maxNodeCount = options.max_nodes
+        autoscaling.totalMinNodeCount = options.total_min_nodes
+        autoscaling.totalMaxNodeCount = options.total_max_nodes
+        if options.location_policy is not None:
+          autoscaling.locationPolicy = LocationPolicyEnumFromString(
+              self.messages, options.location_policy
+          )
+      update = self.messages.ClusterUpdate(
+          desiredNodePoolId=options.node_pool,
+          desiredNodePoolAutoscaling=autoscaling,
+      )
+    elif options.locations:
+      update = self.messages.ClusterUpdate(desiredLocations=options.locations)
+    elif (
+        options.enable_autoprovisioning is not None
+        or options.max_cpu is not None
+        or options.min_cpu is not None
+        or options.max_memory is not None
+        or options.min_memory is not None
+        or options.autoprovisioning_image_type is not None
+        or options.max_accelerator is not None
+        or options.min_accelerator is not None
+        or options.autoprovisioning_service_account is not None
+        or options.autoprovisioning_scopes is not None
+        or options.enable_autoprovisioning_surge_upgrade is not None
+        or options.enable_autoprovisioning_blue_green_upgrade is not None
+        or options.autoprovisioning_max_surge_upgrade is not None
+        or options.autoprovisioning_max_unavailable_upgrade is not None
+        or options.autoprovisioning_standard_rollout_policy is not None
+        or options.autoprovisioning_node_pool_soak_duration is not None
+        or options.enable_autoprovisioning_autoupgrade is not None
+        or options.enable_autoprovisioning_autorepair is not None
+        or options.autoprovisioning_locations is not None
+        or options.autoprovisioning_min_cpu_platform is not None
+        or options.autoscaling_profile is not None
+        or options.enable_default_compute_class is not None
+    ):
+      autoscaling = self.CreateClusterAutoscalingCommon(
+          cluster_ref, options, True
+      )
+      update = self.messages.ClusterUpdate(
+          desiredClusterAutoscaling=autoscaling
+      )
+    elif options.enable_pod_security_policy is not None:
+      config = self.messages.PodSecurityPolicyConfig(
+          enabled=options.enable_pod_security_policy
+      )
+      update = self.messages.ClusterUpdate(
+          desiredPodSecurityPolicyConfig=config
+      )
+    elif options.enable_vertical_pod_autoscaling is not None:
+      vertical_pod_autoscaling = self.messages.VerticalPodAutoscaling(
+          enabled=options.enable_vertical_pod_autoscaling
+      )
+      update = self.messages.ClusterUpdate(
+          desiredVerticalPodAutoscaling=vertical_pod_autoscaling
+      )
+    elif options.resource_usage_bigquery_dataset is not None:
+      export_config = self.messages.ResourceUsageExportConfig(
+          bigqueryDestination=self.messages.BigQueryDestination(
+              datasetId=options.resource_usage_bigquery_dataset
+          )
+      )
+      if options.enable_network_egress_metering:
+        export_config.enableNetworkEgressMetering = True
+      if options.enable_resource_consumption_metering is not None:
+        export_config.consumptionMeteringConfig = (
+            self.messages.ConsumptionMeteringConfig(
+                enabled=options.enable_resource_consumption_metering
+            )
+        )
+      update = self.messages.ClusterUpdate(
+          desiredResourceUsageExportConfig=export_config
+      )
+    elif options.enable_network_egress_metering is not None:
+      raise util.Error(ENABLE_NETWORK_EGRESS_METERING_ERROR_MSG)
+    elif options.enable_resource_consumption_metering is not None:
+      raise util.Error(ENABLE_RESOURCE_CONSUMPTION_METERING_ERROR_MSG)
+    elif options.clear_resource_usage_bigquery_dataset is not None:
+      export_config = self.messages.ResourceUsageExportConfig()
+      update = self.messages.ClusterUpdate(
+          desiredResourceUsageExportConfig=export_config
+      )
+    elif options.security_profile is not None:
+      # security_profile is set in update command
+      security_profile = self.messages.SecurityProfile(
+          name=options.security_profile
+      )
+      update = self.messages.ClusterUpdate(securityProfile=security_profile)
+    elif options.enable_intra_node_visibility is not None:
+      intra_node_visibility_config = self.messages.IntraNodeVisibilityConfig(
+          enabled=options.enable_intra_node_visibility
+      )
+      update = self.messages.ClusterUpdate(
+          desiredIntraNodeVisibilityConfig=intra_node_visibility_config
+      )
+    elif options.managed_otel_scope:
+      managed_otel_config = _GetManagedOpenTelemetryConfig(
+          options, self.messages
+      )
+      update = self.messages.ClusterUpdate(
+          desiredManagedOpentelemetryConfig=managed_otel_config)
+
+    if (
+        options.security_profile is not None
+        and options.security_profile_runtime_rules is not None
+    ):
+      update.securityProfile.disableRuntimeRules = (
+          not options.security_profile_runtime_rules
+      )
+    if (
+        options.master_authorized_networks
+        and not options.enable_master_authorized_networks
+    ):
+      # Raise error if use --master-authorized-networks without
+      # --enable-master-authorized-networks.
+      raise util.Error(MISMATCH_AUTHORIZED_NETWORKS_ERROR_MSG)
+
+    if options.database_encryption_key:
+      update = self.messages.ClusterUpdate(
+          desiredDatabaseEncryption=self.messages.DatabaseEncryption(
+              keyName=options.database_encryption_key,
+              state=self.messages.DatabaseEncryption.StateValueValuesEnum.ENCRYPTED,
+          )
+      )
+
+    elif options.disable_database_encryption:
+      update = self.messages.ClusterUpdate(
+          desiredDatabaseEncryption=self.messages.DatabaseEncryption(
+              state=self.messages.DatabaseEncryption.StateValueValuesEnum.DECRYPTED
+          )
+      )
+
+    if options.enable_shielded_nodes is not None:
+      update = self.messages.ClusterUpdate(
+          desiredShieldedNodes=self.messages.ShieldedNodes(
+              enabled=options.enable_shielded_nodes
+          )
+      )
+    if options.enable_tpu is not None:
+      update = self.messages.ClusterUpdate(
+          desiredTpuConfig=_GetTpuConfigForClusterUpdate(options, self.messages)
+      )
+
+    if options.release_channel is not None:
+      update = self.messages.ClusterUpdate(
+          desiredReleaseChannel=_GetReleaseChannel(options, self.messages)
+      )
+
+    if options.patch_update is not None:
+      update = self.messages.ClusterUpdate(
+          gkeAutoUpgradeConfig=_GetGkeAutoUpgradeConfig(options, self.messages)
+      )
+
+    if options.disable_default_snat is not None:
+      disable_default_snat = self.messages.DefaultSnatStatus(
+          disabled=options.disable_default_snat
+      )
+      update = self.messages.ClusterUpdate(
+          desiredDefaultSnatStatus=disable_default_snat
+      )
+    if options.enable_l4_ilb_subsetting is not None:
+      ilb_subsettting_config = self.messages.ILBSubsettingConfig(
+          enabled=options.enable_l4_ilb_subsetting
+      )
+      update = self.messages.ClusterUpdate(
+          desiredL4ilbSubsettingConfig=ilb_subsettting_config
+      )
+    if options.private_ipv6_google_access_type is not None:
+      update = self.messages.ClusterUpdate(
+          desiredPrivateIpv6GoogleAccess=util.GetPrivateIpv6GoogleAccessTypeMapperForUpdate(
+              self.messages, hidden=False
+          ).GetEnumForChoice(
+              options.private_ipv6_google_access_type
+          )
+      )
+
+    dns_config = self.ParseClusterDNSOptions(
+        options, is_update=True, cluster_ref=cluster_ref
+    )
+    if dns_config is not None:
+      update = self.messages.ClusterUpdate(desiredDnsConfig=dns_config)
+
+    gateway_config = self.ParseGatewayOptions(options)
+    if gateway_config is not None:
+      update = self.messages.ClusterUpdate(
+          desiredGatewayApiConfig=gateway_config
+      )
+
+    if options.notification_config is not None:
+      update = self.messages.ClusterUpdate(
+          desiredNotificationConfig=_GetNotificationConfigForClusterUpdate(
+              options, self.messages
+          )
+      )
+
+    if options.disable_autopilot is not None:
+      update = self.messages.ClusterUpdate(
+          desiredAutopilot=self.messages.Autopilot(enabled=False)
+      )
+
+    if options.security_group is not None:
+      update = self.messages.ClusterUpdate(
+          desiredAuthenticatorGroupsConfig=self.messages.AuthenticatorGroupsConfig(
+              enabled=True, securityGroup=options.security_group
+          )
+      )
+
+    if options.enable_gcfs is not None:
+      update = self.messages.ClusterUpdate(
+          desiredGcfsConfig=self.messages.GcfsConfig(
+              enabled=options.enable_gcfs
+          )
+      )
+
+    if options.autoprovisioning_network_tags is not None:
+      update = self.messages.ClusterUpdate(
+          desiredNodePoolAutoConfigNetworkTags=self.messages.NetworkTags(
+              tags=options.autoprovisioning_network_tags
+          )
+      )
+
+    if options.autoprovisioning_resource_manager_tags is not None:
+      tags = options.autoprovisioning_resource_manager_tags
+      rm_tags = self._ResourceManagerTags(tags)
+      update = self.messages.ClusterUpdate(
+          desiredNodePoolAutoConfigResourceManagerTags=rm_tags
+      )
+
+    if options.enable_image_streaming is not None:
+      update = self.messages.ClusterUpdate(
+          desiredGcfsConfig=self.messages.GcfsConfig(
+              enabled=options.enable_image_streaming
+          )
+      )
+
+    if options.enable_mesh_certificates is not None:
+      update = self.messages.ClusterUpdate(
+          desiredMeshCertificates=self.messages.MeshCertificates(
+              enableCertificates=options.enable_mesh_certificates
+          )
+      )
+
+    if options.maintenance_interval is not None:
+      update = self.messages.ClusterUpdate(
+          desiredStableFleetConfig=_GetStableFleetConfig(options, self.messages)
+      )
+
+    if options.enable_service_externalips is not None:
+      update = self.messages.ClusterUpdate(
+          desiredServiceExternalIpsConfig=self.messages.ServiceExternalIPsConfig(
+              enabled=options.enable_service_externalips
+          )
+      )
+
+    if options.enable_identity_service is not None:
+      update = self.messages.ClusterUpdate(
+          desiredIdentityServiceConfig=self.messages.IdentityServiceConfig(
+              enabled=options.enable_identity_service
+          )
+      )
+
+    if (
+        options.enable_workload_config_audit is not None
+        or options.enable_workload_vulnerability_scanning is not None
+    ):
+      protect_config = self.messages.ProtectConfig()
+      if options.enable_workload_config_audit is not None:
+        protect_config.workloadConfig = self.messages.WorkloadConfig()
+        if options.enable_workload_config_audit:
+          protect_config.workloadConfig.auditMode = (
+              self.messages.WorkloadConfig.AuditModeValueValuesEnum.BASIC
+          )
+        else:
+          protect_config.workloadConfig.auditMode = (
+              self.messages.WorkloadConfig.AuditModeValueValuesEnum.DISABLED
+          )
+
+      if options.enable_workload_vulnerability_scanning is not None:
+        if options.enable_workload_vulnerability_scanning:
+          protect_config.workloadVulnerabilityMode = (
+              self.messages.ProtectConfig.WorkloadVulnerabilityModeValueValuesEnum.BASIC
+          )
+        else:
+          protect_config.workloadVulnerabilityMode = (
+              self.messages.ProtectConfig.WorkloadVulnerabilityModeValueValuesEnum.DISABLED
+          )
+      update = self.messages.ClusterUpdate(desiredProtectConfig=protect_config)
+
+    if options.hpa_profile is not None:
+      if options.hpa_profile == 'performance':
+        pod_autoscaling_config = self.messages.PodAutoscaling(
+            hpaProfile=self.messages.PodAutoscaling.HpaProfileValueValuesEnum.PERFORMANCE
+        )
+        update = self.messages.ClusterUpdate(
+            desiredPodAutoscaling=pod_autoscaling_config
+        )
+      elif options.hpa_profile == 'none':
+        pod_autoscaling_config = self.messages.PodAutoscaling(
+            hpaProfile=self.messages.PodAutoscaling.HpaProfileValueValuesEnum.NONE
+        )
+        update = self.messages.ClusterUpdate(
+            desiredPodAutoscaling=pod_autoscaling_config
+        )
+
+    if options.logging_variant is not None:
+      logging_config = self.messages.NodePoolLoggingConfig()
+      logging_config.variantConfig = self.messages.LoggingVariantConfig(
+          variant=VariantConfigEnumFromString(
+              self.messages, options.logging_variant
+          )
+      )
+      update = self.messages.ClusterUpdate(
+          desiredNodePoolLoggingConfig=logging_config
+      )
+
+    if (
+        options.additional_pod_ipv4_ranges
+        or options.removed_additional_pod_ipv4_ranges
+    ):
+      update = self.messages.ClusterUpdate()
+      if options.additional_pod_ipv4_ranges:
+        update.additionalPodRangesConfig = (
+            self.messages.AdditionalPodRangesConfig(
+                podRangeNames=options.additional_pod_ipv4_ranges
+            )
+        )
+      if options.removed_additional_pod_ipv4_ranges:
+        update.removedAdditionalPodRangesConfig = (
+            self.messages.AdditionalPodRangesConfig(
+                podRangeNames=options.removed_additional_pod_ipv4_ranges
+            )
+        )
+
+    if options.stack_type is not None:
+      update = self.messages.ClusterUpdate(
+          desiredStackType=util.GetUpdateStackTypeMapper(
+              self.messages
+          ).GetEnumForChoice(options.stack_type)
+      )
+
+    if options.enable_cost_allocation is not None:
+      update = self.messages.ClusterUpdate(
+          desiredCostManagementConfig=self.messages.CostManagementConfig(
+              enabled=options.enable_cost_allocation
+          )
+      )
+    membership_types = {
+        'LIGHTWEIGHT': (
+            self.messages.Fleet.MembershipTypeValueValuesEnum.LIGHTWEIGHT
+        ),
+        'MEMBERSHIP_TYPE_UNSPECIFIED': (
+            self.messages.Fleet.MembershipTypeValueValuesEnum.MEMBERSHIP_TYPE_UNSPECIFIED
+        ),
+    }
+    if options.enable_fleet:
+      update = self.messages.ClusterUpdate(
+          desiredFleet=self.messages.Fleet(
+              project=cluster_ref.projectId,
+              membershipType=membership_types.get(
+                  options.membership_type, None
+              ),
+          )
+      )
+
+    if options.fleet_project:
+      update = self.messages.ClusterUpdate(
+          desiredFleet=self.messages.Fleet(
+              project=options.fleet_project,
+              membershipType=membership_types.get(
+                  options.membership_type, None
+              ),
+          )
+      )
+
+    if options.unset_membership_type:
+      fleet_project = options.fleet_project or cluster_ref.projectId
+      update = self.messages.ClusterUpdate(
+          desiredFleet=self.messages.Fleet(
+              membershipType=None, project=fleet_project
+          ),
+      )
+
+    if options.enable_k8s_beta_apis is not None:
+      config_obj = self.messages.K8sBetaAPIConfig()
+      config_obj.enabledApis = options.enable_k8s_beta_apis
+      update = self.messages.ClusterUpdate(desiredK8sBetaApis=config_obj)
+
+    if options.clear_fleet_project:
+      update = self.messages.ClusterUpdate(
+          desiredFleet=self.messages.Fleet(project='')
+      )
+
+    if (
+        options.compliance is not None
+        or options.compliance_standards is not None
+    ):
+      # --compliance=disabled and --compliance-standards=a,b,c are mutually
+      # exclusive.
+      if options.compliance == 'disabled' and options.compliance_standards:
+        raise util.Error(COMPLIANCE_DISABLED_CONFIGURATION)
+
+      # Desired configuration to set.
+      compliance_update = self.messages.CompliancePostureConfig()
+      # Current configuration, if any.
+      cluster = self.GetCluster(cluster_ref)
+
+      compliance_mode = (
+          options.compliance.lower() if options.compliance else None
+      )
+      if (
+          compliance_mode is None
+      ):  # If not provided, look for current configuration.
+        if cluster.compliancePostureConfig is not None:
+          compliance_update.mode = cluster.compliancePostureConfig.mode
+      elif compliance_mode == 'disabled':
+        compliance_update.mode = (
+            self.messages.CompliancePostureConfig.ModeValueValuesEnum.DISABLED
+        )
+      elif compliance_mode == 'enabled':
+        compliance_update.mode = (
+            self.messages.CompliancePostureConfig.ModeValueValuesEnum.ENABLED
+        )
+      else:  # Invalid input.
+        raise util.Error(
+            COMPLIANCE_MODE_NOT_SUPPORTED.format(mode=options.compliance)
+        )
+
+      if options.compliance_standards is None:
+        # If not provided, look for current configuration.
+        if cluster.compliancePostureConfig is not None:
+          compliance_update.complianceStandards = (
+              cluster.compliancePostureConfig.complianceStandards
+          )
+        # Otherwise do nothing.
+      elif not options.compliance_standards:  # Empty input is invalid.
+        raise util.Error(
+            COMPLIANCE_INVALID_STANDARDS_CONFIGURATION.format(
+                standards=options.compliance_standards
+            )
+        )
+      else:  # If a list, build new standards configuration.
+        compliance_update.complianceStandards = [
+            self.messages.ComplianceStandard(standard=standard)
+            for standard in options.compliance_standards.split(',')
+        ]
+
+      update = self.messages.ClusterUpdate(
+          desiredCompliancePostureConfig=compliance_update
+      )
+
+    if options.enable_security_posture is not None:
+      security_posture_config = self.messages.SecurityPostureConfig()
+      if options.enable_security_posture:
+        security_posture_config.mode = (
+            self.messages.SecurityPostureConfig.ModeValueValuesEnum.BASIC
+        )
+      else:
+        security_posture_config.mode = (
+            self.messages.SecurityPostureConfig.ModeValueValuesEnum.DISABLED
+        )
+      update = self.messages.ClusterUpdate(
+          desiredSecurityPostureConfig=security_posture_config
+      )
+
+    if options.security_posture is not None:
+      security_posture_config = self.messages.SecurityPostureConfig()
+      if options.security_posture.lower() == 'enterprise':
+        security_posture_config.mode = (
+            self.messages.SecurityPostureConfig.ModeValueValuesEnum.ENTERPRISE
+        )
+      elif options.security_posture.lower() == 'standard':
+        security_posture_config.mode = (
+            self.messages.SecurityPostureConfig.ModeValueValuesEnum.BASIC
+        )
+      elif options.security_posture.lower() == 'disabled':
+        security_posture_config.mode = (
+            self.messages.SecurityPostureConfig.ModeValueValuesEnum.DISABLED
+        )
+      else:
+        raise util.Error(
+            SECURITY_POSTURE_MODE_NOT_SUPPORTED.format(
+                mode=options.security_posture.lower()
+            )
+        )
+      update = self.messages.ClusterUpdate(
+          desiredSecurityPostureConfig=security_posture_config
+      )
+
+    if options.workload_vulnerability_scanning is not None:
+      security_posture_config = self.messages.SecurityPostureConfig()
+      if options.workload_vulnerability_scanning.lower() == 'standard':
+        security_posture_config.vulnerabilityMode = (
+            self.messages.SecurityPostureConfig.VulnerabilityModeValueValuesEnum.VULNERABILITY_BASIC
+        )
+      elif options.workload_vulnerability_scanning.lower() == 'disabled':
+        security_posture_config.vulnerabilityMode = (
+            self.messages.SecurityPostureConfig.VulnerabilityModeValueValuesEnum.VULNERABILITY_DISABLED
+        )
+      elif options.workload_vulnerability_scanning.lower() == 'enterprise':
+        security_posture_config.vulnerabilityMode = (
+            self.messages.SecurityPostureConfig.VulnerabilityModeValueValuesEnum.VULNERABILITY_ENTERPRISE
+        )
+      else:
+        raise util.Error(
+            WORKLOAD_VULNERABILITY_SCANNING_MODE_NOT_SUPPORTED.format(
+                mode=options.workload_vulnerability_scanning.lower()
+            )
+        )
+      update = self.messages.ClusterUpdate(
+          desiredSecurityPostureConfig=security_posture_config
+      )
+
+    if options.enable_runtime_vulnerability_insight is not None:
+      runtime_vulnerability_insight_config = (
+          self.messages.RuntimeVulnerabilityInsightConfig()
+      )
+      if options.enable_runtime_vulnerability_insight:
+        runtime_vulnerability_insight_config.mode = (
+            self.messages.RuntimeVulnerabilityInsightConfig.ModeValueValuesEnum.PREMIUM_VULNERABILITY_SCAN
+        )
+      else:
+        runtime_vulnerability_insight_config.mode = (
+            self.messages.RuntimeVulnerabilityInsightConfig.ModeValueValuesEnum.DISABLED
+        )
+      update = self.messages.ClusterUpdate(
+          desiredRuntimeVulnerabilityInsightConfig=(
+              runtime_vulnerability_insight_config
+          )
+      )
+
+    if options.network_performance_config:
+      perf = self._GetClusterNetworkPerformanceConfig(options)
+      update = self.messages.ClusterUpdate(desiredNetworkPerformanceConfig=perf)
+
+    if options.workload_policies is not None:
+      workload_policies = self.messages.WorkloadPolicyConfig()
+      if options.workload_policies == 'allow-net-admin':
+        workload_policies.allowNetAdmin = True
+      update = self.messages.ClusterUpdate(
+          desiredAutopilotWorkloadPolicyConfig=workload_policies
+      )
+
+    if options.remove_workload_policies is not None:
+      workload_policies = self.messages.WorkloadPolicyConfig()
+      if options.remove_workload_policies == 'allow-net-admin':
+        workload_policies.allowNetAdmin = False
+      update = self.messages.ClusterUpdate(
+          desiredAutopilotWorkloadPolicyConfig=workload_policies
+      )
+
+    if options.host_maintenance_interval is not None:
+      update = self.messages.ClusterUpdate(
+          desiredHostMaintenancePolicy=_GetHostMaintenancePolicy(
+              options, self.messages, CLUSTER
+          )
+      )
+
+    if options.in_transit_encryption is not None:
+      update = self.messages.ClusterUpdate(
+          desiredInTransitEncryptionConfig=util.GetUpdateInTransitEncryptionConfigMapper(
+              self.messages
+          ).GetEnumForChoice(
+              options.in_transit_encryption
+          )
+      )
+
+    if options.enable_multi_networking is not None:
+      update = self.messages.ClusterUpdate(
+          desiredEnableMultiNetworking=options.enable_multi_networking
+      )
+
+    if options.containerd_config_from_file is not None:
+      update = self.messages.ClusterUpdate(
+          desiredContainerdConfig=self.messages.ContainerdConfig()
+      )
+      util.LoadContainerdConfigFromYAML(
+          update.desiredContainerdConfig,
+          options.containerd_config_from_file,
+          self.messages,
+      )
+
+    if (
+        options.enable_secret_manager_rotation is not None
+        or options.secret_manager_rotation_interval is not None
+        or options.enable_secret_manager is not None
+    ):
+      old_cluster = self.GetCluster(cluster_ref)
+      secret_manager_config = old_cluster.secretManagerConfig
+      if options.enable_secret_manager is not None:
+        if secret_manager_config is None:
+          secret_manager_config = self.messages.SecretManagerConfig()
+        secret_manager_config.enabled = options.enable_secret_manager
+      if options.enable_secret_manager_rotation is not None:
+        if secret_manager_config is None:
+          secret_manager_config = self.messages.SecretManagerConfig()
+        if secret_manager_config.rotationConfig is None:
+          secret_manager_config.rotationConfig = self.messages.RotationConfig()
+        secret_manager_config.rotationConfig.enabled = (
+            options.enable_secret_manager_rotation
+        )
+      if options.secret_manager_rotation_interval is not None:
+        if secret_manager_config is None:
+          secret_manager_config = self.messages.SecretManagerConfig()
+        if secret_manager_config.rotationConfig is None:
+          secret_manager_config.rotationConfig = self.messages.RotationConfig()
+        secret_manager_config.rotationConfig.rotationInterval = (
+            options.secret_manager_rotation_interval
+        )
+      update = self.messages.ClusterUpdate(
+          desiredSecretManagerConfig=secret_manager_config
+      )
+
+    if (
+        options.enable_secret_sync is not None
+        or options.secret_sync_rotation_interval is not None
+        or options.enable_secret_sync_rotation is not None
+    ):
+      old_cluster = self.GetCluster(cluster_ref)
+      secret_sync_config = old_cluster.secretSyncConfig
+      if options.enable_secret_sync is not None:
+        if secret_sync_config is None:
+          secret_sync_config = self.messages.SecretSyncConfig()
+        secret_sync_config.enabled = options.enable_secret_sync
+      if options.enable_secret_sync_rotation is not None:
+        if secret_sync_config is None:
+          secret_sync_config = self.messages.SecretSyncConfig()
+        if secret_sync_config.rotationConfig is None:
+          secret_sync_config.rotationConfig = self.messages.SyncRotationConfig()
+        secret_sync_config.rotationConfig.enabled = (
+            options.enable_secret_sync_rotation
+        )
+      if options.secret_sync_rotation_interval is not None:
+        if secret_sync_config is None:
+          secret_sync_config = self.messages.SecretSyncConfig()
+        if secret_sync_config.rotationConfig is None:
+          secret_sync_config.rotationConfig = self.messages.RotationConfig()
+        secret_sync_config.rotationConfig.rotationInterval = (
+            options.secret_sync_rotation_interval
+        )
+      update = self.messages.ClusterUpdate(
+          desiredSecretSyncConfig=secret_sync_config
+      )
+
+    if options.enable_cilium_clusterwide_network_policy is not None:
+      update = self.messages.ClusterUpdate(
+          desiredEnableCiliumClusterwideNetworkPolicy=(
+              options.enable_cilium_clusterwide_network_policy
+          )
+      )
+
+    if options.enable_fqdn_network_policy is not None:
+      update = self.messages.ClusterUpdate(
+          desiredEnableFqdnNetworkPolicy=options.enable_fqdn_network_policy
+      )
+
+    if (
+        options.enable_insecure_binding_system_authenticated is not None
+        or options.enable_insecure_binding_system_unauthenticated is not None
+    ):
+      confg = self.messages.RBACBindingConfig()
+      if options.enable_insecure_binding_system_authenticated is not None:
+        confg.enableInsecureBindingSystemAuthenticated = (
+            options.enable_insecure_binding_system_authenticated
+        )
+      if options.enable_insecure_binding_system_unauthenticated is not None:
+        confg.enableInsecureBindingSystemUnauthenticated = (
+            options.enable_insecure_binding_system_unauthenticated
+        )
+      update = self.messages.ClusterUpdate(desiredRBACBindingConfig=confg)
+
+    if options.autopilot_privileged_admission is not None:
+      allowlist_paths = options.autopilot_privileged_admission
+      if isinstance(allowlist_paths, str):
+        allowlist_paths = [
+            p.strip() for p in allowlist_paths.split(',') if p.strip()
+        ]
+
+      update = self.messages.ClusterUpdate(
+          desiredPrivilegedAdmissionConfig=self.messages.PrivilegedAdmissionConfig(
+              allowlistPaths=allowlist_paths
+          )
+      )
+
+    if options.enable_private_nodes is not None:
+      update = self.messages.ClusterUpdate(
+          desiredDefaultEnablePrivateNodes=options.enable_private_nodes
+      )
+
+    if (
+        options.enable_dns_access is not None
+        or options.enable_ip_access is not None
+        or options.enable_master_global_access is not None
+        or options.enable_private_endpoint is not None
+        or options.enable_master_authorized_networks is not None
+        or options.enable_google_cloud_access is not None
+        or options.enable_authorized_networks_on_private_endpoint is not None
+        or options.enable_k8s_tokens_via_dns is not None
+        or options.enable_k8s_certs_via_dns is not None
+    ):
+      cp_endpoints_config = self._GetDesiredControlPlaneEndpointsConfig(
+          cluster_ref, options
+      )
+      update = self.messages.ClusterUpdate(
+          desiredControlPlaneEndpointsConfig=cp_endpoints_config
+      )
+
+    if (
+        options.additional_ip_ranges is not None
+        or options.remove_additional_ip_ranges is not None
+    ):
+      cluster = self.GetCluster(cluster_ref)
+      desired_ip_ranges = {}
+      if cluster.ipAllocationPolicy:
+        config = cluster.ipAllocationPolicy.additionalIpRangesConfigs
+        if config:
+          for ip_range in config:
+            secondary_ranges = set(ip_range.podIpv4RangeNames)
+            desired_ip_ranges[ip_range.subnetwork] = secondary_ranges
+
+      if options.additional_ip_ranges is not None:
+        for ip_range in options.additional_ip_ranges:
+          subnetwork = SubnetworkNameToPath(
+              ip_range['subnetwork'], cluster_ref.projectId, cluster_ref.zone
+          )
+          secondary_ranges = (
+              desired_ip_ranges[subnetwork]
+              if subnetwork in desired_ip_ranges
+              else set()
+          )
+          secondary_ranges.add(ip_range['pod-ipv4-range'])
+          desired_ip_ranges[subnetwork] = secondary_ranges
+
+      if options.remove_additional_ip_ranges is not None:
+        for ip_remove in options.remove_additional_ip_ranges:
+          subnetwork = SubnetworkNameToPath(
+              ip_remove['subnetwork'], cluster_ref.projectId, cluster_ref.zone
+          )
+          if subnetwork not in desired_ip_ranges:
+            raise util.Error(
+                ADDITIONAL_SUBNETWORKS_NOT_FOUND.format(subnetwork=subnetwork)
+            )
+          if 'pod-ipv4-range' in ip_remove:
+            removed_range = ip_remove['pod-ipv4-range']
+            try:
+              desired_ip_ranges[subnetwork].remove(removed_range)
+              if not desired_ip_ranges[subnetwork]:
+                desired_ip_ranges.pop(subnetwork)
+            except KeyError:
+              raise util.Error(
+                  ADDITIONAL_SUBNETWORKS_POD_RANG_ENOT_FOUND.format(
+                      range=removed_range
+                  )
+              )
+          else:
+            desired_ip_ranges.pop(subnetwork)
+
+      update = self.messages.ClusterUpdate(
+          desiredAdditionalIpRangesConfig=self.messages.DesiredAdditionalIPRangesConfig(
+              additionalIpRangesConfigs=[
+                  self.messages.AdditionalIPRangesConfig(
+                      subnetwork=subnetwork,
+                      podIpv4RangeNames=list(secondary_ranges),
+                  )
+                  for subnetwork, secondary_ranges in desired_ip_ranges.items()
+              ]
+          )
+      )
+
+    if options.disable_l4_lb_firewall_reconciliation:
+      update = self.messages.ClusterUpdate(
+          desiredDisableL4LbFirewallReconciliation=True
+      )
+    if options.enable_l4_lb_firewall_reconciliation:
+      update = self.messages.ClusterUpdate(
+          desiredDisableL4LbFirewallReconciliation=False
+      )
+
+    if options.tier is not None:
+      update = self.messages.ClusterUpdate(
+          desiredEnterpriseConfig=_GetDesiredEnterpriseConfig(
+              options, self.messages
+          )
+      )
+
+    if options.enable_autopilot_compatibility_auditing is not None:
+      workload_policies = self.messages.WorkloadPolicyConfig()
+      workload_policies.autopilotCompatibilityAuditingEnabled = (
+          options.enable_autopilot_compatibility_auditing
+      )
+      update = self.messages.ClusterUpdate(
+          desiredAutopilotWorkloadPolicyConfig=workload_policies
+      )
+
+    if options.service_account_verification_keys is not None:
+      cluster = self.GetCluster(cluster_ref)
+      updated_user_managed_keys_config = self.messages.UserManagedKeysConfig()
+      if cluster.userManagedKeysConfig is not None:
+        updated_user_managed_keys_config = cluster.userManagedKeysConfig
+      updated_user_managed_keys_config.serviceAccountVerificationKeys = (
+          options.service_account_verification_keys
+      )
+      update = self.messages.ClusterUpdate(
+          desiredUserManagedKeysConfig=updated_user_managed_keys_config
+      )
+
+    if options.service_account_signing_keys is not None:
+      cluster = self.GetCluster(cluster_ref)
+      updated_user_managed_keys_config = self.messages.UserManagedKeysConfig()
+      if cluster.userManagedKeysConfig is not None:
+        updated_user_managed_keys_config = cluster.userManagedKeysConfig
+      updated_user_managed_keys_config.serviceAccountSigningKeys = (
+          options.service_account_signing_keys
+      )
+      update = self.messages.ClusterUpdate(
+          desiredUserManagedKeysConfig=updated_user_managed_keys_config
+      )
+    if options.control_plane_disk_encryption_key is not None:
+      cluster = self.GetCluster(cluster_ref)
+      updated_user_managed_keys_config = self.messages.UserManagedKeysConfig()
+      if cluster.userManagedKeysConfig is not None:
+        updated_user_managed_keys_config = cluster.userManagedKeysConfig
+      updated_user_managed_keys_config.controlPlaneDiskEncryptionKey = (
+          options.control_plane_disk_encryption_key
+      )
+      update = self.messages.ClusterUpdate(
+          desiredUserManagedKeysConfig=updated_user_managed_keys_config
+      )
+    if options.disable_auto_ipam:
+      update = self.messages.ClusterUpdate(
+          desiredAutoIpamConfig=self.messages.AutoIpamConfig(enabled=False)
+      )
+    if options.enable_auto_ipam:
+      update = self.messages.ClusterUpdate(
+          desiredAutoIpamConfig=self.messages.AutoIpamConfig(enabled=True)
+      )
+    if options.anonymous_authentication_config is not None:
+      modes = {
+          'LIMITED': (
+              self.messages.DesiredAnonymousAuthenticationConfig.ModeValueValuesEnum.LIMITED
+          ),
+          'ENABLED': (
+              self.messages.DesiredAnonymousAuthenticationConfig.ModeValueValuesEnum.ENABLED
+          ),
+      }
+      config = self.messages.DesiredAnonymousAuthenticationConfig()
+      config.mode = modes[options.anonymous_authentication_config]
+      update = self.messages.ClusterUpdate(
+          desiredAnonymousAuthenticationConfig=config
+      )
+    if options.network_tier is not None:
+      update = self.messages.ClusterUpdate(
+          desiredNetworkTierConfig=_GetNetworkTierConfig(options, self.messages)
+      )
+
+    return update
 
   def UpdateCluster(self, cluster_ref, options):
     update = self.UpdateClusterCommon(cluster_ref, options)
@@ -8347,72 +9428,69 @@ class V1Beta1Adapter(V1Adapter):
       enable_secure_boot = None
       enable_integrity_monitoring = None
 
-    if options.enable_autoprovisioning is not None:
-      autoscaling.enableNodeAutoprovisioning = options.enable_autoprovisioning
-      autoscaling.resourceLimits = resource_limits or []
-      if scopes is None:
-        scopes = []
-      management = None
-      upgrade_settings = None
-      if (
-          max_surge_upgrade is not None
-          or max_unavailable_upgrade is not None
-          or options.enable_autoprovisioning_blue_green_upgrade
-          or options.enable_autoprovisioning_surge_upgrade
-          or options.autoprovisioning_standard_rollout_policy is not None
-          or options.autoprovisioning_node_pool_soak_duration is not None
-      ):
-        upgrade_settings = self.UpdateUpgradeSettingsForNAP(
-            options, max_surge_upgrade, max_unavailable_upgrade
-        )
-      if enable_autorepair is not None or enable_autoupgrade is not None:
-        management = self.messages.NodeManagement(
-            autoUpgrade=enable_autoupgrade, autoRepair=enable_autorepair
-        )
-      shielded_instance_config = None
-      if (
-          enable_secure_boot is not None
-          or enable_integrity_monitoring is not None
-      ):
-        shielded_instance_config = self.messages.ShieldedInstanceConfig()
-        shielded_instance_config.enableSecureBoot = enable_secure_boot
-        shielded_instance_config.enableIntegrityMonitoring = (
-            enable_integrity_monitoring
-        )
-      if for_update:
-        autoscaling.autoprovisioningNodePoolDefaults = (
-            self.messages.AutoprovisioningNodePoolDefaults(
-                serviceAccount=service_account,
-                oauthScopes=scopes,
-                upgradeSettings=upgrade_settings,
-                management=management,
-                minCpuPlatform=min_cpu_platform,
-                bootDiskKmsKey=boot_disk_kms_key,
-                diskSizeGb=disk_size_gb,
-                diskType=disk_type,
-                imageType=autoprovisioning_image_type,
-                shieldedInstanceConfig=shielded_instance_config,
-            )
-        )
-      else:
-        autoscaling.autoprovisioningNodePoolDefaults = (
-            self.messages.AutoprovisioningNodePoolDefaults(
-                serviceAccount=service_account,
-                oauthScopes=scopes,
-                upgradeSettings=upgrade_settings,
-                management=management,
-                minCpuPlatform=min_cpu_platform,
-                bootDiskKmsKey=boot_disk_kms_key,
-                diskSizeGb=disk_size_gb,
-                diskType=disk_type,
-                imageType=autoprovisioning_image_type,
-                shieldedInstanceConfig=shielded_instance_config,
-            )
-        )
-      if autoprovisioning_locations:
-        autoscaling.autoprovisioningLocations = sorted(
-            autoprovisioning_locations
-        )
+    autoscaling.enableNodeAutoprovisioning = options.enable_autoprovisioning
+    autoscaling.resourceLimits = resource_limits or []
+    if scopes is None:
+      scopes = []
+    management = None
+    upgrade_settings = None
+    if (
+        max_surge_upgrade is not None
+        or max_unavailable_upgrade is not None
+        or options.enable_autoprovisioning_blue_green_upgrade
+        or options.enable_autoprovisioning_surge_upgrade
+        or options.autoprovisioning_standard_rollout_policy is not None
+        or options.autoprovisioning_node_pool_soak_duration is not None
+    ):
+      upgrade_settings = self.UpdateUpgradeSettingsForNAP(
+          options, max_surge_upgrade, max_unavailable_upgrade
+      )
+    if enable_autorepair is not None or enable_autoupgrade is not None:
+      management = self.messages.NodeManagement(
+          autoUpgrade=enable_autoupgrade, autoRepair=enable_autorepair
+      )
+    shielded_instance_config = None
+    if (
+        enable_secure_boot is not None
+        or enable_integrity_monitoring is not None
+    ):
+      shielded_instance_config = self.messages.ShieldedInstanceConfig()
+      shielded_instance_config.enableSecureBoot = enable_secure_boot
+      shielded_instance_config.enableIntegrityMonitoring = (
+          enable_integrity_monitoring
+      )
+    if for_update:
+      autoscaling.autoprovisioningNodePoolDefaults = (
+          self.messages.AutoprovisioningNodePoolDefaults(
+              serviceAccount=service_account,
+              oauthScopes=scopes,
+              upgradeSettings=upgrade_settings,
+              management=management,
+              minCpuPlatform=min_cpu_platform,
+              bootDiskKmsKey=boot_disk_kms_key,
+              diskSizeGb=disk_size_gb,
+              diskType=disk_type,
+              imageType=autoprovisioning_image_type,
+              shieldedInstanceConfig=shielded_instance_config,
+          )
+      )
+    else:
+      autoscaling.autoprovisioningNodePoolDefaults = (
+          self.messages.AutoprovisioningNodePoolDefaults(
+              serviceAccount=service_account,
+              oauthScopes=scopes,
+              upgradeSettings=upgrade_settings,
+              management=management,
+              minCpuPlatform=min_cpu_platform,
+              bootDiskKmsKey=boot_disk_kms_key,
+              diskSizeGb=disk_size_gb,
+              diskType=disk_type,
+              imageType=autoprovisioning_image_type,
+              shieldedInstanceConfig=shielded_instance_config,
+          )
+      )
+    if autoprovisioning_locations:
+      autoscaling.autoprovisioningLocations = sorted(autoprovisioning_locations)
 
     if options.autoscaling_profile is not None:
       autoscaling.autoscalingProfile = self.CreateAutoscalingProfileCommon(
@@ -8434,52 +9512,43 @@ class V1Beta1Adapter(V1Adapter):
     """
     if autoscaling.enableNodeAutoprovisioning:
       if not for_update or autoscaling.resourceLimits:
-        cpu_found = any(
-            limit.resourceType == 'cpu' for limit in autoscaling.resourceLimits
-        )
-        mem_found = any(
-            limit.resourceType == 'memory'
+        cpu_max_set = any(
+            limit.resourceType == 'cpu' and limit.maximum is not None
             for limit in autoscaling.resourceLimits
         )
-        if not cpu_found or not mem_found:
+        mem_max_set = any(
+            limit.resourceType == 'memory' and limit.maximum is not None
+            for limit in autoscaling.resourceLimits
+        )
+        if not cpu_max_set or not mem_max_set:
           raise util.Error(NO_AUTOPROVISIONING_LIMITS_ERROR_MSG)
-        defaults = autoscaling.autoprovisioningNodePoolDefaults
-        if defaults:
-          if defaults.upgradeSettings:
-            max_surge_found = defaults.upgradeSettings.maxSurge is not None
-            max_unavailable_found = (
-                defaults.upgradeSettings.maxUnavailable is not None
-            )
-            if max_unavailable_found != max_surge_found:
-              raise util.Error(BOTH_AUTOPROVISIONING_UPGRADE_SETTINGS_ERROR_MSG)
-          if defaults.management:
-            auto_upgrade_found = defaults.management.autoUpgrade is not None
-            auto_repair_found = defaults.management.autoRepair is not None
-            if auto_repair_found != auto_upgrade_found:
-              raise util.Error(
-                  BOTH_AUTOPROVISIONING_MANAGEMENT_SETTINGS_ERROR_MSG
-              )
-          if defaults.shieldedInstanceConfig:
-            secure_boot_found = (
-                defaults.shieldedInstanceConfig.enableSecureBoot is not None
-            )
-            integrity_monitoring_found = (
-                defaults.shieldedInstanceConfig.enableIntegrityMonitoring
-                is not None
-            )
-            if secure_boot_found != integrity_monitoring_found:
-              raise util.Error(
-                  BOTH_AUTOPROVISIONING_SHIELDED_INSTANCE_SETTINGS_ERROR_MSG
-              )
-    elif autoscaling.resourceLimits:
-      raise util.Error(LIMITS_WITHOUT_AUTOPROVISIONING_MSG)
-    elif autoscaling.autoprovisioningNodePoolDefaults and (
-        autoscaling.autoprovisioningNodePoolDefaults.serviceAccount
-        or autoscaling.autoprovisioningNodePoolDefaults.oauthScopes
-        or autoscaling.autoprovisioningNodePoolDefaults.management
-        or autoscaling.autoprovisioningNodePoolDefaults.upgradeSettings
-    ):
-      raise util.Error(DEFAULTS_WITHOUT_AUTOPROVISIONING_MSG)
+
+    defaults = autoscaling.autoprovisioningNodePoolDefaults
+    if defaults:
+      if defaults.upgradeSettings:
+        max_surge_found = defaults.upgradeSettings.maxSurge is not None
+        max_unavailable_found = (
+            defaults.upgradeSettings.maxUnavailable is not None
+        )
+        if max_unavailable_found != max_surge_found:
+          raise util.Error(BOTH_AUTOPROVISIONING_UPGRADE_SETTINGS_ERROR_MSG)
+      if defaults.management:
+        auto_upgrade_found = defaults.management.autoUpgrade is not None
+        auto_repair_found = defaults.management.autoRepair is not None
+        if auto_repair_found != auto_upgrade_found:
+          raise util.Error(BOTH_AUTOPROVISIONING_MANAGEMENT_SETTINGS_ERROR_MSG)
+      if defaults.shieldedInstanceConfig:
+        secure_boot_found = (
+            defaults.shieldedInstanceConfig.enableSecureBoot is not None
+        )
+        integrity_monitoring_found = (
+            defaults.shieldedInstanceConfig.enableIntegrityMonitoring
+            is not None
+        )
+        if secure_boot_found != integrity_monitoring_found:
+          raise util.Error(
+              BOTH_AUTOPROVISIONING_SHIELDED_INSTANCE_SETTINGS_ERROR_MSG
+          )
 
   def UpdateNodePool(self, node_pool_ref, options):
     if options.IsAutoscalingUpdate():
@@ -8573,6 +9642,25 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     cluster = self.CreateClusterCommon(cluster_ref, options)
     if (
         options.enable_autoprovisioning is not None
+        or options.max_cpu is not None
+        or options.min_cpu is not None
+        or options.max_memory is not None
+        or options.min_memory is not None
+        or options.autoprovisioning_image_type is not None
+        or options.max_accelerator is not None
+        or options.min_accelerator is not None
+        or options.autoprovisioning_service_account is not None
+        or options.autoprovisioning_scopes is not None
+        or options.enable_autoprovisioning_surge_upgrade is not None
+        or options.enable_autoprovisioning_blue_green_upgrade is not None
+        or options.autoprovisioning_max_surge_upgrade is not None
+        or options.autoprovisioning_max_unavailable_upgrade is not None
+        or options.autoprovisioning_standard_rollout_policy is not None
+        or options.autoprovisioning_node_pool_soak_duration is not None
+        or options.enable_autoprovisioning_autoupgrade is not None
+        or options.enable_autoprovisioning_autorepair is not None
+        or options.autoprovisioning_locations is not None
+        or options.autoprovisioning_min_cpu_platform is not None
         or options.autoscaling_profile is not None
         or options.enable_default_compute_class is not None
     ):
@@ -9104,76 +10192,73 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       enable_secure_boot = None
       enable_integrity_monitoring = None
 
-    if options.enable_autoprovisioning is not None:
-      autoscaling.enableNodeAutoprovisioning = options.enable_autoprovisioning
-      if resource_limits is None:
-        resource_limits = []
-      autoscaling.resourceLimits = resource_limits
-      if scopes is None:
-        scopes = []
-      management = None
-      upgrade_settings = None
-      if (
-          max_surge_upgrade is not None
-          or max_unavailable_upgrade is not None
-          or options.enable_autoprovisioning_blue_green_upgrade
-          or options.enable_autoprovisioning_surge_upgrade
-          or options.autoprovisioning_standard_rollout_policy is not None
-          or options.autoprovisioning_node_pool_soak_duration is not None
-      ):
-        upgrade_settings = self.UpdateUpgradeSettingsForNAP(
-            options, max_surge_upgrade, max_unavailable_upgrade
-        )
-      if enable_autorepair is not None or enable_autorepair is not None:
-        management = self.messages.NodeManagement(
-            autoUpgrade=enable_autoupgrade, autoRepair=enable_autorepair
-        )
-      shielded_instance_config = None
-      if (
-          enable_secure_boot is not None
-          or enable_integrity_monitoring is not None
-      ):
-        shielded_instance_config = self.messages.ShieldedInstanceConfig()
-        shielded_instance_config.enableSecureBoot = enable_secure_boot
-        shielded_instance_config.enableIntegrityMonitoring = (
-            enable_integrity_monitoring
-        )
+    autoscaling.enableNodeAutoprovisioning = options.enable_autoprovisioning
+    if resource_limits is None:
+      resource_limits = []
+    autoscaling.resourceLimits = resource_limits
+    if scopes is None:
+      scopes = []
+    management = None
+    upgrade_settings = None
+    if (
+        max_surge_upgrade is not None
+        or max_unavailable_upgrade is not None
+        or options.enable_autoprovisioning_blue_green_upgrade
+        or options.enable_autoprovisioning_surge_upgrade
+        or options.autoprovisioning_standard_rollout_policy is not None
+        or options.autoprovisioning_node_pool_soak_duration is not None
+    ):
+      upgrade_settings = self.UpdateUpgradeSettingsForNAP(
+          options, max_surge_upgrade, max_unavailable_upgrade
+      )
+    if enable_autorepair is not None or enable_autorepair is not None:
+      management = self.messages.NodeManagement(
+          autoUpgrade=enable_autoupgrade, autoRepair=enable_autorepair
+      )
+    shielded_instance_config = None
+    if (
+        enable_secure_boot is not None
+        or enable_integrity_monitoring is not None
+    ):
+      shielded_instance_config = self.messages.ShieldedInstanceConfig()
+      shielded_instance_config.enableSecureBoot = enable_secure_boot
+      shielded_instance_config.enableIntegrityMonitoring = (
+          enable_integrity_monitoring
+      )
 
-      if for_update:
-        autoscaling.autoprovisioningNodePoolDefaults = (
-            self.messages.AutoprovisioningNodePoolDefaults(
-                serviceAccount=service_account,
-                oauthScopes=scopes,
-                upgradeSettings=upgrade_settings,
-                management=management,
-                minCpuPlatform=min_cpu_platform,
-                bootDiskKmsKey=boot_disk_kms_key,
-                diskSizeGb=disk_size_gb,
-                diskType=disk_type,
-                imageType=autoprovisioning_image_type,
-                shieldedInstanceConfig=shielded_instance_config,
-            )
-        )
-      else:
-        autoscaling.autoprovisioningNodePoolDefaults = (
-            self.messages.AutoprovisioningNodePoolDefaults(
-                serviceAccount=service_account,
-                oauthScopes=scopes,
-                upgradeSettings=upgrade_settings,
-                management=management,
-                minCpuPlatform=min_cpu_platform,
-                bootDiskKmsKey=boot_disk_kms_key,
-                diskSizeGb=disk_size_gb,
-                diskType=disk_type,
-                imageType=autoprovisioning_image_type,
-                shieldedInstanceConfig=shielded_instance_config,
-            )
-        )
+    if for_update:
+      autoscaling.autoprovisioningNodePoolDefaults = (
+          self.messages.AutoprovisioningNodePoolDefaults(
+              serviceAccount=service_account,
+              oauthScopes=scopes,
+              upgradeSettings=upgrade_settings,
+              management=management,
+              minCpuPlatform=min_cpu_platform,
+              bootDiskKmsKey=boot_disk_kms_key,
+              diskSizeGb=disk_size_gb,
+              diskType=disk_type,
+              imageType=autoprovisioning_image_type,
+              shieldedInstanceConfig=shielded_instance_config,
+          )
+      )
+    else:
+      autoscaling.autoprovisioningNodePoolDefaults = (
+          self.messages.AutoprovisioningNodePoolDefaults(
+              serviceAccount=service_account,
+              oauthScopes=scopes,
+              upgradeSettings=upgrade_settings,
+              management=management,
+              minCpuPlatform=min_cpu_platform,
+              bootDiskKmsKey=boot_disk_kms_key,
+              diskSizeGb=disk_size_gb,
+              diskType=disk_type,
+              imageType=autoprovisioning_image_type,
+              shieldedInstanceConfig=shielded_instance_config,
+          )
+      )
 
-      if autoprovisioning_locations:
-        autoscaling.autoprovisioningLocations = sorted(
-            autoprovisioning_locations
-        )
+    if autoprovisioning_locations:
+      autoscaling.autoprovisioningLocations = sorted(autoprovisioning_locations)
 
     if options.autoscaling_profile is not None:
       autoscaling.autoscalingProfile = self.CreateAutoscalingProfileCommon(

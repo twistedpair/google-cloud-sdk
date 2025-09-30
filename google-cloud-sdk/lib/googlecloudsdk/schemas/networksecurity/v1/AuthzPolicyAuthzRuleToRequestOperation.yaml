@@ -32,7 +32,8 @@ properties:
     description: |-
       A list of HTTP Hosts to match against. The match can be one of exact,
       prefix, suffix, or contains (substring match). Matches are always case
-      sensitive unless the ignoreCase is set. Limited to 5 matches.
+      sensitive unless the ignoreCase is set. Limited to 10 hosts per
+      Authorization Policy.
     type: array
     items:
       $ref: AuthzPolicyAuthzRuleStringMatch.yaml
@@ -40,7 +41,8 @@ properties:
     description: |-
       A list of HTTP methods to match against. Each entry must be a valid
       HTTP method name (GET, PUT, POST, HEAD, PATCH, DELETE, OPTIONS). It
-      only allows exact match and is always case sensitive.
+      only allows exact match and is always case sensitive. Limited to 10
+      methods per Authorization Policy.
     type: array
     items:
       type: string
@@ -48,10 +50,10 @@ properties:
     description: |-
       A list of paths to match against. The match can be one of exact,
       prefix, suffix, or contains (substring match). Matches are always
-      case sensitive unless the ignoreCase is set. Limited to 5 matches.
-      Note that this path match includes the query parameters. For gRPC
-      services, this should be a fully-qualified name of the form
-      /package.service/method.
+      case sensitive unless the ignoreCase is set. Limited to 10 paths
+      per Authorization Policy. Note that this path match includes the
+      query parameters. For gRPC services, this should be a fully-
+      qualified name of the form /package.service/method.
     type: array
     items:
       $ref: AuthzPolicyAuthzRuleStringMatch.yaml

@@ -4734,6 +4734,8 @@ class Results(_messages.Message):
       build.
     numArtifacts: Number of non-container artifacts uploaded to Cloud Storage.
       Only populated when artifacts are uploaded to Cloud Storage.
+    ociArtifacts: Output only. OCI artifacts uploaded to Artifact Registry at
+      the end of the build.
     pythonPackages: Python artifacts uploaded to Artifact Registry at the end
       of the build.
   """
@@ -4747,7 +4749,8 @@ class Results(_messages.Message):
   mavenArtifacts = _messages.MessageField('UploadedMavenArtifact', 7, repeated=True)
   npmPackages = _messages.MessageField('UploadedNpmPackage', 8, repeated=True)
   numArtifacts = _messages.IntegerField(9)
-  pythonPackages = _messages.MessageField('UploadedPythonPackage', 10, repeated=True)
+  ociArtifacts = _messages.MessageField('UploadedOCIArtifact', 10, repeated=True)
+  pythonPackages = _messages.MessageField('UploadedPythonPackage', 11, repeated=True)
 
 
 class RetryBuildRequest(_messages.Message):
@@ -5299,6 +5302,21 @@ class UploadedNpmPackage(_messages.Message):
     pushTiming: Output only. Stores timing information for pushing the
       specified artifact.
     uri: URI of the uploaded npm package.
+  """
+
+  fileHashes = _messages.MessageField('FileHashes', 1)
+  pushTiming = _messages.MessageField('TimeSpan', 2)
+  uri = _messages.StringField(3)
+
+
+class UploadedOCIArtifact(_messages.Message):
+  r"""An oci image uploaded to Artifact Registry using the OCI directive.
+
+  Fields:
+    fileHashes: Output only. Hash types and values of the OCI Artifact.
+    pushTiming: Output only. Stores timing information for pushing the
+      specified artifact.
+    uri: Output only. URI of the uploaded OCI Artifact.
   """
 
   fileHashes = _messages.MessageField('FileHashes', 1)

@@ -44,6 +44,7 @@ class SupportedFeatures:
       support_graceful_shutdown,
       support_source_snapshot_region,
       support_skip_guest_os_shutdown,
+      support_preemption_notice_duration,
   ):
     self.support_secure_tags = support_secure_tags
     self.support_display_device = support_display_device
@@ -57,6 +58,7 @@ class SupportedFeatures:
     self.support_graceful_shutdown = support_graceful_shutdown
     self.support_source_snapshot_region = support_source_snapshot_region
     self.support_skip_guest_os_shutdown = support_skip_guest_os_shutdown
+    self.support_preemption_notice_duration = support_preemption_notice_duration
 
 
 def _GetSourceInstanceTemplate(args, resources, instance_template_resource):
@@ -251,7 +253,11 @@ def CreateBulkInsertInstanceResource(
       support_local_ssd_recovery_timeout=True,
       support_graceful_shutdown=supported_features.support_graceful_shutdown,
       support_skip_guest_os_shutdown=(
-          supported_features.support_skip_guest_os_shutdown),
+          supported_features.support_skip_guest_os_shutdown
+      ),
+      support_preemption_notice_duration=(
+          supported_features.support_preemption_notice_duration
+      ),
   )
   tags = instance_utils.GetTags(args, compute_client)
   labels = instance_utils.GetLabels(

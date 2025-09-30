@@ -133,6 +133,17 @@ def GetVersionResourceSpec():
   )
 
 
+def GetTagResourceSpec():
+  return concepts.ResourceSpec(
+      'artifactregistry.projects.locations.repositories.packages.tags',
+      resource_name='tag',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      repositoriesId=RepoAttributeConfig(),
+      packagesId=PackageAttributeConfig(),
+  )
+
+
 def GetScopeFlag():
   return base.Argument(
       '--scope',
@@ -251,6 +262,15 @@ def GetRequiredVersionFlag():
       'version',
       GetVersionResourceSpec(),
       'The Artifact Registry version name.',
+      required=True,
+  )
+
+
+def GetRequiredTagFlag():
+  return concept_parsers.ConceptParser.ForResource(
+      'tag',
+      GetTagResourceSpec(),
+      'The Artifact Registry tag name.',
       required=True,
   )
 

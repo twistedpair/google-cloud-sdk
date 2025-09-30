@@ -53,7 +53,7 @@ projects_locations_cloud_exadata_infrastructures:
     parameter_name: cloudExadataInfrastructuresId
     attribute_name: cloud_exadata_infrastructure
     help: The cloudExadataInfrastructure id of the {resource} resource.
-  disable_auto_completers: true
+  disable_auto_completers: false
 projects_locations_cloud_vm_clusters:
   name: cloudVmCluster
   plural_name: cloudVmClusters
@@ -90,6 +90,42 @@ projects_locations_db_systems:
     attribute_name: db_system
     help: The dbSystem id of the {resource} resource.
   disable_auto_completers: false
+projects_locations_exadb_vm_clusters:
+  name: exadbVmCluster
+  plural_name: exadbVmClusters
+  collection: oracledatabase.projects.locations.exadbVmClusters
+  attributes:
+  - *project
+  - *location
+  - &exadbVmCluster
+    parameter_name: exadbVmClustersId
+    attribute_name: exadb_vm_cluster
+    help: The exadbVmCluster id of the {resource} resource.
+  disable_auto_completers: false
+projects_locations_exascale_db_storage_vaults:
+  name: exascaleDbStorageVault
+  plural_name: exascaleDbStorageVaults
+  collection: oracledatabase.projects.locations.exascaleDbStorageVaults
+  attributes:
+  - *project
+  - *location
+  - &exascaleDbStorageVault
+    parameter_name: exascaleDbStorageVaultsId
+    attribute_name: exascale_db_storage_vault
+    help: The exascaleDbStorageVault id of the {resource} resource.
+  disable_auto_completers: false
+projects_locations_gi_versions:
+  name: giVersion
+  plural_name: giVersions
+  collection: oracledatabase.projects.locations.giVersions
+  attributes:
+  - *project
+  - *location
+  - &giVersion
+    parameter_name: giVersionsId
+    attribute_name: gi_version
+    help: The giVersion id of the {resource} resource.
+  disable_auto_completers: true
 projects_locations_odb_networks:
   name: odbNetwork
   plural_name: odbNetworks

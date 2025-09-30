@@ -64,8 +64,8 @@ def get_hash_object(hash_algorithm: HashAlgorithm):
 def _get_hash_for_deferred_crc32c(
     path: str,
     hash_object: fast_crc32c_util.DeferredCrc32c,
-    start: int|None = None,
-    stop: int|None = None,
+    start=None,
+    stop=None,
 ) -> int | None:
   """Returns the hash for the given path and deferred crc32c object."""
   if isinstance(hash_object, fast_crc32c_util.DeferredCrc32c):
@@ -76,11 +76,8 @@ def _get_hash_for_deferred_crc32c(
 
 
 def get_hash_from_data_chunk_or_file(
-    path: str,
-    data: bytes,
-    hash_algorithm: HashAlgorithm,
-    start: int|None = None,
-    stop: int|None = None):
+    path: str, data: bytes, hash_algorithm: HashAlgorithm, start=None, stop=None
+):
   """Returns the hash object for the given data chunk or file.
 
   For MD5 and FastCRC32C, this function will return a hash object after

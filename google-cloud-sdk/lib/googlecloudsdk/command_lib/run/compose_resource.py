@@ -24,13 +24,11 @@ The core responsibilities include:
   2.  Providing classes to represent these resources (e.g., Cloud Build).
   3.  Orchestrating the creation of these resources in Google Cloud.
 """
-
 import json
 import os
 import re
 from typing import Any, Dict, Optional
 
-from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.api_lib.run import api_enabler
 from googlecloudsdk.api_lib.run import global_methods
@@ -41,13 +39,15 @@ from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.calliope import base
-from googlecloudsdk.command_lib.builds import submit_util
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.run import config_changes
 from googlecloudsdk.command_lib.run import connection_context
+from googlecloudsdk.command_lib.run import flags as run_flags
 from googlecloudsdk.command_lib.run import platforms
 from googlecloudsdk.command_lib.run import serverless_operations
 from googlecloudsdk.command_lib.run import stages
+from googlecloudsdk.command_lib.run.compose import builder
+from googlecloudsdk.command_lib.run.compose import tracker as compose_tracker
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -55,32 +55,6 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import files
-
-
-class BuildConfig:
-  """Represents the build configuration for a service."""
-
-  def __init__(
-      self, context: Optional[str] = None, dockerfile: Optional[str] = None
-  ):
-    self.context = context
-    self.dockerfile = dockerfile
-    self.image_id: Optional[str] = None
-
-  @classmethod
-  def from_dict(cls, data: Dict[str, Any]) -> 'BuildConfig':
-    return cls(
-        context=data.get('context'),
-        dockerfile=data.get('dockerfile'),
-    )
-
-  def to_dict(self) -> Dict[str, Any]:
-    """Serializes the BuildConfig instance to a dictionary."""
-    return {
-        'context': self.context,
-        'dockerfile': self.dockerfile,
-        'image_id': self.image_id,
-    }
 
 
 class SecretConfig:
@@ -140,19 +114,23 @@ class Config:
     self.name = name
     self.file = file
     self.target = target
+    self.bucket_name: Optional[str] = None
 
   @classmethod
   def from_dict(cls, data: Dict[str, Any]) -> 'Config':
-    return cls(
+    config = cls(
         name=data.get('name'),
         file=data.get('file'),
         target=data.get('target'),
     )
+    config.bucket_name = data.get('bucket_name')
+    return config
 
   def handle(self, gcs_handler: 'GcsHandler') -> None:
     """Handles the creation of resources for the config."""
     log.debug('Handling config: %s', self.name)
     gcs_handler.ensure_bucket()
+    self.bucket_name = gcs_handler.bucket_name
     source = self.file
     if not source or not os.path.exists(source):
       raise exceptions.Error(
@@ -173,6 +151,7 @@ class Config:
         'name': self.name,
         'file': self.file,
         'target': self.target,
+        'bucket_name': self.bucket_name,
     }
 
 
@@ -286,9 +265,8 @@ class GcsHandler:
       self._gcs_client.CreateBucketIfNotExists(
           bucket_name, location=self.region
       )
-      log.status.Print(
-          f"Ensured bucket '{bucket_name}' exists in region"
-          f" '{self.region}'."
+      log.debug(
+          f"Ensured bucket '{bucket_name}' exists in region '{self.region}'."
       )
     except Exception as e:
       raise exceptions.Error(
@@ -308,7 +286,7 @@ class GcsHandler:
           'roles/storage.objectUser',
       )
       self._gcs_client.SetIamPolicy(bucket_resource, policy)
-      log.status.Print(
+      log.debug(
           f'Set roles/storage.objectUser for {service_account} on bucket'
           f" '{bucket_name}'."
       )
@@ -335,7 +313,7 @@ class GcsHandler:
         )
         object_ref = storage_util.ObjectReference(self.bucket_name, gcs_file_path)
         self._gcs_client.CopyFileToGCS(local_file, object_ref)
-    log.status.Print(
+    log.debug(
         f"Uploaded directory '{source_path}' to"
         f" 'gs://{self.bucket_name}/{gcs_path}'"
     )
@@ -346,7 +324,7 @@ class GcsHandler:
       raise exceptions.Error(f"Source path '{source_path}' is not a file.")
     object_ref = storage_util.ObjectReference(self.bucket_name, gcs_path)
     self._gcs_client.CopyFileToGCS(source_path, object_ref)
-    log.status.Print(
+    log.debug(
         f"Uploaded file '{source_path}' to 'gs://{self.bucket_name}/{gcs_path}'"
     )
 
@@ -413,7 +391,7 @@ class ResourcesConfig:
 
   def __init__(
       self,
-      source_builds: Optional[Dict[str, BuildConfig]] = None,
+      source_builds: Optional[Dict[str, builder.BuildConfig]] = None,
       secrets: Optional[Dict[str, SecretConfig]] = None,
       volumes: Optional[VolumeConfig] = None,
       project: Optional[str] = None,
@@ -437,7 +415,7 @@ class ResourcesConfig:
   def from_dict(cls, data: Dict[str, Any]) -> 'ResourcesConfig':
     """Creates a ResourcesConfig instance from a dictionary."""
     source_builds = {
-        key: BuildConfig.from_dict(value)
+        key: builder.BuildConfig.from_dict(value)
         for key, value in data.get('source_builds', {}).items()
     }
     secrets = {
@@ -457,7 +435,13 @@ class ResourcesConfig:
         configs=configs,
     )
 
-  def handle_resources(self, region: str, repo: str) -> 'ResourcesConfig':
+  def handle_resources(
+      self,
+      region: str,
+      repo: str,
+      tracker: progress_tracker.StagedProgressTracker,
+      no_build: bool = False,
+  ) -> 'ResourcesConfig':
     """Creates or updates all resources defined in the configuration.
 
     This method orchestrates the handling of each type of resource,
@@ -466,6 +450,8 @@ class ResourcesConfig:
     Args:
       region: The region of the compose project.
       repo: The repo of the compose project.
+      tracker: The progress tracker to use for handling the resources.
+      no_build: If true, skip building from source.
 
     Returns:
       The ResourcesConfig instance after handling the resources.
@@ -485,15 +471,20 @@ class ResourcesConfig:
               'artifactregistry.googleapis.com',
           ],
       )
-      perform_source_build(
+      builder.handle(
           self.source_builds,
           repo,
           self.project,
           region,
+          tracker,
+          no_build,
       )
 
     log.debug('Starting resource handling for project: %s', self.project)
     if self.secrets:
+      tracker.StartStage(
+          compose_tracker.StagedProgressTrackerStage.SECRETS.get_key()
+      )
       api_enabler.check_and_enable_apis(
           project_id,
           ['secretmanager.googleapis.com', 'iam.googleapis.com'],
@@ -501,19 +492,34 @@ class ResourcesConfig:
       for name, secret_config in self.secrets.items():
         log.debug(f'Handling secret: {name}')
         secret_config.handle()
+      tracker.CompleteStage(
+          compose_tracker.StagedProgressTrackerStage.SECRETS.get_key()
+      )
 
     if self.volumes.bind_mount or self.volumes.named_volume or self.configs:
       log.debug('Initializing GCS handler for volumes and/or configs.')
       gcs_handler = GcsHandler(self.project, region)
       if self.volumes.bind_mount or self.volumes.named_volume:
+        tracker.StartStage(
+            compose_tracker.StagedProgressTrackerStage.VOLUMES.get_key()
+        )
         api_enabler.check_and_enable_apis(
             project_id, ['storage.googleapis.com', 'iam.googleapis.com']
         )
         self.volumes.handle(gcs_handler)
+        tracker.CompleteStage(
+            compose_tracker.StagedProgressTrackerStage.VOLUMES.get_key()
+        )
       if self.configs:
+        tracker.StartStage(
+            compose_tracker.StagedProgressTrackerStage.CONFIGS.get_key()
+        )
         for config in self.configs:
-          log.status.Print('Handling config: %s', config.name)
+          log.debug('Handling config: %s', config.name)
           config.handle(gcs_handler)
+        tracker.CompleteStage(
+            compose_tracker.StagedProgressTrackerStage.CONFIGS.get_key()
+        )
     return self
 
   def to_dict(self) -> Dict[str, Any]:
@@ -571,125 +577,6 @@ class TranslateResult:
     }
 
 
-def perform_source_build(
-    source_build: Dict[str, BuildConfig],
-    repo: str,
-    project_name: str,
-    region: str,
-) -> None:
-  """Performs source build across containers mentioned in the compose file."""
-  for container, build_config in source_build.items():
-    try:
-      _build_from_source(build_config, container, repo, project_name, region)
-    except submit_util.FailedBuildException as e:
-      log.error(f'Build failed for container {container}: {e}')
-      raise
-    except exceptions.Error as e:
-      log.error(f'An error occurred during build submission: {e}')
-      raise
-
-
-def _write_cloudbuild_config(context: str, image_tag: str) -> str:
-  """Writes a cloudbuild.yaml file to the service source directory.
-
-  Args:
-    context: The build context directory.
-    image_tag: The full tag for the image to be built.
-
-  Returns:
-    The path to the written cloudbuild.yaml file.
-  """
-  config_data = {
-      'steps': [{
-          'id': f'Build Docker Image: {image_tag}',
-          'name': 'gcr.io/cloud-builders/docker',
-          'args': ['buildx', 'build', '-t', image_tag, '.'],
-      }],
-      'images': [image_tag],
-  }
-
-  out_dir = os.path.join(context, 'out')
-  file_path = os.path.join(out_dir, 'cloudbuild.yaml')
-  try:
-    files.MakeDir(out_dir)
-    with files.FileWriter(file_path) as f:
-      yaml.dump(config_data, f)
-    log.debug(f"Wrote Cloud Build config to '{file_path}'")
-    return file_path
-  except Exception as e:
-    raise exceptions.Error(
-        f"Failed to write Cloud Build config to '{file_path}': {e}"
-    )
-
-
-def _build_from_source(
-    config: BuildConfig,
-    container: str,
-    repo: str,
-    project_name: str,
-    region: str,
-) -> None:
-  """Performs source build for a given container using build config."""
-  source_path = config.context
-  if source_path is None:
-    raise ValueError('Build context is required for source build.')
-
-  image = '{repo}/{project_name}_{container}:{tag}'.format(
-      repo=repo, project_name=project_name, container=container, tag='latest'
-  )
-  config.image_id = image
-
-  # Write the cloudbuild.yaml file to the service source directory.
-  config_path = _write_cloudbuild_config(
-      source_path, image
-  )
-
-  # Get the Cloud Build API message module
-  messages = cloudbuild_util.GetMessagesModule()
-
-  # Create the build configuration. This will upload the source
-  # and set up the build steps to use the Dockerfile.
-  log.status.Print(
-      f"Creating build config for image '{image}' from source '{source_path}'"
-  )
-  build_config = submit_util.CreateBuildConfig(
-      tag=None,
-      no_cache=False,
-      messages=messages,
-      substitutions=None,
-      arg_config=config_path,
-      is_specified_source=True,
-      no_source=False,
-      source=source_path,
-      gcs_source_staging_dir=None,
-      ignore_file=None,
-      arg_gcs_log_dir=None,
-      arg_machine_type=None,
-      arg_disk_size=None,
-      arg_worker_pool=None,
-      arg_dir=None,
-      arg_revision=None,
-      arg_git_source_dir=None,
-      arg_git_source_revision=None,
-      arg_service_account=None,
-      buildpack=None,
-      hide_logs=False,
-      # skip_set_source defaults to False, so SetSource is called internally
-  )
-
-  log.status.Print('Submitting build to Google Cloud Build')
-  # Submit and wait for the build
-  build, _ = submit_util.Build(
-      messages,
-      # TODO(b/381256138): optimize for parallel source builds
-      async_=False,
-      build_config=build_config,
-      build_region=region,
-  )
-  log.status.Print(f'Build {build.id} finished with status {build.status}')
-  log.status.Print(f"Image '{image}' created.")
-
-
 def _create_secret_and_add_version(
     config: SecretConfig
 ) -> None:
@@ -710,9 +597,7 @@ def _create_secret_and_add_version(
 
   # Check if secret exists
   if secrets_client.GetOrNone(secret_ref) is None:
-    log.status.Print(
-        f"Creating secret '{config.name}' in project '{project}'."
-    )
+    log.debug(f"Creating secret '{config.name}' in project '{project}'.")
     try:
       # Default replication policy is automatic
       secrets_client.Create(
@@ -722,12 +607,12 @@ def _create_secret_and_add_version(
           labels=None,
           tags=None,
       )
-      log.status.Print(f"Secret '{config.name}' created.")
+      log.debug(f"Secret '{config.name}' created.")
     except Exception as e:
       log.error(f"Failed to create secret '{config.name}': {e}")
       raise
   else:
-    log.status.Print(f"Secret '{config.name}' already exists.")
+    log.debug(f"Secret '{config.name}' already exists.")
 
   # Add IAM policy binding for the compute service account
   try:
@@ -744,13 +629,11 @@ def _create_secret_and_add_version(
           role,
       )
       secrets_client.SetIamPolicy(secret_ref, policy)
-      log.status.Print(
-          f"Set {role} for {service_account} on secret '{config.name}'."
-      )
+      log.debug(f"Set {role} for {service_account} on secret '{config.name}'.")
     else:
-      log.status.Print(
+      log.debug(
           f'{role} for {service_account} already exists on secret'
-          f' \'{config.name}\'.'
+          f" '{config.name}'."
       )
   except Exception as e:
     raise exceptions.Error(
@@ -759,20 +642,20 @@ def _create_secret_and_add_version(
 
   # Add secret version
   try:
-    log.status.Print(
+    log.debug(
         f"Reading secret content from '{config.file}' for secret"
         f" '{config.mount}'."
     )
     secret_data = files.ReadBinaryFileContents(config.file)
 
-    log.status.Print(f"Adding new version to secret '{config.name}'.")
+    log.debug(f"Adding new version to secret '{config.name}'.")
     # data_crc32c is not calculated here, but could be added for integrity
     # TODO(b/440494739): Reuse secret values if unchanged
     version = secrets_client.AddVersion(
         secret_ref, secret_data, data_crc32c=None
     )
     config.secret_version = version.name
-    log.status.Print(
+    log.debug(
         f"Added secret version '{config.secret_version}' to secret"
         f" '{config.name}'."
     )
@@ -792,12 +675,13 @@ def _get_project_number() -> str:
   return str(project.projectNumber)
 
 
-def deploy_application(yaml_file_path: str, region: str) -> None:
+def deploy_application(yaml_file_path: str, region: str, args: Any) -> None:
   """Deploys a Cloud Run application from a YAML file.
 
   Args:
     yaml_file_path: The path to the Cloud Run service YAML file.
     region: The region to deploy the application to.
+    args: The arguments passed to the command.
   """
   project = properties.VALUES.core.project.Get(required=True)
   log.status.Print(
@@ -852,6 +736,13 @@ def deploy_application(yaml_file_path: str, region: str) -> None:
   with serverless_operations.Connect(conn_context) as client:
     existing_service = client.GetService(service_ref)
     changes = [config_changes.ReplaceServiceChange(new_service)]
+    allow_unauthenticated = run_flags.GetAllowUnauthenticated(
+        args, client, service_ref, not existing_service
+    )
+    # Avoid failure removing a policy binding for a service that
+    # doesn't exist.
+    if not existing_service and not allow_unauthenticated:
+      allow_unauthenticated = None
 
     header = (
         f'Deploying service \'{new_service.name}\'...'
@@ -861,21 +752,21 @@ def deploy_application(yaml_file_path: str, region: str) -> None:
 
     with progress_tracker.StagedProgressTracker(
         header,
-        stages.ServiceStages(),
+        stages.ServiceStages(allow_unauthenticated is not None),
         failure_message='Deployment failed',
         suppress_output=False,
+        done_message_callback=lambda: f"Service '{new_service.name}' has been deployed.",
     ) as tracker:
       deployed_service = client.ReleaseService(
           service_ref,
           changes,
-          base.ReleaseTrack.GA,
+          base.ReleaseTrack.ALPHA,
           tracker,
           asyn=False,
-          allow_unauthenticated=None,
+          allow_unauthenticated=allow_unauthenticated,
           for_replace=True,
           prefetch=existing_service,
       )
-  log.status.Print(f"Service '{new_service.name}' has been deployed.")
   if (
       deployed_service
       and deployed_service.status

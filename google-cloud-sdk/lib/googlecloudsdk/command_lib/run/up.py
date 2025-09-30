@@ -59,6 +59,11 @@ class RunComposeWrapper(binary_operations.StreamingBinaryBackedOperation):
       region=None,
       **kwargs
   ):
+    if command == 'up':
+      # Using default handlers for stdout/stderr for the older "up" command.
+      self.std_out_handler = binary_operations.DefaultStreamOutHandler
+      self.std_err_handler = binary_operations.DefaultStreamErrHandler
+
     del kwargs
     exec_args = []
     if command:

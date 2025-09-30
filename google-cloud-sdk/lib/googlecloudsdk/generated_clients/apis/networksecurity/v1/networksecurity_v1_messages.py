@@ -440,11 +440,10 @@ class AuthzPolicyAuthzRuleFromRequestSource(_messages.Message):
       string whose value is matched against a list of URI SANs, DNS Name SANs,
       or the common name in the client's certificate. A match happens when any
       principal matches with the rule. Limited to 50 principals per
-      Authorization Policy for Regional Internal Application Load Balancer,
-      Regional External Application Load Balancer, Cross-region Internal
-      Application Load Balancer, and Cloud Service Mesh. Limited to 25
-      principals per Authorization Policy for Global External Application Load
-      Balancer.
+      Authorization Policy for regional internal Application Load Balancers,
+      regional external Application Load Balancers, cross-region internal
+      Application Load Balancers, and Cloud Service Mesh. This field is not
+      supported for global external Application Load Balancers.
     resources: Optional. A list of resources to match against the resource of
       the source VM of a request. Limited to 10 resources per Authorization
       Policy.
@@ -521,9 +520,10 @@ class AuthzPolicyAuthzRulePrincipal(_messages.Message):
         Requests with multiple common names in the client certificate will be
         rejected if CLIENT_CERT_COMMON_NAME is set as the principal selector.
         A match happens when there is an exact common name value match. This
-        is only applicable for Application Load Balancers except for classic
-        Global External Application load balancer. CLIENT_CERT_COMMON_NAME is
-        not supported for INTERNAL_SELF_MANAGED load balancing scheme.
+        is only applicable for Application Load Balancers except for global
+        external Application Load Balancer and classic Application Load
+        Balancer. CLIENT_CERT_COMMON_NAME is not supported for
+        INTERNAL_SELF_MANAGED load balancing scheme.
     """
     PRINCIPAL_SELECTOR_UNSPECIFIED = 0
     CLIENT_CERT_URI_SAN = 1
@@ -703,29 +703,26 @@ class AuthzPolicyTarget(_messages.Message):
   Enums:
     LoadBalancingSchemeValueValuesEnum: Required. All gateways and forwarding
       rules referenced by this policy and extensions must share the same load
-      balancing scheme. Supported values: `INTERNAL_MANAGED`,
-      `INTERNAL_SELF_MANAGED`, and `EXTERNAL_MANAGED`. For more information,
-      refer to [Backend services overview](https://cloud.google.com/load-
-      balancing/docs/backend-service).
+      balancing scheme. Supported values: `INTERNAL_MANAGED` and
+      `EXTERNAL_MANAGED`. For more information, refer to [Backend services
+      overview](https://cloud.google.com/load-balancing/docs/backend-service).
 
   Fields:
     loadBalancingScheme: Required. All gateways and forwarding rules
       referenced by this policy and extensions must share the same load
-      balancing scheme. Supported values: `INTERNAL_MANAGED`,
-      `INTERNAL_SELF_MANAGED`, and `EXTERNAL_MANAGED`. For more information,
-      refer to [Backend services overview](https://cloud.google.com/load-
-      balancing/docs/backend-service).
+      balancing scheme. Supported values: `INTERNAL_MANAGED` and
+      `EXTERNAL_MANAGED`. For more information, refer to [Backend services
+      overview](https://cloud.google.com/load-balancing/docs/backend-service).
     resources: Required. A list of references to the Forwarding Rules on which
-      this policy will be applied. For policies created for Cloudrun, this
-      field will reference the Cloud Run services.
+      this policy will be applied.
   """
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
     r"""Required. All gateways and forwarding rules referenced by this policy
     and extensions must share the same load balancing scheme. Supported
-    values: `INTERNAL_MANAGED`, `INTERNAL_SELF_MANAGED`, and
-    `EXTERNAL_MANAGED`. For more information, refer to [Backend services
-    overview](https://cloud.google.com/load-balancing/docs/backend-service).
+    values: `INTERNAL_MANAGED` and `EXTERNAL_MANAGED`. For more information,
+    refer to [Backend services overview](https://cloud.google.com/load-
+    balancing/docs/backend-service).
 
     Values:
       LOAD_BALANCING_SCHEME_UNSPECIFIED: Default value. Do not use.

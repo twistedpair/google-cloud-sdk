@@ -428,6 +428,16 @@ def DisableTotalCpuAutoscaling(required=False, hidden=True):
   )
 
 
+def DisableDownScaling(required=False, hidden=True):
+  return base.Argument(
+      '--disable-downscaling',
+      required=required,
+      hidden=hidden,
+      action=arg_parsers.StoreTrueFalseAction,
+      help='Set the flag to disable downscaling for the autoscaled instance.',
+  )
+
+
 def AsymmetricAutoscalingOptionFlag(
     include_total_cpu_target=False, include_disable_autoscaling_args=False
 ):
@@ -574,6 +584,7 @@ def AddCapacityArgsForInstance(
     autoscaling_cpu_target_group=False,
     add_asymmetric_total_cpu_target_flag=False,
     add_asymmetric_disable_autoscaling_flags=False,
+    add_disable_downscaling_flag=False,
 ):
   """Parse the instance capacity arguments, including manual and autoscaling.
 
@@ -591,6 +602,8 @@ def AddCapacityArgsForInstance(
       total cpu target flag.
     add_asymmetric_disable_autoscaling_flags: bool. If True, add the asymmetric
       disable autoscaling flags.
+    add_disable_downscaling_flag: bool. If True, add the disable downscaling
+      flag.
   """
   capacity_parser = parser.add_argument_group(mutex=True, required=False)
 
@@ -620,6 +633,11 @@ def AddCapacityArgsForInstance(
   else:
     AutoscalingHighPriorityCpuTarget(
         required=require_all_autoscaling_args
+    ).AddToParser(autoscaling_config_group_parser)
+
+  if add_disable_downscaling_flag:
+    DisableDownScaling(
+        required=False, hidden=True
     ).AddToParser(autoscaling_config_group_parser)
 
   AutoscalingStorageTarget(

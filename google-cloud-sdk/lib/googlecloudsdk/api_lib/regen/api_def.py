@@ -36,7 +36,7 @@ class APIDef(object):
                apitools=None,
                gapic=None,
                default_version=False,
-               enable_mtls=False,
+               enable_mtls=True,
                mtls_endpoint_override=''):
     self.apitools = apitools
     self.gapic = gapic

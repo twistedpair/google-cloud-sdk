@@ -164,11 +164,16 @@ class AutoscalingConfig(_messages.Message):
       them.
     autoscalingLimits: Required. Autoscaling limits for an instance.
     autoscalingTargets: Required. The autoscaling targets for an instance.
+    disableDownscaling: Optional. If disable_downscaling is true, the
+      autoscaler will not scale down the instance; it will only be able to
+      scale up. This setting will be applied to all replicas under the
+      instance.
   """
 
   asymmetricAutoscalingOptions = _messages.MessageField('AsymmetricAutoscalingOption', 1, repeated=True)
   autoscalingLimits = _messages.MessageField('AutoscalingLimits', 2)
   autoscalingTargets = _messages.MessageField('AutoscalingTargets', 3)
+  disableDownscaling = _messages.BooleanField(4)
 
 
 class AutoscalingConfigOverrides(_messages.Message):

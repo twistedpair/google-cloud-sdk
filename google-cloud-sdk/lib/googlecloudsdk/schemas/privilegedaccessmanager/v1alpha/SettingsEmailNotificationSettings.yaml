@@ -30,4 +30,4 @@ properties:
     $ref: SettingsEmailNotificationSettingsCustomNotificationBehavior.yaml
   disableAllNotifications:
     description: Disable all notifications.
-    type: settingsemailnotificationsettingsdisableallnotifications
+    $ref: SettingsEmailNotificationSettingsDisableAllNotifications.yaml

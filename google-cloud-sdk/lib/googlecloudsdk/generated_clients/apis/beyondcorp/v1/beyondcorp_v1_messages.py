@@ -2771,31 +2771,50 @@ class GoogleCloudBeyondcorpConnectorsV1alphaRemoteAgentDetails(_messages.Message
 
 
 class GoogleCloudBeyondcorpSecuritygatewaysV1Application(_messages.Message):
-  r"""A Beyondcorp Application resource information.
+  r"""The information about an application resource.
+
+  Enums:
+    SchemaValueValuesEnum: Optional. Type of the external application.
 
   Fields:
     createTime: Output only. Timestamp when the resource was created.
-    displayName: Optional. An arbitrary user-provided name for the Application
+    displayName: Optional. An arbitrary user-provided name for the application
       resource. Cannot exceed 64 characters.
     endpointMatchers: Required. Endpoint matchers associated with an
-      application. A combination of hostname and ports as endpoint matcher is
+      application. A combination of hostname and ports as endpoint matchers is
       used to match the application. Match conditions for OR logic. An array
       of match conditions to allow for multiple matching criteria. The rule is
-      considered a match if one the conditions are met. The conditions can be
-      one of the following combination (Hostname), (Hostname & Ports)
-      EXAMPLES: Hostname - ("*.abc.com"), ("xyz.abc.com") Hostname and Ports -
-      ("abc.com" and "22"), ("abc.com" and "22,33") etc
+      considered a match if one of the conditions is met. The conditions
+      should be the following combination: (Hostname & Ports) EXAMPLES:
+      Hostname and Ports - ("*.example.com", "443"), ("example.com" and "22"),
+      ("example.com" and "22,33") etc
     name: Identifier. Name of the resource.
+    schema: Optional. Type of the external application.
     updateTime: Output only. Timestamp when the resource was last modified.
     upstreams: Optional. Which upstream resources to forward traffic to.
   """
+
+  class SchemaValueValuesEnum(_messages.Enum):
+    r"""Optional. Type of the external application.
+
+    Values:
+      SCHEMA_UNSPECIFIED: Default value. This value is unused.
+      PROXY_GATEWAY: Proxy which routes traffic to actual applications, like
+        Netscaler Gateway.
+      API_GATEWAY: Service Discovery API endpoint when Service Discovery is
+        enabled in Gateway.
+    """
+    SCHEMA_UNSPECIFIED = 0
+    PROXY_GATEWAY = 1
+    API_GATEWAY = 2
 
   createTime = _messages.StringField(1)
   displayName = _messages.StringField(2)
   endpointMatchers = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1EndpointMatcher', 3, repeated=True)
   name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
-  upstreams = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1ApplicationUpstream', 6, repeated=True)
+  schema = _messages.EnumField('SchemaValueValuesEnum', 5)
+  updateTime = _messages.StringField(6)
+  upstreams = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1ApplicationUpstream', 7, repeated=True)
 
 
 class GoogleCloudBeyondcorpSecuritygatewaysV1ApplicationUpstream(_messages.Message):
@@ -2803,11 +2822,26 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1ApplicationUpstream(_messages.Messa
 
   Fields:
     egressPolicy: Optional. Routing policy information.
+    external: List of the external endpoints to forward traffic to.
     network: Network to forward traffic to.
+    proxyProtocol: Optional. Enables proxy protocol configuration for the
+      upstream.
   """
 
   egressPolicy = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1EgressPolicy', 1)
-  network = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1ApplicationUpstreamNetwork', 2)
+  external = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1ApplicationUpstreamExternal', 2)
+  network = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1ApplicationUpstreamNetwork', 3)
+  proxyProtocol = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1ProxyProtocolConfig', 4)
+
+
+class GoogleCloudBeyondcorpSecuritygatewaysV1ApplicationUpstreamExternal(_messages.Message):
+  r"""Endpoints to forward traffic to.
+
+  Fields:
+    endpoints: Required. List of the endpoints to forward traffic to.
+  """
+
+  endpoints = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1Endpoint', 1, repeated=True)
 
 
 class GoogleCloudBeyondcorpSecuritygatewaysV1ApplicationUpstreamNetwork(_messages.Message):
@@ -2821,6 +2855,124 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1ApplicationUpstreamNetwork(_message
   name = _messages.StringField(1)
 
 
+class GoogleCloudBeyondcorpSecuritygatewaysV1ContextualHeaders(_messages.Message):
+  r"""Contextual headers configuration.
+
+  Enums:
+    OutputTypeValueValuesEnum: Optional. Default output type for all enabled
+      headers.
+
+  Fields:
+    deviceInfo: Optional. Device info configuration.
+    groupInfo: Optional. Group info configuration.
+    outputType: Optional. Default output type for all enabled headers.
+    userInfo: Optional. User info configuration.
+  """
+
+  class OutputTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Default output type for all enabled headers.
+
+    Values:
+      OUTPUT_TYPE_UNSPECIFIED: Unspecified output type.
+      PROTOBUF: Protobuf output type.
+      JSON: JSON output type.
+      NONE: Explicitly disable header output.
+    """
+    OUTPUT_TYPE_UNSPECIFIED = 0
+    PROTOBUF = 1
+    JSON = 2
+    NONE = 3
+
+  deviceInfo = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1ContextualHeadersDelegatedDeviceInfo', 1)
+  groupInfo = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1ContextualHeadersDelegatedGroupInfo', 2)
+  outputType = _messages.EnumField('OutputTypeValueValuesEnum', 3)
+  userInfo = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1ContextualHeadersDelegatedUserInfo', 4)
+
+
+class GoogleCloudBeyondcorpSecuritygatewaysV1ContextualHeadersDelegatedDeviceInfo(_messages.Message):
+  r"""Delegated device info configuration.
+
+  Enums:
+    OutputTypeValueValuesEnum: Optional. The output type of the delegated
+      device info.
+
+  Fields:
+    outputType: Optional. The output type of the delegated device info.
+  """
+
+  class OutputTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The output type of the delegated device info.
+
+    Values:
+      OUTPUT_TYPE_UNSPECIFIED: Unspecified output type.
+      PROTOBUF: Protobuf output type.
+      JSON: JSON output type.
+      NONE: Explicitly disable header output.
+    """
+    OUTPUT_TYPE_UNSPECIFIED = 0
+    PROTOBUF = 1
+    JSON = 2
+    NONE = 3
+
+  outputType = _messages.EnumField('OutputTypeValueValuesEnum', 1)
+
+
+class GoogleCloudBeyondcorpSecuritygatewaysV1ContextualHeadersDelegatedGroupInfo(_messages.Message):
+  r"""Delegated group info configuration.
+
+  Enums:
+    OutputTypeValueValuesEnum: Optional. The output type of the delegated
+      group info.
+
+  Fields:
+    outputType: Optional. The output type of the delegated group info.
+  """
+
+  class OutputTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The output type of the delegated group info.
+
+    Values:
+      OUTPUT_TYPE_UNSPECIFIED: Unspecified output type.
+      PROTOBUF: Protobuf output type.
+      JSON: JSON output type.
+      NONE: Explicitly disable header output.
+    """
+    OUTPUT_TYPE_UNSPECIFIED = 0
+    PROTOBUF = 1
+    JSON = 2
+    NONE = 3
+
+  outputType = _messages.EnumField('OutputTypeValueValuesEnum', 1)
+
+
+class GoogleCloudBeyondcorpSecuritygatewaysV1ContextualHeadersDelegatedUserInfo(_messages.Message):
+  r"""Delegated user info configuration.
+
+  Enums:
+    OutputTypeValueValuesEnum: Optional. The output type of the delegated user
+      info.
+
+  Fields:
+    outputType: Optional. The output type of the delegated user info.
+  """
+
+  class OutputTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The output type of the delegated user info.
+
+    Values:
+      OUTPUT_TYPE_UNSPECIFIED: Unspecified output type.
+      PROTOBUF: Protobuf output type.
+      JSON: JSON output type.
+      NONE: Explicitly disable header output.
+    """
+    OUTPUT_TYPE_UNSPECIFIED = 0
+    PROTOBUF = 1
+    JSON = 2
+    NONE = 3
+
+  outputType = _messages.EnumField('OutputTypeValueValuesEnum', 1)
+
+
 class GoogleCloudBeyondcorpSecuritygatewaysV1EgressPolicy(_messages.Message):
   r"""Routing policy information.
 
@@ -2832,13 +2984,25 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1EgressPolicy(_messages.Message):
   regions = _messages.StringField(1, repeated=True)
 
 
+class GoogleCloudBeyondcorpSecuritygatewaysV1Endpoint(_messages.Message):
+  r"""Internet Gateway endpoint to forward traffic to.
+
+  Fields:
+    hostname: Required. Hostname of the endpoint.
+    port: Required. Port of the endpoint.
+  """
+
+  hostname = _messages.StringField(1)
+  port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class GoogleCloudBeyondcorpSecuritygatewaysV1EndpointMatcher(_messages.Message):
   r"""EndpointMatcher contains the information of the endpoint that will match
   the application.
 
   Fields:
     hostname: Required. Hostname of the application.
-    ports: Optional. Ports of the application.
+    ports: Required. Ports of the application.
   """
 
   hostname = _messages.StringField(1)
@@ -2896,8 +3060,82 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1ListSecurityGatewaysResponse(_messa
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class GoogleCloudBeyondcorpSecuritygatewaysV1ProxyProtocolConfig(_messages.Message):
+  r"""The configuration for the proxy.
+
+  Enums:
+    GatewayIdentityValueValuesEnum: Optional. Gateway identity configuration.
+
+  Messages:
+    MetadataHeadersValue: Optional. Custom resource specific headers along
+      with the values. The names should conform to RFC 9110: > Field names
+      SHOULD constrain themselves to alphanumeric characters, "-", and ".",
+      and SHOULD begin with a letter. Field values SHOULD contain only ASCII
+      printable characters and tab.
+
+  Fields:
+    allowedClientHeaders: Optional. List of the allowed client header names.
+    clientIp: Optional. Client IP configuration. The client IP address is
+      included if true.
+    contextualHeaders: Optional. Configuration for the contextual headers.
+    gatewayIdentity: Optional. Gateway identity configuration.
+    metadataHeaders: Optional. Custom resource specific headers along with the
+      values. The names should conform to RFC 9110: > Field names SHOULD
+      constrain themselves to alphanumeric characters, "-", and ".", and
+      SHOULD begin with a letter. Field values SHOULD contain only ASCII
+      printable characters and tab.
+  """
+
+  class GatewayIdentityValueValuesEnum(_messages.Enum):
+    r"""Optional. Gateway identity configuration.
+
+    Values:
+      GATEWAY_IDENTITY_UNSPECIFIED: Unspecified gateway identity.
+      RESOURCE_NAME: Resource name for gateway identity, in the format: projec
+        ts/{project_id}/locations/{location_id}/securityGateways/{security_gat
+        eway_id}
+    """
+    GATEWAY_IDENTITY_UNSPECIFIED = 0
+    RESOURCE_NAME = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataHeadersValue(_messages.Message):
+    r"""Optional. Custom resource specific headers along with the values. The
+    names should conform to RFC 9110: > Field names SHOULD constrain
+    themselves to alphanumeric characters, "-", and ".", and SHOULD begin with
+    a letter. Field values SHOULD contain only ASCII printable characters and
+    tab.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataHeadersValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetadataHeadersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataHeadersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  allowedClientHeaders = _messages.StringField(1, repeated=True)
+  clientIp = _messages.BooleanField(2)
+  contextualHeaders = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1ContextualHeaders', 3)
+  gatewayIdentity = _messages.EnumField('GatewayIdentityValueValuesEnum', 4)
+  metadataHeaders = _messages.MessageField('MetadataHeadersValue', 5)
+
+
 class GoogleCloudBeyondcorpSecuritygatewaysV1SecurityGateway(_messages.Message):
-  r"""Information about a BeyondCorp SecurityGateway resource.
+  r"""The information about a security gateway resource.
 
   Enums:
     StateValueValuesEnum: Output only. The operational state of the
@@ -2918,6 +3156,8 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1SecurityGateway(_messages.Message):
     hubs: Optional. Map of Hubs that represents regional data path deployment
       with GCP region as a key.
     name: Identifier. Name of the resource.
+    proxyProtocolConfig: Optional. Shared proxy configuration for all apps.
+    serviceDiscovery: Optional. Settings related to the Service Discovery.
     state: Output only. The operational state of the SecurityGateway.
     updateTime: Output only. Timestamp when the resource was last modified.
   """
@@ -2931,8 +3171,7 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1SecurityGateway(_messages.Message):
       UPDATING: SecurityGateway is being updated.
       DELETING: SecurityGateway is being deleted.
       RUNNING: SecurityGateway is running.
-      DOWN: SecurityGateway is down and may be restored in the future. This
-        happens when CCFE sends ProjectState = OFF.
+      DOWN: SecurityGateway is down and may be restored in the future.
       ERROR: SecurityGateway encountered an error and is in an indeterministic
         state.
     """
@@ -2975,8 +3214,10 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1SecurityGateway(_messages.Message):
   externalIps = _messages.StringField(4, repeated=True)
   hubs = _messages.MessageField('HubsValue', 5)
   name = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  proxyProtocolConfig = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1ProxyProtocolConfig', 7)
+  serviceDiscovery = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1ServiceDiscovery', 8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
 
 
 class GoogleCloudBeyondcorpSecuritygatewaysV1SecurityGatewayOperationMetadata(_messages.Message):
@@ -3004,6 +3245,37 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1SecurityGatewayOperationMetadata(_m
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class GoogleCloudBeyondcorpSecuritygatewaysV1ServiceDiscovery(_messages.Message):
+  r"""Settings related to the Service Discovery.
+
+  Fields:
+    apiGateway: Required. External API configuration.
+  """
+
+  apiGateway = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1ServiceDiscoveryApiGateway', 1)
+
+
+class GoogleCloudBeyondcorpSecuritygatewaysV1ServiceDiscoveryApiGateway(_messages.Message):
+  r"""If Service Discovery is done through API, defines its settings.
+
+  Fields:
+    resourceOverride: Required. Enables fetching resource model updates to
+      alter service behavior per Chrome profile.
+  """
+
+  resourceOverride = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1ServiceDiscoveryApiGatewayOperationDescriptor', 1)
+
+
+class GoogleCloudBeyondcorpSecuritygatewaysV1ServiceDiscoveryApiGatewayOperationDescriptor(_messages.Message):
+  r"""API operation descriptor.
+
+  Fields:
+    path: Required. Contains uri path fragment where HTTP request is sent.
+  """
+
+  path = _messages.StringField(1)
 
 
 class GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGatewayOperationMetadata(_messages.Message):

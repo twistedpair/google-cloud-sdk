@@ -91,6 +91,48 @@ def available_service_flag(suffix='to act on', flag_name='service'):
       help='The name of the service(s) {0}.'.format(suffix))
 
 
+# TODO(b/321801975) Link public documentation about consumer policy format
+# after public preview.
+def consumer_policy_file_flag():
+  return base.Argument(
+      '--consumer-policy-file',
+      required=True,
+      help=(
+          'Path to the file that contains the consumer policy in the YAML'
+          ' format.'
+      ),
+  )
+
+
+def bypass_dependency_check():
+  return base.Argument(
+      '--bypass-dependency-check',
+      action='store_true',
+      help=(
+          ' This flag controls dependency management within the consumer'
+          ' policy. If false, dependencies are enforced. When adding a new'
+          ' service, it verifies that all the services dependencies'
+          ' are already present in the policy. When removing a service, the'
+          ' system will ensure that no other services in the policy depend on'
+          ' it. If the policy lacks any required dependencies, the update will'
+          ' not succeed, and an error will be returned.'
+      ),
+  )
+
+
+def bypass_api_usage_check():
+  return base.Argument(
+      '--bypass-api-usage-check',
+      action='store_true',
+      help=(
+          ' If true, the system will bypass usage checks for services'
+          ' that are being removed. If false, the system will check if'
+          ' the service to be removed was used in the last 30 days or enabled'
+          ' in the last 3 days. If so, an error will be returned.'
+      ),
+  )
+
+
 def _create_key_resource_arg(help_txt, api_version, required=True):
   return presentation_specs.ResourcePresentationSpec(
       'key', _get_key_resource_spec(api_version), help_txt, required=required

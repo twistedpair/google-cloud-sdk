@@ -648,6 +648,17 @@ def add_dataset_config_create_update_flags(parser, is_update=False):
       required=not is_update,
       help='Provide retention period for the config.',
   )
+
+  parser.add_argument(
+      '--activity-data-retention-period-days',
+      type=int,
+      metavar='ACTIVITY_DATA_RETENTION_DAYS',
+      required=False,
+      help='Provide retention period for the activity data in the config. This'
+      ' overrides the retention period for activity data. Otherwise, the'
+      ' `retention_period_days` value is used for activity data as well.',
+  )
+
   parser.add_argument(
       '--description',
       type=str,
