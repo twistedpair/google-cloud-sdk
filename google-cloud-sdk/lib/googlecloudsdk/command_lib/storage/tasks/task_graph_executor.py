@@ -59,23 +59,43 @@ if sys.version_info.major == 2:
   multiprocessing_context = multiprocessing
 
 else:
-  _should_force_spawn = (
-      # On MacOS, fork is unsafe: https://bugs.python.org/issue33725. The
-      # default start method is spawn on versions >= 3.8, but we need to set it
-      # explicitly for older versions.
-      platforms.OperatingSystem.Current() is platforms.OperatingSystem.MACOSX or
-      # On Linux, fork causes issues when mTLS is enabled: go/ecp-gcloud-storage
-      # The default start method on Linux is fork, hence we will set it to spawn
-      # when client certificate authentication (mTLS) is enabled.
-      (properties.VALUES.context_aware.use_client_certificate.GetBool() and
-       platforms.OperatingSystem.Current() is platforms.OperatingSystem.LINUX)
-  )
-
-  if _should_force_spawn:
-    multiprocessing_context = multiprocessing.get_context(method='spawn')
+  _method = properties.VALUES.storage.multiprocessing_default_method.Get()
+  if _method is not None:
+    multiprocessing_context = multiprocessing.get_context(method=_method)
   else:
-    # Uses platform default.
-    multiprocessing_context = multiprocessing.get_context()
+    _should_force_spawn = (
+        # On MacOS, fork is unsafe: https://bugs.python.org/issue33725. The
+        # default start method is spawn on versions >= 3.8, but we need to set
+        # it explicitly for older versions.
+        platforms.OperatingSystem.Current() is platforms.OperatingSystem.MACOSX
+        or
+        # On Linux, fork causes issues when mTLS is enabled:
+        # go/ecp-gcloud-storage
+        # The default start method on Linux is fork, hence we will set it to
+        # spawn when client certificate authentication (mTLS) is enabled.
+        (
+            properties.VALUES.context_aware.use_client_certificate.GetBool()
+            and platforms.OperatingSystem.Current()
+            is platforms.OperatingSystem.LINUX
+        )
+    )
+
+    if _should_force_spawn:
+      multiprocessing_context = multiprocessing.get_context(method='spawn')
+    # TODO(b/438968865): Re-evaluate this workaround once the root cause of the
+    # forkserver-related test failures in Python 3.14 is understood and
+    # addressed.
+    elif (sys.version_info.major == 3 and sys.version_info.minor >= 14) and (
+        platforms.OperatingSystem.Current() is platforms.OperatingSystem.LINUX
+    ):
+      # Force 'fork' start method for Linux.
+      multiprocessing_context = multiprocessing.get_context(method='fork')
+    else:
+      # Force 'fork' start method unconditionally for processes.
+      # WARNING: Using 'fork' is unsafe when threads are running or with
+      # certain C-extension libraries (like those used for mTLS or on macOS).
+      # This override removes the safety checks present in the original code.
+      multiprocessing_context = multiprocessing.get_context()
 
 
 _TASK_QUEUE_LOCK = threading.Lock()

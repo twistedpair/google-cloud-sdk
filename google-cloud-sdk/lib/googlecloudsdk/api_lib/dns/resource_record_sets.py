@@ -558,7 +558,6 @@ def CreateRecordSetFromArgs(
     args,
     project,
     api_version='v1',
-    allow_extended_records=False,
 ):
   """Creates and returns a record-set from the given args.
 
@@ -566,8 +565,6 @@ def CreateRecordSetFromArgs(
     args: The arguments to use to create the record-set.
     project: The GCP project where these resources are to be created.
     api_version: [str], the api version to use for creating the RecordSet.
-    allow_extended_records: [bool], enables extended records if true, otherwise
-      throws an exception when given an extended record type.
   Raises:
     UnsupportedRecordType: If given record-set type is not supported
     ForwardingRuleWithoutHealthCheck: If forwarding rules are specified without
@@ -596,12 +593,9 @@ def CreateRecordSetFromArgs(
     ResourceRecordSet, the record-set created from the given args.
   """
   messages = apis.GetMessagesModule('dns', api_version)
-  if allow_extended_records:
-    if args.type in record_types.CLOUD_DNS_EXTENDED_TYPES:
-      # Extended records are internal to Cloud DNS, so don't have wire values.
-      rd_type = rdatatype.NONE
-    else:
-      rd_type = _TryParseRRTypeFromString(args.type)
+  if args.type in record_types.CLOUD_DNS_EXTENDED_TYPES:
+    # Extended records are internal to Cloud DNS, so don't have wire values.
+    rd_type = rdatatype.NONE
   else:
     rd_type = _TryParseRRTypeFromString(args.type)
 

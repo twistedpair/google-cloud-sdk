@@ -103,5 +103,5 @@ class ProfileCSVPrinter(cp.CustomPrinterBase):
 
   def Print(self, resources, single=True, intermediate=False):
     """Overrides ResourcePrinter.Print to set single=True."""
-    writer = csv.writer(sys.stdout)
+    writer = csv.writer(sys.stdout, lineterminator="\n")
     writer.writerows(self.Transform(resources))

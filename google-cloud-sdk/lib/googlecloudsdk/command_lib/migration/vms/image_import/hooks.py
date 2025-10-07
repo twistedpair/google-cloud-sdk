@@ -46,6 +46,30 @@ def GetSkipOsAdaptationTransform(value):
   return hooks.GetMessageClass('SkipOsAdaptation')()
 
 
+def GetEncryptionTransform(value):
+  """Returns empty Encryption entry.
+
+  Args:
+    value: A pointer to the Encryption field in the request.
+
+  Returns:
+    An empty Encryption message.
+  """
+  del value
+  return hooks.GetMessageClass('Encryption')()
+
+
+def GetProject(ref):
+  """Returns the project name for the given resource reference.
+
+  Args:
+    ref: The resource reference.
+  Returns:
+    The project name for the given resource reference.
+  """
+  return ref.Parent().Parent()
+
+
 # Modify Request Hook For Disk Image Import
 def FixCreateDiskImageImportRequest(ref, args, req):
   """Fixes the Create Image Import request for disk image import.
@@ -72,15 +96,15 @@ def FixCreateDiskImageImportRequest(ref, args, req):
 
   if args.kms_key:
     req.imageImport.diskImageTargetDefaults.encryption = (
-        hooks.GetEncryptionTransform(
+        GetEncryptionTransform(
             req.imageImport.diskImageTargetDefaults.encryption
         )
     )
     req.imageImport.diskImageTargetDefaults.encryption.kmsKey = args.kms_key
 
-    req.imageImport.encryption = hooks.GetEncryptionTransform(
-        req.imageImport.encryption
-    )
+    req.imageImport.encryption = (
+        GetEncryptionTransform(req.imageImport.encryption)
+        )
     req.imageImport.encryption.kmsKey = args.kms_key
   adaptation_modifiers = []
   if args.adaptation_modifiers:
@@ -103,7 +127,7 @@ def FixCreateDiskImageImportRequest(ref, args, req):
         adaptation_modifiers
     )
   hooks.FixTargetDetailsCommonFields(
-      ref, args, req.imageImport.diskImageTargetDefaults
+      GetProject(ref), args, req.imageImport.diskImageTargetDefaults
   )
 
   return req
@@ -143,15 +167,15 @@ def FixCreateMachineImageImportRequest(ref, args, req):
 
   if args.kms_key:
     req.imageImport.machineImageTargetDefaults.encryption = (
-        hooks.GetEncryptionTransform(
+        GetEncryptionTransform(
             req.imageImport.machineImageTargetDefaults.encryption
         )
     )
     req.imageImport.machineImageTargetDefaults.encryption.kmsKey = args.kms_key
 
-    req.imageImport.encryption = hooks.GetEncryptionTransform(
-        req.imageImport.encryption
-    )
+    req.imageImport.encryption = (
+        GetEncryptionTransform(req.imageImport.encryption)
+        )
     req.imageImport.encryption.kmsKey = args.kms_key
   adaptation_modifiers = []
   if args.adaptation_modifiers:
@@ -171,7 +195,7 @@ def FixCreateMachineImageImportRequest(ref, args, req):
         adaptation_modifiers
     )
   hooks.FixTargetDetailsCommonFields(
-      ref, args, req.imageImport.machineImageTargetDefaults
+      GetProject(ref), args, req.imageImport.machineImageTargetDefaults
   )
 
   return req

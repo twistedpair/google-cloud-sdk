@@ -515,11 +515,10 @@ class AuthzPolicyAuthzRuleFromRequestSource(_messages.Message):
       string whose value is matched against a list of URI SANs, DNS Name SANs,
       or the common name in the client's certificate. A match happens when any
       principal matches with the rule. Limited to 50 principals per
-      Authorization Policy for Regional Internal Application Load Balancer,
-      Regional External Application Load Balancer, Cross-region Internal
-      Application Load Balancer, and Cloud Service Mesh. Limited to 25
-      principals per Authorization Policy for Global External Application Load
-      Balancer.
+      Authorization Policy for regional internal Application Load Balancers,
+      regional external Application Load Balancers, cross-region internal
+      Application Load Balancers, and Cloud Service Mesh. This field is not
+      supported for global external Application Load Balancers.
     resources: Optional. A list of resources to match against the resource of
       the source VM of a request. Limited to 10 resources per Authorization
       Policy.
@@ -596,9 +595,10 @@ class AuthzPolicyAuthzRulePrincipal(_messages.Message):
         Requests with multiple common names in the client certificate will be
         rejected if CLIENT_CERT_COMMON_NAME is set as the principal selector.
         A match happens when there is an exact common name value match. This
-        is only applicable for Application Load Balancers except for classic
-        Global External Application load balancer. CLIENT_CERT_COMMON_NAME is
-        not supported for INTERNAL_SELF_MANAGED load balancing scheme.
+        is only applicable for Application Load Balancers except for global
+        external Application Load Balancer and classic Application Load
+        Balancer. CLIENT_CERT_COMMON_NAME is not supported for
+        INTERNAL_SELF_MANAGED load balancing scheme.
     """
     PRINCIPAL_SELECTOR_UNSPECIFIED = 0
     CLIENT_CERT_URI_SAN = 1
@@ -778,29 +778,26 @@ class AuthzPolicyTarget(_messages.Message):
   Enums:
     LoadBalancingSchemeValueValuesEnum: Required. All gateways and forwarding
       rules referenced by this policy and extensions must share the same load
-      balancing scheme. Supported values: `INTERNAL_MANAGED`,
-      `INTERNAL_SELF_MANAGED`, and `EXTERNAL_MANAGED`. For more information,
-      refer to [Backend services overview](https://cloud.google.com/load-
-      balancing/docs/backend-service).
+      balancing scheme. Supported values: `INTERNAL_MANAGED` and
+      `EXTERNAL_MANAGED`. For more information, refer to [Backend services
+      overview](https://cloud.google.com/load-balancing/docs/backend-service).
 
   Fields:
     loadBalancingScheme: Required. All gateways and forwarding rules
       referenced by this policy and extensions must share the same load
-      balancing scheme. Supported values: `INTERNAL_MANAGED`,
-      `INTERNAL_SELF_MANAGED`, and `EXTERNAL_MANAGED`. For more information,
-      refer to [Backend services overview](https://cloud.google.com/load-
-      balancing/docs/backend-service).
+      balancing scheme. Supported values: `INTERNAL_MANAGED` and
+      `EXTERNAL_MANAGED`. For more information, refer to [Backend services
+      overview](https://cloud.google.com/load-balancing/docs/backend-service).
     resources: Required. A list of references to the Forwarding Rules on which
-      this policy will be applied. For policies created for Cloudrun, this
-      field will reference the Cloud Run services.
+      this policy will be applied.
   """
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
     r"""Required. All gateways and forwarding rules referenced by this policy
     and extensions must share the same load balancing scheme. Supported
-    values: `INTERNAL_MANAGED`, `INTERNAL_SELF_MANAGED`, and
-    `EXTERNAL_MANAGED`. For more information, refer to [Backend services
-    overview](https://cloud.google.com/load-balancing/docs/backend-service).
+    values: `INTERNAL_MANAGED` and `EXTERNAL_MANAGED`. For more information,
+    refer to [Backend services overview](https://cloud.google.com/load-
+    balancing/docs/backend-service).
 
     Values:
       LOAD_BALANCING_SCHEME_UNSPECIFIED: Default value. Do not use.
@@ -3104,10 +3101,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListPartnerSSEEnvironmentsResponse(_messages.Message):
@@ -3329,7 +3331,7 @@ class ListUrlListsResponse(_messages.Message):
 
 
 class ListWildfireVerdictChangeRequestsResponse(_messages.Message):
-  r"""Message for response to listing WildfireChangeRequests
+  r"""Message for response to listing WildfireVerdictChangeRequests.
 
   Fields:
     nextPageToken: A token identifying a page of results the server should
@@ -3636,11 +3638,13 @@ class MirroringDeploymentGroup(_messages.Message):
       ACTIVE: The deployment group is ready.
       CREATING: The deployment group is being created.
       DELETING: The deployment group is being deleted.
+      CLOSED: The deployment group is being wiped out (project deleted).
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     CREATING = 2
     DELETING = 3
+    CLOSED = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -3842,7 +3846,8 @@ class MirroringEndpointGroup(_messages.Message):
   Enums:
     StateValueValuesEnum: Output only. The current state of the endpoint
       group. See https://google.aip.dev/216.
-    TypeValueValuesEnum: Required. Immutable. The type of the endpoint group.
+    TypeValueValuesEnum: Immutable. The type of the endpoint group. If left
+      unspecified, defaults to DIRECT.
 
   Messages:
     LabelsValue: Optional. Labels are key/value pairs that help to organize
@@ -3876,7 +3881,8 @@ class MirroringEndpointGroup(_messages.Message):
       the group). See https://google.aip.dev/128.
     state: Output only. The current state of the endpoint group. See
       https://google.aip.dev/216.
-    type: Required. Immutable. The type of the endpoint group.
+    type: Immutable. The type of the endpoint group. If left unspecified,
+      defaults to DIRECT.
     updateTime: Output only. The timestamp when the resource was most recently
       updated. See https://google.aip.dev/148#timestamps.
   """
@@ -3912,7 +3918,8 @@ class MirroringEndpointGroup(_messages.Message):
     DELETE_FAILED = 6
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Required. Immutable. The type of the endpoint group.
+    r"""Immutable. The type of the endpoint group. If left unspecified,
+    defaults to DIRECT.
 
     Values:
       TYPE_UNSPECIFIED: Not set.
@@ -4514,6 +4521,39 @@ class NetworksecurityOrganizationsLocationsFirewallEndpointsPatchRequest(_messag
   updateMask = _messages.StringField(4)
 
 
+class NetworksecurityOrganizationsLocationsFirewallEndpointsWildfireVerdictChangeRequestsCreateRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsFirewallEndpointsWildfireVerdictC
+  hangeRequestsCreateRequest object.
+
+  Fields:
+    parent: Required. Parent value for
+      CreateWildfireVerdictChangeRequestRequest. The parent is a firewall
+      endpoint resource. Format: organizations/{organization}/locations/{locat
+      ion}/firewallEndpoints/{firewall_endpoint}
+    wildfireVerdictChangeRequest: A WildfireVerdictChangeRequest resource to
+      be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  wildfireVerdictChangeRequest = _messages.MessageField('WildfireVerdictChangeRequest', 2)
+
+
+class NetworksecurityOrganizationsLocationsFirewallEndpointsWildfireVerdictChangeRequestsGetRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsFirewallEndpointsWildfireVerdictC
+  hangeRequestsGetRequest object.
+
+  Fields:
+    name: Required. Name of the WildfireVerdictChangeRequest to retrieve.
+      Format: organizations/{organization}/locations/{location}/firewallEndpoi
+      nts/{firewall_endpoint}/wildfireVerdictChangeRequests/{wildfire_verdict_
+      change_request_id} Where {wildfire_verdict_change_request_id} is the ID
+      in the format: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-
+      F]{4}-[0-9a-fA-F]{12}$
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class NetworksecurityOrganizationsLocationsFirewallEndpointsWildfireVerdictChangeRequestsListRequest(_messages.Message):
   r"""A NetworksecurityOrganizationsLocationsFirewallEndpointsWildfireVerdictC
   hangeRequestsListRequest object.
@@ -4524,7 +4564,9 @@ class NetworksecurityOrganizationsLocationsFirewallEndpointsWildfireVerdictChang
     pageToken: Optional. A token identifying a page of results the server
       should return.
     parent: Required. Parent value for
-      ListWildfireVerdictChangeRequestsRequest
+      ListWildfireVerdictChangeRequestsRequest. The parent is a firewall
+      endpoint resource. Format: organizations/{organization}/locations/{locat
+      ion}/firewallEndpoints/{firewall_endpoint}
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -4573,12 +4615,20 @@ class NetworksecurityOrganizationsLocationsOperationsListRequest(_messages.Messa
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class NetworksecurityOrganizationsLocationsSecurityProfileGroupsCreateRequest(_messages.Message):
@@ -6513,8 +6563,8 @@ class NetworksecurityProjectsLocationsListRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Do not use this field. It is unsupported and
-      is ignored unless explicitly documented otherwise. This is primarily for
+    extraLocationTypes: Optional. Unless explicitly documented otherwise,
+      don't use this unsupported field which is primarily intended for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -7119,12 +7169,20 @@ class NetworksecurityProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class NetworksecurityProjectsLocationsPartnerSSEEnvironmentsAddDNSPeeringZoneRequest(_messages.Message):
@@ -10638,7 +10696,138 @@ class WildfireSubmissionRuleCustomFileTypes(_messages.Message):
 
 
 class WildfireVerdictChangeRequest(_messages.Message):
-  r"""Message for a WildfireVerdictChangeRequest"""
+  r"""Message for a WildfireVerdictChangeRequest.
+
+  Enums:
+    FinalVerdictValueValuesEnum: Output only. The final verdict of the Malware
+      Sample.
+    NewVerdictValueValuesEnum: Required. The suggested verdict to apply to the
+      Malware Sample.
+    OldVerdictValueValuesEnum: Output only. The original verdict of the
+      Malware Sample.
+    StateValueValuesEnum: Output only. The review state of the
+      WildfireVerdictChangeRequest.
+
+  Fields:
+    comment: Required. The justification for the verdict change request. Max
+      length 2048 characters.
+    createTime: Output only. The timestamp when the
+      WildfireVerdictChangeRequest was created.
+    fileName: Output only. The file name of the Malware Sample.
+    fileType: Output only. The file type of the Malware Sample.
+    finalVerdict: Output only. The final verdict of the Malware Sample.
+    name: Output only. Identifier. The relative name of the
+      WildfireVerdictChangeRequest. Output only. This is a unique identifier
+      generated by the third party API. Format: organizations/{organization}/l
+      ocations/{location}/firewallEndpoints/{firewall_endpoint}/wildfireVerdic
+      tChangeRequests/{wildfire_verdict_change_request_id} Where
+      {wildfire_verdict_change_request_id} is the ID in the format: ^[0-9a-fA-
+      F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+    newVerdict: Required. The suggested verdict to apply to the Malware
+      Sample.
+    oldVerdict: Output only. The original verdict of the Malware Sample.
+    resolutionTime: Output only. The timestamp when the
+      WildfireVerdictChangeRequest was resolved.
+    sha256: Required. The SHA256 hash of the Malware Sample to change the
+      verdict of.
+    sourceRegion: Output only. The region of the file associated with the
+      Malware Sample.
+    state: Output only. The review state of the WildfireVerdictChangeRequest.
+    updateTime: Output only. The timestamp when the
+      WildfireVerdictChangeRequest was last updated.
+    wildfireVerdictChangeRequestId: Output only. The ID of the
+      WildfireVerdictChangeRequest. This is a unique identifier generated by
+      the third party API. Format: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-
+      F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+  """
+
+  class FinalVerdictValueValuesEnum(_messages.Enum):
+    r"""Output only. The final verdict of the Malware Sample.
+
+    Values:
+      WILDFIRE_SAMPLE_VERDICT_UNKNOWN: Default value. Malware is not yet
+        classified.
+      BENIGN: Sample is safe and does not exhibit malicious behavior.
+      MALWARE: Sample is malware and poses a security threat.
+      GRAYWARE: Sample does not pose a direct security threat, but might
+        display otherwise obtrusive behavior.
+      PHISHING: Link directs users to a phishing site and poses a security
+        threat.
+    """
+    WILDFIRE_SAMPLE_VERDICT_UNKNOWN = 0
+    BENIGN = 1
+    MALWARE = 2
+    GRAYWARE = 3
+    PHISHING = 4
+
+  class NewVerdictValueValuesEnum(_messages.Enum):
+    r"""Required. The suggested verdict to apply to the Malware Sample.
+
+    Values:
+      WILDFIRE_SAMPLE_VERDICT_UNKNOWN: Default value. Malware is not yet
+        classified.
+      BENIGN: Sample is safe and does not exhibit malicious behavior.
+      MALWARE: Sample is malware and poses a security threat.
+      GRAYWARE: Sample does not pose a direct security threat, but might
+        display otherwise obtrusive behavior.
+      PHISHING: Link directs users to a phishing site and poses a security
+        threat.
+    """
+    WILDFIRE_SAMPLE_VERDICT_UNKNOWN = 0
+    BENIGN = 1
+    MALWARE = 2
+    GRAYWARE = 3
+    PHISHING = 4
+
+  class OldVerdictValueValuesEnum(_messages.Enum):
+    r"""Output only. The original verdict of the Malware Sample.
+
+    Values:
+      WILDFIRE_SAMPLE_VERDICT_UNKNOWN: Default value. Malware is not yet
+        classified.
+      BENIGN: Sample is safe and does not exhibit malicious behavior.
+      MALWARE: Sample is malware and poses a security threat.
+      GRAYWARE: Sample does not pose a direct security threat, but might
+        display otherwise obtrusive behavior.
+      PHISHING: Link directs users to a phishing site and poses a security
+        threat.
+    """
+    WILDFIRE_SAMPLE_VERDICT_UNKNOWN = 0
+    BENIGN = 1
+    MALWARE = 2
+    GRAYWARE = 3
+    PHISHING = 4
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The review state of the WildfireVerdictChangeRequest.
+
+    Values:
+      VERDICT_CHANGE_REQUEST_STATE_UNSPECIFIED: Default value. Request does
+        not have a state. This value is unused.
+      OPEN: Request has been created and review has not started.
+      CLOSED: Malware Sample has been reviewed and the final verdict has been
+        updated.
+      PENDING: Malware Sample is currently being reviewed.
+    """
+    VERDICT_CHANGE_REQUEST_STATE_UNSPECIFIED = 0
+    OPEN = 1
+    CLOSED = 2
+    PENDING = 3
+
+  comment = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  fileName = _messages.StringField(3)
+  fileType = _messages.StringField(4)
+  finalVerdict = _messages.EnumField('FinalVerdictValueValuesEnum', 5)
+  name = _messages.StringField(6)
+  newVerdict = _messages.EnumField('NewVerdictValueValuesEnum', 7)
+  oldVerdict = _messages.EnumField('OldVerdictValueValuesEnum', 8)
+  resolutionTime = _messages.StringField(9)
+  sha256 = _messages.StringField(10)
+  sourceRegion = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  updateTime = _messages.StringField(13)
+  wildfireVerdictChangeRequestId = _messages.StringField(14)
 
 
 encoding.AddCustomJsonFieldMapping(

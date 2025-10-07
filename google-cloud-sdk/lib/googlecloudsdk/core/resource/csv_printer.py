@@ -29,8 +29,8 @@ import six
 class CsvPrinter(resource_printer_base.ResourcePrinter):
   r"""A printer for printing CSV data.
 
-  [Comma Separated Values](http://www.ietf.org/rfc/rfc4180.txt) with no keys.
-  This format requires a projection to define the values to be printed.
+  [Comma Separated Values](http://www.rfc-editor.org/rfc/rfc4180.txt) with no
+  keys. This format requires a projection to define the values to be printed.
 
   To use *\n* or *\t* as an attribute value please escape the *\* with your
   shell's escape sequence, example *separator="\\n"* for bash.

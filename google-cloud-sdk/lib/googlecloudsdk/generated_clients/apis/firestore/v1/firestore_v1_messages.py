@@ -2414,15 +2414,15 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
     Values:
       REALTIME_UPDATES_MODE_UNSPECIFIED: The Realtime Updates feature is not
         specified.
-      REALTIME_UPDATES_ENABLED: The Realtime Updates feature is enabled by
-        default. This could potentially degrade write performance for the
+      REALTIME_UPDATES_MODE_ENABLED: The Realtime Updates feature is enabled
+        by default. This could potentially degrade write performance for the
         database.
-      REALTIME_UPDATES_DISABLED: The Realtime Updates feature is disabled by
-        default.
+      REALTIME_UPDATES_MODE_DISABLED: The Realtime Updates feature is disabled
+        by default.
     """
     REALTIME_UPDATES_MODE_UNSPECIFIED = 0
-    REALTIME_UPDATES_ENABLED = 1
-    REALTIME_UPDATES_DISABLED = 2
+    REALTIME_UPDATES_MODE_ENABLED = 1
+    REALTIME_UPDATES_MODE_DISABLED = 2
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the database. See

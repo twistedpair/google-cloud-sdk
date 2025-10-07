@@ -565,15 +565,14 @@ def AddAcceleratorArgs(
 
       *gpu-driver-version*::: (Optional) The NVIDIA driver version to install. GPU_DRIVER_VERSION must be one of:
 
-        `default`: Install the default driver version for this GKE version.
+        `default`: Install the default driver version for this GKE version. For GKE version 1.30.1-gke.1156000 and later, this is the default option.
 
         `latest`: Install the latest driver version available for this GKE version.
         Can only be used for nodes that use Container-Optimized OS.
 
         `disabled`: Skip automatic driver installation. You must manually install a
-        driver after you create the cluster. If you omit the flag `gpu-driver-version`,
-        this is the default option. To learn how to manually install the GPU driver,
-        refer to: https://cloud.google.com/kubernetes-engine/docs/how-to/gpus#installing_drivers
+        driver after you create the cluster. For GKE version 1.30.1-gke.1156000 and earlier, this is the default option.
+        To manually install the GPU driver, refer to https://cloud.google.com/kubernetes-engine/docs/how-to/gpus#installing_drivers.
 
       *gpu-partition-size*::: (Optional) The GPU partition size used when running multi-instance GPUs.
       For information about multi-instance GPUs,
@@ -1671,9 +1670,7 @@ Examples:
   $ {command} example-cluster --node-labels=label-a=value1,label-2=value2
 """
   help_text += """
-New nodes, including ones created by resize or recreate, will have these labels
-on the Kubernetes API node object and can be used in nodeSelectors.
-See [](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) for examples.
+Updating the node pool's --node-labels flag applies the labels to the Kubernetes Node objects for existing nodes in-place; it does not re-create or replace nodes. New nodes, including ones created by resizing or re-creating nodes, will have these labels on the Kubernetes API Node object. The labels can be used in the `nodeSelector` field. See [](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) for examples.
 
 Note that Kubernetes labels, intended to associate cluster components
 and resources with one another and manage resource lifecycles, are different
@@ -5489,7 +5486,12 @@ net.core.somaxconn                                 | Must be between [128, 21474
 net.ipv4.tcp_rmem                                  | Any positive integer tuple
 net.ipv4.tcp_wmem                                  | Any positive integer tuple
 net.ipv4.tcp_tw_reuse                              | Must be {0, 1, 2}
+net.ipv4.tcp_mtu_probing                           | Must be {0, 1, 2}
 net.ipv4.tcp_max_orphans                           | Must be between [16384, 262144]
+net.ipv4.tcp_max_tw_buckets                        | Must be between [4096, 2147483647]
+net.ipv4.tcp_syn_retries                           | Must be between [1, 127]
+net.ipv4.tcp_ecn                                   | Must be {0, 1, 2}
+net.ipv4.tcp_congestion_control                    | Must be string containing only letters and numbers
 net.netfilter.nf_conntrack_max                     | Must be between [65536, 4194304]
 net.netfilter.nf_conntrack_buckets                 | Must be between [65536, 524288]. Recommend setting: nf_conntrack_max = nf_conntrack_buckets * 4
 net.netfilter.nf_conntrack_tcp_timeout_close_wait  | Must be between [60, 3600]
@@ -5499,14 +5501,23 @@ net.netfilter.nf_conntrack_acct                    | Must be {0, 1}
 kernel.shmmni                                      | Must be between [4096, 32768]
 kernel.shmmax                                      | Must be between [0, 18446744073692774399]
 kernel.shmall                                      | Must be between [0, 18446744073692774399]
+kernel.perf_event_paranoid                         | Must be {-1, 0, 1, 2, 3}
+kernel.sched_rt_runtime_us                         | Must be [-1, 1000000]
+kernel.softlockup_panic                            | Must be {0, 1}
+kernel.yama.ptrace_scope                           | Must be {0, 1, 2, 3}
+kernel.kptr_restrict                               | Must be {0, 1, 2}
+kernel.dmesg_restrict                              | Must be {0, 1}
+kernel.sysrq                                       | Must be [0, 511]
 fs.aio-max-nr                                      | Must be between [65536, 4194304]
 fs.file-max                                        | Must be between [104857, 67108864]
 fs.inotify.max_user_instances                      | Must be between [8192, 1048576]
 fs.inotify.max_user_watches                        | Must be between [8192, 1048576]
 fs.nr_open                                         | Must be between [1048576, 2147483584]
 vm.dirty_background_ratio                          | Must be between [1, 100]
+vm.dirty_background_bytes                          | Must be between [0, 68719476736]
 vm.dirty_expire_centisecs                          | Must be between [0, 6000]
 vm.dirty_ratio                                     | Must be between [1, 100]
+vm.dirty_bytes                                     | Must be between [0, 68719476736]
 vm.dirty_writeback_centisecs                       | Must be between [0, 1000]
 vm.max_map_count                                   | Must be between [65536, 2147483647]
 vm.overcommit_memory                               | Must be one of {0, 1, 2}
@@ -6497,7 +6508,6 @@ $ {command} --unset-membership-type
         help=unset_membership_type_text,
         default=None,
         action='store_true',
-        hidden=True,
     )
 
 

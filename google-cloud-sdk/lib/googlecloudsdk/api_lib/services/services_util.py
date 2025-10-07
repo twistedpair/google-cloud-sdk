@@ -165,3 +165,46 @@ def PrintOperationWithResponse(op):
             separators=(',', ':'))))
   else:
     log.status.Print('Operation "{0}" finished successfully.'.format(op.name))
+
+
+def PrintOperationWithResponseForUpdateConsumerPolicy(op):
+  """Print the operation with response for update consumer policy.
+
+  Args:
+    op: The long running operation.
+
+  Raises:
+    OperationErrorException: if the operation fails.
+
+  Returns:
+    Nothing.
+  """
+  if not op.done:
+    log.status.Print('Operation "{0}" is still in progress.'.format(op.name))
+    return
+  if op.error:
+    error_message = op.error.message
+    # only apply the replacement if the error message contains the string
+    # 'Please specify force' to avoid replacing other messages.
+    modified_message = error_message.replace(
+        'Please specify force', 'Please specify --bypass-api-usage-check flag'
+    )
+    raise exceptions.OperationErrorException(
+        'The operation "{0}" resulted in a failure "{1}"'.format(
+            op.name, modified_message
+        )
+    )
+  if op.response:
+    log.status.Print(
+        'Operation [{0}] complete. Result: {1}'.format(
+            op.name,
+            json.dumps(
+                encoding.MessageToDict(op.response),
+                sort_keys=True,
+                indent=4,
+                separators=(',', ':'),
+            ),
+        )
+    )
+  else:
+    log.status.Print('Operation "{0}" finished successfully.'.format(op.name))

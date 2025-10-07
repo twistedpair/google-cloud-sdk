@@ -785,10 +785,6 @@ class IcebergCatalog(_messages.Message):
     biglake_service_account: Output only. The service account used for
       credential vending, output only. Might be empty if Credential vending
       was never enabled for the catalog.
-    catalog_regions: Output only. The GCP region(s) where the physical
-      metadata for the tables is stored, e.g. `us-central1`, `nam4` or `us`.
-      This will contain one value for all locations, except for the catalogs
-      that are configured to use custom dual region buckets.
     catalog_type: Required. The catalog type. Required for
       CreateIcebergCatalog.
     create_time: Output only. When the catalog was created.
@@ -840,14 +836,13 @@ class IcebergCatalog(_messages.Message):
     CREDENTIAL_MODE_VENDED_CREDENTIALS = 2
 
   biglake_service_account = _messages.StringField(1)
-  catalog_regions = _messages.StringField(2, repeated=True)
-  catalog_type = _messages.EnumField('CatalogTypeValueValuesEnum', 3)
-  create_time = _messages.StringField(4)
-  credential_mode = _messages.EnumField('CredentialModeValueValuesEnum', 5)
-  default_location = _messages.StringField(6)
-  name = _messages.StringField(7)
-  storage_regions = _messages.StringField(8, repeated=True)
-  update_time = _messages.StringField(9)
+  catalog_type = _messages.EnumField('CatalogTypeValueValuesEnum', 2)
+  create_time = _messages.StringField(3)
+  credential_mode = _messages.EnumField('CredentialModeValueValuesEnum', 4)
+  default_location = _messages.StringField(5)
+  name = _messages.StringField(6)
+  storage_regions = _messages.StringField(7, repeated=True)
+  update_time = _messages.StringField(8)
 
 
 class IcebergCatalogConfig(_messages.Message):
@@ -1329,8 +1324,6 @@ class UpdateIcebergTableRequest(_messages.Message):
 
 encoding.AddCustomJsonFieldMapping(
     IcebergCatalog, 'biglake_service_account', 'biglake-service-account')
-encoding.AddCustomJsonFieldMapping(
-    IcebergCatalog, 'catalog_regions', 'catalog-regions')
 encoding.AddCustomJsonFieldMapping(
     IcebergCatalog, 'catalog_type', 'catalog-type')
 encoding.AddCustomJsonFieldMapping(

@@ -951,7 +951,7 @@ class HttpHeadersDict(validation.ValidatedDict):
             HTTP header name.
 
       .. _RFC 2616, section 4.2:
-         https://www.ietf.org/rfc/rfc2616.txt
+         https://www.rfc-editor.org/rfc/rfc2616.txt
       """
       original_name = name
 
@@ -1015,7 +1015,7 @@ class HttpHeadersDict(validation.ValidatedDict):
             HTTP header value.
 
       .. _RFC 2616, section 4.2:
-         https://www.ietf.org/rfc/rfc2616.txt
+         https://www.rfc-editor.org/rfc/rfc2616.txt
       """
       # Make sure only ASCII data is used.
       error = appinfo_errors.InvalidHttpHeaderValue(

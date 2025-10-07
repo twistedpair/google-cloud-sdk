@@ -144,7 +144,6 @@ def get_object_context_group(parser):
       help=(
           'Group that allow users to handle object contexts.'
       ),
-      hidden=True,
   )
 
 
@@ -159,10 +158,12 @@ def add_object_contexts_flags(parser):
   )
   context_subgroup = context_group.add_group(
       help=(
-          'Flags that preserves the existing contexts on the object, and can be'
+          'Flags that preserve the existing contexts on the object, and can be'
           ' specified together. However they cannot be specified with'
           ' `--clear-custom-contexts`, `--custom-contexts` or'
-          ' `--custom-contexts-file`.'
+          ' `--custom-contexts-file`. If `--update-custom-contexts` and'
+          ' `--remove-custom-contexts` are specified together, the'
+          ' `--remove-custom-contexts` would be applied first on object.'
       ),
   )
   context_subgroup.add_argument(
@@ -904,13 +905,14 @@ def add_metadata_filter_flag(parser):
   parser.add_argument(
       '--metadata-filter',
       type=str,
-      hidden=True,
       help=(
-          'Server side filtering for objects, Works only for Google Cloud'
+          'Server side filtering for objects. Works only for Google Cloud'
           ' Storage URLs. The filter only works for objects, and not'
-          ' directories or buckets. which means commands like `storage ls` and'
+          ' directories or buckets, which means commands like `storage ls` and'
           ' `storage du` will still list directories or buckets even if they do'
-          ' not contain any objects matching the filter.'
+          ' not contain any objects matching the filter. See'
+          ' https://cloud.google.com/storage/docs/listing-objects#filter-by-object-contexts-syntax'
+          ' for more details.'
       ),
   )
 

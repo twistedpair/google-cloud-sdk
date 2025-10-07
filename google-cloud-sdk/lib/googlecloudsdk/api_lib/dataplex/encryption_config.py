@@ -28,3 +28,23 @@ def GenerateEncryptionConfigForCreateRequest(args):
       key=args.key,
   )
   return request
+
+
+def GenerateUpdateMask(args):
+  """Generates update mask for EncryptionConfig."""
+  update_mask = []
+  if args.IsSpecified('enable_metastore_encryption'):
+    update_mask.append('enableMetastoreEncryption')
+  return update_mask
+
+
+def GenerateEncryptionConfigForUpdateRequest(args):
+  """Update EncryptionConfig Request."""
+  module = dataplex_api.GetMessageModule()
+  request = module.GoogleCloudDataplexV1EncryptionConfig(
+      name='organizations/{0}/locations/{1}/encryptionConfigs/{2}'.format(
+          args.organization, args.location, args.encryption_config
+      ),
+      enableMetastoreEncryption=args.enable_metastore_encryption,
+  )
+  return request

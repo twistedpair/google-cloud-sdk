@@ -477,6 +477,11 @@ class AutonomousDatabaseProperties(_messages.Message):
     dbWorkload: Required. The workload type of the Autonomous Database.
     disasterRecoveryRoleChangedTime: Output only. The date and time the
       Disaster Recovery role was changed for the standby Autonomous Database.
+    encryptionKey: Optional. The encryption key used to encrypt the Autonomous
+      Database. Updating this field will add a new entry in the
+      `encryption_key_history_entries` field with the former version.
+    encryptionKeyHistoryEntries: Output only. The history of the encryption
+      keys used to encrypt the Autonomous Database.
     failedDataRecoveryDuration: Output only. This field indicates the number
       of seconds of data loss during a Data Guard failover.
     isAutoScalingEnabled: Optional. This field indicates if auto scaling is
@@ -538,6 +543,9 @@ class AutonomousDatabaseProperties(_messages.Message):
       scheduled operations of the Autonomous Database.
     secretId: Optional. The ID of the Oracle Cloud Infrastructure vault
       secret.
+    serviceAgentEmail: Output only. An Oracle-managed Google Cloud service
+      account on which customers can grant roles to access resources in the
+      customer project.
     sqlWebDeveloperUrl: Output only. The SQL Web Developer URL for the
       Autonomous Database.
     state: Output only. The current lifecycle state of the Autonomous
@@ -836,43 +844,46 @@ class AutonomousDatabaseProperties(_messages.Message):
   dbVersion = _messages.StringField(21)
   dbWorkload = _messages.EnumField('DbWorkloadValueValuesEnum', 22)
   disasterRecoveryRoleChangedTime = _messages.StringField(23)
-  failedDataRecoveryDuration = _messages.StringField(24)
-  isAutoScalingEnabled = _messages.BooleanField(25)
-  isLocalDataGuardEnabled = _messages.BooleanField(26)
-  isStorageAutoScalingEnabled = _messages.BooleanField(27)
-  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 28)
-  lifecycleDetails = _messages.StringField(29)
-  localAdgAutoFailoverMaxDataLossLimit = _messages.IntegerField(30, variant=_messages.Variant.INT32)
-  localDisasterRecoveryType = _messages.EnumField('LocalDisasterRecoveryTypeValueValuesEnum', 31)
-  localStandbyDb = _messages.MessageField('AutonomousDatabaseStandbySummary', 32)
-  maintenanceBeginTime = _messages.StringField(33)
-  maintenanceEndTime = _messages.StringField(34)
-  maintenanceScheduleType = _messages.EnumField('MaintenanceScheduleTypeValueValuesEnum', 35)
-  memoryPerOracleComputeUnitGbs = _messages.IntegerField(36, variant=_messages.Variant.INT32)
-  memoryTableGbs = _messages.IntegerField(37, variant=_messages.Variant.INT32)
-  mtlsConnectionRequired = _messages.BooleanField(38)
-  nCharacterSet = _messages.StringField(39)
-  nextLongTermBackupTime = _messages.StringField(40)
-  ociUrl = _messages.StringField(41)
-  ocid = _messages.StringField(42)
-  openMode = _messages.EnumField('OpenModeValueValuesEnum', 43)
-  operationsInsightsState = _messages.EnumField('OperationsInsightsStateValueValuesEnum', 44)
-  peerDbIds = _messages.StringField(45, repeated=True)
-  permissionLevel = _messages.EnumField('PermissionLevelValueValuesEnum', 46)
-  privateEndpoint = _messages.StringField(47)
-  privateEndpointIp = _messages.StringField(48)
-  privateEndpointLabel = _messages.StringField(49)
-  refreshableMode = _messages.EnumField('RefreshableModeValueValuesEnum', 50)
-  refreshableState = _messages.EnumField('RefreshableStateValueValuesEnum', 51)
-  role = _messages.EnumField('RoleValueValuesEnum', 52)
-  scheduledOperationDetails = _messages.MessageField('ScheduledOperationDetails', 53, repeated=True)
-  secretId = _messages.StringField(54)
-  sqlWebDeveloperUrl = _messages.StringField(55)
-  state = _messages.EnumField('StateValueValuesEnum', 56)
-  supportedCloneRegions = _messages.StringField(57, repeated=True)
-  totalAutoBackupStorageSizeGbs = _messages.FloatField(58, variant=_messages.Variant.FLOAT)
-  usedDataStorageSizeTbs = _messages.IntegerField(59, variant=_messages.Variant.INT32)
-  vaultId = _messages.StringField(60)
+  encryptionKey = _messages.MessageField('EncryptionKey', 24)
+  encryptionKeyHistoryEntries = _messages.MessageField('EncryptionKeyHistoryEntry', 25, repeated=True)
+  failedDataRecoveryDuration = _messages.StringField(26)
+  isAutoScalingEnabled = _messages.BooleanField(27)
+  isLocalDataGuardEnabled = _messages.BooleanField(28)
+  isStorageAutoScalingEnabled = _messages.BooleanField(29)
+  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 30)
+  lifecycleDetails = _messages.StringField(31)
+  localAdgAutoFailoverMaxDataLossLimit = _messages.IntegerField(32, variant=_messages.Variant.INT32)
+  localDisasterRecoveryType = _messages.EnumField('LocalDisasterRecoveryTypeValueValuesEnum', 33)
+  localStandbyDb = _messages.MessageField('AutonomousDatabaseStandbySummary', 34)
+  maintenanceBeginTime = _messages.StringField(35)
+  maintenanceEndTime = _messages.StringField(36)
+  maintenanceScheduleType = _messages.EnumField('MaintenanceScheduleTypeValueValuesEnum', 37)
+  memoryPerOracleComputeUnitGbs = _messages.IntegerField(38, variant=_messages.Variant.INT32)
+  memoryTableGbs = _messages.IntegerField(39, variant=_messages.Variant.INT32)
+  mtlsConnectionRequired = _messages.BooleanField(40)
+  nCharacterSet = _messages.StringField(41)
+  nextLongTermBackupTime = _messages.StringField(42)
+  ociUrl = _messages.StringField(43)
+  ocid = _messages.StringField(44)
+  openMode = _messages.EnumField('OpenModeValueValuesEnum', 45)
+  operationsInsightsState = _messages.EnumField('OperationsInsightsStateValueValuesEnum', 46)
+  peerDbIds = _messages.StringField(47, repeated=True)
+  permissionLevel = _messages.EnumField('PermissionLevelValueValuesEnum', 48)
+  privateEndpoint = _messages.StringField(49)
+  privateEndpointIp = _messages.StringField(50)
+  privateEndpointLabel = _messages.StringField(51)
+  refreshableMode = _messages.EnumField('RefreshableModeValueValuesEnum', 52)
+  refreshableState = _messages.EnumField('RefreshableStateValueValuesEnum', 53)
+  role = _messages.EnumField('RoleValueValuesEnum', 54)
+  scheduledOperationDetails = _messages.MessageField('ScheduledOperationDetails', 55, repeated=True)
+  secretId = _messages.StringField(56)
+  serviceAgentEmail = _messages.StringField(57)
+  sqlWebDeveloperUrl = _messages.StringField(58)
+  state = _messages.EnumField('StateValueValuesEnum', 59)
+  supportedCloneRegions = _messages.StringField(60, repeated=True)
+  totalAutoBackupStorageSizeGbs = _messages.FloatField(61, variant=_messages.Variant.FLOAT)
+  usedDataStorageSizeTbs = _messages.IntegerField(62, variant=_messages.Variant.INT32)
+  vaultId = _messages.StringField(63)
 
 
 class AutonomousDatabaseStandbySummary(_messages.Message):
@@ -2590,6 +2601,52 @@ class Empty(_messages.Message):
 
 
 
+class EncryptionKey(_messages.Message):
+  r"""The encryption key used to encrypt the Autonomous Database.
+
+  Enums:
+    ProviderValueValuesEnum: Optional. The provider of the encryption key.
+
+  Fields:
+    kmsKey: Optional. The KMS key used to encrypt the Autonomous Database.
+      This field is required if the provider is GOOGLE_MANAGED. The name of
+      the KMS key resource in the following format: `projects/{project}/locati
+      ons/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}`.
+    provider: Optional. The provider of the encryption key.
+  """
+
+  class ProviderValueValuesEnum(_messages.Enum):
+    r"""Optional. The provider of the encryption key.
+
+    Values:
+      PROVIDER_UNSPECIFIED: Default unspecified value.
+      GOOGLE_MANAGED: Google Managed KMS key, if selected, please provide the
+        KMS key name.
+      ORACLE_MANAGED: Oracle Managed.
+    """
+    PROVIDER_UNSPECIFIED = 0
+    GOOGLE_MANAGED = 1
+    ORACLE_MANAGED = 2
+
+  kmsKey = _messages.StringField(1)
+  provider = _messages.EnumField('ProviderValueValuesEnum', 2)
+
+
+class EncryptionKeyHistoryEntry(_messages.Message):
+  r"""The history of the encryption keys used to encrypt the Autonomous
+  Database.
+
+  Fields:
+    activationTime: Output only. The date and time when the encryption key was
+      activated on the Autonomous Database..
+    encryptionKey: Output only. The encryption key used to encrypt the
+      Autonomous Database.
+  """
+
+  activationTime = _messages.StringField(1)
+  encryptionKey = _messages.MessageField('EncryptionKey', 2)
+
+
 class Entitlement(_messages.Message):
   r"""Details of the Entitlement resource.
 
@@ -3409,10 +3466,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListPluggableDatabasesResponse(_messages.Message):
@@ -4133,6 +4195,35 @@ class OracledatabaseProjectsLocationsAutonomousDatabasesListRequest(_messages.Me
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class OracledatabaseProjectsLocationsAutonomousDatabasesPatchRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsAutonomousDatabasesPatchRequest object.
+
+  Fields:
+    autonomousDatabase: A AutonomousDatabase resource to be passed as the
+      request body.
+    name: Identifier. The name of the Autonomous Database resource in the
+      following format: projects/{project}/locations/{region}/autonomousDataba
+      ses/{autonomous_database}
+    requestId: Optional. An optional ID to identify the request. This value is
+      used to identify duplicate requests. If you make a request with the same
+      request ID and the original request is still in progress or completed,
+      the server ignores the second request. This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the Exadata resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields will be overwritten.
+  """
+
+  autonomousDatabase = _messages.MessageField('AutonomousDatabase', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class OracledatabaseProjectsLocationsAutonomousDatabasesRestartRequest(_messages.Message):
@@ -5184,12 +5275,20 @@ class OracledatabaseProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class OracledatabaseProjectsLocationsPluggableDatabasesGetRequest(_messages.Message):

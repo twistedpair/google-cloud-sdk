@@ -1327,8 +1327,8 @@ def GetRespectPodDisruptionBudget(args):
   return getattr(args, 'respect_pdb', None)
 
 
-def AddTagBindings(parser):
-  """Adds --tag-bindings flag to parser.
+def AddResourceManagerTags(parser):
+  """Adds --tags flag to parser.
 
   Args:
     parser: The argparse.parser to add the arguments to.
@@ -1342,16 +1342,15 @@ encoded Unicode characters except single quotes, double quotes,
 backslashes, and forward slashes.
 """
   parser.add_argument(
-      '--tag-bindings',
+      '--tags',
       type=arg_parsers.ArgDict(min_length=1),
-      metavar='TAG_BINDING',
-      hidden=True,
+      metavar='TAG',
       help=help_text,
   )
 
 
-def GetTagBindings(args):
-  """Parses and validates the value of the --tag-bindings flag.
+def GetResourceManagerTags(args):
+  """Parses and validates the value of the --tags flag.
 
   Args:
     args: Arguments parsed from the command.
@@ -1359,4 +1358,4 @@ def GetTagBindings(args):
   Returns:
     The tags object as a dictionary.
   """
-  return getattr(args, 'tag_bindings', None) or {}
+  return getattr(args, 'tags', None) or {}

@@ -742,20 +742,22 @@ def UpdateConsumerPolicy(
       if 'analysis' in analysis_reponse:
         for analysis in analysis_reponse['analysis']:
           for warning in analysis['analysisResult']['warnings']:
-            # using missing_dependencies field to retrive the missing
-            # dependencies for each service.
             if analysis['service'] not in missing_dependencies.keys():
-              missing_dependencies[analysis['service']] = [warning['detail']]
+              missing_dependencies[analysis['service']] = [
+                  warning['missingDependency']
+              ]
             else:
               missing_dependencies[analysis['service']].append(
-                  warning['detail']
+                  warning['missingDependency']
               )
 
       if missing_dependencies:
         error_message = 'Policy cannot be updated as \n'
         for service in missing_dependencies:
           for dependency in missing_dependencies[service]:
-            error_message += service + ' is ' + dependency + '\n'
+            error_message += (
+                service + ' is missing service dependency ' + dependency + '\n'
+            )
 
         raise exceptions.ConfigError(error_message)
 
@@ -820,42 +822,59 @@ def AddEnableRule(
     policy = GetConsumerPolicyV2Beta(policy_name)
 
     services_to_enabled = set()
-
+    existing_services = set()
     if policy.enableRules:
-      enabled_services = set(policy.enableRules[0].services)
-      for service in services:
-        # Check if services to add is not already present in the policy.
-        if _SERVICE_RESOURCE % service not in enabled_services:
-          services_to_enabled.add(_SERVICE_RESOURCE % service)
-    else:
-      for service in services:
+      existing_services = set(policy.enableRules[0].services)
+
+    for service in services:
+      # Check if services to add is not already present in the policy.
+      if _SERVICE_RESOURCE % service not in existing_services:
         services_to_enabled.add(_SERVICE_RESOURCE % service)
 
-    if not services_to_enabled:
-      raise exceptions.ConfigError(
-          'The service(s) '
-          + ','.join(services)
-          + ' are already enabled and present in the consumer policy'
-      )
+    dependent_services = set()
 
     if not skip_dependency:
-      dependent_services = []
-      for service in services_to_enabled:
+      for service in services:
         list_expanded_members = ListExpandedMembers(
-            resource_name, service + _DEPENDENCY_GROUP
+            resource_name, _SERVICE_RESOURCE % service + _DEPENDENCY_GROUP
         )
         for dependent_service in list_expanded_members:
           # dependent_service is in format services/{service_name}
-          dependent_services.append(dependent_service)
+          dependent_service_name = dependent_service.split('/')[-1]
+          # Check if dependent services to add is not already present in the
+          # input services.
+          if dependent_service_name not in services:
+            dependent_services.add(dependent_service)
 
-      for service in dependent_services:
-        services_to_enabled.add(service)
+      for service in list(dependent_services):
+        # check if dependent services are already enabled
+        if service not in existing_services:
+          services_to_enabled.add(service)
+
+    if not services_to_enabled:
+      if skip_dependency:
+        raise exceptions.ConfigError(
+            'The service(s) '
+            + ','.join(services)
+            + ' are already enabled and present in the consumer policy'
+        )
+      else:
+        service_list_str = ','.join(services)
+        message = f'The service(s) {service_list_str}'
+
+        if dependent_services:
+          # if dependent services are present and not in services,
+          # add them to the error message.
+
+          dependent_list_str = ','.join(list(dependent_services))
+          message += f' and their dependencies {dependent_list_str}'
+
+        message += ' are already enabled and present in the consumer policy'
+        raise exceptions.ConfigError(message)
 
     if policy.enableRules:
       for service in list(services_to_enabled):
-        # check if dependent services are already enabled
-        if service not in policy.enableRules[0].services:
-          policy.enableRules[0].services.append(service)
+        policy.enableRules[0].services.append(service)
     else:
       policy.enableRules.append(
           messages.GoogleApiServiceusageV2betaEnableRule(
@@ -968,7 +987,7 @@ def RemoveEnableRule(
           for warning in analysis['analysisResult']['warnings']:
             for service in services_to_remove:
               ## check if analysis is related to service to be removed.
-              if _SERVICE_RESOURCE % service in warning['detail']:
+              if _SERVICE_RESOURCE % service == warning['missingDependency']:
                 if service not in missing_dependency:
                   missing_dependency[service] = []
                 missing_dependency[service].append(analysis['service'])
@@ -979,7 +998,7 @@ def RemoveEnableRule(
         raise exceptions.ConfigError(
             'The services are depended on by the following active service(s) '
             + json_string
-            + ' . Please remove the active depedndent services or provide the'
+            + ' . Please remove the active dependent services or provide the'
             ' --disable-dependency-services flag to disable them, or'
             ' --bypass-dependency-service-check to ignore this check.'
         )
@@ -1209,11 +1228,13 @@ def ListServicesV2Beta(
           services[service_name] = service_state.service.displayName
 
     else:
-      for category_service in ListCategoryServices(
-          resource_name, _GOOGLE_CATEGORY_RESOURCE, page_size, limit
+      for public_service in _ListPublicServices(page_size, limit):
+        services[public_service.name] = public_service.displayName
+      for shared_service in _ListSharedServices(
+          resource_name, page_size, limit
       ):
-        services[category_service.service.name] = (
-            category_service.service.displayName
+        services[shared_service.service.name] = (
+            shared_service.service.displayName
         )
 
     result = []
@@ -1561,6 +1582,77 @@ def _ValidateConsumer(consumer):
     if consumer.startswith(prefix):
       return
   raise exceptions.Error('invalid consumer format "%s".' % consumer)
+
+
+def _ListPublicServices(page_size=1000, limit=sys.maxsize):
+  """Make API call to list public services.
+
+  Args:
+    page_size: The page size to list. default=1000
+    limit: The max number of services to display.
+
+  Raises:
+    exceptions.ListPublicServicesException: when listing public services fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    Message.ListPublicServicesResponse: The public services.
+  """
+  client = _GetClientInstance(version=_V2BETA_VERSION)
+  messages = client.MESSAGES_MODULE
+
+  request = messages.ServiceusageServicesListRequest()
+
+  try:
+    return list_pager.YieldFromList(
+        _Lister(client.services),
+        request,
+        limit=limit,
+        batch_size_attribute='pageSize',
+        batch_size=page_size,
+        field='services',
+    )
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(e, exceptions.ListPublicServicesException)
+
+
+def _ListSharedServices(parent, page_size=1000, limit=sys.maxsize):
+  """Make API call to list shared services.
+
+  Args:
+    parent: The parent for which to list shared services.
+    page_size: The page size to list. default=1000
+    limit: The max number of services to display.
+
+  Raises:
+    exceptions.ListSharedServicesException: when listing shared services fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    Message.ListSharedServicesResponse: The shared services.
+  """
+  client = _GetClientInstance(version=_V2BETA_VERSION)
+  messages = client.MESSAGES_MODULE
+
+  request = messages.ServiceusageSharedServicesListRequest(parent=parent)
+
+  try:
+    return list_pager.YieldFromList(
+        _Lister(client.sharedServices),
+        request,
+        limit=limit,
+        batch_size_attribute='pageSize',
+        batch_size=page_size,
+        field='sharedServices',
+    )
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(e, exceptions.ListSharedServicesException)
 
 
 def _GetClientInstance(version='v1'):

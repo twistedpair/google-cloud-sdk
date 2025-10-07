@@ -5,6 +5,87 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 542.0.0 (2025-10-07)
+
+### Anthos Multi-Cloud
+
+* Added `--tags` flag to `gcloud container attached clusters register` to attach Tags to the cluster.
+
+### Cloud DNS
+
+*   Fix an issue where `gcloud dns managed-zones create` did not correctly
+    support the --locations flag with DNSSEC configurations. The command now
+    properly handles uppercase enum values for `--dnssec-state` (ON, OFF,
+    TRANSFER) and KSK/ZSK algorithms.
+*   Added support for ALIAS record set type for GA. ALIAS record sets can be
+    created/modified using `--type` flag in `gcloud dns record-sets` command
+    group.
+
+### Cloud Run
+
+* Promoted `--[no-]deploy-health-check` flag to GA for `gcloud run deploy` and
+`gcloud run services update` which disables the deploy-time health check.
+
+### Cloud SQL
+
+*   Added PostgreSQL 18 to supported database versions.
+*   Promoted `--mode` flag for `gcloud sql instances reset-ssl-config` to GA.
+*   Promoted `--server-ca-mode` and `--server-ca-pool` flags for `gcloud sql instances patch` to GA.
+
+### Cloud Storage
+
+*   Modified `gcloud storage diagnose --test-type=DIRECT_CONNECTIVITY` to
+    include check for VPC network MTU settings.
+
+### Cloud TPU
+
+* Mark `gcloud compute tpus` commands for 2VM as deprecated and will be removed in an upcoming release.
+
+### Compute Engine
+
+* Promoted `--resource-manager-tags` flag in `gcloud compute routers create` to v1.
+* Promoted `health-sources` in `gcloud compute` to beta.
+* Added `--full-view` flag for alpha to `gcloud compute reservations sub-blocks describe` to allow users to see the availability of slices of TPU Hypercomputer reservations within sub-blocks.
+
+### Compute Firewall Policies
+
+* Fixed issue where `gcloud compute firewall-policies associations delete`
+ command returns 'Invalid value' error for valid association name.
+
+### Kubernetes Engine
+
+* Added `--unset-membership-type` flag to `gcloud container cluster update`
+  command to update cluster membership type to unspecified.
+* Promoted `--membership-type` flag in `gcloud container cluster create|update` commands to GA.
+
+### Oracle Database
+
+* Added `gcloud oracle-database` group in GA with the following commands:
+  * `gcloud oracle-database autonomous-database-backups list` command
+  * `gcloud oracle-database autonomous-databases` commands group
+  * `gcloud oracle-database autonomous-db-versions list` command
+  * `gcloud oracle-database cloud-exadata-infrastructures` commands group
+  * `gcloud oracle-database cloud-exadata-infrastructures db-servers list`
+  * `gcloud oracle-database cloud-vm-clusters` commands group
+  * `gcloud oracle-database cloud-vm-clusters db-system-shapes list` command
+  * `gcloud oracle-database entitlements list` command
+  * `gcloud oracle-database gi-versions list` command
+  * `gcloud oracle-database db-versions list` command
+  * `gcloud oracle-database db-systems` commands group
+  * `gcloud oracle-database databases` commands group
+  * `gcloud oracle-database pluggable-databases` commands group
+  * `gcloud oracle-database database-character-sets list` commands
+  * `gcloud oracle-database db-system-initial-storage-sizes list` commands
+
+### Transfer
+
+* Promoted `--replication` flag in `transfer jobs create` to GA.
+* Promoted `--job-type` flag in `transfer jobs list` to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 541.0.0 (2025-09-30)
 
 ### AI

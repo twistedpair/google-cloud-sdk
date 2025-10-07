@@ -35,6 +35,28 @@ import requests
 _CORE_CHECK_NAME = 'Direct Connectivity Call'
 _SUCCESS = 'Success.'
 _NOT_FOUND = '[Not Found]'
+_METADATA_BASE_URL = (  # gcloud-disable-gdu-domain
+    'http://metadata.google.internal/computeMetadata/v1/instance/'
+)
+_METADATA_ZONE_URL = _METADATA_BASE_URL + 'zone'
+_METADATA_MTU_URL = _METADATA_BASE_URL + 'network-interfaces/0/mtu'
+_METADATA_NETWORK_URL = _METADATA_BASE_URL + 'network-interfaces/0/network'
+
+
+def _get_metadata_service_response(url):
+  """Returns response from the Metadata service."""
+  try:
+    response = requests.get(
+        # gcloud-disable-gdu-domain
+        url,
+        headers={'Metadata-Flavor': 'Google'},
+        timeout=5,
+    )
+    if response.status_code == 200:
+      return response.text.strip()
+  except requests.exceptions.RequestException:
+    pass
+  return ''
 
 
 def _get_ips(dns_path, service_name):
@@ -76,15 +98,8 @@ def _exec_gcloud_and_return_stdout(command_args):
 
 def _get_zone():
   """Gets the zone of the VM from the Metadata service."""
-  response = requests.get(
-      # gcloud-disable-gdu-domain
-      'http://metadata.google.internal/computeMetadata/v1/instance/zone',
-      headers={'Metadata-Flavor': 'Google'},
-      timeout=5,
-  )
-  if response.status_code == 200:
-    return response.text.strip().rsplit('/', 1)[-1]
-  return ''
+  response = _get_metadata_service_response(_METADATA_ZONE_URL)
+  return response.rsplit('/', 1)[-1]
 
 
 def _log_running_check(check_name):
@@ -338,6 +353,20 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
         'https://cloud.google.com/compute/docs/instances/change-service-account'
     )
 
+  def _check_vm_mtu(self):
+    """Checks if VM has a MTU of at least 1460."""
+    mtu = _get_metadata_service_response(_METADATA_MTU_URL)
+    if not mtu:
+      return 'Could not determine MTU from metadata service.'
+    if mtu == '8896':
+      return _SUCCESS
+    network = _get_metadata_service_response(_METADATA_NETWORK_URL)
+    return (
+        f'Set the MTU of VPC network interface "{network}" to 8896 for optimal '
+        'transfer performance. See: '
+        'https://cloud.google.com/storage/docs/enable-grpc-api#configure-vpcsc'
+    )
+
   def _run(self):
     """Runs the diagnostic test."""
     log.warning(
@@ -406,6 +435,14 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
             self._check_vm_has_service_account,
             'VM has Service Account',
             'Direct Connectivity requires the VM have a service account.',
+        ),
+        (
+            self._check_vm_mtu,
+            'VPC Network MTU',
+            (
+                'Direct Connectivity performs best with a VPC network MTU of'
+                ' 8896.'
+            ),
         ),
     ]:
       try:

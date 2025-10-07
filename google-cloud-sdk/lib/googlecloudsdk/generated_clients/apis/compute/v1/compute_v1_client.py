@@ -51,6 +51,7 @@ class ComputeV1(base_api.BaseApiClient):
     self.firewallPolicies = self.FirewallPoliciesService(self)
     self.firewalls = self.FirewallsService(self)
     self.forwardingRules = self.ForwardingRulesService(self)
+    self.futureReservations = self.FutureReservationsService(self)
     self.globalAddresses = self.GlobalAddressesService(self)
     self.globalForwardingRules = self.GlobalForwardingRulesService(self)
     self.globalNetworkEndpointGroups = self.GlobalNetworkEndpointGroupsService(self)
@@ -160,7 +161,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of accelerator types. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of accelerator types.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeAcceleratorTypesAggregatedListRequest) input message
@@ -212,7 +216,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of accelerator types that are available to the specified project.
+      r"""Retrieves a list of accelerator types that are available to the specified.
+project.
 
       Args:
         request: (ComputeAcceleratorTypesListRequest) input message
@@ -248,7 +253,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of addresses. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of addresses.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeAddressesAggregatedListRequest) input message
@@ -326,7 +334,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates an address resource in the specified project by using the data included in the request.
+      r"""Creates an address resource in the specified project by using the data.
+included in the request.
 
       Args:
         request: (ComputeAddressesInsertRequest) input message
@@ -352,7 +361,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of addresses contained within the specified region.
+      r"""Retrieves a list of addresses contained within.
+the specified region.
 
       Args:
         request: (ComputeAddressesListRequest) input message
@@ -404,7 +414,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on an Address. To learn more about labels, read the Labeling Resources documentation.
+      r"""Sets the labels on an Address. To learn more about labels, read theLabeling.
+Resources documentation.
 
       Args:
         request: (ComputeAddressesSetLabelsRequest) input message
@@ -466,7 +477,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of autoscalers. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of autoscalers.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeAutoscalersAggregatedListRequest) input message
@@ -544,7 +558,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates an autoscaler in the specified project using the data included in the request.
+      r"""Creates an autoscaler in the specified project using the data.
+included in the request.
 
       Args:
         request: (ComputeAutoscalersInsertRequest) input message
@@ -570,7 +585,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of autoscalers contained within the specified zone.
+      r"""Retrieves a list of autoscalers contained within.
+the specified zone.
 
       Args:
         request: (ComputeAutoscalersListRequest) input message
@@ -596,7 +612,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates an autoscaler in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Updates an autoscaler in the specified project using the data.
+included in the request. This method supportsPATCH
+semantics and uses theJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeAutoscalersPatchRequest) input message
@@ -622,7 +641,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates an autoscaler in the specified project using the data included in the request.
+      r"""Updates an autoscaler in the specified project using the data.
+included in the request.
 
       Args:
         request: (ComputeAutoscalersUpdateRequest) input message
@@ -658,7 +678,8 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AddSignedUrlKey(self, request, global_params=None):
-      r"""Adds a key for validating requests with signed URLs for this backend bucket.
+      r"""Adds a key for validating requests with signed URLs for this backend.
+bucket.
 
       Args:
         request: (ComputeBackendBucketsAddSignedUrlKeyRequest) input message
@@ -710,7 +731,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def DeleteSignedUrlKey(self, request, global_params=None):
-      r"""Deletes a key for validating requests with signed URLs for this backend bucket.
+      r"""Deletes a key for validating requests with signed URLs for this backend.
+bucket.
 
       Args:
         request: (ComputeBackendBucketsDeleteSignedUrlKeyRequest) input message
@@ -762,7 +784,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
 
       Args:
         request: (ComputeBackendBucketsGetIamPolicyRequest) input message
@@ -788,7 +811,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a BackendBucket resource in the specified project using the data included in the request.
+      r"""Creates a BackendBucket resource in the specified project using.
+the data included in the request.
 
       Args:
         request: (ComputeBackendBucketsInsertRequest) input message
@@ -814,7 +838,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of BackendBucket resources available to the specified project.
+      r"""Retrieves the list of BackendBucket resources available to the specified.
+project.
 
       Args:
         request: (ComputeBackendBucketsListRequest) input message
@@ -840,7 +865,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified BackendBucket resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Updates the specified BackendBucket resource with the data included in the.
+request. This method supportsPATCH
+semantics and uses theJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeBackendBucketsPatchRequest) input message
@@ -892,7 +920,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
 
       Args:
         request: (ComputeBackendBucketsSetIamPolicyRequest) input message
@@ -944,7 +973,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the specified BackendBucket resource with the data included in the request.
+      r"""Updates the specified BackendBucket resource with the data included in the.
+request.
 
       Args:
         request: (ComputeBackendBucketsUpdateRequest) input message
@@ -980,7 +1010,8 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AddSignedUrlKey(self, request, global_params=None):
-      r"""Adds a key for validating requests with signed URLs for this backend service.
+      r"""Adds a key for validating requests with signed URLs for this backend.
+service.
 
       Args:
         request: (ComputeBackendServicesAddSignedUrlKeyRequest) input message
@@ -1006,7 +1037,11 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all BackendService resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves the list of all BackendService resources, regional and global,.
+available to the specified project.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeBackendServicesAggregatedListRequest) input message
@@ -1058,7 +1093,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def DeleteSignedUrlKey(self, request, global_params=None):
-      r"""Deletes a key for validating requests with signed URLs for this backend service.
+      r"""Deletes a key for validating requests with signed URLs for this backend.
+service.
 
       Args:
         request: (ComputeBackendServicesDeleteSignedUrlKeyRequest) input message
@@ -1136,7 +1172,14 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetHealth(self, request, global_params=None):
-      r"""Gets the most recent health check results for this BackendService. Example request body: { "group": "/zones/us-east1-b/instanceGroups/lb-backend-example" }.
+      r"""Gets the most recent health check results for this.
+BackendService.
+
+Example request body:
+
+{
+  "group": "/zones/us-east1-b/instanceGroups/lb-backend-example"
+}
 
       Args:
         request: (ComputeBackendServicesGetHealthRequest) input message
@@ -1162,7 +1205,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
 
       Args:
         request: (ComputeBackendServicesGetIamPolicyRequest) input message
@@ -1188,7 +1232,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a BackendService resource in the specified project using the data included in the request. For more information, see Backend services overview .
+      r"""Creates a BackendService resource in the specified project using.
+the data included in the request. For more information, see
+Backend services overview.
 
       Args:
         request: (ComputeBackendServicesInsertRequest) input message
@@ -1214,7 +1260,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of BackendService resources available to the specified project.
+      r"""Retrieves the list of BackendService resources available to the specified.
+project.
 
       Args:
         request: (ComputeBackendServicesListRequest) input message
@@ -1266,7 +1313,11 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified BackendService resource with the data included in the request. For more information, see Backend services overview. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Patches the specified BackendService resource with the data included in the.
+request. For more information, see 
+Backend services overview. This method
+supports PATCH semantics and uses the JSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeBackendServicesPatchRequest) input message
@@ -1318,7 +1369,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
 
       Args:
         request: (ComputeBackendServicesSetIamPolicyRequest) input message
@@ -1344,7 +1396,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetSecurityPolicy(self, request, global_params=None):
-      r"""Sets the Google Cloud Armor security policy for the specified backend service. For more information, see Google Cloud Armor Overview.
+      r"""Sets the Google Cloud Armor security policy for the specified backend.
+service. For more information, seeGoogle
+Cloud Armor Overview
 
       Args:
         request: (ComputeBackendServicesSetSecurityPolicyRequest) input message
@@ -1396,7 +1450,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the specified BackendService resource with the data included in the request. For more information, see Backend services overview.
+      r"""Updates the specified BackendService resource with the data included in the.
+request. For more information, seeBackend
+services overview.
 
       Args:
         request: (ComputeBackendServicesUpdateRequest) input message
@@ -1484,7 +1540,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a cross-site network in the specified project in the given scope using the parameters that are included in the request.
+      r"""Creates a cross-site network in the specified project in the given scope.
+using the parameters that are included in the request.
 
       Args:
         request: (ComputeCrossSiteNetworksInsertRequest) input message
@@ -1536,7 +1593,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified cross-site network with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Updates the specified cross-site network with the data included in.
+the request. This method supportsPATCH
+semantics and uses theJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeCrossSiteNetworksPatchRequest) input message
@@ -1572,7 +1632,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of disk types. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of disk types.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeDiskTypesAggregatedListRequest) input message
@@ -1624,7 +1687,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of disk types available to the specified project.
+      r"""Retrieves a list of disk types available to the specified.
+project.
 
       Args:
         request: (ComputeDiskTypesListRequest) input message
@@ -1660,7 +1724,9 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AddResourcePolicies(self, request, global_params=None):
-      r"""Adds existing resource policies to a disk. You can only add one policy which will be applied to this disk for scheduling snapshot creation.
+      r"""Adds existing resource policies to a disk. You can only add one.
+policy which will be applied to this disk for scheduling snapshot
+creation.
 
       Args:
         request: (ComputeDisksAddResourcePoliciesRequest) input message
@@ -1686,7 +1752,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of persistent disks. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of persistent disks.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeDisksAggregatedListRequest) input message
@@ -1738,7 +1807,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def BulkSetLabels(self, request, global_params=None):
-      r"""Sets the labels on many disks at once. To learn more about labels, read the Labeling Resources documentation.
+      r"""Sets the labels on many disks at once. To learn more about labels, read theLabeling.
+Resources documentation.
 
       Args:
         request: (ComputeDisksBulkSetLabelsRequest) input message
@@ -1764,7 +1834,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def CreateSnapshot(self, request, global_params=None):
-      r"""Creates a snapshot of a specified persistent disk. For regular snapshot creation, consider using snapshots.insert instead, as that method supports more features, such as creating snapshots in a project different from the source disk project.
+      r"""Creates a snapshot of a specified persistent disk. For regular snapshot.
+creation, consider using snapshots.insert
+instead, as that method supports more features, such as creating snapshots
+in a project different from the source disk project.
 
       Args:
         request: (ComputeDisksCreateSnapshotRequest) input message
@@ -1790,7 +1863,11 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified persistent disk. Deleting a disk removes its data permanently and is irreversible. However, deleting a disk does not delete any snapshots previously made from the disk. You must separately delete snapshots.
+      r"""Deletes the specified persistent disk. Deleting a disk removes its data.
+permanently and is irreversible. However, deleting a disk does not
+delete any snapshots
+previously made from the disk. You must separatelydelete
+snapshots.
 
       Args:
         request: (ComputeDisksDeleteRequest) input message
@@ -1842,7 +1919,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
 
       Args:
         request: (ComputeDisksGetIamPolicyRequest) input message
@@ -1868,7 +1946,11 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a persistent disk in the specified project using the data in the request. You can create a disk from a source (sourceImage, sourceSnapshot, or sourceDisk) or create an empty 500 GB data disk by omitting all properties. You can also create a disk that is larger than the default size by specifying the sizeGb property.
+      r"""Creates a persistent disk in the specified project using the data.
+in the request. You can create a disk from a source
+(sourceImage, sourceSnapshot, orsourceDisk) or create an empty 500 GB data disk by
+omitting all properties. You can also create a disk that is larger than
+the default size by specifying the sizeGb property.
 
       Args:
         request: (ComputeDisksInsertRequest) input message
@@ -1894,7 +1976,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of persistent disks contained within the specified zone.
+      r"""Retrieves a list of persistent disks contained within.
+the specified zone.
 
       Args:
         request: (ComputeDisksListRequest) input message
@@ -1946,7 +2029,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Resize(self, request, global_params=None):
-      r"""Resizes the specified persistent disk. You can only increase the size of the disk.
+      r"""Resizes the specified persistent disk.
+You can only increase the size of the disk.
 
       Args:
         request: (ComputeDisksResizeRequest) input message
@@ -1972,7 +2056,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
 
       Args:
         request: (ComputeDisksSetIamPolicyRequest) input message
@@ -1998,7 +2083,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on a disk. To learn more about labels, read the Labeling Resources documentation.
+      r"""Sets the labels on a disk. To learn more about labels, read theLabeling.
+Resources documentation.
 
       Args:
         request: (ComputeDisksSetLabelsRequest) input message
@@ -2024,7 +2110,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def StartAsyncReplication(self, request, global_params=None):
-      r"""Starts asynchronous replication. Must be invoked on the primary disk.
+      r"""Starts asynchronous replication.
+Must be invoked on the primary disk.
 
       Args:
         request: (ComputeDisksStartAsyncReplicationRequest) input message
@@ -2050,7 +2137,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def StopAsyncReplication(self, request, global_params=None):
-      r"""Stops asynchronous replication. Can be invoked either on the primary or on the secondary disk.
+      r"""Stops asynchronous replication.
+Can be invoked either on the primary or on the secondary disk.
 
       Args:
         request: (ComputeDisksStopAsyncReplicationRequest) input message
@@ -2076,7 +2164,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def StopGroupAsyncReplication(self, request, global_params=None):
-      r"""Stops asynchronous replication for a consistency group of disks. Can be invoked either in the primary or secondary scope.
+      r"""Stops asynchronous replication for a consistency group of disks.
+Can be invoked either in the primary or secondary scope.
 
       Args:
         request: (ComputeDisksStopGroupAsyncReplicationRequest) input message
@@ -2128,7 +2217,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the specified disk with the data included in the request. The update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: user_license.
+      r"""Updates the specified disk with the data included in the request.
+The update is performed only on selected fields included as part
+of update-mask. Only the following fields can be modified: user_license.
 
       Args:
         request: (ComputeDisksUpdateRequest) input message
@@ -2190,7 +2281,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified externalVpnGateway. Get a list of available externalVpnGateways by making a list() request.
+      r"""Returns the specified externalVpnGateway. Get a list of available.
+externalVpnGateways by making a list() request.
 
       Args:
         request: (ComputeExternalVpnGatewaysGetRequest) input message
@@ -2216,7 +2308,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a ExternalVpnGateway in the specified project using the data included in the request.
+      r"""Creates a ExternalVpnGateway in the specified project using.
+the data included in the request.
 
       Args:
         request: (ComputeExternalVpnGatewaysInsertRequest) input message
@@ -2242,7 +2335,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of ExternalVpnGateway available to the specified project.
+      r"""Retrieves the list of ExternalVpnGateway available to the specified.
+project.
 
       Args:
         request: (ComputeExternalVpnGatewaysListRequest) input message
@@ -2268,7 +2362,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on an ExternalVpnGateway. To learn more about labels, read the Labeling Resources documentation.
+      r"""Sets the labels on an ExternalVpnGateway. To learn more about labels,.
+read the Labeling
+Resources documentation.
 
       Args:
         request: (ComputeExternalVpnGatewaysSetLabelsRequest) input message
@@ -2486,7 +2582,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
 
       Args:
         request: (ComputeFirewallPoliciesGetIamPolicyRequest) input message
@@ -2538,7 +2635,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a new policy in the specified project using the data included in the request.
+      r"""Creates a new policy in the specified project using the data included in.
+the request.
 
       Args:
         request: (ComputeFirewallPoliciesInsertRequest) input message
@@ -2564,7 +2662,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all the policies that have been configured for the specified folder or organization.
+      r"""Lists all the policies that have been configured for the specified.
+folder or organization.
 
       Args:
         request: (ComputeFirewallPoliciesListRequest) input message
@@ -2746,7 +2845,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
 
       Args:
         request: (ComputeFirewallPoliciesSetIamPolicyRequest) input message
@@ -2860,7 +2960,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a firewall rule in the specified project using the data included in the request.
+      r"""Creates a firewall rule in the specified project using the data.
+included in the request.
 
       Args:
         request: (ComputeFirewallsInsertRequest) input message
@@ -2886,7 +2987,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of firewall rules available to the specified project.
+      r"""Retrieves the list of firewall rules available to the specified.
+project.
 
       Args:
         request: (ComputeFirewallsListRequest) input message
@@ -2912,7 +3014,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified firewall rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Updates the specified firewall rule with the data included in the.
+request. This method supportsPATCH
+semantics and uses theJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeFirewallsPatchRequest) input message
@@ -2938,7 +3043,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the specified firewall rule with the data included in the request. Note that all fields will be updated if using PUT, even fields that are not specified. To update individual fields, please use PATCH instead.
+      r"""Updates the specified firewall rule with the data included in the.
+request.
+Note that all fields will be updated if using PUT, even fields that are not
+specified. To update individual fields, please use PATCH instead.
 
       Args:
         request: (ComputeFirewallsUpdateRequest) input message
@@ -2974,7 +3082,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of forwarding rules. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of forwarding rules.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeForwardingRulesAggregatedListRequest) input message
@@ -3052,7 +3163,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a ForwardingRule resource in the specified project and region using the data included in the request.
+      r"""Creates a ForwardingRule resource in the specified project and region using.
+the data included in the request.
 
       Args:
         request: (ComputeForwardingRulesInsertRequest) input message
@@ -3078,7 +3190,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of ForwardingRule resources available to the specified project and region.
+      r"""Retrieves a list of ForwardingRule resources available to the specified.
+project and region.
 
       Args:
         request: (ComputeForwardingRulesListRequest) input message
@@ -3104,7 +3217,11 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified forwarding rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. Currently, you can only patch the network_tier field.
+      r"""Updates the specified forwarding rule with the data included in the.
+request. This method supportsPATCH
+semantics and uses theJSON merge
+patch format and processing rules. Currently, you can only
+patch the network_tier field.
 
       Args:
         request: (ComputeForwardingRulesPatchRequest) input message
@@ -3130,7 +3247,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on the specified resource. To learn more about labels, read the Labeling Resources documentation.
+      r"""Sets the labels on the specified resource. To learn more about labels,.
+read the 
+Labeling Resources documentation.
 
       Args:
         request: (ComputeForwardingRulesSetLabelsRequest) input message
@@ -3156,7 +3275,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetTarget(self, request, global_params=None):
-      r"""Changes target URL for forwarding rule. The new target should be of the same type as the old target.
+      r"""Changes target URL for forwarding rule. The new target should be of the.
+same type as the old target.
 
       Args:
         request: (ComputeForwardingRulesSetTargetRequest) input message
@@ -3177,6 +3297,202 @@ class ComputeV1(base_api.BaseApiClient):
         relative_path='projects/{project}/regions/{region}/forwardingRules/{forwardingRule}/setTarget',
         request_field='targetReference',
         request_type_name='ComputeForwardingRulesSetTargetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class FutureReservationsService(base_api.BaseApiService):
+    """Service class for the futureReservations resource."""
+
+    _NAME = 'futureReservations'
+
+    def __init__(self, client):
+      super(ComputeV1.FutureReservationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves an aggregated list of future reservations.
+
+To prevent failure, recommendation is that you set the
+`returnPartialSuccess` parameter to `true`.
+
+      Args:
+        request: (ComputeFutureReservationsAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FutureReservationsAggregatedListResponse) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.futureReservations.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
+        relative_path='projects/{project}/aggregated/futureReservations',
+        request_field='',
+        request_type_name='ComputeFutureReservationsAggregatedListRequest',
+        response_type_name='FutureReservationsAggregatedListResponse',
+        supports_download=False,
+    )
+
+    def Cancel(self, request, global_params=None):
+      r"""Cancel the specified future reservation.
+
+      Args:
+        request: (ComputeFutureReservationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.futureReservations.cancel',
+        ordered_params=['project', 'zone', 'futureReservation'],
+        path_params=['futureReservation', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/futureReservations/{futureReservation}/cancel',
+        request_field='',
+        request_type_name='ComputeFutureReservationsCancelRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified future reservation.
+
+      Args:
+        request: (ComputeFutureReservationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.futureReservations.delete',
+        ordered_params=['project', 'zone', 'futureReservation'],
+        path_params=['futureReservation', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/futureReservations/{futureReservation}',
+        request_field='',
+        request_type_name='ComputeFutureReservationsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves information about the specified future reservation.
+
+      Args:
+        request: (ComputeFutureReservationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FutureReservation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.futureReservations.get',
+        ordered_params=['project', 'zone', 'futureReservation'],
+        path_params=['futureReservation', 'project', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/futureReservations/{futureReservation}',
+        request_field='',
+        request_type_name='ComputeFutureReservationsGetRequest',
+        response_type_name='FutureReservation',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a new Future Reservation.
+
+      Args:
+        request: (ComputeFutureReservationsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.futureReservations.insert',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/futureReservations',
+        request_field='futureReservation',
+        request_type_name='ComputeFutureReservationsInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""A list of all the future reservations that have been configured for the.
+specified project in specified zone.
+
+      Args:
+        request: (ComputeFutureReservationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FutureReservationsListResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.futureReservations.list',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/zones/{zone}/futureReservations',
+        request_field='',
+        request_type_name='ComputeFutureReservationsListRequest',
+        response_type_name='FutureReservationsListResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Updates the specified future reservation.
+
+      Args:
+        request: (ComputeFutureReservationsUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.futureReservations.update',
+        ordered_params=['project', 'zone', 'futureReservation'],
+        path_params=['futureReservation', 'project', 'zone'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='projects/{project}/zones/{zone}/futureReservations/{futureReservation}',
+        request_field='futureReservationResource',
+        request_type_name='ComputeFutureReservationsUpdateRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -3244,7 +3560,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates an address resource in the specified project by using the data included in the request.
+      r"""Creates an address resource in the specified project by using the data.
+included in the request.
 
       Args:
         request: (ComputeGlobalAddressesInsertRequest) input message
@@ -3322,7 +3639,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on a GlobalAddress. To learn more about labels, read the Labeling Resources documentation.
+      r"""Sets the labels on a GlobalAddress. To learn more about labels, read theLabeling.
+Resources documentation.
 
       Args:
         request: (ComputeGlobalAddressesSetLabelsRequest) input message
@@ -3410,7 +3728,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified GlobalForwardingRule resource. Gets a list of available forwarding rules by making a list() request.
+      r"""Returns the specified GlobalForwardingRule resource. Gets a list of.
+available forwarding rules by making a list() request.
 
       Args:
         request: (ComputeGlobalForwardingRulesGetRequest) input message
@@ -3436,7 +3755,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a GlobalForwardingRule resource in the specified project using the data included in the request.
+      r"""Creates a GlobalForwardingRule resource in the specified project using.
+the data included in the request.
 
       Args:
         request: (ComputeGlobalForwardingRulesInsertRequest) input message
@@ -3462,7 +3782,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of GlobalForwardingRule resources available to the specified project.
+      r"""Retrieves a list of GlobalForwardingRule resources available to the.
+specified project.
 
       Args:
         request: (ComputeGlobalForwardingRulesListRequest) input message
@@ -3488,7 +3809,11 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified forwarding rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. Currently, you can only patch the network_tier field.
+      r"""Updates the specified forwarding rule with the data included in the.
+request. This method supportsPATCH
+semantics and uses theJSON merge
+patch format and processing rules. Currently, you can only
+patch the network_tier field.
 
       Args:
         request: (ComputeGlobalForwardingRulesPatchRequest) input message
@@ -3514,7 +3839,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on the specified resource. To learn more about labels, read the Labeling resources documentation.
+      r"""Sets the labels on the specified resource. To learn more about labels,.
+read the 
+Labeling resources documentation.
 
       Args:
         request: (ComputeGlobalForwardingRulesSetLabelsRequest) input message
@@ -3540,7 +3867,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetTarget(self, request, global_params=None):
-      r"""Changes target URL for the GlobalForwardingRule resource. The new target should be of the same type as the old target.
+      r"""Changes target URL for the GlobalForwardingRule resource. The new target.
+should be of the same type as the old target.
 
       Args:
         request: (ComputeGlobalForwardingRulesSetTargetRequest) input message
@@ -3602,7 +3930,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified network endpoint group.Note that the NEG cannot be deleted if there are backend services referencing it.
+      r"""Deletes the specified network endpoint group.Note that the NEG cannot be.
+deleted if there are backend services referencing it.
 
       Args:
         request: (ComputeGlobalNetworkEndpointGroupsDeleteRequest) input message
@@ -3680,7 +4009,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a network endpoint group in the specified project using the parameters that are included in the request.
+      r"""Creates a network endpoint group in the specified project using the.
+parameters that are included in the request.
 
       Args:
         request: (ComputeGlobalNetworkEndpointGroupsInsertRequest) input message
@@ -3706,7 +4036,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of network endpoint groups that are located in the specified project.
+      r"""Retrieves the list of network endpoint groups that are located in the.
+specified project.
 
       Args:
         request: (ComputeGlobalNetworkEndpointGroupsListRequest) input message
@@ -3768,7 +4099,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of all operations. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of all operations.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeGlobalOperationsAggregatedListRequest) input message
@@ -3846,7 +4180,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of Operation resources contained within the specified project.
+      r"""Retrieves a list of Operation resources contained within the specified.
+project.
 
       Args:
         request: (ComputeGlobalOperationsListRequest) input message
@@ -3872,7 +4207,22 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Wait(self, request, global_params=None):
-      r"""Waits for the specified Operation resource to return as `DONE` or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method differs from the `GET` method in that it waits for no more than the default deadline (2 minutes) and then returns the current state of the operation, which might be `DONE` or still in progress. This method is called on a best-effort basis. Specifically: - In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds. - If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not `DONE`. .
+      r"""Waits for the specified Operation resource to return as `DONE`.
+or for the request to approach the 2 minute deadline, and retrieves the
+specified Operation resource. This method differs from the
+`GET` method in that it waits for no more than the default
+deadline (2 minutes) and then returns the current state of the operation,
+which might be `DONE` or still in progress.
+
+This method is called on a best-effort basis. Specifically:
+   
+   
+    - In uncommon cases, when the server is overloaded, the request might
+    return before the default deadline is reached, or might return after zero
+    seconds.
+   - If the default deadline is reached, there is no guarantee that the
+    operation is actually done when the method returns. Be prepared to retry
+    if the operation is not `DONE`.
 
       Args:
         request: (ComputeGlobalOperationsWaitRequest) input message
@@ -3934,7 +4284,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves the specified Operations resource. Gets a list of operations by making a `list()` request.
+      r"""Retrieves the specified Operations resource. Gets a list of operations.
+by making a `list()` request.
 
       Args:
         request: (ComputeGlobalOrganizationOperationsGetRequest) input message
@@ -3960,7 +4311,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of Operation resources contained within the specified organization.
+      r"""Retrieves a list of Operation resources contained within the specified.
+organization.
 
       Args:
         request: (ComputeGlobalOrganizationOperationsListRequest) input message
@@ -4048,7 +4400,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a global PublicDelegatedPrefix in the specified project using the parameters that are included in the request.
+      r"""Creates a global PublicDelegatedPrefix in the specified project using the.
+parameters that are included in the request.
 
       Args:
         request: (ComputeGlobalPublicDelegatedPrefixesInsertRequest) input message
@@ -4100,7 +4453,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified global PublicDelegatedPrefix resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+      r"""Patches the specified global PublicDelegatedPrefix resource with the data.
+included in the request. This method supportsPATCH
+semantics and usesJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeGlobalPublicDelegatedPrefixesPatchRequest) input message
@@ -4136,7 +4492,11 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all HealthCheck resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves the list of all HealthCheck resources, regional and global,.
+available to the specified project.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeHealthChecksAggregatedListRequest) input message
@@ -4214,7 +4574,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a HealthCheck resource in the specified project using the data included in the request.
+      r"""Creates a HealthCheck resource in the specified project using the data.
+included in the request.
 
       Args:
         request: (ComputeHealthChecksInsertRequest) input message
@@ -4240,7 +4601,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of HealthCheck resources available to the specified project.
+      r"""Retrieves the list of HealthCheck resources available to the specified.
+project.
 
       Args:
         request: (ComputeHealthChecksListRequest) input message
@@ -4266,7 +4628,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a HealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Updates a HealthCheck resource in the specified project using the data.
+included in the request. This method supportsPATCH
+semantics and uses theJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeHealthChecksPatchRequest) input message
@@ -4292,7 +4657,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates a HealthCheck resource in the specified project using the data included in the request.
+      r"""Updates a HealthCheck resource in the specified project using the data.
+included in the request.
 
       Args:
         request: (ComputeHealthChecksUpdateRequest) input message
@@ -4380,7 +4746,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a HttpHealthCheck resource in the specified project using the data included in the request.
+      r"""Creates a HttpHealthCheck resource in the specified project using the data.
+included in the request.
 
       Args:
         request: (ComputeHttpHealthChecksInsertRequest) input message
@@ -4406,7 +4773,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of HttpHealthCheck resources available to the specified project.
+      r"""Retrieves the list of HttpHealthCheck resources available to the specified.
+project.
 
       Args:
         request: (ComputeHttpHealthChecksListRequest) input message
@@ -4432,7 +4800,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a HttpHealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Updates a HttpHealthCheck resource in the specified project using the data.
+included in the request. This method supportsPATCH
+semantics and uses theJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeHttpHealthChecksPatchRequest) input message
@@ -4458,7 +4829,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates a HttpHealthCheck resource in the specified project using the data included in the request.
+      r"""Updates a HttpHealthCheck resource in the specified project using the data.
+included in the request.
 
       Args:
         request: (ComputeHttpHealthChecksUpdateRequest) input message
@@ -4546,7 +4918,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a HttpsHealthCheck resource in the specified project using the data included in the request.
+      r"""Creates a HttpsHealthCheck resource in the specified project using the data.
+included in the request.
 
       Args:
         request: (ComputeHttpsHealthChecksInsertRequest) input message
@@ -4572,7 +4945,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of HttpsHealthCheck resources available to the specified project.
+      r"""Retrieves the list of HttpsHealthCheck resources available to the specified.
+project.
 
       Args:
         request: (ComputeHttpsHealthChecksListRequest) input message
@@ -4598,7 +4972,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a HttpsHealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Updates a HttpsHealthCheck resource in the specified project using the data.
+included in the request. This method supportsPATCH
+semantics and uses theJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeHttpsHealthChecksPatchRequest) input message
@@ -4624,7 +5001,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates a HttpsHealthCheck resource in the specified project using the data included in the request.
+      r"""Updates a HttpsHealthCheck resource in the specified project using the data.
+included in the request.
 
       Args:
         request: (ComputeHttpsHealthChecksUpdateRequest) input message
@@ -4660,7 +5038,8 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Returns the latest image that is part of an image family, is not deprecated and is rolled out in the specified zone.
+      r"""Returns the latest image that is part of an image family, is not.
+deprecated and is rolled out in the specified zone.
 
       Args:
         request: (ComputeImageFamilyViewsGetRequest) input message
@@ -4722,7 +5101,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Deprecate(self, request, global_params=None):
-      r"""Sets the deprecation status of an image. If an empty request body is given, clears the deprecation status instead.
+      r"""Sets the deprecation status of an image.
+
+If an empty request body is given, clears the deprecation status instead.
 
       Args:
         request: (ComputeImagesDeprecateRequest) input message
@@ -4774,7 +5155,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetFromFamily(self, request, global_params=None):
-      r"""Returns the latest image that is part of an image family and is not deprecated. For more information on image families, see Public image families documentation.
+      r"""Returns the latest image that is part of an image family and is not.
+deprecated. For more information on image families, seePublic
+image families documentation.
 
       Args:
         request: (ComputeImagesGetFromFamilyRequest) input message
@@ -4800,7 +5183,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
 
       Args:
         request: (ComputeImagesGetIamPolicyRequest) input message
@@ -4826,7 +5210,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates an image in the specified project using the data included in the request.
+      r"""Creates an image in the specified project using the data included.
+in the request.
 
       Args:
         request: (ComputeImagesInsertRequest) input message
@@ -4852,7 +5237,13 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of custom images available to the specified project. Custom images are images you create that belong to your project. This method does not get any images that belong to other projects, including publicly-available images, like Debian 8. If you want to get a list of publicly-available images, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.
+      r"""Retrieves the list of custom images.
+available to the specified project. Custom images are images you
+create that belong to your project. This method does not
+get any images that belong to other projects, including publicly-available
+images, like Debian 8. If you want to get a list of publicly-available
+images, use this method to make a request to the respective image project,
+such as debian-cloud or windows-cloud.
 
       Args:
         request: (ComputeImagesListRequest) input message
@@ -4878,7 +5269,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified image with the data included in the request. Only the following fields can be modified: family, description, deprecation status.
+      r"""Patches the specified image with the data included in the request.
+Only the following fields can be modified: family, description,
+deprecation status.
 
       Args:
         request: (ComputeImagesPatchRequest) input message
@@ -4904,7 +5297,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
 
       Args:
         request: (ComputeImagesSetIamPolicyRequest) input message
@@ -4930,7 +5324,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on an image. To learn more about labels, read the Labeling Resources documentation.
+      r"""Sets the labels on an image. To learn more about labels, read theLabeling.
+Resources documentation.
 
       Args:
         request: (ComputeImagesSetLabelsRequest) input message
@@ -4992,7 +5387,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Cancels the specified resize request and removes it from the queue. Cancelled resize request does no longer wait for the resources to be provisioned. Cancel is only possible for requests that are accepted in the queue.
+      r"""Cancels the specified resize request and removes it from the queue.
+Cancelled resize request does no longer wait for the resources to be
+provisioned. Cancel is only possible for requests that are accepted in the
+queue.
 
       Args:
         request: (ComputeInstanceGroupManagerResizeRequestsCancelRequest) input message
@@ -5018,7 +5416,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified, inactive resize request. Requests that are still active cannot be deleted. Deleting request does not delete instances that were provisioned previously.
+      r"""Deletes the specified, inactive resize request. Requests that are still.
+active cannot be deleted. Deleting request does not delete instances that
+were provisioned previously.
 
       Args:
         request: (ComputeInstanceGroupManagerResizeRequestsDeleteRequest) input message
@@ -5070,7 +5470,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a new resize request that starts provisioning VMs immediately or queues VM creation.
+      r"""Creates a new resize request that starts provisioning VMs immediately.
+or queues VM creation.
 
       Args:
         request: (ComputeInstanceGroupManagerResizeRequestsInsertRequest) input message
@@ -5096,7 +5497,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of resize requests that are contained in the managed instance group.
+      r"""Retrieves a list of resize requests that are contained in the.
+managed instance group.
 
       Args:
         request: (ComputeInstanceGroupManagerResizeRequestsListRequest) input message
@@ -5132,7 +5534,21 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AbandonInstances(self, request, global_params=None):
-      r"""Flags the specified instances to be removed from the managed instance group. Abandoning an instance does not delete the instance, but it does remove the instance from any target pools that are applied by the managed instance group. This method reduces the targetSize of the managed instance group by the number of instances that you abandon. This operation is marked as DONE when the action is scheduled even if the instances have not yet been removed from the group. You must separately verify the status of the abandoning action with the listmanagedinstances method. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted. You can specify a maximum of 1000 instances with this method per request.
+      r"""Flags the specified instances to be removed from the.
+managed instance group. Abandoning an instance does not delete the
+instance, but it does remove the instance from any target pools that are
+applied by the managed instance group. This method reduces thetargetSize of the managed instance group by the
+number of instances that you abandon. This operation is marked asDONE when the action is scheduled even if the instances have
+not yet been removed from the group. You must separately verify the
+status of the abandoning action with thelistmanagedinstances
+method.
+
+If the group is part of a backend
+service that has enabled
+connection draining, it can take up to 60 seconds after the connection
+draining duration has elapsed before the VM instance is removed or deleted.
+
+You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeInstanceGroupManagersAbandonInstancesRequest) input message
@@ -5158,7 +5574,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of managed instance groups and groups them by zone. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves the list of managed instance groups and groups them by zone.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeInstanceGroupManagersAggregatedListRequest) input message
@@ -5184,7 +5603,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def ApplyUpdatesToInstances(self, request, global_params=None):
-      r"""Applies changes to selected instances on the managed instance group. This method can be used to apply new overrides and/or new versions.
+      r"""Applies changes to selected instances on the managed instance group.
+This method can be used to apply new overrides and/or new versions.
 
       Args:
         request: (ComputeInstanceGroupManagersApplyUpdatesToInstancesRequest) input message
@@ -5210,7 +5630,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def CreateInstances(self, request, global_params=None):
-      r"""Creates instances with per-instance configurations in this managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.
+      r"""Creates instances with per-instance configurations in this managed instance.
+group. Instances are created using the current instance template. Thecreate instances operation is marked DONE if thecreateInstances request is successful. The underlying actions
+take additional time. You must separately verify the status of thecreating or actions with the listmanagedinstances
+method.
 
       Args:
         request: (ComputeInstanceGroupManagersCreateInstancesRequest) input message
@@ -5236,7 +5659,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified managed instance group and all of the instances in that group. Note that the instance group must not belong to a backend service. Read Deleting an instance group for more information.
+      r"""Deletes the specified managed instance group and all of the instances.
+in that group. Note that the instance group must not belong to a
+backend service. Read
+Deleting an instance group for more information.
 
       Args:
         request: (ComputeInstanceGroupManagersDeleteRequest) input message
@@ -5262,7 +5688,21 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def DeleteInstances(self, request, global_params=None):
-      r"""Flags the specified instances in the managed instance group for immediate deletion. The instances are also removed from any target pools of which they were a member. This method reduces the targetSize of the managed instance group by the number of instances that you delete. This operation is marked as DONE when the action is scheduled even if the instances are still being deleted. You must separately verify the status of the deleting action with the listmanagedinstances method. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted. You can specify a maximum of 1000 instances with this method per request.
+      r"""Flags the specified instances in the managed instance group for immediate.
+deletion. The instances are also removed from any target
+pools of which they were a member. This method reduces thetargetSize of the managed instance group by the number of
+instances that you delete. This operation is marked as DONE
+when the action is scheduled even if the instances are still being deleted.
+You must separately verify the status of the deleting action
+with thelistmanagedinstances
+method.
+
+If the group is part of a backend
+service that has enabled
+connection draining, it can take up to 60 seconds after the connection
+draining duration has elapsed before the VM instance is removed or deleted.
+
+You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeInstanceGroupManagersDeleteInstancesRequest) input message
@@ -5288,7 +5728,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def DeletePerInstanceConfigs(self, request, global_params=None):
-      r"""Deletes selected per-instance configurations for the managed instance group.
+      r"""Deletes selected per-instance configurations for the managed instance.
+group.
 
       Args:
         request: (ComputeInstanceGroupManagersDeletePerInstanceConfigsRequest) input message
@@ -5340,7 +5781,17 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a managed instance group using the information that you specify in the request. After the group is created, instances in the group are created using the specified instance template. This operation is marked as DONE when the group is created even if the instances in the group have not yet been created. You must separately verify the status of the individual instances with the listmanagedinstances method. A managed instance group can have up to 1000 VM instances per group. Please contact Cloud Support if you need an increase in this limit.
+      r"""Creates a managed instance group using the information that you specify.
+in the request. After the group is created, instances in the group are
+created using the specified instance template.
+This operation is marked as DONE when the group is created
+even if the instances in the group have not yet been created. You
+must separately verify the status of the individual instances with thelistmanagedinstances
+method.
+
+A managed instance group can have up to 1000 VM instances per group. Please
+contact Cloud Support if you need an increase in
+this limit.
 
       Args:
         request: (ComputeInstanceGroupManagersInsertRequest) input message
@@ -5366,7 +5817,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of managed instance groups that are contained within the specified project and zone.
+      r"""Retrieves a list of managed instance groups that are contained within the.
+specified project and zone.
 
       Args:
         request: (ComputeInstanceGroupManagersListRequest) input message
@@ -5392,7 +5844,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def ListErrors(self, request, global_params=None):
-      r"""Lists all errors thrown by actions on instances for a given managed instance group. The filter and orderBy query parameters are not supported.
+      r"""Lists all errors thrown by actions on instances for a given managed.
+instance group. The filter and orderBy query
+parameters are not supported.
 
       Args:
         request: (ComputeInstanceGroupManagersListErrorsRequest) input message
@@ -5418,7 +5872,15 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def ListManagedInstances(self, request, global_params=None):
-      r"""Lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action. The orderBy query parameter is not supported. The `pageToken` query parameter is supported only if the group's `listManagedInstancesResults` field is set to `PAGINATED`.
+      r"""Lists all of the instances in the managed instance group. Each instance.
+in the list has a currentAction, which indicates the action
+that the managed instance group is performing on the instance. For example,
+if the group is still creating an instance, the currentAction
+is CREATING. If a previous action failed, the
+list displays the errors for that failed action. The orderBy
+query parameter is not supported. The `pageToken` query parameter is
+supported only if the group's `listManagedInstancesResults` field is set
+to `PAGINATED`.
 
       Args:
         request: (ComputeInstanceGroupManagersListManagedInstancesRequest) input message
@@ -5444,7 +5906,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def ListPerInstanceConfigs(self, request, global_params=None):
-      r"""Lists all of the per-instance configurations defined for the managed instance group. The orderBy query parameter is not supported.
+      r"""Lists all of the per-instance configurations defined for the managed.
+instance group. The orderBy query parameter is not supported.
 
       Args:
         request: (ComputeInstanceGroupManagersListPerInstanceConfigsRequest) input message
@@ -5470,7 +5933,21 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listManagedInstances method. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. If you update your group to specify a new template or instance configuration, it's possible that your intended specification for each VM in the group is different from the current state of that VM. To learn how to apply an updated configuration to the VMs in a MIG, see Updating instances in a MIG.
+      r"""Updates a managed instance group using the information that you specify.
+in the request.
+This operation is marked as DONE when the group is patched
+even if the instances in the group are still in the process of being
+patched. You must separately verify the status of the individual instances
+with thelistManagedInstances
+method. This method supportsPATCH
+semantics and uses theJSON merge
+patch format and processing rules.
+
+If you update your group to specify a new template or instance
+configuration, it's possible that your intended specification for each VM
+in the group is different from the current state of that VM. To learn how
+to apply an updated configuration to the VMs in a MIG, seeUpdating instances in
+a MIG.
 
       Args:
         request: (ComputeInstanceGroupManagersPatchRequest) input message
@@ -5496,7 +5973,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def PatchPerInstanceConfigs(self, request, global_params=None):
-      r"""Inserts or patches per-instance configurations for the managed instance group. perInstanceConfig.name serves as a key used to distinguish whether to perform insert or patch.
+      r"""Inserts or patches per-instance configurations for the managed instance.
+group. perInstanceConfig.name serves as a key used to
+distinguish whether to perform insert or patch.
 
       Args:
         request: (ComputeInstanceGroupManagersPatchPerInstanceConfigsRequest) input message
@@ -5522,7 +6001,19 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def RecreateInstances(self, request, global_params=None):
-      r"""Flags the specified VM instances in the managed instance group to be immediately recreated. Each instance is recreated using the group's current configuration. This operation is marked as DONE when the flag is set even if the instances have not yet been recreated. You must separately verify the status of each instance by checking its currentAction field; for more information, see Checking the status of managed instances. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted. You can specify a maximum of 1000 instances with this method per request.
+      r"""Flags the specified VM instances in the managed instance group to be.
+immediately recreated. Each instance is recreated using the group's current
+configuration. This operation is marked as DONE when the flag
+is set even if the instances have not yet been recreated. You must
+separately verify the status of each instance by checking itscurrentAction field; for more information, see Checking
+the status of managed instances.
+
+If the group is part of a backend
+service that has enabled
+connection draining, it can take up to 60 seconds after the connection
+draining duration has elapsed before the VM instance is removed or deleted.
+
+You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeInstanceGroupManagersRecreateInstancesRequest) input message
@@ -5548,7 +6039,29 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Resize(self, request, global_params=None):
-      r"""Resizes the managed instance group. If you increase the size, the group creates new instances using the current instance template. If you decrease the size, the group deletes instances. The resize operation is marked DONE when the resize actions are scheduled even if the group has not yet added or deleted any instances. You must separately verify the status of the creating or deleting actions with the listmanagedinstances method. When resizing down, the instance group arbitrarily chooses the order in which VMs are deleted. The group takes into account some VM attributes when making the selection including: + The status of the VM instance. + The health of the VM instance. + The instance template version the VM is based on. + For regional managed instance groups, the location of the VM instance. This list is subject to change. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
+      r"""Resizes the managed instance group. If you increase the size, the group.
+creates new instances using the current instance template. If you decrease
+the size, the group deletes instances. The resize operation is markedDONE when the resize actions are scheduled even if the group
+has not yet added or deleted any instances. You must separately
+verify the status of the creating or deleting
+actions with thelistmanagedinstances
+method.
+
+When resizing down, the instance group arbitrarily chooses the order in
+which VMs are deleted. The group takes into account some VM attributes when
+making the selection including:
+
++ The status of the VM instance.
++ The health of the VM instance.
++ The instance template version the VM is based on.
++ For regional managed instance groups, the location of the VM instance.
+
+This list is subject to change.
+
+If the group is part of a backend
+service that has enabled
+connection draining, it can take up to 60 seconds after the connection
+draining duration has elapsed before the VM instance is removed or deleted.
 
       Args:
         request: (ComputeInstanceGroupManagersResizeRequest) input message
@@ -5574,7 +6087,22 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def ResumeInstances(self, request, global_params=None):
-      r"""Flags the specified instances in the managed instance group to be resumed. This method increases the targetSize and decreases the targetSuspendedSize of the managed instance group by the number of instances that you resume. The resumeInstances operation is marked DONE if the resumeInstances request is successful. The underlying actions take additional time. You must separately verify the status of the RESUMING action with the listmanagedinstances method. In this request, you can only specify instances that are suspended. For example, if an instance was previously suspended using the suspendInstances method, it can be resumed using the resumeInstances method. If a health check is attached to the managed instance group, the specified instances will be verified as healthy after they are resumed. You can specify a maximum of 1000 instances with this method per request.
+      r"""Flags the specified instances in the managed instance group to be.
+resumed. This method increases thetargetSize and decreases the targetSuspendedSize
+of the managed instance group by the number of instances that you resume.
+The resumeInstances operation is marked DONE if
+the resumeInstances request is successful. The underlying
+actions take additional time. You must separately verify the status of theRESUMING action with thelistmanagedinstances
+method.
+
+In this request, you can only specify instances that are suspended. For
+example, if an instance was previously suspended using the suspendInstances
+method, it can be resumed using the resumeInstances method.
+
+If a health check is attached to the managed instance group, the specified
+instances will be verified as healthy after they are resumed.
+
+You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeInstanceGroupManagersResumeInstancesRequest) input message
@@ -5600,7 +6128,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetInstanceTemplate(self, request, global_params=None):
-      r"""Specifies the instance template to use when creating new instances in this group. The templates for existing instances in the group do not change unless you run recreateInstances, run applyUpdatesToInstances, or set the group's updatePolicy.type to PROACTIVE.
+      r"""Specifies the instance template to use when creating new instances in this.
+group. The templates for existing instances in the group do not change
+unless you run recreateInstances, runapplyUpdatesToInstances, or set the group'supdatePolicy.type to PROACTIVE.
 
       Args:
         request: (ComputeInstanceGroupManagersSetInstanceTemplateRequest) input message
@@ -5626,7 +6156,12 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetTargetPools(self, request, global_params=None):
-      r"""Modifies the target pools to which all instances in this managed instance group are assigned. The target pools automatically apply to all of the instances in the managed instance group. This operation is marked DONE when you make the request even if the instances have not yet been added to their target pools. The change might take some time to apply to all of the instances in the group depending on the size of the group.
+      r"""Modifies the target pools to which all instances in this managed instance.
+group are assigned. The target pools automatically apply to all of the
+instances in the managed instance group. This operation is markedDONE when you make the request even if the instances have not
+yet been added to their target pools. The change might take some time to
+apply to all of the instances in the group depending on the size of the
+group.
 
       Args:
         request: (ComputeInstanceGroupManagersSetTargetPoolsRequest) input message
@@ -5652,7 +6187,22 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def StartInstances(self, request, global_params=None):
-      r"""Flags the specified instances in the managed instance group to be started. This method increases the targetSize and decreases the targetStoppedSize of the managed instance group by the number of instances that you start. The startInstances operation is marked DONE if the startInstances request is successful. The underlying actions take additional time. You must separately verify the status of the STARTING action with the listmanagedinstances method. In this request, you can only specify instances that are stopped. For example, if an instance was previously stopped using the stopInstances method, it can be started using the startInstances method. If a health check is attached to the managed instance group, the specified instances will be verified as healthy after they are started. You can specify a maximum of 1000 instances with this method per request.
+      r"""Flags the specified instances in the managed instance group to be.
+started. This method increases thetargetSize and decreases the targetStoppedSize
+of the managed instance group by the number of instances that you start.
+The startInstances operation is marked DONE if
+the startInstances request is successful. The underlying
+actions take additional time. You must separately verify the status of theSTARTING action with thelistmanagedinstances
+method.
+
+In this request, you can only specify instances that are stopped. For
+example, if an instance was previously stopped using the stopInstances
+method, it can be started using the startInstances method.
+
+If a health check is attached to the managed instance group, the specified
+instances will be verified as healthy after they are started.
+
+You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeInstanceGroupManagersStartInstancesRequest) input message
@@ -5678,7 +6228,31 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def StopInstances(self, request, global_params=None):
-      r"""Flags the specified instances in the managed instance group to be immediately stopped. You can only specify instances that are running in this request. This method reduces the targetSize and increases the targetStoppedSize of the managed instance group by the number of instances that you stop. The stopInstances operation is marked DONE if the stopInstances request is successful. The underlying actions take additional time. You must separately verify the status of the STOPPING action with the listmanagedinstances method. If the standbyPolicy.initialDelaySec field is set, the group delays stopping the instances until initialDelaySec have passed from instance.creationTimestamp (that is, when the instance was created). This delay gives your application time to set itself up and initialize on the instance. If more than initialDelaySec seconds have passed since instance.creationTimestamp when this method is called, there will be zero delay. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is stopped. Stopped instances can be started using the startInstances method. You can specify a maximum of 1000 instances with this method per request.
+      r"""Flags the specified instances in the managed instance group to be.
+immediately stopped. You can only specify instances that are running in
+this request. This method reduces thetargetSize and increases the targetStoppedSize
+of the managed instance group by the number of instances that you stop.
+The stopInstances operation is marked DONE if
+the stopInstances request is successful. The underlying
+actions take additional time. You must separately verify the status of theSTOPPING action with thelistmanagedinstances
+method.
+
+If the standbyPolicy.initialDelaySec field is set, the group
+delays stopping the instances until initialDelaySec have
+passed from instance.creationTimestamp (that is, when the
+instance was created). This delay gives your application time to
+set itself up and initialize on the instance. If more thaninitialDelaySec seconds have passed sinceinstance.creationTimestamp when this method is called, there
+will be zero delay.
+
+If the group is part of a backend
+service that has enabled
+connection draining, it can take up to 60 seconds after the connection
+draining duration has elapsed before the VM instance is stopped.
+
+Stopped instances can be started using the startInstances
+method.
+
+You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeInstanceGroupManagersStopInstancesRequest) input message
@@ -5704,7 +6278,31 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SuspendInstances(self, request, global_params=None):
-      r"""Flags the specified instances in the managed instance group to be immediately suspended. You can only specify instances that are running in this request. This method reduces the targetSize and increases the targetSuspendedSize of the managed instance group by the number of instances that you suspend. The suspendInstances operation is marked DONE if the suspendInstances request is successful. The underlying actions take additional time. You must separately verify the status of the SUSPENDING action with the listmanagedinstances method. If the standbyPolicy.initialDelaySec field is set, the group delays suspension of the instances until initialDelaySec have passed from instance.creationTimestamp (that is, when the instance was created). This delay gives your application time to set itself up and initialize on the instance. If more than initialDelaySec seconds have passed since instance.creationTimestamp when this method is called, there will be zero delay. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is suspended. Suspended instances can be resumed using the resumeInstances method. You can specify a maximum of 1000 instances with this method per request.
+      r"""Flags the specified instances in the managed instance group to be.
+immediately suspended. You can only specify instances that are running in
+this request. This method reduces thetargetSize and increases the targetSuspendedSize
+of the managed instance group by the number of instances that you suspend.
+The suspendInstances operation is marked DONE if
+the suspendInstances request is successful. The underlying
+actions take additional time. You must separately verify the status of theSUSPENDING action with thelistmanagedinstances
+method.
+
+If the standbyPolicy.initialDelaySec field is set, the group
+delays suspension of the instances until initialDelaySec have
+passed from instance.creationTimestamp (that is, when the
+instance was created). This delay gives your application time to
+set itself up and initialize on the instance. If more thaninitialDelaySec seconds have passed sinceinstance.creationTimestamp when this method is called, there
+will be zero delay.
+
+If the group is part of a backend
+service that has enabled
+connection draining, it can take up to 60 seconds after the connection
+draining duration has elapsed before the VM instance is suspended.
+
+Suspended instances can be resumed using the resumeInstances
+method.
+
+You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeInstanceGroupManagersSuspendInstancesRequest) input message
@@ -5730,7 +6328,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def UpdatePerInstanceConfigs(self, request, global_params=None):
-      r"""Inserts or updates per-instance configurations for the managed instance group. perInstanceConfig.name serves as a key used to distinguish whether to perform insert or patch.
+      r"""Inserts or updates per-instance configurations for the managed instance.
+group. perInstanceConfig.name serves as a key used to
+distinguish whether to perform insert or patch.
 
       Args:
         request: (ComputeInstanceGroupManagersUpdatePerInstanceConfigsRequest) input message
@@ -5766,7 +6366,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AddInstances(self, request, global_params=None):
-      r"""Adds a list of instances to the specified instance group. All of the instances in the instance group must be in the same network/subnetwork. Read Adding instances for more information.
+      r"""Adds a list of instances to the specified instance group.  All of the.
+instances in the instance group must be in the same network/subnetwork.
+Read 
+Adding instances for more information.
 
       Args:
         request: (ComputeInstanceGroupsAddInstancesRequest) input message
@@ -5792,7 +6395,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of instance groups and sorts them by zone. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves the list of instance groups and sorts them by zone.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeInstanceGroupsAggregatedListRequest) input message
@@ -5818,7 +6424,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified instance group. The instances in the group are not deleted. Note that instance group must not belong to a backend service. Read Deleting an instance group for more information.
+      r"""Deletes the specified instance group. The instances in the group are not.
+deleted. Note that instance group must not belong to a backend service.
+Read
+Deleting an instance group for more information.
 
       Args:
         request: (ComputeInstanceGroupsDeleteRequest) input message
@@ -5844,7 +6453,12 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified zonal instance group. Get a list of available zonal instance groups by making a list() request. For managed instance groups, use the instanceGroupManagers or regionInstanceGroupManagers methods instead.
+      r"""Returns the specified zonal instance group. Get a list of available zonal.
+instance groups by making a list() request.
+
+For managed instance groups, use theinstanceGroupManagers
+or regionInstanceGroupManagers
+methods instead.
 
       Args:
         request: (ComputeInstanceGroupsGetRequest) input message
@@ -5870,7 +6484,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates an instance group in the specified project using the parameters that are included in the request.
+      r"""Creates an instance group in the specified project using the.
+parameters that are included in the request.
 
       Args:
         request: (ComputeInstanceGroupsInsertRequest) input message
@@ -5896,7 +6511,12 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of zonal instance group resources contained within the specified zone. For managed instance groups, use the instanceGroupManagers or regionInstanceGroupManagers methods instead.
+      r"""Retrieves the list of zonal instance group resources contained within the.
+specified zone.
+
+For managed instance groups, use theinstanceGroupManagers
+or regionInstanceGroupManagers
+methods instead.
 
       Args:
         request: (ComputeInstanceGroupsListRequest) input message
@@ -5922,7 +6542,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def ListInstances(self, request, global_params=None):
-      r"""Lists the instances in the specified instance group. The orderBy query parameter is not supported. The filter query parameter is supported, but only for expressions that use `eq` (equal) or `ne` (not equal) operators.
+      r"""Lists the instances in the specified instance group.
+The orderBy query parameter is not supported.
+The filter query parameter is supported, but only for
+expressions that use `eq` (equal) or `ne` (not equal) operators.
 
       Args:
         request: (ComputeInstanceGroupsListInstancesRequest) input message
@@ -5948,7 +6571,13 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def RemoveInstances(self, request, global_params=None):
-      r"""Removes one or more instances from the specified instance group, but does not delete those instances. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration before the VM instance is removed or deleted.
+      r"""Removes one or more instances from the specified instance group, but does.
+not delete those instances.
+
+If the group is part of a backend
+service that has enabled
+connection draining, it can take up to 60 seconds after the connection
+draining duration before the VM instance is removed or deleted.
 
       Args:
         request: (ComputeInstanceGroupsRemoveInstancesRequest) input message
@@ -6098,7 +6727,11 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all InstanceTemplates resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves the list of all InstanceTemplates resources, regional and global,.
+available to the specified project.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeInstanceTemplatesAggregatedListRequest) input message
@@ -6124,7 +6757,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified instance template. Deleting an instance template is permanent and cannot be undone. It is not possible to delete templates that are already in use by a managed instance group.
+      r"""Deletes the specified instance template. Deleting an instance template is.
+permanent and cannot be undone. It is not possible to delete templates
+that are already in use by a managed instance group.
 
       Args:
         request: (ComputeInstanceTemplatesDeleteRequest) input message
@@ -6176,7 +6811,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
 
       Args:
         request: (ComputeInstanceTemplatesGetIamPolicyRequest) input message
@@ -6202,7 +6838,11 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates an instance template in the specified project using the data that is included in the request. If you are creating a new template to update an existing instance group, your new instance template must use the same network or, if applicable, the same subnetwork as the original template.
+      r"""Creates an instance template in the specified project using the.
+data that is included in the request. If you are creating a new template to
+update an existing instance group, your new instance template must use the
+same network or, if applicable, the same subnetwork as the original
+template.
 
       Args:
         request: (ComputeInstanceTemplatesInsertRequest) input message
@@ -6228,7 +6868,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of instance templates that are contained within the specified project.
+      r"""Retrieves a list of instance templates that are contained within.
+the specified project.
 
       Args:
         request: (ComputeInstanceTemplatesListRequest) input message
@@ -6254,7 +6895,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
 
       Args:
         request: (ComputeInstanceTemplatesSetIamPolicyRequest) input message
@@ -6368,7 +7010,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def AddResourcePolicies(self, request, global_params=None):
-      r"""Adds existing resource policies to an instance. You can only add one policy right now which will be applied to this instance for scheduling live migrations.
+      r"""Adds existing resource policies to an instance. You can only add one.
+policy right now which will be applied to this instance for scheduling live
+migrations.
 
       Args:
         request: (ComputeInstancesAddResourcePoliciesRequest) input message
@@ -6394,7 +7038,14 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of all of the instances in your project across all regions and zones. The performance of this method degrades when a filter is specified on a project that has a very large number of instances. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of all of the instances in your project.
+across all regions and zones.
+
+The performance of this method degrades when a filter is specified on a
+project that has a very large number of instances.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeInstancesAggregatedListRequest) input message
@@ -6420,7 +7071,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def AttachDisk(self, request, global_params=None):
-      r"""Attaches an existing Disk resource to an instance. You must first create the disk before you can attach it. It is not possible to create and attach a disk at the same time. For more information, read Adding a persistent disk to your instance.
+      r"""Attaches an existing Disk resource to an instance. You must first.
+create the disk before you can attach it. It is not possible to create
+and attach a disk at the same time. For more information, readAdding a
+persistent disk to your instance.
 
       Args:
         request: (ComputeInstancesAttachDiskRequest) input message
@@ -6446,7 +7100,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def BulkInsert(self, request, global_params=None):
-      r"""Creates multiple instances. Count specifies the number of instances to create. For more information, see About bulk creation of VMs.
+      r"""Creates multiple instances. Count specifies the number of instances to.
+create. For more information, seeAbout bulk
+creation of VMs.
 
       Args:
         request: (ComputeInstancesBulkInsertRequest) input message
@@ -6472,7 +7128,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified Instance resource. For more information, see Deleting an instance.
+      r"""Deletes the specified Instance resource. For more information, seeDeleting.
+an instance.
 
       Args:
         request: (ComputeInstancesDeleteRequest) input message
@@ -6524,7 +7181,11 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def DeleteNetworkInterface(self, request, global_params=None):
-      r"""Deletes one dynamic network interface from an active instance. InstancesDeleteNetworkInterfaceRequest indicates: - instance from which to delete, using project+zone+resource_id fields; - dynamic network interface to be deleted, using network_interface_name field;.
+      r"""Deletes one dynamic network interface from an active instance.
+InstancesDeleteNetworkInterfaceRequest indicates:
+- instance from which to delete, using project+zone+resource_id fields;
+- dynamic network interface to be deleted, using network_interface_name
+field;
 
       Args:
         request: (ComputeInstancesDeleteNetworkInterfaceRequest) input message
@@ -6654,7 +7315,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
 
       Args:
         request: (ComputeInstancesGetIamPolicyRequest) input message
@@ -6758,7 +7420,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates an instance resource in the specified project using the data included in the request.
+      r"""Creates an instance resource in the specified project using the data.
+included in the request.
 
       Args:
         request: (ComputeInstancesInsertRequest) input message
@@ -6784,7 +7447,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of instances contained within the specified zone.
+      r"""Retrieves the list of instances contained within.
+the specified zone.
 
       Args:
         request: (ComputeInstancesListRequest) input message
@@ -6810,7 +7474,11 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def ListReferrers(self, request, global_params=None):
-      r"""Retrieves a list of resources that refer to the VM instance specified in the request. For example, if the VM instance is part of a managed or unmanaged instance group, the referrers list includes the instance group. For more information, read Viewing referrers to VM instances.
+      r"""Retrieves a list of resources that refer to the VM instance specified in.
+the request. For example, if the VM instance is part of a managed or
+unmanaged instance group, the referrers list includes the instance group.
+For more information, readViewing
+referrers to VM instances.
 
       Args:
         request: (ComputeInstancesListReferrersRequest) input message
@@ -6914,7 +7582,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Reset(self, request, global_params=None):
-      r"""Performs a reset on the instance. This is a hard reset. The VM does not do a graceful shutdown. For more information, see Resetting an instance.
+      r"""Performs a reset on the instance. This is a hard reset. The VM.
+does not do a graceful shutdown. For more information, seeResetting
+an instance.
 
       Args:
         request: (ComputeInstancesResetRequest) input message
@@ -6940,7 +7610,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Resume(self, request, global_params=None):
-      r"""Resumes an instance that was suspended using the instances().suspend method.
+      r"""Resumes an instance that was suspended using theinstances().suspend.
+method.
 
       Args:
         request: (ComputeInstancesResumeRequest) input message
@@ -7044,7 +7715,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
 
       Args:
         request: (ComputeInstancesSetIamPolicyRequest) input message
@@ -7070,7 +7742,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets labels on an instance. To learn more about labels, read the Labeling Resources documentation.
+      r"""Sets labels on an instance.  To learn more about labels, read theLabeling.
+Resources documentation.
 
       Args:
         request: (ComputeInstancesSetLabelsRequest) input message
@@ -7096,7 +7769,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetMachineResources(self, request, global_params=None):
-      r"""Changes the number and/or type of accelerator for a stopped instance to the values specified in the request.
+      r"""Changes the number and/or type of accelerator for a stopped instance to the.
+values specified in the request.
 
       Args:
         request: (ComputeInstancesSetMachineResourcesRequest) input message
@@ -7122,7 +7796,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetMachineType(self, request, global_params=None):
-      r"""Changes the machine type for a stopped instance to the machine type specified in the request.
+      r"""Changes the machine type for a stopped instance to the machine.
+type specified in the request.
 
       Args:
         request: (ComputeInstancesSetMachineTypeRequest) input message
@@ -7148,7 +7823,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetMetadata(self, request, global_params=None):
-      r"""Sets metadata for the specified instance to the data included in the request.
+      r"""Sets metadata for the specified instance to the data included.
+in the request.
 
       Args:
         request: (ComputeInstancesSetMetadataRequest) input message
@@ -7174,7 +7850,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetMinCpuPlatform(self, request, global_params=None):
-      r"""Changes the minimum CPU platform that this instance should use. This method can only be called on a stopped instance. For more information, read Specifying a Minimum CPU Platform.
+      r"""Changes the minimum CPU platform that this instance should use.
+This method can only
+be called on a stopped instance. For more information, readSpecifying a
+Minimum CPU Platform.
 
       Args:
         request: (ComputeInstancesSetMinCpuPlatformRequest) input message
@@ -7226,7 +7905,11 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetScheduling(self, request, global_params=None):
-      r"""Sets an instance's scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a `TERMINATED` state. See Instance Life Cycle for more information on the possible instance states. For more information about setting scheduling options for a VM, see Set VM host maintenance policy.
+      r"""Sets an instance's scheduling options. You can only call this method on astopped instance,.
+that is, a VM instance that is in a `TERMINATED` state. SeeInstance Life
+Cycle for more information on the possible instance states.
+For more information about setting scheduling options for a VM, seeSet
+VM host maintenance policy.
 
       Args:
         request: (ComputeInstancesSetSchedulingRequest) input message
@@ -7252,7 +7935,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetSecurityPolicy(self, request, global_params=None):
-      r"""Sets the Google Cloud Armor security policy for the specified instance. For more information, see Google Cloud Armor Overview.
+      r"""Sets the Google Cloud Armor security policy for the specified instance.
+For more information, seeGoogle
+Cloud Armor Overview
 
       Args:
         request: (ComputeInstancesSetSecurityPolicyRequest) input message
@@ -7278,7 +7963,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetServiceAccount(self, request, global_params=None):
-      r"""Sets the service account on the instance. For more information, read Changing the service account and access scopes for an instance.
+      r"""Sets the service account on the instance. For more information,.
+readChanging
+the service account and access scopes for an instance.
 
       Args:
         request: (ComputeInstancesSetServiceAccountRequest) input message
@@ -7304,7 +7991,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetShieldedInstanceIntegrityPolicy(self, request, global_params=None):
-      r"""Sets the Shielded Instance integrity policy for an instance. You can only use this method on a running instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Sets the Shielded Instance integrity policy for an instance. You can.
+only use this method on a running instance. This method
+supports PATCH semantics and uses the JSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeInstancesSetShieldedInstanceIntegrityPolicyRequest) input message
@@ -7330,7 +8020,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetTags(self, request, global_params=None):
-      r"""Sets network tags for the specified instance to the data included in the request.
+      r"""Sets network tags.
+for the specified instance to the data included in the request.
 
       Args:
         request: (ComputeInstancesSetTagsRequest) input message
@@ -7356,7 +8047,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SimulateMaintenanceEvent(self, request, global_params=None):
-      r"""Simulates a host maintenance event on a VM. For more information, see Simulate a host maintenance event.
+      r"""Simulates a host maintenance event on a VM. For more information, see.
+Simulate a host maintenance event.
 
       Args:
         request: (ComputeInstancesSimulateMaintenanceEventRequest) input message
@@ -7382,7 +8074,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Start(self, request, global_params=None):
-      r"""Starts an instance that was stopped using the instances().stop method. For more information, see Restart an instance.
+      r"""Starts an instance that was stopped using theinstances().stop.
+method. For more information, seeRestart an
+instance.
 
       Args:
         request: (ComputeInstancesStartRequest) input message
@@ -7408,7 +8102,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def StartWithEncryptionKey(self, request, global_params=None):
-      r"""Starts an instance that was stopped using the instances().stop method. For more information, see Restart an instance.
+      r"""Starts an instance that was stopped using theinstances().stop.
+method. For more information, seeRestart an
+instance.
 
       Args:
         request: (ComputeInstancesStartWithEncryptionKeyRequest) input message
@@ -7434,7 +8130,12 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Stop(self, request, global_params=None):
-      r"""Stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted. For more information, see Stopping an instance.
+      r"""Stops a running instance, shutting it down cleanly, and allows.
+you to restart the instance at a later time. Stopped instances do not incur
+VM usage charges while they are stopped. However, resources that the VM is
+using, such as persistent disks and static IP addresses, will continue to
+be charged until they are deleted. For more information, seeStopping
+an instance.
 
       Args:
         request: (ComputeInstancesStopRequest) input message
@@ -7460,7 +8161,14 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Suspend(self, request, global_params=None):
-      r"""This method suspends a running instance, saving its state to persistent storage, and allows you to resume the instance at a later time. Suspended instances have no compute costs (cores or RAM), and incur only storage charges for the saved VM memory and localSSD data. Any charged resources the virtual machine was using, such as persistent disks and static IP addresses, will continue to be charged while the instance is suspended. For more information, see Suspending and resuming an instance.
+      r"""This method suspends a running instance, saving its state to persistent.
+storage, and allows you to resume the instance at a later time. Suspended
+instances have no compute costs (cores or RAM), and incur only storage
+charges for the saved VM memory and localSSD data. Any charged resources
+the virtual machine was using, such as persistent disks and static IP
+addresses, will continue to be charged while the instance is suspended.
+For more information, see
+Suspending and resuming an instance.
 
       Args:
         request: (ComputeInstancesSuspendRequest) input message
@@ -7512,7 +8220,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates an instance only if the necessary resources are available. This method can update only a specific set of instance properties. See Updating a running instance for a list of updatable instance properties.
+      r"""Updates an instance only if the necessary resources are available. This.
+method can update only a specific set of instance properties. See
+Updating a running instance for a list of updatable instance
+properties.
 
       Args:
         request: (ComputeInstancesUpdateRequest) input message
@@ -7538,7 +8249,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def UpdateAccessConfig(self, request, global_params=None):
-      r"""Updates the specified access config from an instance's network interface with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Updates the specified access config from an instance's network interface.
+with the data included in the request. This method supportsPATCH
+semantics and uses theJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeInstancesUpdateAccessConfigRequest) input message
@@ -7564,7 +8278,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def UpdateDisplayDevice(self, request, global_params=None):
-      r"""Updates the Display config for a VM instance. You can only use this method on a stopped VM instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Updates the Display config for a VM instance. You can.
+only use this method on a stopped VM instance. This method supportsPATCH
+semantics and uses theJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeInstancesUpdateDisplayDeviceRequest) input message
@@ -7590,7 +8307,12 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def UpdateNetworkInterface(self, request, global_params=None):
-      r"""Updates an instance's network interface. This method can only update an interface's alias IP range and attached network. See Modifying alias IP ranges for an existing instance for instructions on changing alias IP ranges. See Migrating a VM between networks for instructions on migrating an interface. This method follows PATCH semantics.
+      r"""Updates an instance's network interface. This method can only update an.
+interface's alias IP range and attached network. See Modifying
+alias IP ranges for an existing instance for instructions on
+changing alias IP ranges. See Migrating
+a VM between networks for instructions on migrating an interface.
+This method follows PATCH semantics.
 
       Args:
         request: (ComputeInstancesUpdateNetworkInterfaceRequest) input message
@@ -7616,7 +8338,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def UpdateShieldedInstanceConfig(self, request, global_params=None):
-      r"""Updates the Shielded Instance config for an instance. You can only use this method on a stopped instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Updates the Shielded Instance config for an instance. You can.
+only use this method on a stopped instance. This method supportsPATCH
+semantics and uses theJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeInstancesUpdateShieldedInstanceConfigRequest) input message
@@ -7652,7 +8377,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of instantSnapshots. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of instantSnapshots.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeInstantSnapshotsAggregatedListRequest) input message
@@ -7678,7 +8406,14 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified InstantSnapshot resource. Keep in mind that deleting a single instantSnapshot might not necessarily delete all the data on that instantSnapshot. If any data on the instantSnapshot that is marked for deletion is needed for subsequent instantSnapshots, the data will be moved to the next corresponding instantSnapshot. For more information, see Deleting instantSnapshots.
+      r"""Deletes the specified InstantSnapshot resource. Keep in mind that deleting.
+a single instantSnapshot might not necessarily delete all the data on that
+instantSnapshot. If any data on the instantSnapshot that is marked for
+deletion is needed for subsequent instantSnapshots, the data will be moved
+to the next corresponding instantSnapshot.
+
+For more information, seeDeleting
+instantSnapshots.
 
       Args:
         request: (ComputeInstantSnapshotsDeleteRequest) input message
@@ -7730,7 +8465,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
 
       Args:
         request: (ComputeInstantSnapshotsGetIamPolicyRequest) input message
@@ -7782,7 +8518,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of InstantSnapshot resources contained within the specified zone.
+      r"""Retrieves the list of InstantSnapshot resources contained within.
+the specified zone.
 
       Args:
         request: (ComputeInstantSnapshotsListRequest) input message
@@ -7808,7 +8545,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
 
       Args:
         request: (ComputeInstantSnapshotsSetIamPolicyRequest) input message
@@ -7834,7 +8572,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on a instantSnapshot in the given zone. To learn more about labels, read the Labeling Resources documentation.
+      r"""Sets the labels on a instantSnapshot in the given zone. To learn more about.
+labels, read the Labeling
+Resources documentation.
 
       Args:
         request: (ComputeInstantSnapshotsSetLabelsRequest) input message
@@ -7922,7 +8662,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified InterconnectAttachmentGroup resource in the given scope.
+      r"""Returns the specified InterconnectAttachmentGroup resource in the given.
+scope.
 
       Args:
         request: (ComputeInterconnectAttachmentGroupsGetRequest) input message
@@ -7948,7 +8689,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
 
       Args:
         request: (ComputeInterconnectAttachmentGroupsGetIamPolicyRequest) input message
@@ -7974,7 +8716,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetOperationalStatus(self, request, global_params=None):
-      r"""Returns the InterconnectAttachmentStatuses for the specified InterconnectAttachmentGroup resource.
+      r"""Returns the InterconnectAttachmentStatuses for the specified.
+InterconnectAttachmentGroup resource.
 
       Args:
         request: (ComputeInterconnectAttachmentGroupsGetOperationalStatusRequest) input message
@@ -8000,7 +8743,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a InterconnectAttachmentGroup in the specified project in the given scope using the parameters that are included in the request.
+      r"""Creates a InterconnectAttachmentGroup in the specified project in the given.
+scope using the parameters that are included in the request.
 
       Args:
         request: (ComputeInterconnectAttachmentGroupsInsertRequest) input message
@@ -8052,7 +8796,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified InterconnectAttachmentGroup resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+      r"""Patches the specified InterconnectAttachmentGroup resource with the data.
+included in the request. This method supports PATCH
+semantics and usesJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeInterconnectAttachmentGroupsPatchRequest) input message
@@ -8078,7 +8825,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
 
       Args:
         request: (ComputeInterconnectAttachmentGroupsSetIamPolicyRequest) input message
@@ -8140,7 +8888,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of interconnect attachments. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of interconnect attachments.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeInterconnectAttachmentsAggregatedListRequest) input message
@@ -8218,7 +8969,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates an InterconnectAttachment in the specified project using the data included in the request.
+      r"""Creates an InterconnectAttachment in the specified project using the data.
+included in the request.
 
       Args:
         request: (ComputeInterconnectAttachmentsInsertRequest) input message
@@ -8244,7 +8996,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of interconnect attachments contained within the specified region.
+      r"""Retrieves the list of interconnect attachments contained within.
+the specified region.
 
       Args:
         request: (ComputeInterconnectAttachmentsListRequest) input message
@@ -8270,7 +9023,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified interconnect attachment with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Updates the specified interconnect attachment with the data included in the.
+request. This method supportsPATCH
+semantics and uses theJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeInterconnectAttachmentsPatchRequest) input message
@@ -8296,7 +9052,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on an InterconnectAttachment. To learn more about labels, read the Labeling Resources documentation.
+      r"""Sets the labels on an InterconnectAttachment. To learn more about labels,.
+read the Labeling
+Resources documentation.
 
       Args:
         request: (ComputeInterconnectAttachmentsSetLabelsRequest) input message
@@ -8332,7 +9090,8 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def CreateMembers(self, request, global_params=None):
-      r"""Create Interconnects with redundancy by creating them in a specified interconnect group.
+      r"""Create Interconnects with redundancy by creating them in a specified.
+interconnect group.
 
       Args:
         request: (ComputeInterconnectGroupsCreateMembersRequest) input message
@@ -8410,7 +9169,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
 
       Args:
         request: (ComputeInterconnectGroupsGetIamPolicyRequest) input message
@@ -8436,7 +9196,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetOperationalStatus(self, request, global_params=None):
-      r"""Returns the interconnectStatuses for the specified InterconnectGroup.
+      r"""Returns the interconnectStatuses for the specified.
+InterconnectGroup.
 
       Args:
         request: (ComputeInterconnectGroupsGetOperationalStatusRequest) input message
@@ -8462,7 +9223,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a InterconnectGroup in the specified project in the given scope using the parameters that are included in the request.
+      r"""Creates a InterconnectGroup in the specified project in the given scope.
+using the parameters that are included in the request.
 
       Args:
         request: (ComputeInterconnectGroupsInsertRequest) input message
@@ -8514,7 +9276,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified InterconnectGroup resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+      r"""Patches the specified InterconnectGroup resource with the data included in.
+the request. This method supports PATCH
+semantics and usesJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeInterconnectGroupsPatchRequest) input message
@@ -8540,7 +9305,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
 
       Args:
         request: (ComputeInterconnectGroupsSetIamPolicyRequest) input message
@@ -8602,7 +9368,8 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Returns the details for the specified interconnect location. Gets a list of available interconnect locations by making a list() request.
+      r"""Returns the details for the specified interconnect location. Gets a list of.
+available interconnect locations by making a list() request.
 
       Args:
         request: (ComputeInterconnectLocationsGetRequest) input message
@@ -8628,7 +9395,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of interconnect locations available to the specified project.
+      r"""Retrieves the list of interconnect locations available to the specified.
+project.
 
       Args:
         request: (ComputeInterconnectLocationsListRequest) input message
@@ -8664,7 +9432,8 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Returns the details for the specified interconnect remote location. Gets a list of available interconnect remote locations by making a list() request.
+      r"""Returns the details for the specified interconnect remote location. Gets a.
+list of available interconnect remote locations by making alist() request.
 
       Args:
         request: (ComputeInterconnectRemoteLocationsGetRequest) input message
@@ -8690,7 +9459,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of interconnect remote locations available to the specified project.
+      r"""Retrieves the list of interconnect remote locations available to the.
+specified project.
 
       Args:
         request: (ComputeInterconnectRemoteLocationsListRequest) input message
@@ -8752,7 +9522,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified Interconnect. Get a list of available Interconnects by making a list() request.
+      r"""Returns the specified Interconnect. Get a list of available Interconnects.
+by making a list() request.
 
       Args:
         request: (ComputeInterconnectsGetRequest) input message
@@ -8778,7 +9549,16 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetDiagnostics(self, request, global_params=None):
-      r"""Returns the interconnectDiagnostics for the specified Interconnect. In the event of a global outage, do not use this API to make decisions about where to redirect your network traffic. Unlike a VLAN attachment, which is regional, a Cloud Interconnect connection is a global resource. A global outage can prevent this API from functioning properly.
+      r"""Returns the interconnectDiagnostics for the specified.
+Interconnect.
+
+In the event of a
+global outage, do not use this API to make decisions about where to
+redirect your network traffic.
+
+Unlike a VLAN attachment, which is regional, a Cloud Interconnect
+connection is a global resource. A global outage can prevent this
+API from functioning properly.
 
       Args:
         request: (ComputeInterconnectsGetDiagnosticsRequest) input message
@@ -8804,7 +9584,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetMacsecConfig(self, request, global_params=None):
-      r"""Returns the interconnectMacsecConfig for the specified Interconnect.
+      r"""Returns the interconnectMacsecConfig for the specified.
+Interconnect.
 
       Args:
         request: (ComputeInterconnectsGetMacsecConfigRequest) input message
@@ -8830,7 +9611,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates an Interconnect in the specified project using the data included in the request.
+      r"""Creates an Interconnect in the specified project using.
+the data included in the request.
 
       Args:
         request: (ComputeInterconnectsInsertRequest) input message
@@ -8882,7 +9664,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified Interconnect with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Updates the specified Interconnect with the data included in the request.
+This method supportsPATCH
+semantics and uses theJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeInterconnectsPatchRequest) input message
@@ -8908,7 +9693,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on an Interconnect. To learn more about labels, read the Labeling Resources documentation.
+      r"""Sets the labels on an Interconnect. To learn more about labels,.
+read the Labeling
+Resources documentation.
 
       Args:
         request: (ComputeInterconnectsSetLabelsRequest) input message
@@ -8944,7 +9731,11 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Return a specified license code. License codes are mirrored across all projects that have permissions to read the License Code. *Caution* This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. .
+      r"""Return a specified license code. License codes are mirrored across.
+all projects that have permissions to read the License Code.
+ *Caution* This resource is intended
+for use only by third-party partners who are creatingCloud Marketplace
+images.
 
       Args:
         request: (ComputeLicenseCodesGetRequest) input message
@@ -8970,7 +9761,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. *Caution* This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. .
+      r"""Returns permissions that a caller has on the specified resource.
+ *Caution* This resource is intended
+for use only by third-party partners who are creatingCloud Marketplace
+images.
 
       Args:
         request: (ComputeLicenseCodesTestIamPermissionsRequest) input message
@@ -9006,7 +9800,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified license. *Caution* This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. .
+      r"""Deletes the specified license.
+ *Caution* This resource is intended
+for use only by third-party partners who are creatingCloud Marketplace
+images.
 
       Args:
         request: (ComputeLicensesDeleteRequest) input message
@@ -9032,7 +9829,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified License resource. *Caution* This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. .
+      r"""Returns the specified License resource.
+ *Caution* This resource is intended
+for use only by third-party partners who are creatingCloud Marketplace
+images.
 
       Args:
         request: (ComputeLicensesGetRequest) input message
@@ -9058,7 +9858,11 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists. *Caution* This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. .
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
+ *Caution* This resource is intended
+for use only by third-party partners who are creatingCloud Marketplace
+images.
 
       Args:
         request: (ComputeLicensesGetIamPolicyRequest) input message
@@ -9084,7 +9888,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Create a License resource in the specified project. *Caution* This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. .
+      r"""Create a License resource in the specified project.
+ *Caution* This resource is intended
+for use only by third-party partners who are creatingCloud Marketplace
+images.
 
       Args:
         request: (ComputeLicensesInsertRequest) input message
@@ -9110,7 +9917,15 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of licenses available in the specified project. This method does not get any licenses that belong to other projects, including licenses attached to publicly-available images, like Debian 9. If you want to get a list of publicly-available licenses, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud. *Caution* This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. .
+      r"""Retrieves the list of licenses.
+available in the specified project. This method does not
+get any licenses that belong to other projects, including licenses attached
+to publicly-available images, like Debian 9. If you want to get a list of
+publicly-available licenses, use this method to make a request to the
+respective image project, such as debian-cloud orwindows-cloud.
+ *Caution* This resource is intended
+for use only by third-party partners who are creatingCloud Marketplace
+images.
 
       Args:
         request: (ComputeLicensesListRequest) input message
@@ -9136,7 +9951,11 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. *Caution* This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. .
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
+ *Caution* This resource is intended
+for use only by third-party partners who are creatingCloud Marketplace
+images.
 
       Args:
         request: (ComputeLicensesSetIamPolicyRequest) input message
@@ -9162,7 +9981,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. *Caution* This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. .
+      r"""Returns permissions that a caller has on the specified resource.
+ *Caution* This resource is intended
+for use only by third-party partners who are creatingCloud Marketplace
+images.
 
       Args:
         request: (ComputeLicensesTestIamPermissionsRequest) input message
@@ -9188,7 +10010,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates a License resource in the specified project. *Caution* This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. .
+      r"""Updates a License resource in the specified project.
+ *Caution* This resource is intended
+for use only by third-party partners who are creatingCloud Marketplace
+images.
 
       Args:
         request: (ComputeLicensesUpdateRequest) input message
@@ -9224,7 +10049,8 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified machine image. Deleting a machine image is permanent and cannot be undone.
+      r"""Deletes the specified machine image. Deleting a machine image is permanent.
+and cannot be undone.
 
       Args:
         request: (ComputeMachineImagesDeleteRequest) input message
@@ -9276,7 +10102,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
 
       Args:
         request: (ComputeMachineImagesGetIamPolicyRequest) input message
@@ -9302,7 +10129,11 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a machine image in the specified project using the data that is included in the request. If you are creating a new machine image to update an existing instance, your new machine image should use the same network or, if applicable, the same subnetwork as the original instance.
+      r"""Creates a machine image in the specified project using the.
+data that is included in the request. If you are creating a new machine
+image to update an existing instance, your new machine image should use the
+same network or, if applicable, the same subnetwork as the original
+instance.
 
       Args:
         request: (ComputeMachineImagesInsertRequest) input message
@@ -9328,7 +10159,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of machine images that are contained within the specified project.
+      r"""Retrieves a list of machine images that are contained within.
+the specified project.
 
       Args:
         request: (ComputeMachineImagesListRequest) input message
@@ -9354,7 +10186,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
 
       Args:
         request: (ComputeMachineImagesSetIamPolicyRequest) input message
@@ -9380,7 +10213,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on a machine image. To learn more about labels, read the Labeling Resources documentation.
+      r"""Sets the labels on a machine image. To learn more about labels, read theLabeling.
+Resources documentation.
 
       Args:
         request: (ComputeMachineImagesSetLabelsRequest) input message
@@ -9442,7 +10276,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of machine types. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of machine types.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeMachineTypesAggregatedListRequest) input message
@@ -9494,7 +10331,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of machine types available to the specified project.
+      r"""Retrieves a list of machine types available to the specified.
+project.
 
       Args:
         request: (ComputeMachineTypesListRequest) input message
@@ -9530,7 +10368,11 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all NetworkAttachment resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves the list of all NetworkAttachment resources,.
+regional and global, available to the specified project.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeNetworkAttachmentsAggregatedListRequest) input message
@@ -9608,7 +10450,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
 
       Args:
         request: (ComputeNetworkAttachmentsGetIamPolicyRequest) input message
@@ -9634,7 +10477,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a NetworkAttachment in the specified project in the given scope using the parameters that are included in the request.
+      r"""Creates a NetworkAttachment in the specified project in the given scope.
+using the parameters that are included in the request.
 
       Args:
         request: (ComputeNetworkAttachmentsInsertRequest) input message
@@ -9686,7 +10530,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified NetworkAttachment resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+      r"""Patches the specified NetworkAttachment resource with the data included in.
+the request. This method supports PATCH
+semantics and usesJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeNetworkAttachmentsPatchRequest) input message
@@ -9712,7 +10559,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
 
       Args:
         request: (ComputeNetworkAttachmentsSetIamPolicyRequest) input message
@@ -9774,7 +10622,11 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all NetworkEdgeSecurityService resources available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves the list of all NetworkEdgeSecurityService resources available to.
+the specified project.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeNetworkEdgeSecurityServicesAggregatedListRequest) input message
@@ -9852,7 +10704,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a new service in the specified project using the data included in the request.
+      r"""Creates a new service in the specified project using the data included in.
+the request.
 
       Args:
         request: (ComputeNetworkEdgeSecurityServicesInsertRequest) input message
@@ -9914,7 +10767,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of network endpoint groups and sorts them by zone. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves the list of network endpoint groups and sorts them by zone.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeNetworkEndpointGroupsAggregatedListRequest) input message
@@ -9966,7 +10822,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified network endpoint group. The network endpoints in the NEG and the VM instances they belong to are not terminated when the NEG is deleted. Note that the NEG cannot be deleted if there are backend services referencing it.
+      r"""Deletes the specified network endpoint group. The network endpoints in the.
+NEG and the VM instances they belong to are not terminated when the NEG is
+deleted. Note that the NEG cannot be deleted if there are backend services
+referencing it.
 
       Args:
         request: (ComputeNetworkEndpointGroupsDeleteRequest) input message
@@ -9992,7 +10851,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def DetachNetworkEndpoints(self, request, global_params=None):
-      r"""Detach a list of network endpoints from the specified network endpoint group.
+      r"""Detach a list of network endpoints from the specified network endpoint.
+group.
 
       Args:
         request: (ComputeNetworkEndpointGroupsDetachNetworkEndpointsRequest) input message
@@ -10044,7 +10904,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a network endpoint group in the specified project using the parameters that are included in the request.
+      r"""Creates a network endpoint group in the specified project using the.
+parameters that are included in the request.
 
       Args:
         request: (ComputeNetworkEndpointGroupsInsertRequest) input message
@@ -10070,7 +10931,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of network endpoint groups that are located in the specified project and zone.
+      r"""Retrieves the list of network endpoint groups that are located in the.
+specified project and zone.
 
       Args:
         request: (ComputeNetworkEndpointGroupsListRequest) input message
@@ -10236,7 +11098,12 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of network firewall policies, listing network firewall policies from all applicable scopes (global and regional) and grouping the results per scope. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of network firewall policies, listing network.
+firewall policies from all applicable scopes (global and regional) and
+grouping the results per scope.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeNetworkFirewallPoliciesAggregatedListRequest) input message
@@ -10366,7 +11233,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
 
       Args:
         request: (ComputeNetworkFirewallPoliciesGetIamPolicyRequest) input message
@@ -10444,7 +11312,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a new policy in the specified project using the data included in the request.
+      r"""Creates a new policy in the specified project using the data included in.
+the request.
 
       Args:
         request: (ComputeNetworkFirewallPoliciesInsertRequest) input message
@@ -10652,7 +11521,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
 
       Args:
         request: (ComputeNetworkFirewallPoliciesSetIamPolicyRequest) input message
@@ -10740,7 +11610,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of network profiles available to the specified project.
+      r"""Retrieves a list of network profiles available to the specified.
+project.
 
       Args:
         request: (ComputeNetworkProfilesListRequest) input message
@@ -10880,7 +11751,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a network in the specified project using the data included in the request.
+      r"""Creates a network in the specified project using the data included.
+in the request.
 
       Args:
         request: (ComputeNetworksInsertRequest) input message
@@ -10958,7 +11830,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified network with the data included in the request. Only routingConfig can be modified.
+      r"""Patches the specified network with the data included in the request.
+Only routingConfig can be modified.
 
       Args:
         request: (ComputeNetworksPatchRequest) input message
@@ -11010,7 +11883,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def RequestRemovePeering(self, request, global_params=None):
-      r"""Requests to remove a peering from the specified network. Applicable only for PeeringConnection with update_strategy=CONSENSUS.
+      r"""Requests to remove a peering from the specified network. Applicable only.
+for PeeringConnection with update_strategy=CONSENSUS.
 
       Args:
         request: (ComputeNetworksRequestRemovePeeringRequest) input message
@@ -11062,7 +11936,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def UpdatePeering(self, request, global_params=None):
-      r"""Updates the specified network peering with the data included in the request. You can only modify the NetworkPeering.export_custom_routes field and the NetworkPeering.import_custom_routes field.
+      r"""Updates the specified network peering with the data included in the.
+request. You can only modify the NetworkPeering.export_custom_routes field
+and the NetworkPeering.import_custom_routes field.
 
       Args:
         request: (ComputeNetworksUpdatePeeringRequest) input message
@@ -11124,7 +12000,11 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of node groups. Note: use nodeGroups.listNodes for more details about each group. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of node groups.
+Note: use nodeGroups.listNodes for more details about each group.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeNodeGroupsAggregatedListRequest) input message
@@ -11202,7 +12082,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified NodeGroup. Get a list of available NodeGroups by making a list() request. Note: the "nodes" field should not be used. Use nodeGroups.listNodes instead.
+      r"""Returns the specified NodeGroup. Get a list of available NodeGroups.
+by making a list() request.
+Note: the "nodes" field should not be used. Use nodeGroups.listNodes
+instead.
 
       Args:
         request: (ComputeNodeGroupsGetRequest) input message
@@ -11228,7 +12111,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
 
       Args:
         request: (ComputeNodeGroupsGetIamPolicyRequest) input message
@@ -11254,7 +12138,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a NodeGroup resource in the specified project using the data included in the request.
+      r"""Creates a NodeGroup resource in the specified project using the data.
+included in the request.
 
       Args:
         request: (ComputeNodeGroupsInsertRequest) input message
@@ -11280,7 +12165,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of node groups available to the specified project. Note: use nodeGroups.listNodes for more details about each group.
+      r"""Retrieves a list of node groups available to the specified project.
+Note: use nodeGroups.listNodes for more details about each group.
 
       Args:
         request: (ComputeNodeGroupsListRequest) input message
@@ -11384,7 +12270,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
 
       Args:
         request: (ComputeNodeGroupsSetIamPolicyRequest) input message
@@ -11498,7 +12385,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of node templates. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of node templates.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeNodeTemplatesAggregatedListRequest) input message
@@ -11576,7 +12466,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
 
       Args:
         request: (ComputeNodeTemplatesGetIamPolicyRequest) input message
@@ -11602,7 +12493,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a NodeTemplate resource in the specified project using the data included in the request.
+      r"""Creates a NodeTemplate resource in the specified project using the data.
+included in the request.
 
       Args:
         request: (ComputeNodeTemplatesInsertRequest) input message
@@ -11628,7 +12520,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of node templates available to the specified project.
+      r"""Retrieves a list of node templates available to the specified.
+project.
 
       Args:
         request: (ComputeNodeTemplatesListRequest) input message
@@ -11654,7 +12547,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
 
       Args:
         request: (ComputeNodeTemplatesSetIamPolicyRequest) input message
@@ -11716,7 +12610,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of node types. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of node types.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeNodeTypesAggregatedListRequest) input message
@@ -11768,7 +12665,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of node types available to the specified project.
+      r"""Retrieves a list of node types available to the specified.
+project.
 
       Args:
         request: (ComputeNodeTypesListRequest) input message
@@ -11804,7 +12702,14 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AddAssociation(self, request, global_params=None):
-      r"""Inserts an association for the specified security policy. This has billing implications. Projects in the hierarchy with effective hierarchical security policies will be automatically enrolled into Cloud Armor Enterprise if not already enrolled. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.addAssociation instead if possible.
+      r"""Inserts an association for the specified security policy.
+
+This has billing implications.  Projects in the hierarchy with effective
+hierarchical security policies will be automatically enrolled into Cloud
+Armor Enterprise if not already enrolled.
+
+Use of this API to modify firewall policies is deprecated. Use
+firewallPolicies.addAssociation instead if possible.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesAddAssociationRequest) input message
@@ -11856,7 +12761,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def CopyRules(self, request, global_params=None):
-      r"""Copies rules to the specified security policy. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.copyRules instead.
+      r"""Copies rules to the specified security policy.
+
+Use of this API to modify firewall policies is deprecated. Use
+firewallPolicies.copyRules instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesCopyRulesRequest) input message
@@ -11882,7 +12790,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified policy. Use of this API to remove firewall policies is deprecated. Use firewallPolicies.delete instead.
+      r"""Deletes the specified policy.
+
+Use of this API to remove firewall policies is deprecated. Use
+firewallPolicies.delete instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesDeleteRequest) input message
@@ -11908,7 +12819,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""List all of the ordered rules present in a single specified policy. Use of this API to read firewall policies is deprecated. Use firewallPolicies.get instead.
+      r"""List all of the ordered rules present in a single specified policy.
+
+Use of this API to read firewall policies is deprecated. Use
+firewallPolicies.get instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesGetRequest) input message
@@ -11934,7 +12848,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetAssociation(self, request, global_params=None):
-      r"""Gets an association with the specified name. Use of this API to read firewall policies is deprecated. Use firewallPolicies.getAssociation instead if possible.
+      r"""Gets an association with the specified name.
+
+Use of this API to read firewall policies is deprecated. Use
+firewallPolicies.getAssociation instead if possible.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesGetAssociationRequest) input message
@@ -11960,7 +12877,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetRule(self, request, global_params=None):
-      r"""Gets a rule at the specified priority. Use of this API to read firewall policies is deprecated. Use firewallPolicies.getRule instead.
+      r"""Gets a rule at the specified priority.
+
+Use of this API to read firewall policies is deprecated. Use
+firewallPolicies.getRule instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesGetRuleRequest) input message
@@ -11986,7 +12906,11 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a new policy in the specified project using the data included in the request. Use of this API to insert firewall policies is deprecated. Use firewallPolicies.insert instead.
+      r"""Creates a new policy in the specified organization using the data included.
+in the request.
+
+Use of this API to insert firewall policies is deprecated. Use
+firewallPolicies.insert instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesInsertRequest) input message
@@ -12012,7 +12936,11 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List all the policies that have been configured for the specified project. Use of this API to read firewall policies is deprecated. Use firewallPolicies.list instead.
+      r"""List all the policies that have been configured for the specified.
+organization.
+
+Use of this API to read firewall policies is deprecated. Use
+firewallPolicies.list instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesListRequest) input message
@@ -12038,7 +12966,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def ListAssociations(self, request, global_params=None):
-      r"""Lists associations of a specified target, i.e., organization or folder. Use of this API to read firewall policies is deprecated. Use firewallPolicies.listAssociations instead if possible.
+      r"""Lists associations of a specified target, i.e., organization or folder.
+
+Use of this API to read firewall policies is deprecated. Use
+firewallPolicies.listAssociations instead if possible.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesListAssociationsRequest) input message
@@ -12064,7 +12995,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def ListPreconfiguredExpressionSets(self, request, global_params=None):
-      r"""Gets the current list of preconfigured Web Application Firewall (WAF) expressions.
+      r"""Gets the current list of preconfigured Web Application Firewall (WAF).
+expressions.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesListPreconfiguredExpressionSetsRequest) input message
@@ -12090,7 +13022,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Move(self, request, global_params=None):
-      r"""Moves the specified security policy. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.move instead.
+      r"""Moves the specified security policy.
+
+Use of this API to modify firewall policies is deprecated. Use
+firewallPolicies.move instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesMoveRequest) input message
@@ -12116,7 +13051,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified policy with the data included in the request. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.patch instead.
+      r"""Patches the specified policy with the data included in the request.
+
+Use of this API to modify firewall policies is deprecated. Use
+firewallPolicies.patch instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesPatchRequest) input message
@@ -12142,7 +13080,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def PatchRule(self, request, global_params=None):
-      r"""Patches a rule at the specified priority. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.patchRule instead.
+      r"""Patches a rule at the specified priority.
+
+Use of this API to modify firewall policies is deprecated. Use
+firewallPolicies.patchRule instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesPatchRuleRequest) input message
@@ -12168,7 +13109,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def RemoveAssociation(self, request, global_params=None):
-      r"""Removes an association for the specified security policy. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.removeAssociation instead if possible.
+      r"""Removes an association for the specified security policy.
+
+Use of this API to modify firewall policies is deprecated. Use
+firewallPolicies.removeAssociation instead if possible.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesRemoveAssociationRequest) input message
@@ -12230,7 +13174,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of packetMirrorings. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of packetMirrorings.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputePacketMirroringsAggregatedListRequest) input message
@@ -12308,7 +13255,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a PacketMirroring resource in the specified project and region using the data included in the request.
+      r"""Creates a PacketMirroring resource in the specified project and region.
+using the data included in the request.
 
       Args:
         request: (ComputePacketMirroringsInsertRequest) input message
@@ -12334,7 +13282,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of PacketMirroring resources available to the specified project and region.
+      r"""Retrieves a list of PacketMirroring resources available to the specified.
+project and region.
 
       Args:
         request: (ComputePacketMirroringsListRequest) input message
@@ -12360,7 +13309,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified PacketMirroring resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+      r"""Patches the specified PacketMirroring resource with the data included in.
+the request. This method supportsPATCH
+semantics and usesJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputePacketMirroringsPatchRequest) input message
@@ -12474,7 +13426,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Patches the given PreviewFeature. This method is used to enable or disable a PreviewFeature.
+      r"""Patches the given PreviewFeature. This method is used to enable or disable.
+a PreviewFeature.
 
       Args:
         request: (ComputePreviewFeaturesUpdateRequest) input message
@@ -12536,7 +13489,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def DisableXpnResource(self, request, global_params=None):
-      r"""Disable a service resource (also known as service project) associated with this host project.
+      r"""Disable a service resource (also known as service project) associated with.
+this host project.
 
       Args:
         request: (ComputeProjectsDisableXpnResourceRequest) input message
@@ -12588,7 +13542,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def EnableXpnResource(self, request, global_params=None):
-      r"""Enable service resource (a.k.a service project) for a host project, so that subnets in the host project can be used by instances in the service project.
+      r"""Enable service resource (a.k.a service project) for a host project, so that.
+subnets in the host project can be used by instances in the service
+project.
 
       Args:
         request: (ComputeProjectsEnableXpnResourceRequest) input message
@@ -12614,7 +13570,15 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified Project resource. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the `quotas` field). To exclude one or more fields, set your request's `fields` query parameter to only include the fields you need. For example, to only include the `id` and `selfLink` fields, add the query parameter `?fields=id,selfLink` to your request.
+      r"""Returns the specified Project resource.
+
+To decrease latency for this method, you can optionally omit any unneeded
+information from the response by using a field mask. This practice is
+especially recommended for unused quota information (the `quotas` field).
+To exclude one or more fields, set your request's `fields` query parameter
+to only include the fields you need. For example, to only include the `id`
+and `selfLink` fields, add the query parameter `?fields=id,selfLink` to
+your request.
 
       Args:
         request: (ComputeProjectsGetRequest) input message
@@ -12640,7 +13604,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetXpnHost(self, request, global_params=None):
-      r"""Gets the shared VPC host project that this project links to. May be empty if no link exists.
+      r"""Gets the shared VPC host project that this project links to. May be empty.
+if no link exists.
 
       Args:
         request: (ComputeProjectsGetXpnHostRequest) input message
@@ -12666,7 +13631,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetXpnResources(self, request, global_params=None):
-      r"""Gets service resources (a.k.a service project) associated with this host project.
+      r"""Gets service resources (a.k.a service project) associated with this host.
+project.
 
       Args:
         request: (ComputeProjectsGetXpnResourcesRequest) input message
@@ -12718,7 +13684,20 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def MoveDisk(self, request, global_params=None):
-      r"""Starting September 29, 2025, you can't use the moveDisk API on new projects. To move a disk to a different region or zone, follow the steps in [Change the location of a disk](https://{$universe.dns_names.final_documentation_domain}/compute/docs/disks/migrate-to-hyperdisk#migrate-to-hd). Projects that already use the moveDisk API can continue usage until September 29, 2026. Starting November 1, 2025, API responses will include a warning message in the response body about the upcoming deprecation. You can skip the message to continue using the service without interruption.
+      r"""Moves a persistent disk from one zone to another.
+*Note*: The moveDisk API will be deprecated on September 29, 2026.
+
+Starting September 29, 2025, you can't use the moveDisk API on new
+projects. To move a disk to a different region or zone, follow the steps in
+[Change the location of a
+disk](https://cloud.google.com/compute/docs/disks/migrate-to-hyperdisk#migrate-to-hd).
+
+Projects that already use the moveDisk API can continue usage until
+September 29, 2026.
+
+Starting November 1, 2025, API responses will include a warning message in
+the response body about the upcoming deprecation. You can skip the message
+to continue using the service without interruption.
 
       Args:
         request: (ComputeProjectsMoveDiskRequest) input message
@@ -12744,7 +13723,13 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def MoveInstance(self, request, global_params=None):
-      r"""Moves an instance and its attached persistent disks from one zone to another. *Note*: Moving VMs or disks by using this method might cause unexpected behavior. For more information, see the [known issue](/compute/docs/troubleshooting/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior). [Deprecated] This method is deprecated. See [moving instance across zones](/compute/docs/instances/moving-instance-across-zones) instead.
+      r"""Moves an instance and its attached persistent disks from one zone to.
+another.
+*Note*: Moving VMs or disks by using this method might
+ cause unexpected behavior. For more information, see the [known
+ issue](/compute/docs/troubleshooting/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior).
+[Deprecated] This method is deprecated. See [moving instance across
+zones](/compute/docs/instances/moving-instance-across-zones) instead.
 
       Args:
         request: (ComputeProjectsMoveInstanceRequest) input message
@@ -12770,7 +13755,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetCloudArmorTier(self, request, global_params=None):
-      r"""Sets the Cloud Armor tier of the project. To set ENTERPRISE or above the billing account of the project must be subscribed to Cloud Armor Enterprise. See Subscribing to Cloud Armor Enterprise for more information.
+      r"""Sets the Cloud Armor tier of the project. To set ENTERPRISE or above the.
+billing account of the project must be subscribed to Cloud Armor
+Enterprise. See Subscribing
+to Cloud Armor Enterprise for more information.
 
       Args:
         request: (ComputeProjectsSetCloudArmorTierRequest) input message
@@ -12796,7 +13784,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetCommonInstanceMetadata(self, request, global_params=None):
-      r"""Sets metadata common to all instances within the specified project using the data included in the request.
+      r"""Sets metadata common to all instances within the specified project using.
+the data included in the request.
 
       Args:
         request: (ComputeProjectsSetCommonInstanceMetadataRequest) input message
@@ -12822,7 +13811,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetDefaultNetworkTier(self, request, global_params=None):
-      r"""Sets the default network tier of the project. The default network tier is used when an address/forwardingRule/instance is created without specifying the network tier field.
+      r"""Sets the default network tier of the project. The default network tier is.
+used when an address/forwardingRule/instance is created without specifying
+the network tier field.
 
       Args:
         request: (ComputeProjectsSetDefaultNetworkTierRequest) input message
@@ -12848,7 +13839,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetUsageExportBucket(self, request, global_params=None):
-      r"""Enables the usage export feature and sets the usage export bucket where reports are stored. If you provide an empty request body using this method, the usage export feature will be disabled.
+      r"""Enables the usage export feature and sets theusage export bucket.
+where reports are stored. If you provide an empty request body using this
+method, the usage export feature will be disabled.
 
       Args:
         request: (ComputeProjectsSetUsageExportBucketRequest) input message
@@ -12962,7 +13955,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a PublicAdvertisedPrefix in the specified project using the parameters that are included in the request.
+      r"""Creates a PublicAdvertisedPrefix in the specified project.
+using the parameters that are included in the request.
 
       Args:
         request: (ComputePublicAdvertisedPrefixesInsertRequest) input message
@@ -13014,7 +14008,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+      r"""Patches the specified Router resource with the data included in the.
+request. This method supportsPATCH
+semantics and usesJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputePublicAdvertisedPrefixesPatchRequest) input message
@@ -13076,7 +14073,11 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Lists all PublicDelegatedPrefix resources owned by the specific project across all scopes. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Lists all PublicDelegatedPrefix resources owned by the specific project.
+across all scopes.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputePublicDelegatedPrefixesAggregatedListRequest) input message
@@ -13180,7 +14181,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a PublicDelegatedPrefix in the specified project in the given region using the parameters that are included in the request.
+      r"""Creates a PublicDelegatedPrefix in the specified project in the given.
+region using the parameters that are included in the request.
 
       Args:
         request: (ComputePublicDelegatedPrefixesInsertRequest) input message
@@ -13232,7 +14234,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified PublicDelegatedPrefix resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+      r"""Patches the specified PublicDelegatedPrefix resource with the data included.
+in the request. This method supportsPATCH
+semantics and usesJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputePublicDelegatedPrefixesPatchRequest) input message
@@ -13346,7 +14351,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates an autoscaler in the specified project using the data included in the request.
+      r"""Creates an autoscaler in the specified project using.
+the data included in the request.
 
       Args:
         request: (ComputeRegionAutoscalersInsertRequest) input message
@@ -13372,7 +14378,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of autoscalers contained within the specified region.
+      r"""Retrieves a list of autoscalers contained within.
+the specified region.
 
       Args:
         request: (ComputeRegionAutoscalersListRequest) input message
@@ -13398,7 +14405,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates an autoscaler in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Updates an autoscaler in the specified project using.
+the data included in the request. This method supportsPATCH
+semantics and uses theJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeRegionAutoscalersPatchRequest) input message
@@ -13424,7 +14434,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates an autoscaler in the specified project using the data included in the request.
+      r"""Updates an autoscaler in the specified project using.
+the data included in the request.
 
       Args:
         request: (ComputeRegionAutoscalersUpdateRequest) input message
@@ -13512,7 +14523,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetHealth(self, request, global_params=None):
-      r"""Gets the most recent health check results for this regional BackendService.
+      r"""Gets the most recent health check results for this.
+regional BackendService.
 
       Args:
         request: (ComputeRegionBackendServicesGetHealthRequest) input message
@@ -13538,7 +14550,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
 
       Args:
         request: (ComputeRegionBackendServicesGetIamPolicyRequest) input message
@@ -13564,7 +14577,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a regional BackendService resource in the specified project using the data included in the request. For more information, see Backend services overview.
+      r"""Creates a regional BackendService resource in the specified project using.
+the data included in the request. For more information, see
+Backend services overview.
 
       Args:
         request: (ComputeRegionBackendServicesInsertRequest) input message
@@ -13590,7 +14605,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of regional BackendService resources available to the specified project in the given region.
+      r"""Retrieves the list of regional BackendService resources available to the.
+specified project in the given region.
 
       Args:
         request: (ComputeRegionBackendServicesListRequest) input message
@@ -13616,7 +14632,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def ListUsable(self, request, global_params=None):
-      r"""Retrieves a list of all usable backend services in the specified project in the given region.
+      r"""Retrieves a list of all usable backend services in the specified project in.
+the given region.
 
       Args:
         request: (ComputeRegionBackendServicesListUsableRequest) input message
@@ -13642,7 +14659,11 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified regional BackendService resource with the data included in the request. For more information, see Understanding backend services This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Updates the specified regional BackendService resource with the data.
+included in the request. For more information, see 
+Understanding backend services This method
+supports PATCH semantics and uses the JSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeRegionBackendServicesPatchRequest) input message
@@ -13668,7 +14689,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
 
       Args:
         request: (ComputeRegionBackendServicesSetIamPolicyRequest) input message
@@ -13694,7 +14716,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetSecurityPolicy(self, request, global_params=None):
-      r"""Sets the Google Cloud Armor security policy for the specified backend service. For more information, see Google Cloud Armor Overview.
+      r"""Sets the Google Cloud Armor security policy for the specified backend.
+service. For more information, seeGoogle
+Cloud Armor Overview
 
       Args:
         request: (ComputeRegionBackendServicesSetSecurityPolicyRequest) input message
@@ -13746,7 +14770,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the specified regional BackendService resource with the data included in the request. For more information, see Backend services overview .
+      r"""Updates the specified regional BackendService resource with the data.
+included in the request. For more information,
+see 
+Backend services overview.
 
       Args:
         request: (ComputeRegionBackendServicesUpdateRequest) input message
@@ -13782,7 +14809,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of commitments by region. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of commitments by region.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeRegionCommitmentsAggregatedListRequest) input message
@@ -13834,7 +14864,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a commitment in the specified project using the data included in the request.
+      r"""Creates a commitment in the specified project using the data.
+included in the request.
 
       Args:
         request: (ComputeRegionCommitmentsInsertRequest) input message
@@ -13860,7 +14891,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of commitments contained within the specified region.
+      r"""Retrieves a list of commitments contained within.
+the specified region.
 
       Args:
         request: (ComputeRegionCommitmentsListRequest) input message
@@ -13886,7 +14918,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the specified commitment with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be updated: auto_renew and plan.
+      r"""Updates the specified commitment with the data included in the request.
+Update is performed only on selected fields included as part of
+update-mask. Only the following fields can be updated: auto_renew and plan.
 
       Args:
         request: (ComputeRegionCommitmentsUpdateRequest) input message
@@ -13984,7 +15018,9 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AddResourcePolicies(self, request, global_params=None):
-      r"""Adds existing resource policies to a regional disk. You can only add one policy which will be applied to this disk for scheduling snapshot creation.
+      r"""Adds existing resource policies to a regional disk. You can only add one.
+policy which will be applied to this disk for scheduling snapshot
+creation.
 
       Args:
         request: (ComputeRegionDisksAddResourcePoliciesRequest) input message
@@ -14036,7 +15072,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def CreateSnapshot(self, request, global_params=None):
-      r"""Creates a snapshot of a specified persistent disk. For regular snapshot creation, consider using snapshots.insert instead, as that method supports more features, such as creating snapshots in a project different from the source disk project.
+      r"""Creates a snapshot of a specified persistent disk. For regular snapshot.
+creation, consider using snapshots.insert
+instead, as that method supports more features, such as creating snapshots
+in a project different from the source disk project.
 
       Args:
         request: (ComputeRegionDisksCreateSnapshotRequest) input message
@@ -14062,7 +15101,11 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified regional persistent disk. Deleting a regional disk removes all the replicas of its data permanently and is irreversible. However, deleting a disk does not delete any snapshots previously made from the disk. You must separately delete snapshots.
+      r"""Deletes the specified regional persistent disk. Deleting a regional disk.
+removes all the replicas of its data permanently and is irreversible.
+However, deleting a disk does not delete anysnapshots
+previously made from the disk. You must separatelydelete
+snapshots.
 
       Args:
         request: (ComputeRegionDisksDeleteRequest) input message
@@ -14114,7 +15157,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
 
       Args:
         request: (ComputeRegionDisksGetIamPolicyRequest) input message
@@ -14140,7 +15184,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a persistent regional disk in the specified project using the data included in the request.
+      r"""Creates a persistent regional disk in the specified project using the data.
+included in the request.
 
       Args:
         request: (ComputeRegionDisksInsertRequest) input message
@@ -14166,7 +15211,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of persistent disks contained within the specified region.
+      r"""Retrieves the list of persistent disks contained within.
+the specified region.
 
       Args:
         request: (ComputeRegionDisksListRequest) input message
@@ -14244,7 +15290,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
 
       Args:
         request: (ComputeRegionDisksSetIamPolicyRequest) input message
@@ -14296,7 +15343,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def StartAsyncReplication(self, request, global_params=None):
-      r"""Starts asynchronous replication. Must be invoked on the primary disk.
+      r"""Starts asynchronous replication.
+Must be invoked on the primary disk.
 
       Args:
         request: (ComputeRegionDisksStartAsyncReplicationRequest) input message
@@ -14322,7 +15370,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def StopAsyncReplication(self, request, global_params=None):
-      r"""Stops asynchronous replication. Can be invoked either on the primary or on the secondary disk.
+      r"""Stops asynchronous replication.
+Can be invoked either on the primary or on the secondary disk.
 
       Args:
         request: (ComputeRegionDisksStopAsyncReplicationRequest) input message
@@ -14348,7 +15397,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def StopGroupAsyncReplication(self, request, global_params=None):
-      r"""Stops asynchronous replication for a consistency group of disks. Can be invoked either in the primary or secondary scope.
+      r"""Stops asynchronous replication for a consistency group of disks.
+Can be invoked either in the primary or secondary scope.
 
       Args:
         request: (ComputeRegionDisksStopGroupAsyncReplicationRequest) input message
@@ -14400,7 +15450,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Update the specified disk with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: user_license.
+      r"""Update the specified disk with the data included in the request. Update is.
+performed only on selected fields included as part of update-mask. Only the
+following fields can be modified: user_license.
 
       Args:
         request: (ComputeRegionDisksUpdateRequest) input message
@@ -14488,7 +15540,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a regional HealthCheckService resource in the specified project and region using the data included in the request.
+      r"""Creates a regional HealthCheckService resource in the.
+specified project and region using the data included in the request.
 
       Args:
         request: (ComputeRegionHealthCheckServicesInsertRequest) input message
@@ -14514,7 +15567,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all the HealthCheckService resources that have been configured for the specified project in the given region.
+      r"""Lists all the HealthCheckService resources that have been.
+configured for the specified project in the given region.
 
       Args:
         request: (ComputeRegionHealthCheckServicesListRequest) input message
@@ -14540,7 +15594,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified regional HealthCheckService resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Updates the specified regional HealthCheckService resource.
+with the data included in the request.  This method supportsPATCH
+semantics and uses theJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeRegionHealthCheckServicesPatchRequest) input message
@@ -14628,7 +15685,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a HealthCheck resource in the specified project using the data included in the request.
+      r"""Creates a HealthCheck resource in the specified project using the data.
+included in the request.
 
       Args:
         request: (ComputeRegionHealthChecksInsertRequest) input message
@@ -14654,7 +15712,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of HealthCheck resources available to the specified project.
+      r"""Retrieves the list of HealthCheck resources available to the specified.
+project.
 
       Args:
         request: (ComputeRegionHealthChecksListRequest) input message
@@ -14680,7 +15739,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a HealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Updates a HealthCheck resource in the specified project using the data.
+included in the request. This method supportsPATCH
+semantics and uses theJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeRegionHealthChecksPatchRequest) input message
@@ -14706,7 +15768,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates a HealthCheck resource in the specified project using the data included in the request.
+      r"""Updates a HealthCheck resource in the specified project using the data.
+included in the request.
 
       Args:
         request: (ComputeRegionHealthChecksUpdateRequest) input message
@@ -14742,7 +15805,21 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AbandonInstances(self, request, global_params=None):
-      r"""Flags the specified instances to be immediately removed from the managed instance group. Abandoning an instance does not delete the instance, but it does remove the instance from any target pools that are applied by the managed instance group. This method reduces the targetSize of the managed instance group by the number of instances that you abandon. This operation is marked as DONE when the action is scheduled even if the instances have not yet been removed from the group. You must separately verify the status of the abandoning action with the listmanagedinstances method. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted. You can specify a maximum of 1000 instances with this method per request.
+      r"""Flags the specified instances to be immediately removed from the managed.
+instance group. Abandoning an instance does not delete the
+instance, but it does remove the instance from any target pools that are
+applied by the managed instance group. This method reduces thetargetSize of the managed instance group by the
+number of instances that you abandon. This operation is marked asDONE when the action is scheduled even if the instances have
+not yet been removed from the group. You must separately verify the
+status of the abandoning action with thelistmanagedinstances
+method.
+
+If the group is part of a backend
+service that has enabled
+connection draining, it can take up to 60 seconds after the connection
+draining duration has elapsed before the VM instance is removed or deleted.
+
+You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersAbandonInstancesRequest) input message
@@ -14794,7 +15871,12 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def CreateInstances(self, request, global_params=None):
-      r"""Creates instances with per-instance configurations in this regional managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.
+      r"""Creates instances with per-instance configurations in this regional managed.
+instance group. Instances are created using the current instance template.
+The create instances operation is marked DONE if
+the createInstances request is successful. The underlying
+actions take additional time. You must separately verify the status of thecreating or actions with the listmanagedinstances
+method.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersCreateInstancesRequest) input message
@@ -14820,7 +15902,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified managed instance group and all of the instances in that group.
+      r"""Deletes the specified managed instance group and all of the instances.
+in that group.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersDeleteRequest) input message
@@ -14846,7 +15929,21 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def DeleteInstances(self, request, global_params=None):
-      r"""Flags the specified instances in the managed instance group to be immediately deleted. The instances are also removed from any target pools of which they were a member. This method reduces the targetSize of the managed instance group by the number of instances that you delete. The deleteInstances operation is marked DONE if the deleteInstances request is successful. The underlying actions take additional time. You must separately verify the status of the deleting action with the listmanagedinstances method. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted. You can specify a maximum of 1000 instances with this method per request.
+      r"""Flags the specified instances in the managed instance group to be.
+immediately deleted. The instances are also removed from any target
+pools of which they were a member. This method reduces thetargetSize of the managed instance group by the number of
+instances that you delete.
+The deleteInstances operation is marked DONE if
+the deleteInstances request is successful. The underlying
+actions take additional time. You must separately verify the status of thedeleting action with thelistmanagedinstances
+method.
+
+If the group is part of a backend
+service that has enabled
+connection draining, it can take up to 60 seconds after the connection
+draining duration has elapsed before the VM instance is removed or deleted.
+
+You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersDeleteInstancesRequest) input message
@@ -14872,7 +15969,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def DeletePerInstanceConfigs(self, request, global_params=None):
-      r"""Deletes selected per-instance configurations for the managed instance group.
+      r"""Deletes selected per-instance configurations for the managed instance.
+group.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersDeletePerInstanceConfigsRequest) input message
@@ -14924,7 +16022,15 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a managed instance group using the information that you specify in the request. After the group is created, instances in the group are created using the specified instance template. This operation is marked as DONE when the group is created even if the instances in the group have not yet been created. You must separately verify the status of the individual instances with the listmanagedinstances method. A regional managed instance group can contain up to 2000 instances.
+      r"""Creates a managed instance group using the information that you specify.
+in the request. After the group is created, instances in the group are
+created using the specified instance template.
+This operation is marked as DONE when the group is created
+even if the instances in the group have not yet been created. You must
+separately verify the status of the individual instances with thelistmanagedinstances
+method.
+
+A regional managed instance group can contain up to 2000 instances.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersInsertRequest) input message
@@ -14950,7 +16056,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of managed instance groups that are contained within the specified region.
+      r"""Retrieves the list of managed instance groups that are contained.
+within the specified region.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersListRequest) input message
@@ -14976,7 +16083,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def ListErrors(self, request, global_params=None):
-      r"""Lists all errors thrown by actions on instances for a given regional managed instance group. The filter and orderBy query parameters are not supported.
+      r"""Lists all errors thrown by actions on instances for a given regional.
+managed instance group. The filter andorderBy query parameters are not supported.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersListErrorsRequest) input message
@@ -15002,7 +16110,12 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def ListManagedInstances(self, request, global_params=None):
-      r"""Lists the instances in the managed instance group and instances that are scheduled to be created. The list includes any current actions that the group has scheduled for its instances. The orderBy query parameter is not supported. The `pageToken` query parameter is supported only if the group's `listManagedInstancesResults` field is set to `PAGINATED`.
+      r"""Lists the instances in the managed instance group and instances that are.
+scheduled to be created. The list includes any current actions
+that the group has scheduled for its instances. The orderBy
+query parameter is not supported.   The `pageToken` query parameter is
+supported only if the group's `listManagedInstancesResults` field is set
+to `PAGINATED`.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersListManagedInstancesRequest) input message
@@ -15028,7 +16141,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def ListPerInstanceConfigs(self, request, global_params=None):
-      r"""Lists all of the per-instance configurations defined for the managed instance group. The orderBy query parameter is not supported.
+      r"""Lists all of the per-instance configurations defined for the managed.
+instance group. The orderBy query parameter is not supported.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersListPerInstanceConfigsRequest) input message
@@ -15054,7 +16168,21 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. If you update your group to specify a new template or instance configuration, it's possible that your intended specification for each VM in the group is different from the current state of that VM. To learn how to apply an updated configuration to the VMs in a MIG, see Updating instances in a MIG.
+      r"""Updates a managed instance group using the information that you specify.
+in the request.
+This operation is marked as DONE when the group is patched
+even if the instances in the group are still in the process of being
+patched. You must separately verify the status of the individual instances
+with the listmanagedinstances
+method. This method supportsPATCH
+semantics and uses theJSON merge
+patch format and processing rules.
+
+If you update your group to specify a new template or instance
+configuration, it's possible that your intended specification for each VM
+in the group is different from the current state of that VM. To learn how
+to apply an updated configuration to the VMs in a MIG, seeUpdating instances in
+a MIG.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersPatchRequest) input message
@@ -15080,7 +16208,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def PatchPerInstanceConfigs(self, request, global_params=None):
-      r"""Inserts or patches per-instance configurations for the managed instance group. perInstanceConfig.name serves as a key used to distinguish whether to perform insert or patch.
+      r"""Inserts or patches per-instance configurations for the managed instance.
+group. perInstanceConfig.name serves as a key used to
+distinguish whether to perform insert or patch.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersPatchPerInstanceConfigsRequest) input message
@@ -15106,7 +16236,19 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def RecreateInstances(self, request, global_params=None):
-      r"""Flags the specified VM instances in the managed instance group to be immediately recreated. Each instance is recreated using the group's current configuration. This operation is marked as DONE when the flag is set even if the instances have not yet been recreated. You must separately verify the status of each instance by checking its currentAction field; for more information, see Checking the status of managed instances. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted. You can specify a maximum of 1000 instances with this method per request.
+      r"""Flags the specified VM instances in the managed instance group to be.
+immediately recreated. Each instance is recreated using the group's current
+configuration. This operation is marked as DONE when the flag
+is set even if the instances have not yet been recreated. You must
+separately verify the status of each instance by checking itscurrentAction field; for more information, see Checking
+the status of managed instances.
+
+If the group is part of a backend
+service that has enabled
+connection draining, it can take up to 60 seconds after the connection
+draining duration has elapsed before the VM instance is removed or deleted.
+
+You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersRecreateInstancesRequest) input message
@@ -15132,7 +16274,19 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Resize(self, request, global_params=None):
-      r"""Changes the intended size of the managed instance group. If you increase the size, the group creates new instances using the current instance template. If you decrease the size, the group deletes one or more instances. The resize operation is marked DONE if the resize request is successful. The underlying actions take additional time. You must separately verify the status of the creating or deleting actions with the listmanagedinstances method. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
+      r"""Changes the intended size of the managed instance group. If you increase.
+the size, the group creates new instances using the current instance
+template. If you decrease the size, the group deletes one or more
+instances.
+
+The resize operation is marked DONE if theresize request is successful. The underlying actions take
+additional time. You must separately verify the status of thecreating or deleting actions with thelistmanagedinstances
+method.
+
+If the group is part of a backend
+service that has enabled
+connection draining, it can take up to 60 seconds after the connection
+draining duration has elapsed before the VM instance is removed or deleted.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersResizeRequest) input message
@@ -15158,7 +16312,22 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def ResumeInstances(self, request, global_params=None):
-      r"""Flags the specified instances in the managed instance group to be resumed. This method increases the targetSize and decreases the targetSuspendedSize of the managed instance group by the number of instances that you resume. The resumeInstances operation is marked DONE if the resumeInstances request is successful. The underlying actions take additional time. You must separately verify the status of the RESUMING action with the listmanagedinstances method. In this request, you can only specify instances that are suspended. For example, if an instance was previously suspended using the suspendInstances method, it can be resumed using the resumeInstances method. If a health check is attached to the managed instance group, the specified instances will be verified as healthy after they are resumed. You can specify a maximum of 1000 instances with this method per request.
+      r"""Flags the specified instances in the managed instance group to be.
+resumed. This method increases thetargetSize and decreases the targetSuspendedSize
+of the managed instance group by the number of instances that you resume.
+The resumeInstances operation is marked DONE if
+the resumeInstances request is successful. The underlying
+actions take additional time. You must separately verify the status of theRESUMING action with thelistmanagedinstances
+method.
+
+In this request, you can only specify instances that are suspended. For
+example, if an instance was previously suspended using the suspendInstances
+method, it can be resumed using the resumeInstances method.
+
+If a health check is attached to the managed instance group, the specified
+instances will be verified as healthy after they are resumed.
+
+You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersResumeInstancesRequest) input message
@@ -15184,7 +16353,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetInstanceTemplate(self, request, global_params=None):
-      r"""Sets the instance template to use when creating new instances or recreating instances in this group. Existing instances are not affected.
+      r"""Sets the instance template to use when creating new instances or recreating.
+instances in this group. Existing instances are not affected.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersSetInstanceTemplateRequest) input message
@@ -15210,7 +16380,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetTargetPools(self, request, global_params=None):
-      r"""Modifies the target pools to which all new instances in this group are assigned. Existing instances in the group are not affected.
+      r"""Modifies the target pools to which all new instances in this group are.
+assigned. Existing instances in the group are not affected.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersSetTargetPoolsRequest) input message
@@ -15236,7 +16407,22 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def StartInstances(self, request, global_params=None):
-      r"""Flags the specified instances in the managed instance group to be started. This method increases the targetSize and decreases the targetStoppedSize of the managed instance group by the number of instances that you start. The startInstances operation is marked DONE if the startInstances request is successful. The underlying actions take additional time. You must separately verify the status of the STARTING action with the listmanagedinstances method. In this request, you can only specify instances that are stopped. For example, if an instance was previously stopped using the stopInstances method, it can be started using the startInstances method. If a health check is attached to the managed instance group, the specified instances will be verified as healthy after they are started. You can specify a maximum of 1000 instances with this method per request.
+      r"""Flags the specified instances in the managed instance group to be.
+started. This method increases thetargetSize and decreases the targetStoppedSize
+of the managed instance group by the number of instances that you start.
+The startInstances operation is marked DONE if
+the startInstances request is successful. The underlying
+actions take additional time. You must separately verify the status of theSTARTING action with thelistmanagedinstances
+method.
+
+In this request, you can only specify instances that are stopped. For
+example, if an instance was previously stopped using the stopInstances
+method, it can be started using the startInstances method.
+
+If a health check is attached to the managed instance group, the specified
+instances will be verified as healthy after they are started.
+
+You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersStartInstancesRequest) input message
@@ -15262,7 +16448,31 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def StopInstances(self, request, global_params=None):
-      r"""Flags the specified instances in the managed instance group to be immediately stopped. You can only specify instances that are running in this request. This method reduces the targetSize and increases the targetStoppedSize of the managed instance group by the number of instances that you stop. The stopInstances operation is marked DONE if the stopInstances request is successful. The underlying actions take additional time. You must separately verify the status of the STOPPING action with the listmanagedinstances method. If the standbyPolicy.initialDelaySec field is set, the group delays stopping the instances until initialDelaySec have passed from instance.creationTimestamp (that is, when the instance was created). This delay gives your application time to set itself up and initialize on the instance. If more than initialDelaySec seconds have passed since instance.creationTimestamp when this method is called, there will be zero delay. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is stopped. Stopped instances can be started using the startInstances method. You can specify a maximum of 1000 instances with this method per request.
+      r"""Flags the specified instances in the managed instance group to be.
+immediately stopped. You can only specify instances that are running in
+this request. This method reduces thetargetSize and increases the targetStoppedSize
+of the managed instance group by the number of instances that you stop.
+The stopInstances operation is marked DONE if
+the stopInstances request is successful. The underlying
+actions take additional time. You must separately verify the status of theSTOPPING action with thelistmanagedinstances
+method.
+
+If the standbyPolicy.initialDelaySec field is set, the group
+delays stopping the instances until initialDelaySec have
+passed from instance.creationTimestamp (that is, when the
+instance was created). This delay gives your application time to
+set itself up and initialize on the instance. If more thaninitialDelaySec seconds have passed sinceinstance.creationTimestamp when this method is called, there
+will be zero delay.
+
+If the group is part of a backend
+service that has enabled
+connection draining, it can take up to 60 seconds after the connection
+draining duration has elapsed before the VM instance is stopped.
+
+Stopped instances can be started using the startInstances
+method.
+
+You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersStopInstancesRequest) input message
@@ -15288,7 +16498,31 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SuspendInstances(self, request, global_params=None):
-      r"""Flags the specified instances in the managed instance group to be immediately suspended. You can only specify instances that are running in this request. This method reduces the targetSize and increases the targetSuspendedSize of the managed instance group by the number of instances that you suspend. The suspendInstances operation is marked DONE if the suspendInstances request is successful. The underlying actions take additional time. You must separately verify the status of the SUSPENDING action with the listmanagedinstances method. If the standbyPolicy.initialDelaySec field is set, the group delays suspension of the instances until initialDelaySec have passed from instance.creationTimestamp (that is, when the instance was created). This delay gives your application time to set itself up and initialize on the instance. If more than initialDelaySec seconds have passed since instance.creationTimestamp when this method is called, there will be zero delay. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is suspended. Suspended instances can be resumed using the resumeInstances method. You can specify a maximum of 1000 instances with this method per request.
+      r"""Flags the specified instances in the managed instance group to be.
+immediately suspended. You can only specify instances that are running in
+this request. This method reduces thetargetSize and increases the targetSuspendedSize
+of the managed instance group by the number of instances that you suspend.
+The suspendInstances operation is marked DONE if
+the suspendInstances request is successful. The underlying
+actions take additional time. You must separately verify the status of theSUSPENDING action with thelistmanagedinstances
+method.
+
+If the standbyPolicy.initialDelaySec field is set, the group
+delays suspension of the instances until initialDelaySec have
+passed from instance.creationTimestamp (that is, when the
+instance was created). This delay gives your application time to
+set itself up and initialize on the instance. If more thaninitialDelaySec seconds have passed sinceinstance.creationTimestamp when this method is called, there
+will be zero delay.
+
+If the group is part of a backend
+service that has enabled
+connection draining, it can take up to 60 seconds after the connection
+draining duration has elapsed before the VM instance is suspended.
+
+Suspended instances can be resumed using the resumeInstances
+method.
+
+You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersSuspendInstancesRequest) input message
@@ -15314,7 +16548,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def UpdatePerInstanceConfigs(self, request, global_params=None):
-      r"""Inserts or updates per-instance configurations for the managed instance group. perInstanceConfig.name serves as a key used to distinguish whether to perform insert or patch.
+      r"""Inserts or updates per-instance configurations for the managed instance.
+group. perInstanceConfig.name serves as a key used to
+distinguish whether to perform insert or patch.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersUpdatePerInstanceConfigsRequest) input message
@@ -15376,7 +16612,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of instance group resources contained within the specified region.
+      r"""Retrieves the list of instance group resources contained within.
+the specified region.
 
       Args:
         request: (ComputeRegionInstanceGroupsListRequest) input message
@@ -15402,7 +16639,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def ListInstances(self, request, global_params=None):
-      r"""Lists the instances in the specified instance group and displays information about the named ports. Depending on the specified options, this method can list all instances or only the instances that are running. The orderBy query parameter is not supported.
+      r"""Lists the instances in the specified instance group and displays.
+information about the named ports. Depending on the specified options, this
+method can list all instances or only the instances that are running.
+The orderBy query parameter is not supported.
 
       Args:
         request: (ComputeRegionInstanceGroupsListInstancesRequest) input message
@@ -15490,7 +16730,8 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified instance template. Deleting an instance template is permanent and cannot be undone.
+      r"""Deletes the specified instance template. Deleting an instance template is.
+permanent and cannot be undone.
 
       Args:
         request: (ComputeRegionInstanceTemplatesDeleteRequest) input message
@@ -15542,7 +16783,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates an instance template in the specified project and region using the global instance template whose URL is included in the request.
+      r"""Creates an instance template in the specified project and region using the.
+global instance template whose URL is included in the request.
 
       Args:
         request: (ComputeRegionInstanceTemplatesInsertRequest) input message
@@ -15568,7 +16810,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of instance templates that are contained within the specified project and region.
+      r"""Retrieves a list of instance templates that are contained within the.
+specified project and region.
 
       Args:
         request: (ComputeRegionInstanceTemplatesListRequest) input message
@@ -15604,7 +16847,8 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def BulkInsert(self, request, global_params=None):
-      r"""Creates multiple instances in a given region. Count specifies the number of instances to create.
+      r"""Creates multiple instances in a given region. Count specifies the number of.
+instances to create.
 
       Args:
         request: (ComputeRegionInstancesBulkInsertRequest) input message
@@ -15640,7 +16884,14 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified InstantSnapshot resource. Keep in mind that deleting a single instantSnapshot might not necessarily delete all the data on that instantSnapshot. If any data on the instantSnapshot that is marked for deletion is needed for subsequent instantSnapshots, the data will be moved to the next corresponding instantSnapshot. For more information, see Deleting instantSnapshots.
+      r"""Deletes the specified InstantSnapshot resource. Keep in mind that deleting.
+a single instantSnapshot might not necessarily delete all the data on that
+instantSnapshot. If any data on the instantSnapshot that is marked for
+deletion is needed for subsequent instantSnapshots, the data will be moved
+to the next corresponding instantSnapshot.
+
+For more information, seeDeleting
+instantSnapshots.
 
       Args:
         request: (ComputeRegionInstantSnapshotsDeleteRequest) input message
@@ -15692,7 +16943,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
 
       Args:
         request: (ComputeRegionInstantSnapshotsGetIamPolicyRequest) input message
@@ -15744,7 +16996,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of InstantSnapshot resources contained within the specified region.
+      r"""Retrieves the list of InstantSnapshot resources contained within.
+the specified region.
 
       Args:
         request: (ComputeRegionInstantSnapshotsListRequest) input message
@@ -15770,7 +17023,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
 
       Args:
         request: (ComputeRegionInstantSnapshotsSetIamPolicyRequest) input message
@@ -15796,7 +17050,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on a instantSnapshot in the given region. To learn more about labels, read the Labeling Resources documentation.
+      r"""Sets the labels on a instantSnapshot in the given region. To learn more.
+about labels, read the Labeling
+Resources documentation.
 
       Args:
         request: (ComputeRegionInstantSnapshotsSetLabelsRequest) input message
@@ -15884,7 +17140,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified network endpoint group. Note that the NEG cannot be deleted if it is configured as a backend of a backend service.
+      r"""Deletes the specified network endpoint group. Note that the NEG cannot be.
+deleted if it is configured as a backend of a backend service.
 
       Args:
         request: (ComputeRegionNetworkEndpointGroupsDeleteRequest) input message
@@ -15962,7 +17219,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a network endpoint group in the specified project using the parameters that are included in the request.
+      r"""Creates a network endpoint group in the specified project using the.
+parameters that are included in the request.
 
       Args:
         request: (ComputeRegionNetworkEndpointGroupsInsertRequest) input message
@@ -15988,7 +17246,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of regional network endpoint groups available to the specified project in the given region.
+      r"""Retrieves the list of regional network endpoint groups available to the.
+specified project in the given region.
 
       Args:
         request: (ComputeRegionNetworkEndpointGroupsListRequest) input message
@@ -16232,7 +17491,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
 
       Args:
         request: (ComputeRegionNetworkFirewallPoliciesGetIamPolicyRequest) input message
@@ -16310,7 +17570,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all the network firewall policies that have been configured for the specified project in the given region.
+      r"""Lists all the network firewall policies that have been configured.
+for the specified project in the given region.
 
       Args:
         request: (ComputeRegionNetworkFirewallPoliciesListRequest) input message
@@ -16440,7 +17701,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
 
       Args:
         request: (ComputeRegionNetworkFirewallPoliciesSetIamPolicyRequest) input message
@@ -16554,7 +17816,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Create a NotificationEndpoint in the specified project in the given region using the parameters that are included in the request.
+      r"""Create a NotificationEndpoint in the specified project in the given region.
+using the parameters that are included in the request.
 
       Args:
         request: (ComputeRegionNotificationEndpointsInsertRequest) input message
@@ -16668,7 +17931,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of Operation resources contained within the specified region.
+      r"""Retrieves a list of Operation resources contained within.
+the specified region.
 
       Args:
         request: (ComputeRegionOperationsListRequest) input message
@@ -16694,7 +17958,22 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Wait(self, request, global_params=None):
-      r"""Waits for the specified Operation resource to return as `DONE` or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method differs from the `GET` method in that it waits for no more than the default deadline (2 minutes) and then returns the current state of the operation, which might be `DONE` or still in progress. This method is called on a best-effort basis. Specifically: - In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds. - If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not `DONE`. .
+      r"""Waits for the specified Operation resource to return as `DONE`.
+or for the request to approach the 2 minute deadline, and retrieves the
+specified Operation resource. This method differs from the
+`GET` method in that it waits for no more than the default
+deadline (2 minutes) and then returns the current state of the operation,
+which might be `DONE` or still in progress.
+
+This method is called on a best-effort basis. Specifically:
+   
+   
+    - In uncommon cases, when the server is overloaded, the request might
+    return before the default deadline is reached, or might return after zero
+    seconds.
+   - If the default deadline is reached, there is no guarantee that the
+    operation is actually done when the method returns. Be prepared to retry
+    if the operation is not `DONE`.
 
       Args:
         request: (ComputeRegionOperationsWaitRequest) input message
@@ -16834,7 +18113,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a new policy in the specified project using the data included in the request.
+      r"""Creates a new policy in the specified project using the data included in.
+the request.
 
       Args:
         request: (ComputeRegionSecurityPoliciesInsertRequest) input message
@@ -16860,7 +18140,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List all the policies that have been configured for the specified project and region.
+      r"""List all the policies that have been configured for the specified project.
+and region.
 
       Args:
         request: (ComputeRegionSecurityPoliciesListRequest) input message
@@ -16886,7 +18167,11 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified policy with the data included in the request. To clear fields in the policy, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
+      r"""Patches the specified policy with the data included in the request. To.
+clear fields in the policy, leave the fields empty and specify them in the
+updateMask. This cannot be used to be update the rules in the policy.
+Please use the per rule methods like addRule, patchRule, and removeRule
+instead.
 
       Args:
         request: (ComputeRegionSecurityPoliciesPatchRequest) input message
@@ -16912,7 +18197,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def PatchRule(self, request, global_params=None):
-      r"""Patches a rule at the specified priority. To clear fields in the rule, leave the fields empty and specify them in the updateMask.
+      r"""Patches a rule at the specified priority. To clear fields in the rule,.
+leave the fields empty and specify them in the updateMask.
 
       Args:
         request: (ComputeRegionSecurityPoliciesPatchRuleRequest) input message
@@ -16964,7 +18250,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on a security policy. To learn more about labels, read the Labeling Resources documentation.
+      r"""Sets the labels on a security policy. To learn more about labels,.
+read the Labeling Resources
+documentation.
 
       Args:
         request: (ComputeRegionSecurityPoliciesSetLabelsRequest) input message
@@ -17026,7 +18314,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified SslCertificate resource in the specified region. Get a list of available SSL certificates by making a list() request.
+      r"""Returns the specified SslCertificate resource in the specified region. Get.
+a list of available SSL certificates by making a list()
+request.
 
       Args:
         request: (ComputeRegionSslCertificatesGetRequest) input message
@@ -17052,7 +18342,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a SslCertificate resource in the specified project and region using the data included in the request.
+      r"""Creates a SslCertificate resource in the specified project and region using.
+the data included in the request
 
       Args:
         request: (ComputeRegionSslCertificatesInsertRequest) input message
@@ -17078,7 +18369,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of SslCertificate resources available to the specified project in the specified region.
+      r"""Retrieves the list of SslCertificate resources available to the specified.
+project in the specified region.
 
       Args:
         request: (ComputeRegionSslCertificatesListRequest) input message
@@ -17114,7 +18406,9 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified SSL policy. The SSL policy resource can be deleted only if it is not in use by any TargetHttpsProxy or TargetSslProxy resources.
+      r"""Deletes the specified SSL policy. The SSL policy resource can be deleted.
+only if it is not in use by any TargetHttpsProxy or TargetSslProxy
+resources.
 
       Args:
         request: (ComputeRegionSslPoliciesDeleteRequest) input message
@@ -17166,7 +18460,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a new policy in the specified project and region using the data included in the request.
+      r"""Creates a new policy in the specified project and region using the data.
+included in the request.
 
       Args:
         request: (ComputeRegionSslPoliciesInsertRequest) input message
@@ -17192,7 +18487,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all the SSL policies that have been configured for the specified project and region.
+      r"""Lists all the SSL policies that have been configured for the specified.
+project and region.
 
       Args:
         request: (ComputeRegionSslPoliciesListRequest) input message
@@ -17218,7 +18514,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def ListAvailableFeatures(self, request, global_params=None):
-      r"""Lists all features that can be specified in the SSL policy when using custom profile.
+      r"""Lists all features that can be specified in the SSL policy when using.
+custom profile.
 
       Args:
         request: (ComputeRegionSslPoliciesListAvailableFeaturesRequest) input message
@@ -17332,7 +18629,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a TargetHttpProxy resource in the specified project and region using the data included in the request.
+      r"""Creates a TargetHttpProxy resource in the specified project and region.
+using the data included in the request.
 
       Args:
         request: (ComputeRegionTargetHttpProxiesInsertRequest) input message
@@ -17358,7 +18656,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of TargetHttpProxy resources available to the specified project in the specified region.
+      r"""Retrieves the list of TargetHttpProxy resources available.
+to the specified project in the specified region.
 
       Args:
         request: (ComputeRegionTargetHttpProxiesListRequest) input message
@@ -17472,7 +18771,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a TargetHttpsProxy resource in the specified project and region using the data included in the request.
+      r"""Creates a TargetHttpsProxy resource in the specified project and region.
+using the data included in the request.
 
       Args:
         request: (ComputeRegionTargetHttpsProxiesInsertRequest) input message
@@ -17498,7 +18798,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of TargetHttpsProxy resources available to the specified project in the specified region.
+      r"""Retrieves the list of TargetHttpsProxy resources available.
+to the specified project in the specified region.
 
       Args:
         request: (ComputeRegionTargetHttpsProxiesListRequest) input message
@@ -17524,7 +18825,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified regional TargetHttpsProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+      r"""Patches the specified regional TargetHttpsProxy resource with the data.
+included in the request. This method supports PATCH
+semantics and usesJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeRegionTargetHttpsProxiesPatchRequest) input message
@@ -17664,7 +18968,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a TargetTcpProxy resource in the specified project and region using the data included in the request.
+      r"""Creates a TargetTcpProxy resource in the specified project and region using.
+the data included in the request.
 
       Args:
         request: (ComputeRegionTargetTcpProxiesInsertRequest) input message
@@ -17690,7 +18995,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of TargetTcpProxy resources available to the specified project in a given region.
+      r"""Retrieves a list of TargetTcpProxy resources.
+available to the specified project in a given region.
 
       Args:
         request: (ComputeRegionTargetTcpProxiesListRequest) input message
@@ -17778,7 +19084,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a UrlMap resource in the specified project using the data included in the request.
+      r"""Creates a UrlMap resource in the specified project using.
+the data included in the request.
 
       Args:
         request: (ComputeRegionUrlMapsInsertRequest) input message
@@ -17804,7 +19111,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of UrlMap resources available to the specified project in the specified region.
+      r"""Retrieves the list of UrlMap resources available to the specified.
+project in the specified region.
 
       Args:
         request: (ComputeRegionUrlMapsListRequest) input message
@@ -17830,7 +19138,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified UrlMap resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+      r"""Patches the specified UrlMap resource with the data included in the.
+request. This method supportsPATCH
+semantics and usesJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeRegionUrlMapsPatchRequest) input message
@@ -17856,7 +19167,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the specified UrlMap resource with the data included in the request.
+      r"""Updates the specified UrlMap resource with the data included in the.
+request.
 
       Args:
         request: (ComputeRegionUrlMapsUpdateRequest) input message
@@ -17882,7 +19194,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Validate(self, request, global_params=None):
-      r"""Runs static validation for the UrlMap. In particular, the tests of the provided UrlMap will be run. Calling this method does NOT create the UrlMap.
+      r"""Runs static validation for the UrlMap. In particular, the tests of the.
+provided UrlMap will be run. Calling this method does NOT create the
+UrlMap.
 
       Args:
         request: (ComputeRegionUrlMapsValidateRequest) input message
@@ -17918,7 +19232,8 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of Zone resources under the specific region available to the specified project.
+      r"""Retrieves the list of Zone resources under the specific region available to.
+the specified project.
 
       Args:
         request: (ComputeRegionZonesListRequest) input message
@@ -17954,7 +19269,24 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified Region resource. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the `quotas` field). To exclude one or more fields, set your request's `fields` query parameter to only include the fields you need. For example, to only include the `id` and `selfLink` fields, add the query parameter `?fields=id,selfLink` to your request. This method fails if the quota information is unavailable for the region and if the organization policy constraint compute.requireBasicQuotaInResponse is enforced. This constraint, when enforced, disables the fail-open behaviour when quota information (the `items.quotas` field) is unavailable for the region. It is recommended to use the default setting for the constraint unless your application requires the fail-closed behaviour for this method.
+      r"""Returns the specified Region resource.
+
+To decrease latency for this method, you can optionally omit any unneeded
+information from the response by using a field mask. This practice is
+especially recommended for unused quota information (the `quotas` field).
+To exclude one or more fields, set your request's `fields` query parameter
+to only include the fields you need. For example, to only include the `id`
+and `selfLink` fields, add the query parameter `?fields=id,selfLink` to
+your request.
+
+This method fails if the quota information is unavailable for the region
+and if the organization policy constraint
+compute.requireBasicQuotaInResponse is enforced. This
+constraint, when enforced, disables the fail-open behaviour when quota
+information (the `items.quotas` field) is unavailable for the region.
+It is recommended to use the default setting
+for the constraint unless your application requires the fail-closed
+behaviour for this method.
 
       Args:
         request: (ComputeRegionsGetRequest) input message
@@ -17980,7 +19312,25 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of region resources available to the specified project. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the `items.quotas` field). To exclude one or more fields, set your request's `fields` query parameter to only include the fields you need. For example, to only include the `id` and `selfLink` fields, add the query parameter `?fields=id,selfLink` to your request. This method fails if the quota information is unavailable for the region and if the organization policy constraint compute.requireBasicQuotaInResponse is enforced. This constraint, when enforced, disables the fail-open behaviour when quota information (the `items.quotas` field) is unavailable for the region. It is recommended to use the default setting for the constraint unless your application requires the fail-closed behaviour for this method.
+      r"""Retrieves the list of region resources available to the specified project.
+
+To decrease latency for this method, you can optionally omit any unneeded
+information from the response by using a field mask. This practice is
+especially recommended for unused quota information
+(the `items.quotas` field).
+To exclude one or more fields, set your request's `fields` query parameter
+to only include the fields you need. For example, to only include the `id`
+and `selfLink` fields, add the query parameter `?fields=id,selfLink` to
+your request.
+
+This method fails if the quota information is unavailable for the region
+and if the organization policy constraint
+compute.requireBasicQuotaInResponse is enforced. This
+constraint, when enforced, disables the fail-open behaviour when quota
+information (the `items.quotas` field) is unavailable for the region.
+It is recommended to use the default setting
+for the constraint unless your application requires the fail-closed
+behaviour for this method.
 
       Args:
         request: (ComputeRegionsListRequest) input message
@@ -18218,7 +19568,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of reservations. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of reservations.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeReservationsAggregatedListRequest) input message
@@ -18296,7 +19649,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
 
       Args:
         request: (ComputeReservationsGetIamPolicyRequest) input message
@@ -18322,7 +19676,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a new reservation. For more information, read Reserving zonal resources.
+      r"""Creates a new reservation. For more information, readReserving zonal.
+resources.
 
       Args:
         request: (ComputeReservationsInsertRequest) input message
@@ -18348,7 +19703,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""A list of all the reservations that have been configured for the specified project in specified zone.
+      r"""A list of all the reservations that have been configured for the.
+specified project in specified zone.
 
       Args:
         request: (ComputeReservationsListRequest) input message
@@ -18400,7 +19756,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Resize(self, request, global_params=None):
-      r"""Resizes the reservation (applicable to standalone reservations only). For more information, read Modifying reservations.
+      r"""Resizes the reservation (applicable to standalone reservations only). For.
+more information, readModifying
+reservations.
 
       Args:
         request: (ComputeReservationsResizeRequest) input message
@@ -18426,7 +19784,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
 
       Args:
         request: (ComputeReservationsSetIamPolicyRequest) input message
@@ -18514,7 +19873,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of resource policies. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of resource policies.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeResourcePoliciesAggregatedListRequest) input message
@@ -18592,7 +19954,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
 
       Args:
         request: (ComputeResourcePoliciesGetIamPolicyRequest) input message
@@ -18644,7 +20007,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""A list all the resource policies that have been configured for the specified project in specified region.
+      r"""A list all the resource policies that have been configured for the.
+specified project in specified region.
 
       Args:
         request: (ComputeResourcePoliciesListRequest) input message
@@ -18696,7 +20060,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
 
       Args:
         request: (ComputeResourcePoliciesSetIamPolicyRequest) input message
@@ -18758,7 +20123,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of routers. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of routers.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeRoutersAggregatedListRequest) input message
@@ -18966,7 +20334,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a Router resource in the specified project and region using the data included in the request.
+      r"""Creates a Router resource in the specified project and region using.
+the data included in the request.
 
       Args:
         request: (ComputeRoutersInsertRequest) input message
@@ -19044,7 +20413,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def ListRoutePolicies(self, request, global_params=None):
-      r"""Retrieves a list of router route policy subresources available to the specified project.
+      r"""Retrieves a list of router route policy subresources available to the.
+specified project.
 
       Args:
         request: (ComputeRoutersListRoutePoliciesRequest) input message
@@ -19070,7 +20440,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+      r"""Patches the specified Router resource with the data included in the.
+request. This method supportsPATCH
+semantics and usesJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeRoutersPatchRequest) input message
@@ -19122,7 +20495,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Preview(self, request, global_params=None):
-      r"""Preview fields auto-generated during router create and update operations. Calling this method does NOT create or update the router.
+      r"""Preview fields auto-generated during router create andupdate operations.
+Calling this method does NOT create or update the router.
 
       Args:
         request: (ComputeRoutersPreviewRequest) input message
@@ -19148,7 +20522,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the specified Router resource with the data included in the request. This method conforms to PUT semantics, which requests that the state of the target resource be created or replaced with the state defined by the representation enclosed in the request message payload.
+      r"""Updates the specified Router resource with the data included in the.
+request.  This method conforms toPUT semantics, which requests that the state of the
+target resource be created or replaced with the state defined by the
+representation enclosed in the request message payload.
 
       Args:
         request: (ComputeRoutersUpdateRequest) input message
@@ -19262,7 +20639,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a Route resource in the specified project using the data included in the request.
+      r"""Creates a Route resource in the specified project using the data included.
+in the request.
 
       Args:
         request: (ComputeRoutesInsertRequest) input message
@@ -19350,7 +20728,11 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all SecurityPolicy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves the list of all SecurityPolicy resources, regional and global,.
+available to the specified project.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeSecurityPoliciesAggregatedListRequest) input message
@@ -19454,7 +20836,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a new policy in the specified project using the data included in the request.
+      r"""Creates a new policy in the specified project using the data included in.
+the request.
 
       Args:
         request: (ComputeSecurityPoliciesInsertRequest) input message
@@ -19506,7 +20889,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def ListPreconfiguredExpressionSets(self, request, global_params=None):
-      r"""Gets the current list of preconfigured Web Application Firewall (WAF) expressions.
+      r"""Gets the current list of preconfigured Web Application Firewall (WAF).
+expressions.
 
       Args:
         request: (ComputeSecurityPoliciesListPreconfiguredExpressionSetsRequest) input message
@@ -19532,7 +20916,11 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified policy with the data included in the request. To clear fields in the policy, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
+      r"""Patches the specified policy with the data included in the request. To.
+clear fields in the policy, leave the fields empty and specify them in the
+updateMask. This cannot be used to be update the rules in the policy.
+Please use the per rule methods like addRule, patchRule, and removeRule
+instead.
 
       Args:
         request: (ComputeSecurityPoliciesPatchRequest) input message
@@ -19558,7 +20946,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def PatchRule(self, request, global_params=None):
-      r"""Patches a rule at the specified priority. To clear fields in the rule, leave the fields empty and specify them in the updateMask.
+      r"""Patches a rule at the specified priority. To clear fields in the rule,.
+leave the fields empty and specify them in the updateMask.
 
       Args:
         request: (ComputeSecurityPoliciesPatchRuleRequest) input message
@@ -19610,7 +20999,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on a security policy. To learn more about labels, read the Labeling Resources documentation.
+      r"""Sets the labels on a security policy. To learn more about labels,.
+read the Labeling Resources
+documentation.
 
       Args:
         request: (ComputeSecurityPoliciesSetLabelsRequest) input message
@@ -19646,7 +21037,11 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all ServiceAttachment resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves the list of all ServiceAttachment resources,.
+regional and global, available to the specified project.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeServiceAttachmentsAggregatedListRequest) input message
@@ -19724,7 +21119,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
 
       Args:
         request: (ComputeServiceAttachmentsGetIamPolicyRequest) input message
@@ -19750,7 +21146,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a ServiceAttachment in the specified project in the given scope using the parameters that are included in the request.
+      r"""Creates a ServiceAttachment in the specified project in the given scope.
+using the parameters that are included in the request.
 
       Args:
         request: (ComputeServiceAttachmentsInsertRequest) input message
@@ -19802,7 +21199,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified ServiceAttachment resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+      r"""Patches the specified ServiceAttachment resource with the data included in.
+the request. This method supports PATCH
+semantics and usesJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeServiceAttachmentsPatchRequest) input message
@@ -19828,7 +21228,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
 
       Args:
         request: (ComputeServiceAttachmentsSetIamPolicyRequest) input message
@@ -19952,7 +21353,14 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified Snapshot resource. Keep in mind that deleting a single snapshot might not necessarily delete all the data on that snapshot. If any data on the snapshot that is marked for deletion is needed for subsequent snapshots, the data will be moved to the next corresponding snapshot. For more information, see Deleting snapshots.
+      r"""Deletes the specified Snapshot resource. Keep in mind that deleting.
+a single snapshot might not necessarily delete all the data on that
+snapshot. If any data on the snapshot that is marked for deletion is
+needed for subsequent snapshots, the data will be moved to the next
+corresponding snapshot.
+
+For more information, seeDeleting
+snapshots.
 
       Args:
         request: (ComputeSnapshotsDeleteRequest) input message
@@ -20004,7 +21412,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
 
       Args:
         request: (ComputeSnapshotsGetIamPolicyRequest) input message
@@ -20030,7 +21439,11 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a snapshot in the specified project using the data included in the request. For regular snapshot creation, consider using this method instead of disks.createSnapshot, as this method supports more features, such as creating snapshots in a project different from the source disk project.
+      r"""Creates a snapshot in the specified project using the data included.
+in the request. For regular snapshot creation, consider using this method
+instead of disks.createSnapshot,
+as this method supports more features, such as creating snapshots in a
+project different from the source disk project.
 
       Args:
         request: (ComputeSnapshotsInsertRequest) input message
@@ -20056,7 +21469,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of Snapshot resources contained within the specified project.
+      r"""Retrieves the list of Snapshot resources contained within.
+the specified project.
 
       Args:
         request: (ComputeSnapshotsListRequest) input message
@@ -20082,7 +21496,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
 
       Args:
         request: (ComputeSnapshotsSetIamPolicyRequest) input message
@@ -20108,7 +21523,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on a snapshot. To learn more about labels, read the Labeling Resources documentation.
+      r"""Sets the labels on a snapshot. To learn more about labels, read theLabeling.
+Resources documentation.
 
       Args:
         request: (ComputeSnapshotsSetLabelsRequest) input message
@@ -20170,7 +21586,11 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all SslCertificate resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves the list of all SslCertificate resources, regional and global,.
+available to the specified project.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeSslCertificatesAggregatedListRequest) input message
@@ -20248,7 +21668,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a SslCertificate resource in the specified project using the data included in the request.
+      r"""Creates a SslCertificate resource in the specified project using the data.
+included in the request.
 
       Args:
         request: (ComputeSslCertificatesInsertRequest) input message
@@ -20274,7 +21695,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of SslCertificate resources available to the specified project.
+      r"""Retrieves the list of SslCertificate resources available to the specified.
+project.
 
       Args:
         request: (ComputeSslCertificatesListRequest) input message
@@ -20310,7 +21732,11 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all SslPolicy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves the list of all SslPolicy resources, regional and global,.
+available to the specified project.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeSslPoliciesAggregatedListRequest) input message
@@ -20336,7 +21762,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified SSL policy. The SSL policy resource can be deleted only if it is not in use by any TargetHttpsProxy or TargetSslProxy resources.
+      r"""Deletes the specified SSL policy. The SSL policy resource can be deleted.
+only if it is not in use by any TargetHttpsProxy or TargetSslProxy
+resources.
 
       Args:
         request: (ComputeSslPoliciesDeleteRequest) input message
@@ -20414,7 +21842,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all the SSL policies that have been configured for the specified project.
+      r"""Lists all the SSL policies that have been configured for the specified.
+project.
 
       Args:
         request: (ComputeSslPoliciesListRequest) input message
@@ -20440,7 +21869,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def ListAvailableFeatures(self, request, global_params=None):
-      r"""Lists all features that can be specified in the SSL policy when using custom profile.
+      r"""Lists all features that can be specified in the SSL policy when using.
+custom profile.
 
       Args:
         request: (ComputeSslPoliciesListAvailableFeaturesRequest) input message
@@ -20502,7 +21932,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of storage pool types. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of storage pool types.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeStoragePoolTypesAggregatedListRequest) input message
@@ -20554,7 +21987,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of storage pool types available to the specified project.
+      r"""Retrieves a list of storage pool types available to the specified.
+project.
 
       Args:
         request: (ComputeStoragePoolTypesListRequest) input message
@@ -20590,7 +22024,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of storage pools. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of storage pools.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeStoragePoolsAggregatedListRequest) input message
@@ -20616,7 +22053,11 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified storage pool. Deleting a storagePool removes its data permanently and is irreversible. However, deleting a storagePool does not delete any snapshots previously made from the storagePool. You must separately delete snapshots.
+      r"""Deletes the specified storage pool. Deleting a storagePool.
+removes its data permanently and is irreversible. However, deleting a
+storagePool does not delete any snapshots previously
+made from the storagePool. You must separately delete
+snapshots.
 
       Args:
         request: (ComputeStoragePoolsDeleteRequest) input message
@@ -20642,7 +22083,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns a specified storage pool. Gets a list of available storage pools by making a list() request.
+      r"""Returns a specified storage pool. Gets a list of available.
+storage pools by making a list() request.
 
       Args:
         request: (ComputeStoragePoolsGetRequest) input message
@@ -20668,7 +22110,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
 
       Args:
         request: (ComputeStoragePoolsGetIamPolicyRequest) input message
@@ -20694,7 +22137,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a storage pool in the specified project using the data in the request.
+      r"""Creates a storage pool in the specified project using the data.
+in the request.
 
       Args:
         request: (ComputeStoragePoolsInsertRequest) input message
@@ -20720,7 +22164,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of storage pools contained within the specified zone.
+      r"""Retrieves a list of storage pools contained within.
+the specified zone.
 
       Args:
         request: (ComputeStoragePoolsListRequest) input message
@@ -20772,7 +22217,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
 
       Args:
         request: (ComputeStoragePoolsSetIamPolicyRequest) input message
@@ -20824,7 +22270,11 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the specified storagePool with the data included in the request. The update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: pool_provisioned_capacity_gb, pool_provisioned_iops and pool_provisioned_throughput.
+      r"""Updates the specified storagePool with the data included in the request.
+The update is performed only on selected fields included as part
+of update-mask. Only the following fields can be modified:
+pool_provisioned_capacity_gb, pool_provisioned_iops and
+pool_provisioned_throughput.
 
       Args:
         request: (ComputeStoragePoolsUpdateRequest) input message
@@ -20860,7 +22310,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of subnetworks. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of subnetworks.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeSubnetworksAggregatedListRequest) input message
@@ -20877,7 +22330,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.subnetworks.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber', 'views'],
         relative_path='projects/{project}/aggregated/subnetworks',
         request_field='',
         request_type_name='ComputeSubnetworksAggregatedListRequest',
@@ -20964,7 +22417,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
 
       Args:
         request: (ComputeSubnetworksGetIamPolicyRequest) input message
@@ -20990,7 +22444,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a subnetwork in the specified project using the data included in the request.
+      r"""Creates a subnetwork in the specified project using the data.
+included in the request.
 
       Args:
         request: (ComputeSubnetworksInsertRequest) input message
@@ -21016,7 +22471,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of subnetworks available to the specified project.
+      r"""Retrieves a list of subnetworks available to the specified.
+project.
 
       Args:
         request: (ComputeSubnetworksListRequest) input message
@@ -21068,7 +22524,11 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified subnetwork with the data included in the request. Only certain fields can be updated with a patch request as indicated in the field descriptions. You must specify the current fingerprint of the subnetwork resource being patched.
+      r"""Patches the specified subnetwork with the data included in the request.
+Only certain fields can be updated with a patch request
+as indicated in the field descriptions.
+You must specify the current fingerprint of the
+subnetwork resource being patched.
 
       Args:
         request: (ComputeSubnetworksPatchRequest) input message
@@ -21094,7 +22554,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
 
       Args:
         request: (ComputeSubnetworksSetIamPolicyRequest) input message
@@ -21120,7 +22581,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetPrivateIpGoogleAccess(self, request, global_params=None):
-      r"""Set whether VMs in this subnet can access Google services without assigning external IP addresses through Private Google Access.
+      r"""Set whether VMs in this subnet can access Google services without assigning.
+external IP addresses through Private Google Access.
 
       Args:
         request: (ComputeSubnetworksSetPrivateIpGoogleAccessRequest) input message
@@ -21234,7 +22696,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a TargetGrpcProxy in the specified project in the given scope using the parameters that are included in the request.
+      r"""Creates a TargetGrpcProxy in the specified project in the given scope.
+using the parameters that are included in the request.
 
       Args:
         request: (ComputeTargetGrpcProxiesInsertRequest) input message
@@ -21286,7 +22749,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified TargetGrpcProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+      r"""Patches the specified TargetGrpcProxy resource with the data included in.
+the request. This method supports PATCH
+semantics and usesJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeTargetGrpcProxiesPatchRequest) input message
@@ -21322,7 +22788,11 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all TargetHttpProxy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves the list of all TargetHttpProxy resources, regional and global,.
+available to the specified project.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeTargetHttpProxiesAggregatedListRequest) input message
@@ -21400,7 +22870,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a TargetHttpProxy resource in the specified project using the data included in the request.
+      r"""Creates a TargetHttpProxy resource in the specified.
+project using the data included in the request.
 
       Args:
         request: (ComputeTargetHttpProxiesInsertRequest) input message
@@ -21426,7 +22897,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of TargetHttpProxy resources available to the specified project.
+      r"""Retrieves the list of TargetHttpProxy resources available.
+to the specified project.
 
       Args:
         request: (ComputeTargetHttpProxiesListRequest) input message
@@ -21452,7 +22924,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified TargetHttpProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+      r"""Patches the specified TargetHttpProxy resource with the data included in.
+the request. This method supports PATCH
+semantics and usesJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeTargetHttpProxiesPatchRequest) input message
@@ -21514,7 +22989,11 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all TargetHttpsProxy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves the list of all TargetHttpsProxy resources, regional and global,.
+available to the specified project.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeTargetHttpsProxiesAggregatedListRequest) input message
@@ -21592,7 +23071,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a TargetHttpsProxy resource in the specified project using the data included in the request.
+      r"""Creates a TargetHttpsProxy resource in the specified.
+project using the data included in the request.
 
       Args:
         request: (ComputeTargetHttpsProxiesInsertRequest) input message
@@ -21618,7 +23098,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of TargetHttpsProxy resources available to the specified project.
+      r"""Retrieves the list of TargetHttpsProxy resources.
+available to the specified project.
 
       Args:
         request: (ComputeTargetHttpsProxiesListRequest) input message
@@ -21644,7 +23125,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified TargetHttpsProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+      r"""Patches the specified TargetHttpsProxy resource with the data included in.
+the request. This method supports PATCH
+semantics and usesJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeTargetHttpsProxiesPatchRequest) input message
@@ -21748,7 +23232,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetSslPolicy(self, request, global_params=None):
-      r"""Sets the SSL policy for TargetHttpsProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the HTTPS proxy load balancer. They do not affect the connection between the load balancer and the backends.
+      r"""Sets the SSL policy for TargetHttpsProxy. The SSL policy specifies the.
+server-side support for SSL features. This affects connections between
+clients and the HTTPS proxy load balancer. They do not affect the
+connection between the load balancer and the backends.
 
       Args:
         request: (ComputeTargetHttpsProxiesSetSslPolicyRequest) input message
@@ -21810,7 +23297,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of target instances. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of target instances.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeTargetInstancesAggregatedListRequest) input message
@@ -21888,7 +23378,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a TargetInstance resource in the specified project and zone using the data included in the request.
+      r"""Creates a TargetInstance resource in the specified project and zone using.
+the data included in the request.
 
       Args:
         request: (ComputeTargetInstancesInsertRequest) input message
@@ -21914,7 +23405,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of TargetInstance resources available to the specified project and zone.
+      r"""Retrieves a list of TargetInstance resources available to the specified.
+project and zone.
 
       Args:
         request: (ComputeTargetInstancesListRequest) input message
@@ -21940,7 +23432,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetSecurityPolicy(self, request, global_params=None):
-      r"""Sets the Google Cloud Armor security policy for the specified target instance. For more information, see Google Cloud Armor Overview.
+      r"""Sets the Google Cloud Armor security policy for the specified target.
+instance. For more information, seeGoogle
+Cloud Armor Overview
 
       Args:
         request: (ComputeTargetInstancesSetSecurityPolicyRequest) input message
@@ -22054,7 +23548,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of target pools. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of target pools.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeTargetPoolsAggregatedListRequest) input message
@@ -22132,7 +23629,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetHealth(self, request, global_params=None):
-      r"""Gets the most recent health check results for each IP for the instance that is referenced by the given target pool.
+      r"""Gets the most recent health check results for each IP for the.
+instance that is referenced by the given target pool.
 
       Args:
         request: (ComputeTargetPoolsGetHealthRequest) input message
@@ -22158,7 +23656,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a target pool in the specified project and region using the data included in the request.
+      r"""Creates a target pool in the specified project and region using.
+the data included in the request.
 
       Args:
         request: (ComputeTargetPoolsInsertRequest) input message
@@ -22184,7 +23683,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of target pools available to the specified project and region.
+      r"""Retrieves a list of target pools available to the specified.
+project and region.
 
       Args:
         request: (ComputeTargetPoolsListRequest) input message
@@ -22288,7 +23788,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetSecurityPolicy(self, request, global_params=None):
-      r"""Sets the Google Cloud Armor security policy for the specified target pool. For more information, see Google Cloud Armor Overview.
+      r"""Sets the Google Cloud Armor security policy for the specified target pool.
+For more information, seeGoogle
+Cloud Armor Overview
 
       Args:
         request: (ComputeTargetPoolsSetSecurityPolicyRequest) input message
@@ -22402,7 +23904,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a TargetSslProxy resource in the specified project using the data included in the request.
+      r"""Creates a TargetSslProxy resource in the specified project using.
+the data included in the request.
 
       Args:
         request: (ComputeTargetSslProxiesInsertRequest) input message
@@ -22428,7 +23931,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of TargetSslProxy resources available to the specified project.
+      r"""Retrieves the list of TargetSslProxy resources.
+available to the specified project.
 
       Args:
         request: (ComputeTargetSslProxiesListRequest) input message
@@ -22558,7 +24062,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetSslPolicy(self, request, global_params=None):
-      r"""Sets the SSL policy for TargetSslProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the load balancer. They do not affect the connection between the load balancer and the backends.
+      r"""Sets the SSL policy for TargetSslProxy. The SSL policy specifies the.
+server-side support for SSL features. This affects connections between
+clients and the load balancer. They do not affect the
+connection between the load balancer and the backends.
 
       Args:
         request: (ComputeTargetSslProxiesSetSslPolicyRequest) input message
@@ -22594,7 +24101,11 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all TargetTcpProxy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves the list of all TargetTcpProxy resources, regional and global,.
+available to the specified project.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeTargetTcpProxiesAggregatedListRequest) input message
@@ -22672,7 +24183,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a TargetTcpProxy resource in the specified project using the data included in the request.
+      r"""Creates a TargetTcpProxy resource in the specified project using.
+the data included in the request.
 
       Args:
         request: (ComputeTargetTcpProxiesInsertRequest) input message
@@ -22698,7 +24210,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of TargetTcpProxy resources available to the specified project.
+      r"""Retrieves the list of TargetTcpProxy resources.
+available to the specified project.
 
       Args:
         request: (ComputeTargetTcpProxiesListRequest) input message
@@ -22786,7 +24299,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of target VPN gateways. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of target VPN gateways.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeTargetVpnGatewaysAggregatedListRequest) input message
@@ -22864,7 +24380,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a target VPN gateway in the specified project and region using the data included in the request.
+      r"""Creates a target VPN gateway in the specified project and region using.
+the data included in the request.
 
       Args:
         request: (ComputeTargetVpnGatewaysInsertRequest) input message
@@ -22890,7 +24407,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of target VPN gateways available to the specified project and region.
+      r"""Retrieves a list of target VPN gateways available to the specified.
+project and region.
 
       Args:
         request: (ComputeTargetVpnGatewaysListRequest) input message
@@ -22916,7 +24434,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on a TargetVpnGateway. To learn more about labels, read the Labeling Resources documentation.
+      r"""Sets the labels on a TargetVpnGateway. To learn more about labels, read theLabeling.
+Resources documentation.
 
       Args:
         request: (ComputeTargetVpnGatewaysSetLabelsRequest) input message
@@ -22952,7 +24471,11 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all UrlMap resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves the list of all UrlMap resources, regional and global,.
+available to the specified project.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeUrlMapsAggregatedListRequest) input message
@@ -23030,7 +24553,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a UrlMap resource in the specified project using the data included in the request.
+      r"""Creates a UrlMap resource in the specified project using.
+the data included in the request.
 
       Args:
         request: (ComputeUrlMapsInsertRequest) input message
@@ -23056,7 +24580,11 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def InvalidateCache(self, request, global_params=None):
-      r"""Initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap. For more information, see [Invalidating cached content](/cdn/docs/invalidating-cached-content).
+      r"""Initiates a cache invalidation operation, invalidating the specified path,.
+scoped to the specified UrlMap.
+
+For more information, see [Invalidating cached
+content](/cdn/docs/invalidating-cached-content).
 
       Args:
         request: (ComputeUrlMapsInvalidateCacheRequest) input message
@@ -23082,7 +24610,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of UrlMap resources available to the specified project.
+      r"""Retrieves the list of UrlMap resources available to the specified.
+project.
 
       Args:
         request: (ComputeUrlMapsListRequest) input message
@@ -23108,7 +24637,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified UrlMap resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Patches the specified UrlMap resource with the data included in the.
+request. This method supportsPATCH
+semantics and uses theJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeUrlMapsPatchRequest) input message
@@ -23134,7 +24666,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the specified UrlMap resource with the data included in the request.
+      r"""Updates the specified UrlMap resource with the data included in the.
+request.
 
       Args:
         request: (ComputeUrlMapsUpdateRequest) input message
@@ -23160,7 +24693,9 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Validate(self, request, global_params=None):
-      r"""Runs static validation for the UrlMap. In particular, the tests of the provided UrlMap will be run. Calling this method does NOT create the UrlMap.
+      r"""Runs static validation for the UrlMap. In particular, the tests of the.
+provided UrlMap will be run. Calling this method does NOT create the
+UrlMap.
 
       Args:
         request: (ComputeUrlMapsValidateRequest) input message
@@ -23196,7 +24731,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of VPN gateways. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of VPN gateways.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeVpnGatewaysAggregatedListRequest) input message
@@ -23300,7 +24838,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a VPN gateway in the specified project and region using the data included in the request.
+      r"""Creates a VPN gateway in the specified project and region using.
+the data included in the request.
 
       Args:
         request: (ComputeVpnGatewaysInsertRequest) input message
@@ -23326,7 +24865,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of VPN gateways available to the specified project and region.
+      r"""Retrieves a list of VPN gateways available to the specified.
+project and region.
 
       Args:
         request: (ComputeVpnGatewaysListRequest) input message
@@ -23352,7 +24892,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on a VpnGateway. To learn more about labels, read the Labeling Resources documentation.
+      r"""Sets the labels on a VpnGateway. To learn more about labels, read theLabeling.
+Resources documentation.
 
       Args:
         request: (ComputeVpnGatewaysSetLabelsRequest) input message
@@ -23414,7 +24955,10 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of VPN tunnels. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+      r"""Retrieves an aggregated list of VPN tunnels.
+
+To prevent failure, Google recommends that you set the
+`returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeVpnTunnelsAggregatedListRequest) input message
@@ -23492,7 +25036,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a VpnTunnel resource in the specified project and region using the data included in the request.
+      r"""Creates a VpnTunnel resource in the specified project and region using.
+the data included in the request.
 
       Args:
         request: (ComputeVpnTunnelsInsertRequest) input message
@@ -23518,7 +25063,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of VpnTunnel resources contained in the specified project and region.
+      r"""Retrieves a list of VpnTunnel resources contained in the specified.
+project and region.
 
       Args:
         request: (ComputeVpnTunnelsListRequest) input message
@@ -23544,7 +25090,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on a VpnTunnel. To learn more about labels, read the Labeling Resources documentation.
+      r"""Sets the labels on a VpnTunnel. To learn more about labels, read theLabeling.
+Resources documentation.
 
       Args:
         request: (ComputeVpnTunnelsSetLabelsRequest) input message
@@ -23632,7 +25179,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a wire group in the specified project in the given scope using the parameters that are included in the request.
+      r"""Creates a wire group in the specified project in the given scope.
+using the parameters that are included in the request.
 
       Args:
         request: (ComputeWireGroupsInsertRequest) input message
@@ -23684,7 +25232,10 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified wire group resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+      r"""Updates the specified wire group resource with the data included in the.
+request. This method supportsPATCH
+semantics and usesJSON merge
+patch format and processing rules.
 
       Args:
         request: (ComputeWireGroupsPatchRequest) input message
@@ -23772,7 +25323,8 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of Operation resources contained within the specified zone.
+      r"""Retrieves a list of Operation resources contained within.
+the specified zone.
 
       Args:
         request: (ComputeZoneOperationsListRequest) input message
@@ -23798,7 +25350,21 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Wait(self, request, global_params=None):
-      r"""Waits for the specified Operation resource to return as `DONE` or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method waits for no more than the 2 minutes and then returns the current state of the operation, which might be `DONE` or still in progress. This method is called on a best-effort basis. Specifically: - In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds. - If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not `DONE`. .
+      r"""Waits for the specified Operation resource to return as `DONE`.
+or for the request to approach the 2 minute deadline, and retrieves the
+specified Operation resource. This method waits for no more than the
+2 minutes and then returns the current state of the
+operation, which might be `DONE` or still in progress.
+
+This method is called on a best-effort basis. Specifically:
+   
+   
+    - In uncommon cases, when the server is overloaded, the request might
+    return before the default deadline is reached, or might return after zero
+    seconds.
+   - If the default deadline is reached, there is no guarantee that the
+    operation is actually done when the method returns. Be prepared to retry
+    if the operation is not `DONE`.
 
       Args:
         request: (ComputeZoneOperationsWaitRequest) input message

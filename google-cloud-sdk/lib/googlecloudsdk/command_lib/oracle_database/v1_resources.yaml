@@ -53,7 +53,7 @@ projects_locations_cloud_exadata_infrastructures:
     parameter_name: cloudExadataInfrastructuresId
     attribute_name: cloud_exadata_infrastructure
     help: The cloudExadataInfrastructure id of the {resource} resource.
-  disable_auto_completers: false
+  disable_auto_completers: true
 projects_locations_cloud_vm_clusters:
   name: cloudVmCluster
   plural_name: cloudVmClusters

@@ -1297,7 +1297,14 @@ class FirewallEndpointAssociationReference(_messages.Message):
 
 
 class FirewallEndpointEndpointSettings(_messages.Message):
-  r"""Settings for the endpoint."""
+  r"""Settings for the endpoint.
+
+  Fields:
+    jumboFramesEnabled: Optional. Immutable. Indicates whether Jumbo Frames
+      are enabled. Default value is false.
+  """
+
+  jumboFramesEnabled = _messages.BooleanField(1)
 
 
 class GatewaySecurityPolicy(_messages.Message):
@@ -2637,10 +2644,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListSACAttachmentsResponse(_messages.Message):
@@ -3049,11 +3061,13 @@ class MirroringDeploymentGroup(_messages.Message):
       ACTIVE: The deployment group is ready.
       CREATING: The deployment group is being created.
       DELETING: The deployment group is being deleted.
+      CLOSED: The deployment group is being wiped out (project deleted).
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     CREATING = 2
     DELETING = 3
+    CLOSED = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -3158,6 +3172,8 @@ class MirroringEndpointGroup(_messages.Message):
   Enums:
     StateValueValuesEnum: Output only. The current state of the endpoint
       group. See https://google.aip.dev/216.
+    TypeValueValuesEnum: Immutable. The type of the endpoint group. If left
+      unspecified, defaults to DIRECT.
 
   Messages:
     LabelsValue: Optional. Labels are key/value pairs that help to organize
@@ -3187,6 +3203,8 @@ class MirroringEndpointGroup(_messages.Message):
       the group). See https://google.aip.dev/128.
     state: Output only. The current state of the endpoint group. See
       https://google.aip.dev/216.
+    type: Immutable. The type of the endpoint group. If left unspecified,
+      defaults to DIRECT.
     updateTime: Output only. The timestamp when the resource was most recently
       updated. See https://google.aip.dev/148#timestamps.
   """
@@ -3220,6 +3238,18 @@ class MirroringEndpointGroup(_messages.Message):
     DELETING = 4
     OUT_OF_SYNC = 5
     DELETE_FAILED = 6
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Immutable. The type of the endpoint group. If left unspecified,
+    defaults to DIRECT.
+
+    Values:
+      TYPE_UNSPECIFIED: Not set.
+      DIRECT: An endpoint group that sends packets to a single deployment
+        group.
+    """
+    TYPE_UNSPECIFIED = 0
+    DIRECT = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -3255,7 +3285,8 @@ class MirroringEndpointGroup(_messages.Message):
   name = _messages.StringField(7)
   reconciling = _messages.BooleanField(8)
   state = _messages.EnumField('StateValueValuesEnum', 9)
-  updateTime = _messages.StringField(10)
+  type = _messages.EnumField('TypeValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
 
 
 class MirroringEndpointGroupAssociation(_messages.Message):
@@ -3849,12 +3880,20 @@ class NetworksecurityOrganizationsLocationsOperationsListRequest(_messages.Messa
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class NetworksecurityOrganizationsLocationsSecurityProfileGroupsCreateRequest(_messages.Message):
@@ -5675,8 +5714,8 @@ class NetworksecurityProjectsLocationsListRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Do not use this field. It is unsupported and
-      is ignored unless explicitly documented otherwise. This is primarily for
+    extraLocationTypes: Optional. Unless explicitly documented otherwise,
+      don't use this unsupported field which is primarily intended for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -6160,12 +6199,20 @@ class NetworksecurityProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class NetworksecurityProjectsLocationsSacAttachmentsCreateRequest(_messages.Message):

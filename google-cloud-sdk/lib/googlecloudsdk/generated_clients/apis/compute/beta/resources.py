@@ -458,6 +458,13 @@ class Collections(enum.Enum):
       ['project', 'region', 'autoscaler'],
       True
   )
+  REGIONBACKENDBUCKETS = (
+      'regionBackendBuckets',
+      'projects/{project}/regions/{region}/backendBuckets/{backendBucket}',
+      {},
+      ['project', 'region', 'backendBucket'],
+      True
+  )
   REGIONBACKENDSERVICES = (
       'regionBackendServices',
       'projects/{project}/regions/{region}/backendServices/{backendService}',
@@ -499,6 +506,14 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}/disks/{disk}',
       {},
       ['project', 'region', 'disk'],
+      True
+  )
+  REGIONHEALTHAGGREGATIONPOLICIES = (
+      'regionHealthAggregationPolicies',
+      'projects/{project}/regions/{region}/healthAggregationPolicies/'
+      '{healthAggregationPolicy}',
+      {},
+      ['project', 'region', 'healthAggregationPolicy'],
       True
   )
   REGIONHEALTHCHECKSERVICES = (
@@ -892,6 +907,14 @@ class Collections(enum.Enum):
       'projects/{project}/zones/{zone}/operations/{operation}',
       {},
       ['project', 'zone', 'operation'],
+      True
+  )
+  ZONEVMEXTENSIONPOLICIES = (
+      'zoneVmExtensionPolicies',
+      'projects/{project}/zones/{zone}/vmExtensionPolicies/'
+      '{vmExtensionPolicy}',
+      {},
+      ['project', 'zone', 'vmExtensionPolicy'],
       True
   )
   ZONES = (

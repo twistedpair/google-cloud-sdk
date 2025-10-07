@@ -180,6 +180,18 @@ def GetBackupResourceSpec():
   )
 
 
+def GetDataSourceResourceSpec():
+  return concepts.ResourceSpec(
+      'backupdr.projects.locations.backupVaults.dataSources',
+      resource_name='Data Source',
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      backupVaultsId=BackupVaultAttributeConfig(),
+      dataSourcesId=DataSourceAttributeConfig(),
+      disable_auto_completers=False,
+  )
+
+
 def AddManagementServerResourceArg(parser, help_text):
   """Adds an argument for management server to parser."""
   name = 'management_server'

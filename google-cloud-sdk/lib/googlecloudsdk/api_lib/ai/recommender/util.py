@@ -22,6 +22,10 @@ VERSION_MAP = {
     base.ReleaseTrack.GA: 'v1',
 }
 
+HTTP_ERROR_FORMAT = (
+    'ResponseError: code={status_code}, message={status_message}'
+)
+
 
 # The messages module can also be accessed from client.MESSAGES_MODULE
 def GetMessagesModule(release_track=base.ReleaseTrack.GA):

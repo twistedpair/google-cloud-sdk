@@ -207,8 +207,11 @@ def MakeAggregateReservationPropertiesMessage(
       ),
       'V6E': (
           messages.AllocationAggregateReservation.VmFamilyValueValuesEnum.VM_FAMILY_CLOUD_TPU_LITE_POD_SLICE_CT6E
-      )
-      }
+      ),
+      'TPU7X': (
+          messages.AllocationAggregateReservation.VmFamilyValueValuesEnum.VM_FAMILY_CLOUD_TPU_POD_SLICE_TPU7X
+      ),
+  }
 
   reserved_resources = []
   accelerator = (

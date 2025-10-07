@@ -462,19 +462,23 @@ def _is_parallelizable(args, raw_destination_url, first_source_url):
   Returns:
     True if the transfer is parallelizable, False otherwise.
   """
-  configured_for_parallelism = (
-      properties.VALUES.storage.process_count.GetInt() != 1 or
-      properties.VALUES.storage.thread_count.GetInt() != 1)
+  # Only warn the user about sequential execution when they have explicitly
+  # requested parallelism in some dimension (process or thread count).
+  parallelism_properties = {
+      properties.VALUES.storage.process_count.GetInt(),
+      properties.VALUES.storage.thread_count.GetInt(),
+  }
+  requested_parallelism = bool(parallelism_properties - {None, 1})  # any are >1
 
   if args.all_versions:
-    if configured_for_parallelism:
+    if requested_parallelism:
       log.warning(
           'Using sequential instead of parallel task execution. This will'
           ' maintain version ordering when copying all versions of an object.')
     return False
 
   if raw_destination_url.is_stream:
-    if configured_for_parallelism:
+    if requested_parallelism:
       log.warning(
           'Using sequential instead of parallel task execution to write to a'
           ' stream.')
@@ -483,7 +487,7 @@ def _is_parallelizable(args, raw_destination_url, first_source_url):
   # Only the first url needs to be checked since multiple sources aren't
   # allowed with stdin.
   if first_source_url.is_stdio:
-    if configured_for_parallelism:
+    if requested_parallelism:
       log.warning('Using sequential instead of parallel task execution to'
                   ' transfer from stdin.')
     return False

@@ -675,13 +675,19 @@ def _get_project_number() -> str:
   return str(project.projectNumber)
 
 
-def deploy_application(yaml_file_path: str, region: str, args: Any) -> None:
+def deploy_application(
+    yaml_file_path: str,
+    region: str,
+    args: Any,
+    release_track: base.ReleaseTrack,
+) -> None:
   """Deploys a Cloud Run application from a YAML file.
 
   Args:
     yaml_file_path: The path to the Cloud Run service YAML file.
     region: The region to deploy the application to.
     args: The arguments passed to the command.
+    release_track: The release track of the command.
   """
   project = properties.VALUES.core.project.Get(required=True)
   log.status.Print(
@@ -760,7 +766,7 @@ def deploy_application(yaml_file_path: str, region: str, args: Any) -> None:
       deployed_service = client.ReleaseService(
           service_ref,
           changes,
-          base.ReleaseTrack.ALPHA,
+          release_track,
           tracker,
           asyn=False,
           allow_unauthenticated=allow_unauthenticated,

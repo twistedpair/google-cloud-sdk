@@ -1007,6 +1007,17 @@ class Collections(enum.Enum):
       ['project', 'zone', 'operation'],
       True
   )
+  ZONEORGANIZATIONOPERATIONS = (
+      'zoneOrganizationOperations',
+      '{+organization}/zones/{zone}/operations/{operation}',
+      {
+          '':
+              'organizations/{organizationsId}/zones/{zone}/operations/'
+              '{operation}',
+      },
+      ['organization', 'zone', 'operation'],
+      True
+  )
   ZONEQUEUEDRESOURCES = (
       'zoneQueuedResources',
       'projects/{project}/zones/{zone}/queuedResources/{queuedResource}',

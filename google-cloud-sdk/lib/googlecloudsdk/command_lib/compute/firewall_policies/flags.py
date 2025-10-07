@@ -73,11 +73,13 @@ def FirewallPolicyArgument(required=False, plural=False, operation=None):
 
 def FirewallPolicyAssociationsArgument(required=False, plural=False):
   return compute_flags.ResourceArgument(
-      name='name',
-      resource_name='association',
-      completer=FirewallPoliciesCompleter,
+      name='--firewall-policy',
+      resource_name='firewall policy',
       plural=plural,
       required=required,
+      short_help=(
+          'Short name or ID of the firewall policy ID of the association.'
+      ),
       global_collection='compute.firewallPolicies',
   )
 
@@ -437,9 +439,9 @@ def AddArgsCreateAssociation(parser):
 def AddArgsDeleteAssociation(parser):
   """Adds the arguments of association deletion."""
   parser.add_argument(
-      '--firewall-policy',
-      required=True,
-      help='Short name or ID of the firewall policy ID of the association.',
+      'name',
+      metavar='NAME',
+      help='Name of the association to delete.',
   )
 
   parser.add_argument(

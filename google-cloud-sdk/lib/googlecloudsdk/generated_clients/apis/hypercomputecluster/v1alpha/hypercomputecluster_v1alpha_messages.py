@@ -24,11 +24,36 @@ class Artifacts(_messages.Message):
   gcsPath = _messages.StringField(1)
 
 
-class BucketReference(_messages.Message):
-  r"""BucketReference describes the underlying bucket resource.
+class BootDisk(_messages.Message):
+  r"""A [Persistent disk](https://cloud.google.com/compute/docs/disks) used as
+  the boot disk for a Compute Engine VM instance.
 
   Fields:
-    bucket: Output only. Name of the bucket
+    effectiveImage: Output only. The specific image that will be used for new
+      VM instances.
+    image: Optional. Immutable. Source image used to create this disk. Must be
+      a supported disk family for the VM instance's machine type. If this is
+      empty, the system will select a supported image based on the machine
+      type.
+    sizeGb: Required. Immutable. Size of the disk in gigabytes. Must be at
+      least 10GB.
+    type: Required. Immutable. [Persistent disk
+      type](https://cloud.google.com/compute/docs/disks#disk-types), in the
+      format `projects/{project}/zones/{zone}/diskTypes/{disk_type}`.
+  """
+
+  effectiveImage = _messages.StringField(1)
+  image = _messages.StringField(2)
+  sizeGb = _messages.IntegerField(3)
+  type = _messages.StringField(4)
+
+
+class BucketReference(_messages.Message):
+  r"""A reference to a [Google Cloud
+  Storage](https://cloud.google.com/storage) bucket.
+
+  Fields:
+    bucket: Output only. Name of the bucket.
   """
 
   bucket = _messages.StringField(1)
@@ -242,29 +267,39 @@ class Compute(_messages.Message):
 
 
 class ComputeInstance(_messages.Message):
-  r"""Compute instance details.
+  r"""Details about a Compute Engine
+  [instance](https://cloud.google.com/compute/docs/instances).
 
   Fields:
-    instance: Output only. Name of the instance.
+    instance: Output only. Name of the VM instance, in the format
+      `projects/{project}/zones/{zone}/instances/{instance}`.
   """
 
   instance = _messages.StringField(1)
 
 
 class ComputeInstanceSlurmNodeSet(_messages.Message):
-  r"""Message describing Compute Instance Slurm NodeSet object
+  r"""When set in a SlurmNodeSet, indicates that the nodeset should be backed
+  by Compute Engine VM instances.
 
   Messages:
-    LabelsValue: Optional. Labels for the nodeset
+    LabelsValue: Optional.
+      [Labels](https://cloud.google.com/compute/docs/labeling-resources) that
+      should be applied to each VM instance in the nodeset.
 
   Fields:
-    labels: Optional. Labels for the nodeset
-    startupScript: Optional. Startup script for the nodeset
+    bootDisk: Optional. Boot disk for the compute instance
+    labels: Optional. [Labels](https://cloud.google.com/compute/docs/labeling-
+      resources) that should be applied to each VM instance in the nodeset.
+    startupScript: Optional. [Startup
+      script](https://cloud.google.com/compute/docs/instances/startup-
+      scripts/linux) to be run on each VM instance in the nodeset. Max 256KB.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Labels for the nodeset
+    r"""Optional. [Labels](https://cloud.google.com/compute/docs/labeling-
+    resources) that should be applied to each VM instance in the nodeset.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -286,13 +321,13 @@ class ComputeInstanceSlurmNodeSet(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  labels = _messages.MessageField('LabelsValue', 1)
-  startupScript = _messages.StringField(2)
+  bootDisk = _messages.MessageField('BootDisk', 1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  startupScript = _messages.StringField(3)
 
 
 class ComputeNetworkReference(_messages.Message):
-  r"""ComputeNetworkReference describes which underlying Compute Engine's
-  resource being represented.
+  r"""Deprecated: Use NetworkReference instead.
 
   Fields:
     network: Output only. The name of the network.
@@ -304,19 +339,46 @@ class ComputeNetworkReference(_messages.Message):
 
 
 class ComputeResource(_messages.Message):
-  r"""ComputeResource represents a compute resource of a cluster.
+  r"""A resource defining how virtual machines and accelerators should be
+  provisioned for the cluster.
 
   Fields:
-    newDwsFlexInstances: New dws flex instance config
-    newOnDemandInstances: New on demand instance config
-    newReservedInstances: New reserved instance config
-    newSpotInstances: New spot instance config
+    config: Required. Immutable. Configuration for this compute resource,
+      which describes how it should be created at runtime.
+    newDwsFlexInstances: Deprecated: Use config.
+    newOnDemandInstances: Deprecated: Use config.
+    newReservedInstances: Deprecated: Use config.
+    newSpotInstances: Deprecated: Use config.
+  """
+
+  config = _messages.MessageField('ComputeResourceConfig', 1)
+  newDwsFlexInstances = _messages.MessageField('NewDWSFlexInstancesConfig', 2)
+  newOnDemandInstances = _messages.MessageField('NewOnDemandInstancesConfig', 3)
+  newReservedInstances = _messages.MessageField('NewReservedInstancesConfig', 4)
+  newSpotInstances = _messages.MessageField('NewSpotInstancesConfig', 5)
+
+
+class ComputeResourceConfig(_messages.Message):
+  r"""Describes how a compute resource should be created at runtime.
+
+  Fields:
+    newDwsFlexInstances: Optional. Immutable. If set, indicates that this
+      resource should use flex-start VMs.
+    newFlexStartInstances: Optional. Immutable. If set, indicates that this
+      resource should use flex-start VMs.
+    newOnDemandInstances: Optional. Immutable. If set, indicates that this
+      resource should use on-demand VMs.
+    newReservedInstances: Optional. Immutable. If set, indicates that this
+      resource should use reserved VMs.
+    newSpotInstances: Optional. Immutable. If set, indicates that this
+      resource should use spot VMs.
   """
 
   newDwsFlexInstances = _messages.MessageField('NewDWSFlexInstancesConfig', 1)
-  newOnDemandInstances = _messages.MessageField('NewOnDemandInstancesConfig', 2)
-  newReservedInstances = _messages.MessageField('NewReservedInstancesConfig', 3)
-  newSpotInstances = _messages.MessageField('NewSpotInstancesConfig', 4)
+  newFlexStartInstances = _messages.MessageField('NewFlexStartInstancesConfig', 2)
+  newOnDemandInstances = _messages.MessageField('NewOnDemandInstancesConfig', 3)
+  newReservedInstances = _messages.MessageField('NewReservedInstancesConfig', 4)
+  newSpotInstances = _messages.MessageField('NewSpotInstancesConfig', 5)
 
 
 class Configs(_messages.Message):
@@ -414,17 +476,24 @@ class Configs(_messages.Message):
 
 
 class ContainerNodePoolSlurmNodeSet(_messages.Message):
-  r"""Message describing Container NodePool Slurm NodeSet object"""
+  r"""When set in a SlurmNodeSet, indicates that the nodeset should be backed
+  by a Kubernetes Engine node pool.
+  """
+
 
 
 class Disk(_messages.Message):
-  r"""Message describing Disk object
+  r"""Unstable: Contact hypercompute-service-eng@ before using.
 
   Fields:
-    boot: Optional. Whether the disk is a boot disk
-    sizeGb: Required. Size of the disk
-    sourceImage: Optional. Source image for the disk
-    type: Required. Type of the disk
+    boot: Optional. Immutable. Unstable: Contact hypercompute-service-eng@
+      before using.
+    sizeGb: Required. Immutable. Unstable: Contact hypercompute-service-eng@
+      before using.
+    sourceImage: Optional. Immutable. Unstable: Contact hypercompute-service-
+      eng@ before using.
+    type: Required. Immutable. Unstable: Contact hypercompute-service-eng@
+      before using.
   """
 
   boot = _messages.BooleanField(1)
@@ -443,18 +512,18 @@ class Empty(_messages.Message):
 
 
 class ExistingBucketConfig(_messages.Message):
-  r"""ExistingBucketConfig describes the config to use an existing bucket.
+  r"""When set in a StorageResourceConfig, indicates that an existing [Google
+  Cloud Storage](https://cloud.google.com/storage) bucket should be imported.
 
   Fields:
-    bucket: Immutable. Name of the bucket
+    bucket: Required. Immutable. Name of the Cloud Storage bucket to import.
   """
 
   bucket = _messages.StringField(1)
 
 
 class ExistingComputeNetworkConfig(_messages.Message):
-  r"""ExistingComputeNetworkConfig represents the configuration of an existing
-  compute network which will be used by the cluster.
+  r"""Deprecated: Use ExistingNetworkConfig instead.
 
   Fields:
     network: Immutable. The name of the network.
@@ -466,33 +535,41 @@ class ExistingComputeNetworkConfig(_messages.Message):
 
 
 class ExistingFilestoreConfig(_messages.Message):
-  r"""ExistingFilestoreConfig describes the config to use an existing
-  filestore.
+  r"""When set in a StorageResourceConfig, indicates that an existing
+  [Filestore](https://cloud.google.com/filestore) instance should be imported.
 
   Fields:
-    filestore: Immutable. Name of the filestore
+    filestore: Required. Immutable. Name of the Filestore instance to import,
+      in the format
+      `projects/{project}/locations/{location}/instances/{instance}`
   """
 
   filestore = _messages.StringField(1)
 
 
 class ExistingLustreConfig(_messages.Message):
-  r"""ExistingLustreConfig describes the config to use an existing lustre.
+  r"""When set in a StorageResourceConfig, indicates that an existing [Managed
+  Lustre](https://cloud.google.com/products/managed-lustre) instance should be
+  imported.
 
   Fields:
-    lustre: Immutable. Name of the lustre
+    lustre: Required. Immutable. Name of the Managed Lustre instance to
+      import, in the format
+      `projects/{project}/locations/{location}/instances/{instance}`
   """
 
   lustre = _messages.StringField(1)
 
 
 class ExistingNetworkConfig(_messages.Message):
-  r"""ExistingNetworkConfig represents the configuration of an existing
-  network which will be used by the cluster.
+  r"""When set in a NetworkResourceConfig, indicates that an existing network
+  should be imported.
 
   Fields:
-    network: Immutable. The name of the network.
-    subnetwork: Immutable. Subnetwork of the network.
+    network: Required. Immutable. Name of the network to import, in the format
+      `projects/{project}/global/networks/{network}`.
+    subnetwork: Required. Immutable. Particular subnetwork to use, in the
+      format `projects/{project}/regions/{region}/subnetworks/{subnetwork}`.
   """
 
   network = _messages.StringField(1)
@@ -566,13 +643,70 @@ class FilestoreInitializeParams(_messages.Message):
 
 
 class FilestoreReference(_messages.Message):
-  r"""FilestoreReference describes the underlying filestore resource.
+  r"""A reference to a [Filestore](https://cloud.google.com/filestore)
+  instance.
 
   Fields:
-    filestore: Output only. Name of the filestore
+    filestore: Output only. Name of the Filestore instance, in the format
+      `projects/{project}/locations/{location}/instances/{instance}`
   """
 
   filestore = _messages.StringField(1)
+
+
+class GKEWorkloadDetails(_messages.Message):
+  r"""Workload details for the GKE orchestrator.
+
+  Messages:
+    LabelsValue: Optional. labels for the workload. Example: {"type":
+      "workload", "app": "simulation"}.
+
+  Fields:
+    cluster: Required. The cluster of the workload. Example -
+      /projects//locations//clusters/
+    id: Required. The identifier of the workload. Example - jobset-abcd
+    kind: Required. The kind of the workload. Example - JobSet
+    labels: Optional. labels for the workload. Example: {"type": "workload",
+      "app": "simulation"}.
+    namespace: Required. The namespace of the workload. Example - default
+    parentWorkload: Optional. The parent workload. Example - JobSet for a Job,
+      RayJob, LeaderWorkerSet etc. If a workload is a part of a RunSet, this
+      field is populate as `RunSet` and if it was ray job, it will be set to
+      `RayJob` etc. This will be an additional field to representing a
+      workload.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. labels for the workload. Example: {"type": "workload",
+    "app": "simulation"}.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  cluster = _messages.StringField(1)
+  id = _messages.StringField(2)
+  kind = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  namespace = _messages.StringField(5)
+  parentWorkload = _messages.StringField(6)
 
 
 class GcsAutoclassConfig(_messages.Message):
@@ -671,10 +805,14 @@ class HypercomputeclusterProjectsLocationsClustersCreateRequest(_messages.Messag
 
   Fields:
     cluster: A Cluster resource to be passed as the request body.
-    clusterId: Required. Id of the requesting object
-    parent: Required. Parent collection in which cluster is created Format:
-      projects/{project}/locations/{locations}
-    requestId: Optional. A unique identifier for this request
+    clusterId: Required. ID of the cluster to create. Must conform to
+      [RFC-1034](https://datatracker.ietf.org/doc/html/rfc1034) (lower-case,
+      alphanumeric, and at most 63 characters).
+    parent: Required. Parent location in which the cluster should be created,
+      in the format `projects/{project}/locations/{location}`.
+    requestId: Optional. A unique identifier for this request. A random UUID
+      is recommended. This request is idempotent if and only if `request_id`
+      is provided.
   """
 
   cluster = _messages.MessageField('Cluster', 1)
@@ -687,19 +825,11 @@ class HypercomputeclusterProjectsLocationsClustersDeleteRequest(_messages.Messag
   r"""A HypercomputeclusterProjectsLocationsClustersDeleteRequest object.
 
   Fields:
-    name: Required. Name of the cluster to delete. Format:
-      projects/{project}/locations/{locations}/clusters/{cluster}
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+    name: Required. Name of the cluster to delete, in the format
+      `projects/{project}/locations/{location}/clusters/{cluster}`.
+    requestId: Optional. A unique identifier for this request. A random UUID
+      is recommended. This request is idempotent if and only if `request_id`
+      is provided.
   """
 
   name = _messages.StringField(1, required=True)
@@ -710,8 +840,8 @@ class HypercomputeclusterProjectsLocationsClustersGetRequest(_messages.Message):
   r"""A HypercomputeclusterProjectsLocationsClustersGetRequest object.
 
   Fields:
-    name: Required. Name of the cluster to retrieve. Format:
-      projects/{project}/locations/{location}/clusters/{cluster}
+    name: Required. Name of the cluster to retrieve, in the format
+      `projects/{project}/locations/{location}/clusters/{cluster}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -721,14 +851,19 @@ class HypercomputeclusterProjectsLocationsClustersListRequest(_messages.Message)
   r"""A HypercomputeclusterProjectsLocationsClustersListRequest object.
 
   Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent collection which own list of clusters. Format:
-      projects/{project}/locations/{location}
+    filter: Optional. [Filter](https://google.aip.dev/160) to apply to the
+      returned results.
+    orderBy: Optional. How to order the resulting clusters. Must be one of the
+      following strings: * `name` * `name desc` * `create_time` * `create_time
+      desc` If not specified, clusters will be returned in an arbitrary order.
+    pageSize: Optional. Maximum number of clusters to return. The service may
+      return fewer than this value.
+    pageToken: Optional. A page token received from a previous `ListClusters`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListClusters` must match the call that
+      provided the page token.
+    parent: Required. Parent location of the clusters to list, in the format
+      `projects/{project}/locations/{location}`.
   """
 
   filter = _messages.StringField(1)
@@ -746,13 +881,12 @@ class HypercomputeclusterProjectsLocationsClustersPatchRequest(_messages.Message
     name: Identifier. [Relative resource name](https://google.aip.dev/122) of
       the cluster, in the format
       `projects/{project}/locations/{location}/clusters/{cluster}`.
-    requestId: Optional. A unique identifier for this request
-    updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the Cluster resource by the update. The fields specified
-      in the update_mask are relative to the resource, not the full request. A
-      field will be overwritten if it is in the mask. If the user does not
-      provide a mask then all fields present in the request will be
-      overwritten.
+    requestId: Optional. A unique identifier for this request. A random UUID
+      is recommended. This request is idempotent if and only if `request_id`
+      is provided.
+    updateMask: Optional. Mask specifying which fields in the cluster to
+      update. All paths must be specified explicitly - wildcards are not
+      supported. At least one path must be provided.
   """
 
   cluster = _messages.MessageField('Cluster', 1)
@@ -974,21 +1108,29 @@ class HypercomputeclusterProjectsLocationsOperationsListRequest(_messages.Messag
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class ListClustersResponse(_messages.Message):
-  r"""Message for response to listing Clusters
+  r"""Response message for ListClusters.
 
   Fields:
-    clusters: The list of Cluster
-    nextPageToken: A token identifying a page of results the server should
-      return.
+    clusters: Clusters in the specified location.
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is absent, there are no subsequent pages.
     unreachable: Locations that could not be reached.
   """
 
@@ -1030,10 +1172,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListProfileSessionsResponse(_messages.Message):
@@ -1146,10 +1293,12 @@ class LustreInitializeParams(_messages.Message):
 
 
 class LustreReference(_messages.Message):
-  r"""LustreReference describes the underlying lustre resource.
+  r"""A reference to a [Managed
+  Lustre](https://cloud.google.com/products/managed-lustre) instance.
 
   Fields:
-    lustre: Output only. Name of the lustre
+    lustre: Output only. Name of the Managed Lustre instance, in the format
+      `projects/{project}/locations/{location}/instances/{instance}`
   """
 
   lustre = _messages.StringField(1)
@@ -1160,6 +1309,7 @@ class MachineLearningRun(_messages.Message):
 
   Enums:
     OrchestratorValueValuesEnum: Required. The orchestrator used for the run.
+    RunPhaseValueValuesEnum: Optional. RunPhase defines the phase of the run.
     StateValueValuesEnum: Output only. State of the run.
 
   Messages:
@@ -1172,6 +1322,10 @@ class MachineLearningRun(_messages.Message):
       jax_version, tpu_generation etc.
     createTime: Output only. Time when the run was created.
     displayName: Optional. Display name for the run.
+    endTime: Output only. Time when the run was completed. This field is set
+      when the run is completed or failed.
+    errorDetails: Optional. Error details for the run. This field is set when
+      the run is failed.
     etag: Optional. ETag for the run. It must be provided for update/delete
       operations and must match the server's etag.
     labels: Optional. Any custom labels for this run Example: type:workload,
@@ -1179,11 +1333,14 @@ class MachineLearningRun(_messages.Message):
     metrics: Optional. Metrics for the run.
     name: Identifier. The name of the Machine Learning run.
     orchestrator: Required. The orchestrator used for the run.
+    runPhase: Optional. RunPhase defines the phase of the run.
     runSet: Required. Allows grouping of similar runs. * Helps improving UI
       rendering performance. * Allows comparing similar runs via fast filters.
     state: Output only. State of the run.
     tools: Required. List of tools enabled for this run example: XProf, NSys
     updateTime: Output only. Time when the run was last updated.
+    workloadDetails: Optional. The metadata for the workload associated with
+      the run.
   """
 
   class OrchestratorValueValuesEnum(_messages.Enum):
@@ -1199,6 +1356,20 @@ class MachineLearningRun(_messages.Message):
     GCE = 1
     GKE = 2
     SLURM = 3
+
+  class RunPhaseValueValuesEnum(_messages.Enum):
+    r"""Optional. RunPhase defines the phase of the run.
+
+    Values:
+      RUN_PHASE_UNSPECIFIED: State is not specified.
+      ACTIVE: Run is active.
+      COMPLETED: Run is completed.
+      FAILED: Run is failed.
+    """
+    RUN_PHASE_UNSPECIFIED = 0
+    ACTIVE = 1
+    COMPLETED = 2
+    FAILED = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of the run.
@@ -1243,15 +1414,19 @@ class MachineLearningRun(_messages.Message):
   configs = _messages.MessageField('Configs', 2)
   createTime = _messages.StringField(3)
   displayName = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  metrics = _messages.MessageField('Metrics', 7)
-  name = _messages.StringField(8)
-  orchestrator = _messages.EnumField('OrchestratorValueValuesEnum', 9)
-  runSet = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  tools = _messages.MessageField('Tool', 12, repeated=True)
-  updateTime = _messages.StringField(13)
+  endTime = _messages.StringField(5)
+  errorDetails = _messages.StringField(6)
+  etag = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  metrics = _messages.MessageField('Metrics', 9)
+  name = _messages.StringField(10)
+  orchestrator = _messages.EnumField('OrchestratorValueValuesEnum', 11)
+  runPhase = _messages.EnumField('RunPhaseValueValuesEnum', 12)
+  runSet = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  tools = _messages.MessageField('Tool', 15, repeated=True)
+  updateTime = _messages.StringField(16)
+  workloadDetails = _messages.MessageField('WorkloadDetails', 17)
 
 
 class Metrics(_messages.Message):
@@ -1300,12 +1475,15 @@ class NetworkInitializeParams(_messages.Message):
 
 
 class NetworkReference(_messages.Message):
-  r"""NetworkReference describes which underlying network resource being
-  represented.
+  r"""A reference to a [VPC network](https://cloud.google.com/vpc/docs/vpc) in
+  Google Compute Engine.
 
   Fields:
-    network: Output only. The name of the network.
-    subnetwork: Output only. Subnetwork of the network.
+    network: Output only. Name of the network, in the format
+      `projects/{project}/global/networks/{network}`.
+    subnetwork: Output only. Name of the particular subnetwork being used by
+      the cluster, in the format
+      `projects/{project}/regions/{region}/subnetworks/{subnetwork}`.
   """
 
   network = _messages.StringField(1)
@@ -1313,12 +1491,17 @@ class NetworkReference(_messages.Message):
 
 
 class NetworkResource(_messages.Message):
-  r"""NetworkResource represents a network resource of a cluster.
+  r"""A resource representing a network that connects the various components
+  of a cluster together.
 
   Fields:
-    computeNetwork: Compute network reference.
-    config: Immutable. Configuration to initialize the network resource.
-    network: Network reference.
+    computeNetwork: Deprecated: Use network instead.
+    config: Immutable. Configuration for this network resource, which
+      describes how it should be created or imported. This field only controls
+      how the network resource is initially created or imported. Subsequent
+      changes to the network resource should be made via the resource's API
+      and will not be reflected in the configuration.
+    network: Reference to a network in Google Compute Engine.
   """
 
   computeNetwork = _messages.MessageField('ComputeNetworkReference', 1)
@@ -1327,18 +1510,18 @@ class NetworkResource(_messages.Message):
 
 
 class NetworkResourceConfig(_messages.Message):
-  r"""NetworkResourceConfig describe how the network resource is initialized.
+  r"""Describes how a network resource should be initialized. Each network
+  resource can either be imported from an existing Google Cloud resource or
+  initialized when the cluster is created.
 
   Fields:
-    existingComputeNetwork: Immutable. ExistingComputeNetworkConfig represents
-      the configuration of an existing compute network which will be used by
-      the cluster.
-    existingNetwork: Immutable. ExistingNetworkConfig represents the
-      configuration of an existing network which will be used by the cluster.
-    newComputeNetwork: Immutable. NewComputeNetworkConfig represents the
-      configuration to create a new compute network for the cluster.
-    newNetwork: Immutable. NewNetworkConfig represents the configuration to
-      create a new network for the cluster.
+    existingComputeNetwork: Immutable. Deprecated: Use existing_network
+      instead.
+    existingNetwork: Optional. Immutable. If set, indicates that an existing
+      network should be imported.
+    newComputeNetwork: Immutable. Deprecated: Use new_network instead.
+    newNetwork: Optional. Immutable. If set, indicates that a new network
+      should be created.
   """
 
   existingComputeNetwork = _messages.MessageField('ExistingComputeNetworkConfig', 1)
@@ -1360,29 +1543,35 @@ class NetworkSource(_messages.Message):
 
 
 class NewBucketConfig(_messages.Message):
-  r"""NewBucketConfig describes the config to initialize a new bucket.
+  r"""When set in a StorageResourceConfig, indicates that a new [Google Cloud
+  Storage](https://cloud.google.com/storage) bucket should be created.
 
   Enums:
-    StorageClassValueValuesEnum: Default storage class for objects in the
-      bucket.
+    StorageClassValueValuesEnum: Optional. Immutable. If set, uses the
+      provided storage class as the bucket's default storage class.
 
   Fields:
-    autoclass: Autoclass configuration for objects in the bucket.
-    bucket: Immutable. Name of the bucket
-    hierarchicalNamespace: Optional. Immutable. The hierarchical namespace
-      configuration of the bucket
-    storageClass: Default storage class for objects in the bucket.
+    autoclass: Optional. Immutable. If set, indicates that the bucket should
+      use [Autoclass](https://cloud.google.com/storage/docs/autoclass).
+    bucket: Required. Immutable. Name of the Cloud Storage bucket to create.
+    hierarchicalNamespace: Optional. Immutable. If set, indicates that the
+      bucket should use [hierarchical
+      namespaces](https://cloud.google.com/storage/docs/hns-overview).
+    storageClass: Optional. Immutable. If set, uses the provided storage class
+      as the bucket's default storage class.
   """
 
   class StorageClassValueValuesEnum(_messages.Enum):
-    r"""Default storage class for objects in the bucket.
+    r"""Optional. Immutable. If set, uses the provided storage class as the
+    bucket's default storage class.
 
     Values:
-      STORAGE_CLASS_UNSPECIFIED: Unspecified storage class
-      STANDARD: Standard storage class
-      NEARLINE: Nearline storage class
-      COLDLINE: Coldline storage class
-      ARCHIVE: Archive storage class
+      STORAGE_CLASS_UNSPECIFIED: Not set.
+      STANDARD: Best for data that is frequently accessed.
+      NEARLINE: Low-cost storage for data that is accessed less frequently.
+      COLDLINE: Very low-cost storage for infrequently accessed data.
+      ARCHIVE: Lowest-cost storage for data archiving, online backup, and
+        disaster recovery.
     """
     STORAGE_CLASS_UNSPECIFIED = 0
     STANDARD = 1
@@ -1397,8 +1586,7 @@ class NewBucketConfig(_messages.Message):
 
 
 class NewComputeNetworkConfig(_messages.Message):
-  r"""NewComputeNetworkConfig represents the configuration to create a new
-  compute network for the cluster.
+  r"""Deprecated: Use NewNetworkConfig instead.
 
   Fields:
     description: Immutable. Description of the network.
@@ -1410,20 +1598,273 @@ class NewComputeNetworkConfig(_messages.Message):
 
 
 class NewDWSFlexInstancesConfig(_messages.Message):
-  r"""NewDWSFlexInstancesConfig describes the config to create new dws flex
-  instances.
+  r"""When set in a ComputeResourceConfig, indicates that VM instances should
+  be created using [Flex
+  Start](https://cloud.google.com/compute/docs/instances/provisioning-models)
+  with Dynamic Workload Scheduler.
+
+  Enums:
+    TerminationActionValueValuesEnum: Optional. Immutable. Deprecated: Do not
+      use.
+
+  Fields:
+    bootDisk: Optional. Immutable. Deprecated: set disks in node config
+      instead.
+    machineType: Required. Immutable. Name of the Compute Engine [machine
+      type](https://cloud.google.com/compute/docs/machine-resource) to use,
+      e.g. `n2-standard-2`.
+    maxDuration: Required. Immutable. Specifies the time limit for created
+      instances. Instances will be terminated at the end of this duration.
+    terminationAction: Optional. Immutable. Deprecated: Do not use.
+    zone: Required. Immutable. Name of the zone in which VM instances should
+      run, e.g., `us-central1-a`. Must be in the same region as the cluster,
+      and must match the zone of any other resources specified in the cluster.
+  """
+
+  class TerminationActionValueValuesEnum(_messages.Enum):
+    r"""Optional. Immutable. Deprecated: Do not use.
+
+    Values:
+      TERMINATION_ACTION_UNSPECIFIED: Deprecated: Do not use.
+      STOP: Deprecated: Do not use.
+      DELETE: Deprecated: Do not use.
+    """
+    TERMINATION_ACTION_UNSPECIFIED = 0
+    STOP = 1
+    DELETE = 2
+
+  bootDisk = _messages.MessageField('Disk', 1)
+  machineType = _messages.StringField(2)
+  maxDuration = _messages.StringField(3)
+  terminationAction = _messages.EnumField('TerminationActionValueValuesEnum', 4)
+  zone = _messages.StringField(5)
+
+
+class NewFilestoreConfig(_messages.Message):
+  r"""When set in a StorageResourceConfig, indicates that a new
+  [Filestore](https://cloud.google.com/filestore) instance should be created.
+
+  Enums:
+    ProtocolValueValuesEnum: Optional. Immutable. Access protocol to use for
+      all file shares in the instance. Defaults to NFS V3 if not set.
+    TierValueValuesEnum: Required. Immutable. Service tier to use for the
+      instance.
+
+  Fields:
+    description: Optional. Immutable. Description of the instance. Maximum of
+      2048 characters.
+    fileShares: Required. Immutable. File system shares on the instance.
+      Exactly one file share must be specified.
+    filestore: Required. Immutable. Name of the Filestore instance to create,
+      in the format
+      `projects/{project}/locations/{location}/instances/{instance}`
+    protocol: Optional. Immutable. Access protocol to use for all file shares
+      in the instance. Defaults to NFS V3 if not set.
+    tier: Required. Immutable. Service tier to use for the instance.
+  """
+
+  class ProtocolValueValuesEnum(_messages.Enum):
+    r"""Optional. Immutable. Access protocol to use for all file shares in the
+    instance. Defaults to NFS V3 if not set.
+
+    Values:
+      PROTOCOL_UNSPECIFIED: Not set.
+      NFSV3: NFS 3.0.
+      NFSV41: NFS 4.1.
+    """
+    PROTOCOL_UNSPECIFIED = 0
+    NFSV3 = 1
+    NFSV41 = 2
+
+  class TierValueValuesEnum(_messages.Enum):
+    r"""Required. Immutable. Service tier to use for the instance.
+
+    Values:
+      TIER_UNSPECIFIED: Not set.
+      ZONAL: Offers expanded capacity and performance scaling capabilities
+        suitable for high-performance computing application requirements.
+      REGIONAL: Offers features and availability needed for mission-critical,
+        high-performance computing workloads.
+      BASIC_HDD: Deprecated: Use a different tier instead.
+      BASIC_SSD: Deprecated: Use a different tier instead.
+      HIGH_SCALE_SSD: Deprecated: Use a different tier instead.
+      ENTERPRISE: Deprecated: Use a different tier instead.
+    """
+    TIER_UNSPECIFIED = 0
+    ZONAL = 1
+    REGIONAL = 2
+    BASIC_HDD = 3
+    BASIC_SSD = 4
+    HIGH_SCALE_SSD = 5
+    ENTERPRISE = 6
+
+  description = _messages.StringField(1)
+  fileShares = _messages.MessageField('FileShareConfig', 2, repeated=True)
+  filestore = _messages.StringField(3)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 4)
+  tier = _messages.EnumField('TierValueValuesEnum', 5)
+
+
+class NewFlexStartInstancesConfig(_messages.Message):
+  r"""When set in a ComputeResourceConfig, indicates that VM instances should
+  be created using [Flex
+  Start](https://cloud.google.com/compute/docs/instances/provisioning-models).
+
+  Enums:
+    TerminationActionValueValuesEnum: Optional. Immutable. Deprecated: Do not
+      use.
+
+  Fields:
+    bootDisk: Optional. Immutable. Deprecated: set disks in node config
+      instead.
+    machineType: Required. Immutable. Name of the Compute Engine [machine
+      type](https://cloud.google.com/compute/docs/machine-resource) to use,
+      e.g. `n2-standard-2`.
+    maxDuration: Required. Immutable. Specifies the time limit for created
+      instances. Instances will be terminated at the end of this duration.
+    terminationAction: Optional. Immutable. Deprecated: Do not use.
+    zone: Required. Immutable. Name of the zone in which VM instances should
+      run, e.g., `us-central1-a`. Must be in the same region as the cluster,
+      and must match the zone of any other resources specified in the cluster.
+  """
+
+  class TerminationActionValueValuesEnum(_messages.Enum):
+    r"""Optional. Immutable. Deprecated: Do not use.
+
+    Values:
+      TERMINATION_ACTION_UNSPECIFIED: Deprecated: Do not use.
+      STOP: Deprecated: Do not use.
+      DELETE: Deprecated: Do not use.
+    """
+    TERMINATION_ACTION_UNSPECIFIED = 0
+    STOP = 1
+    DELETE = 2
+
+  bootDisk = _messages.MessageField('Disk', 1)
+  machineType = _messages.StringField(2)
+  maxDuration = _messages.StringField(3)
+  terminationAction = _messages.EnumField('TerminationActionValueValuesEnum', 4)
+  zone = _messages.StringField(5)
+
+
+class NewLustreConfig(_messages.Message):
+  r"""When set in a StorageResourceConfig, indicates that a new [Managed
+  Lustre](https://cloud.google.com/products/managed-lustre) instance should be
+  created.
+
+  Fields:
+    capacityGb: Required. Immutable. Storage capacity of the instance in
+      gibibytes (GiB). Allowed values are between 18000 and 7632000.
+    description: Optional. Immutable. Description of the Managed Lustre
+      instance. Maximum of 2048 characters.
+    filesystem: Required. Immutable. Filesystem name for this instance. This
+      name is used by client-side tools, including when mounting the instance.
+      Must be 8 characters or less and can only contain letters and numbers.
+    lustre: Required. Immutable. Name of the Managed Lustre instance to
+      create, in the format
+      `projects/{project}/locations/{location}/instances/{instance}`
+  """
+
+  capacityGb = _messages.IntegerField(1)
+  description = _messages.StringField(2)
+  filesystem = _messages.StringField(3)
+  lustre = _messages.StringField(4)
+
+
+class NewNetworkConfig(_messages.Message):
+  r"""When set in a NetworkResourceConfig, indicates that a new network should
+  be created.
+
+  Fields:
+    description: Optional. Immutable. Description of the network. Maximum of
+      2048 characters.
+    network: Required. Immutable. Name of the network to create, in the format
+      `projects/{project}/global/networks/{network}`.
+  """
+
+  description = _messages.StringField(1)
+  network = _messages.StringField(2)
+
+
+class NewOnDemandInstancesConfig(_messages.Message):
+  r"""When set in a ComputeResourceConfig, indicates that on-demand (i.e.,
+  using the standard provisioning model) VM instances should be created.
+
+  Fields:
+    bootDisk: Immutable. Deprecated: set disks in node config instead.
+    machineType: Required. Immutable. Name of the Compute Engine [machine
+      type](https://cloud.google.com/compute/docs/machine-resource) to use,
+      e.g. `n2-standard-2`.
+    zone: Required. Immutable. Name of the zone in which VM instances should
+      run, e.g., `us-central1-a`. Must be in the same region as the cluster,
+      and must match the zone of any other resources specified in the cluster.
+  """
+
+  bootDisk = _messages.MessageField('Disk', 1)
+  machineType = _messages.StringField(2)
+  zone = _messages.StringField(3)
+
+
+class NewReservedInstancesConfig(_messages.Message):
+  r"""When set in a ComputeResourceConfig, indicates that VM instances should
+  be created from a
+  [reservation](https://cloud.google.com/compute/docs/instances/reservations-
+  overview).
+
+  Enums:
+    TypeValueValuesEnum: Optional. Immutable. Deprecated: Do not use.
+
+  Fields:
+    bootDisk: Optional. Immutable. Deprecated: set disks in node config
+      instead.
+    machineType: Optional. Immutable. Deprecated: Do not use.
+    reservation: Required. Immutable. Name of the reservation from which VM
+      instances should be created, in the format
+      `projects/{project}/zones/{zone}/reservations/{reservation}`.
+    type: Optional. Immutable. Deprecated: Do not use.
+    zone: Optional. Immutable. Deprecated: Do not use.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Immutable. Deprecated: Do not use.
+
+    Values:
+      RESERVATION_TYPE_UNSPECIFIED: Deprecated: Do not use.
+      NO_RESERVATION: Deprecated: Do not use.
+      ANY_RESERVATION: Deprecated: Do not use.
+      SPECIFIC_RESERVATION: Deprecated: Do not use.
+    """
+    RESERVATION_TYPE_UNSPECIFIED = 0
+    NO_RESERVATION = 1
+    ANY_RESERVATION = 2
+    SPECIFIC_RESERVATION = 3
+
+  bootDisk = _messages.MessageField('Disk', 1)
+  machineType = _messages.StringField(2)
+  reservation = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+  zone = _messages.StringField(5)
+
+
+class NewSpotInstancesConfig(_messages.Message):
+  r"""When set in a ComputeResourceConfig, indicates that [spot
+  VM](https://cloud.google.com/compute/docs/instances/spot) instances should
+  be created.
 
   Enums:
     TerminationActionValueValuesEnum: Optional. Specifies the termination
       action of the instance
 
   Fields:
-    bootDisk: Immutable. Boot disk for the instances
-    machineType: Immutable. Machine type of the instance
-    maxDuration: Immutable. Max duration of the instance
+    bootDisk: Immutable. Deprecated: set disks in node config instead.
+    machineType: Required. Immutable. Name of the Compute Engine [machine
+      type](https://cloud.google.com/compute/docs/machine-resource) to use,
+      e.g. `n2-standard-2`.
     terminationAction: Optional. Specifies the termination action of the
       instance
-    zone: Immutable. Zone of the instance
+    zone: Required. Immutable. Name of the zone in which VM instances should
+      run, e.g., `us-central1-a`. Must be in the same region as the cluster,
+      and must match the zone of any other resources specified in the cluster.
   """
 
   class TerminationActionValueValuesEnum(_messages.Enum):
@@ -1440,163 +1881,8 @@ class NewDWSFlexInstancesConfig(_messages.Message):
 
   bootDisk = _messages.MessageField('Disk', 1)
   machineType = _messages.StringField(2)
-  maxDuration = _messages.StringField(3)
-  terminationAction = _messages.EnumField('TerminationActionValueValuesEnum', 4)
-  zone = _messages.StringField(5)
-
-
-class NewFilestoreConfig(_messages.Message):
-  r"""NewFilestoreConfig describes the config to initialize a new filestore.
-
-  Enums:
-    ProtocolValueValuesEnum: Optional. Immutable. The protocol of the
-      filestore
-    TierValueValuesEnum: Required. Immutable. The service tier of the
-      filestore
-
-  Fields:
-    description: Optional. Immutable. Description of the filestore
-    fileShares: Required. Immutable. File share configuration
-    filestore: Immutable. Name of the filestore
-    protocol: Optional. Immutable. The protocol of the filestore
-    tier: Required. Immutable. The service tier of the filestore
-  """
-
-  class ProtocolValueValuesEnum(_messages.Enum):
-    r"""Optional. Immutable. The protocol of the filestore
-
-    Values:
-      PROTOCOL_UNSPECIFIED: Unspecified filestore protocol
-      NFSV3: NFSv3
-      NFSV41: NFSv4.1
-    """
-    PROTOCOL_UNSPECIFIED = 0
-    NFSV3 = 1
-    NFSV41 = 2
-
-  class TierValueValuesEnum(_messages.Enum):
-    r"""Required. Immutable. The service tier of the filestore
-
-    Values:
-      TIER_UNSPECIFIED: Unspecified filestore tier
-      BASIC_HDD: Basic HDD filestore tier
-      BASIC_SSD: Basic SSD filestore tier
-      HIGH_SCALE_SSD: High scale SSD filestore tier
-      ZONAL: Zonal filestore tier
-      ENTERPRISE: Enterprise filestore tier
-      REGIONAL: Regional filestore tier
-    """
-    TIER_UNSPECIFIED = 0
-    BASIC_HDD = 1
-    BASIC_SSD = 2
-    HIGH_SCALE_SSD = 3
-    ZONAL = 4
-    ENTERPRISE = 5
-    REGIONAL = 6
-
-  description = _messages.StringField(1)
-  fileShares = _messages.MessageField('FileShareConfig', 2, repeated=True)
-  filestore = _messages.StringField(3)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 4)
-  tier = _messages.EnumField('TierValueValuesEnum', 5)
-
-
-class NewLustreConfig(_messages.Message):
-  r"""NewLustreConfig describes the config to initialize a new lustre.
-
-  Fields:
-    capacityGb: Required. Immutable. Size of the lustre instance in GB
-    description: Optional. Immutable. Description of the lustre instance
-    filesystem: Required. Immutable. Filesystem of the lustre instance
-    lustre: Immutable. Name of the lustre
-  """
-
-  capacityGb = _messages.IntegerField(1)
-  description = _messages.StringField(2)
-  filesystem = _messages.StringField(3)
-  lustre = _messages.StringField(4)
-
-
-class NewNetworkConfig(_messages.Message):
-  r"""NewNetworkConfig represents the configuration to create a new network
-  for the cluster.
-
-  Fields:
-    description: Immutable. Description of the network.
-    network: Immutable. The name of the network.
-  """
-
-  description = _messages.StringField(1)
-  network = _messages.StringField(2)
-
-
-class NewOnDemandInstancesConfig(_messages.Message):
-  r"""NewOnDemandInstancesConfig describes the config to create new on demand
-  instances.
-
-  Fields:
-    bootDisk: Immutable. Boot disk for the instances
-    machineType: Immutable. Machine type of the instance
-    zone: Immutable. Zone of the instance
-  """
-
-  bootDisk = _messages.MessageField('Disk', 1)
-  machineType = _messages.StringField(2)
-  zone = _messages.StringField(3)
-
-
-class NewReservedInstancesConfig(_messages.Message):
-  r"""NewReservedInstancesConfig describes the config to create new reserved
-  instances.
-
-  Enums:
-    TypeValueValuesEnum: Required. Specifies the type of reservation instance
-      can consume resources
-
-  Fields:
-    bootDisk: Immutable. Boot disk for the instances
-    machineType: Immutable. Machine type of instances
-    reservation: Immutable. Reservation name of the instance
-    type: Required. Specifies the type of reservation instance can consume
-      resources
-    zone: Immutable. Zone of the instances
-  """
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""Required. Specifies the type of reservation instance can consume
-    resources
-
-    Values:
-      RESERVATION_TYPE_UNSPECIFIED: Unspecified reservation type
-      NO_RESERVATION: No reservation type
-      ANY_RESERVATION: Any reservation type
-      SPECIFIC_RESERVATION: Specific reservation type
-    """
-    RESERVATION_TYPE_UNSPECIFIED = 0
-    NO_RESERVATION = 1
-    ANY_RESERVATION = 2
-    SPECIFIC_RESERVATION = 3
-
-  bootDisk = _messages.MessageField('Disk', 1)
-  machineType = _messages.StringField(2)
-  reservation = _messages.StringField(3)
-  type = _messages.EnumField('TypeValueValuesEnum', 4)
-  zone = _messages.StringField(5)
-
-
-class NewSpotInstancesConfig(_messages.Message):
-  r"""NewSpotInstancesConfig describes the config to create new spot
-  instances.
-
-  Fields:
-    bootDisk: Immutable. Boot disk for the instances
-    machineType: Immutable. Machine type of the instance
-    zone: Immutable. Zone of the instance
-  """
-
-  bootDisk = _messages.MessageField('Disk', 1)
-  machineType = _messages.StringField(2)
-  zone = _messages.StringField(3)
+  terminationAction = _messages.EnumField('TerminationActionValueValuesEnum', 3)
+  zone = _messages.StringField(4)
 
 
 class Operation(_messages.Message):
@@ -1732,10 +2018,13 @@ class OperationMetadata(_messages.Message):
 
 
 class Orchestrator(_messages.Message):
-  r"""Message describing Orchestrator object
+  r"""The component responsible for scheduling and running workloads on the
+  cluster as well as providing the user interface for interacting with the
+  cluster at runtime.
 
   Fields:
-    slurm: Simple Linux Utility for Resource Management
+    slurm: Optional. If set, indicates that the cluster should use Slurm as
+      the orchestrator.
   """
 
   slurm = _messages.MessageField('SlurmOrchestrator', 1)
@@ -1764,28 +2053,25 @@ class ProfileSession(_messages.Message):
 
 
 class ReservationAffinity(_messages.Message):
-  r"""Message describing ReservationAffinity object
+  r"""Deprecated: Do not use.
 
   Enums:
-    TypeValueValuesEnum: Required. Specifies the type of reservation instance
-      can consume resources
+    TypeValueValuesEnum: Required. Deprecated: Do not use.
 
   Fields:
-    key: Optional. Label key of a reservation resource
-    type: Required. Specifies the type of reservation instance can consume
-      resources
-    values: Optional. Label values of a reservation resource
+    key: Optional. Deprecated: Do not use.
+    type: Required. Deprecated: Do not use.
+    values: Optional. Deprecated: Do not use.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Required. Specifies the type of reservation instance can consume
-    resources
+    r"""Required. Deprecated: Do not use.
 
     Values:
-      RESERVATION_TYPE_UNSPECIFIED: Unspecified reservation type
-      RESERVATION_TYPE_NO_RESERVATION: No reservation type
-      RESERVATION_TYPE_ANY_RESERVATION: Any reservation type
-      RESERVATION_TYPE_SPECIFIC_RESERVATION: Specific reservation type
+      RESERVATION_TYPE_UNSPECIFIED: Deprecated: Do not use.
+      RESERVATION_TYPE_NO_RESERVATION: Deprecated: Do not use.
+      RESERVATION_TYPE_ANY_RESERVATION: Deprecated: Do not use.
+      RESERVATION_TYPE_SPECIFIC_RESERVATION: Deprecated: Do not use.
     """
     RESERVATION_TYPE_UNSPECIFIED = 0
     RESERVATION_TYPE_NO_RESERVATION = 1
@@ -1889,8 +2175,8 @@ class SlurmConfig(_messages.Message):
 
   Fields:
     accountingStorageEnforceFlags: Optional. Flags to control the level of
-      association-based enforcement to impose on job submissions. By default
-      no flags are set. Corresponds to AccountingStorageEnforce.
+      association to impose on job submissions. By default no flags are set.
+      Corresponds to AccountingStorageEnforce.
     preemptExemptTime: Optional. Specifies minimum run time of jobs before
       they are considered for preemption.
     preemptMode: Optional. Specifies the mechanism used to preempt jobs or
@@ -2081,29 +2367,49 @@ class SlurmConfig(_messages.Message):
 
 
 class SlurmLoginNodes(_messages.Message):
-  r"""Message describing set of Slurm Login Node object
+  r"""Configuration for Slurm [login
+  nodes](https://slurm.schedmd.com/quickstart_admin.html#login) in the
+  cluster. Login nodes are Compute Engine VM instances that allow users to
+  access the cluster over SSH.
 
   Messages:
-    LabelsValue: Optional. Labels for the login node
+    LabelsValue: Optional.
+      [Labels](https://cloud.google.com/compute/docs/labeling-resources) that
+      should be applied to each login node instance.
 
   Fields:
-    count: Required. Number of login nodes to create
-    disks: Required. Array of disks associated with the login node
-    enableOsLogin: Optional. Whether to enable OS login for the login node
-    enablePublicIps: Optional. Whether to enable public IPs for the login node
-    instances: Output only. Compute instance details of the login nodes.
-    labels: Optional. Labels for the login node
-    machineType: Required. Type of the machine
-    serviceAccount: Optional. Service account to be used by the nodes in the
-      login nodeset.
-    startupScript: Optional. Startup script for the login node
-    storageConfigs: Optional. Storage configs
-    zone: Required. Zone of the login node
+    bootDisk: Optional. Boot disk for the login node
+    count: Required. Number of login node instances to create.
+    disks: Optional. Unstable: Contact hypercompute-service-eng@ before using.
+    enableOsLogin: Optional. Whether [OS
+      Login](https://cloud.google.com/compute/docs/oslogin) should be enabled
+      on login node instances.
+    enablePublicIps: Optional. Whether login node instances should be assigned
+      [external IP addresses](https://cloud.google.com/compute/docs/ip-
+      addresses#externaladdresses).
+    instances: Output only. Information about the login node instances that
+      were created in Compute Engine.
+    labels: Optional. [Labels](https://cloud.google.com/compute/docs/labeling-
+      resources) that should be applied to each login node instance.
+    machineType: Required. Name of the Compute Engine [machine
+      type](https://cloud.google.com/compute/docs/machine-resource) to use for
+      login nodes, e.g. `n2-standard-2`.
+    serviceAccount: Optional. Unstable: Contact hypercompute-service-eng@
+      before using.
+    startupScript: Optional. [Startup
+      script](https://cloud.google.com/compute/docs/instances/startup-
+      scripts/linux) to be run on each login node instance. Max 256KB.
+    storageConfigs: Optional. How storage resources should be mounted on each
+      login node.
+    zone: Required. Name of the zone in which login nodes should run, e.g.,
+      `us-central1-a`. Must be in the same region as the cluster, and must
+      match the zone of any other resources specified in the cluster.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Labels for the login node
+    r"""Optional. [Labels](https://cloud.google.com/compute/docs/labeling-
+    resources) that should be applied to each login node instance.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2125,48 +2431,68 @@ class SlurmLoginNodes(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  count = _messages.IntegerField(1)
-  disks = _messages.MessageField('Disk', 2, repeated=True)
-  enableOsLogin = _messages.BooleanField(3)
-  enablePublicIps = _messages.BooleanField(4)
-  instances = _messages.MessageField('ComputeInstance', 5, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 6)
-  machineType = _messages.StringField(7)
-  serviceAccount = _messages.MessageField('ServiceAccount', 8)
-  startupScript = _messages.StringField(9)
-  storageConfigs = _messages.MessageField('StorageConfig', 10, repeated=True)
-  zone = _messages.StringField(11)
+  bootDisk = _messages.MessageField('BootDisk', 1)
+  count = _messages.IntegerField(2)
+  disks = _messages.MessageField('Disk', 3, repeated=True)
+  enableOsLogin = _messages.BooleanField(4)
+  enablePublicIps = _messages.BooleanField(5)
+  instances = _messages.MessageField('ComputeInstance', 6, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 7)
+  machineType = _messages.StringField(8)
+  serviceAccount = _messages.MessageField('ServiceAccount', 9)
+  startupScript = _messages.StringField(10)
+  storageConfigs = _messages.MessageField('StorageConfig', 11, repeated=True)
+  zone = _messages.StringField(12)
 
 
 class SlurmNodeSet(_messages.Message):
-  r"""Message describing Slurm NodeSet object
+  r"""Configuration for Slurm nodesets in the cluster. Nodesets are groups of
+  compute nodes used by Slurm that are responsible for running workloads
+  submitted to the cluster.
 
   Messages:
-    LabelsValue: Optional. Labels for the nodeset
+    LabelsValue: Optional. Deprecated: Use ComputeInstanceSlurmNodeSet.labels
+      instead.
 
   Fields:
-    bootDisk: Optional. Boot disk for the nodeset
-    canIpForward: Optional. Whether login node can forward IP packets
-    computeId: Optional. Compute id of the nodeset
-    computeInstance: Optional. Compute instance details of the nodes.
-    containerNodePool: Optional. Container node pool details of the nodes.
-    enableOsLogin: Optional. Whether to enable OS login for the nodeset
-    enablePublicIps: Optional. Whether to enable public IPs for the nodeset
-    id: Required. Id of the nodeset
-    labels: Optional. Labels for the nodeset
-    maxDynamicNodeCount: Optional. Maximum number of auto-scaling nodes
-      allowed in the nodeset
-    resourceRequestId: Optional. Resource request id for the nodeset
-    serviceAccount: Optional. Service account to be used by the nodes in the
-      nodeset.
-    startupScript: Optional. Startup script for the nodeset
-    staticNodeCount: Optional. Number of nodes to be statically created
-    storageConfigs: Optional. Storage configs
+    bootDisk: Optional. Unstable: Contact hypercompute-service-eng@ before
+      using.
+    canIpForward: Optional. Deprecated: Do not use.
+    computeId: Optional. ID of the compute resource on which this nodeset will
+      run. Must match a key in the cluster's
+      [compute_resources](Cluster.compute_resources).
+    computeInstance: Optional. If set, indicates that the nodeset should be
+      backed by Compute Engine instances.
+    containerNodePool: Optional. If set, indicates that the nodeset should be
+      backed by a Kubernetes Engine node pool.
+    enableOsLogin: Optional. Deprecated: Do not use.
+    enablePublicIps: Optional. Deprecated: Do not use.
+    id: Required. Identifier for the nodeset, which allows it to be referenced
+      by partitions. Must conform to
+      [RFC-1034](https://datatracker.ietf.org/doc/html/rfc1034) (lower-case,
+      alphanumeric, and at most 63 characters).
+    labels: Optional. Deprecated: Use ComputeInstanceSlurmNodeSet.labels
+      instead.
+    maxDynamicNodeCount: Optional. Controls how many additional nodes a
+      cluster can bring online to handle workloads. Set this value to enable
+      dynamic node creation and limit the number of additional nodes the
+      cluster can bring online. Leave empty if you do not want the cluster to
+      create nodes dynamically, and instead rely only on static nodes.
+    resourceRequestId: Optional. Deprecated: Use compute_id instead.
+    serviceAccount: Optional. Unstable: Contact hypercompute-service-eng@
+      before using.
+    startupScript: Optional. Deprecated: Use
+      ComputeInstanceSlurmNodeSet.startup_script instead.
+    staticNodeCount: Optional. Number of nodes to be statically created for
+      this nodeset. The cluster will attempt to ensure that at least this many
+      nodes exist at all times.
+    storageConfigs: Optional. How storage resources should be mounted on each
+      compute node.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Labels for the nodeset
+    r"""Optional. Deprecated: Use ComputeInstanceSlurmNodeSet.labels instead.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2206,26 +2532,34 @@ class SlurmNodeSet(_messages.Message):
 
 
 class SlurmOrchestrator(_messages.Message):
-  r"""Message describing Slurm Orchestrator object
+  r"""When set in Orchestrator, indicates that the cluster should use
+  [Slurm](https://slurm.schedmd.com/) as the orchestrator.
 
   Fields:
-    config: Optional. Optional Slurm configuration available only in v1alpha.
-    defaultPartition: Optional. Default partition
-    epilogBashScripts: Optional. Custom bash scripts executed after each slurm
-      job on every allocated node. Scripts will be copied to
-      /slurm/custom_scripts/epilog.d/.
-    loginNodes: Optional. Set of slurm login nodes
-    nodeSets: Required. List of slurm nodesets
-    partitions: Required. List of slurm partition
-    prologBashScripts: Optional. Custom bash scripts executed before each
-      slurm job on every allocated node. Scripts will be copied to
-      /slurm/custom_scripts/prolog.d/.
-    taskEpilogBashScripts: Optional. Custom bash scripts executed after each
-      slurm task on every allocated node. Scripts will be copied to
-      /slurm/custom_scripts/task_epilog.d/.
-    taskPrologBashScripts: Optional. Custom bash scripts executed before each
-      slurm task on every allocated node. Scripts will be copied to
-      /slurm/custom_scripts/task_prolog.d/.
+    config: Optional. Unstable: Contact hypercompute-service-eng@ before
+      using.
+    defaultPartition: Optional. Default partition to use for submitted jobs
+      that do not explicitly specify a partition. Required if and only if
+      there is more than one partition, in which case it must match the id of
+      one of the partitions.
+    epilogBashScripts: Optional. Slurm [epilog
+      scripts](https://slurm.schedmd.com/prolog_epilog.html), which will be
+      executed by compute nodes whenever a node finishes running a job.
+    loginNodes: Required. Configuration for login nodes, which allow users to
+      access the cluster over SSH.
+    nodeSets: Required. Configuration of Slurm nodesets, which define groups
+      of compute resources that can be used by Slurm. At least one compute
+      node is required.
+    partitions: Required. Configuration of Slurm partitions, which group one
+      or more nodesets. Acts as a queue against which jobs can be submitted.
+      At least one partition is required.
+    prologBashScripts: Optional. Slurm [prolog
+      scripts](https://slurm.schedmd.com/prolog_epilog.html), which will be
+      executed by compute nodes before a node begins running a new job.
+    taskEpilogBashScripts: Optional. Unstable: Contact hypercompute-service-
+      eng@ before using.
+    taskPrologBashScripts: Optional. Unstable: Contact hypercompute-service-
+      eng@ before using.
   """
 
   config = _messages.MessageField('SlurmConfig', 1)
@@ -2240,14 +2574,19 @@ class SlurmOrchestrator(_messages.Message):
 
 
 class SlurmPartition(_messages.Message):
-  r"""Message describing Slurm Partition object
+  r"""Configuration for Slurm partitions in the cluster. Partitions are groups
+  of nodesets, and are how clients specify where their workloads should be
+  run.
 
   Fields:
-    exclusive: Optional. Exclusive job access to nodes True: nodes execute
-      single job and are deleted after job exits False: nodes can execute
-      multiple jobs
-    id: Required. Id of the slurm partiton
-    nodeSetIds: Required. Nodeset for the slurm partition
+    exclusive: Optional. Unstable: Contact hypercompute-service-eng@ before
+      using.
+    id: Required. ID of the partition, which is how users will identify it.
+      Must conform to
+      [RFC-1034](https://datatracker.ietf.org/doc/html/rfc1034) (lower-case,
+      alphanumeric, and at most 63 characters).
+    nodeSetIds: Required. IDs of the nodesets that make up this partition.
+      Values must match SlurmNodeSet.id.
   """
 
   exclusive = _messages.BooleanField(1)
@@ -2386,11 +2725,14 @@ class Storage(_messages.Message):
 
 
 class StorageConfig(_messages.Message):
-  r"""Message describing StorageConfig object
+  r"""Description of how a storage resource should be mounted on a VM
+  instance.
 
   Fields:
-    id: Required. Id of the storage
-    localMount: Optional. Mountpoint for the storage
+    id: Required. ID of the storage resource to mount, which must match a key
+      in the cluster's [storage_resources](Cluster.storage_resources).
+    localMount: Required. A directory inside the VM instance's file system
+      where the storage resource should be mounted (e.g., `/mnt/share`).
   """
 
   id = _messages.StringField(1)
@@ -2412,13 +2754,21 @@ class StorageInitializeParams(_messages.Message):
 
 
 class StorageResource(_messages.Message):
-  r"""StorageResource represents a storage resource of a cluster.
+  r"""A resource representing a form of persistent storage that is accessible
+  to compute resources in the cluster.
 
   Fields:
-    bucket: Bucket reference
-    config: Optional. Describes config to initialize the storage resource.
-    filestore: Filestore reference
-    lustre: Lustre reference
+    bucket: Reference to a Google Cloud Storage bucket. Populated if and only
+      if the storage resource was configured to use Google Cloud Storage.
+    config: Required. Immutable. Configuration for this storage resource,
+      which describes how it should be created or imported. This field only
+      controls how the storage resource is initially created or imported.
+      Subsequent changes to the storage resource should be made via the
+      resource's API and will not be reflected in the configuration.
+    filestore: Reference to a Filestore instance. Populated if and only if the
+      storage resource was configured to use Filestore.
+    lustre: Reference to a Managed Lustre instance. Populated if and only if
+      the storage resource was configured to use Managed Lustre.
   """
 
   bucket = _messages.MessageField('BucketReference', 1)
@@ -2428,16 +2778,23 @@ class StorageResource(_messages.Message):
 
 
 class StorageResourceConfig(_messages.Message):
-  r"""StorageResourceConfig describes the config to initialize the storage
-  resource.
+  r"""Describes how a storage resource should be initialized. Each storage
+  resource can either be imported from an existing Google Cloud resource or
+  initialized when the cluster is created.
 
   Fields:
-    existingBucket: Existing bucket config
-    existingFilestore: Existing filestore config
-    existingLustre: Existing lustre config
-    newBucket: New bucket config
-    newFilestore: New filestore config
-    newLustre: New lustre config
+    existingBucket: Optional. Immutable. If set, indicates that an existing
+      Cloud Storage bucket should be imported.
+    existingFilestore: Optional. Immutable. If set, indicates that an existing
+      Filestore instance should be imported.
+    existingLustre: Optional. Immutable. If set, indicates that an existing
+      Managed Lustre instance should be imported.
+    newBucket: Optional. Immutable. If set, indicates that a new Cloud Storage
+      bucket should be created.
+    newFilestore: Optional. Immutable. If set, indicates that a new Filestore
+      instance should be created.
+    newLustre: Optional. Immutable. If set, indicates that a new Managed
+      Lustre instance should be created.
   """
 
   existingBucket = _messages.MessageField('ExistingBucketConfig', 1)
@@ -2472,12 +2829,23 @@ class Tool(_messages.Message):
   xprof = _messages.MessageField('Xprof', 1)
 
 
-class Xprof(_messages.Message):
-  r"""XProf related metadata TODO(b/419397021) - Define or link XProf tool
-  proto for run tools.
+class WorkloadDetails(_messages.Message):
+  r"""Workload details associated for the Machine Learning Run. Workload have
+  different metadata based on the orchestrator like GKE cluster, Slurm
+  cluster, Google Compute Engine instance etc.
 
   Fields:
-    sessionId: Required. TODO(b/419397021) - Add XProf related metadata.
+    gke: GKE Workload metadata.
+  """
+
+  gke = _messages.MessageField('GKEWorkloadDetails', 1)
+
+
+class Xprof(_messages.Message):
+  r"""XProf related metadata
+
+  Fields:
+    sessionId: Required. XProf session id
   """
 
   sessionId = _messages.StringField(1)

@@ -15,6 +15,10 @@
 
 """A library that is used to support our commands."""
 
+from googlecloudsdk.core import properties
+
+from googlecloudsdk.core import resources
+
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 
@@ -34,3 +38,24 @@ def GetMessagesModule(release_track=base.ReleaseTrack.GA):
 def GetClientInstance(release_track=base.ReleaseTrack.GA):
   api_version = VERSION_MAP.get(release_track)
   return apis.GetClientInstance('biglake', api_version)
+
+
+def GetCatalogRef(catalog):
+  """Get a resource reference to a catalog."""
+  return resources.REGISTRY.Parse(
+      catalog,  # in the format of projects/{project-id}/catalogs/{catalog-id}
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+      },
+      collection='biglake.iceberg.v1.restcatalog.extensions.projects.catalogs',
+  )
+
+
+def GetCatalogName(catalog_id):
+  """Get the catalog name in the format of projects/{project-id}/catalogs/{catalog-id}."""
+  return f'projects/{properties.VALUES.core.project.GetOrFail()}/catalogs/{catalog_id}'
+
+
+def GetParentName():
+  """Get the parent name in the format of projects/{project-id}."""
+  return f'projects/{properties.VALUES.core.project.GetOrFail()}'

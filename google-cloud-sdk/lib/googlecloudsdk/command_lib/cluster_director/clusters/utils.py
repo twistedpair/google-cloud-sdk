@@ -110,10 +110,11 @@ class ClusterUtil:
     """Makes a cluster message with network fields."""
     networks = self.message_module.Cluster.NetworkResourcesValue()
     if self.args.IsSpecified("create_network"):
-      network_name = self._GetNetworkName(self.args.create_network.get("name"))
+      network_id = self.args.create_network.get("name")
+      network_name = self._GetNetworkName(network_id)
       networks.additionalProperties.append(
           self.message_module.Cluster.NetworkResourcesValue.AdditionalProperty(
-              key=f"net-{network_name}",
+              key=f"net-{network_id}",
               value=self.message_module.NetworkResource(
                   config=self.message_module.NetworkResourceConfig(
                       newNetwork=self.message_module.NewNetworkConfig(
@@ -127,10 +128,11 @@ class ClusterUtil:
           )
       )
     if self.args.IsSpecified("network") and self.args.IsSpecified("subnet"):
-      network_name = self._GetNetworkName(self.args.network)
+      network_id = self.args.network
+      network_name = self._GetNetworkName(network_id)
       networks.additionalProperties.append(
           self.message_module.Cluster.NetworkResourcesValue.AdditionalProperty(
-              key=f"net-{network_name}",
+              key=f"net-{network_id}",
               value=self.message_module.NetworkResource(
                   config=self.message_module.NetworkResourceConfig(
                       existingNetwork=self.message_module.ExistingNetworkConfig(
@@ -460,7 +462,7 @@ class ClusterUtil:
         self._RemoveKeyByAttrFromDictSpec(
             key=compute_id,
             dict_spec=compute,
-            attr="newOnDemandInstances",
+            attrs=["newOnDemandInstances"],
             key_exception_message=ex_msg_not_found,
             attr_exception_message=f"On demand {ex_msg_not_found}",
         )
@@ -470,7 +472,7 @@ class ClusterUtil:
         self._RemoveKeyByAttrFromDictSpec(
             key=compute_id,
             dict_spec=compute,
-            attr="newSpotInstances",
+            attrs=["newSpotInstances"],
             key_exception_message=ex_msg_not_found,
             attr_exception_message=f"Spot {ex_msg_not_found}",
         )
@@ -480,7 +482,7 @@ class ClusterUtil:
         self._RemoveKeyByAttrFromDictSpec(
             key=compute_id,
             dict_spec=compute,
-            attr="newReservedInstances",
+            attrs=["newReservedInstances"],
             key_exception_message=ex_msg_not_found,
             attr_exception_message=f"Reserved {ex_msg_not_found}",
         )
@@ -490,7 +492,7 @@ class ClusterUtil:
         self._RemoveKeyByAttrFromDictSpec(
             key=compute_id,
             dict_spec=compute,
-            attr="newDwsFlexInstances",
+            attrs=["newDwsFlexInstances", "newFlexStartInstances"],
             key_exception_message=ex_msg_not_found,
             attr_exception_message=f"DWS Flex {ex_msg_not_found}",
         )
@@ -665,7 +667,20 @@ class ClusterUtil:
   def _GetReservationName(self, reservation) -> str:
     """Returns the reservation name."""
     project = self.cluster_ref.Parent().projectsId
+    if reservation.startswith("projects/"):
+      return reservation
     return f"projects/{project}/{reservation}"
+
+  def _GetReservationZone(self, reservation) -> str:
+    """Returns the reservation zone."""
+    # projects/{project}/zones/{zone}/reservations/{reservation}/reservationBlocks/{reservationBlock}
+    parts = reservation.split("/")
+    for current_part, next_part in zip(parts, parts[1:]):
+      if current_part == "zones" and next_part:
+        return next_part
+    raise exceptions.ToolException(
+        f"Reservation {reservation} does not contain a zone."
+    )
 
   def _GetComputeMachineTypeFromArgs(self, compute_id):
     """Returns the compute machine type from args."""
@@ -707,14 +722,17 @@ class ClusterUtil:
       self, compute_id: str, compute_resources: Dict[str, Any]
   ):
     """Returns the compute machine type from compute resources."""
-    if compute_resources[compute_id].newOnDemandInstances:
-      return compute_resources[compute_id].newOnDemandInstances.machineType
-    if compute_resources[compute_id].newSpotInstances:
-      return compute_resources[compute_id].newSpotInstances.machineType
-    if compute_resources[compute_id].newReservedInstances:
-      return compute_resources[compute_id].newReservedInstances.machineType
-    if compute_resources[compute_id].newDwsFlexInstances:
-      return compute_resources[compute_id].newDwsFlexInstances.machineType
+    compute_resource = compute_resources[compute_id]
+    if compute_resource.config.newOnDemandInstances:
+      return compute_resource.config.newOnDemandInstances.machineType
+    if compute_resource.config.newSpotInstances:
+      return compute_resource.config.newSpotInstances.machineType
+    if compute_resource.config.newReservedInstances:
+      return compute_resource.config.newReservedInstances.machineType
+    if compute_resource.config.newDwsFlexInstances:
+      return compute_resource.config.newDwsFlexInstances.machineType
+    if compute_resource.config.newFlexStartInstances:
+      return compute_resource.config.newFlexStartInstances.machineType
     raise exceptions.ToolException("Compute instances type not supported.")
 
   def _GetStorageConfigs(self, cluster):
@@ -822,14 +840,16 @@ class ClusterUtil:
       self,
       key: str,
       dict_spec: dict[str, Any],
-      attr: str,
+      attrs: List[str],
       key_exception_message: str,
       attr_exception_message: str,
   ) -> None | exceptions.ToolException:
     """Removes a cluster identifier (key) by attribute, if present in dict spec."""
     if key not in dict_spec:
       raise exceptions.ToolException(key_exception_message.format(key))
-    if not getattr(dict_spec[key], attr, None):
+    if not getattr(dict_spec[key], "config", None):
+      raise exceptions.ToolException(attr_exception_message.format(key))
+    if not any(getattr(dict_spec[key].config, attr, None) for attr in attrs):
       raise exceptions.ToolException(attr_exception_message.format(key))
     dict_spec.pop(key)
 
@@ -844,37 +864,48 @@ class ClusterUtil:
   def _MakeOnDemandComputeResource(self, instance):
     """Makes a cluster compute resource message for on demand instances."""
     return self.message_module.ComputeResource(
-        newOnDemandInstances=self.message_module.NewOnDemandInstancesConfig(
-            zone=instance.get("zone"),
-            machineType=instance.get("machineType"),
+        config=self.message_module.ComputeResourceConfig(
+            newOnDemandInstances=self.message_module.NewOnDemandInstancesConfig(
+                zone=instance.get("zone"),
+                machineType=instance.get("machineType"),
+            ),
         ),
     )
 
   def _MakeSpotComputeResource(self, instance):
     """Makes a cluster compute resource message for spot instances."""
     return self.message_module.ComputeResource(
-        newSpotInstances=self.message_module.NewSpotInstancesConfig(
-            zone=instance.get("zone"),
-            machineType=instance.get("machineType"),
+        config=self.message_module.ComputeResourceConfig(
+            newSpotInstances=self.message_module.NewSpotInstancesConfig(
+                zone=instance.get("zone"),
+                machineType=instance.get("machineType"),
+            ),
         ),
     )
 
   def _MakeReservedComputeResource(self, instance):
     """Makes a cluster compute resource message for reserved instances."""
+    reservation = instance.get("reservation")
     return self.message_module.ComputeResource(
-        newReservedInstances=self.message_module.NewReservedInstancesConfig(
-            reservation=self._GetReservationName(instance.get("reservation")),
-            machineType=instance.get("machineType"),
+        config=self.message_module.ComputeResourceConfig(
+            newReservedInstances=self.message_module.NewReservedInstancesConfig(
+                reservation=self._GetReservationName(reservation),
+                machineType=instance.get("machineType"),
+                zone=self._GetReservationZone(reservation),
+                type=self.message_module.NewReservedInstancesConfig.TypeValueValuesEnum.SPECIFIC_RESERVATION,
+            ),
         ),
     )
 
   def _MakeDwsFlexComputeResource(self, instance):
     """Makes a cluster compute resource message for DWS Flex instances."""
     return self.message_module.ComputeResource(
-        newDwsFlexInstances=self.message_module.NewDWSFlexInstancesConfig(
-            zone=instance.get("zone"),
-            machineType=instance.get("machineType"),
-            maxDuration=instance.get("maxDuration"),
+        config=self.message_module.ComputeResourceConfig(
+            newDwsFlexInstances=self.message_module.NewDWSFlexInstancesConfig(
+                zone=instance.get("zone"),
+                machineType=instance.get("machineType"),
+                maxDuration=instance.get("maxDuration"),
+            ),
         ),
     )
 

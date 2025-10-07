@@ -193,7 +193,7 @@ def AddResourceArgs(parser, resources):
 
 
 def GetAlertResourceUriFunc():
-  return lambda x: GetAlertResourceSpec().CreateResourceURI(x)
+  return lambda x: x.name
 
 
 def AddProjectResourceArg(parser, help_text, required=True):

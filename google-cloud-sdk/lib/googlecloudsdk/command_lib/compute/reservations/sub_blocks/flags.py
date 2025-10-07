@@ -48,6 +48,27 @@ def AddListFlags(parser):
       help='The name of the reservation block.')
 
 
+def AddFullViewFlag(parser):
+  help_text = """\
+  The view type for the reservation sub-block.
+  """
+  parser.add_argument(
+      '--full-view',
+      metavar='FULL_VIEW',
+      choices={
+          'SUB_BLOCK_VIEW_FULL': (
+              'Full detailed view of the reservation sub-block.'
+          ),
+          'SUB_BLOCK_VIEW_BASIC': (
+              'Basic default view of the reservation sub-block.'
+          ),
+      },
+      default='SUB_BLOCK_VIEW_UNSPECIFIED',
+      help=help_text,
+      required=False,
+  )
+
+
 def GetDisruptionScheduleFlag():
   """Gets the --disruption-schedule flag."""
   return base.Argument(

@@ -348,6 +348,60 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Create WildfireVerdictChangeRequest in a given Firewall Endpoint in a project and location.
+
+      Args:
+        request: (NetworksecurityOrganizationsLocationsFirewallEndpointsWildfireVerdictChangeRequestsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WildfireVerdictChangeRequest) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/organizations/{organizationsId}/locations/{locationsId}/firewallEndpoints/{firewallEndpointsId}/wildfireVerdictChangeRequests',
+        http_method='POST',
+        method_id='networksecurity.organizations.locations.firewallEndpoints.wildfireVerdictChangeRequests.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha1/{+parent}/wildfireVerdictChangeRequests',
+        request_field='wildfireVerdictChangeRequest',
+        request_type_name='NetworksecurityOrganizationsLocationsFirewallEndpointsWildfireVerdictChangeRequestsCreateRequest',
+        response_type_name='WildfireVerdictChangeRequest',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get WildfireVerdictChangeRequest in a given Firewall Endpoint in a project and location.
+
+      Args:
+        request: (NetworksecurityOrganizationsLocationsFirewallEndpointsWildfireVerdictChangeRequestsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WildfireVerdictChangeRequest) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/organizations/{organizationsId}/locations/{locationsId}/firewallEndpoints/{firewallEndpointsId}/wildfireVerdictChangeRequests/{wildfireVerdictChangeRequestsId}',
+        http_method='GET',
+        method_id='networksecurity.organizations.locations.firewallEndpoints.wildfireVerdictChangeRequests.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityOrganizationsLocationsFirewallEndpointsWildfireVerdictChangeRequestsGetRequest',
+        response_type_name='WildfireVerdictChangeRequest',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists WildfireVerdictChangeRequests in a given Firewall Endpoint in a project and location.
 
@@ -630,7 +684,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
         method_id='networksecurity.organizations.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1alpha1/{+name}/operations',
         request_field='',
         request_type_name='NetworksecurityOrganizationsLocationsOperationsListRequest',
@@ -4245,7 +4299,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
         method_id='networksecurity.projects.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1alpha1/{+name}/operations',
         request_field='',
         request_type_name='NetworksecurityProjectsLocationsOperationsListRequest',

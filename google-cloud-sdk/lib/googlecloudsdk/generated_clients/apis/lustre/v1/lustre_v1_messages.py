@@ -13,6 +13,92 @@ from apitools.base.py import extra_types
 package = 'lustre'
 
 
+class AccessRule(_messages.Message):
+  r"""A single policy group with IP-based access rules for the Managed Lustre
+  instance.
+
+  Enums:
+    SquashModeValueValuesEnum: Required. Squash mode for the access rule.
+
+  Fields:
+    ipAddressRanges: Required. The IP address ranges to which to apply this
+      access rule. Accepts non-overlapping CIDR ranges (e.g.,
+      `192.168.1.0/24`) and IP addresses (e.g., `192.168.1.0`).
+    name: Required. The name of the access rule policy group. Must be 16
+      characters or less and include only alphanumeric characters or '_'.
+    squashMode: Required. Squash mode for the access rule.
+  """
+
+  class SquashModeValueValuesEnum(_messages.Enum):
+    r"""Required. Squash mode for the access rule.
+
+    Values:
+      SQUASH_MODE_UNSPECIFIED: Unspecified squash mode.
+      NO_SQUASH: Squash is disabled. If set inside an AccessRule, root users
+        matching the ip_ranges are not squashed. If set as the
+        default_squash_mode, root squash is disabled for this instance. If the
+        default squash mode is `NO_SQUASH`, do not set the default_squash_uid
+        or default_squash_gid, or an `invalid argument` error is returned.
+      ROOT_SQUASH: Root user squash is enabled. Not supported inside an
+        AccessRule. If set as the default_squash_mode, root users not matching
+        any of the access_rules are squashed to the default_squash_uid and
+        default_squash_gid.
+    """
+    SQUASH_MODE_UNSPECIFIED = 0
+    NO_SQUASH = 1
+    ROOT_SQUASH = 2
+
+  ipAddressRanges = _messages.StringField(1, repeated=True)
+  name = _messages.StringField(2)
+  squashMode = _messages.EnumField('SquashModeValueValuesEnum', 3)
+
+
+class AccessRulesOptions(_messages.Message):
+  r"""IP-based access rules for the Managed Lustre instance. These options
+  define the root user squash configuration.
+
+  Enums:
+    DefaultSquashModeValueValuesEnum: Required. The squash mode for the
+      default access rule.
+
+  Fields:
+    accessRules: Optional. The access rules for the instance.
+    defaultSquashGid: Optional. The user squash GID for the default access
+      rule. This user squash GID applies to all root users connecting from
+      clients that are not matched by any of the access rules. If not set, the
+      default is 0 (no GID squash).
+    defaultSquashMode: Required. The squash mode for the default access rule.
+    defaultSquashUid: Optional. The user squash UID for the default access
+      rule. This user squash UID applies to all root users connecting from
+      clients that are not matched by any of the access rules. If not set, the
+      default is 0 (no UID squash).
+  """
+
+  class DefaultSquashModeValueValuesEnum(_messages.Enum):
+    r"""Required. The squash mode for the default access rule.
+
+    Values:
+      SQUASH_MODE_UNSPECIFIED: Unspecified squash mode.
+      NO_SQUASH: Squash is disabled. If set inside an AccessRule, root users
+        matching the ip_ranges are not squashed. If set as the
+        default_squash_mode, root squash is disabled for this instance. If the
+        default squash mode is `NO_SQUASH`, do not set the default_squash_uid
+        or default_squash_gid, or an `invalid argument` error is returned.
+      ROOT_SQUASH: Root user squash is enabled. Not supported inside an
+        AccessRule. If set as the default_squash_mode, root users not matching
+        any of the access_rules are squashed to the default_squash_uid and
+        default_squash_gid.
+    """
+    SQUASH_MODE_UNSPECIFIED = 0
+    NO_SQUASH = 1
+    ROOT_SQUASH = 2
+
+  accessRules = _messages.MessageField('AccessRule', 1, repeated=True)
+  defaultSquashGid = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  defaultSquashMode = _messages.EnumField('DefaultSquashModeValueValuesEnum', 3)
+  defaultSquashUid = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
 class ExportDataRequest(_messages.Message):
   r"""Export data from Managed Lustre to a Cloud Storage bucket.
 
@@ -85,6 +171,7 @@ class Instance(_messages.Message):
     LabelsValue: Optional. Labels as key value pairs.
 
   Fields:
+    accessRulesOptions: Optional. The access rules options for the instance.
     capacityGib: Required. The storage capacity of the instance in gibibytes
       (GiB). Allowed values are from `18000` to `7632000`, depending on the
       `perUnitStorageThroughput`. See [Performance tiers and maximum storage
@@ -111,7 +198,12 @@ class Instance(_messages.Message):
       MB/s/TiB. Valid values are 125, 250, 500, 1000. See [Performance tiers
       and maximum storage capacities](https://cloud.google.com/managed-
       lustre/docs/create-instance#performance-tiers) for more information.
+    placementPolicy: Optional. The placement policy name for the instance in
+      the format of projects/{project}/locations/{location}/resourcePolicies/{
+      resource_policy}
     state: Output only. The state of the instance.
+    uid: Output only. Unique ID of the resource. This is unrelated to the
+      access rules which allow specifying the root squash uid.
     updateTime: Output only. Timestamp when the instance was last updated.
   """
 
@@ -161,18 +253,21 @@ class Instance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  capacityGib = _messages.IntegerField(1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  filesystem = _messages.StringField(4)
-  gkeSupportEnabled = _messages.BooleanField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  mountPoint = _messages.StringField(7)
-  name = _messages.StringField(8)
-  network = _messages.StringField(9)
-  perUnitStorageThroughput = _messages.IntegerField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
+  accessRulesOptions = _messages.MessageField('AccessRulesOptions', 1)
+  capacityGib = _messages.IntegerField(2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  filesystem = _messages.StringField(5)
+  gkeSupportEnabled = _messages.BooleanField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  mountPoint = _messages.StringField(8)
+  name = _messages.StringField(9)
+  network = _messages.StringField(10)
+  perUnitStorageThroughput = _messages.IntegerField(11)
+  placementPolicy = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -210,10 +305,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -470,8 +570,8 @@ class LustreProjectsLocationsListRequest(_messages.Message):
   r"""A LustreProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Do not use this field. It is unsupported and
-      is ignored unless explicitly documented otherwise. This is primarily for
+    extraLocationTypes: Optional. Unless explicitly documented otherwise,
+      don't use this unsupported field which is primarily intended for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -528,12 +628,20 @@ class LustreProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class Operation(_messages.Message):
@@ -669,6 +777,39 @@ class OperationMetadata(_messages.Message):
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class ReconciliationOperationMetadata(_messages.Message):
+  r"""Operation metadata returned by the CLH during resource state
+  reconciliation.
+
+  Enums:
+    ExclusiveActionValueValuesEnum: Excluisive action returned by the CLH.
+
+  Fields:
+    deleteResource: DEPRECATED. Use exclusive_action instead.
+    exclusiveAction: Excluisive action returned by the CLH.
+  """
+
+  class ExclusiveActionValueValuesEnum(_messages.Enum):
+    r"""Excluisive action returned by the CLH.
+
+    Values:
+      UNKNOWN_REPAIR_ACTION: Unknown repair action.
+      DELETE: The resource has to be deleted. When using this bit, the CLH
+        should fail the operation. DEPRECATED. Instead use DELETE_RESOURCE
+        OperationSignal in SideChannel.
+      RETRY: This resource could not be repaired but the repair should be
+        tried again at a later time. This can happen if there is a dependency
+        that needs to be resolved first- e.g. if a parent resource must be
+        repaired before a child resource.
+    """
+    UNKNOWN_REPAIR_ACTION = 0
+    DELETE = 1
+    RETRY = 2
+
+  deleteResource = _messages.BooleanField(1)
+  exclusiveAction = _messages.EnumField('ExclusiveActionValueValuesEnum', 2)
 
 
 class StandardQueryParameters(_messages.Message):

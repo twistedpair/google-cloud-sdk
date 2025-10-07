@@ -125,7 +125,7 @@ def _GetBalancingModes(release_track=None):
           Spreads load based on custom defined and reported metrics.
           """,
   }
-  if release_track == ReleaseTrack.ALPHA:
+  if release_track == ReleaseTrack.ALPHA or release_track == ReleaseTrack.BETA:
     balancing_modes['IN_FLIGHT'] = """
                     Available if the backend service's load balancing scheme is
           `INTERNAL_MANAGED`, `INTERNAL_SELF_MANAGED`, or `EXTERNAL_MANAGED`. Available
@@ -252,7 +252,7 @@ def AddCapacityLimits(parser,
       by the number of instances in the instance group, and then dividing by
       the number of healthy instances.
       """)
-  if release_track == ReleaseTrack.ALPHA:
+  if release_track == ReleaseTrack.ALPHA or release_track == ReleaseTrack.BETA:
     capacity_group.add_argument(
         '--max-in-flight-requests',
         type=int,

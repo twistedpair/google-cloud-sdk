@@ -310,14 +310,22 @@ def AddNetworkDdosAdaptiveProtection(parser, required=False):
 
 def AddNetworkDdosImpactedBaselineThreshold(parser, required=False):
   """Adds the Cloud Armor Network DDoS impacted baseline threshold argument."""
-  parser.add_argument(
+  impacted_baseline_threshold_group = parser.add_mutually_exclusive_group(
+      required=required
+  )
+  impacted_baseline_threshold_group.add_argument(
       '--network-ddos-impacted-baseline-threshold',
       type=float,
-      required=required,
       help=(
           'Threshold below which rules with collateral damage below this'
           ' value will be deployed'
       ),
+  )
+  impacted_baseline_threshold_group.add_argument(
+      '--clear-network-ddos-impacted-baseline-threshold',
+      action='store_true',
+      help=('If provided, clears the Network DDoS impacted baseline threshold '
+            'from the security policy.'),
   )
 
 

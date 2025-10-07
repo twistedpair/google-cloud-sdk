@@ -59,29 +59,42 @@ _CLUSTER = {
         key_type=str,
         value_type=arg_parsers.ArgObject(
             spec={
-                "newDwsFlexInstances": arg_parsers.ArgObject(
+                "config": arg_parsers.ArgObject(
                     spec={
-                        "machineType": str,
-                        "maxDuration": str,
-                        "zone": str,
-                    }
-                ),
-                "newOnDemandInstances": arg_parsers.ArgObject(
-                    spec={
-                        "machineType": str,
-                        "zone": str,
-                    }
-                ),
-                "newReservedInstances": arg_parsers.ArgObject(
-                    spec={
-                        "machineType": str,
-                        "reservation": str,
-                    }
-                ),
-                "newSpotInstances": arg_parsers.ArgObject(
-                    spec={
-                        "machineType": str,
-                        "zone": str,
+                        "newFlexStartInstances": arg_parsers.ArgObject(
+                            spec={
+                                "machineType": str,
+                                "maxDuration": str,
+                                "zone": str,
+                            }
+                        ),
+                        "newDwsFlexInstances": arg_parsers.ArgObject(
+                            spec={
+                                "machineType": str,
+                                "maxDuration": str,
+                                "zone": str,
+                            }
+                        ),
+                        "newOnDemandInstances": arg_parsers.ArgObject(
+                            spec={
+                                "machineType": str,
+                                "zone": str,
+                            }
+                        ),
+                        "newReservedInstances": arg_parsers.ArgObject(
+                            spec={
+                                "machineType": str,
+                                "reservation": str,
+                                "type": str,
+                                "zone": str,
+                            }
+                        ),
+                        "newSpotInstances": arg_parsers.ArgObject(
+                            spec={
+                                "machineType": str,
+                                "zone": str,
+                            }
+                        ),
                     }
                 ),
             }

@@ -102,7 +102,7 @@ class ClientBase(object):
     Returns:
       Returns the parsed tag bindings.
     """
-    tag_bindings = flags.GetTagBindings(args)
+    tag_bindings = flags.GetResourceManagerTags(args)
     if not tag_bindings:
       return None
     tag_binding_type = parent_type.TagsValue.AdditionalProperty

@@ -32,6 +32,27 @@ def _IsDefaultUniverse():
   )
 
 
+def _HandleNonDefaultUniverseRegion():
+  """Handles region selection for non-default universes."""
+  non_default_universe_regions = constants.NON_DEFAULT_UNIVERSE_REGIONS
+  if not non_default_universe_regions:
+    return None
+
+  if len(non_default_universe_regions) == 1:
+    return non_default_universe_regions[0]
+
+  # Prompt only if console is available and there are multiple non-default
+  # regions
+  if console_io.CanPrompt():
+    all_regions = list(non_default_universe_regions)
+    idx = console_io.PromptChoice(
+        all_regions, message='Please specify a region:\n', cancel_option=True)
+    return all_regions[idx]
+  # When cannot prompt, returns the first region in the list as a default
+  # choice.
+  return None
+
+
 def GetPromptForRegionFunc(available_regions=constants.SUPPORTED_REGION):
   """Returns a no argument function that prompts available regions and catches the user selection."""
   return lambda: PromptForRegion(available_regions)
@@ -41,7 +62,7 @@ def PromptForRegion(available_regions=constants.SUPPORTED_REGION):
   """Prompt for region from list of available regions.
 
   This method is referenced by the declaritive iam commands as a fallthrough
-  for getting the region. Prompts only in GDU
+  for getting the region.
 
   Args:
     available_regions: list of the available regions to choose from
@@ -50,8 +71,10 @@ def PromptForRegion(available_regions=constants.SUPPORTED_REGION):
     The region specified by the user, str, or None if not in GDU or cannot
     prompt.
   """
+  if not _IsDefaultUniverse():
+    return _HandleNonDefaultUniverseRegion()
 
-  if console_io.CanPrompt() and _IsDefaultUniverse():
+  if console_io.CanPrompt():
     all_regions = list(available_regions)
     idx = console_io.PromptChoice(
         all_regions, message='Please specify a region:\n', cancel_option=True)
@@ -65,14 +88,16 @@ def PromptForOpRegion():
   """Prompt for region from list of online prediction available regions.
 
   This method is referenced by the declaritive iam commands as a fallthrough
-  for getting the region. Prompts only in GDU.
+  for getting the region.
 
   Returns:
     The region specified by the user, str, or None if not in GDU or cannot
     prompt.
   """
+  if not _IsDefaultUniverse():
+    return _HandleNonDefaultUniverseRegion()
 
-  if console_io.CanPrompt() and _IsDefaultUniverse():
+  if console_io.CanPrompt():
     all_regions = list(constants.SUPPORTED_OP_REGIONS)
     idx = console_io.PromptChoice(
         all_regions, message='Please specify a region:\n', cancel_option=True)
@@ -86,14 +111,16 @@ def PromptForDeploymentResourcePoolSupportedRegion():
   """Prompt for region from list of deployment resource pool available regions.
 
   This method is referenced by the declaritive iam commands as a fallthrough
-  for getting the region. Prompts only in GDU.
+  for getting the region.
 
   Returns:
     The region specified by the user, str, or None if not in GDU or cannot
     prompt.
   """
+  if not _IsDefaultUniverse():
+    return _HandleNonDefaultUniverseRegion()
 
-  if console_io.CanPrompt() and _IsDefaultUniverse():
+  if console_io.CanPrompt():
     all_regions = list(constants.SUPPORTED_DEPLOYMENT_RESOURCE_POOL_REGIONS)
     idx = console_io.PromptChoice(
         all_regions, message='Please specify a region:\n', cancel_option=True)

@@ -23,7 +23,6 @@ from __future__ import unicode_literals
 
 import enum
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import base
 
 _POSIX_SOURCE_OR_DESTINATION_HELP_TEXT = (
     'POSIX filesystem - Specify the `posix://` scheme followed by the absolute'
@@ -145,6 +144,7 @@ def setup_parser(parser, is_update=False, release_track=None):
   """Adds flags to job create and job update commands."""
   # Flags and arg groups appear in help text in the order they are added here.
   # The order was designed by UX, so please do not modify.
+  del release_track  # Unused.
   parser.SetSortArgs(False)
   if is_update:
     parser.add_argument(
@@ -223,14 +223,14 @@ def setup_parser(parser, is_update=False, release_track=None):
       ' `destination://path/to/manifest.csv`). For manifest file formatting,'
       ' see https://cloud.google.com/storage-transfer/docs/manifest.')
 
-  if not is_update and release_track is base.ReleaseTrack.ALPHA:
+  if not is_update:
     replication_group = parser.add_group(help='REPLICATION OPTIONS')
     replication_group.add_argument(
         '--replication',
         action='store_true',
         help=(
             'Enable replication to automatically copy all new and existing'
-            ' objects from the source to the destination. Important: Objects'
+            ' objects from the source to the destination. Note: Objects'
             ' deleted from the source bucket will not be deleted from the'
             ' destination bucket. Please note that it is an event-driven'
             ' transfer.'

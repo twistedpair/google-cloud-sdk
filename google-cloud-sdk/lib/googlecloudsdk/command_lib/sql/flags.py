@@ -211,9 +211,10 @@ def AddPromptForPassword(parser):
   )
 
 
-def AddType(parser):
+def AddType(parser, required=False):
   parser.add_argument(
       '--type',
+      required=required,
       help=(
           "Cloud SQL user's type. It determines "
           'the method to authenticate the user during login. '
@@ -586,9 +587,6 @@ def AddDatabaseVersion(
       'SQLSERVER_2022_STANDARD',
       'SQLSERVER_2022_ENTERPRISE',
   ]
-  hidden_choices = [
-      'POSTGRES_18',
-  ]
   # End of engine-specific content.
 
   help_text_unspecified_part = (
@@ -618,9 +616,6 @@ def AddDatabaseVersion(
       if support_default_version
       else None,
       choices=_MajorVersionMatchList(choices) if restrict_choices else None,
-      hidden_choices=_MajorVersionMatchList(hidden_choices)
-      if restrict_choices
-      else None,
       help=help_text,
       hidden=hidden,
   )
@@ -2574,7 +2569,7 @@ def AddActiveDirectoryMode(parser, hidden=False):
   """
   choices = [
       messages.SqlActiveDirectoryConfig.ModeValueValuesEnum.MANAGED_ACTIVE_DIRECTORY.name,
-      messages.SqlActiveDirectoryConfig.ModeValueValuesEnum.SELF_MANAGED_ACTIVE_DIRECTORY.name,
+      messages.SqlActiveDirectoryConfig.ModeValueValuesEnum.CUSTOMER_MANAGED_ACTIVE_DIRECTORY.name,
   ]
   help_text = (
       'Defines the Active Directory mode. Only available for SQL Server'
@@ -3570,15 +3565,16 @@ def AddClearUncMappings(parser, hidden=True):
   )
 
 
-def AddDatabaseRoles(parser):
+def AddDatabaseRoles(parser, required=False):
   """Add the flag to specify database roles for the user.
 
   Args:
     parser: The current argparse parser to add this to.
+    required: Whether the flag is required.
   """
   parser.add_argument(
       '--database-roles',
-      required=False,
+      required=required,
       # TODO: b/440167373 - Remove hidden flag once the feature is launched.
       hidden=True,
       default=[],
@@ -3591,5 +3587,24 @@ def AddDatabaseRoles(parser):
         own custom roles. Custom roles must be created in the database before
         you can assign them. You can create roles using the CREATE ROLE
         statement for both MySQL and PostgreSQL.
+      """,
+  )
+
+
+def AddRevokeExistingRoles(parser):
+  """Add the flag to revoke existing database roles for the user.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--revoke-existing-roles',
+      required=False,
+      # TODO: b/440167373 - Remove hidden flag once the feature is launched.
+      hidden=True,
+      action='store_true',
+      help="""\
+        A boolean flag for revoking existing database roles from the user.
+        This option is only available for MySQL and PostgreSQL instances.
       """,
   )

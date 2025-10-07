@@ -26,30 +26,24 @@ def GetMessageClass(msg_type_name):
 
 
 # Argument Processors
-def GetEncryptionTransform(value):
-  """Returns empty Encryption entry."""
-  del value
-  return GetMessageClass('Encryption')()
-
-
 def SetLocationAsGlobal():
   """Set default location to global."""
   return 'global'
 
 
-def FixTargetDetailsCommonFields(ref, args, target_details):
+def FixTargetDetailsCommonFields(project_ref, args, target_details):
   """"Fixes the target details common fields."""
 
   if not args.target_project:
     # Handle default target project being the host project.
     target = args.project or properties.VALUES.core.project.Get(required=True)
     target_details.targetProject = (
-        ref.Parent().Parent().RelativeName() +
+        project_ref.RelativeName() +
         '/locations/global/targetProjects/' + target
     )
   elif '/' not in args.target_project:
     # Handle prepending path to target project short-name.
     target_details.targetProject = (
-        ref.Parent().Parent().RelativeName() +
+        project_ref.RelativeName() +
         '/locations/global/targetProjects/' + args.target_project
     )

@@ -35,6 +35,11 @@ AI_PLATFORM_RELEASE_TRACK_TO_VERSION = {
     base.ReleaseTrack.GA: GA_VERSION,
     base.ReleaseTrack.BETA: BETA_VERSION
 }
+
+# TODO(b/448146624): To remove hardcoded regions in non-default universes,
+# by calling location service to get available regions in non-default universes.
+NON_DEFAULT_UNIVERSE_REGIONS = ('u-us-prp1',)
+
 # NOTE: The following region lists are GDU-specific.
 # They should ONLY be used as fallbacks within the Google Default Universe
 # when dynamic region lookups fail. Do not use for validation or prompting

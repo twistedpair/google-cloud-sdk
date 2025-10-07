@@ -145,6 +145,14 @@ class ListCategoryServicesException(Error):
   """List category service."""
 
 
+class ListPublicServicesException(Error):
+  """List public service."""
+
+
+class ListSharedServicesException(Error):
+  """List shared service."""
+
+
 class AnalyzeConsumerPolicyException(Error):
   """Analyze consumer policy."""
 

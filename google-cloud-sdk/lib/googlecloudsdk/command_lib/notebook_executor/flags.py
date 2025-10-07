@@ -441,7 +441,7 @@ def AddCreateOrUpdateScheduleFlags(
       help=(
           'The timestamp after which the first run can be scheduled. Defaults'
           ' to the schedule creation time. Must be in the RFC 3339'
-          ' (https://www.ietf.org/rfc/rfc3339.txt) format. E.g.'
+          ' (https://www.rfc-editor.org/rfc/rfc3339.txt) format. E.g.'
           ' "2026-01-01T00:00:00Z" or "2026-01-01T00:00:00-05:00"'
       ),
       type=arg_parsers.Datetime.ParseUtcTime,
@@ -454,7 +454,7 @@ def AddCreateOrUpdateScheduleFlags(
           ' when scheduled_run_count >= max_run_count. If neither end time nor'
           ' max_run_count is specified, new runs will keep getting scheduled'
           ' until this Schedule is paused or deleted. Must be in the RFC 3339'
-          ' (https://www.ietf.org/rfc/rfc3339.txt) format. E.g.'
+          ' (https://www.rfc-editor.org/rfc/rfc3339.txt) format. E.g.'
           ' "2026-01-01T00:00:00Z" or "2026-01-01T00:00:00-05:00"'
       ),
       type=arg_parsers.Datetime.ParseUtcTime,

@@ -165,8 +165,8 @@ def _ValidateAndBuildCloudSqlVolume(
         'Cloud SQL volumes must have at least one instance specified'
     )
   for instance in volume_dict['instances'].split(';'):
-    instance = instance.strip().split(':')
-    if len(instance) != 3:
+    instance_list = instance.strip().split(':')
+    if len(instance_list) != 3:
       raise serverless_exceptions.ConfigurationError(
           'Cloud SQL instance names must be in the form'
           ' PROJECT_ID:REGION:INSTANCE_ID but got {}'.format(instance)

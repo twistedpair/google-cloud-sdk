@@ -4974,7 +4974,7 @@ class APIAdapter(object):
       fleet_project = options.fleet_project or cluster_ref.projectId
       update = self.messages.ClusterUpdate(
           desiredFleet=self.messages.Fleet
-          (membershipType=None,
+          (membershipType=self.messages.Fleet.MembershipTypeValueValuesEnum.MEMBERSHIP_TYPE_UNSPECIFIED,
            project=fleet_project),
       )
 
@@ -8645,7 +8645,8 @@ class V1Beta1Adapter(V1Adapter):
       fleet_project = options.fleet_project or cluster_ref.projectId
       update = self.messages.ClusterUpdate(
           desiredFleet=self.messages.Fleet(
-              membershipType=None, project=fleet_project
+              membershipType=self.messages.Fleet.MembershipTypeValueValuesEnum.MEMBERSHIP_TYPE_UNSPECIFIED,
+              project=fleet_project
           ),
       )
 

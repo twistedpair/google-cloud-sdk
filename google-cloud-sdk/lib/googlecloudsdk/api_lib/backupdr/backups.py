@@ -585,3 +585,20 @@ class BackupsClient(util.BackupDrClientBase):
         requestId=request_id,
     )
     return self.service.Patch(request)
+
+  def FetchForResourceType(
+      self,
+      resource,
+      resource_type,
+      filter_expression=None,
+      page_size=None,
+      order_by=None,
+  ):
+    request = self.messages.BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsFetchForResourceTypeRequest(
+        parent=resource.RelativeName(),
+        resourceType=resource_type,
+        pageSize=page_size,
+        filter=filter_expression,
+        orderBy=order_by,
+    )
+    return self.service.FetchForResourceType(request)

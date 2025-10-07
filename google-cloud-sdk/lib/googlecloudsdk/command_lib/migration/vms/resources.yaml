@@ -57,3 +57,29 @@ targetProject:
     attribute_name: target_project
     help: The target project ID.
   disable_auto_completers: false
+
+source:
+  name: source
+  collection: vmmigration.projects.locations.sources
+  attributes:
+  - *project
+  - *location
+  - &source
+    parameter_name: sourcesId
+    attribute_name: source
+    help: The client source environment object.
+  disable_auto_completers: false
+
+diskMigration:
+  name: disk_migration
+  collection: vmmigration.projects.locations.sources.diskMigrationJobs
+  request_id_field: diskMigrationJobId
+  attributes:
+  - *project
+  - *location
+  - *source
+  - &diskMigration
+    parameter_name: diskMigrationJobsId
+    attribute_name: disk_migration
+    help: The Disk Migration ID.
+  disable_auto_completers: false

@@ -52,7 +52,7 @@ properties:
     type: string
     format: date-time
     description: |-
-      [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) encoded timestamp.
+      [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339.txt) encoded timestamp.
   body:
     type: string
     description: |-

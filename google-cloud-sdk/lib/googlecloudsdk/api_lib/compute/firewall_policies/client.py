@@ -80,12 +80,14 @@ class OrgFirewallPolicy(object):
         ),
     )
 
-  def _MakeDeleteAssociationRequestTuple(self, firewall_policy_id):
+  def _MakeDeleteAssociationRequestTuple(
+      self, firewall_policy_id, association_name
+  ):
     return (
         self._client.firewallPolicies,
         'RemoveAssociation',
         self._messages.ComputeFirewallPoliciesRemoveAssociationRequest(
-            name=self.ref.Name(), firewallPolicy=firewall_policy_id
+            name=association_name, firewallPolicy=firewall_policy_id
         ),
     )
 
@@ -221,19 +223,26 @@ class OrgFirewallPolicy(object):
   def DeleteAssociation(
       self,
       firewall_policy_id=None,
+      association_name=None,
       batch_mode=False,
       only_generate_request=False,
   ):
     """Sends request to delete an association."""
 
     if batch_mode:
-      requests = [self._MakeDeleteAssociationRequestTuple(firewall_policy_id)]
+      requests = [
+          self._MakeDeleteAssociationRequestTuple(
+              firewall_policy_id, association_name
+          )
+      ]
       if not only_generate_request:
         return self._compute_client.MakeRequests(requests)
       return requests
 
     op_res = self._service.RemoveAssociation(
-        self._MakeDeleteAssociationRequestTuple(firewall_policy_id)[2]
+        self._MakeDeleteAssociationRequestTuple(
+            firewall_policy_id, association_name
+        )[2]
     )
     return self.WaitOperation(
         op_res,
@@ -259,9 +268,7 @@ class OrgFirewallPolicy(object):
         )
     ]
 
-  def Delete(
-      self, fp_id=None, batch_mode=False, only_generate_request=False
-  ):
+  def Delete(self, fp_id=None, batch_mode=False, only_generate_request=False):
     """Sends request to delete an organization firewall policy."""
 
     if batch_mode:
@@ -372,9 +379,7 @@ class OrgFirewallPolicy(object):
         op_res, message='Cloning rules to the organization firewall policy.'
     )
 
-  def Describe(
-      self, fp_id=None, batch_mode=False, only_generate_request=False
-  ):
+  def Describe(self, fp_id=None, batch_mode=False, only_generate_request=False):
     """Sends request to describe a firewall policy."""
 
     if batch_mode:

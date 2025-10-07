@@ -1232,6 +1232,8 @@ class _SectionApiEndpointOverrides(_Section):
         'baremetalsolution', command='gcloud bms')
     self.batch = self._Add('batch', command='gcloud batch', hidden=True)
     self.beyondcorp = self._Add('beyondcorp', hidden=True)
+    self.biglake = self._Add(
+        'biglake', command='gcloud biglake', hidden=True)
     self.bigquery = self._Add('bigquery', hidden=True)
     self.bigquerymigration = self._Add('bigquerymigration', hidden=True)
     self.bigtableadmin = self._Add('bigtableadmin', command='gcloud bigtable')
@@ -3664,6 +3666,16 @@ class _SectionStorage(_Section):
         'parts, uploaded separately by the Boto3 client, and then combined '
         'into a single object. Otherwise, files smaller than this threshold '
         'will be uploaded by the Boto3 client in a single stream.')
+
+    self.multiprocessing_default_method = self._Add(
+        'multiprocessing_default_method',
+        default=None,
+        hidden=True,
+        help_text='Specifies the default method to use for multiprocessing in'
+        ' storage commands. If not set, the default method is determined by the'
+        ' operating system and python version.',
+        choices=['fork', 'spawn', 'forkserver'],
+    )
 
     self.process_count = self._Add(
         'process_count',

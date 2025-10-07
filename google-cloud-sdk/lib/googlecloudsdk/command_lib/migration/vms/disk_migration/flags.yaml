@@ -1,0 +1,71 @@
+# Copyright 2018 Google LLC. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+source_volume_id:
+  api_field: diskMigrationJob.awsSourceDiskDetails.volumeId
+  arg_name: source-volume-id
+  required: true
+  help_text: |
+    The ID of the source volume that you want to migrate to Compute Engine.
+
+labels:
+  api_field: diskMigrationJob.targetDetails.labels.additionalProperties
+  arg_name: labels
+  required: false
+  metavar: KEY=VALUE
+  type:
+    arg_dict:
+      flatten: true
+      spec:
+      - api_field: key
+      - api_field: value
+  help_text: |
+    A map of labels to associate with the disk.
+
+target_project:
+  api_field: diskMigrationJob.targetDetails.targetProject
+  arg_name: target-project
+  required: false
+  help_text: |
+    The target project resource path to which the disk will be migrated.
+    Default is the host project.
+    To get a list of the target projects run the gcloud alpha migration vms target-projects list command.
+
+kms_key:
+  api_field: diskMigrationJob.targetDetails.encryption.kmsKey
+  arg_name: kms-key
+  required: false
+  help_text: |
+    Fully qualified identifier for the Cloud KMS (Key Management Service) cryptokey that will be used to protect the disk.
+
+disk_id:
+  api_field: diskMigrationJob.targetDetails.targetDisk.diskId
+  arg_name: disk-id
+  required: false
+  help_text: |
+    The ID of the disk that will be migrated to Compute Engine. The default value is the disk migration resource name.
+
+zone:
+  api_field: diskMigrationJob.targetDetails.targetDisk.zone
+  arg_name: zone
+  required: false
+  help_text: |
+    The zone in which to create the disk. The default value is the first zone of the Google Cloud location parameter given.
+
+disk_type:
+  api_field: diskMigrationJob.targetDetails.targetDisk.diskType
+  arg_name: disk-type
+  required: false
+  help_text: |
+    The Compute Engine disk type to use for the migrated disk. The default value is COMPUTE_ENGINE_DISK_TYPE_STANDARD.

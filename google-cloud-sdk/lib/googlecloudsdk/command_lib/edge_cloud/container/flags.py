@@ -111,7 +111,7 @@ def AddMaintenanceWindowEnd(parser):
       '--maintenance-window-end',
       help="""
       End time of the recurring cluster maintenance window in the RFC 3339
-      (https://www.ietf.org/rfc/rfc3339.txt) format. E.g.
+      (https://www.rfc-editor.org/rfc/rfc3339.txt) format. E.g.
       "2021-01-01T00:00:00Z" or "2021-01-01T00:00:00-05:00"
       """,
   )
@@ -122,7 +122,7 @@ def AddMaintenanceWindowStart(parser):
       '--maintenance-window-start',
       help="""
       Start time of the recurring cluster maintenance window in the RFC 3339
-      (https://www.ietf.org/rfc/rfc3339.txt) format. E.g.
+      (https://www.rfc-editor.org/rfc/rfc3339.txt) format. E.g.
       "2021-01-01T00:00:00Z" or "2021-01-01T00:00:00-05:00"
       """,
   )

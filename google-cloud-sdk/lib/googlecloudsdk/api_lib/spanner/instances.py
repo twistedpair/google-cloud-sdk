@@ -216,6 +216,7 @@ def Create(
     autoscaling_total_cpu_target=None,
     autoscaling_storage_target=None,
     asymmetric_autoscaling_options=None,
+    disable_downscaling=None,
     instance_type=None,
     expire_behavior=None,
     default_storage_type=None,
@@ -243,6 +244,7 @@ def Create(
     autoscaling_storage_target: The storage target to use.
     asymmetric_autoscaling_options: A list of ordered dict of key-value pairs
       representing the asymmetric autoscaling options.
+    disable_downscaling: Whether to disable downscaling for the instance.
     instance_type: The instance type to use.
     expire_behavior: The expire behavior to use.
     default_storage_type: The default storage type to use.
@@ -280,6 +282,7 @@ def Create(
       or autoscaling_high_priority_cpu_target
       or autoscaling_total_cpu_target
       or autoscaling_storage_target
+      or disable_downscaling is not None
   ):
     instance_obj.autoscalingConfig = msgs.AutoscalingConfig(
         autoscalingLimits=msgs.AutoscalingLimits(
@@ -293,6 +296,7 @@ def Create(
             totalCpuUtilizationPercent=autoscaling_total_cpu_target,
             storageUtilizationPercent=autoscaling_storage_target,
         ),
+        disableDownscaling=disable_downscaling,
     )
   if instance_type is not None:
     instance_obj.instanceType = instance_type
@@ -424,6 +428,7 @@ def Patch(
     autoscaling_total_cpu_target=None,
     autoscaling_storage_target=None,
     asymmetric_autoscaling_options=None,
+    disable_downscaling=None,
     clear_asymmetric_autoscaling_options=None,
     instance_type=None,
     expire_behavior=None,
@@ -467,6 +472,8 @@ def Patch(
       fields.append(
           'autoscalingConfig.autoscalingTargets.storageUtilizationPercent'
       )
+    if disable_downscaling is not None:
+      fields.append('autoscalingConfig.disableDownscaling')
   client = apis.GetClientInstance(_SPANNER_API_NAME, _SPANNER_API_VERSION)
   msgs = apis.GetMessagesModule(_SPANNER_API_NAME, _SPANNER_API_VERSION)
 
@@ -483,6 +490,7 @@ def Patch(
       or autoscaling_high_priority_cpu_target
       or autoscaling_total_cpu_target
       or autoscaling_storage_target
+      or disable_downscaling is not None
   ):
     instance_obj.autoscalingConfig = msgs.AutoscalingConfig(
         autoscalingLimits=msgs.AutoscalingLimits(
@@ -496,6 +504,7 @@ def Patch(
             totalCpuUtilizationPercent=autoscaling_total_cpu_target,
             storageUtilizationPercent=autoscaling_storage_target,
         ),
+        disableDownscaling=disable_downscaling,
     )
 
   if asymmetric_autoscaling_options is not None:
