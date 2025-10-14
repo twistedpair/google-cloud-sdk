@@ -42,6 +42,7 @@ class ServiceusageV2beta(base_api.BaseApiClient):
     self.categories_categoryServices = self.CategoriesCategoryServicesService(self)
     self.categories = self.CategoriesService(self)
     self.consumerPolicies = self.ConsumerPoliciesService(self)
+    self.contentSecurityPolicies = self.ContentSecurityPoliciesService(self)
     self.mcpPolicies = self.McpPoliciesService(self)
     self.operations = self.OperationsService(self)
     self.services_apis_apiVersions_apiOperations = self.ServicesApisApiVersionsApiOperationsService(self)
@@ -192,6 +193,70 @@ class ServiceusageV2beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ContentSecurityPoliciesService(base_api.BaseApiService):
+    """Service class for the contentSecurityPolicies resource."""
+
+    _NAME = 'contentSecurityPolicies'
+
+    def __init__(self, client):
+      super(ServiceusageV2beta.ContentSecurityPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get the content security policy of a resource.
+
+      Args:
+        request: (ServiceusageContentSecurityPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ContentSecurityPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2beta/{v2betaId}/{v2betaId1}/contentSecurityPolicies/{contentSecurityPoliciesId}',
+        http_method='GET',
+        method_id='serviceusage.contentSecurityPolicies.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2beta/{+name}',
+        request_field='',
+        request_type_name='ServiceusageContentSecurityPoliciesGetRequest',
+        response_type_name='ContentSecurityPolicy',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update the content security policy of a resource.
+
+      Args:
+        request: (ServiceusageContentSecurityPoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2beta/{v2betaId}/{v2betaId1}/contentSecurityPolicies/{contentSecurityPoliciesId}',
+        http_method='PATCH',
+        method_id='serviceusage.contentSecurityPolicies.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['force', 'validateOnly'],
+        relative_path='v2beta/{+name}',
+        request_field='contentSecurityPolicy',
+        request_type_name='ServiceusageContentSecurityPoliciesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class McpPoliciesService(base_api.BaseApiService):
     """Service class for the mcpPolicies resource."""
 
@@ -311,7 +376,7 @@ class ServiceusageV2beta(base_api.BaseApiClient):
         method_id='serviceusage.operations.list',
         ordered_params=[],
         path_params=[],
-        query_params=['filter', 'name', 'pageSize', 'pageToken'],
+        query_params=['filter', 'name', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v2beta/operations',
         request_field='',
         request_type_name='ServiceusageOperationsListRequest',

@@ -458,6 +458,7 @@ def ParseUpdateOptionsBase(args, locations):
       boot_disk_provisioned_throughput=getattr(
           args, 'boot_disk_provisioned_throughput', None
       ),
+      enable_pod_snapshots=getattr(args, 'pod_snapshots_enabled', None),
   )
 
   if (args.disable_addons and

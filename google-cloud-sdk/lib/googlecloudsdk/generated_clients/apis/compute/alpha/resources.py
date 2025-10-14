@@ -807,6 +807,20 @@ class Collections(enum.Enum):
       ['project', 'region', 'resourcePolicy'],
       True
   )
+  ROLLOUTPLANS = (
+      'rolloutPlans',
+      'projects/{project}/global/rolloutPlans/{rolloutPlan}',
+      {},
+      ['project', 'rolloutPlan'],
+      True
+  )
+  ROLLOUTS = (
+      'rollouts',
+      'projects/{project}/global/rollouts/{rollout}',
+      {},
+      ['project', 'rollout'],
+      True
+  )
   ROUTERS = (
       'routers',
       'projects/{project}/regions/{region}/routers/{router}',

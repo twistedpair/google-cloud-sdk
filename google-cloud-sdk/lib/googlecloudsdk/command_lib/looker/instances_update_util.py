@@ -23,6 +23,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core.console import console_io
 
 
@@ -247,4 +248,21 @@ def UpdateGeminiAiConfig(unused_instance_ref, args, patch_request):
     patch_request = AddFieldToUpdateMask(
         'gemini_ai_config.prompt_logging', patch_request
     )
+  return patch_request
+
+
+def UpdatePeriodicExportConfig(unused_instance_ref, args, patch_request):
+  """Hook to handle periodic export config updates."""
+  if (
+      args.IsSpecified('clear_periodic_export_config')
+      or args.IsSpecified('periodic_export_kms_key')
+      or args.IsSpecified('periodic_export_gcs_uri')
+      or args.IsSpecified('periodic_export_start_time')
+  ):
+    patch_request = AddFieldToUpdateMask(
+        'periodic_export_config', patch_request
+    )
+
+  if args.IsSpecified('clear_periodic_export_config'):
+    patch_request.instance.periodicExportConfig = None
   return patch_request

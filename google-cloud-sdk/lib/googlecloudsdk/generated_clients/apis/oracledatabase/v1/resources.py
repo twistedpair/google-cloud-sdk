@@ -188,6 +188,14 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_EXADBVMCLUSTERS_DBNODES = (
+      'projects.locations.exadbVmClusters.dbNodes',
+      'projects/{projectsId}/locations/{locationsId}/exadbVmClusters/'
+      '{exadbVmClustersId}/dbNodes/{dbNodesId}',
+      {},
+      ['projectsId', 'locationsId', 'exadbVmClustersId', 'dbNodesId'],
+      True
+  )
   PROJECTS_LOCATIONS_EXASCALEDBSTORAGEVAULTS = (
       'projects.locations.exascaleDbStorageVaults',
       '{+name}',
@@ -213,6 +221,14 @@ class Collections(enum.Enum):
       '{giVersionsId}/minorVersions/{minorVersionsId}',
       {},
       ['projectsId', 'locationsId', 'giVersionsId', 'minorVersionsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_KEYRINGS_CRYPTOKEYS = (
+      'projects.locations.keyRings.cryptoKeys',
+      'projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/'
+      'cryptoKeys/{cryptoKeysId}',
+      {},
+      ['projectsId', 'locationsId', 'keyRingsId', 'cryptoKeysId'],
       True
   )
   PROJECTS_LOCATIONS_ODBNETWORKS = (

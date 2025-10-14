@@ -5,6 +5,99 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 543.0.0 (2025-10-14)
+
+### Google Cloud CLI
+
+* Updated `gcloud` CLI to support Python v3.14.
+
+### Cloud Auth
+
+*   Updated `gcloud auth application-default login` to include specified scopes
+    in the Application Default Credentials (ADC) file when using
+    `--impersonate-service-account` flag or `auth/impersonate_service_account`
+    property. The scopes will be listed in the `scopes` field of the generated
+    ADC JSON.
+
+### Cloud Build
+
+* Updated `gcloud builds submit` to allow the use of the field `remote_config`.
+
+### Cloud IAM
+
+*   Added `--hard-delete` flag to `gcloud iam workforce-pools providers scim-tenants delete` which allows for the immediate and permanent deletion of a SCIM tenant.
+
+### Cloud Interconnect
+
+* Promoted `gcloud compute interconnects cross-site-networks` to GA.
+* Promoted `gcloud compute interconnects wire-groups` to GA.
+
+### Cloud Managed Lustre
+
+* Added IP-based Access Control flags `--default-squash-mode`,
+  `--default-squash-uid`, `--default-squash-gid`, and `--access-rules` to
+  `gcloud lustre instances create` and `gcloud lustre instances update`.
+
+### Cloud Memorystore
+
+*   Modified `gcloud memcache instances describe` to include the `tags` field in the output.
+
+### Cloud Resource Manager
+
+* Updated `gcloud resource-manager tags values create` to support Hierarchical Tag Values for GA release.
+* Updated `gcloud resource-manager tags values list` to support Hierarchical Tag Values for GA release.
+
+### Cloud Run
+
+* Promoted `--gpu` and `--[no-]gpu-zonal-redundancy` flags to `gcloud run jobs`
+  command group.
+
+### Cloud TPU
+
+* Mark `gcloud compute tpus execution_groups` commands for 2VM as removed.
+* Mark `gcloud compute tpus` commands for 2VM as removed.
+
+### Compute Engine
+
+* Promoted `composite-health-checks` in `gcloud compute` to beta.
+* Promoted `health-aggregation-policies` in `gcloud compute` to beta.
+* Removed `gcloud compute instances move`. See <https://cloud.google.com/compute/docs/instances/moving-instance-across-zones> for an alternative method.
+* Promoted `gcloud compute reservations sub-blocks report-subblock-as-faulty` command to beta and v1.
+* Added `--no-locality-lb-policy` flag in `gcloud compute backend-services update`.
+* Promoted Cloud Armor `gcloud compute org-security-policies` commands
+  (including association and rules subcommands) to GA.
+
+### Compute Firewall Policies
+
+* Promoted `--policy-type` flag to GA in
+ `gcloud compute network-firewall-policies create`.
+
+### Container
+
+* Added `--autoscaled-rollout-policy` flag to `gcloud container node-pools create` to specify Autoscaled Rollout policy options for Blue Green upgrades on the node pool.
+* Added `--autoscaled-rollout-policy` flag to `gcloud container node-pools update` to specify Autoscaled Rollout policy options for Blue Green upgrades on the node pool.
+
+### Developer Connect
+
+*   Updated `gcloud developer-connect insights-configs` `create` and `update` to support Artifact Configs for gcr.io image URIs.
+
+### Kubernetes Engine
+
+* Added flag option `--enable-k8s-tokens-via-dns` to
+  `gcloud container clusters create`,`gcloud container clusters create-auto` and
+  `gcloud container clusters update` commands.
+  This flag enables authentication to the cluster's control plane by using
+  KSA tokens, via dns endpoint.
+* Added flag option `--enable-k8s-certs-via-dns` to
+  `gcloud container clusters create`,`gcloud container clusters create-auto` and
+  `gcloud container clusters update` commands.
+   This flag enables authentication to the cluster's control plane by using
+   client certificates, via DNS endpoint.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 542.0.0 (2025-10-07)
 
 ### Anthos Multi-Cloud

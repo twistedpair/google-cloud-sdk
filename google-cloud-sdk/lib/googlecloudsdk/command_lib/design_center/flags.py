@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
@@ -195,8 +196,8 @@ def AddCreateCatalogTemplateRevisionFlags(parser):
       '--developer-connect-repo',
       help=(
           'The Developer Connect repository to use as a source. Example: '
-          'projects/my-project/locations/us-central1/connections/my-connection/'
-          'gitRepositoryLinks/my-repo'
+          '`projects/my-project/locations/us-central1/connections/my-connection/'
+          'gitRepositoryLinks/my-repo`'
       ),
       required=True,
   )
@@ -204,8 +205,8 @@ def AddCreateCatalogTemplateRevisionFlags(parser):
       '--developer-connect-repo-ref',
       help=(
           'The Git ref (branch or tag) within the repository to use. Example:'
-          ' "refs/tags/v1.0.0" or "refs/heads/main" or '
-          '"refs/commits/269b518b99d06b31ff938a2d182e75f5e41941c7".'
+          ' `"refs/tags/v1.0.0"` or `"refs/heads/main"` or '
+          '`"refs/commits/269b518b99d06b31ff938a2d182e75f5e41941c7"`.'
       ),
       required=True,
   )
@@ -213,7 +214,7 @@ def AddCreateCatalogTemplateRevisionFlags(parser):
       '--developer-connect-repo-dir',
       help=(
           'The directory within the repository to use. Example:'
-          ' "modules/my-product"'
+          ' `"modules/my-product"`'
       ),
       required=True,
   )
@@ -224,18 +225,18 @@ def AddCreateCatalogTemplateRevisionFlags(parser):
   git_source_group.add_argument(
       '--git-source-repo',
       help='Git repository for Git source. Example:'
-      ' GoogleCloudPlatform/terraform-google-cloud-run',
+      ' `GoogleCloudPlatform/terraform-google-cloud-run`',
       required=True,
   )
   git_source_group.add_argument(
       '--git-source-ref-tag',
-      help='Git reference tag for Git source. Example: "v1.0.0"',
+      help='Git reference tag for Git source. Example: `"v1.0.0"`',
       required=True,
   )
   git_source_group.add_argument(
       '--git-source-dir',
       help=(
-          'Git directory for Git source. Example: "modules/my-product".'
+          'Git directory for Git source. Example: `"modules/my-product"`.'
           ' This field is optional.'
       ),
       required=False,
@@ -245,7 +246,7 @@ def AddCreateCatalogTemplateRevisionFlags(parser):
       '--application-template-revision-source',
       help=(
           'Application template revision to use as source. Example:'
-          ' projects/my-project/locations/us-central1/spaces/my-space/catalogs/my-catalog/templates/my-template/revisions/r1'
+          ' `projects/my-project/locations/us-central1/spaces/my-space/catalogs/my-catalog/templates/my-template/revisions/r1`'
       ),
       required=False,
   )
@@ -254,7 +255,7 @@ def AddCreateCatalogTemplateRevisionFlags(parser):
       '--gcs-source-uri',
       help=(
           'Google Cloud Storage URI for source. Example:'
-          ' gs://my-bucket/my-template.'
+          ' `gs://my-bucket/my-template`.'
       ),
       required=False,
   )
@@ -264,14 +265,14 @@ def AddCreateCatalogTemplateRevisionFlags(parser):
       '--oci-repo-uri',
       help=(
           'OCI Repo URI for OCI Repo source. Example:'
-          ' oci://us-west1-docker.pkg.dev/my-project/my-repo/my-chart'
+          ' `oci://us-west1-docker.pkg.dev/my-project/my-repo/my-chart`'
       ),
       required=True,
   )
   oci_repo_group.add_argument(
       '--oci-repo-version',
       help=(
-          'OCI Repo version for OCI Repo source. Example: "1.0.0". This field'
+          'OCI Repo version for OCI Repo source. Example: `"1.0.0"`. This field'
           ' is optional.'
       ),
       required=False,
@@ -282,6 +283,45 @@ def AddCreateCatalogTemplateRevisionFlags(parser):
       type=arg_parsers.YAMLFileContents(),
       help=(
           'Path to a local YAML file containing the template metadata. Example:'
-          ' "path/to/metadata.yaml".'
+          ' `"path/to/metadata.yaml"`.'
       ),
   )
+
+
+def AddRegisterWithApphubFlags(parser):
+  """Adds all flags for the register with apphub command.
+
+  Args:
+    parser: An argparse.ArgumentParser-like object. It is mocked out in tests.
+  """
+  GetSpaceResourceArg(
+      arg_name='space',
+      help_text='The ID of the space.',
+  ).AddToParser(parser)
+  source_group = parser.add_group(mutex=True, required=True)
+  source_group.add_argument(
+      '--apphub-application-uri',
+      help=(
+          'AppHub application URI to register the deployed resource using'
+          ' application template as source in the space.'
+          ' Format: `projects/{projectId}/locations/{locationId}/applications/'
+          '{applicationId}'
+      ),
+  )
+  source_group.add_argument(
+      '--adc-application-uri',
+      help=(
+          'The Application Design Center application URI to register the'
+          ' deployed resources with the AppHub application using Application'
+          ' Design Center application as source in the space. Format:'
+          ' `projects/{projectId}/locations/{locationId}/spaces/{spaceId}/applications/'
+          '{applicationId}`'
+      ),
+  )
+  parser.add_argument(
+      '--tfstate-location',
+      help='Path to the Terraform state file (e.g., `terraform.tfstate`).',
+  )
+  base.ASYNC_FLAG.AddToParser(parser)
+
+

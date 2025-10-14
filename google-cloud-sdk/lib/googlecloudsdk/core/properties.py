@@ -3471,6 +3471,7 @@ class _SectionStorage(_Section):
   DEFAULT_MULTIPART_THRESHOLD = '8Mi'
   DEFAULT_MULTIPART_CHUNKSIZE = '8Mi'
   DEFAULT_RESUMABLE_THRESHOLD = '8Mi'
+  DEFAULT_BIDI_STREAMING_FLUSH_SIZE = '100Mi'
   DEFAULT_RSYNC_LIST_CHUNK_SIZE = 32000
 
   def __init__(self):
@@ -3781,6 +3782,18 @@ class _SectionStorage(_Section):
         'the maximum number of objects the API allows composing at once. For '
         'Cloud Storage this limit is 32. This property has no effect if '
         'parallel_composite_upload_enabled is set to False.')
+
+    self.bidi_streaming_flush_size = self._Add(
+        'bidi_streaming_flush_size',
+        default=self.DEFAULT_BIDI_STREAMING_FLUSH_SIZE,
+        hidden=True,
+        validator=_HumanReadableByteAmountValidator,
+        help_text=(
+            'The size of the in-memory buffer that is flushed during bidi'
+            ' streaming uploads. Ensure this is within your machine\'s RAM'
+            ' limits.'
+        ),
+    )
 
     self.rsync_files_directory = self._Add(
         'rsync_files_directory',

@@ -21,7 +21,7 @@ from __future__ import unicode_literals
 import re
 
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
-from googlecloudsdk.command_lib.compute import  exceptions
+from googlecloudsdk.command_lib.compute import exceptions
 
 ALLOWED_METAVAR = 'PROTOCOL[:PORT[-PORT]]'
 LEGAL_SPECS = re.compile(
@@ -33,7 +33,9 @@ LEGAL_SPECS = re.compile(
                                   # May specify a range.
 
     $                             # End of input marker.
-    """, re.VERBOSE)
+    """,
+    re.VERBOSE,
+)
 
 
 def ParseLayer4Configs(layer4_conifigs, message_classes):
@@ -44,14 +46,15 @@ def ParseLayer4Configs(layer4_conifigs, message_classes):
     if not match:
       raise exceptions.ArgumentError(
           'Organization firewall policy rules must be of the form {0}; '
-          'received [{1}].'.format(ALLOWED_METAVAR, spec))
+          'received [{1}].'.format(ALLOWED_METAVAR, spec)
+      )
     if match.group('ports'):
       ports = [match.group('ports')]
     else:
       ports = []
-    layer4_conifig = (
-        message_classes.FirewallPolicyRuleMatcherLayer4Config(
-            ipProtocol=match.group('protocol'), ports=ports))
+    layer4_conifig = message_classes.FirewallPolicyRuleMatcherLayer4Config(
+        ipProtocol=match.group('protocol'), ports=ports
+    )
     layer4_config_list.append(layer4_conifig)
   return layer4_config_list
 
@@ -61,8 +64,10 @@ def ConvertPriorityToInt(priority):
     int_priority = int(priority)
   except ValueError:
     raise calliope_exceptions.InvalidArgumentException(
-        'priority', 'priority must be a valid non-negative integer.')
+        'priority', 'priority must be a valid non-negative integer.'
+    )
   if int_priority < 0:
     raise calliope_exceptions.InvalidArgumentException(
-        'priority', 'priority must be a valid non-negative integer.')
+        'priority', 'priority must be a valid non-negative integer.'
+    )
   return int_priority

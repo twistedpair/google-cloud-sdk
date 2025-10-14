@@ -341,13 +341,15 @@ def AddExternalMigration(parser: parser_arguments.ArgumentInterceptor):
   )
 
 
-def AddLocalityLbPolicy(parser):
+def AddLocalityLbPolicy(parser, is_update=False):
   """Add flags related to lb algorithm used within the scope of the locality.
 
   Args:
     parser: The parser that parses args from user input.
+    is_update: Whether the command is an update command.
   """
-  parser.add_argument(
+  group = parser.add_mutually_exclusive_group() if is_update else parser
+  group.add_argument(
       '--locality-lb-policy',
       choices=[
           'INVALID_LB_POLICY',
@@ -359,6 +361,7 @@ def AddLocalityLbPolicy(parser):
           'MAGLEV',
           'WEIGHTED_MAGLEV',
           'WEIGHTED_ROUND_ROBIN',
+          'WEIGHTED_GCP_RENDEZVOUS',
       ],
       type=lambda x: x.replace('-', '_').upper(),
       default=None,
@@ -366,6 +369,16 @@ def AddLocalityLbPolicy(parser):
       The load balancing algorithm used within the scope of the locality.
       """,
   )
+
+  if is_update:
+    group.add_argument(
+        '--no-locality-lb-policy',
+        action='store_true',
+        default=None,
+        help="""\
+        Removes the locality load balancing policy from the backend service.
+        """,
+    )
 
 
 def AddConnectionTrackingPolicy(parser):
@@ -1405,4 +1418,3 @@ def AddResourceManagerTags(parser):
       to apply to the backend service.
       """,
   )
-

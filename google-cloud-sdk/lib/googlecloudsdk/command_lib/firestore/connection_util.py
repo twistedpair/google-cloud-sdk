@@ -16,6 +16,9 @@
 
 import dataclasses
 import re
+import socket
+import ssl
+import time
 from typing import List
 
 from googlecloudsdk.core import log
@@ -292,3 +295,73 @@ def PrettyPrintValidationResults(validation_results: ValidationResults):
     log.status.Print(f"{con.Colorize('ERROR:', 'red')} {error}")
   for footer in validation_results.footers:
     log.status.Print(footer)
+
+# Byte encoding of the Bson "hello" command document:
+# {"hello": 1, "helloOk": True, "loadBalanced": True}
+_HELLO_HEX = (
+    '340000000100000000000000DD07000000000000001F0000001068656C6C6'
+    'F0001000000086C6F616442616C616E636564000100'
+)
+# Byte encoding of the Bson "ping" command document: {"ping": 1}
+_PING_HEX = (
+    '240000000000000000000000dd07000000000000000f0000001070696e67000100000000'
+)
+_MAX_CONNECTION_WAIT_TIME = 20.0
+_MAX_PING_WAIT_TIME = 5.0
+
+
+def Ping(ssock):
+  """Sends a Mongo ping message via specified socket."""
+  ping_complete = False
+  ping_start = time.perf_counter()
+  ssock.sendall(bytes.fromhex(_PING_HEX))
+  while True:
+    data = ssock.recv(1024)
+    ping_time = time.perf_counter() - ping_start
+    if not data:
+      break
+    if data.find(b'ok') != -1:
+      ping_complete = True
+      break
+    # Give up after enough time has passed.
+    if ping_time > _MAX_PING_WAIT_TIME:
+      break
+  if ping_complete:
+    print(f'{ping_time:.3f}s ', end='')
+  else:
+    print('N/A    ', end='')
+  return ping_time if ping_complete else None
+
+
+def Hello(ssock):
+  """Sends a Mongo hello message via specified socket."""
+  handshake_complete = False
+  connection_start = time.perf_counter()
+  ssock.sendall(bytes.fromhex(_HELLO_HEX))
+  while True:
+    data = ssock.recv(1024)
+    connect_time = time.perf_counter() - connection_start
+    if not data:
+      break
+    if data.find(b'isWritablePrimary') != -1:
+      print(f'Connection established in {connect_time:.3f} seconds')
+      handshake_complete = True
+      break
+    # Give up after enough time has passed.
+    if connect_time > _MAX_CONNECTION_WAIT_TIME:
+      break
+  return connect_time if handshake_complete else None
+
+
+def ConnectAndPing(hostname, num_pings):
+  """Opens an SSL connection and sends timed Mongo commands to the server."""
+  context = ssl.create_default_context()
+  ping_times = []
+  with socket.create_connection((hostname, 443)) as sock:
+    with context.wrap_socket(sock, server_hostname=hostname) as ssock:
+      connect_time = Hello(ssock)
+      print(f'Sending {num_pings} pings ...: ', end='')
+      for _ in range(num_pings):
+        ping_times.append(Ping(ssock))
+      print()
+      return (connect_time, ping_times)

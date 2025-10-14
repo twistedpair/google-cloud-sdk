@@ -34,6 +34,9 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import parser_extensions
+from googlecloudsdk.command_lib.kms import resource_args as kms_resource_args
+from googlecloudsdk.command_lib.sql import constants
 from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.core import properties
 
@@ -1120,6 +1123,18 @@ def AddClearNetwork(parser, hidden=False):
           ' different project or region where the original network'
           " configuration isn't available."
       ),
+      hidden=hidden,
+  )
+
+
+def AddClearDiskEncryption(
+    parser: parser_extensions.Namespace, hidden: bool = False
+) -> None:
+  """Adds the `--clear-disk-encryption` flag to the parser."""
+  parser.add_argument(
+      '--clear-disk-encryption',
+      required=False,
+      help='Disables CMEK in the restored instance.',
       hidden=hidden,
   )
 
@@ -2923,17 +2938,19 @@ def AddEnableDbAlignedAtomicWrites(parser):
   )
 
 
-def AddEnableAutoUpgrade(parser):
+def AddEnableAutoUpgrade(parser, hidden=False):
   """Adds '--enable-auto-upgrade-minor-version' flag to the parser."""
+  kwargs = _GetKwargsForBoolFlag(False)
   parser.add_argument(
       '--enable-auto-upgrade-minor-version',
-      action=arg_parsers.StoreTrueFalseAction,
+      # action=arg_parsers.StoreTrueFalseAction,
       required=False,
       help=(
           'Enables auto-upgrade for MySQL 8.0 minor versions. The MySQL version'
           ' must be 8.0.35 or higher.'
       ),
-      hidden=True,
+      hidden=hidden,
+      **kwargs
   )
 
 
@@ -3608,3 +3625,111 @@ def AddRevokeExistingRoles(parser):
         This option is only available for MySQL and PostgreSQL instances.
       """,
   )
+
+
+# Restore to new instance and cross project PITR should eventually have the
+# exact same flags. But since restore to new instance was launched before cross
+# project PITR, the visibility of flags will temporarily be different. After
+# cross project PITR is launched, we can remove the "for_pitr" parameter.
+def AddSourceInstanceOverrideArgs(
+    parser: parser_extensions.Namespace, for_pitr: bool = False
+) -> None:
+  """Add flags that can be overridden from the source instance.
+
+  These flags are used when creating a new Cloud SQL instance via a backup
+  restore or PITR operation.
+
+  Args:
+    parser: The current argparse parser to add this to.
+    for_pitr: Whether the args are being added for point-in-time-restore.
+  """
+  parser.display_info.AddFormat(GetInstanceListFormat())
+  psc_setup_group = parser.add_group(hidden=for_pitr)
+
+  # go/keep-sorted start
+  AddActivationPolicy(parser, hidden=for_pitr)
+  AddActiveDirectoryDNSServers(parser, hidden=True)
+  AddActiveDirectoryDomain(parser, hidden=for_pitr)
+  AddActiveDirectoryMode(parser, hidden=True)
+  AddActiveDirectoryOrganizationalUnit(parser, hidden=True)
+  AddActiveDirectorySecretManagerKey(parser, hidden=True)
+  AddAllowedPscProjects(psc_setup_group, hidden=for_pitr)
+  AddAssignIp(parser, hidden=for_pitr)
+  AddAuthorizedNetworks(parser, hidden=for_pitr)
+  AddAvailabilityType(parser, hidden=for_pitr)
+  AddBackup(parser, hidden=for_pitr)
+  AddBackupLocation(parser, allow_empty=False, hidden=for_pitr)
+  AddBackupStartTime(parser, hidden=for_pitr)
+  AddCPU(parser, hidden=for_pitr)
+  AddClearActiveDirectory(parser, hidden=True)
+  AddClearDiskEncryption(parser, hidden=for_pitr)
+  AddClearNetwork(parser, hidden=for_pitr)
+  AddConnectorEnforcement(parser, hidden=for_pitr)
+  AddDatabaseVersion(
+      parser,
+      restrict_choices=False,
+      hidden=for_pitr,
+      support_default_version=False,
+      additional_help_text=(
+          ' Note for restore to new instance major version upgrades are not'
+          ' supported. Only minor version upgrades are allowed.'
+      ),
+  )
+  AddDeletionProtection(parser, hidden=for_pitr)
+  AddDenyMaintenancePeriodEndDate(parser, hidden=for_pitr)
+  AddDenyMaintenancePeriodStartDate(parser, hidden=for_pitr)
+  AddDenyMaintenancePeriodTime(parser, hidden=for_pitr)
+  AddEdition(parser, hidden=for_pitr)
+  AddEnableBinLog(parser, hidden=for_pitr)
+  AddEnableDataCache(parser, hidden=True)
+  AddEnableDataplexIntegration(parser, hidden=True)
+  AddEnableGoogleMLIntegration(parser, hidden=True)
+  AddEnableGooglePrivatePath(
+      parser, show_negated_in_help=False, hidden=for_pitr
+  )
+  AddEnablePointInTimeRecovery(parser, hidden=for_pitr)
+  AddEnablePrivateServiceConnect(psc_setup_group, hidden=for_pitr)
+  AddFinalBackup(parser, hidden=for_pitr)
+  AddFinalbackupRetentionDays(parser, hidden=for_pitr)
+  AddInsightsConfigQueryInsightsEnabled(parser, hidden=for_pitr)
+  AddInsightsConfigQueryPlansPerMinute(parser, hidden=for_pitr)
+  AddInsightsConfigQueryStringLength(parser, hidden=for_pitr)
+  AddInsightsConfigRecordApplicationTags(parser, hidden=for_pitr)
+  AddInsightsConfigRecordClientAddress(parser, hidden=for_pitr)
+  AddInstanceCollation(parser, hidden=for_pitr)
+  AddLocationGroup(parser, hidden=for_pitr, specify_default_region=False)
+  AddMaintenanceReleaseChannel(parser, hidden=for_pitr)
+  AddMaintenanceWindowDay(parser, hidden=for_pitr)
+  AddMaintenanceWindowHour(parser, hidden=for_pitr)
+  AddMemory(parser, hidden=for_pitr)
+  AddNetwork(parser, hidden=for_pitr)
+  AddPscAutoConnections(parser, hidden=True)
+  AddRequireSsl(parser, hidden=for_pitr)
+  AddRetainBackupsOnDelete(parser, hidden=True)
+  AddRetainedBackupsCount(parser, hidden=for_pitr)
+  AddRetainedTransactionLogDays(parser, hidden=for_pitr)
+  AddServerCaMode(parser, hidden=True)
+  AddSqlServerAudit(parser, hidden=for_pitr)
+  AddSqlServerTimeZone(parser, hidden=for_pitr)
+  AddSslMode(parser, hidden=for_pitr)
+  AddStorageAutoIncrease(parser, hidden=for_pitr)
+  AddStorageProvisionedIops(parser, hidden=for_pitr)
+  AddStorageProvisionedThroughput(parser, hidden=for_pitr)
+  AddStorageSize(parser, hidden=for_pitr)
+  AddStorageType(parser, hidden=for_pitr)
+  AddTags(parser, hidden=True)
+  AddTier(parser, hidden=for_pitr)
+  AddTimeout(
+      parser, constants.INSTANCE_CREATION_TIMEOUT_SECONDS, hidden=for_pitr
+  )
+  ClearActiveDirectoryDNSServers(parser, hidden=True)
+  kms_flag_overrides = {
+      'kms-key': '--disk-encryption-key',
+      'kms-keyring': '--disk-encryption-key-keyring',
+      'kms-location': '--disk-encryption-key-location',
+      'kms-project': '--disk-encryption-key-project',
+  }
+  kms_resource_args.AddKmsKeyResourceArg(
+      parser, 'instance', flag_overrides=kms_flag_overrides, hidden=for_pitr
+  )
+  # go/keep-sorted end

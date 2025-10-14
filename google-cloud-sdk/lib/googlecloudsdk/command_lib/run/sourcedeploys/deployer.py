@@ -73,6 +73,7 @@ def CreateImage(
 
   base_image_from_build = None
   source = None
+  client = 'gcloud'
 
   tracker.StartStage(stages.UPLOAD_SOURCE)
   if kms_key:
@@ -98,6 +99,7 @@ def CreateImage(
       build_env_vars,
       enable_automatic_updates,
       release_track,
+      client,
   )
   try:
     response_dict, build_log_url, base_image_from_build = _SubmitBuild(
@@ -343,6 +345,7 @@ def _PrepareSubmitBuildRequest(
     build_env_vars,
     enable_automatic_updates,
     release_track,
+    client,
 ):
   """Upload the provided build source and prepare submit build request."""
   messages = apis.GetMessagesModule(global_methods.SERVERLESS_API_NAME, 'v2')
@@ -389,6 +392,7 @@ def _PrepareSubmitBuildRequest(
             workerPool=build_worker_pool,
             machineType=build_machine_type,
             releaseTrack=_MapToReleaseTrackEnum(release_track, messages),
+            client=client,
         ),
     )
 
@@ -405,6 +409,7 @@ def _PrepareSubmitBuildRequest(
           workerPool=build_worker_pool,
           machineType=build_machine_type,
           releaseTrack=_MapToReleaseTrackEnum(release_track, messages),
+          client=client,
       ),
   )
 

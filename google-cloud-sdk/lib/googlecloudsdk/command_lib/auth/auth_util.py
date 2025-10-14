@@ -334,10 +334,12 @@ def AddQuotaProjectToADC(quota_project):
   LogQuotaProjectAdded(quota_project)
 
 
-def DumpImpersonatedServiceAccountToADC(credentials, target_principal,
-                                        delegates):
+def DumpImpersonatedServiceAccountToADC(credentials,
+                                        target_principal,
+                                        delegates,
+                                        scopes=None):
   adc_path = c_creds.ADC(credentials, target_principal,
-                         delegates).DumpADCToFile()
+                         delegates, scopes).DumpADCToFile()
   LogADCIsWritten(adc_path)
 
 

@@ -88,6 +88,9 @@ class SubmitBuildRequest(proto.Message):
         release_track (google.api.launch_stage_pb2.LaunchStage):
             Optional. The release track of the client
             that initiated the build request.
+        client (str):
+            Optional. The client that initiated the build
+            request.
     """
 
     class DockerBuild(proto.Message):
@@ -209,6 +212,10 @@ class SubmitBuildRequest(proto.Message):
         proto.ENUM,
         number=10,
         enum=launch_stage_pb2.LaunchStage,
+    )
+    client: str = proto.Field(
+        proto.STRING,
+        number=11,
     )
 
 

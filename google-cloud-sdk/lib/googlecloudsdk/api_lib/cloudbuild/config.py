@@ -108,11 +108,10 @@ def FinalizeCloudbuildConfig(build, path, params=None, no_source=None):
     raise InvalidBuildConfigException(
         path, 'config cannot specify source without the flag --no-source'
     )
-  if not build.source and not build.steps:
+  if not build.remoteConfig and not build.steps:
     raise InvalidBuildConfigException(
         path,
-        'config must list at least one step or specify source with the flag'
-        ' --no-source',
+        'config must list at least one step or specify remote_config',
     )
   return build
 

@@ -4797,6 +4797,26 @@ class OracledatabaseProjectsLocationsExadbVmClustersCreateRequest(_messages.Mess
   requestId = _messages.StringField(4)
 
 
+class OracledatabaseProjectsLocationsExadbVmClustersDbNodesListRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsExadbVmClustersDbNodesListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. The maximum number of items to return. If unspecified,
+      at most 50 db nodes will be returned. The maximum value is 1000; values
+      above 1000 will be coerced to 1000.
+    pageToken: Optional. A token identifying a page of results the node should
+      return.
+    parent: Required. The parent value for database node in the following
+      format: projects/{project}/locations/{location}/cloudVmClusters/{cloudVm
+      Cluster}. .
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class OracledatabaseProjectsLocationsExadbVmClustersDeleteRequest(_messages.Message):
   r"""A OracledatabaseProjectsLocationsExadbVmClustersDeleteRequest object.
 

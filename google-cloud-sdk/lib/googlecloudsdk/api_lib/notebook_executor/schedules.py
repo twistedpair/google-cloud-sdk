@@ -173,6 +173,7 @@ def ValidateAndGetWorkbenchSchedule(
     args: Namespace,
     messages: types.ModuleType,
     service: AiplatformV1beta1.ProjectsLocationsSchedulesService,
+    skip_workbench_check: bool = False,
 ):
   """Checks if the schedule is for a Workbench notebook execution and returns the schedule if so.
 
@@ -180,6 +181,7 @@ def ValidateAndGetWorkbenchSchedule(
     args: Argparse object from Command.Run
     messages: Module containing messages definition for the specified API.
     service: The service to use to make the request.
+    skip_workbench_check: Whether to skip validation of the schedule type.
 
   Returns:
     The schedule if it is of Workbench type.
@@ -195,7 +197,10 @@ def ValidateAndGetWorkbenchSchedule(
     raise exceptions.InvalidArgumentException(
         'SCHEDULE', 'Schedule is not of notebook execution type.'
     )
-  if notebook_execution_job_request.notebookExecutionJob.kernelName is None:
+  if (
+      notebook_execution_job_request.notebookExecutionJob.kernelName is None
+      and not skip_workbench_check
+  ):
     raise exceptions.InvalidArgumentException(
         'SCHEDULE',
         'Schedule is not of Workbench type. To manage Colab Enterprise'

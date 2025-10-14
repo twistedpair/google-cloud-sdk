@@ -18,7 +18,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from googlecloudsdk.command_lib.resource_manager import tag_utils
+
+SHORT_NAME_VALUE_REGEX = re.compile(r"[a-zA-Z0-9][^\"\\'/]*")
 
 
 def GetResourceManagerTags(resource_manager_tags):
@@ -34,10 +38,15 @@ def GetResourceManagerTags(resource_manager_tags):
 
   ret_resource_manager_tags = {}
   for key, value in resource_manager_tags.items():
-    if not key.startswith('tagKeys/'):
-      key = tag_utils.GetNamespacedResource(key, tag_utils.TAG_KEYS).name
-    if not value.startswith('tagValues/'):
-      value = tag_utils.GetNamespacedResource(value, tag_utils.TAG_VALUES).name
+    # If the tag value is in short name format, directly pass both key and value
+    # without translation.
+    if not SHORT_NAME_VALUE_REGEX.fullmatch(value):
+      if not key.startswith("tagKeys/"):
+        key = tag_utils.GetNamespacedResource(key, tag_utils.TAG_KEYS).name
+      if not value.startswith("tagValues/"):
+        value = tag_utils.GetNamespacedResource(
+            value, tag_utils.TAG_VALUES
+        ).name
     ret_resource_manager_tags[key] = value
 
   return ret_resource_manager_tags

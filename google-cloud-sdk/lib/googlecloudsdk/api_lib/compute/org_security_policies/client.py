@@ -44,14 +44,15 @@ class OrgSecurityPolicy(object):
     self.ref = ref
     self._compute_client = compute_client
     self._resources = resources
-    self._version = version
+    self._version = 'v1' if version == 'ga' else version
     self._op_has_project = self._HasProject(OP_COLLECTION_NAME)
     self._api_has_project = self._HasProject(API_COLLECTION_NAME)
 
   def _HasProject(self, collection):
     collection_info = self._resources.GetCollectionInfo(collection,
                                                         self._version)
-    return 'projects' in collection_info.path or 'projects' in collection_info.base_url
+    return ('projects' in collection_info.path or
+            'projects' in collection_info.base_url)
 
   @property
   def _client(self):

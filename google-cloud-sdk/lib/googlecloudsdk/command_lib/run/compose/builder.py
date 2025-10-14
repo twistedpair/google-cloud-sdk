@@ -18,7 +18,6 @@ import os
 from typing import Any, Dict, Optional
 
 from apitools.base.py import encoding
-
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.builds import submit_util
@@ -33,6 +32,7 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import parallel
 
 
 class BuildConfig:
@@ -69,63 +69,112 @@ def handle(
     tracker: progress_tracker.StagedProgressTracker,
     no_build: bool = False,
 ) -> None:
-  """Performs source build across containers subsequetially mentioned in the compose file."""
+  """Performs source builds for all containers in parallel."""
   if no_build:
     _handle_no_build(source_build, project_name, region, tracker)
     return
-  build_op = []
+  build_ops = []
   for container, build_config in source_build.items():
     try:
       build_op_ref, build_log_url, image_tag = _build_from_source(
           build_config, container, repo, project_name, region, tracker
       )
-      build_op.append(build_op_ref)
-      response_dict = _poll_until_build_completes(build_op_ref)
-      if response_dict and response_dict['status'] != 'SUCCESS':
-        tracker.FailStage(
-            tracker_stages.StagedProgressTrackerStage.BUILD.get_key(
-                container=container
-            ),
-            None,
-            message=(
-                'Container build failed and '
-                'logs are available at [{build_log_url}].'.format(
-                    build_log_url=build_log_url
-                )
-            ),
-        )
-      else:
-        image_with_digest = None
-        if response_dict.get('results') and response_dict.get('results').get(
-            'images'
-        ):
-          for img in response_dict.get('results').get('images'):
-            if img.get('name') == image_tag:
-              digest = img.get('digest')
-              if digest:
-                image_name_without_tag, _, _ = image_tag.rpartition(':')
-                image_with_digest = (
-                    image_name_without_tag + '@' + digest
-                )
-                break
-
-        if image_with_digest:
-          build_config.image_id = image_with_digest
-          log.debug(f"Image '{image_with_digest}' created.")
-        else:
-          build_config.image_id = image_tag
-          log.debug(f"Image '{image_tag}' created.")
-        tracker.CompleteStage(
-            tracker_stages.StagedProgressTrackerStage.BUILD.get_key(
-                container=container
-            )
-        )
+      build_ops.append(
+          (container, build_config, build_op_ref, build_log_url, image_tag)
+      )
     except submit_util.FailedBuildException as e:
       log.error(f'Build failed for container {container}: {e}')
       raise
     except exceptions.Error as e:
       log.error(f'An error occurred during build submission: {e}')
       raise
+
+  if not build_ops:
+    return
+
+  def _run_build(args):
+    container, build_config, build_op_ref, build_log_url, image_tag = args
+    return _poll_and_handle_build_result(
+        container, build_config, build_op_ref, build_log_url, tracker, image_tag
+    )
+
+  task_args = [
+      (
+          container,
+          build_config,
+          build_op_ref,
+          build_log_url,
+          image_tag,
+      )
+      for container, build_config, build_op_ref, build_log_url, image_tag in build_ops
+  ]
+
+  num_threads = min(len(task_args), 10)
+  with parallel.GetPool(num_threads) as pool:
+    results = pool.Map(_run_build, task_args)
+
+  if not all(results):
+    raise exceptions.Error('One or more container builds failed.')
+
+
+def _poll_and_handle_build_result(
+    container: str,
+    build_config: BuildConfig,
+    build_op_ref: resources.Resource,
+    build_log_url: str,
+    tracker: progress_tracker.StagedProgressTracker,  # pytype: disable=invalid-annotation
+    image_tag: str,
+) -> bool:
+  """Polls a build operation and updates the tracker."""
+  try:
+    response_dict = _poll_until_build_completes(build_op_ref)
+    if response_dict and response_dict['status'] != 'SUCCESS':
+      tracker.FailStage(
+          tracker_stages.StagedProgressTrackerStage.BUILD.get_key(
+              container=container
+          ),
+          None,
+          message=(
+              'Container build failed and logs are available at'
+              ' [{build_log_url}].'.format(build_log_url=build_log_url)
+          ),
+      )
+      return False
+    else:
+      image_with_digest = None
+      if response_dict.get('results') and response_dict.get('results').get(
+          'images'
+      ):
+        for img in response_dict.get('results').get('images'):
+          if img.get('name') == image_tag:
+            digest = img.get('digest')
+            if digest:
+              image_name_without_tag, _, _ = image_tag.rpartition(':')
+              image_with_digest = image_name_without_tag + '@' + digest
+              break
+
+      if image_with_digest:
+        build_config.image_id = image_with_digest
+        log.debug(f"Image '{image_with_digest}' created.")
+      else:
+        build_config.image_id = image_tag
+        log.debug(f"Image '{image_tag}' created.")
+      tracker.CompleteStage(
+          tracker_stages.StagedProgressTrackerStage.BUILD.get_key(
+              container=container
+          )
+      )
+      return True
+  except exceptions.Error as e:
+    log.error(f'An error occurred while waiting for build of {container}: {e}')
+    tracker.FailStage(
+        tracker_stages.StagedProgressTrackerStage.BUILD.get_key(
+            container=container
+        ),
+        None,
+        message=f'Error waiting for build to complete: {e}',
+    )
+    return False
 
 
 def _get_service(service_name, region):
@@ -240,7 +289,7 @@ def _build_from_source(
     project_name: str,
     region: str,
     tracker: progress_tracker.StagedProgressTracker,
-) -> None:
+) -> tuple[resources.Resource, str, str]:
   """Performs source build for a given container using build config."""
   source_path = config.context
   if source_path is None:

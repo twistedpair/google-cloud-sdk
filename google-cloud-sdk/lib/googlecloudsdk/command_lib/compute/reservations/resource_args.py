@@ -31,7 +31,7 @@ class ZoneReservationsCompleter(compute_completers.ListCommandCompleter):
         **kwargs)
 
 
-def GetReservationResourceArg(positional=True):
+def GetReservationResourceArg(positional=True, help_text=None):
   if positional:
     name = 'reservation'
   else:
@@ -43,5 +43,6 @@ def GetReservationResourceArg(positional=True):
       completer=ZoneReservationsCompleter,
       plural=False,
       required=True,
+      short_help=help_text,
       zonal_collection='compute.reservations',
       zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)

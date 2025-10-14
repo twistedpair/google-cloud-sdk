@@ -694,6 +694,15 @@ def CreateRecaptchaOptionsConfig(client, args,
   return recaptcha_options_config
 
 
+def ParseEnforceOnKeyConfig(config):
+  """Parses an enforce-on-key-config string into a key-value tuple."""
+  if '=' in config:
+    k, v = config.split('=', 1)
+    return k, v
+  else:
+    return config, None
+
+
 def CreateRateLimitOptions(client, args, support_fairshare):
   """Returns a SecurityPolicyRuleRateLimitOptions message."""
 
@@ -741,15 +750,14 @@ def CreateRateLimitOptions(client, args, support_fairshare):
 
   if args.IsSpecified('enforce_on_key_configs'):
     enforce_on_key_configs = []
-    for k, v in args.enforce_on_key_configs.items():
+    for k, v in args.enforce_on_key_configs:
       enforce_on_key_configs.append(
           messages.SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig(
-              enforceOnKeyType=messages.SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig.EnforceOnKeyTypeValueValuesEnum(
-                  ConvertEnforceOnKey(k)
-              ),
-              enforceOnKeyName=v if v else None,
-          )
-      )
+              enforceOnKeyType=messages
+              .SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig
+              .EnforceOnKeyTypeValueValuesEnum(ConvertEnforceOnKey(k)),
+              enforceOnKeyName=v,
+          ))
     rate_limit_options.enforceOnKeyConfigs = enforce_on_key_configs
     is_updated = True
 

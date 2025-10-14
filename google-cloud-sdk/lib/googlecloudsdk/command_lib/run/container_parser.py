@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import collections
 from collections.abc import Sequence
+import re
 from typing import Any
 
 from googlecloudsdk.calliope import base as calliope_base
@@ -31,16 +32,20 @@ from googlecloudsdk.command_lib.run import flags
 def AddContainerFlags(
     parser: parser_arguments.ArgumentInterceptor,
     container_arg_group: calliope_base.ArgumentGroup,
+    release_track=calliope_base.ReleaseTrack.GA,
 ):
   """AddContainerFlags updates parser to add --container arg parsing.
 
   Args:
     parser: The parser to patch.
     container_arg_group: Arguments that can be specified per-container.
+    release_track: The release track of the command.
   """
   flags.ContainerFlag().AddToParser(parser)
   container_arg_group.AddToParser(parser)
-  container_parser = ContainerParser(parser.parser, container_arg_group)
+  container_parser = ContainerParser(
+      parser.parser, container_arg_group, release_track
+  )
   parser.parser.parse_known_args = container_parser.ParseKnownArgs
 
 
@@ -49,22 +54,26 @@ class ContainerParser(object):
 
   _CONTAINER_FLAG_NAME = '--container'
   _PRESET_FLAG_NAME = '--preset'
+  _FLAG_PATTERN = r'^(--[^:=]+)[:=]?.*'
 
   def __init__(
       self,
       parser: parser_extensions.ArgumentParser,
       container_arg_group: calliope_base.ArgumentGroup,
+      release_track: calliope_base.ReleaseTrack,
   ):
     """ContainerParser constructor.
 
     Args:
       parser: The original command's parser. Used to parse non-container args.
       container_arg_group: Arguments to add to per-container parsers.
+      release_track: The release track of the command.
     """
     self._parse_known_args = parser.parse_known_args
     self._prog = parser.prog
     self._calliope_command = parser._calliope_command
     self._container_arg_group = container_arg_group
+    self._release_track = release_track
 
   def _GetContainerFlags(self) -> frozenset[str]:
     """_GetContainerFlags returns the configured set of per-container flags."""
@@ -112,6 +121,15 @@ class ContainerParser(object):
           ' --container.',
           flags=', '.join(container_flags),
       )
+
+  def _IsFlagArg(self, arg: Any):
+    return isinstance(arg, str) and arg.startswith('--')
+
+  def _ExtractFlag(self, arg: str):
+    flag = re.match(self._FLAG_PATTERN, arg)
+    if flag:
+      return flag.group(1)
+    return None
 
   def ParseKnownArgs(
       self,
@@ -181,6 +199,19 @@ class ContainerParser(object):
         remaining.append(value)
         remaining.extend(args[i:])
         break
+      # For any flags not in the container flag list that come after a container
+      # flag, add the flag and all arguments to 'remaining' list until the next
+      # flag is encountered.
+      elif (
+          self._release_track == calliope_base.ReleaseTrack.ALPHA
+          and containers
+          and self._IsFlagArg(value)
+          and self._ExtractFlag(value) not in self._GetContainerFlags()
+      ):
+        remaining.append(value)
+        while i < len(args) and not self._IsFlagArg(args[i]):
+          remaining.append(args[i])
+          i += 1
       else:
         current.append(value)
 

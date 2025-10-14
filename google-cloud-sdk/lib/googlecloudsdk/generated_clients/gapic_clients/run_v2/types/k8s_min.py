@@ -188,7 +188,8 @@ class ResourceRequirements(proto.Message):
 
     Attributes:
         limits (MutableMapping[str, str]):
-            Only ``memory`` and ``cpu`` keys in the map are supported.
+            Only ``memory``, ``cpu`` and ``nvidia.com/gpu`` keys in the
+            map are supported.
 
             .. raw:: html
 
@@ -198,6 +199,7 @@ class ResourceRequirements(proto.Message):
                 https://cloud.google.com/run/docs/configuring/cpu.
                   * For supported 'memory' values and syntax, go to
                  https://cloud.google.com/run/docs/configuring/memory-limits
+                 * The only supported 'nvidia.com/gpu' value is '1'.
         cpu_idle (bool):
             Determines whether CPU is only allocated
             during requests (true by default). However, if

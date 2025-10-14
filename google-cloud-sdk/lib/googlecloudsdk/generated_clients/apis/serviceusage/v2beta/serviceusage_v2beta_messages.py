@@ -981,6 +981,24 @@ class ContentSecurity(_messages.Message):
   contentSecurityProviders = _messages.MessageField('ContentSecurityProvider', 1, repeated=True)
 
 
+class ContentSecurityPolicy(_messages.Message):
+  r"""Content Security Policy contains the content security related policy of
+  a resource.
+
+  Fields:
+    mcpContentSecurity: mcp_content_security contains the content security
+      related settings at resource level for MCP traffic.
+    name: Output only. The resource name of the policy. Only the `default`
+      policy is supported. We allow the following formats:
+      `projects/{PROJECT_NUMBER}/contentSecurityPolicies/default`,
+      `projects/{PROJECT_ID}/contentSecurityPolicies/default`, We only support
+      project level content security policy for now.
+  """
+
+  mcpContentSecurity = _messages.MessageField('ContentSecurity', 1)
+  name = _messages.StringField(2)
+
+
 class ContentSecurityProvider(_messages.Message):
   r"""ContentSecurityProvider contains the name of content security provider.
 
@@ -2222,18 +2240,7 @@ class GoogleApiServiceusageV2betaConsumerPolicy(_messages.Message):
   r"""Consumer Policy is a set of rules that define what services or service
   groups can be used for a cloud resource hierarchy.
 
-  Messages:
-    AnnotationsValue: Optional. Annotations is an unstructured key-value map
-      stored with a policy that may be set by external tools to store and
-      retrieve arbitrary metadata. They are not queryable and should be
-      preserved when modifying objects.
-      [AIP-128](https://google.aip.dev/128#annotations)
-
   Fields:
-    annotations: Optional. Annotations is an unstructured key-value map stored
-      with a policy that may be set by external tools to store and retrieve
-      arbitrary metadata. They are not queryable and should be preserved when
-      modifying objects. [AIP-128](https://google.aip.dev/128#annotations)
     createTime: Output only. The time the policy was created. For singleton
       policies, this is the first touch of the policy.
     enableRules: Enable rules define usable services, groups, and categories.
@@ -2248,40 +2255,11 @@ class GoogleApiServiceusageV2betaConsumerPolicy(_messages.Message):
     updateTime: Output only. The time the policy was last updated.
   """
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AnnotationsValue(_messages.Message):
-    r"""Optional. Annotations is an unstructured key-value map stored with a
-    policy that may be set by external tools to store and retrieve arbitrary
-    metadata. They are not queryable and should be preserved when modifying
-    objects. [AIP-128](https://google.aip.dev/128#annotations)
-
-    Messages:
-      AdditionalProperty: An additional property for a AnnotationsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type AnnotationsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AnnotationsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  annotations = _messages.MessageField('AnnotationsValue', 1)
-  createTime = _messages.StringField(2)
-  enableRules = _messages.MessageField('GoogleApiServiceusageV2betaEnableRule', 3, repeated=True)
-  etag = _messages.StringField(4)
-  name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  createTime = _messages.StringField(1)
+  enableRules = _messages.MessageField('GoogleApiServiceusageV2betaEnableRule', 2, repeated=True)
+  etag = _messages.StringField(3)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
 
 
 class GoogleApiServiceusageV2betaDocumentation(_messages.Message):
@@ -2868,10 +2846,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListPublicServicesResponse(_messages.Message):
@@ -3039,7 +3022,7 @@ class McpPolicy(_messages.Message):
 
   Fields:
     contentSecurity: ContentSecurity contains the content security related
-      fields of a MCP policy.
+      fields of a MCP policy. Deprecated. Use ContentSecurityPolicy instead.
     createTime: Output only. The time the policy was created. For singleton
       policies (such as the `default` policy), this is the first touch of the
       policy.
@@ -3125,6 +3108,21 @@ class McpRuleSource(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   serviceSources = _messages.MessageField('ServiceSourcesValue', 1)
+
+
+class McpServer(_messages.Message):
+  r"""Configuration for MCP server. Reference: google3/google/api/mcp.proto
+
+  Fields:
+    description: Description of the server.
+    name: Name of the server.
+    urls: Addresses of the server. There are typically multiple addresses for
+      a server, e.g. one for each region.
+  """
+
+  description = _messages.StringField(1)
+  name = _messages.StringField(2)
+  urls = _messages.StringField(3, repeated=True)
 
 
 class McpService(_messages.Message):
@@ -4534,6 +4532,7 @@ class Service(_messages.Message):
     displayName: The display name of the service.
     documentation: Documentation links providing more information about a
       service.
+    mcpServer: The MCP server details of a service.
     name: The name of the service.
     requirements: The requirements to use a service, such as its Terms of
       Service.
@@ -4542,8 +4541,9 @@ class Service(_messages.Message):
   description = _messages.StringField(1)
   displayName = _messages.StringField(2)
   documentation = _messages.MessageField('GoogleApiServiceusageV2betaDocumentation', 3)
-  name = _messages.StringField(4)
-  requirements = _messages.MessageField('Requirements', 5)
+  mcpServer = _messages.MessageField('McpServer', 4)
+  name = _messages.StringField(5)
+  requirements = _messages.MessageField('Requirements', 6)
 
 
 class ServiceIdentity(_messages.Message):
@@ -4644,6 +4644,40 @@ class ServiceusageConsumerPoliciesPatchRequest(_messages.Message):
 
   force = _messages.BooleanField(1)
   googleApiServiceusageV2betaConsumerPolicy = _messages.MessageField('GoogleApiServiceusageV2betaConsumerPolicy', 2)
+  name = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class ServiceusageContentSecurityPoliciesGetRequest(_messages.Message):
+  r"""A ServiceusageContentSecurityPoliciesGetRequest object.
+
+  Fields:
+    name: Required. The name of the content security policy to retrieve.
+      Format: `projects/100/contentSecurityPolicies/default`. We only support
+      project level content security policy and default policy for now.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ServiceusageContentSecurityPoliciesPatchRequest(_messages.Message):
+  r"""A ServiceusageContentSecurityPoliciesPatchRequest object.
+
+  Fields:
+    contentSecurityPolicy: A ContentSecurityPolicy resource to be passed as
+      the request body.
+    force: This flag will skip the breaking change detections.
+    name: Output only. The resource name of the policy. Only the `default`
+      policy is supported. We allow the following formats:
+      `projects/{PROJECT_NUMBER}/contentSecurityPolicies/default`,
+      `projects/{PROJECT_ID}/contentSecurityPolicies/default`, We only support
+      project level content security policy for now.
+    validateOnly: If set, validate the request and preview the result but do
+      not actually commit it.
+  """
+
+  contentSecurityPolicy = _messages.MessageField('ContentSecurityPolicy', 1)
+  force = _messages.BooleanField(2)
   name = _messages.StringField(3, required=True)
   validateOnly = _messages.BooleanField(4)
 
@@ -4763,12 +4797,20 @@ class ServiceusageOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class ServiceusageServicesApisApiVersionsApiOperationsListRequest(_messages.Message):
@@ -5388,6 +5430,10 @@ class UpdateAdminQuotaPolicyMetadata(_messages.Message):
 
 class UpdateConsumerPolicyMetadata(_messages.Message):
   r"""Metadata for the `UpdateConsumerPolicy` method."""
+
+
+class UpdateContentSecurityPolicyMetadata(_messages.Message):
+  r"""Metadata for the `UpdateContentSecurityPolicy` method."""
 
 
 class UpdateMcpPolicyMetadata(_messages.Message):

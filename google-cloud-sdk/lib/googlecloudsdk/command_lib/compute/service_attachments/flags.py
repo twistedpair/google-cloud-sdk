@@ -155,7 +155,7 @@ def AddConsumerRejectList(parser):
       projects or only networks.""")
 
 
-def AddConsumerAcceptList(parser):
+def AddConsumerAcceptListOld(parser):
   parser.add_argument(
       '--consumer-accept-list',
       type=arg_parsers.ArgDict(),
@@ -177,6 +177,33 @@ def AddConsumerAcceptList(parser):
     * `PROJECT_OR_NETWORK` - Consumer project ID, project number or network URL.
     * `CONNECTION_LIMIT` - The maximum number of allowed connections.
     """)
+
+
+def AddConsumerAcceptList(parser):
+  parser.add_argument(
+      '--consumer-accept-list',
+      type=arg_parsers.ArgDict(allow_key_only=True),
+      action='append',
+      metavar='PROJECT_OR_NETWORK_OR_ENDPOINT=LIMIT',
+      default=None,
+      help="""\
+    Specifies which consumer projects/networks/endpoints are allowed to connect to the
+    service attachment. Each project or network has a connection limit. For
+    endpoints, the connection limit is optional. Both the accept and reject lists for a
+    given service attachment must contain either only one of projects, networks
+    or endpoints.
+
+    For example, `--consumer-accept-list myProjectId1=20` accepts a consumer
+    project myProjectId1 with connection limit 20;
+    `--consumer-accept-list projects/myProjectId1/global/networks/myNet1=20`
+    accepts a consumer network myNet1 with connection limit 20
+    `--consumer-accept-list projects/myProjectId1/regions/myRegion1/forwardingRules/8167352512`
+    also accepts a consumer endpoint with ID 8167352512.
+
+    * `PROJECT_OR_NETWORK_OR_ENDPOINT` - Consumer project ID/number or network URL orendpoint URL.
+    * `CONNECTION_LIMIT` - The maximum number of allowed connections.
+    """,
+  )
 
 
 def AddPropagatedConnectionLimit(parser):

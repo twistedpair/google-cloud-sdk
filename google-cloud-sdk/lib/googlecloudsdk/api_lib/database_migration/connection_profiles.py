@@ -463,20 +463,26 @@ class ConnectionProfilesClient(object):
         alloydbClusterId=alloydb_cluster,
     )
 
-    private_service_connect_connectivity_ref = (
-        args.CONCEPTS.psc_service_attachment.Parse()
-    )
-    if private_service_connect_connectivity_ref:
-      psc_relative_name = (
-          private_service_connect_connectivity_ref.RelativeName()
-      )
-      connection_profile_obj.privateServiceConnectConnectivity = (
-          self.messages.PrivateServiceConnectConnectivity(
-              serviceAttachment=psc_relative_name
+    if args.IsKnownAndSpecified('private_connection'):
+      private_connectivity = args.CONCEPTS.private_connection.Parse()
+      connection_profile_obj.privateConnectivity = (
+          self.messages.PrivateConnectivity(
+              privateConnection=private_connectivity.RelativeName()
           )
       )
-    elif args.static_ip_connectivity:
+    elif args.IsKnownAndSpecified('forward_ssh_hostname'):
+      connection_profile_obj.forwardSshConnectivity = (
+          self._GetForwardSshTunnelConnectivity(args)
+      )
+    elif args.IsKnownAndSpecified('static_ip_connectivity'):
       connection_profile_obj.staticIpConnectivity = {}
+    elif args.IsKnownAndSpecified('psc_service_attachment'):
+      psc_ref = args.CONCEPTS.psc_service_attachment.Parse()
+      connection_profile_obj.privateServiceConnectConnectivity = (
+          self.messages.PrivateServiceConnectConnectivity(
+              serviceAttachment=psc_ref.RelativeName()
+          )
+      )
     return connection_profile_obj
 
   def _UpdatePostgreSqlConnectionProfile(self, connection_profile, args,
@@ -918,6 +924,13 @@ class ConnectionProfilesClient(object):
       )
     elif args.IsKnownAndSpecified('static_ip_connectivity'):
       connection_profile_obj.staticIpConnectivity = {}
+    elif args.IsKnownAndSpecified('psc_service_attachment'):
+      psc_ref = args.CONCEPTS.psc_service_attachment.Parse()
+      connection_profile_obj.privateServiceConnectConnectivity = (
+          self.messages.PrivateServiceConnectConnectivity(
+              serviceAttachment=psc_ref.RelativeName()
+          )
+      )
     return connection_profile_obj
 
   def _GetConnectionProfile(self, cp_type, args, connection_profile_id):

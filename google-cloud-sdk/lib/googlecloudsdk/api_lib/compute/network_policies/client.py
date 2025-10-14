@@ -137,7 +137,7 @@ class NetworkPolicy:
       *,
       association: str,
       network_policy: str,
-      only_generate_request=False
+      only_generate_request=False,
   ):
     """Sends request to delete an association to a network policy."""
     requests = [
@@ -185,6 +185,135 @@ class NetworkPolicy:
         self._messages.ComputeRegionNetworkPoliciesGetAssociationRequest(
             networkPolicy=network_policy,
             name=association,
+            project=self.ref.project,
+            region=self.ref.region,
+        ),
+    )
+
+
+class NetworkPolicyRule(NetworkPolicy):
+  """Abstracts Network Policy Rule."""
+
+  def __init__(self, ref=None, compute_client=None):
+    super().__init__(ref=ref, compute_client=compute_client)
+
+  def CreateRule(
+      self,
+      network_policy=None,
+      network_policy_rule=None,
+      only_generate_request=False,
+  ):
+    """Sends request to create an network policy rule."""
+    request = [
+        self._MakeCreateRuleRequestTuple(
+            network_policy=network_policy,
+            network_policy_rule=network_policy_rule,
+        )
+    ]
+    if only_generate_request:
+      return request
+    return self._compute_client.MakeRequests(request)
+
+  def _MakeCreateRuleRequestTuple(
+      self, network_policy=None, network_policy_rule=None
+  ):
+    return (
+        self._client.regionNetworkPolicies,
+        'AddTrafficClassificationRule',
+        self._messages.ComputeRegionNetworkPoliciesAddTrafficClassificationRuleRequest(
+            networkPolicy=network_policy,
+            networkPolicyTrafficClassificationRule=network_policy_rule,
+            project=self.ref.project,
+            region=self.ref.region,
+        ),
+    )
+
+  def DeleteRule(
+      self,
+      network_policy,
+      priority,
+  ):
+    """Sends request to delete an network policy rule."""
+    request = [
+        self._MakeDeleteRuleRequestTuple(
+            network_policy=network_policy, priority=priority
+        )
+    ]
+    return self._compute_client.MakeRequests(request)
+
+  def _MakeDeleteRuleRequestTuple(self, *, network_policy, priority):
+    """Makes a request tuple for deleting a network policy rule.
+
+    Args:
+      network_policy: The name of the network policy.
+      priority: The priority of the rule to delete.
+
+    Returns:
+      A tuple containing the client, method name, and request message.
+    """
+    return (
+        self._client.regionNetworkPolicies,
+        'RemoveTrafficClassificationRule',
+        self._messages.ComputeRegionNetworkPoliciesRemoveTrafficClassificationRuleRequest(
+            networkPolicy=network_policy,
+            priority=priority,
+            project=self.ref.project,
+            region=self.ref.region,
+        ),
+    )
+
+  def DescribeRule(
+      self,
+      network_policy,
+      priority,
+  ):
+    """Sends request to describe a network policy rule."""
+    request = [
+        self._MakeDescribeRuleRequestTuple(
+            network_policy=network_policy, priority=priority
+        )
+    ]
+    return self._compute_client.MakeRequests(request)
+
+  def _MakeDescribeRuleRequestTuple(self, *, network_policy, priority):
+    return (
+        self._client.regionNetworkPolicies,
+        'GetTrafficClassificationRule',
+        self._messages.ComputeRegionNetworkPoliciesGetTrafficClassificationRuleRequest(
+            networkPolicy=network_policy,
+            priority=priority,
+            project=self.ref.project,
+            region=self.ref.region,
+        ),
+    )
+
+  def UpdateRule(
+      self,
+      *,
+      priority,
+      network_policy,
+      network_policy_rule,
+  ):
+    """Sends request to update a network policy rule."""
+    request = [
+        self._MakeUpdateRuleRequestTuple(
+            network_policy=network_policy,
+            network_policy_rule=network_policy_rule,
+            priority=priority,
+        )
+    ]
+    return self._compute_client.MakeRequests(request)
+
+  def _MakeUpdateRuleRequestTuple(
+      self, *, network_policy, network_policy_rule, priority
+  ):
+    return (
+        self._client.regionNetworkPolicies,
+        'PatchTrafficClassificationRule',
+        self._messages.ComputeRegionNetworkPoliciesPatchTrafficClassificationRuleRequest(
+            networkPolicy=network_policy,
+            networkPolicyTrafficClassificationRule=network_policy_rule,
+            priority=priority,
             project=self.ref.project,
             region=self.ref.region,
         ),

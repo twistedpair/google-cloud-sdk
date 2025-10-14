@@ -379,18 +379,6 @@ class WorkerPoolScaling(proto.Message):
             during changes from one revision to another but
             specifying how many extra instances can be
             brought up at a time.
-        max_unavailable (int):
-            Optional. A maximum percentage of instances
-            that may be unavailable during changes from one
-            revision to another.
-
-            When set to a positive value, the server may
-            bring down instances before bringing up new
-            instances. This can prevent a spike of total
-            active instances during changes from one
-            revision by reducing the pool of instances
-            before bringing up new ones. Some requests may
-            be slow or fail to serve during the transition.
         manual_instance_count (int):
             Optional. The total number of instances in
             manual scaling mode.
@@ -432,10 +420,6 @@ class WorkerPoolScaling(proto.Message):
     max_surge: int = proto.Field(
         proto.INT32,
         number=3,
-    )
-    max_unavailable: int = proto.Field(
-        proto.INT32,
-        number=4,
     )
     manual_instance_count: int = proto.Field(
         proto.INT32,

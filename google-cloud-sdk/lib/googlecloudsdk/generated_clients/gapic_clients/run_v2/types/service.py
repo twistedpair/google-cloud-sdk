@@ -251,7 +251,7 @@ class Service(proto.Message):
 
     Attributes:
         name (str):
-            The fully qualified name of this Service. In
+            Identifier. The fully qualified name of this Service. In
             CreateServiceRequest, this field is ignored, and instead
             composed from CreateServiceRequest.parent and
             CreateServiceRequest.service_id.

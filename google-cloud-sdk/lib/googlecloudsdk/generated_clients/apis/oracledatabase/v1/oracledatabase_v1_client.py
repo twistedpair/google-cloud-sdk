@@ -54,6 +54,7 @@ class OracledatabaseV1(base_api.BaseApiClient):
     self.projects_locations_dbSystems = self.ProjectsLocationsDbSystemsService(self)
     self.projects_locations_dbVersions = self.ProjectsLocationsDbVersionsService(self)
     self.projects_locations_entitlements = self.ProjectsLocationsEntitlementsService(self)
+    self.projects_locations_exadbVmClusters_dbNodes = self.ProjectsLocationsExadbVmClustersDbNodesService(self)
     self.projects_locations_exadbVmClusters = self.ProjectsLocationsExadbVmClustersService(self)
     self.projects_locations_exascaleDbStorageVaults = self.ProjectsLocationsExascaleDbStorageVaultsService(self)
     self.projects_locations_giVersions_minorVersions = self.ProjectsLocationsGiVersionsMinorVersionsService(self)
@@ -1184,6 +1185,43 @@ class OracledatabaseV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='OracledatabaseProjectsLocationsEntitlementsListRequest',
         response_type_name='ListEntitlementsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsExadbVmClustersDbNodesService(base_api.BaseApiService):
+    """Service class for the projects_locations_exadbVmClusters_dbNodes resource."""
+
+    _NAME = 'projects_locations_exadbVmClusters_dbNodes'
+
+    def __init__(self, client):
+      super(OracledatabaseV1.ProjectsLocationsExadbVmClustersDbNodesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists the database nodes of a VM Cluster.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsExadbVmClustersDbNodesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDbNodesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/exadbVmClusters/{exadbVmClustersId}/dbNodes',
+        http_method='GET',
+        method_id='oracledatabase.projects.locations.exadbVmClusters.dbNodes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/dbNodes',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsExadbVmClustersDbNodesListRequest',
+        response_type_name='ListDbNodesResponse',
         supports_download=False,
     )
 

@@ -152,8 +152,29 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
     self._buffer.clear()
 
   def _update_initial_request(self, response):
-    """Updates the initial request for the bidi write RPC."""
-    if self._initial_request is not None:
+    """Updates the initial request for the bidi write RPC.
+
+    If the initial request is an append_object_spec, then we update the
+    write_handle in the initial request with the one from the response, for
+    retries.
+    If the initial request is a write_object_spec, then we need to update the
+    initial request with an append_object_spec based on the response. This is
+    because write_object_spec is only used for creating an appendable object.
+    For retrying on failures, we need to use append_object_spec to append to an
+    existing object.
+
+    For failures on the first request(creating or appending),
+    this method is not called, and the initial request is not modified.
+
+    Args:
+      response (gapic_clients.storage_v2.types.BidiWriteObjectResponse): The
+        response from the bidi write RPC.
+    """
+    if self._initial_request.append_object_spec:
+      if response.write_handle:
+        self._initial_request.append_object_spec.write_handle = (
+            response.write_handle
+        )
       return
     self._initial_request = self._client.types.BidiWriteObjectRequest(
         append_object_spec=self._client.types.AppendObjectSpec(
@@ -199,8 +220,7 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
     try:
       bidi_write_rpc.open()
       # TODO: b/440507899 - Add support for retrying an upload with a token.
-      # (Redirected token error handling) and/or error handling/retries
-      # with the first response.
+      # (Redirected token error handling) and/or error handling/retries.
       response = bidi_write_rpc.recv()
       self._update_initial_request(response)
 
@@ -396,11 +416,11 @@ class SimpleUpload(_Upload):
     Raises:
       CloudApiError: API returned an error.
     """
-
+    self._initial_request = self._get_request_for_creating_append_object()
     bidi_write_rpc = gapic_util.MakeBidiRpc(
         self._client,
         self._client.storage.bidi_write_object,
-        initial_request=self._get_request_for_creating_append_object(),
+        initial_request=self._initial_request,
         metadata=metadata_util.get_bucket_name_routing_header(
             grpc_util.get_full_bucket_name(
                 self._destination_resource.storage_url.bucket_name
@@ -433,12 +453,15 @@ class ResumableUpload(_Upload):
 
     destination_object = self._get_object_if_exists()
     if destination_object:
+      self._initial_request = (
+          self._get_request_for_resuming_appendable_object_upload(
+              destination_object
+          )
+      )
       bidi_write_rpc = gapic_util.MakeBidiRpc(
           self._client,
           self._client.storage.bidi_write_object,
-          initial_request=self._get_request_for_resuming_appendable_object_upload(
-              destination_object
-          ),
+          initial_request=self._initial_request,
           metadata=metadata,
       )
       self._start_offset = destination_object.size

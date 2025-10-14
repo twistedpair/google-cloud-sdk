@@ -32,8 +32,8 @@ from googlecloudsdk.command_lib.run import config_changes
 from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.command_lib.run import flags
 from googlecloudsdk.command_lib.run import resource_name_conversion
+from googlecloudsdk.command_lib.run import volumes as volumes_lib
 from googlecloudsdk.command_lib.run.v2 import instance_split as instance_split_lib
-from googlecloudsdk.command_lib.run.v2 import volumes as volumes_lib
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import instance_split
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import k8s_min
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import vendor_settings
@@ -1067,8 +1067,8 @@ class AddVolumeChange(config_changes.TemplateConfigChanger):
     current_volumes = {
         volume.name: volume for volume in resource.template.volumes
     }
-    for volume_dict in self.new_volumes:
-      new_volume = volumes_lib.CreateVolume(volume_dict, self.release_track)
+    for volume in self.new_volumes:
+      new_volume = volumes_lib.create_volume_v2(volume, self.release_track)
       current_volumes[new_volume.name] = new_volume
     resource.template.volumes = list(current_volumes.values())
     return resource

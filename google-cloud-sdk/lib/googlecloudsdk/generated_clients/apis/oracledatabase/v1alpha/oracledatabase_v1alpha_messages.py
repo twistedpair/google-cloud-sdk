@@ -1902,12 +1902,10 @@ class DbBackupConfig(_messages.Message):
       provided, it will default to Sunday.
     AutoFullBackupWindowValueValuesEnum: Optional. The window in which the
       full backup should be performed on the database. If no value is
-      provided, a start time between 12:00 AM to 7:00 AM in the region of the
-      database is automatically chosen.
+      provided, the default is anytime.
     AutoIncrementalBackupWindowValueValuesEnum: Optional. The window in which
       the incremental backup should be performed on the database. If no value
-      is provided, a start time between 12:00 AM to 7:00 AM in the region of
-      the database is automatically chosen.
+      is provided, the default is anytime except the auto full backup day.
     BackupDeletionPolicyValueValuesEnum: Optional. This defines when the
       backups will be deleted after Database termination.
 
@@ -1918,13 +1916,11 @@ class DbBackupConfig(_messages.Message):
       should be performed on the database. If no value is provided, it will
       default to Sunday.
     autoFullBackupWindow: Optional. The window in which the full backup should
-      be performed on the database. If no value is provided, a start time
-      between 12:00 AM to 7:00 AM in the region of the database is
-      automatically chosen.
+      be performed on the database. If no value is provided, the default is
+      anytime.
     autoIncrementalBackupWindow: Optional. The window in which the incremental
-      backup should be performed on the database. If no value is provided, a
-      start time between 12:00 AM to 7:00 AM in the region of the database is
-      automatically chosen.
+      backup should be performed on the database. If no value is provided, the
+      default is anytime except the auto full backup day.
     backupDeletionPolicy: Optional. This defines when the backups will be
       deleted after Database termination.
     backupDestinationDetails: Optional. Details of the database backup
@@ -1961,8 +1957,7 @@ class DbBackupConfig(_messages.Message):
 
   class AutoFullBackupWindowValueValuesEnum(_messages.Enum):
     r"""Optional. The window in which the full backup should be performed on
-    the database. If no value is provided, a start time between 12:00 AM to
-    7:00 AM in the region of the database is automatically chosen.
+    the database. If no value is provided, the default is anytime.
 
     Values:
       BACKUP_WINDOW_UNSPECIFIED: Default unspecified value.
@@ -1995,8 +1990,8 @@ class DbBackupConfig(_messages.Message):
 
   class AutoIncrementalBackupWindowValueValuesEnum(_messages.Enum):
     r"""Optional. The window in which the incremental backup should be
-    performed on the database. If no value is provided, a start time between
-    12:00 AM to 7:00 AM in the region of the database is automatically chosen.
+    performed on the database. If no value is provided, the default is anytime
+    except the auto full backup day.
 
     Values:
       BACKUP_WINDOW_UNSPECIFIED: Default unspecified value.
@@ -2417,14 +2412,11 @@ class DbSystemProperties(_messages.Message):
       ENTERPRISE_EDITION: The database edition is Enterprise.
       ENTERPRISE_EDITION_HIGH_PERFORMANCE: The database edition is Enterprise
         Edition.
-      ENTERPRISE_EDITION_DEVELOPER: The database edition is Enterprise Edition
-        Developer.
     """
     DB_SYSTEM_DATABASE_EDITION_UNSPECIFIED = 0
     STANDARD_EDITION = 1
     ENTERPRISE_EDITION = 2
     ENTERPRISE_EDITION_HIGH_PERFORMANCE = 3
-    ENTERPRISE_EDITION_DEVELOPER = 4
 
   class LicenseModelValueValuesEnum(_messages.Enum):
     r"""Required. The license model of the DbSystem.
@@ -2782,18 +2774,15 @@ class ExadbVmClusterProperties(_messages.Message):
       23ai and later
 
   Fields:
-    additionalEcpuCountPerNode: Optional. Immutable. The total number of ECPUs
-      available (enabled + reserved) per node for an exadata vm cluster on
-      exascale infrastructure.
+    additionalEcpuCountPerNode: Optional. Immutable. The number of additional
+      ECPUs per node for an Exadata VM cluster on exascale infrastructure.
     clusterName: Optional. Immutable. The cluster name for Exascale vm
       cluster. The cluster name must begin with an alphabetic character and
       may contain hyphens(-) but can not contain underscores(_). It should be
       not more than 11 characters and is not case sensitive. OCI Cluster name.
     dataCollectionOptions: Optional. Immutable. Indicates user preference for
       data collection options.
-    enabledEcpuCount: Optional. Immutable. The number of ECPUs enabled for an
-      exadata vm cluster on exascale infrastructure.
-    enabledEcpuCountPerNode: Optional. Immutable. The number of ECPUs enabled
+    enabledEcpuCountPerNode: Required. Immutable. The number of ECPUs enabled
       per node for an exadata vm cluster on exascale infrastructure.
     exascaleDbStorageVault: Required. Immutable. The name of
       ExascaleDbStorageVault associated with the ExadbVmCluster. It can refer
@@ -2820,9 +2809,6 @@ class ExadbVmClusterProperties(_messages.Message):
     sshPublicKeys: Required. Immutable. The SSH public keys for the
       ExadbVmCluster.
     timeZone: Optional. Immutable. The time zone of the ExadbVmCluster.
-    totalEcpuCount: Optional. Immutable. The total number of ECPUs available
-      (enabled + reserved) for an exadata vm cluster on exascale
-      infrastructure.
     vmFileSystemStorage: Required. Immutable. Total storage details for the
       ExadbVmCluster.
   """
@@ -2879,39 +2865,34 @@ class ExadbVmClusterProperties(_messages.Message):
   additionalEcpuCountPerNode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   clusterName = _messages.StringField(2)
   dataCollectionOptions = _messages.MessageField('DataCollectionOptionsCommon', 3)
-  enabledEcpuCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  enabledEcpuCountPerNode = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  exascaleDbStorageVault = _messages.StringField(6)
-  giVersion = _messages.StringField(7)
-  gridImageId = _messages.StringField(8)
-  hostname = _messages.StringField(9)
-  hostnamePrefix = _messages.StringField(10)
-  licenseModel = _messages.EnumField('LicenseModelValueValuesEnum', 11)
-  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 12)
-  memorySizeGb = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  nodeCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  ociUri = _messages.StringField(15)
-  scanListenerPortTcp = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  shapeAttribute = _messages.EnumField('ShapeAttributeValueValuesEnum', 17)
-  sshPublicKeys = _messages.StringField(18, repeated=True)
-  timeZone = _messages.MessageField('TimeZone', 19)
-  totalEcpuCount = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  vmFileSystemStorage = _messages.MessageField('ExadbVmClusterStorageDetails', 21)
+  enabledEcpuCountPerNode = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  exascaleDbStorageVault = _messages.StringField(5)
+  giVersion = _messages.StringField(6)
+  gridImageId = _messages.StringField(7)
+  hostname = _messages.StringField(8)
+  hostnamePrefix = _messages.StringField(9)
+  licenseModel = _messages.EnumField('LicenseModelValueValuesEnum', 10)
+  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 11)
+  memorySizeGb = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  nodeCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  ociUri = _messages.StringField(14)
+  scanListenerPortTcp = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  shapeAttribute = _messages.EnumField('ShapeAttributeValueValuesEnum', 16)
+  sshPublicKeys = _messages.StringField(17, repeated=True)
+  timeZone = _messages.MessageField('TimeZone', 18)
+  vmFileSystemStorage = _messages.MessageField('ExadbVmClusterStorageDetails', 19)
 
 
 class ExadbVmClusterStorageDetails(_messages.Message):
   r"""The storage allocation for the exadbvmcluster, in gigabytes (GB).
 
   Fields:
-    sizeInGbsPerNode: Optional. The storage allocation for the exadbvmcluster
+    sizeInGbsPerNode: Required. The storage allocation for the exadbvmcluster
       per node, in gigabytes (GB). This field is used to calculate the total
       storage allocation for the exadbvmcluster.
-    totalSizeInGbs: Required. The storage allocation for the exadbvmcluster,
-      in gigabytes (GB).
   """
 
   sizeInGbsPerNode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  totalSizeInGbs = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class ExascaleDbStorageDetails(_messages.Message):
@@ -2991,10 +2972,11 @@ class ExascaleDbStorageVault(_messages.Message):
 
 
 class ExascaleDbStorageVaultProperties(_messages.Message):
-  r"""The properties of the ExascaleDbStorageVault. next ID: 11
+  r"""The properties of the ExascaleDbStorageVault. next ID: 12
 
   Enums:
     AttachedShapeAttributesValueListEntryValuesEnum:
+    AvailableShapeAttributesValueListEntryValuesEnum:
     StateValueValuesEnum: Output only. The state of the
       ExascaleDbStorageVault.
 
@@ -3003,6 +2985,8 @@ class ExascaleDbStorageVaultProperties(_messages.Message):
       in percentage of high capacity database storage.
     attachedShapeAttributes: Output only. The shape attributes of the VM
       clusters attached to the ExascaleDbStorageVault.
+    availableShapeAttributes: Output only. The shape attributes available for
+      the VM clusters to be attached to the ExascaleDbStorageVault.
     description: Optional. The description of the ExascaleDbStorageVault.
     exascaleDbStorageDetails: Required. The storage details of the
       ExascaleDbStorageVault.
@@ -3018,6 +3002,18 @@ class ExascaleDbStorageVaultProperties(_messages.Message):
 
   class AttachedShapeAttributesValueListEntryValuesEnum(_messages.Enum):
     r"""AttachedShapeAttributesValueListEntryValuesEnum enum type.
+
+    Values:
+      SHAPE_ATTRIBUTE_UNSPECIFIED: Default unspecified value.
+      SMART_STORAGE: Indicates that the resource is in smart storage.
+      BLOCK_STORAGE: Indicates that the resource is in block storage.
+    """
+    SHAPE_ATTRIBUTE_UNSPECIFIED = 0
+    SMART_STORAGE = 1
+    BLOCK_STORAGE = 2
+
+  class AvailableShapeAttributesValueListEntryValuesEnum(_messages.Enum):
+    r"""AvailableShapeAttributesValueListEntryValuesEnum enum type.
 
     Values:
       SHAPE_ATTRIBUTE_UNSPECIFIED: Default unspecified value.
@@ -3051,14 +3047,15 @@ class ExascaleDbStorageVaultProperties(_messages.Message):
 
   additionalFlashCachePercent = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   attachedShapeAttributes = _messages.EnumField('AttachedShapeAttributesValueListEntryValuesEnum', 2, repeated=True)
-  description = _messages.StringField(3)
-  exascaleDbStorageDetails = _messages.MessageField('ExascaleDbStorageDetails', 4)
-  ociUri = _messages.StringField(5)
-  ocid = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  timeZone = _messages.MessageField('TimeZone', 8)
-  vmClusterCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  vmClusterIds = _messages.StringField(10, repeated=True)
+  availableShapeAttributes = _messages.EnumField('AvailableShapeAttributesValueListEntryValuesEnum', 3, repeated=True)
+  description = _messages.StringField(4)
+  exascaleDbStorageDetails = _messages.MessageField('ExascaleDbStorageDetails', 5)
+  ociUri = _messages.StringField(6)
+  ocid = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  timeZone = _messages.MessageField('TimeZone', 9)
+  vmClusterCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  vmClusterIds = _messages.StringField(11, repeated=True)
 
 
 class FailoverAutonomousDatabaseRequest(_messages.Message):
@@ -3469,10 +3466,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListPluggableDatabasesResponse(_messages.Message):
@@ -4711,7 +4713,10 @@ class OracledatabaseProjectsLocationsDatabasesListRequest(_messages.Message):
   r"""A OracledatabaseProjectsLocationsDatabasesListRequest object.
 
   Fields:
-    filter: Optional.
+    filter: Optional. An expression for filtering the results of the request.
+      list for container databases is supported only with a valid dbSystem
+      (full resource name) filter in this format: `dbSystem="projects/{project
+      }/locations/{location}/dbSystems/{dbSystemId}"`
     pageSize: Optional. The maximum number of items to return. If unspecified,
       a maximum of 50 System Versions will be returned. The maximum value is
       1000; values above 1000 will be reset to 1000.
@@ -5225,8 +5230,8 @@ class OracledatabaseProjectsLocationsGiVersionsListRequest(_messages.Message):
 
   Fields:
     filter: Optional. An expression for filtering the results of the request.
-      Only the shape and gi_version fields are supported in this format:
-      `shape="{shape}"`.
+      Only the shape, gcp_oracle_zone and gi_version fields are supported in
+      this format: `shape="{shape}"`.
     pageSize: Optional. The maximum number of items to return. If unspecified,
       a maximum of 50 Oracle Grid Infrastructure (GI) versions will be
       returned. The maximum value is 1000; values above 1000 will be reset to
@@ -5509,12 +5514,20 @@ class OracledatabaseProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class OracledatabaseProjectsLocationsPluggableDatabasesGetRequest(_messages.Message):

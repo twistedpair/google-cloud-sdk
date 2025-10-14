@@ -75,25 +75,27 @@ def GetExecutionResourceName(args):
   return args.CONCEPTS.execution.Parse().RelativeName()
 
 
-def ValidateAndGetWorkbenchExecution(args, messages, service):
+def ValidateAndGetWorkbenchExecution(
+    args, messages, service, skip_workbench_check=False
+):
   """Checks that the execution is a Workbench execution and returns it if so.
 
   Args:
     args: Argparse object from Command.Run
     messages: Module containing messages definition for the aiplatform API.
     service: The service to use for the API call.
+    skip_workbench_check: Whether to skip validation of the execution type.
 
   Returns:
     The execution if it is a Workbench execution.
 
   Raises:
     InvalidArgumentException: If the execution is not a Workbench execution.
-
   """
   execution = service.Get(
       CreateExecutionGetRequest(args, messages)
   )
-  if not IsWorkbenchExecution(execution):
+  if not IsWorkbenchExecution(execution) and not skip_workbench_check:
     raise exceptions.InvalidArgumentException(
         'EXECUTION',
         'Execution is not of Workbench type. To manage Colab Enterprise'

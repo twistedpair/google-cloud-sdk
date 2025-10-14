@@ -39,6 +39,7 @@ _LOCATION_LIST_FORMAT = '''table(
 _PUBSUB_MESSAGE_URL = 'type.googleapis.com/google.pubsub.v1.PubsubMessage'
 PROJECTS_COLLECTION = 'cloudscheduler.projects'
 LOCATIONS_COLLECTION = 'cloudscheduler.projects.locations'
+OPERATIONS_COLLECTION = 'cloudscheduler.projects.locations.operations'
 
 
 def _GetPubsubMessages():

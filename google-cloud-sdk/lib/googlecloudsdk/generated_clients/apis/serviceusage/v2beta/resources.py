@@ -34,6 +34,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  CONTENTSECURITYPOLICIES = (
+      'contentSecurityPolicies',
+      '{+name}',
+      {
+          '':
+              '{v2betaId}/{v2betaId1}/contentSecurityPolicies/'
+              '{contentSecurityPoliciesId}',
+      },
+      ['name'],
+      True
+  )
   MCPPOLICIES = (
       'mcpPolicies',
       '{+name}',

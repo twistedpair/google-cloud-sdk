@@ -322,3 +322,14 @@ class RequiredImageArgumentException(c_exceptions.RequiredArgumentException):
             ', '.join(containers)
         ),
     )
+
+
+class NoGrpcInstalledError(exceptions.Error):
+  """Error that occurs when the gRPC module is not installed."""
+
+  def __init__(self):
+    super(NoGrpcInstalledError, self).__init__(
+        'Please ensure that the gRPC module is installed and the environment '
+        'is correctly configured. Run `sudo pip3 install grpcio` and set the '
+        'environment variable CLOUDSDK_PYTHON_SITEPACKAGES=1.'
+    )

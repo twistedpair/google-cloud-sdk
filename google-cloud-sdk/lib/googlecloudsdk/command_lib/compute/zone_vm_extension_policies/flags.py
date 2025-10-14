@@ -14,13 +14,10 @@
 # limitations under the License.
 """Flags for the compute zone vm extension policies commands."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
 import functools
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core.util import files
@@ -96,6 +93,10 @@ def AddExtensionVersion(parser):
       extension, the latest version will be used and will be upgraded automatically.
 
       E.g. --version=filestore=123ABC,ops-agent=456DEF
+
+      Raises:
+        ArgumentTypeError: If the extension name is not specified in the
+        --extensions flag.
       """)
 
 
@@ -113,7 +114,11 @@ def AddExtensionConfigs(parser):
       desired config for the given extension. The extension name must be one of the extensions
       specified in the --extensions flag.
 
-      E.g. --config=filestore=,ops-agent=
+      E.g. --config=filestore='filestore config',ops-agent='ops agent config'
+
+      Raises:
+        ArgumentTypeError: If the extension name is not specified in the
+        --extensions flag.
       """)
 
 
@@ -200,22 +205,25 @@ def ParseExtensionConfigs(extensions, configs, config_from_file=None):
     config_extensions_set = set(configs.keys())
     extra_extensions = config_extensions_set - extensions_set
     if extra_extensions:
-      raise ValueError(
-          f'Extensions {extra_extensions} from --config are not specified in the'
-          f' --extensions flag. {extensions}'
+      raise exceptions.BadArgumentException(
+          '--config',
+          f'Extensions {extra_extensions} from --config are not specified in'
+          f' the --extensions flag. {extensions}'
       )
   if config_from_file:
     config_from_file_extensions_set = set(config_from_file.keys())
     extra_extensions = config_from_file_extensions_set - extensions_set
     if extra_extensions:
-      raise ValueError(
+      raise exceptions.BadArgumentException(
+          '--config-from-file',
           f'Extensions {extra_extensions} from --config-from-file are not'
           f' specified in the --extensions flag. {extensions}'
       )
   if configs and config_from_file:
     common_extensions = set(configs.keys()) & set(config_from_file.keys())
     if common_extensions:
-      raise ValueError(
+      raise exceptions.BadArgumentException(
+          '--config and --config-from-file',
           f'Extensions {common_extensions} are specified in both --config and'
           ' --config-from-file.'
       )
@@ -229,9 +237,10 @@ def ParseExtensionVersions(extensions, versions):
   versions_extensions_set = set(versions.keys())
   extra_extensions = versions_extensions_set - extensions_set
   if extra_extensions:
-    raise ValueError(
-        f'Extensions {extra_extensions} from --version are not specified in \
-        the --extensions flag. {extensions}'
+    raise exceptions.BadArgumentException(
+        '--version',
+        f'Extensions {extra_extensions} from --version are not specified in'
+        f' the --extensions flag. {extensions}'
     )
 
 
@@ -245,7 +254,7 @@ def _GetConfigs(args):
       try:
         configs[extension] = files.ReadFileContents(file_path)
       except files.Error as e:
-        raise ValueError(
+        raise exceptions.BadFileException(
             f'Could not read config file [{file_path}] for extension'
             f' [{extension}]: {e}'
         )

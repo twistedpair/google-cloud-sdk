@@ -53,6 +53,8 @@ def FormatResponse(response, _):
     modified_response['updateTime'] = response.updateTime
   if response.zones:
     modified_response['zones'] = response.zones
+  if response.tags:
+    modified_response['tags'] = response.tags
 
   if response.maintenancePolicy:
     modified_mw_policy = {}

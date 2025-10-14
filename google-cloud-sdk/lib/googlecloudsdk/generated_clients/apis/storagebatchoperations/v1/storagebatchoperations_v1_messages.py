@@ -103,7 +103,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class ErrorLogEntry(_messages.Message):
   r"""An entry describing an error that has occurred.
 
@@ -343,10 +342,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -489,6 +493,37 @@ class Manifest(_messages.Message):
   """
 
   manifestLocation = _messages.StringField(1)
+
+
+class ObjectRetention(_messages.Message):
+  r"""Describes options for object retention update.
+
+  Enums:
+    RetentionModeValueValuesEnum: Required. The retention mode of the object.
+
+  Fields:
+    retainUntilTime: Required. The time when the object will be retained
+      until. UNSET will clear the retention. Must be specified in RFC 3339
+      format e.g. YYYY-MM-DD'T'HH:MM:SS.SS'Z' or YYYY-MM-DD'T'HH:MM:SS'Z'.
+    retentionMode: Required. The retention mode of the object.
+  """
+
+  class RetentionModeValueValuesEnum(_messages.Enum):
+    r"""Required. The retention mode of the object.
+
+    Values:
+      RETENTION_MODE_UNSPECIFIED: If set and retain_until_time is empty,
+        clears the retention.
+      LOCKED: Sets the retention mode to locked.
+      UNLOCKED: Sets the retention mode to unlocked.
+    """
+
+    RETENTION_MODE_UNSPECIFIED = 0
+    LOCKED = 1
+    UNLOCKED = 2
+
+  retainUntilTime = _messages.StringField(1)
+  retentionMode = _messages.EnumField('RetentionModeValueValuesEnum', 2)
 
 
 class Operation(_messages.Message):
@@ -680,6 +715,12 @@ class PutMetadata(_messages.Message):
       values will be ignored. Set empty values to clear the metadata. Refer to
       documentation in https://cloud.google.com/storage/docs/metadata#custom-
       time.
+    objectRetention: Optional. Updates objects retention lock configuration.
+      Unset values will be ignored. Set empty values to clear the retention
+      for the object with existing `Unlocked` retention mode. Object with
+      existing `Locked` retention mode cannot be cleared or reduce
+      retain_until_time. Refer to documentation in
+      https://cloud.google.com/storage/docs/object-lock
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -719,6 +760,7 @@ class PutMetadata(_messages.Message):
   contentType = _messages.StringField(5)
   customMetadata = _messages.MessageField('CustomMetadataValue', 6)
   customTime = _messages.StringField(7)
+  objectRetention = _messages.MessageField('ObjectRetention', 8)
 
 
 class PutObjectHold(_messages.Message):
@@ -1005,8 +1047,8 @@ class StoragebatchoperationsProjectsLocationsListRequest(_messages.Message):
   r"""A StoragebatchoperationsProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Do not use this field. It is unsupported and
-      is ignored unless explicitly documented otherwise. This is primarily for
+    extraLocationTypes: Optional. Unless explicitly documented otherwise,
+      don't use this unsupported field which is primarily intended for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -1066,12 +1108,20 @@ class StoragebatchoperationsProjectsLocationsOperationsListRequest(_messages.Mes
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 encoding.AddCustomJsonFieldMapping(

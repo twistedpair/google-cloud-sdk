@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.compute.security_policies import security_policies_utils
 
 _WAF_EXCLUSION_REQUEST_FIELD_HELP_TEXT = """
 You can specify an exact match or a partial match by using a field operator and
@@ -492,12 +493,10 @@ def AddRateLimitOptions(
 
   parser.add_argument(
       '--enforce-on-key-configs',
-      type=arg_parsers.ArgDict(
-          spec={key: str for key in enforce_on_key},
+      type=arg_parsers.ArgList(
+          element_type=security_policies_utils.ParseEnforceOnKeyConfig,
           min_length=1,
-          max_length=3,
-          allow_key_only=True,
-      ),
+          max_length=3),
       # The default renders as follows:
       # [all=ALL],[http-cookie=HTTP-COOKIE],
       # [http-header=HTTP-HEADER],[http-path=HTTP-PATH],

@@ -427,7 +427,10 @@ def ParseMembershipsPlural(args,
     log.status.Print('Selecting membership [{}].'.format(all_memberships[0]))
     return [all_memberships[0]]
   if prompt:
-    membership = resources.PromptForMembership(cancel=prompt_cancel)
+    membership = resources.PromptForMembership(
+        flag='--memberships',
+        cancel=prompt_cancel,
+    )
     if membership:
       memberships.append(membership)
     return memberships

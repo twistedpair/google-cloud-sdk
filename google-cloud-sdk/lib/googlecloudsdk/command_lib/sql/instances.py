@@ -508,6 +508,9 @@ class _BaseInstances(object):
     if args.retain_backups_on_delete is not None:
       settings.retainBackupsOnDelete = args.retain_backups_on_delete
 
+    if args.IsKnownAndSpecified('enable_auto_upgrade_minor_version'):
+      settings.autoUpgradeEnabled = True
+
     if args.IsKnownAndSpecified('server_ca_pool'):
       if not settings.ipConfiguration:
         settings.ipConfiguration = sql_messages.IpConfiguration()
@@ -589,9 +592,6 @@ class _BaseInstances(object):
       if args.IsKnownAndSpecified('enable_accelerated_replica_mode'):
         _ShowAcceleratedReplicaModeWarning()
         settings.acceleratedReplicaMode = args.enable_accelerated_replica_mode
-
-      if args.IsKnownAndSpecified('enable_auto_upgrade_minor_version'):
-        settings.autoUpgradeEnabled = True
 
     return settings
 

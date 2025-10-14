@@ -575,7 +575,7 @@ workforce_pool_provider_scim_tenant:
     arg_name: hard-delete
     action: store_true
     help_text: |-
-      If set, permanently deletes the SCIM tenant and its associated resources, including the SCIM tenant project and service account. This action cannot be undone.
+      Deletes the SCIM tenant immediately. This operation cannot be undone.
 
 workforce_pool_provider_scim_token:
   display_name:

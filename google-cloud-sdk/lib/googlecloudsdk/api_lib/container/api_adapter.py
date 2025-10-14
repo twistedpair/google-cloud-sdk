@@ -666,6 +666,7 @@ class CreateClusterOptions(object):
       placement_policy=None,
       enable_queued_provisioning=None,
       max_run_duration=None,
+      consolidation_delay=None,
       flex_start=None,
       enable_autorepair=None,
       enable_autoupgrade=None,
@@ -863,7 +864,9 @@ class CreateClusterOptions(object):
       boot_disk_provisioned_throughput=None,
       network_tier=None,
       control_plane_egress_mode=None,
+      enable_pod_snapshots=None,
       autopilot_privileged_admission=None,
+      enable_kernel_module_signature_enforcement=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -922,6 +925,7 @@ class CreateClusterOptions(object):
     self.placement_policy = placement_policy
     self.enable_queued_provisioning = enable_queued_provisioning
     self.max_run_duration = max_run_duration
+    self.consolidation_delay = consolidation_delay
     self.flex_start = flex_start
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
@@ -985,6 +989,9 @@ class CreateClusterOptions(object):
     self.enable_identity_service = enable_identity_service
     self.enable_shielded_nodes = enable_shielded_nodes
     self.linux_sysctls = linux_sysctls
+    self.enable_kernel_module_signature_enforcement = (
+        enable_kernel_module_signature_enforcement
+    )
     self.disable_default_snat = disable_default_snat
     self.dataplane_v2 = dataplane_v2
     self.enable_dataplane_v2_metrics = enable_dataplane_v2_metrics
@@ -1163,6 +1170,7 @@ class CreateClusterOptions(object):
     self.boot_disk_provisioned_throughput = boot_disk_provisioned_throughput
     self.network_tier = network_tier
     self.control_plane_egress_mode = control_plane_egress_mode
+    self.enable_pod_snapshots = enable_pod_snapshots
     self.autopilot_privileged_admission = autopilot_privileged_admission
 
 
@@ -1353,6 +1361,7 @@ class UpdateClusterOptions(object):
       network_tier=None,
       control_plane_egress_mode=None,
       control_plane_soak_duration=None,
+      enable_pod_snapshots=None,
       autopilot_privileged_admission=None,
   ):
     self.version = version
@@ -1586,6 +1595,7 @@ class UpdateClusterOptions(object):
     self.network_tier = network_tier
     self.control_plane_egress_mode = control_plane_egress_mode
     self.control_plane_soak_duration = control_plane_soak_duration
+    self.enable_pod_snapshots = enable_pod_snapshots
     self.autopilot_privileged_admission = autopilot_privileged_admission
 
 
@@ -1647,6 +1657,7 @@ class CreateNodePoolOptions(object):
       tpu_topology=None,
       enable_queued_provisioning=None,
       max_run_duration=None,
+      consolidation_delay=None,
       flex_start=None,
       enable_autorepair=None,
       enable_autoupgrade=None,
@@ -1711,6 +1722,7 @@ class CreateNodePoolOptions(object):
       boot_disk_provisioned_throughput=None,
       data_cache_count=None,
       accelerator_network_profile=None,
+      enable_kernel_module_signature_enforcement=None,
   ):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
@@ -1747,6 +1759,7 @@ class CreateNodePoolOptions(object):
     self.tpu_topology = tpu_topology
     self.enable_queued_provisioning = enable_queued_provisioning
     self.max_run_duration = max_run_duration
+    self.consolidation_delay = consolidation_delay
     self.flex_start = flex_start
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
@@ -1812,6 +1825,9 @@ class CreateNodePoolOptions(object):
     self.boot_disk_provisioned_iops = boot_disk_provisioned_iops
     self.boot_disk_provisioned_throughput = boot_disk_provisioned_throughput
     self.accelerator_network_profile = accelerator_network_profile
+    self.enable_kernel_module_signature_enforcement = (
+        enable_kernel_module_signature_enforcement
+    )
 
 
 class UpdateNodePoolOptions(object):
@@ -1863,10 +1879,12 @@ class UpdateNodePoolOptions(object):
       disk_size_gb=None,
       enable_queued_provisioning=None,
       max_run_duration=None,
+      consolidation_delay=None,
       flex_start=None,
       storage_pools=None,
       boot_disk_provisioned_iops=None,
       boot_disk_provisioned_throughput=None,
+      enable_kernel_module_signature_enforcement=None,
   ):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
@@ -1914,6 +1932,7 @@ class UpdateNodePoolOptions(object):
     self.disk_size_gb = disk_size_gb
     self.enable_queued_provisioning = enable_queued_provisioning
     self.max_run_duration = max_run_duration
+    self.consolidation_delay = consolidation_delay
     self.flex_start = flex_start
     self.storage_pools = storage_pools
     self.enable_insecure_kubelet_readonly_port = (
@@ -1921,6 +1940,9 @@ class UpdateNodePoolOptions(object):
     )
     self.provisioned_iops = boot_disk_provisioned_iops
     self.provisioned_throughput = boot_disk_provisioned_throughput
+    self.enable_kernel_module_signature_enforcement = (
+        enable_kernel_module_signature_enforcement
+    )
 
   def IsAutoscalingUpdate(self):
     return (
@@ -1974,10 +1996,12 @@ class UpdateNodePoolOptions(object):
         or self.disk_size_gb is not None
         or self.enable_queued_provisioning is not None
         or self.max_run_duration is not None
+        or self.consolidation_delay is not None
         or self.flex_start is not None
         or self.storage_pools is not None
         or self.provisioned_iops is not None
         or self.provisioned_throughput is not None
+        or self.enable_kernel_module_signature_enforcement is not None
     )
 
 
@@ -2308,7 +2332,6 @@ class APIAdapter(object):
     """
     node_config = self.ParseNodeConfig(options)
     pools = self.ParseNodePools(options, node_config)
-
     cluster = self.messages.Cluster(name=cluster_ref.clusterId, nodePools=pools)
     if options.tag_bindings:
       # Assign the dictionary to the cluster.tags field
@@ -2429,6 +2452,12 @@ class APIAdapter(object):
 
       cluster.addonsConfig = addons
 
+    if options.enable_pod_snapshots is not None:
+      if cluster.addonsConfig is None:
+        cluster.addonsConfig = self._AddonsConfig()
+      cluster.addonsConfig.podSnapshotConfig = self.messages.PodSnapshotConfig(
+          enabled=options.enable_pod_snapshots
+      )
     if options.enable_kubernetes_alpha:
       cluster.enableKubernetesAlpha = options.enable_kubernetes_alpha
 
@@ -3294,6 +3323,14 @@ class APIAdapter(object):
         cluster.controlPlaneEgress = self.messages.ControlPlaneEgress()
       cluster.controlPlaneEgress = _GetControlPlaneEgress(options, self.messages)
 
+    if options.enable_kernel_module_signature_enforcement is not None:
+      if options.autopilot:
+        if cluster.nodePoolAutoConfig is None:
+          cluster.nodePoolAutoConfig = self.messages.NodePoolAutoConfig()
+        _AddKernelModuleSignatureEnforcementToNodeConfig(
+            cluster.nodePoolAutoConfig, options, self.messages
+        )
+
     return cluster
 
   def _GetClusterNetworkPerformanceConfig(self, options):
@@ -3413,6 +3450,9 @@ class APIAdapter(object):
 
     if options.max_run_duration is not None:
       node_config.maxRunDuration = options.max_run_duration
+
+    if options.consolidation_delay is not None:
+      node_config.consolidationDelay = options.consolidation_delay
 
     if options.flex_start is not None:
       node_config.flexStart = options.flex_start
@@ -4702,6 +4742,11 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredManagedOpentelemetryConfig=managed_otel_config)
 
+    if options.enable_pod_snapshots is not None:
+      addons = self.messages.AddonsConfig(
+          podSnapshotConfig=self.messages.PodSnapshotConfig(
+              enabled=options.enable_pod_snapshots))
+      update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
     if (
         options.security_profile is not None
         and options.security_profile_runtime_rules is not None
@@ -5573,6 +5618,7 @@ class APIAdapter(object):
       enable_parallelstore_csi_driver=None,
       enable_high_scale_checkpointing=None,
       enable_lustre_csi_driver=None,
+      enable_pod_snapshots=None,
       enable_ray_operator=None,
   ):
     """Generates an AddonsConfig object given specific parameters.
@@ -5593,6 +5639,7 @@ class APIAdapter(object):
       enable_parallelstore_csi_driver: whether to enable ParallelstoreCsiDriver.
       enable_high_scale_checkpointing: whether to enable HighScaleCheckpointing.
       enable_lustre_csi_driver: whether to enable LustreCsiDriver.
+      enable_pod_snapshots: whether to enable PodSnapshots.
       enable_ray_operator: whether to enable RayOperator.
 
     Returns:
@@ -5654,6 +5701,10 @@ class APIAdapter(object):
     if enable_lustre_csi_driver:
       addons.lustreCsiDriverConfig = (
           self.messages.LustreCsiDriverConfig(enabled=True)
+      )
+    if enable_pod_snapshots is not None:
+      addons.podSnapshotConfig = self.messages.PodSnapshotConfig(
+          enabled=enable_pod_snapshots
       )
     if enable_ray_operator:
       addons.rayOperatorConfig = self.messages.RayOperatorConfig(enabled=True)
@@ -6082,6 +6133,9 @@ class APIAdapter(object):
 
     if options.max_run_duration is not None:
       node_config.maxRunDuration = options.max_run_duration
+
+    if options.consolidation_delay is not None:
+      node_config.consolidationDelay = options.consolidation_delay
 
     if options.flex_start is not None:
       node_config.flexStart = options.flex_start
@@ -6653,6 +6707,8 @@ class APIAdapter(object):
       update_request.gvnic = gvnic
     elif options.max_run_duration is not None:
       update_request.maxRunDuration = options.max_run_duration
+    elif options.consolidation_delay is not None:
+      update_request.consolidationDelay = options.consolidation_delay
     elif options.flex_start is not None:
       update_request.flexStart = options.flex_start
     elif options.enable_image_streaming is not None:
@@ -6733,6 +6789,10 @@ class APIAdapter(object):
       )
     elif options.storage_pools is not None:
       update_request.storagePools = options.storage_pools
+    elif options.enable_kernel_module_signature_enforcement is not None:
+      _AddKernelModuleSignatureEnforcementToNodeConfig(
+          update_request, options, self.messages
+      )
     return update_request
 
   def UpdateNodePool(self, node_pool_ref, options):
@@ -7372,6 +7432,30 @@ class APIAdapter(object):
     )
     update = self.messages.ClusterUpdate()
     update.desiredNodeKubeletConfig = nkc
+    op = self.client.projects_locations_clusters.Update(
+        self.messages.UpdateClusterRequest(
+            name=ProjectLocationCluster(
+                cluster_ref.projectId, cluster_ref.zone, cluster_ref.clusterId
+            ),
+            update=update,
+        )
+    )
+    return self.ParseOperation(op.name, cluster_ref.zone)
+
+  def ModifyKernelModuleSignatureEnforcement(
+      self, cluster_ref, enable_kernel_module_signature_enforcement
+  ):
+    """Updates default for Kernel Module Signature Enforcement on new node-pools."""
+    lnc = self.messages.LinuxNodeConfig()
+    module_loading_config = self.messages.NodeKernelModuleLoading()
+    policy_enum = self.messages.NodeKernelModuleLoading.PolicyValueValuesEnum
+    if enable_kernel_module_signature_enforcement:
+      module_loading_config.policy = policy_enum.ENFORCE_SIGNED_MODULES
+    else:
+      module_loading_config.policy = policy_enum.DO_NOT_ENFORCE_SIGNED_MODULES
+    lnc.nodeKernelModuleLoading = module_loading_config
+    update = self.messages.ClusterUpdate()
+    update.desiredNodePoolAutoConfigLinuxNodeConfig = lnc
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
             name=ProjectLocationCluster(
@@ -8172,64 +8256,68 @@ class V1Beta1Adapter(V1Adapter):
         update.desiredLoggingConfig = logging
       if monitoring:
         update.desiredMonitoringConfig = monitoring
-    elif options.disable_addons:
-      disable_node_local_dns = options.disable_addons.get(NODELOCALDNS)
+    elif options.disable_addons or options.enable_pod_snapshots is not None:
+      disable_addons = options.disable_addons
+      if disable_addons is None:
+        disable_addons = {}
+      disable_node_local_dns = disable_addons.get(NODELOCALDNS)
       addons = self._AddonsConfig(
-          disable_ingress=options.disable_addons.get(INGRESS),
-          disable_hpa=options.disable_addons.get(HPA),
-          disable_dashboard=options.disable_addons.get(DASHBOARD),
-          disable_network_policy=options.disable_addons.get(NETWORK_POLICY),
+          disable_ingress=disable_addons.get(INGRESS),
+          disable_hpa=disable_addons.get(HPA),
+          disable_dashboard=disable_addons.get(DASHBOARD),
+          disable_network_policy=disable_addons.get(NETWORK_POLICY),
           enable_node_local_dns=not disable_node_local_dns
           if disable_node_local_dns is not None
           else None,
+          enable_pod_snapshots=options.enable_pod_snapshots,
       )
-      if options.disable_addons.get(CONFIGCONNECTOR) is not None:
+      if disable_addons.get(CONFIGCONNECTOR) is not None:
         addons.configConnectorConfig = self.messages.ConfigConnectorConfig(
-            enabled=(not options.disable_addons.get(CONFIGCONNECTOR))
+            enabled=(not disable_addons.get(CONFIGCONNECTOR))
         )
-      if options.disable_addons.get(GCEPDCSIDRIVER) is not None:
+      if disable_addons.get(GCEPDCSIDRIVER) is not None:
         addons.gcePersistentDiskCsiDriverConfig = (
             self.messages.GcePersistentDiskCsiDriverConfig(
-                enabled=not options.disable_addons.get(GCEPDCSIDRIVER)
+                enabled=not disable_addons.get(GCEPDCSIDRIVER)
             )
         )
-      if options.disable_addons.get(GCPFILESTORECSIDRIVER) is not None:
+      if disable_addons.get(GCPFILESTORECSIDRIVER) is not None:
         addons.gcpFilestoreCsiDriverConfig = (
             self.messages.GcpFilestoreCsiDriverConfig(
-                enabled=not options.disable_addons.get(GCPFILESTORECSIDRIVER)
+                enabled=not disable_addons.get(GCPFILESTORECSIDRIVER)
             )
         )
-      if options.disable_addons.get(GCSFUSECSIDRIVER) is not None:
+      if disable_addons.get(GCSFUSECSIDRIVER) is not None:
         addons.gcsFuseCsiDriverConfig = self.messages.GcsFuseCsiDriverConfig(
-            enabled=not options.disable_addons.get(GCSFUSECSIDRIVER)
+            enabled=not disable_addons.get(GCSFUSECSIDRIVER)
         )
-      if options.disable_addons.get(STATEFULHA) is not None:
+      if disable_addons.get(STATEFULHA) is not None:
         addons.statefulHaConfig = self.messages.StatefulHAConfig(
-            enabled=not options.disable_addons.get(STATEFULHA)
+            enabled=not disable_addons.get(STATEFULHA)
         )
-      if options.disable_addons.get(PARALLELSTORECSIDRIVER) is not None:
+      if disable_addons.get(PARALLELSTORECSIDRIVER) is not None:
         addons.parallelstoreCsiDriverConfig = (
             self.messages.ParallelstoreCsiDriverConfig(
-                enabled=not options.disable_addons.get(PARALLELSTORECSIDRIVER)
+                enabled=not disable_addons.get(PARALLELSTORECSIDRIVER)
             )
         )
-      if options.disable_addons.get(HIGHSCALECHECKPOINTING) is not None:
+      if disable_addons.get(HIGHSCALECHECKPOINTING) is not None:
         addons.highScaleCheckpointingConfig = (
             self.messages.HighScaleCheckpointingConfig(
-                enabled=not options.disable_addons.get(HIGHSCALECHECKPOINTING)
+                enabled=not disable_addons.get(HIGHSCALECHECKPOINTING)
             )
         )
-      if options.disable_addons.get(LUSTRECSIDRIVER) is not None:
+      if disable_addons.get(LUSTRECSIDRIVER) is not None:
         addons.lustreCsiDriverConfig = self.messages.LustreCsiDriverConfig(
-            enabled=not options.disable_addons.get(LUSTRECSIDRIVER)
+            enabled=not disable_addons.get(LUSTRECSIDRIVER)
         )
-      if options.disable_addons.get(BACKUPRESTORE) is not None:
+      if disable_addons.get(BACKUPRESTORE) is not None:
         addons.gkeBackupAgentConfig = self.messages.GkeBackupAgentConfig(
-            enabled=not options.disable_addons.get(BACKUPRESTORE)
+            enabled=not disable_addons.get(BACKUPRESTORE)
         )
-      if options.disable_addons.get(RAYOPERATOR) is not None:
+      if disable_addons.get(RAYOPERATOR) is not None:
         addons.rayOperatorConfig = self.messages.RayOperatorConfig(
-            enabled=not options.disable_addons.get(RAYOPERATOR)
+            enabled=not disable_addons.get(RAYOPERATOR)
         )
       update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
     elif (
@@ -10440,6 +10528,27 @@ def _AddLinuxNodeConfigToNodeConfig(node_config, options, messages):
     linux_sysctls.additionalProperties = props
 
     node_config.linuxNodeConfig.sysctls = linux_sysctls
+
+  _AddKernelModuleSignatureEnforcementToNodeConfig(
+      node_config, options, messages
+  )
+
+
+def _AddKernelModuleSignatureEnforcementToNodeConfig(
+    node_config, options, messages
+):
+  """Adds KernelModuleSignatureEnforcement to NodeConfig."""
+  if options.enable_kernel_module_signature_enforcement is not None:
+    if not node_config.linuxNodeConfig:
+      node_config.linuxNodeConfig = messages.LinuxNodeConfig()
+    module_loading_config = messages.NodeKernelModuleLoading()
+    policy_enum = messages.NodeKernelModuleLoading.PolicyValueValuesEnum
+    if options.enable_kernel_module_signature_enforcement:
+      module_loading_config.policy = policy_enum.ENFORCE_SIGNED_MODULES
+    else:
+      module_loading_config.policy = policy_enum.DO_NOT_ENFORCE_SIGNED_MODULES
+
+    node_config.linuxNodeConfig.nodeKernelModuleLoading = module_loading_config
 
 
 def _AddWindowsNodeConfigToNodeConfig(node_config, options, messages):

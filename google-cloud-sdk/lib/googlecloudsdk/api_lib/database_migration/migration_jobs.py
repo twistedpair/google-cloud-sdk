@@ -476,6 +476,21 @@ class MigrationJobsClient(object):
       )
     return postgres_destination_config
 
+  def _GetPostgresSourceConfig(self, args):
+    """Returns the postgres source config.
+
+    Args:
+      args: argparse.Namespace, the arguments that this command was invoked
+        with.
+
+    Returns:
+      The postgres source config.
+    """
+    postgres_source_config = self.messages.PostgresSourceConfig()
+    if args.IsKnownAndSpecified('skip_full_dump'):
+      postgres_source_config.skipFullDump = args.skip_full_dump
+    return postgres_source_config
+
   def _GetOracleSourceConfig(self, args):
     """Returns the oracle source config.
 
@@ -553,6 +568,27 @@ class MigrationJobsClient(object):
         )
     return sqlserver_source_config
 
+  def _GetSqlServerDestinationConfig(self, args):
+    """Returns the sqlserver destination config.
+
+    Args:
+      args: argparse.Namespace, the arguments that this command was invoked
+        with.
+
+    Returns:
+      SqlServerDestinationConfig: The sqlserver destination config.
+    """
+    sqlserver_destination_config = self.messages.SqlServerDestinationConfig()
+    if args.IsKnownAndSpecified('max_concurrent_destination_connections'):
+      sqlserver_destination_config.maxConcurrentConnections = (
+          args.max_concurrent_destination_connections
+      )
+    if args.IsKnownAndSpecified('transaction_timeout'):
+      sqlserver_destination_config.transactionTimeout = (
+          str(args.transaction_timeout) + 's'
+      )
+    return sqlserver_destination_config
+
   def _GetHeterogeneousMigrationJobConfig(
       self, conversion_workspace_name, args
   ):
@@ -614,11 +650,75 @@ class MigrationJobsClient(object):
         )
     return None, None
 
+  def _GetHeterogeneousFailbackMigrationJobConfig(
+      self, original_migration_name, args
+  ):
+    """Returns the heterogeneous migration job config for failback migration job.
+
+    Args:
+      original_migration_name: str, the name of the original migration job.
+      args: argparse.Namespace, The arguments that this command was invoked
+        with.
+
+    Returns:
+      A tuple containing the heterogeneous config key and the config object.
+
+    Raises:
+      Error: Invalid source or destination engine.
+    """
+    if self._IsHeterogeneousConfigKnownAndSpecified(args):
+      original_migration_job = self._GetExistingMigrationJob(
+          original_migration_name
+      )
+      if original_migration_job.conversionWorkspace is None:
+        raise Error(
+            'Cannot create failback heterogeneous migration job configuration'
+            ' for original migration job: {original_migration_name} does not'
+            ' have conversion workspace.'.format(
+                original_migration_name=original_migration_name
+            )
+        )
+      conversion_workspace = self._GetConversionWorkspace(
+          original_migration_job.conversionWorkspace.name
+      )
+      if (
+          conversion_workspace.destination.engine
+          == self.messages.DatabaseEngineInfo.EngineValueValuesEnum.POSTGRESQL
+      ):
+        postgres_source_config = self._GetPostgresSourceConfig(args)
+      else:
+        raise Error(
+            'Cannot create failback heterogeneous migration job configuration'
+            ' for destination engine: {engine}'.format(
+                engine=conversion_workspace.destination.engine
+            )
+        )
+      if (
+          conversion_workspace.source.engine
+          == self.messages.DatabaseEngineInfo.EngineValueValuesEnum.SQLSERVER
+      ):
+        postgres_to_sqlserver_config = self.messages.PostgresToSqlServerConfig(
+            postgresSourceConfig=postgres_source_config,
+            sqlserverDestinationConfig=self._GetSqlServerDestinationConfig(
+                args
+            ),
+        )
+        return 'postgresToSqlserverConfig', postgres_to_sqlserver_config
+      else:
+        raise Error(
+            'Cannot create failback heterogeneous migration job configuration'
+            ' for  source engine: {engine}'.format(
+                engine=conversion_workspace.source.engine
+            ),
+        )
+    return None, None
+
   def _GetMigrationJob(
       self,
       source_ref,
       destination_ref,
       conversion_workspace_ref,
+      original_migration_name_ref,
       cmek_key_ref,
       args,
   ):
@@ -631,6 +731,8 @@ class MigrationJobsClient(object):
         datamigration.projects.locations.connectionProfiles resource.
       conversion_workspace_ref: a Resource reference to a
         datamigration.projects.locations.conversionWorkspaces resource.
+      original_migration_name_ref: a Resource reference to a
+        datamigration.projects.locations.migrationJobs resource.
       cmek_key_ref: a Resource reference to a
         cloudkms.projects.locations.keyRings.cryptoKeys resource.
       args: argparse.Namespace, The arguments that this command was invoked
@@ -640,8 +742,8 @@ class MigrationJobsClient(object):
       MigrationJob: the migration job.
 
     Raises:
-      RequiredArgumentException: If conversion workspace is not specified for
-      heterogeneous migration job.
+      Error: If neither conversion workspace nor original migration job name is
+      specified for heterogeneous migration job.
     """
     migration_job_type = self.messages.MigrationJob
     labels = labels_util.ParseCreateArgs(
@@ -672,14 +774,22 @@ class MigrationJobsClient(object):
       )
       if heterogeneous_config_key is not None:
         params[heterogeneous_config_key] = heterogeneous_config_obj
+    elif original_migration_name_ref is not None:
+      params['originalMigrationName'] = (
+          original_migration_name_ref.RelativeName()
+      )
+      heterogeneous_config_key, heterogeneous_config_obj = (
+          self._GetHeterogeneousFailbackMigrationJobConfig(
+              original_migration_name_ref.RelativeName(), args
+          )
+      )
+      if heterogeneous_config_key is not None:
+        params[heterogeneous_config_key] = heterogeneous_config_obj
     else:
       if self._IsHeterogeneousConfigKnownAndSpecified(args):
-        raise exceptions.RequiredArgumentException(
-            'conversion-workspace',
-            (
-                'Conversion workspace is required for heterogeneous migration'
-                ' job.'
-            ),
+        raise Error(
+            'Conversion workspace or original migration job name is '
+            'required for heterogeneous migration job.'
         )
 
     migration_job_obj = migration_job_type(
@@ -785,6 +895,31 @@ class MigrationJobsClient(object):
           '{destination_engine}'.format(
               source_engine=migration_job.conversionWorkspace.source.engine,
               destination_engine=migration_job.conversionWorkspace.destination.engine,
+          )
+      )
+
+  def _UpdateHeterogeneousFailbackMigrationJobConfig(
+      self, args, migration_job, update_fields
+  ):
+    """Update the heterogeneous migration job config for the failback migration job."""
+    heterogeneous_config_key, heterogeneous_config_obj = (
+        self._GetHeterogeneousFailbackMigrationJobConfig(
+            migration_job.originalMigrationName, args
+        )
+    )
+    if heterogeneous_config_key == 'postgresToSqlserverConfig':
+      migration_job.postgresToSqlserverConfig = heterogeneous_config_obj
+      self._UpdateHeterogeneousMigrationJobConfigUpdateFields(
+          args,
+          update_fields,
+          'postgres',
+          'sqlserver',
+      )
+    else:
+      raise Error(
+          'Unknown heterogeneous failback migration job configuration:'
+          ' {heterogeneous_config_key}'.format(
+              heterogeneous_config_key=heterogeneous_config_key
           )
       )
 
@@ -989,9 +1124,14 @@ class MigrationJobsClient(object):
     self._UpdateMigrationJobObjectsConfig(args, migration_job)
 
     if self._IsHeterogeneousConfigKnownAndSpecified(args):
-      self._UpdateHeterogeneousMigrationJobConfig(
-          args, migration_job, update_fields
-      )
+      if migration_job.originalMigrationName is None:
+        self._UpdateHeterogeneousMigrationJobConfig(
+            args, migration_job, update_fields
+        )
+      else:
+        self._UpdateHeterogeneousFailbackMigrationJobConfig(
+            args, migration_job, update_fields
+        )
 
     return migration_job, update_fields
 
@@ -1010,6 +1150,7 @@ class MigrationJobsClient(object):
       source_ref,
       destination_ref,
       conversion_workspace_ref=None,
+      original_migration_name_ref=None,
       cmek_key_ref=None,
       args=None,
   ):
@@ -1025,6 +1166,8 @@ class MigrationJobsClient(object):
         datamigration.projects.locations.connectionProfiles resource.
       conversion_workspace_ref: a Resource reference to a
         datamigration.projects.locations.conversionWorkspaces resource.
+      original_migration_name_ref: a Resource reference to a
+        datamigration.projects.locations.migrationJobs resource.
       cmek_key_ref: a Resource reference to a
         cloudkms.projects.locations.keyRings.cryptoKeys resource.
       args: argparse.Namespace, The arguments that this command was invoked
@@ -1040,6 +1183,7 @@ class MigrationJobsClient(object):
         source_ref,
         destination_ref,
         conversion_workspace_ref,
+        original_migration_name_ref,
         cmek_key_ref,
         args,
     )

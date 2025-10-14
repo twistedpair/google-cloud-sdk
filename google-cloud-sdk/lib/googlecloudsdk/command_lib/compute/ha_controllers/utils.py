@@ -15,13 +15,28 @@
 """Flags for the compute ha-controllers commands."""
 
 from apitools.base.protorpclite import messages
+from apitools.base.py import encoding
+from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.apis import yaml_data
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
-from googlecloudsdk.generated_clients.apis.compute.alpha import compute_alpha_messages
+from googlecloudsdk.core import yaml
+
+
+_MESSAGES = apis.GetMessagesModule("compute", "alpha")
+
+
+def GetMessagesModule(version="alpha"):
+  return apis.GetMessagesModule("compute", version)
+
+
+class NodeAffinityFileParseError(core_exceptions.Error):
+  """Exception for invalid node affinity file format."""
 
 
 def AddHaControllerNameArgToParser(parser, api_version=None):
@@ -43,10 +58,10 @@ def AddHaControllerNameArgToParser(parser, api_version=None):
 
 def MakeZoneConfiguration(
     zone_config: list[dict[str, str]],
-) -> compute_alpha_messages.HaController.ZoneConfigurationsValue:
+) -> _MESSAGES.HaController.ZoneConfigurationsValue:
   """Convert zone-configuration to the zoneConfigurations api field."""
   zone_configs_parsed: list[
-      compute_alpha_messages.HaController.ZoneConfigurationsValue.AdditionalProperty
+      _MESSAGES.HaController.ZoneConfigurationsValue.AdditionalProperty
   ] = []
 
   for config in zone_config:
@@ -55,8 +70,8 @@ def MakeZoneConfiguration(
     single_zone_config = {}
     if "reservation-affinity" in config:
       single_zone_config["reservationAffinity"] = (
-          compute_alpha_messages.HaControllerZoneConfigurationReservationAffinity(
-              consumeReservationType=compute_alpha_messages.HaControllerZoneConfigurationReservationAffinity.ConsumeReservationTypeValueValuesEnum(
+          _MESSAGES.HaControllerZoneConfigurationReservationAffinity(
+              consumeReservationType=_MESSAGES.HaControllerZoneConfigurationReservationAffinity.ConsumeReservationTypeValueValuesEnum(
                   config["reservation-affinity"],
               )
           )
@@ -70,25 +85,51 @@ def MakeZoneConfiguration(
         single_zone_config["reservationAffinity"].values = [
             config["reservation"]
         ]
-    if "node-affinity" in config:
-      single_zone_config["nodeAffinity"] = (
-          compute_alpha_messages.HaControllerZoneConfigurationNodeAffinity(
-              operator=config["node-affinity"],
-          )
-      )
+    node_affinities = _GetNodeAffinities(config)
+    if node_affinities:
+      single_zone_config["nodeAffinities"] = node_affinities
+
     zone_configs_parsed.append(
-        compute_alpha_messages.HaController.ZoneConfigurationsValue.AdditionalProperty(
+        _MESSAGES.HaController.ZoneConfigurationsValue.AdditionalProperty(
             key=config["zone"],
-            value=compute_alpha_messages.HaControllerZoneConfiguration(
+            value=_MESSAGES.HaControllerZoneConfiguration(
                 **single_zone_config
             ),
         )
     )
 
-  res = compute_alpha_messages.HaController.ZoneConfigurationsValue(
+  res = _MESSAGES.HaController.ZoneConfigurationsValue(
       additionalProperties=zone_configs_parsed
   )
   return res
+
+
+def MakeNetworkConfiguration(
+    network_config: list[dict[str, str]],
+) -> _MESSAGES.HaControllerNetworkingAutoConfiguration:
+  """Convert network-auto-configuration args to the networkConfiguration api field."""
+  network_config_parsed = {}
+  if network_config and len(network_config) > 1:
+    raise exceptions.InvalidArgumentException(
+        "--network-auto-configuration",
+        "Only one network interface can be specified."
+    )
+  network_config = network_config[0] if network_config else {}
+
+  if "stack-type" in network_config:
+    network_config_parsed["stackType"] = network_config["stack-type"]
+  if "address" in network_config:
+    network_config_parsed["ipAddress"] = network_config["address"]
+  if "internal-ipv6-address" in network_config:
+    network_config_parsed["ipv6Address"] = (
+        network_config["internal-ipv6-address"]
+    )
+
+  return _MESSAGES.HaControllerNetworkingAutoConfiguration(
+      internal=_MESSAGES.HaControllerNetworkingAutoConfigurationInternal(
+          **network_config_parsed
+      )
+  )
 
 
 def SetResourceName(unused_ref, unused_args, request):
@@ -105,6 +146,78 @@ def SetResourceName(unused_ref, unused_args, request):
   if hasattr(request.haControllerResource, "name"):
     request.haControllerResource.name = request.haController
   return request
+
+
+def _GetNodeAffinities(config: dict[str, str]) -> list[
+    _MESSAGES.HaControllerZoneConfigurationNodeAffinity
+]:
+  """Get node affinities from the zone configuration."""
+  node_affinity_operator_enum = (
+      _MESSAGES.HaControllerZoneConfigurationNodeAffinity.OperatorValueValuesEnum
+  )
+  node_affinities = []
+
+  if "node-affinity-file" in config:
+    affinities_yaml = yaml.load(config["node-affinity-file"])
+    if not affinities_yaml:  # Catch empty files/lists.
+      raise NodeAffinityFileParseError(
+          "No node affinity labels specified. You must specify at least one "
+          "label to create a sole tenancy instance."
+      )
+    for affinity in affinities_yaml:
+      if not affinity:  # Catches None and empty dicts
+        raise NodeAffinityFileParseError("Empty list item in JSON/YAML file.")
+      try:
+        node_affinity = encoding.PyValueToMessage(
+            _MESSAGES.HaControllerZoneConfigurationNodeAffinity,
+            affinity,
+        )
+      except Exception as e:  # pylint: disable=broad-except
+        raise NodeAffinityFileParseError(e)
+      if not node_affinity.key:
+        raise NodeAffinityFileParseError(
+            "A key must be specified for every node affinity label."
+        )
+      if node_affinity.all_unrecognized_fields():
+        raise NodeAffinityFileParseError(
+            "Key [{0}] has invalid field formats for: {1}".format(
+                node_affinity.key, node_affinity.all_unrecognized_fields()
+            )
+        )
+
+      node_affinities.append(node_affinity)
+  if "node-group" in config:
+    node_affinities.append(
+        _MESSAGES.HaControllerZoneConfigurationNodeAffinity(
+            key="compute."
+            + properties.VALUES.core.universe_domain.Get()
+            + "/node-group-name",
+            operator=node_affinity_operator_enum.IN,
+            values=[config["node-group"]],
+        )
+    )
+  if "node" in config:
+    node_affinities.append(
+        _MESSAGES.HaControllerZoneConfigurationNodeAffinity(
+            key="compute."
+            + properties.VALUES.core.universe_domain.Get()
+            + "/node-name",
+            operator=node_affinity_operator_enum.IN,
+            values=[config["node"]],
+        )
+    )
+  if "node-project" in config:
+    node_affinities.append(
+        _MESSAGES.HaControllerZoneConfigurationNodeAffinity(
+            key="compute."
+            + properties.VALUES.core.universe_domain.Get()
+            + "/project",
+            operator=node_affinity_operator_enum.IN,
+            values=[config["node-project"]],
+        )
+    )
+
+  return node_affinities
 
 
 def EnumTypeToChoices(enum_type: messages.Enum) -> str:

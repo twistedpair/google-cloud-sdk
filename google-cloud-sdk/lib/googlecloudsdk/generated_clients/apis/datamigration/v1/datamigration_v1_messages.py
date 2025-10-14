@@ -2246,8 +2246,8 @@ class DatamigrationProjectsLocationsListRequest(_messages.Message):
   r"""A DatamigrationProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Do not use this field. It is unsupported and
-      is ignored unless explicitly documented otherwise. This is primarily for
+    extraLocationTypes: Optional. Unless explicitly documented otherwise,
+      don't use this unsupported field which is primarily intended for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -2714,12 +2714,20 @@ class DatamigrationProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class DatamigrationProjectsLocationsPrivateConnectionsCreateRequest(_messages.Message):
@@ -3803,10 +3811,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListPrivateConnectionsResponse(_messages.Message):
@@ -4147,6 +4160,7 @@ class MigrationJob(_messages.Message):
     DumpTypeValueValuesEnum: Optional. The type of the data dump. Supported
       for MySQL to CloudSQL for MySQL migrations only.
     PhaseValueValuesEnum: Output only. The current migration job phase.
+    PurposeValueValuesEnum: Output only. The purpose of the migration job.
     StateValueValuesEnum: The current migration job state.
     TypeValueValuesEnum: Required. The migration job type.
 
@@ -4202,9 +4216,14 @@ class MigrationJob(_messages.Message):
     oracleToPostgresConfig: Configuration for heterogeneous **Oracle to Cloud
       SQL for PostgreSQL** and **Oracle to AlloyDB for PostgreSQL**
       migrations.
+    originalMigrationName: Optional. A failback replication pointer to the
+      resource name (URI) of the original migration job.
     performanceConfig: Optional. Data dump parallelism settings used by the
       migration.
     phase: Output only. The current migration job phase.
+    postgresToSqlserverConfig: Configuration for heterogeneous
+      **\u2248PostgreSQL to SQL Server** migrations.
+    purpose: Output only. The purpose of the migration job.
     reverseSshConnectivity: The details needed to communicate to the source
       over Reverse SSH tunnel connectivity.
     satisfiesPzi: Output only. Reserved for future use.
@@ -4262,6 +4281,18 @@ class MigrationJob(_messages.Message):
     WAITING_FOR_SOURCE_WRITES_TO_STOP = 4
     PREPARING_THE_DUMP = 5
     READY_FOR_PROMOTE = 6
+
+  class PurposeValueValuesEnum(_messages.Enum):
+    r"""Output only. The purpose of the migration job.
+
+    Values:
+      PURPOSE_UNSPECIFIED: Unknown purpose. Will be defaulted to MIGRATE.
+      MIGRATE: Standard migration job.
+      FAILBACK: Failback replication job.
+    """
+    PURPOSE_UNSPECIFIED = 0
+    MIGRATE = 1
+    FAILBACK = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""The current migration job state.
@@ -4357,20 +4388,23 @@ class MigrationJob(_messages.Message):
   name = _messages.StringField(15)
   objectsConfig = _messages.MessageField('MigrationJobObjectsConfig', 16)
   oracleToPostgresConfig = _messages.MessageField('OracleToPostgresConfig', 17)
-  performanceConfig = _messages.MessageField('PerformanceConfig', 18)
-  phase = _messages.EnumField('PhaseValueValuesEnum', 19)
-  reverseSshConnectivity = _messages.MessageField('ReverseSshConnectivity', 20)
-  satisfiesPzi = _messages.BooleanField(21)
-  satisfiesPzs = _messages.BooleanField(22)
-  source = _messages.StringField(23)
-  sourceDatabase = _messages.MessageField('DatabaseType', 24)
-  sqlserverHomogeneousMigrationJobConfig = _messages.MessageField('SqlServerHomogeneousMigrationJobConfig', 25)
-  sqlserverToPostgresConfig = _messages.MessageField('SqlServerToPostgresConfig', 26)
-  state = _messages.EnumField('StateValueValuesEnum', 27)
-  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 28)
-  type = _messages.EnumField('TypeValueValuesEnum', 29)
-  updateTime = _messages.StringField(30)
-  vpcPeeringConnectivity = _messages.MessageField('VpcPeeringConnectivity', 31)
+  originalMigrationName = _messages.StringField(18)
+  performanceConfig = _messages.MessageField('PerformanceConfig', 19)
+  phase = _messages.EnumField('PhaseValueValuesEnum', 20)
+  postgresToSqlserverConfig = _messages.MessageField('PostgresToSqlServerConfig', 21)
+  purpose = _messages.EnumField('PurposeValueValuesEnum', 22)
+  reverseSshConnectivity = _messages.MessageField('ReverseSshConnectivity', 23)
+  satisfiesPzi = _messages.BooleanField(24)
+  satisfiesPzs = _messages.BooleanField(25)
+  source = _messages.StringField(26)
+  sourceDatabase = _messages.MessageField('DatabaseType', 27)
+  sqlserverHomogeneousMigrationJobConfig = _messages.MessageField('SqlServerHomogeneousMigrationJobConfig', 28)
+  sqlserverToPostgresConfig = _messages.MessageField('SqlServerToPostgresConfig', 29)
+  state = _messages.EnumField('StateValueValuesEnum', 30)
+  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 31)
+  type = _messages.EnumField('TypeValueValuesEnum', 32)
+  updateTime = _messages.StringField(33)
+  vpcPeeringConnectivity = _messages.MessageField('VpcPeeringConnectivity', 34)
 
 
 class MigrationJobObject(_messages.Message):
@@ -5121,6 +5155,7 @@ class PostgreSqlConnectionProfile(_messages.Message):
     cloudSqlId: If the source is a Cloud SQL database, use this field to
       provide the Cloud SQL instance ID of the source.
     database: Optional. The name of the specific database within the host.
+    forwardSshConnectivity: Forward SSH tunnel connectivity.
     host: Required. The IP or hostname of the source PostgreSQL database.
     networkArchitecture: Output only. If the source is a Cloud SQL database,
       this field indicates the network architecture it's associated with.
@@ -5131,6 +5166,7 @@ class PostgreSqlConnectionProfile(_messages.Message):
     passwordSet: Output only. Indicates If this connection profile password is
       stored.
     port: Required. The network port of the source PostgreSQL database.
+    privateConnectivity: Private connectivity.
     privateServiceConnectConnectivity: Private service connect connectivity.
     ssl: SSL configuration for the destination to connect to the source
       database.
@@ -5159,15 +5195,17 @@ class PostgreSqlConnectionProfile(_messages.Message):
   alloydbClusterId = _messages.StringField(1)
   cloudSqlId = _messages.StringField(2)
   database = _messages.StringField(3)
-  host = _messages.StringField(4)
-  networkArchitecture = _messages.EnumField('NetworkArchitectureValueValuesEnum', 5)
-  password = _messages.StringField(6)
-  passwordSet = _messages.BooleanField(7)
-  port = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  privateServiceConnectConnectivity = _messages.MessageField('PrivateServiceConnectConnectivity', 9)
-  ssl = _messages.MessageField('SslConfig', 10)
-  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 11)
-  username = _messages.StringField(12)
+  forwardSshConnectivity = _messages.MessageField('ForwardSshTunnelConnectivity', 4)
+  host = _messages.StringField(5)
+  networkArchitecture = _messages.EnumField('NetworkArchitectureValueValuesEnum', 6)
+  password = _messages.StringField(7)
+  passwordSet = _messages.BooleanField(8)
+  port = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  privateConnectivity = _messages.MessageField('PrivateConnectivity', 10)
+  privateServiceConnectConnectivity = _messages.MessageField('PrivateServiceConnectConnectivity', 11)
+  ssl = _messages.MessageField('SslConfig', 12)
+  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 13)
+  username = _messages.StringField(14)
 
 
 class PostgresDestinationConfig(_messages.Message):
@@ -5181,6 +5219,30 @@ class PostgresDestinationConfig(_messages.Message):
 
   maxConcurrentConnections = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   transactionTimeout = _messages.StringField(2)
+
+
+class PostgresSourceConfig(_messages.Message):
+  r"""Configuration for Postgres as a source in a migration.
+
+  Fields:
+    skipFullDump: Optional. Whether to skip full dump or not.
+  """
+
+  skipFullDump = _messages.BooleanField(1)
+
+
+class PostgresToSqlServerConfig(_messages.Message):
+  r"""Configuration for heterogeneous **\u2248PostgreSQL to SQL Server**
+  migrations.
+
+  Fields:
+    postgresSourceConfig: Optional. Configuration for PostgreSQL source.
+    sqlserverDestinationConfig: Optional. Configuration for SQL Server
+      destination.
+  """
+
+  postgresSourceConfig = _messages.MessageField('PostgresSourceConfig', 1)
+  sqlserverDestinationConfig = _messages.MessageField('SqlServerDestinationConfig', 2)
 
 
 class PrimaryInstanceSettings(_messages.Message):
@@ -6091,6 +6153,19 @@ class SqlServerDatabaseDetails(_messages.Message):
   """
 
   encryptionOptions = _messages.MessageField('SqlServerEncryptionOptions', 1)
+
+
+class SqlServerDestinationConfig(_messages.Message):
+  r"""Configuration for SQL Server as a destination in a migration.
+
+  Fields:
+    maxConcurrentConnections: Optional. Maximum number of connections Database
+      Migration Service will open to the destination for data migration.
+    transactionTimeout: Optional. Timeout for data migration transactions.
+  """
+
+  maxConcurrentConnections = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  transactionTimeout = _messages.StringField(2)
 
 
 class SqlServerEncryptionOptions(_messages.Message):

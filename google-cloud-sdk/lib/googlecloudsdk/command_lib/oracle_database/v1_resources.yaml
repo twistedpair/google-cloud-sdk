@@ -65,7 +65,30 @@ projects_locations_cloud_vm_clusters:
     parameter_name: cloudVmClustersId
     attribute_name: cloud_vm_cluster
     help: The cloudVmCluster id of the {resource} resource.
-  disable_auto_completers: true
+  disable_auto_completers: false
+projects_locations_cloud_vm_clusters_or_exadb_vm_clusters:
+  name: cloudVmClusterOrExadbVmCluster
+  plural_name: cloudVmClustersOrExadbVmClusters
+  resources:
+  - name: cloudVmCluster
+    plural_name: cloudVmClusters
+    collection: oracledatabase.projects.locations.cloudVmClusters
+    attributes:
+    - *project
+    - *location
+    - *cloudVmCluster
+    disable_auto_completers: true
+  - name: exadbVmCluster
+    plural_name: exadbVmClusters
+    collection: oracledatabase.projects.locations.exadbVmClusters
+    attributes:
+    - *project
+    - *location
+    - &exadbVmCluster
+      parameter_name: exadbVmClustersId
+      attribute_name: exadb_vm_cluster
+      help: The exadbVmCluster id of the {resource} resource.
+    disable_auto_completers: true
 projects_locations_databases:
   name: database
   plural_name: databases
@@ -97,10 +120,7 @@ projects_locations_exadb_vm_clusters:
   attributes:
   - *project
   - *location
-  - &exadbVmCluster
-    parameter_name: exadbVmClustersId
-    attribute_name: exadb_vm_cluster
-    help: The exadbVmCluster id of the {resource} resource.
+  - *exadbVmCluster
   disable_auto_completers: false
 projects_locations_exascale_db_storage_vaults:
   name: exascaleDbStorageVault
@@ -160,6 +180,22 @@ projects_none_networks:
     parameter_name: networksId
     attribute_name: network
     help: The network id of the {resource} resource.
+  disable_auto_completers: true
+projects_locations_key_rings_crypto_keys:
+  name: cryptoKey
+  plural_name: cryptoKeys
+  collection: oracledatabase.projects.locations.keyRings.cryptoKeys
+  attributes:
+  - *project
+  - *location
+  - &keyRing
+    parameter_name: keyRingsId
+    attribute_name: key_ring
+    help: The keyRing id of the {resource} resource.
+  - &cryptoKey
+    parameter_name: cryptoKeysId
+    attribute_name: crypto_key
+    help: The cryptoKey id of the {resource} resource.
   disable_auto_completers: true
 projects_locations_odb_networks_odb_subnets:
   name: odbSubnet

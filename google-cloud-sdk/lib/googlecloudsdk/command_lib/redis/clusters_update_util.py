@@ -97,6 +97,14 @@ def UpdateShardCount(unused_cluster_ref, args, patch_request):
   return patch_request
 
 
+def UpdateMaintenanceVersion(unused_cluster_ref, args, patch_request):
+  """Hook to add maintenance version to the redis cluster update request."""
+  if args.IsSpecified('maintenance_version'):
+    patch_request.cluster.maintenanceVersion = args.maintenance_version
+    patch_request = AddFieldToUpdateMask('maintenance_version', patch_request)
+  return patch_request
+
+
 def UpdateDeletionProtection(unused_cluster_ref, args, patch_request):
   """Hook to add delete protection to the redis cluster update request."""
   if args.IsSpecified('deletion_protection'):

@@ -165,7 +165,7 @@ class DesigncenterV1alpha(base_api.BaseApiClient):
         method_id='designcenter.projects.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1alpha/{+name}/operations',
         request_field='',
         request_type_name='DesigncenterProjectsLocationsOperationsListRequest',
@@ -726,6 +726,33 @@ class DesigncenterV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ImportIaC(self, request, global_params=None):
+      r"""Imports IaC for an application template.
+
+      Args:
+        request: (DesigncenterProjectsLocationsSpacesApplicationTemplatesImportIaCRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ImportApplicationTemplateIaCResponse) The response message.
+      """
+      config = self.GetMethodConfig('ImportIaC')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ImportIaC.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/spaces/{spacesId}/applicationTemplates/{applicationTemplatesId}:importIaC',
+        http_method='POST',
+        method_id='designcenter.projects.locations.spaces.applicationTemplates.importIaC',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:importIaC',
+        request_field='importApplicationTemplateIaCRequest',
+        request_type_name='DesigncenterProjectsLocationsSpacesApplicationTemplatesImportIaCRequest',
+        response_type_name='ImportApplicationTemplateIaCResponse',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists application templates in a given space.
 
@@ -922,6 +949,33 @@ class DesigncenterV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='DesigncenterProjectsLocationsSpacesApplicationsGetRequest',
         response_type_name='Application',
+        supports_download=False,
+    )
+
+    def ImportIaC(self, request, global_params=None):
+      r"""Imports IaC for an application resource.
+
+      Args:
+        request: (DesigncenterProjectsLocationsSpacesApplicationsImportIaCRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ImportApplicationIaCResponse) The response message.
+      """
+      config = self.GetMethodConfig('ImportIaC')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ImportIaC.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/spaces/{spacesId}/applications/{applicationsId}:importIaC',
+        http_method='POST',
+        method_id='designcenter.projects.locations.spaces.applications.importIaC',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:importIaC',
+        request_field='importApplicationIaCRequest',
+        request_type_name='DesigncenterProjectsLocationsSpacesApplicationsImportIaCRequest',
+        response_type_name='ImportApplicationIaCResponse',
         supports_download=False,
     )
 
@@ -1883,6 +1937,33 @@ class DesigncenterV1alpha(base_api.BaseApiClient):
         request_field='space',
         request_type_name='DesigncenterProjectsLocationsSpacesPatchRequest',
         response_type_name='Space',
+        supports_download=False,
+    )
+
+    def RegisterApphubResources(self, request, global_params=None):
+      r"""Registers a list of deployed GCP resources with App Hub.
+
+      Args:
+        request: (DesigncenterProjectsLocationsSpacesRegisterApphubResourcesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RegisterApphubResources')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RegisterApphubResources.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/spaces/{spacesId}:registerApphubResources',
+        http_method='POST',
+        method_id='designcenter.projects.locations.spaces.registerApphubResources',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}:registerApphubResources',
+        request_field='registerApphubResourcesRequest',
+        request_type_name='DesigncenterProjectsLocationsSpacesRegisterApphubResourcesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

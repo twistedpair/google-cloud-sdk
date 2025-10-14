@@ -13,14 +13,54 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for working with volumes."""
+
 import abc
 import argparse
+from typing import TypedDict
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 
 _supported_volume_types = {}
+
+VolumeDict = TypedDict(
+    'VolumeDict',
+    {
+        'name': str,
+        'type': str,
+        'read-only': str,
+        'bucket': str,
+        'location': str,
+        'size-limit': str,
+        'dynamic-mounting': str,
+        'mount-options': str,
+        'secret': str,
+        'version': str,
+        'path': str,
+        'instances': str,
+    },
+    total=False,
+)
+
+
+def import_gapic_client_types():
+  """Imports types from the v2 gapic client, handling potential gRPC import errors.
+
+  Not all gCloud distributions have the gRPC library. Since only
+  workerpools use the gapic client (which requires gRPC), we import it here
+  so only workerpool commands are affected if gRPC is not installed.
+
+  Returns:
+    The run_v2 types module.
+  """
+  try:
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.generated_clients.gapic_clients.run_v2 import types
+    # pylint: enable=g-import-not-at-top
+    return types
+  except ImportError:
+    raise serverless_exceptions.NoGrpcInstalledError()
 
 
 def _registered_volume_type(cls):
@@ -40,26 +80,28 @@ def _registered_volume_type(cls):
 
 def add_volume(volume, volumes, messages, release_track):
   """Add the volume described by the given volume dict to the resource."""
-  if 'name' not in volume or 'type' not in volume:
-    raise serverless_exceptions.ConfigurationError(
-        'All added volumes must have a name and type'
-    )
-
-  if volume['type'] not in _supported_volume_types:
-    raise serverless_exceptions.ConfigurationError(
-        'Volume type {} not supported'.format(volume['type'])
-    )
+  _validate_volume_name_and_type(volume, release_track)
   new_vol = messages.Volume(name=volume['name'])
   vol_type = _supported_volume_types[volume['type']]
-  if release_track not in vol_type.release_tracks():
-    raise serverless_exceptions.ConfigurationError(
-        'Volume type {} not supported'.format(volume['type'])
-    )
   vol_type.validate_volume_add(volume, release_track)
   vol_type.validate_fields(volume, release_track)
   vol_type.fill_volume(volume, new_vol, messages)
 
   volumes[volume['name']] = new_vol
+
+
+def create_volume_v2(
+    volume: VolumeDict,
+    release_track: base.ReleaseTrack = base.ReleaseTrack.ALPHA,
+):
+  """Create the volume described by the given volume dict to the resource."""
+  types = import_gapic_client_types()
+  _validate_volume_name_and_type(volume, release_track)
+  vol_type = _supported_volume_types[volume['type']]
+  vol_type.validate_volume_add(volume, release_track)
+  vol_type.validate_fields(volume, release_track)
+
+  return vol_type.create_volume_v2(volume, types)
 
 
 def volume_help(release_track):
@@ -124,7 +166,13 @@ class _VolumeType(abc.ABC):
   @classmethod
   @abc.abstractmethod
   def fill_volume(cls, volume, new_vol, messages):
-    """Fills in the Volume message from the provided volume dict."""
+    """Fills in the Volume message (V1) from the provided volume dict."""
+    pass
+
+  @classmethod
+  @abc.abstractmethod
+  def create_volume_v2(cls, volume):
+    """Creates the volume (V2) from the provided volume dict."""
     pass
 
   @classmethod
@@ -229,6 +277,62 @@ class _InMemoryVolume(_VolumeType):
       src = messages.EmptyDirVolumeSource(medium='Memory')
     new_vol.emptyDir = src
 
+  @classmethod
+  def create_volume_v2(cls, volume, types):
+    source = types.EmptyDirVolumeSource(
+        medium=types.EmptyDirVolumeSource.Medium.MEMORY
+    )
+    if 'size-limit' in volume:
+      source.size_limit = volume['size-limit']
+    return types.Volume(
+        name=volume['name'],
+        empty_dir=source,
+    )
+
+
+@_registered_volume_type
+class _TempDiskVolume(_VolumeType):
+  """Volume Type representing a disk-backed emptydir."""
+
+  @classmethod
+  def name(cls):
+    return 'ephemeral-disk'
+
+  @classmethod
+  def help(cls):
+    return (
+        'A volume that stores data on a temporary disk. '
+        'With this type of volume, data is not shared between instances and '
+        'all data will be lost when the instance it is on is terminated.'
+    )
+
+  @classmethod
+  def release_tracks(cls):
+    return [base.ReleaseTrack.ALPHA]
+
+  @classmethod
+  def required_fields(cls, release_track):
+    return {}
+
+  @classmethod
+  def optional_fields(cls, release_track):
+    return {
+        'size': (
+            'A quantity representing the amount of disk space allocated to'
+            ' this volume, such as "512Mi" or "3G".'
+        )
+    }
+
+  @classmethod
+  def fill_volume(cls, volume, new_vol, messages):
+    if 'size' in volume:
+      src = messages.EmptyDirVolumeSource(
+          medium='Disk', sizeLimit=volume['size']
+      )
+    else:
+      src = messages.EmptyDirVolumeSource(medium='Disk')
+    new_vol.emptyDir = src
+
 
 @_registered_volume_type
 class _NfsVolume(_VolumeType):
@@ -273,6 +377,22 @@ class _NfsVolume(_VolumeType):
     path = '/' + path
     src = messages.NFSVolumeSource(server=server, path=path, readOnly=readonly)
     new_vol.nfs = src
+
+  @classmethod
+  def create_volume_v2(cls, volume, types):
+    readonly = _is_readonly(volume)
+    location = volume['location']
+    server, path = str(location).split(':/', 1)
+    # need to re-add leading slash
+    path = '/' + path
+    return types.Volume(
+        name=volume['name'],
+        nfs=types.NFSVolumeSource(
+            server=server,
+            path=path,
+            read_only=readonly,
+        ),
+    )
 
 
 @_registered_volume_type
@@ -368,6 +488,27 @@ class _GcsVolume(_VolumeType):
       )
     new_vol.csi = src
 
+  @classmethod
+  def create_volume_v2(cls, volume, types):
+    if 'mount-options' in volume:
+      mount_options = volume['mount-options'].split(';')
+    else:
+      mount_options = []
+    source = types.GCSVolumeSource(
+        read_only=_is_readonly(volume),
+        mount_options=mount_options,
+    )
+    # If dynamic mounting is enabled, we need to set the bucket to a special
+    # value to indicate that the bucket should be dynamically mounted.
+    if 'dynamic-mounting' in volume and volume['dynamic-mounting']:
+      source.bucket = '_'
+    else:
+      source.bucket = volume['bucket']
+    return types.Volume(
+        name=volume['name'],
+        gcs=source,
+    )
+
 
 @_registered_volume_type
 class SecretVolume(_VolumeType):
@@ -407,6 +548,20 @@ class SecretVolume(_VolumeType):
     item = messages.KeyToPath(path=volume['path'], key=volume['version'])
     src.items.append(item)
     new_vol.secret = src
+
+  @classmethod
+  def create_volume_v2(cls, volume, types):
+    return types.Volume(
+        name=volume['name'],
+        secret=types.SecretVolumeSource(
+            secret=volume['secret'],
+            items=[
+                types.VersionToPath(
+                    version=volume['version'], path=volume['path']
+                )
+            ],
+        ),
+    )
 
 
 @_registered_volume_type
@@ -461,6 +616,35 @@ class CloudSqlInstance(_VolumeType):
       )
     new_vol.csi = src
 
+  @classmethod
+  def create_volume_v2(cls, volume, types):
+    return types.Volume(
+        name=volume['name'],
+        cloud_sql_instance=types.CloudSqlInstance(
+            instances=[
+                instance.strip() for instance in volume['instances'].split(';')
+            ]
+        ),
+    )
+
 
 def _is_readonly(volume):
   return 'readonly' in volume and volume['readonly'].lower() == 'true'
+
+
+def _validate_volume_name_and_type(volume, release_track):
+  """Validates the volume name and type."""
+  if 'name' not in volume or 'type' not in volume:
+    raise serverless_exceptions.ConfigurationError(
+        'All added volumes must have a name and type'
+    )
+
+  if volume['type'] not in _supported_volume_types:
+    raise serverless_exceptions.ConfigurationError(
+        'Volume type {} not supported'.format(volume['type'])
+    )
+  vol_type = _supported_volume_types[volume['type']]
+  if release_track not in vol_type.release_tracks():
+    raise serverless_exceptions.ConfigurationError(
+        'Volume type {} not supported'.format(volume['type'])
+    )

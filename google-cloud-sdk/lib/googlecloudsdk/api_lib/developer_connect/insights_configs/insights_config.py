@@ -579,7 +579,8 @@ class InsightsConfigClient(object):
             'Skipping permissions checks/binding.'
         )
     else:
-      for project in dependent_resources:
+      # Sort the projects to ensure deterministic behavior for tests.
+      for project in sorted(dependent_resources):
         project_ref = projects_util.ParseProject(project)
         self.BindRolesToServiceAccount(self.p4sa_email, project_ref, False)
 

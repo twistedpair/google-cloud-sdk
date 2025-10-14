@@ -95,6 +95,18 @@ def ParseTimeOfDayMainWindowV1(time_of_day):
   return ParseTimeOfDay(time_of_day, messages)
 
 
+def ParseTimeOfDayPeriodicExportStartTimeV1Alpha(time_of_day):
+  """Convert input to TimeOfDay type for Deny Main Period v1."""
+  messages = GetMessagesModuleForVersion('v1alpha2')
+  arg = '--periodic-export-start-time'
+  error_message = (
+      "'--periodic-export-start-time' must be used in a valid 24-hr UTC Time"
+      ' format.'
+  )
+  CheckTimeOfDayField(time_of_day, error_message, arg)
+  return ParseTimeOfDay(time_of_day, messages)
+
+
 def CheckTimeOfDayField(time_of_day, error_message, arg):
   """Check if input is a valid TimeOfDay format."""
   hour_and_min = time_of_day.split(':')

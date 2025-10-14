@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import encoding as apitools_encoding
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
@@ -88,6 +89,23 @@ def MakeGetUriFunc(collection, release_track=base.ReleaseTrack.ALPHA):
   return _GetUri
 
 
+class EmbeddedResultOperationPoller(waiter.CloudOperationPoller):
+  """Poller for operations with result embedded in operation.response."""
+
+  def __init__(self, operation_service):
+    super(EmbeddedResultOperationPoller, self).__init__(None, operation_service)
+
+  def GetRequestType(self, request_name):
+    """Overrides."""
+    return self.operation_service.GetRequestType(request_name)
+
+  def GetResult(self, operation):
+    """Overrides."""
+    if operation.response:
+      return apitools_encoding.MessageToPyValue(operation.response)
+    return None
+
+
 def WaitForOperation(
     client,
     operation,
@@ -107,6 +125,54 @@ def WaitForOperation(
           client.projects_locations_operations,
           client.projects_locations_operations,
       ),
+      operation_ref=operation_ref,
+      message=message,
+      max_wait_ms=max_wait_sec * 1000,
+  )
+
+
+def GetGoogleCatalogProjectId() -> str:
+  """Returns the project ID for Google Catalog based on API endpoint."""
+  endpoint_override = (
+      properties.VALUES.api_endpoint_overrides.designcenter.Get()
+  )
+  # universe_domain will always be non empty with default value 'googleapis.com'
+  universe_domain = properties.VALUES.core.universe_domain.Get()
+  if (
+      endpoint_override
+      and f'autopush-designcenter.sandbox.{universe_domain}'
+      in endpoint_override
+  ):
+    return 'gcpdesigncenter-autopush'
+  if (
+      endpoint_override
+      and f'staging-designcenter.sandbox.{universe_domain}'
+      in endpoint_override
+  ):
+    return 'gcpdesigncenter-staging'
+  return 'gcpdesigncenter'
+
+
+def WaitForOperationWithEmbeddedResult(
+    client,
+    operation,
+    message: str,
+    max_wait_sec: int,
+    release_track=base.ReleaseTrack.ALPHA,
+):
+  """Waits for an operation to complete, where the result is embedded in the operation response."""
+  operation_ref = resources.REGISTRY.ParseRelativeName(
+      operation.name,
+      collection=OPERATIONS_COLLECTION,
+      api_version=VERSION_MAP.get(release_track),
+  )
+
+  poller = EmbeddedResultOperationPoller(
+      client.projects_locations_operations
+  )
+
+  return waiter.WaitFor(
+      poller=poller,
       operation_ref=operation_ref,
       message=message,
       max_wait_ms=max_wait_sec * 1000,

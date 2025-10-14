@@ -2091,6 +2091,22 @@ def AddQueuedProvisioningFlag(parser, hidden=False):
   )
 
 
+def AddConsolidationDelayFlag(parser, hidden=False):
+  """Adds a --consolidation-delay flag to parser."""
+  parser.add_argument(
+      '--consolidation-delay',
+      default=None,
+      type=str,
+      help=textwrap.dedent("""\
+        Set the duration after which the Cluster Autoscaler can scale down
+        underutilized nodes.
+
+          $ {command} node-pool-1 --cluster=example-cluster --consolidation-delay=3600s
+        """),
+      hidden=hidden,
+  )
+
+
 def AddMaxRunDurationFlag(parser, hidden=False):
   """Adds a --max-run-duration flag to parser."""
   parser.add_argument(
@@ -3813,6 +3829,27 @@ https://cloud.google.com/kubernetes-engine/docs/how-to/pod-security-policies.
   )
 
 
+def AddPodSnapshotConfigFlags(parser, hidden=True):
+  """Adds --enable-pod-snapshots and --disable-pod-snapshots flags to parser."""
+  group = parser.add_group(mutex=True, hidden=hidden)
+  group.add_argument(
+      '--enable-pod-snapshots',
+      dest='pod_snapshots_enabled',
+      action='store_const',
+      const=True,
+      default=None,
+      help='Enable the Pod Snapshot feature on the cluster.',
+  )
+  group.add_argument(
+      '--disable-pod-snapshots',
+      dest='pod_snapshots_enabled',
+      action='store_const',
+      const=False,
+      default=None,
+      help='Disable the Pod Snapshot feature on the cluster.',
+  )
+
+
 def AddAllowRouteOverlapFlag(parser):
   """Adds a --allow-route-overlap flag to parser."""
   help_text = """\
@@ -5160,7 +5197,7 @@ The duration between batches is specified by batch-soak-duration.
   )
 
 
-def AddAutoscaledRolloutPolicyFlag(parser, hidden=True):
+def AddAutoscaledRolloutPolicyFlag(parser, hidden=False):
   """Adds --autoscaled-rollout-policy flag to the parser."""
 
   autoscaled_rollout_policy_help = """\
@@ -5171,9 +5208,12 @@ the blue pool before draining the nodes.
 
 Examples:
 
-$ {command} node-pool-1 --cluster=example-cluster --autoscaled-rollout-policy
+$ {command} node-pool-1 --cluster=example-cluster\
+  --enable-blue-green-upgrade\
+  --autoscaled-rollout-policy=""
 
 $ {command} node-pool-1 --cluster=example-cluster\
+  --enable-blue-green-upgrade\
   --autoscaled-rollout-policy=wait-for-drain-duration=7200s
 """
 
@@ -5223,6 +5263,39 @@ Examples:
               '`--system-config-from-file` instead. '
           ),
       ),
+  )
+
+
+def AddEnableKernelModuleSignatureEnforcementFlag(
+    parser, for_node_pool=False, hidden=False
+):
+  """Adds kernel module signature enforcement flag to the given parser."""
+  if for_node_pool:
+    help_text = """\
+Enforces that kernel modules are signed on all nodes in the node pool.
+Use `--no-enable-kernel-module-signature-enforcement` to disable.
+
+Examples:
+
+  $ {command} node-pool-1 --enable-kernel-module-signature-enforcement
+"""
+  else:
+    help_text = """\
+Enforces that kernel modules are signed on all new nodes in the cluster unless
+explicitly overridden with `--no-enable-kernel-module-signature-enforcement`
+when creating the nodepool.
+Use `--no-enable-kernel-module-signature-enforcement` to disable.
+
+Examples:
+
+  $ {command} example-cluster --enable-kernel-module-signature-enforcement
+"""
+  parser.add_argument(
+      '--enable-kernel-module-signature-enforcement',
+      hidden=hidden,
+      action='store_true',
+      default=None,
+      help=help_text,
   )
 
 
@@ -7837,11 +7910,10 @@ def AddAutoIpamFlag(parser, hidden=False, is_update=False):
 
 def AddEnableK8sTokensViaDnsFlag(parser):
   """Adds the --enable-k8s-tokens-via-dns flag to parser."""
-  help_text = ' '
+  help_text = """ Enable K8s Service Account tokens Authentication to the cluster's control plane over DNS-based endpoint. """
   parser.add_argument(
       '--enable-k8s-tokens-via-dns',
       default=None,
-      hidden=True,
       action='store_true',
       help=help_text,
   )
@@ -7887,11 +7959,10 @@ def AddUseIamTokenFlag(parser):
 
 def AddEnableK8sCertsViaDnsFlag(parser):
   """Adds the --enable-k8s-certs-via-dns flag to parser."""
-  help_text = ' '
+  help_text = """ Enable K8s client certificates Authentication to the cluster's control plane over DNS-based endpoint. """
   parser.add_argument(
       '--enable-k8s-certs-via-dns',
       default=None,
-      hidden=True,
       action='store_true',
       help=help_text,
   )

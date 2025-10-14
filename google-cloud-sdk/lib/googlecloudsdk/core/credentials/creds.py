@@ -1678,10 +1678,12 @@ class ADC(object):
   def __init__(self,
                credentials,
                impersonated_service_account=None,
-               delegates=None):
+               delegates=None,
+               scopes=None):
     self._credentials = credentials
     self._impersonated_service_account = impersonated_service_account
     self._delegates = delegates
+    self._scopes = scopes
 
   @property
   def is_user(self):
@@ -1693,7 +1695,8 @@ class ADC(object):
     """Json representation of the credentials for ADC."""
     return _ConvertCredentialsToADC(self._credentials,
                                     self._impersonated_service_account,
-                                    self._delegates)
+                                    self._delegates,
+                                    self._scopes)
 
   def DumpADCToFile(self, file_path=None):
     """Dumps the credentials to the ADC json file."""
@@ -1759,7 +1762,7 @@ IMPERSONATION_TOKEN_URL = 'https://iamcredentials.{}/v1/projects/-/serviceAccoun
 
 
 def _ConvertCredentialsToADC(credentials, impersonated_service_account,
-                             delegates):
+                             delegates, scopes=None):
   """Convert credentials with impersonation to a json dictionary."""
   if IsOauth2ClientCredentials(credentials):
     creds_dict = _ConvertOauth2ClientCredentialsToADC(credentials)
@@ -1786,6 +1789,9 @@ def _ConvertCredentialsToADC(credentials, impersonated_service_account,
       'type':
           'impersonated_service_account'
   }
+
+  if scopes:
+    impersonated_creds_dict['scopes'] = scopes
 
   return impersonated_creds_dict
 

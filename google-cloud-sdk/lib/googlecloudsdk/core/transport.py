@@ -234,6 +234,7 @@ class RequestWrapper(six.with_metaclass(abc.ABCMeta, object)):
               lambda *args: None,
           )
       )
+
     self.WrapRequest(http_client, handlers, response_encoding=response_encoding)
     return http_client
 
@@ -653,6 +654,7 @@ def MakeUserAgentString(cmd_path=None):
       ' from-script/{from_script}'
       ' python/{py_version}'
       ' term/{term}'
+      ' {gcloud_mcp_metrics}'
       ' {ua_fragment}'
   ).format(
       version=config.CLOUD_SDK_VERSION.replace(' ', '_'),
@@ -670,6 +672,7 @@ def MakeUserAgentString(cmd_path=None):
       ua_fragment=user_platform.UserAgentFragment(),
       from_script=console_io.IsRunFromShellScript(),
       term=console_attr.GetConsoleAttr().GetTermIdentifier(),
+      gcloud_mcp_metrics=GetValidMCPMetricsString(),
   )
 
 
@@ -695,3 +698,30 @@ def IsTokenUri(uri):
     return True
 
   return False
+
+
+def GetValidMCPMetricsString():
+  """Returns the valid MCP metrics string if it exists, otherwise returns empty string."""
+  if (
+      'GCLOUD_MCP_METRICS' in os.environ
+  ):
+    metrics_string = os.environ['GCLOUD_MCP_METRICS']
+    if ValidateMCPMetricsFormat(metrics_string):
+      return metrics_string
+  return ''
+
+
+def ValidateMCPMetricsFormat(metrics_string):
+  """Checks if a string follows the MCP metrics format.
+
+  Args:
+    metrics_string: The string to validate.
+
+  Returns:
+    True if the string matches the format, False otherwise.
+  """
+  pattern = (
+      r'goog-mcp/agent/[^/]+/agent-version/[^/]+/mcp-server/[^/]+/'
+      r'mcp-version/[^/]+/mcp-tool/[^/]+'
+  )
+  return re.fullmatch(pattern, metrics_string) is not None

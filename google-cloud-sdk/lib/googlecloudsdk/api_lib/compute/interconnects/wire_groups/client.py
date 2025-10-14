@@ -95,7 +95,6 @@ class WireGroup(object):
           )
       )
 
-    # The following attributes are only available in ALPHA.
     if bandwidth_metered:
       wire_group.wireProperties.bandwidthMetered = bandwidth_metered
     if network_service_class:
@@ -180,7 +179,6 @@ class WireGroup(object):
           )
       )
 
-    # The following attributes are only available in ALPHA.
     if bandwidth_metered:
       wire_group.wireProperties.bandwidthMetered = bandwidth_metered
     if network_service_class:

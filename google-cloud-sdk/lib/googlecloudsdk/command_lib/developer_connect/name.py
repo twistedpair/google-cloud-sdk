@@ -21,8 +21,9 @@ from googlecloudsdk.command_lib.projects import util as projects_util
 from googlecloudsdk.core import exceptions
 
 _APPHUB_MANAGEMENT_PROJECT_PREFIX = "google-mfp"
-_ARTIFACT_URI_PATTERN = (
-    r"^([^\.]+)-docker.pkg.dev/([^/]+)/([^/]+)/([^@:]+)(@sha256:[a-f0-9]+)?$"
+_ARTIFACT_URI_PATTERN = r"^([^\.]+)-docker.pkg.dev/([^/]+)/([^/]+)/([^@:]+)((@sha256:[a-f0-9]+)|(:[\w\-\.]+))?$"
+_CONTAINER_REGISTRY_URI_PATTERN = (
+    r"^(.*gcr.io)/([^/]+)/([^@:]+)((@sha256:[a-f0-9]+)|(:[\w\-\.]+))?$"
 )
 _PROJECT_PATTERN = r"projects/([^/]+)"
 apphub_service_prefix = "//apphub.googleapis.com"
@@ -35,6 +36,15 @@ app_hub_application_path_regex = re.compile(
 gke_deployment_path_regex = re.compile(
     rf"^(?:{gke_service_prefix}/)?projects/((?:[^:]+:.)?[a-z0-9\\-]+)/(locations|zones)/([\w-]{{2,40}})/clusters/{name_segment_re}/k8s/namespaces/{name_segment_re}/apps/deployments/{name_segment_re}$"
 )
+
+# https://cloud.google.com/artifact-registry/docs/transition/gcr-repositories#gcr-domain-support
+_GCR_HOST_TO_AR_LOCATION = {
+    "us.gcr.io": "us",
+    "gcr.io": "us",
+    # the documentation says "europe", but it seems to only work with "eu"
+    "eu.gcr.io": "eu",
+    "asia.gcr.io": "asia",
+}
 
 
 class Project:
@@ -62,42 +72,46 @@ def extract_project(uri):
 class ArtifactRegistryUri:
   """Parses and represents an Artifact Registry URI."""
 
-  def __init__(self, location, project, repository, image_name, sha_suffix):
+  def __init__(self, location, project, repository, image_name):
     self._location = location
     self._project = project
     self._repository = repository
     self._image_name = image_name
-    self._sha_suffix = sha_suffix
 
   def project_id(self):
     """The project ID."""
     return self._project
 
-  def sha_suffix(self):
-    """The SHA suffix (e.g., '@sha256:...') if present, otherwise None."""
-    return self._sha_suffix
-
   def base_uri(self):
     """The artifact URI without the SHA suffix."""
+    # If the repository is a GCR host name, then the URI must be a gcr.io URI.
+    if self._repository in _GCR_HOST_TO_AR_LOCATION:
+      return f"{self._repository}/{self._project}/{self._image_name}"
     return f"{self._location}-docker.pkg.dev/{self._project}/{self._repository}/{self._image_name}"
 
 
 def validate_artifact_uri(uri):
   """Validates the artifact URI."""
-
   # Parse the URI if it matches the expected pattern.
-  match = re.match(_ARTIFACT_URI_PATTERN, uri)
-  if not match or len(match.groups()) != 5:
-    return False
+  if match := re.match(_ARTIFACT_URI_PATTERN, uri):
+    location = match.group(1)
+    project = match.group(2)
+    repository = match.group(3)
+    image_name = match.group(4)
+  elif match := re.match(_CONTAINER_REGISTRY_URI_PATTERN, uri):
+    host_name = match.group(1)
+    location = _GCR_HOST_TO_AR_LOCATION.get(host_name)
+    if not location:
+      return None
 
-  location = match.group(1)
-  project = match.group(2)
-  repository = match.group(3)
-  image_name = match.group(4)
-  sha_suffix = match.group(5)
-  return ArtifactRegistryUri(
-      location, project, repository, image_name, sha_suffix
-  )
+    project = match.group(2)
+    # The repository name is the same as the container registry host name.
+    repository = host_name
+    image_name = match.group(3)
+  else:
+    return None
+
+  return ArtifactRegistryUri(location, project, repository, image_name)
 
 
 def is_management_project(app_hub_application):
@@ -208,9 +222,7 @@ def parse_app_hub_application_uri(uri):
     )
   location = match.group(2)
   application_id = match.group(3)
-  return AppHubApplication(
-      project, location, application_id
-  )
+  return AppHubApplication(project, location, application_id)
 
 
 def parse_artifact_configs(user_artifact_configs):

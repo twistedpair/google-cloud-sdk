@@ -71,9 +71,6 @@ To show more fields in table format, please see the examples in --help.
 class ArgumentValidationError(exceptions.Error):
   """Raised when a user specifies --rules and --allow parameters together."""
 
-  def __init__(self, error_message):
-    super(ArgumentValidationError, self).__init__(error_message)
-
 
 class ActionType(enum.Enum):
   """Firewall Action type."""
@@ -460,20 +457,25 @@ def SortNetworkFirewallRules(client, rules):
 
 
 def SortOrgFirewallRules(client, rules):
-  """Sort the organization firewall rules by direction and priority."""
-  ingress_org_firewall_rule = [
-      item for item in rules if item.direction ==
-      client.messages.SecurityPolicyRule.DirectionValueValuesEnum.INGRESS
-  ]
-  ingress_org_firewall_rule.sort(key=lambda x: x.priority, reverse=False)
-  egress_org_firewall_rule = [
-      item for item in rules if item.direction ==
-      client.messages.SecurityPolicyRule.DirectionValueValuesEnum.EGRESS
-  ]
-  egress_org_firewall_rule.sort(key=lambda x: x.priority, reverse=False)
-  cloud_armor_rule = [item for item in rules if not item.direction]
-  cloud_armor_rule.sort(key=lambda x: x.priority, reverse=False)
-  return ingress_org_firewall_rule + egress_org_firewall_rule + cloud_armor_rule
+  """Sort the organization firewall rules by optional direction and priority."""
+  ingress_rule, egress_rule, cloud_armor_rule = [], [], []
+  for item in rules:
+    direction = getattr(item, 'direction', None)
+    if direction is None:
+      cloud_armor_rule.append(item)
+    elif (
+        direction
+        == client.messages.SecurityPolicyRule.DirectionValueValuesEnum.INGRESS
+    ):
+      ingress_rule.append(item)
+    elif (
+        direction
+        == client.messages.SecurityPolicyRule.DirectionValueValuesEnum.EGRESS
+    ):
+      egress_rule.append(item)
+  for rule_list in [ingress_rule, egress_rule, cloud_armor_rule]:
+    rule_list.sort(key=lambda x: x.priority, reverse=False)
+  return ingress_rule + egress_rule + cloud_armor_rule
 
 
 def SortFirewallPolicyRules(client, rules):

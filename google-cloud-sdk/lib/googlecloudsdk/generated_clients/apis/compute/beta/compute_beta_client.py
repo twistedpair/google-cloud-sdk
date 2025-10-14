@@ -176,7 +176,7 @@ class ComputeBeta(base_api.BaseApiClient):
     def AggregatedList(self, request, global_params=None):
       r"""Retrieves an aggregated list of accelerator types.
 
-To prevent failure, Google recommends that you set the
+To prevent failure, it is recommended that you set the
 `returnPartialSuccess` parameter to `true`.
 
       Args:
@@ -268,7 +268,7 @@ project.
     def AggregatedList(self, request, global_params=None):
       r"""Retrieves an aggregated list of addresses.
 
-To prevent failure, Google recommends that you set the
+To prevent failure, it is recommended that you set the
 `returnPartialSuccess` parameter to `true`.
 
       Args:
@@ -531,7 +531,7 @@ resources.
     def AggregatedList(self, request, global_params=None):
       r"""Retrieves an aggregated list of autoscalers.
 
-To prevent failure, Google recommends that you set the
+To prevent failure, it is recommended that you set the
 `returnPartialSuccess` parameter to `true`.
 
       Args:
@@ -1174,7 +1174,7 @@ service.
       r"""Retrieves the list of all BackendService resources, regional and global,.
 available to the specified project.
 
-To prevent failure, Google recommends that you set the
+To prevent failure, it is recommended that you set the
 `returnPartialSuccess` parameter to `true`.
 
       Args:
@@ -1830,7 +1830,7 @@ patch format and processing rules.
     def AggregatedList(self, request, global_params=None):
       r"""Retrieves an aggregated list of disk types.
 
-To prevent failure, Google recommends that you set the
+To prevent failure, it is recommended that you set the
 `returnPartialSuccess` parameter to `true`.
 
       Args:
@@ -1950,7 +1950,7 @@ creation.
     def AggregatedList(self, request, global_params=None):
       r"""Retrieves an aggregated list of persistent disks.
 
-To prevent failure, Google recommends that you set the
+To prevent failure, it is recommended that you set the
 `returnPartialSuccess` parameter to `true`.
 
       Args:
@@ -3410,7 +3410,7 @@ specified. To update individual fields, please use PATCH instead.
     def AggregatedList(self, request, global_params=None):
       r"""Retrieves an aggregated list of forwarding rules.
 
-To prevent failure, Google recommends that you set the
+To prevent failure, it is recommended that you set the
 `returnPartialSuccess` parameter to `true`.
 
       Args:
@@ -3666,7 +3666,7 @@ same type as the old target.
     def AggregatedList(self, request, global_params=None):
       r"""Retrieves an aggregated list of future reservations.
 
-To prevent failure, recommendation is that you set the
+To prevent failure, it is recommended that you set the
 `returnPartialSuccess` parameter to `true`.
 
       Args:
@@ -11878,7 +11878,7 @@ specified project and zone.
 firewall policies from all applicable scopes (global and regional) and
 grouping the results per scope.
 
-To prevent failure, Google recommends that you set the
+To prevent failure, it is recommended that you set the
 `returnPartialSuccess` parameter to `true`.
 
       Args:
@@ -15920,7 +15920,7 @@ Backend services overview.
     def AggregatedList(self, request, global_params=None):
       r"""Retrieves an aggregated list of commitments by region.
 
-To prevent failure, Google recommends that you set the
+To prevent failure, it is recommended that you set the
 `returnPartialSuccess` parameter to `true`.
 
       Args:
@@ -16121,7 +16121,7 @@ to the same commitment.
       r"""Retrieves the list of all CompositeHealthCheck resources (all.
 regional) available to the specified project.
 
-To prevent failure, Google recommends that you set the
+To prevent failure, it is recommended that you set the
 `returnPartialSuccess` parameter to `true`.
 
       Args:
@@ -16915,7 +16915,7 @@ following fields can be modified: user_license.
       r"""Retrieves the list of all HealthAggregationPolicy resources,.
 regional and global, available to the specified project.
 
-To prevent failure, Google recommends that you set the
+To prevent failure, it is recommended that you set the
 `returnPartialSuccess` parameter to `true`.
 
       Args:
@@ -22724,7 +22724,7 @@ behaviour for this method.
     def AggregatedList(self, request, global_params=None):
       r"""Retrieves an aggregated list of reservations.
 
-To prevent failure, Google recommends that you set the
+To prevent failure, it is recommended that you set the
 `returnPartialSuccess` parameter to `true`.
 
       Args:

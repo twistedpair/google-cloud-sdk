@@ -292,6 +292,10 @@ class GoogleCloudEventarcPublishingV1PublishRequest(_messages.Message):
     avroMessage: The Avro format of the CloudEvent being published.
       Specification can be found here: https://github.com/cloudevents/spec/blo
       b/v1.0.2/cloudevents/formats/avro-format.md
+    destinationEnrollment: Optional. The only Enrollment that the message
+      should be delivered to. Must be the full resource name of an Enrollment.
+      Format:
+      `projects/{project}/locations/{location}/enrollments/{enrollment}`.
     jsonMessage: The JSON format of the CloudEvent being published.
       Specification can be found here: https://github.com/cloudevents/spec/blo
       b/v1.0.2/cloudevents/formats/json-format.md
@@ -304,9 +308,12 @@ class GoogleCloudEventarcPublishingV1PublishRequest(_messages.Message):
   """
 
   avroMessage = _messages.BytesField(1)
-  jsonMessage = _messages.StringField(2)
-  messageUid = _messages.StringField(3)
-  protoMessage = _messages.MessageField('GoogleCloudEventarcPublishingV1CloudEvent', 4)
+  destinationEnrollment = _messages.StringField(2)
+  jsonMessage = _messages.StringField(3)
+  messageUid = _messages.StringField(4)
+  protoMessage = _messages.MessageField(
+      'GoogleCloudEventarcPublishingV1CloudEvent', 5
+  )
 
 
 class GoogleCloudEventarcPublishingV1PublishResponse(_messages.Message):

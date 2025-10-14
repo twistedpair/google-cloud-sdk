@@ -41,6 +41,34 @@ class AlternateDefault(_messages.Message):
   value = _messages.MessageField('extra_types.JsonValue', 2)
 
 
+class AlternateDefaultInput(_messages.Message):
+  r"""Alternate default input for a UI.
+
+  Enums:
+    TypeValueValuesEnum: Optional. Type of alternate default.
+
+  Fields:
+    type: Optional. Type of alternate default.
+    value: Optional. Value of the alternate default.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Type of alternate default.
+
+    Values:
+      DISPLAY_VARIABLE_ALTERNATE_TYPE_UNSPECIFIED: Default
+      DISPLAY_VARIABLE_ALTERNATE_TYPE_SECURITY: A more secure default.
+      DISPLAY_VARIABLE_ALTERNATE_TYPE_DC: A default specifically needed for
+        Application Design center.
+    """
+    DISPLAY_VARIABLE_ALTERNATE_TYPE_UNSPECIFIED = 0
+    DISPLAY_VARIABLE_ALTERNATE_TYPE_SECURITY = 1
+    DISPLAY_VARIABLE_ALTERNATE_TYPE_DC = 2
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
+  value = _messages.MessageField('extra_types.JsonValue', 2)
+
+
 class AppHubApplicationParameters(_messages.Message):
   r"""App Hub application parameters.
 
@@ -66,6 +94,7 @@ class Application(_messages.Message):
 
   Enums:
     StateValueValuesEnum: Output only. Deployment state of the application.
+    TypeValueValuesEnum: Optional. The type of the application.
 
   Fields:
     appParameters: Optional. A list of parameters to attach to the deployment
@@ -85,6 +114,7 @@ class Application(_messages.Message):
     deploymentRegion: Optional. The region where the application is deployed.
     deploymentRevision: Output only. [Output only] Optional Infra Manager
       deployment Id with revision
+    deploymentTarget: Optional. The deployment target of the application.
     description: Optional. Description of the application.
     displayName: Optional. Display name of the application.
     importExistingResources: Optional. Import existing resources into the
@@ -101,6 +131,7 @@ class Application(_messages.Message):
       an application.
     source: Required. The application deployment source.
     state: Output only. Deployment state of the application.
+    type: Optional. The type of the application.
     updateTime: Output only. Update timestamp.
     updatedTemplateRevision: Output only. The updated template revision
       because of which the application is outdated.
@@ -130,6 +161,18 @@ class Application(_messages.Message):
     FAILED = 7
     DEPLOYING = 8
 
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The type of the application.
+
+    Values:
+      APPLICATION_TYPE_UNSPECIFIED: Application type is unspecified.
+      TERRAFORM_APP: Application type is terraform application.
+      HELM_APP: Application type is helm application.
+    """
+    APPLICATION_TYPE_UNSPECIFIED = 0
+    TERRAFORM_APP = 1
+    HELM_APP = 2
+
   appParameters = _messages.MessageField('Parameter', 1, repeated=True)
   apphubApplication = _messages.StringField(2)
   artifactLocation = _messages.MessageField('ArtifactLocation', 3)
@@ -141,19 +184,21 @@ class Application(_messages.Message):
   deploymentProject = _messages.StringField(9)
   deploymentRegion = _messages.StringField(10)
   deploymentRevision = _messages.StringField(11)
-  description = _messages.StringField(12)
-  displayName = _messages.StringField(13)
-  importExistingResources = _messages.BooleanField(14)
-  name = _messages.StringField(15)
-  previewReference = _messages.StringField(16)
-  projectParameters = _messages.MessageField('ProjectParameters', 17, repeated=True)
-  scope = _messages.MessageField('Scope', 18)
-  serializedApplicationTemplate = _messages.MessageField('SerializedApplicationTemplate', 19)
-  serviceAccount = _messages.StringField(20)
-  source = _messages.MessageField('DeploymentSource', 21)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
-  updateTime = _messages.StringField(23)
-  updatedTemplateRevision = _messages.MessageField('UpdatedTemplateRevision', 24)
+  deploymentTarget = _messages.MessageField('DeploymentTarget', 12)
+  description = _messages.StringField(13)
+  displayName = _messages.StringField(14)
+  importExistingResources = _messages.BooleanField(15)
+  name = _messages.StringField(16)
+  previewReference = _messages.StringField(17)
+  projectParameters = _messages.MessageField('ProjectParameters', 18, repeated=True)
+  scope = _messages.MessageField('Scope', 19)
+  serializedApplicationTemplate = _messages.MessageField('SerializedApplicationTemplate', 20)
+  serviceAccount = _messages.StringField(21)
+  source = _messages.MessageField('DeploymentSource', 22)
+  state = _messages.EnumField('StateValueValuesEnum', 23)
+  type = _messages.EnumField('TypeValueValuesEnum', 24)
+  updateTime = _messages.StringField(25)
+  updatedTemplateRevision = _messages.MessageField('UpdatedTemplateRevision', 26)
 
 
 class ApplicationOperationMetadata(_messages.Message):
@@ -647,6 +692,32 @@ class Channel(_messages.Message):
   uri = _messages.StringField(1)
 
 
+class CodePosition(_messages.Message):
+  r"""CodePosition represents a code location.
+
+  Fields:
+    byteOffset: Output only. Byte offset in the content.
+    column: Output only. One-based column count of the relevant position.
+    line: Output only. One-based line count of the relevant position.
+  """
+
+  byteOffset = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  column = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  line = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class CodeRange(_messages.Message):
+  r"""CodeRange represents a portion of code.
+
+  Fields:
+    end: Output only. End position.
+    start: Output only. Start position.
+  """
+
+  end = _messages.MessageField('CodePosition', 1)
+  start = _messages.MessageField('CodePosition', 2)
+
+
 class CommitApplicationTemplateRequest(_messages.Message):
   r"""Request message for CommitApplicationTemplate method."""
 
@@ -921,6 +992,22 @@ class DeployApplicationRequest(_messages.Message):
   workerPool = _messages.StringField(3)
 
 
+class DeployedResource(_messages.Message):
+  r"""DeployedResource represents a single deployed GCP resource.
+
+  Fields:
+    location: Optional. The location of the deployed resource.
+    project: Optional. The project ID of the deployed resource.
+    resourceId: Required. The full resource name of the deployed GCP resource.
+      Example: projects/my-project/locations/us-central1-a/instances/my-
+      instance
+  """
+
+  location = _messages.StringField(1)
+  project = _messages.StringField(2)
+  resourceId = _messages.StringField(3)
+
+
 class DeploymentAttemptMetadata(_messages.Message):
   r"""DeploymentAttemptMetadata represents a previous deployment attempt for
   an operation that failed due to a retryable error.
@@ -1103,6 +1190,16 @@ class DeploymentSource(_messages.Message):
   sharedTemplateRevisionUri = _messages.StringField(2)
 
 
+class DeploymentTarget(_messages.Message):
+  r"""The deployment target of the application.
+
+  Fields:
+    gkeDeploymentTarget: Optional. The GKE deployment target.
+  """
+
+  gkeDeploymentTarget = _messages.MessageField('GKEDeploymentTarget', 1)
+
+
 class DesigncenterProjectsLocationsGetRequest(_messages.Message):
   r"""A DesigncenterProjectsLocationsGetRequest object.
 
@@ -1178,12 +1275,20 @@ class DesigncenterProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class DesigncenterProjectsLocationsSpacesApplicationTemplatesCommitRequest(_messages.Message):
@@ -1422,6 +1527,21 @@ class DesigncenterProjectsLocationsSpacesApplicationTemplatesGetRequest(_message
   name = _messages.StringField(1, required=True)
 
 
+class DesigncenterProjectsLocationsSpacesApplicationTemplatesImportIaCRequest(_messages.Message):
+  r"""A
+  DesigncenterProjectsLocationsSpacesApplicationTemplatesImportIaCRequest
+  object.
+
+  Fields:
+    importApplicationTemplateIaCRequest: A ImportApplicationTemplateIaCRequest
+      resource to be passed as the request body.
+    name: Required. The name of the application template.
+  """
+
+  importApplicationTemplateIaCRequest = _messages.MessageField('ImportApplicationTemplateIaCRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class DesigncenterProjectsLocationsSpacesApplicationTemplatesImportRequest(_messages.Message):
   r"""A DesigncenterProjectsLocationsSpacesApplicationTemplatesImportRequest
   object.
@@ -1597,6 +1717,20 @@ class DesigncenterProjectsLocationsSpacesApplicationsGetRequest(_messages.Messag
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class DesigncenterProjectsLocationsSpacesApplicationsImportIaCRequest(_messages.Message):
+  r"""A DesigncenterProjectsLocationsSpacesApplicationsImportIaCRequest
+  object.
+
+  Fields:
+    importApplicationIaCRequest: A ImportApplicationIaCRequest resource to be
+      passed as the request body.
+    name: Required. The name of the application.
+  """
+
+  importApplicationIaCRequest = _messages.MessageField('ImportApplicationIaCRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class DesigncenterProjectsLocationsSpacesApplicationsListRequest(_messages.Message):
@@ -2084,6 +2218,21 @@ class DesigncenterProjectsLocationsSpacesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class DesigncenterProjectsLocationsSpacesRegisterApphubResourcesRequest(_messages.Message):
+  r"""A DesigncenterProjectsLocationsSpacesRegisterApphubResourcesRequest
+  object.
+
+  Fields:
+    parent: Required. The parent space. Format:
+      projects/{project}/locations/{location}/spaces/{space}
+    registerApphubResourcesRequest: A RegisterApphubResourcesRequest resource
+      to be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  registerApphubResourcesRequest = _messages.MessageField('RegisterApphubResourcesRequest', 2)
+
+
 class DesigncenterProjectsLocationsSpacesSetIamPolicyRequest(_messages.Message):
   r"""A DesigncenterProjectsLocationsSpacesSetIamPolicyRequest object.
 
@@ -2256,15 +2405,69 @@ class DisplayVariable(_messages.Message):
   r"""Additional display specific Template pertaining to a particular input
   variable.
 
+  Messages:
+    PropertiesValue: Optional. properties is a map defining all the fields of
+      the input variable.
+
   Fields:
+    alternateDefaults: Optional. Alternate defaults for the input.
+    enumValueLabels: Optional. Labels for enum values. Values must be UTF-8
+      text with no markup, and at most 64 characters.
+    level: Optional. Indicates the "advanced" level of the input property.
+      Level 0 (default) will always be shown. Level 1 corresponds to one
+      expansion (user clicks "show advanced options" or "more options").
+      Higher levels correspond to further expansions, or they may be collapsed
+      to level 1 by the UI implementation. Optional.
+    max: Optional. Maximum value for numeric types.
+    min: Optional. Minimum value for numeric types.
     name: Required. The variable name from the corresponding standard Template
       file.
-    title: Required. Visible title for the variable on the UI. If not present,
-      Name will be used for the Title.
+    properties: Optional. properties is a map defining all the fields of the
+      input variable.
+    regexValidation: Optional. Regex based validation rules for the variable.
+    subtext: Optional. Property subtext, displayed below the title.
+    title: Required. Visible title for the variable on the UI.
+    validation: Optional. Text describing the validation rules for the
+      property. Typically shown after an invalid input. Optional. UTF-8 text.
+      No markup. At most 128 characters.
   """
 
-  name = _messages.StringField(1)
-  title = _messages.StringField(2)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PropertiesValue(_messages.Message):
+    r"""Optional. properties is a map defining all the fields of the input
+    variable.
+
+    Messages:
+      AdditionalProperty: An additional property for a PropertiesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type PropertiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PropertiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A DisplayVariable attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('DisplayVariable', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  alternateDefaults = _messages.MessageField('AlternateDefaultInput', 1, repeated=True)
+  enumValueLabels = _messages.MessageField('ValueLabelInput', 2, repeated=True)
+  level = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  max = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  min = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+  name = _messages.StringField(6)
+  properties = _messages.MessageField('PropertiesValue', 7)
+  regexValidation = _messages.StringField(8)
+  subtext = _messages.StringField(9)
+  title = _messages.StringField(10)
+  validation = _messages.StringField(11)
 
 
 class DisplayVariableToggle(_messages.Message):
@@ -2379,6 +2582,22 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class GKEDeploymentTarget(_messages.Message):
+  r"""The GKE deployment target.
+
+  Fields:
+    clusterSelfLink: Required. The self link of the cluster where GKE based
+      application is deployed.
+    kubernetesServiceAccount: Required. The kubernetes service account that is
+      created within the namespace provided above. Example: default or node-sa
+    namespace: Required. The namespace where the application is deployed.
+  """
+
+  clusterSelfLink = _messages.StringField(1)
+  kubernetesServiceAccount = _messages.StringField(2)
+  namespace = _messages.StringField(3)
 
 
 class GenerateApplicationIaCRequest(_messages.Message):
@@ -2595,6 +2814,30 @@ class HelmChartOutput(_messages.Message):
   value = _messages.MessageField('extra_types.JsonValue', 3)
 
 
+class IaCFile(_messages.Message):
+  r"""IaCFile represents a single infrastructure as code file.
+
+  Fields:
+    content: Optional. The content of the file. The content of the file can be
+      read and passed as a string. For example, for a terraform file, the
+      content is the the HCL content of the file.
+    name: Required. The name of the file.
+  """
+
+  content = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
+class IaCModule(_messages.Message):
+  r"""IaCModule represents a single infrastructure as code module.
+
+  Fields:
+    files: Optional. The files in the module.
+  """
+
+  files = _messages.MessageField('IaCFile', 1, repeated=True)
+
+
 class IacFormatInfo(_messages.Message):
   r"""IacFormatInfo defines the actuation tool used to provision the Template.
 
@@ -2606,6 +2849,104 @@ class IacFormatInfo(_messages.Message):
 
   flavor = _messages.StringField(1)
   version = _messages.StringField(2)
+
+
+class ImportApplicationIaCRequest(_messages.Message):
+  r"""Request message for ImportApplicationIaC method.
+
+  Fields:
+    allowPartialImport: Optional. If set to true, partially imports the valid
+      edits in the IaC and ignore the invalid changes. Defaults to false,
+      which means any edits which can't be imported must result in an error.
+    gcsUri: Optional. The Cloud Storage URI of the terraform code.
+    iacModule: Optional. The IaC module to import.
+    validateIac: Optional. If set to true, the IaC is validated against the
+      golden terraform without importing. Defaults to false.
+  """
+
+  allowPartialImport = _messages.BooleanField(1)
+  gcsUri = _messages.StringField(2)
+  iacModule = _messages.MessageField('IaCModule', 3)
+  validateIac = _messages.BooleanField(4)
+
+
+class ImportApplicationIaCResponse(_messages.Message):
+  r"""Response message for ImportApplicationIaC method.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the import.
+
+  Fields:
+    application: Output only. Application template corresponding to the
+      imported IaC.
+    errors: Output only. Errors encountered during import.
+    state: Output only. The state of the import.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the import.
+
+    Values:
+      STATE_UNSPECIFIED: Default.
+      SUCCEEDED: The import was successful.
+      FAILED: The import failed.
+    """
+    STATE_UNSPECIFIED = 0
+    SUCCEEDED = 1
+    FAILED = 2
+
+  application = _messages.MessageField('Application', 1)
+  errors = _messages.MessageField('ImportIaCError', 2, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+
+
+class ImportApplicationTemplateIaCRequest(_messages.Message):
+  r"""Request message for ImportApplicationTemplateIaC method.
+
+  Fields:
+    allowPartialImport: Optional. If set to true, partially imports the valid
+      edits in the IaC and ignore the invalid changes. Defaults to false,
+      which means any edits which can't be imported must result in an error.
+    gcsUri: Optional. The Cloud Storage URI of the terraform code.
+    iacModule: Optional. The IaC module to import.
+    validateIac: Optional. If set to true, the IaC is validated against the
+      golden terraform without importing. Defaults to false.
+  """
+
+  allowPartialImport = _messages.BooleanField(1)
+  gcsUri = _messages.StringField(2)
+  iacModule = _messages.MessageField('IaCModule', 3)
+  validateIac = _messages.BooleanField(4)
+
+
+class ImportApplicationTemplateIaCResponse(_messages.Message):
+  r"""Response message for ImportApplicationTemplateIaC method.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the import.
+
+  Fields:
+    applicationTemplate: Output only. Application template corresponding to
+      the imported IaC.
+    errors: Output only. Errors encountered during import.
+    state: Output only. The state of the import.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the import.
+
+    Values:
+      STATE_UNSPECIFIED: Default.
+      SUCCEEDED: The import was successful.
+      FAILED: The import failed.
+    """
+    STATE_UNSPECIFIED = 0
+    SUCCEEDED = 1
+    FAILED = 2
+
+  applicationTemplate = _messages.MessageField('ApplicationTemplate', 1)
+  errors = _messages.MessageField('ImportIaCError', 2, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class ImportApplicationTemplateRequest(_messages.Message):
@@ -2624,17 +2965,61 @@ class ImportApplicationTemplateRequest(_messages.Message):
   sharedTemplateRevisionUri = _messages.StringField(3)
 
 
+class ImportIaCError(_messages.Message):
+  r"""Message representing the error encountered during import. Example: A
+  variable with name "name" is expected to be of type string, but is provided
+  as number, inside a module named "my_module". { resource_address:
+  "module.my_module.name" file: "gs://my_bucket/main.tf" range: { start: {
+  line: 2 byte_offset: 1 column: 2 } end: { line: 2 byte_offset: 10 column: 10
+  } } description: "Error parsing field: \"name\". Expected type \"string\"
+  but got \"number\"." type: INVALID }
+
+  Enums:
+    TypeValueValuesEnum: Output only. The type of error.
+
+  Fields:
+    description: Output only. The description of the error.
+    file: Output only. The file where the error has occurred.
+    range: Output only. The code portion where this error occurs.
+    resourceAddress: Output only. The resource address of the error.
+    type: Output only. The type of error.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of error.
+
+    Values:
+      TYPE_UNSPECIFIED: Default.
+      INVALID: The change is invalid. Example: a string value provided for a
+        number input parameter type, which would be caught by terraform
+        validation.
+      NOT_SUPPORTED: The change is not supported. Example: a user directly
+        adding a Terraform resource in main.tf that Design Center does not
+        support importing.
+    """
+    TYPE_UNSPECIFIED = 0
+    INVALID = 1
+    NOT_SUPPORTED = 2
+
+  description = _messages.StringField(1)
+  file = _messages.StringField(2)
+  range = _messages.MessageField('CodeRange', 3)
+  resourceAddress = _messages.StringField(4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
+
+
 class InferConnectionsRequest(_messages.Message):
   r"""Request message for InferConnections method.
 
   Fields:
-    catalogTemplateRevisionIds: Optional. A list of components that you want
-      to infer connections for. If you don't provide this, the system infers
-      connections for all components in the space, including all catalogs.
+    catalogTemplateRevisionUris: Optional. A list of Catalog template
+      revisions that you want to infer connections for. If you don't provide
+      this, the system infers connections for the latest revisions of all
+      catalog templates in all the catalogs present in the space.
     useGemini: Optional. Whether to use Gemini.
   """
 
-  catalogTemplateRevisionIds = _messages.StringField(1, repeated=True)
+  catalogTemplateRevisionUris = _messages.StringField(1, repeated=True)
   useGemini = _messages.BooleanField(2)
 
 
@@ -2789,10 +3174,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListSharedTemplateRevisionsResponse(_messages.Message):
@@ -3287,6 +3677,25 @@ class ProviderVersion(_messages.Message):
 
   source = _messages.StringField(1)
   version = _messages.StringField(2)
+
+
+class RegisterApphubResourcesRequest(_messages.Message):
+  r"""Request message for RegisterApphubResources method.
+
+  Fields:
+    adcApplicationUri: The resource uri of the ADC Application. Used for
+      registering resources of an application. Format: projects/{project}/loca
+      tions/{location}/spaces/{space}/applications/{application}
+    apphubApplicationUri: The resource uri of the App Hub application. Used
+      for registering resources of an application template. Format:
+      projects/{project}/locations/{location}/applications/{application}
+    deployedResources: Optional. The list of deployed GCP resources to
+      register.
+  """
+
+  adcApplicationUri = _messages.StringField(1)
+  apphubApplicationUri = _messages.StringField(2)
+  deployedResources = _messages.MessageField('DeployedResource', 3, repeated=True)
 
 
 class Resource(_messages.Message):
@@ -4266,6 +4675,18 @@ class ValueLabel(_messages.Message):
   Fields:
     label: Output only. Label of the enum.
     value: Output only. Value of the enum.
+  """
+
+  label = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class ValueLabelInput(_messages.Message):
+  r"""Value label input for a UI.
+
+  Fields:
+    label: Optional. Label of the enum.
+    value: Optional. Value of the enum.
   """
 
   label = _messages.StringField(1)

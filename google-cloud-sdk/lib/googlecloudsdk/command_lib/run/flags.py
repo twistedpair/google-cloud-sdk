@@ -1466,6 +1466,32 @@ class ScaleValue:
         )
 
 
+class UtilizationValue:
+  """Type for scaling utilization target values."""
+
+  def __init__(self, value):
+    self.restore_default = value == 'default'
+    if value == 'disabled':
+      self.utilization = float(0.0)
+      return
+    if not self.restore_default:
+      try:
+        self.utilization = float(value)
+      except (TypeError, ValueError):
+        raise serverless_exceptions.ArgumentError(
+            "Utilization value %s is not an decimal or 'default'." % value
+        )
+
+      if self.utilization < 0:
+        raise serverless_exceptions.ArgumentError(
+            'Utilization value %s is negative.' % value
+        )
+      if self.utilization > 1:
+        raise serverless_exceptions.ArgumentError(
+            'Utilization value %s is greater than 1.' % value
+        )
+
+
 class ScalingValue:
   """Type for --scaling flag values.
 
@@ -2167,6 +2193,34 @@ def AddOverflowScalingFlag(parser):
   )
 
 
+def AddCpuUtilizationFlag(parser):
+  """Add flag to modify cpu utilization scaling."""
+  parser.add_argument(
+      '--scaling-cpu-utilization',
+      type=UtilizationValue,
+      help=(
+          'A value between 0.0 and 1.0 that indicates the target CPU'
+          ' utilization where a new instance should be started.  Also accepts '
+          '"default" to restore the default value or "disabled" to disable '
+          'CPU utilization scaling.'
+      ),
+  )
+
+
+def AddConcurrencyUtilizationFlag(parser):
+  """Add flag to modify scaling concurrency utilization."""
+  parser.add_argument(
+      '--scaling-concurrency-utilization',
+      type=UtilizationValue,
+      help=(
+          'A value between 0.0 and 1.0 that indicates the target concurrency'
+          ' utilization where a new instance should be started. Also accepts '
+          '"default" to restore the default value or "disabled" to disable '
+          'concurrency utilization scaling.'
+      ),
+  )
+
+
 def HasChanges(args, flags):
   """True iff any of the passed flags are set."""
   return any(FlagIsExplicitlySet(args, flag) for flag in flags)
@@ -2528,6 +2582,46 @@ def _GetOverFlowScalingChanges(args):
             str(args.overflow_scaling).lower(),
         )
     )
+  return config_maps_changes
+
+
+def _GetCpuUtilizationChanges(args):
+  """Return cpu utilization scaling changes for given args."""
+  config_maps_changes = []
+  if FlagIsExplicitlySet(args, 'scaling_cpu_utilization'):
+    if args.scaling_cpu_utilization.restore_default:
+      config_maps_changes.append(
+          config_changes.DeleteTemplateAnnotationChange(
+              revision.CPU_UTILIZATION_ANNOTATION
+          )
+      )
+    else:
+      config_maps_changes.append(
+          config_changes.SetTemplateAnnotationChange(
+              revision.CPU_UTILIZATION_ANNOTATION,
+              str(args.scaling_cpu_utilization.utilization),
+          )
+      )
+  return config_maps_changes
+
+
+def _GetConcurrencyUtilizationChanges(args):
+  """Return concurrency utilization scaling changes for given args."""
+  config_maps_changes = []
+  if FlagIsExplicitlySet(args, 'scaling_concurrency_utilization'):
+    if args.scaling_concurrency_utilization.restore_default:
+      config_maps_changes.append(
+          config_changes.DeleteTemplateAnnotationChange(
+              revision.CONCURRENCY_UTILIZATION_ANNOTATION
+          )
+      )
+    else:
+      config_maps_changes.append(
+          config_changes.SetTemplateAnnotationChange(
+              revision.CONCURRENCY_UTILIZATION_ANNOTATION,
+              str(args.scaling_concurrency_utilization.utilization),
+          )
+      )
   return config_maps_changes
 
 
@@ -3233,6 +3327,8 @@ def GetServiceConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
 
   changes.extend(_GetIapChanges(args))
   changes.extend(_GetOverFlowScalingChanges(args))
+  changes.extend(_GetCpuUtilizationChanges(args))
+  changes.extend(_GetConcurrencyUtilizationChanges(args))
   return changes
 
 

@@ -74,7 +74,7 @@ def GetDisruptionScheduleFlag():
   return base.Argument(
       '--disruption-schedule',
       choices={
-          'IMMEDIATE': 'All VMs will be disrupted immediately.',
+          'IMMEDIATE': 'All VMs are immediately disrupted.',
       },
       help='The disruption schedule for the sub-block.',
       required=True)
@@ -89,10 +89,10 @@ def GetFaultReasonsFlag():
       ),
       action='append',
       help=(
-          'The reasons for the fault experienced with the sub-block. This flag'
-          ' can be repeated. Each instance should specify a "behavior" and an'
-          ' optional "description". The possible values for "behavior" are:'
-          ' PERFORMANCE, SWITCH_FAILURE, GPU_ERROR.'
+          'The reasons for reporting the sub-block as faulty. You can repeat'
+          ' this flag. Each flag must specify a "behavior" attribute and can'
+          ' optionally include a "description" attribute. The possible values'
+          ' for "behavior" are: PERFORMANCE, SWITCH_FAILURE, GPU_ERROR.'
       ),
       required=True,
   )

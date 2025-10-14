@@ -1666,23 +1666,25 @@ class GoogleCloudRunV2ResourceRequirements(_messages.Message):
   r"""ResourceRequirements describes the compute resource requirements.
 
   Messages:
-    LimitsValue: Only `memory` and `cpu` keys in the map are supported. Notes:
-      * The only supported values for CPU are '1', '2', '4', and '8'. Setting
-      4 CPU requires at least 2Gi of memory. For more information, go to
-      https://cloud.google.com/run/docs/configuring/cpu. * For supported
-      'memory' values and syntax, go to
-      https://cloud.google.com/run/docs/configuring/memory-limits
+    LimitsValue: Only `memory`, `cpu` and `nvidia.com/gpu` keys in the map are
+      supported. Notes: * The only supported values for CPU are '1', '2', '4',
+      and '8'. Setting 4 CPU requires at least 2Gi of memory. For more
+      information, go to https://cloud.google.com/run/docs/configuring/cpu. *
+      For supported 'memory' values and syntax, go to
+      https://cloud.google.com/run/docs/configuring/memory-limits * The only
+      supported 'nvidia.com/gpu' value is '1'.
 
   Fields:
     cpuIdle: Determines whether CPU is only allocated during requests (true by
       default). However, if ResourceRequirements is set, the caller must
       explicitly set this field to true to preserve the default behavior.
-    limits: Only `memory` and `cpu` keys in the map are supported. Notes: *
-      The only supported values for CPU are '1', '2', '4', and '8'. Setting 4
-      CPU requires at least 2Gi of memory. For more information, go to
-      https://cloud.google.com/run/docs/configuring/cpu. * For supported
-      'memory' values and syntax, go to
-      https://cloud.google.com/run/docs/configuring/memory-limits
+    limits: Only `memory`, `cpu` and `nvidia.com/gpu` keys in the map are
+      supported. Notes: * The only supported values for CPU are '1', '2', '4',
+      and '8'. Setting 4 CPU requires at least 2Gi of memory. For more
+      information, go to https://cloud.google.com/run/docs/configuring/cpu. *
+      For supported 'memory' values and syntax, go to
+      https://cloud.google.com/run/docs/configuring/memory-limits * The only
+      supported 'nvidia.com/gpu' value is '1'.
     startupCpuBoost: Determines whether CPU should be boosted on startup of a
       new container instance above the requested CPU threshold, this can help
       reduce cold-start latency.
@@ -1690,12 +1692,13 @@ class GoogleCloudRunV2ResourceRequirements(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LimitsValue(_messages.Message):
-    r"""Only `memory` and `cpu` keys in the map are supported. Notes: * The
-    only supported values for CPU are '1', '2', '4', and '8'. Setting 4 CPU
-    requires at least 2Gi of memory. For more information, go to
-    https://cloud.google.com/run/docs/configuring/cpu. * For supported
-    'memory' values and syntax, go to
-    https://cloud.google.com/run/docs/configuring/memory-limits
+    r"""Only `memory`, `cpu` and `nvidia.com/gpu` keys in the map are
+    supported. Notes: * The only supported values for CPU are '1', '2', '4',
+    and '8'. Setting 4 CPU requires at least 2Gi of memory. For more
+    information, go to https://cloud.google.com/run/docs/configuring/cpu. *
+    For supported 'memory' values and syntax, go to
+    https://cloud.google.com/run/docs/configuring/memory-limits * The only
+    supported 'nvidia.com/gpu' value is '1'.
 
     Messages:
       AdditionalProperty: An additional property for a LimitsValue object.
@@ -2419,8 +2422,8 @@ class GoogleCloudRunV2Service(_messages.Message):
       provided as input, but only BETA and GA-level features are used, this
       field will be BETA on output.
     multiRegionSettings: Optional. Settings for multi-region deployment.
-    name: The fully qualified name of this Service. In CreateServiceRequest,
-      this field is ignored, and instead composed from
+    name: Identifier. The fully qualified name of this Service. In
+      CreateServiceRequest, this field is ignored, and instead composed from
       CreateServiceRequest.parent and CreateServiceRequest.service_id. Format:
       projects/{project}/locations/{location}/services/{service_id}
     observedGeneration: Output only. The generation of this Service currently
@@ -2726,6 +2729,7 @@ class GoogleCloudRunV2SubmitBuildRequest(_messages.Message):
 
   Fields:
     buildpackBuild: Build the source using Buildpacks.
+    client: Optional. The client that initiated the build request.
     dockerBuild: Build the source using Docker. This means the source has a
       Dockerfile.
     imageUri: Required. Artifact Registry URI to store the built image.
@@ -2794,14 +2798,15 @@ class GoogleCloudRunV2SubmitBuildRequest(_messages.Message):
     DEPRECATED = 7
 
   buildpackBuild = _messages.MessageField('GoogleCloudRunV2BuildpacksBuild', 1)
-  dockerBuild = _messages.MessageField('GoogleCloudRunV2DockerBuild', 2)
-  imageUri = _messages.StringField(3)
-  machineType = _messages.StringField(4)
-  releaseTrack = _messages.EnumField('ReleaseTrackValueValuesEnum', 5)
-  serviceAccount = _messages.StringField(6)
-  storageSource = _messages.MessageField('GoogleCloudRunV2StorageSource', 7)
-  tags = _messages.StringField(8, repeated=True)
-  workerPool = _messages.StringField(9)
+  client = _messages.StringField(2)
+  dockerBuild = _messages.MessageField('GoogleCloudRunV2DockerBuild', 3)
+  imageUri = _messages.StringField(4)
+  machineType = _messages.StringField(5)
+  releaseTrack = _messages.EnumField('ReleaseTrackValueValuesEnum', 6)
+  serviceAccount = _messages.StringField(7)
+  storageSource = _messages.MessageField('GoogleCloudRunV2StorageSource', 8)
+  tags = _messages.StringField(9, repeated=True)
+  workerPool = _messages.StringField(10)
 
 
 class GoogleCloudRunV2SubmitBuildResponse(_messages.Message):
@@ -3792,13 +3797,6 @@ class GoogleCloudRunV2WorkerPoolScaling(_messages.Message):
       will bring down instances of the old revision. This can reduce a spike
       of total active instances during changes from one revision to another
       but specifying how many extra instances can be brought up at a time.
-    maxUnavailable: Optional. A maximum percentage of instances that may be
-      unavailable during changes from one revision to another. When set to a
-      positive value, the server may bring down instances before bringing up
-      new instances. This can prevent a spike of total active instances during
-      changes from one revision by reducing the pool of instances before
-      bringing up new ones. Some requests may be slow or fail to serve during
-      the transition.
     minInstanceCount: Optional. The minimum count of instances distributed
       among revisions based on the specified instance split percentages.
     scalingMode: Optional. The scaling mode for the worker pool.
@@ -3819,9 +3817,8 @@ class GoogleCloudRunV2WorkerPoolScaling(_messages.Message):
   manualInstanceCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   maxInstanceCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   maxSurge = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  maxUnavailable = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  minInstanceCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  scalingMode = _messages.EnumField('ScalingModeValueValuesEnum', 6)
+  minInstanceCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  scalingMode = _messages.EnumField('ScalingModeValueValuesEnum', 5)
 
 
 class GoogleDevtoolsCloudbuildV1ApprovalConfig(_messages.Message):
@@ -3926,6 +3923,11 @@ class GoogleDevtoolsCloudbuildV1Artifacts(_messages.Message):
       generation of the uploaded objects will be stored in the Build
       resource's results field. If any objects fail to be pushed, the build is
       marked FAILURE.
+    oci: Optional. A list of OCI images to be uploaded to Artifact Registry
+      upon successful completion of all build steps. OCI images in the
+      specified paths will be uploaded to the specified Artifact Registry
+      repository using the builder service account's credentials. If any
+      images fail to be pushed, the build is marked FAILURE.
     pythonPackages: A list of Python packages to be uploaded to Artifact
       Registry upon successful completion of all build steps. The build
       service account credentials will be used to perform the upload. If any
@@ -3937,7 +3939,8 @@ class GoogleDevtoolsCloudbuildV1Artifacts(_messages.Message):
   mavenArtifacts = _messages.MessageField('GoogleDevtoolsCloudbuildV1MavenArtifact', 3, repeated=True)
   npmPackages = _messages.MessageField('GoogleDevtoolsCloudbuildV1NpmPackage', 4, repeated=True)
   objects = _messages.MessageField('GoogleDevtoolsCloudbuildV1ArtifactObjects', 5)
-  pythonPackages = _messages.MessageField('GoogleDevtoolsCloudbuildV1PythonPackage', 6, repeated=True)
+  oci = _messages.MessageField('GoogleDevtoolsCloudbuildV1Oci', 6, repeated=True)
+  pythonPackages = _messages.MessageField('GoogleDevtoolsCloudbuildV1PythonPackage', 7, repeated=True)
 
 
 class GoogleDevtoolsCloudbuildV1Build(_messages.Message):
@@ -4887,6 +4890,23 @@ class GoogleDevtoolsCloudbuildV1NpmPackage(_messages.Message):
   repository = _messages.StringField(2)
 
 
+class GoogleDevtoolsCloudbuildV1Oci(_messages.Message):
+  r"""OCI image to upload to Artifact Registry upon successful completion of
+  all build steps.
+
+  Fields:
+    file: Required. Path on the local file system where to find the container
+      to upload. e.g. /workspace/my-image.tar
+    registryPath: Required. Registry path to upload the container to. e.g. us-
+      east1-docker.pkg.dev/my-project/my-repo/my-image
+    tags: Optional. Tags to apply to the uploaded image. e.g. latest, 1.0.0
+  """
+
+  file = _messages.StringField(1)
+  registryPath = _messages.StringField(2)
+  tags = _messages.StringField(3, repeated=True)
+
+
 class GoogleDevtoolsCloudbuildV1PoolOption(_messages.Message):
   r"""Details about how a build should be executed on a `WorkerPool`. See
   [running builds in a private
@@ -5687,10 +5707,15 @@ class GoogleLongrunningListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('GoogleLongrunningOperation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class GoogleLongrunningOperation(_messages.Message):
@@ -6317,12 +6342,20 @@ class RunProjectsLocationsOperationsListRequest(_messages.Message):
       0, the default page size is 100. .
     pageToken: Token identifying which result to start with, which is returned
       by a previous list call.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class RunProjectsLocationsOperationsWaitRequest(_messages.Message):
@@ -6450,8 +6483,8 @@ class RunProjectsLocationsServicesPatchRequest(_messages.Message):
       permissions if this is set to true and the Service does not exist.
     googleCloudRunV2Service: A GoogleCloudRunV2Service resource to be passed
       as the request body.
-    name: The fully qualified name of this Service. In CreateServiceRequest,
-      this field is ignored, and instead composed from
+    name: Identifier. The fully qualified name of this Service. In
+      CreateServiceRequest, this field is ignored, and instead composed from
       CreateServiceRequest.parent and CreateServiceRequest.service_id. Format:
       projects/{project}/locations/{location}/services/{service_id}
     updateMask: Optional. The list of fields to be updated.

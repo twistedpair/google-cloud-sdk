@@ -15,12 +15,13 @@
 
 """A library that is used to support our commands."""
 
-from googlecloudsdk.core import properties
-
-from googlecloudsdk.core import resources
+from googlecloudsdk.command_lib.util.apis import arg_utils
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
+
 
 VERSION_MAP = {
     base.ReleaseTrack.ALPHA: 'v1',
@@ -30,12 +31,12 @@ VERSION_MAP = {
 
 
 # The messages module can also be accessed from client.MESSAGES_MODULE
-def GetMessagesModule(release_track=base.ReleaseTrack.GA):
+def GetMessagesModule(release_track=base.ReleaseTrack.ALPHA):
   api_version = VERSION_MAP.get(release_track)
   return apis.GetMessagesModule('biglake', api_version)
 
 
-def GetClientInstance(release_track=base.ReleaseTrack.GA):
+def GetClientInstance(release_track=base.ReleaseTrack.ALPHA):
   api_version = VERSION_MAP.get(release_track)
   return apis.GetClientInstance('biglake', api_version)
 
@@ -59,3 +60,41 @@ def GetCatalogName(catalog_id):
 def GetParentName():
   """Get the parent name in the format of projects/{project-id}."""
   return f'projects/{properties.VALUES.core.project.GetOrFail()}'
+
+
+def GetCatalogTypeEnumMapper(release_track):
+  messages = GetMessagesModule(release_track)
+  catalog_type_enum = messages.IcebergCatalog.CatalogTypeValueValuesEnum
+  return arg_utils.ChoiceEnumMapper(
+      '--catalog-type',
+      catalog_type_enum,
+      required=True,
+      help_str='Catalog type to create the catalog with.',
+      custom_mappings={
+          'CATALOG_TYPE_GCS_BUCKET': (
+              'gcs-bucket',
+              'A catalog backed by a GCS bucket.',
+          ),
+      },
+  )
+
+
+def GetCredentialModeEnumMapper(release_track):
+  messages = GetMessagesModule(release_track)
+  credential_mode_enum = messages.IcebergCatalog.CredentialModeValueValuesEnum
+  return arg_utils.ChoiceEnumMapper(
+      '--credential-mode',
+      credential_mode_enum,
+      default='end-user',
+      help_str='Credential mode to create the catalog with.',
+      custom_mappings={
+          'CREDENTIAL_MODE_END_USER': (
+              'end-user',
+              'Use end user credentials to access the catalog.',
+          ),
+          'CREDENTIAL_MODE_VENDED_CREDENTIALS': (
+              'vended-credentials',
+              'Use vended credentials to access the catalog.',
+          ),
+      },
+  )
