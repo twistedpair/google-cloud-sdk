@@ -65,7 +65,7 @@ projects_locations_insights_configs:
     parameter_name: insightsConfigsId
     attribute_name: insights_config
     help: The insightsConfig id of the {resource} resource.
-  disable_auto_completers: false
+  disable_auto_completers: true
 projects_secrets_versions:
   name: secretVersion
   plural_name: versions
@@ -93,6 +93,19 @@ projects_locations_connections_git_repository_links:
     parameter_name: gitRepositoryLinksId
     attribute_name: git_repository_link
     help: The gitRepositoryLink id of the {resource} resource.
+  disable_auto_completers: false
+projects_locations_insights_configs_deployment_events:
+  name: deploymentEvent
+  plural_name: deploymentEvents
+  collection: developerconnect.projects.locations.insightsConfigs.deploymentEvents
+  attributes:
+  - *project
+  - *location
+  - *insightsConfig
+  - &deploymentEvent
+    parameter_name: deploymentEventsId
+    attribute_name: deployment_event
+    help: The deploymentEvent id of the {resource} resource.
   disable_auto_completers: false
 projects_locations_key_rings_crypto_keys:
   name: cryptoKey

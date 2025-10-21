@@ -141,6 +141,10 @@ class BatchGetServiceException(Error):
   """Batch get service."""
 
 
+class GetServiceException(Error):
+  """Get service."""
+
+
 class ListCategoryServicesException(Error):
   """List category service."""
 
@@ -165,8 +169,32 @@ class GetMcpPolicyException(Error):
   """Exception for get MCP policy."""
 
 
+class GetContentSecurityPolicyException(Error):
+  """Exception for get content security policy."""
+
+
+class UpdateContentSecurityPolicyException(Error):
+  """Exception for update content security policy."""
+
+
+class AddContentSecurityProviderException(Error):
+  """Exception for add content security provider."""
+
+
+class RemoveContentSecurityProviderException(Error):
+  """Exception for remove content security provider."""
+
+
 class GetEffectiveMcpPolicyException(Error):
   """Exception for get effective MCP policy."""
+
+
+class UpdateMcpPolicyException(Error):
+  """Exception for update MCP policy."""
+
+
+class EnableMcpServiceException(Error):
+  """Exception for enable MCP service."""
 
 
 class OperationErrorException(Error):

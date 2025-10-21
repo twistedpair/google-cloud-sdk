@@ -22,3 +22,5 @@ DEFAULT_DEGRADED_WARNING = (
     "Missing edit permissions on project.\n"
     "Please refer to https://cloud.google.com/kubernetes-engine/docs/support\n"
     "to fix this.")
+
+IPV6_STACK_TYPE = "ipv6"

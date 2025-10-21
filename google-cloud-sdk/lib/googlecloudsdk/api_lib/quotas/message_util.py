@@ -21,16 +21,40 @@ from __future__ import unicode_literals
 import re
 
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import properties
 
 
 def _ValidateContainer(container_type, flag_value):
+  """Validates the container.
+
+  Args:
+    container_type: str, The container type.
+    flag_value: str, The flag value.
+
+  Raises:
+    exceptions.InvalidArgumentException: If the flag value is invalid.
+  """
   if not re.match('^[a-z0-9-:]+$', flag_value):
     raise exceptions.InvalidArgumentException(container_type, flag_value)
 
 
 def CreateConsumer(project, folder, organization):
+  """Creates a consumer string based on project, folder or organization.
+
+  Args:
+    project: str, The project ID.
+    folder: str, The folder ID.
+    organization: str, The organization ID.
+
+  Returns:
+    The consumer string in projects/{project}, folders/{folder}, or
+    organizations/{organization} format.
+  """
   if project:
-    _ValidateContainer('project', project)
+    try:
+      properties.VALUES.core.project.Validate(project)
+    except Exception:
+      raise exceptions.InvalidArgumentException('project', project)
     return 'projects/' + project
   if folder:
     _ValidateContainer('folder', folder)
@@ -42,5 +66,13 @@ def CreateConsumer(project, folder, organization):
 
 
 def CreateProjectConsumer(project):
+  """Creates a project consumer string.
+
+  Args:
+    project: str, The project ID.
+
+  Returns:
+    The consumer string in projects/{project} format.
+  """
   _ValidateContainer('project', project)
   return 'projects/' + project

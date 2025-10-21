@@ -487,6 +487,8 @@ class _Sections(object):
     recaptcha: Section, The section containing recaptcha properties for the
       Cloud SDK.
     redis: Section, The section containing redis properties for the Cloud SDK.
+    regional: Section, The section containing regional endpoint properties for
+      the Cloud SDK.
     resource_policy: Section, The section containing resource policy
       configurations for the Cloud SDK.
     run: Section, The section containing run properties for the Cloud SDK.
@@ -588,6 +590,7 @@ class _Sections(object):
     self.pubsub = _SectionPubsub()
     self.recaptcha = _SectionRecaptcha()
     self.redis = _SectionRedis()
+    self.regional = _SectionRegional()
     self.resource_policy = _SectionResourcePolicy()
     self.run = _SectionRun()
     self.runapps = _SectionRunApps()
@@ -670,6 +673,7 @@ class _Sections(object):
         self.proxy,
         self.recaptcha,
         self.redis,
+        self.regional,
         self.resource_policy,
         self.run,
         self.runapps,
@@ -3278,6 +3282,32 @@ class _SectionRedis(_Section):
         help_text='Default region to use when working with Cloud '
         'Memorystore for Redis resources. When a `region` is required but not '
         'provided by a flag, the command will fall back to this value, if set.')
+
+
+class _SectionRegional(_Section):
+  """Contains the properties for the 'regional' section."""
+
+  REGIONAL_ONLY = 'regional-only'
+  AUTO = 'auto'
+  LEGACY = 'legacy'
+
+  def __init__(self):
+    super(_SectionRegional, self).__init__('regional', hidden=True)
+    self.endpoint_mode = self._Add(
+        'endpoint_mode',
+        choices=[self.REGIONAL_ONLY, self.AUTO, self.LEGACY],
+        default=self.LEGACY,
+        help_text="""\
+Determines how regional endpoints are used. The choices are:
+    *   `legacy` - Use global/locational endpoints.
+    *   `regional-only` - Use only regional endpoints.
+    *   `auto` - Allow commands to choose between regional/global endpoints, preferring regional if available.
+"""
+    )
+    self.default_endpoint_location = self._Add(
+        'default_endpoint_location',
+        help_text='Specifies the regional endpoint location to use by default.',
+    )
 
 
 class _SectionResourcePolicy(_Section):

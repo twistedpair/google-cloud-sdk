@@ -47,17 +47,36 @@ class AdditionalIPRangesConfig(_messages.Message):
   r"""AdditionalIPRangesConfig is the configuration for individual additional
   subnetwork attached to the cluster
 
+  Enums:
+    StatusValueValuesEnum: Draining status of the additional subnet.
+
   Fields:
     podIpv4RangeNames: List of secondary ranges names within this subnetwork
       that can be used for pod IPs. Example1: gke-pod-range1 Example2: gke-
       pod-range1,gke-pod-range2
+    status: Draining status of the additional subnet.
     subnetwork: Name of the subnetwork. This can be the full path of the
       subnetwork or just the name. Example1: my-subnet Example2: projects/gke-
       project/regions/us-central1/subnetworks/my-subnet
   """
 
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""Draining status of the additional subnet.
+
+    Values:
+      STATUS_UNSPECIFIED: Not set, same as ACTIVE.
+      ACTIVE: ACTIVE status indicates that the subnet is available for new
+        node pool creation.
+      DRAINING: DRAINING status indicates that the subnet is not used for new
+        node pool creation.
+    """
+    STATUS_UNSPECIFIED = 0
+    ACTIVE = 1
+    DRAINING = 2
+
   podIpv4RangeNames = _messages.StringField(1, repeated=True)
-  subnetwork = _messages.StringField(2)
+  status = _messages.EnumField('StatusValueValuesEnum', 2)
+  subnetwork = _messages.StringField(3)
 
 
 class AdditionalNodeNetworkConfig(_messages.Message):
@@ -156,6 +175,8 @@ class AddonsConfig(_messages.Message):
     podSnapshotConfig: Configuration for the Pod Snapshot feature.
     rayConfig: Optional. DEPRECATED. Use RayOperatorConfig instead.
     rayOperatorConfig: Optional. Configuration for Ray Operator addon.
+    sliceControllerConfig: Optional. Configuration for the slice controller
+      add-on.
     statefulHaConfig: Optional. Configuration for the StatefulHA add-on.
   """
 
@@ -178,7 +199,8 @@ class AddonsConfig(_messages.Message):
   podSnapshotConfig = _messages.MessageField('PodSnapshotConfig', 17)
   rayConfig = _messages.MessageField('RayConfig', 18)
   rayOperatorConfig = _messages.MessageField('RayOperatorConfig', 19)
-  statefulHaConfig = _messages.MessageField('StatefulHAConfig', 20)
+  sliceControllerConfig = _messages.MessageField('SliceControllerConfig', 20)
+  statefulHaConfig = _messages.MessageField('StatefulHAConfig', 21)
 
 
 class AdvancedDatapathObservabilityConfig(_messages.Message):
@@ -832,6 +854,35 @@ class CertificateAuthorityDomainConfig(_messages.Message):
 
   fqdns = _messages.StringField(1, repeated=True)
   gcpSecretManagerCertificateConfig = _messages.MessageField('GCPSecretManagerCertificateConfig', 2)
+
+
+class CertificateConfig(_messages.Message):
+  r"""CertificateConfig configures certificate for the registry.
+
+  Fields:
+    gcpSecretManagerSecretUri: The URI configures a secret from [Secret
+      Manager](https://{$universe.dns_names.final_documentation_domain}/secret
+      -manager) in the format
+      "projects/$PROJECT_ID/secrets/$SECRET_NAME/versions/$VERSION" for global
+      secret or "projects/$PROJECT_ID/locations/$REGION/secrets/$SECRET_NAME/v
+      ersions/$VERSION" for regional secret. Version can be fixed (e.g. "2")
+      or "latest"
+  """
+
+  gcpSecretManagerSecretUri = _messages.StringField(1)
+
+
+class CertificateConfigPair(_messages.Message):
+  r"""CertificateConfigPair configures pairs of certificates, which is used
+  for client certificate and key pairs under a registry.
+
+  Fields:
+    cert: Cert configures the client certificate.
+    key: Key configures the client private key. Optional.
+  """
+
+  cert = _messages.MessageField('CertificateConfig', 1)
+  key = _messages.MessageField('CertificateConfig', 2)
 
 
 class CheckAutopilotCompatibilityResponse(_messages.Message):
@@ -2785,12 +2836,16 @@ class ContainerdConfig(_messages.Message):
   Fields:
     privateRegistryAccessConfig: PrivateRegistryAccessConfig is used to
       configure access configuration for private container registries.
+    registryHosts: RegistryHostConfig configures containerd registry host
+      configuration. Each registry_hosts represents a hosts.toml file. At most
+      25 registry_hosts are allowed.
     writableCgroups: Optional. WritableCgroups defines writable cgroups
       configuration for the node pool.
   """
 
   privateRegistryAccessConfig = _messages.MessageField('PrivateRegistryAccessConfig', 1)
-  writableCgroups = _messages.MessageField('WritableCgroups', 2)
+  registryHosts = _messages.MessageField('RegistryHostConfig', 2, repeated=True)
+  writableCgroups = _messages.MessageField('WritableCgroups', 3)
 
 
 class ControlPlaneEgress(_messages.Message):
@@ -3913,6 +3968,56 @@ class HorizontalPodAutoscaling(_messages.Message):
   """
 
   disabled = _messages.BooleanField(1)
+
+
+class HostConfig(_messages.Message):
+  r"""HostConfig configures the registry host under a given Server.
+
+  Enums:
+    CapabilitiesValueListEntryValuesEnum:
+
+  Fields:
+    ca: CA configures the registry host certificate.
+    capabilities: Capabilities represent the capabilities of the registry
+      host, specifying what operations a host is capable of performing. If not
+      set, containerd enables all capabilities by default.
+    client: Client configures the registry host client certificate and key.
+    dialTimeout: Specifies the maximum duration allowed for a connection
+      attempt to complete. A shorter timeout helps reduce delays when falling
+      back to the original registry if the mirror is unreachable. Maximum
+      allowed value is 3m. If not set, containerd sets default 30s.
+    header: Header configures the registry host headers.
+    host: Host configures the registry host/mirror.
+    overridePath: OverridePath is used to indicate the host's API root
+      endpoint is defined in the URL path rather than by the API
+      specification. This may be used with non-compliant OCI registries which
+      are missing the /v2 prefix. If not set, containerd sets default false.
+  """
+
+  class CapabilitiesValueListEntryValuesEnum(_messages.Enum):
+    r"""CapabilitiesValueListEntryValuesEnum enum type.
+
+    Values:
+      HOST_CAPABILITY_UNSPECIFIED: UNKNOWN should never be set.
+      HOST_CAPABILITY_PULL: Pull represents the capability to fetch manifests
+        and blobs by digest.
+      HOST_CAPABILITY_RESOLVE: Resolve represents the capability to fetch
+        manifests by name.
+      HOST_CAPABILITY_PUSH: Push represents the capability to push blobs and
+        manifests.
+    """
+    HOST_CAPABILITY_UNSPECIFIED = 0
+    HOST_CAPABILITY_PULL = 1
+    HOST_CAPABILITY_RESOLVE = 2
+    HOST_CAPABILITY_PUSH = 3
+
+  ca = _messages.MessageField('CertificateConfig', 1, repeated=True)
+  capabilities = _messages.EnumField('CapabilitiesValueListEntryValuesEnum', 2, repeated=True)
+  client = _messages.MessageField('CertificateConfigPair', 3, repeated=True)
+  dialTimeout = _messages.StringField(4)
+  header = _messages.MessageField('RegistryHeader', 5, repeated=True)
+  host = _messages.StringField(6)
+  overridePath = _messages.BooleanField(7)
 
 
 class HostMaintenancePolicy(_messages.Message):
@@ -7431,6 +7536,36 @@ class RecurringTimeWindow(_messages.Message):
   window = _messages.MessageField('TimeWindow', 2)
 
 
+class RegistryHeader(_messages.Message):
+  r"""RegistryHeader configures headers for the registry.
+
+  Fields:
+    key: Key configures the header key.
+    value: Value configures the header value.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2, repeated=True)
+
+
+class RegistryHostConfig(_messages.Message):
+  r"""RegistryHostConfig configures the top-level structure for a single
+  containerd registry server's configuration, which represents one hosts.toml
+  file on the node. It will override the same fqdns in
+  PrivateRegistryAccessConfig.
+
+  Fields:
+    hosts: HostConfig configures a list of host-specific configurations for
+      the server. Each server can have at most 10 host configurations.
+    server: Defines the host name of the registry server, e.g., "docker.io",
+      "my.private.registry". This will be used to create a directory under
+      /etc/containerd/hosts.d/.
+  """
+
+  hosts = _messages.MessageField('HostConfig', 1, repeated=True)
+  server = _messages.StringField(2)
+
+
 class ReleaseChannel(_messages.Message):
   r"""ReleaseChannel indicates which release channel a cluster is subscribed
   to. Release channels are arranged in order of risk. When a cluster is
@@ -8560,6 +8695,16 @@ class ShieldedNodes(_messages.Message):
   enabled = _messages.BooleanField(1)
 
 
+class SliceControllerConfig(_messages.Message):
+  r"""Configuration for the Slice Controller.
+
+  Fields:
+    enabled: Whether the Slice Controller is enabled for this cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class SoleTenantConfig(_messages.Message):
   r"""SoleTenantConfig contains the NodeAffinities to specify what shared sole
   tenant node groups should back the node pool.
@@ -9158,7 +9303,14 @@ class UpdateNodePoolRequest(_messages.Message):
       ) in which the node pool's nodes should be located. Changing the
       locations for a node pool will result in nodes being either created or
       removed from the node pool, depending on whether locations are being
-      added or removed.
+      added or removed. Warning: It is recommended to update node pool
+      locations in a standalone API call. Do not combine a location update
+      with changes to other fields (such as `tags`, `labels`, `taints`, etc.)
+      in the same request. Otherwise, the API performs a structural
+      modification where changes to other fields will only apply to newly
+      created nodes and will not be applied to existing nodes in the node
+      pool. To ensure all nodes are updated consistently, use a separate API
+      call for location changes.
     loggingConfig: Logging configuration.
     machineType: Optional. The desired machine type for nodes in the node
       pool. Initiates an upgrade operation that migrates the nodes in the node
@@ -9353,12 +9505,14 @@ class UpgradeEvent(_messages.Message):
     ResourceTypeValueValuesEnum: The resource type that is upgrading.
 
   Fields:
+    currentEmulatedVersion: The current emulated version before the upgrade.
     currentVersion: The current version before the upgrade.
     operation: The operation associated with this upgrade.
     operationStartTime: The time when the operation was started.
     resource: Optional relative path to the resource. For example in node pool
       upgrades, the relative path of the node pool.
     resourceType: The resource type that is upgrading.
+    targetEmulatedVersion: The target emulated version for the upgrade.
     targetVersion: The target version for the upgrade.
   """
 
@@ -9375,12 +9529,14 @@ class UpgradeEvent(_messages.Message):
     MASTER = 1
     NODE_POOL = 2
 
-  currentVersion = _messages.StringField(1)
-  operation = _messages.StringField(2)
-  operationStartTime = _messages.StringField(3)
-  resource = _messages.StringField(4)
-  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 5)
-  targetVersion = _messages.StringField(6)
+  currentEmulatedVersion = _messages.StringField(1)
+  currentVersion = _messages.StringField(2)
+  operation = _messages.StringField(3)
+  operationStartTime = _messages.StringField(4)
+  resource = _messages.StringField(5)
+  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 6)
+  targetEmulatedVersion = _messages.StringField(7)
+  targetVersion = _messages.StringField(8)
 
 
 class UpgradeInfoEvent(_messages.Message):
@@ -9394,6 +9550,7 @@ class UpgradeInfoEvent(_messages.Message):
     StateValueValuesEnum: Output only. The state of the upgrade.
 
   Fields:
+    currentEmulatedVersion: The current emulated version before the upgrade.
     currentVersion: The current version before the upgrade.
     description: A brief description of the event.
     endTime: The time when the operation ended.
@@ -9406,6 +9563,7 @@ class UpgradeInfoEvent(_messages.Message):
     standardSupportEndTime: The end of standard support timestamp.
     startTime: The time when the operation was started.
     state: Output only. The state of the upgrade.
+    targetEmulatedVersion: The target emulated version for the upgrade.
     targetVersion: The target version for the upgrade.
   """
 
@@ -9458,18 +9616,20 @@ class UpgradeInfoEvent(_messages.Message):
     FAILED = 3
     CANCELED = 4
 
-  currentVersion = _messages.StringField(1)
-  description = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  eventType = _messages.EnumField('EventTypeValueValuesEnum', 4)
-  extendedSupportEndTime = _messages.StringField(5)
-  operation = _messages.StringField(6)
-  resource = _messages.StringField(7)
-  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 8)
-  standardSupportEndTime = _messages.StringField(9)
-  startTime = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  targetVersion = _messages.StringField(12)
+  currentEmulatedVersion = _messages.StringField(1)
+  currentVersion = _messages.StringField(2)
+  description = _messages.StringField(3)
+  endTime = _messages.StringField(4)
+  eventType = _messages.EnumField('EventTypeValueValuesEnum', 5)
+  extendedSupportEndTime = _messages.StringField(6)
+  operation = _messages.StringField(7)
+  resource = _messages.StringField(8)
+  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 9)
+  standardSupportEndTime = _messages.StringField(10)
+  startTime = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  targetEmulatedVersion = _messages.StringField(13)
+  targetVersion = _messages.StringField(14)
 
 
 class UpgradeSettings(_messages.Message):

@@ -344,6 +344,12 @@ CONTROL_PLANE_EGRESS_NOT_SUPPORTED = """\
 Control plane egress '{mode}' is not supported.
 """
 
+NO_SUCH_RESOURCE_POLICY_ERROR_MSG = """\
+Resource policy '{policy_name}' not found in project '{project}' region '{region}'."""
+
+WRONG_REGION_RESOURCE_POLICY_ERROR_MSG = """\
+Resource policy '{policy_name}' was not found in region '{wrong_region}', but a policy with the same name exists in region '{region}'. Did you mean to specify that region?'"""
+
 DEFAULT_MAX_NODES_PER_POOL = 1000
 
 MAX_AUTHORIZED_NETWORKS_CIDRS_PRIVATE = 100
@@ -477,6 +483,24 @@ SUBNETWORK_URL_PATTERN = (
 ZONE_PATTERN = '^[^-]+-[^-]+-[^-]+$'
 
 TPU_TOPOLOGY_PATTERN = r'^\d{1,3}x\d{1,3}(x\d{1,3})?$'
+TPU_MACHINE_TYPES = frozenset({
+    'ct3-hightpu-4t',
+    'ct3p-hightpu-4t',
+    'ct4l-hightpu-4t',
+    'ct4p-hightpu-4t',
+    'ct5l-hightpu-1t',
+    'ct5l-hightpu-4t',
+    'ct5l-hightpu-8t',
+    'ct5lp-hightpu-1t',
+    'ct5lp-hightpu-4t',
+    'ct5lp-hightpu-8t',
+    'ct5p-hightpu-4t',
+    'ct6e-standard-1t',
+    'ct6e-standard-4t',
+    'ct6e-standard-8t',
+    'tpu7x-standard-1t',
+    'tpu7x-standard-4t',
+})
 
 CLUSTER = 'cluster'
 NODEPOOL = 'nodepool'
@@ -536,11 +560,16 @@ def InitAPIAdapter(api_version, adapter):
   api_client.check_response_func = CheckResponse
   messages = core_apis.GetMessagesModule('container', api_version)
 
+  compute_api_client = core_apis.GetClientInstance('compute', 'v1')
+  compute_messages = core_apis.GetMessagesModule('compute', 'v1')
+
   registry = cloud_resources.REGISTRY.Clone()
   registry.RegisterApiByName('container', api_version)
   registry.RegisterApiByName('compute', 'v1')
 
-  return adapter(registry, api_client, messages)
+  return adapter(
+      registry, api_client, messages, compute_messages, compute_api_client
+  )
 
 
 _SERVICE_ACCOUNT_SCOPES = (
@@ -2008,10 +2037,14 @@ class UpdateNodePoolOptions(object):
 class APIAdapter(object):
   """Handles making api requests in a version-agnostic way."""
 
-  def __init__(self, registry, client, messages):
+  def __init__(
+      self, registry, client, messages, compute_messages, compute_client
+  ):
     self.registry = registry
     self.client = client
     self.messages = messages
+    self.compute_messages = compute_messages
+    self.compute_client = compute_client
 
   def ParseCluster(self, name, location, project=None):
     project = project or properties.VALUES.core.project.GetOrFail()
@@ -2103,6 +2136,45 @@ class APIAdapter(object):
       api_error = exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
       # Cluster couldn't be found, maybe user got the location wrong?
       self.CheckClusterOtherZones(cluster_ref, api_error)
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
+
+  def GetResourcePolicy(self, policy_name, project, location):
+    """Fetches a GCE Resource Policy from the Compute API.
+
+    Args:
+      policy_name (str): The name of the resource policy to retrieve.
+      project (str): The Google Cloud project that contains the resource policy.
+      location (str): The location of the policy. This can be a region (e.g.,
+        'us-central1') or a zone (e.g., 'us-central1-a').
+
+    Returns:
+      The complete ResourcePolicy message object, populated with its
+      configuration data and status.
+
+    Raises:
+      exceptions.Error: If the resource policy is not found in the specified
+        project and region.
+      exceptions.HttpException: For other underlying API errors, such as
+        permission denied.
+    """
+    if re.match(r'^[^-]+-[^-]+-[^-]+$', location):
+      region = location[: location.rfind('-')]
+    else:
+      region = location
+
+    try:
+      get_request = self.compute_messages.ComputeResourcePoliciesGetRequest(
+          project=project,
+          region=region,
+          resourcePolicy=policy_name,
+      )
+
+      return self.compute_client.resourcePolicies.Get(get_request)
+
+    except apitools_exceptions.HttpNotFoundError as error:
+      api_error = exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
+      self.CheckPolicyOtherRegions(project, policy_name, region, api_error)
     except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
 
@@ -2208,6 +2280,61 @@ class APIAdapter(object):
             )
         )
     # Couldn't find a cluster with that name.
+    raise not_found_error
+
+  def CheckPolicyOtherRegions(self, project, policy_name, region, api_error):
+    """Searches for a resource policy in other regions to provide a better error.
+
+    Args:
+      project (str): The project to search in.
+      policy_name (str): The name of the resource policy to find.
+      region (str): The region that was searched in previously.
+      api_error: current error from original request.
+
+    Raises:
+      util.Error: A more helpful error if a match is found elsewhere.
+      exceptions.HttpException: The original error if no helpful suggestion can
+      be made.
+    """
+    not_found_error = util.Error(
+        NO_SUCH_RESOURCE_POLICY_ERROR_MSG.format(
+            policy_name=policy_name,
+            region=region,
+            project=project,
+        )
+    )
+    try:
+      aggregated_list_request = (
+          self.compute_messages.ComputeResourcePoliciesAggregatedListRequest(
+              project=project
+          )
+      )
+      all_policies = self.compute_client.resourcePolicies.AggregatedList(
+          aggregated_list_request
+      )
+    except apitools_exceptions.HttpForbiddenError:
+      raise not_found_error
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
+
+    for prop in all_policies.items.additionalProperties:
+      scoped_list = prop.value
+      if scoped_list.resourcePolicies:
+        for policy in scoped_list.resourcePolicies:
+          if policy.name == policy_name:
+            policy_region = policy.region.split('/')[-1]
+
+            if policy_region == region:
+              raise api_error
+
+            raise util.Error(
+                WRONG_REGION_RESOURCE_POLICY_ERROR_MSG.format(
+                    wrong_region=region,
+                    region=policy_region,
+                    policy_name=policy_name,
+                )
+            )
+
     raise not_found_error
 
   def FindNodePool(self, cluster, pool_name=None):
@@ -2632,7 +2759,8 @@ class APIAdapter(object):
       )
 
     is_cluster_ipv6 = (
-        options.stack_type and options.stack_type.lower() == 'ipv6'
+        options.stack_type
+        and options.stack_type.lower() == gke_constants.IPV6_STACK_TYPE
     )
     if not is_cluster_ipv6:
       # IP Alias is a no-op for IPv6-only clusters.
@@ -3238,9 +3366,10 @@ class APIAdapter(object):
         cluster.autopilot = self.messages.Autopilot()
         cluster.autopilot.enabled = False
       if cluster.autopilot.privilegedAdmissionConfig is None:
-        admission_values = options.autopilot_privileged_admission.split(',')
         cluster.autopilot.privilegedAdmissionConfig = self.messages.PrivilegedAdmissionConfig(
-            allowlistPaths=admission_values
+            # Permit either the flag array value or, if the array is empty,
+            # set to the actual empty value of [""] (allow nothing).
+            allowlistPaths=options.autopilot_privileged_admission or ['']
         )
     if options.cluster_ca is not None:
       if cluster.userManagedKeysConfig is None:
@@ -5312,15 +5441,9 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(desiredRBACBindingConfig=confg)
 
     if options.autopilot_privileged_admission is not None:
-      allowlist_paths = options.autopilot_privileged_admission
-      if isinstance(allowlist_paths, str):
-        allowlist_paths = [
-            p.strip() for p in allowlist_paths.split(',') if p.strip()
-        ]
-
       update = self.messages.ClusterUpdate(
           desiredPrivilegedAdmissionConfig=self.messages.PrivilegedAdmissionConfig(
-              allowlistPaths=allowlist_paths
+              allowlistPaths=options.autopilot_privileged_admission or ['']
           )
       )
 
@@ -6193,16 +6316,34 @@ class APIAdapter(object):
     _AddSandboxConfigToNodeConfig(node_config, options, self.messages)
     _AddWindowsNodeConfigToNodeConfig(node_config, options, self.messages)
 
-    # if we are using a multi-host TPU (tpu_topology is specified)
-    # and num_nodes is not specified, calculate the
-    # num_nodes based on the tpu_topology as the new default. If not
+    # if we are creating a multi-host TPU (tpu_topology or a resource policy
+    # is specified) and num_nodes is not specified, calculate the
+    # num_nodes based on the topology as the new default. If not
     # a multi-host TPU, default num_nodes to 3.
-    if (options.tpu_topology is not None) and (options.num_nodes is None):
-      options.num_nodes = TpuTopologyToNumNodes(
-          options.tpu_topology, options.machine_type
-      )
-    elif options.num_nodes is None:
-      options.num_nodes = 3
+    if options.num_nodes is None:
+      tpu_topology = None
+
+      is_tpu = options.machine_type in TPU_MACHINE_TYPES
+      if options.tpu_topology is not None:
+        tpu_topology = options.tpu_topology
+      elif is_tpu and options.placement_policy is not None:
+        resource_policy = self.GetResourcePolicy(
+            project=node_pool_ref.projectId,
+            location=node_pool_ref.zone,
+            policy_name=options.placement_policy,
+        )
+        if (
+            resource_policy.workloadPolicy
+            and resource_policy.workloadPolicy.acceleratorTopology
+        ):
+          tpu_topology = resource_policy.workloadPolicy.acceleratorTopology
+
+      if tpu_topology:
+        options.num_nodes = TpuTopologyToNumNodes(
+            tpu_topology, options.machine_type
+        )
+      else:
+        options.num_nodes = 3
 
     pool = self.messages.NodePool(
         name=node_pool_ref.nodePoolId,
@@ -8116,7 +8257,7 @@ class V1Beta1Adapter(V1Adapter):
       )
 
     if options.stack_type is not None:
-      if options.stack_type.lower() == 'ipv6':
+      if options.stack_type.lower() == gke_constants.IPV6_STACK_TYPE:
         self._ParseIPv6Options(options, cluster)
       else:
         cluster.ipAllocationPolicy.stackType = util.GetCreateStackTypeMapper(
@@ -9027,15 +9168,9 @@ class V1Beta1Adapter(V1Adapter):
       update = self.messages.ClusterUpdate(desiredRBACBindingConfig=confg)
 
     if options.autopilot_privileged_admission is not None:
-      allowlist_paths = options.autopilot_privileged_admission
-      if isinstance(allowlist_paths, str):
-        allowlist_paths = [
-            p.strip() for p in allowlist_paths.split(',') if p.strip()
-        ]
-
       update = self.messages.ClusterUpdate(
           desiredPrivilegedAdmissionConfig=self.messages.PrivilegedAdmissionConfig(
-              allowlistPaths=allowlist_paths
+              allowlistPaths=options.autopilot_privileged_admission or ['']
           )
       )
 
@@ -9937,7 +10072,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         )
 
     if options.stack_type is not None:
-      if options.stack_type.lower() == 'ipv6':
+      if options.stack_type.lower() == gke_constants.IPV6_STACK_TYPE:
         self._ParseIPv6Options(options, cluster)
       else:
         cluster.ipAllocationPolicy.stackType = util.GetCreateStackTypeMapper(

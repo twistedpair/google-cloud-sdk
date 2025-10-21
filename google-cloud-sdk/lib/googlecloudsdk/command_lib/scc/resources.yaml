@@ -201,3 +201,40 @@ prediction:
     attribute_name: prediction
     help: SCC Posture Prediction resource
   disable_auto_completers: false
+
+artifact_scan_guard_organization:
+  name: organization
+  collection: artifactscanguard.organizations
+  attributes:
+  - &artifact_scan_guard_organization
+    parameter_name: organizationsId
+    attribute_name: organization
+    help: |
+      (Optional) If the full resource name isn't provided e.g. organizations/123, then provide the
+      organization id which is the suffix of the organization. Example: organizations/123, the id is
+      123.
+  disable_auto_completers: false
+
+artifact_scan_guard_location:
+  name: location
+  collection: artifactscanguard.organizations.locations
+  attributes:
+  - *artifact_scan_guard_organization
+  - &artifact_scan_guard_location
+    parameter_name: locationsId
+    attribute_name: location
+    help: |
+      ID of the location where the resource exists (for example, global).
+
+policy:
+  name: policy
+  collection: artifactscanguard.organizations.locations.policies
+  request_id_field: policyId
+  attributes:
+  - *artifact_scan_guard_organization
+  - *artifact_scan_guard_location
+  - &artifact_scan_guard_policy
+    parameter_name: policiesId
+    attribute_name: policy
+    help: Artifact Guard Policy resource
+  disable_auto_completers: false

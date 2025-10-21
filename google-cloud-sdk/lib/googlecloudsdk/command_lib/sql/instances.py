@@ -734,6 +734,19 @@ class _BaseInstances(object):
       if mcp_config is not None:
         settings.connectionPoolConfig = mcp_config
 
+    read_pool_auto_scale_config = reducers.ReadPoolAutoScaleConfig(
+        sql_messages,
+        auto_scale_enabled=args.auto_scale_enabled,
+        auto_scale_min_node_count=args.auto_scale_min_node_count,
+        auto_scale_max_node_count=args.auto_scale_max_node_count,
+        auto_scale_target_metrics=args.auto_scale_target_metrics,
+        auto_scale_disable_scale_in=args.auto_scale_disable_scale_in,
+        auto_scale_in_cooldown_seconds=args.auto_scale_in_cooldown_seconds,
+        auto_scale_out_cooldown_seconds=args.auto_scale_out_cooldown_seconds,
+    )
+    if read_pool_auto_scale_config is not None:
+      settings.readPoolAutoScaleConfig = read_pool_auto_scale_config
+
     # BETA args.
     if IsBetaOrNewer(release_track):
       settings.userLabels = labels_util.ParseCreateArgs(
@@ -751,21 +764,6 @@ class _BaseInstances(object):
       )
       if db_aligned_atomic_writes_config is not None:
         settings.dbAlignedAtomicWritesConfig = db_aligned_atomic_writes_config
-
-    # ALPHA args.
-    if _IsAlpha(release_track):
-      read_pool_auto_scale_config = reducers.ReadPoolAutoScaleConfig(
-          sql_messages,
-          auto_scale_enabled=args.auto_scale_enabled,
-          auto_scale_min_node_count=args.auto_scale_min_node_count,
-          auto_scale_max_node_count=args.auto_scale_max_node_count,
-          auto_scale_target_metrics=args.auto_scale_target_metrics,
-          auto_scale_disable_scale_in=args.auto_scale_disable_scale_in,
-          auto_scale_in_cooldown_seconds=args.auto_scale_in_cooldown_seconds,
-          auto_scale_out_cooldown_seconds=args.auto_scale_out_cooldown_seconds,
-      )
-      if read_pool_auto_scale_config is not None:
-        settings.readPoolAutoScaleConfig = read_pool_auto_scale_config
 
     return settings
 
@@ -926,6 +924,20 @@ class _BaseInstances(object):
         settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
       settings.ipConfiguration.pscConfig.pscAutoConnections = []
 
+    read_pool_auto_scale_config = reducers.ReadPoolAutoScaleConfig(
+        sql_messages,
+        auto_scale_enabled=args.auto_scale_enabled,
+        auto_scale_min_node_count=args.auto_scale_min_node_count,
+        auto_scale_max_node_count=args.auto_scale_max_node_count,
+        auto_scale_target_metrics=args.auto_scale_target_metrics,
+        auto_scale_disable_scale_in=args.auto_scale_disable_scale_in,
+        auto_scale_in_cooldown_seconds=args.auto_scale_in_cooldown_seconds,
+        auto_scale_out_cooldown_seconds=args.auto_scale_out_cooldown_seconds,
+        current_config=original_settings.readPoolAutoScaleConfig,
+    )
+    if read_pool_auto_scale_config is not None:
+      settings.readPoolAutoScaleConfig = read_pool_auto_scale_config
+
     # BETA args.
     if IsBetaOrNewer(release_track):
       labels_diff = labels_util.ExplicitNullificationDiff.FromUpdateArgs(args)
@@ -950,19 +962,8 @@ class _BaseInstances(object):
         )
     # ALPHA args.
     if _IsAlpha(release_track):
-      read_pool_auto_scale_config = reducers.ReadPoolAutoScaleConfig(
-          sql_messages,
-          auto_scale_enabled=args.auto_scale_enabled,
-          auto_scale_min_node_count=args.auto_scale_min_node_count,
-          auto_scale_max_node_count=args.auto_scale_max_node_count,
-          auto_scale_target_metrics=args.auto_scale_target_metrics,
-          auto_scale_disable_scale_in=args.auto_scale_disable_scale_in,
-          auto_scale_in_cooldown_seconds=args.auto_scale_in_cooldown_seconds,
-          auto_scale_out_cooldown_seconds=args.auto_scale_out_cooldown_seconds,
-          current_config=original_settings.readPoolAutoScaleConfig,
-      )
-      if read_pool_auto_scale_config is not None:
-        settings.readPoolAutoScaleConfig = read_pool_auto_scale_config
+      pass
+
     return settings
 
   @classmethod

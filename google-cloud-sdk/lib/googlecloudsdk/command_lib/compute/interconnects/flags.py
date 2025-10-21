@@ -25,6 +25,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute import completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.compute import resource_manager_tags_utils
 
 
 INTERCONNECT_TYPE_CHOICES_GA = {
@@ -238,6 +239,7 @@ def AddCreateArgs(parser, track, required=True):
     AddInterconnectTypeGA(parser, required)
   else:
     AddInterconnectTypeBetaAndAlpha(parser)
+    AddResourceManagerTags(parser)
 
 
 def AddCreateArgsForInterconnectGroupsCreateMembers(parser, required=True):
@@ -543,3 +545,34 @@ def GetAaiBandwidthPercentages(messages, bandwidth_percentages_arg):
         )
     ] = percentage
   return result
+
+
+def AddResourceManagerTags(parser):
+  """Adds the --resource-manager-tags flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--resource-manager-tags',
+      type=arg_parsers.ArgDict(),
+      metavar='KEY=VALUE',
+      help="""\
+          A comma-separated list of Resource Manager tags to apply to the interconnect.
+      """,
+  )
+
+
+def CreateInterconnectParams(messages, resource_manager_tags):
+  """Converts the resource manager tags argument into InterconnectParams."""
+  resource_manager_tags_map = (
+      resource_manager_tags_utils.GetResourceManagerTags(
+          resource_manager_tags
+      )
+  )
+  params = messages.InterconnectParams
+  additional_properties = [
+      params.ResourceManagerTagsValue.AdditionalProperty(key=key, value=value)
+      for key, value in sorted(resource_manager_tags_map.items())
+  ]
+  return params(
+      resourceManagerTags=params.ResourceManagerTagsValue(
+          additionalProperties=additional_properties
+      )
+  )

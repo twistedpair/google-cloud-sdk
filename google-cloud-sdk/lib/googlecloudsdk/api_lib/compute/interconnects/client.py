@@ -20,6 +20,8 @@ from __future__ import unicode_literals
 
 import dataclasses
 
+from googlecloudsdk.command_lib.compute.interconnects import flags
+
 
 class Interconnect(object):
   """Abstracts Interconnect resource."""
@@ -45,6 +47,7 @@ class Interconnect(object):
       customer_name,
       remote_location,
       requested_features,
+      resource_manager_tags,
   ):
     """Make a tuple for interconnect insert request.
 
@@ -67,10 +70,17 @@ class Interconnect(object):
       remote_location: String that represents the Cloud Interconnect remote
         location URL that should be connected to Cloud Interconnect.
       requested_features: List of features requested for this interconnect.
+      resource_manager_tags: Dictionary of resource manager tags for this
+        interconnect.
 
     Returns:
     Insert interconnect tuple that can be used in a request.
     """
+    kwargs = {}
+    if resource_manager_tags is not None:
+      kwargs['params'] = flags.CreateInterconnectParams(
+          self._messages, resource_manager_tags
+      )
     return (
         self._client.interconnects,
         'Insert',
@@ -89,6 +99,7 @@ class Interconnect(object):
                 customerName=customer_name,
                 remoteLocation=remote_location,
                 requestedFeatures=requested_features,
+                **kwargs
             ),
         ),
     )
@@ -179,6 +190,7 @@ class Interconnect(object):
       only_generate_request=False,
       remote_location=None,
       requested_features=None,
+      resource_manager_tags=None,
   ):
     """Create an interconnect."""
     requests = [
@@ -194,6 +206,7 @@ class Interconnect(object):
             customer_name,
             remote_location,
             requested_features or [],
+            resource_manager_tags,
         )
     ]
     if not only_generate_request:

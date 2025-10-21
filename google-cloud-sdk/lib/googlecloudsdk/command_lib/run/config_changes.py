@@ -1306,9 +1306,9 @@ class RevisionNameChanges(TemplateConfigChanger):
     return resource
 
 
-def _GenerateVolumeName(prefix):
+def GenerateVolumeName(prefix):
   """Randomly generated name with the given prefix."""
-  return name_generator.GenerateName(sections=3, separator='-', prefix=prefix)
+  return name_generator.GenerateName(sections=2, separator='-', prefix=prefix)
 
 
 def _UniqueVolumeName(source_name, existing_volumes):
@@ -1326,7 +1326,7 @@ def _UniqueVolumeName(source_name, existing_volumes):
   """
   volume_name = None
   while volume_name is None or volume_name in existing_volumes:
-    volume_name = _GenerateVolumeName(source_name)
+    volume_name = GenerateVolumeName(source_name)
   return volume_name
 
 
@@ -2315,4 +2315,3 @@ class RemovePresetsChange(TemplateConfigChanger):
     if presets and self.clear_presets:
       del resource.annotations[service.PRESETS_ANNOTATION]
       return resource
-

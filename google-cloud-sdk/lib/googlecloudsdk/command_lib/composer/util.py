@@ -91,7 +91,7 @@ SUBCOMMAND_ALLOWLIST = {
     'clear':
         SupportedAirflowVersion(from_version=None, to_version='2.0.0'),
     'connections':
-        SupportedAirflowVersion(from_version=None, to_version='3.1.0'),
+        SupportedAirflowVersion(from_version=None, to_version='3.2.0'),
     'db':
         SupportedAirflowVersion(
             from_version='2.3.0',
@@ -107,13 +107,13 @@ SUBCOMMAND_ALLOWLIST = {
     'dag_state':
         SupportedAirflowVersion(from_version=None, to_version='2.0.0'),
     'dags':
-        SupportedAirflowVersion(from_version='1.10.14', to_version='3.1.0'),
+        SupportedAirflowVersion(from_version='1.10.14', to_version='3.2.0'),
     'delete_dag':
         SupportedAirflowVersion(from_version='1.10.1', to_version='2.0.0'),
     'kerberos':
-        SupportedAirflowVersion(from_version=None, to_version='3.1.0'),
+        SupportedAirflowVersion(from_version=None, to_version='3.2.0'),
     'kubernetes':
-        SupportedAirflowVersion(from_version='2.1.4', to_version='3.1.0'),
+        SupportedAirflowVersion(from_version='2.1.4', to_version='3.2.0'),
     'list_dag_runs':
         SupportedAirflowVersion(from_version='1.10.2', to_version='2.0.0'),
     'list_dags':
@@ -129,15 +129,15 @@ SUBCOMMAND_ALLOWLIST = {
     'pool':
         SupportedAirflowVersion(from_version=None, to_version='2.0.0'),
     'pools':
-        SupportedAirflowVersion(from_version='1.10.14', to_version='3.1.0'),
+        SupportedAirflowVersion(from_version='1.10.14', to_version='3.2.0'),
     'render':
         SupportedAirflowVersion(from_version=None, to_version='2.0.0'),
     'roles':
-        SupportedAirflowVersion(from_version='2.0.0', to_version='3.1.0'),
+        SupportedAirflowVersion(from_version='2.0.0', to_version='3.2.0'),
     'run':
         SupportedAirflowVersion(from_version=None, to_version='2.0.0'),
     'sync-perm':
-        SupportedAirflowVersion(from_version='1.10.14', to_version='3.1.0'),
+        SupportedAirflowVersion(from_version='1.10.14', to_version='3.2.0'),
     'sync_perm':
         SupportedAirflowVersion(from_version='1.10.2', to_version='2.0.0'),
     'task_failed_deps':
@@ -145,7 +145,7 @@ SUBCOMMAND_ALLOWLIST = {
     'task_state':
         SupportedAirflowVersion(from_version=None, to_version='2.0.0'),
     'tasks':
-        SupportedAirflowVersion(from_version='1.10.14', to_version='3.1.0'),
+        SupportedAirflowVersion(from_version='1.10.14', to_version='3.2.0'),
     'test':
         SupportedAirflowVersion(from_version=None, to_version='2.0.0'),
     'trigger_dag':
@@ -155,11 +155,11 @@ SUBCOMMAND_ALLOWLIST = {
     'upgrade_check':
         SupportedAirflowVersion(from_version='1.10.15', to_version='2.0.0'),
     'users':
-        SupportedAirflowVersion(from_version='1.10.14', to_version='3.1.0'),
+        SupportedAirflowVersion(from_version='1.10.14', to_version='3.2.0'),
     'variables':
-        SupportedAirflowVersion(from_version=None, to_version='3.1.0'),
+        SupportedAirflowVersion(from_version=None, to_version='3.2.0'),
     'version':
-        SupportedAirflowVersion(from_version=None, to_version='3.1.0'),
+        SupportedAirflowVersion(from_version=None, to_version='3.2.0'),
 }
 # Code paths are prohibited from being included in this file.
 # LINT.ThenChange()

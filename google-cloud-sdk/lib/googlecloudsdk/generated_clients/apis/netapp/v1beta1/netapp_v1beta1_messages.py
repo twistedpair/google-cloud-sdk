@@ -583,6 +583,10 @@ class BlockProperties(_messages.Message):
 class CacheConfig(_messages.Message):
   r"""Configuration of the cache volume.
 
+  Enums:
+    CachePrePopulateStateValueValuesEnum: Output only. State of the
+      prepopulation job indicating how the prepopulation is progressing.
+
   Fields:
     atimeScrubDays: Optional. Duration in days after which inactive files can
       be scrubbed from FlexCache volume.
@@ -590,17 +594,41 @@ class CacheConfig(_messages.Message):
       is enabled for the FlexCache volume.
     cachePrePopulate: Optional. Pre-populate cache volume with data from the
       origin volume.
+    cachePrePopulateState: Output only. State of the prepopulation job
+      indicating how the prepopulation is progressing.
     cifsChangeNotifyEnabled: Optional. Flag indicating whether a CIFS change
       notification is enabled for the FlexCache volume.
     writeBackEnabled: Optional. Flag indicating whether writeback is enabled
       for the FlexCache volume.
   """
 
+  class CachePrePopulateStateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the prepopulation job indicating how the
+    prepopulation is progressing.
+
+    Values:
+      CACHE_PRE_POPULATE_STATE_UNSPECIFIED: Default unspecified state.
+      NOT_NEEDED: State representing when the most recent create or update
+        request did not require a prepopulation job.
+      IN_PROGRESS: State representing when the most recent update request
+        requested a prepopulation job but it has not yet completed.
+      COMPLETE: State representing when the most recent update request
+        requested a prepopulation job and it has completed successfully.
+      ERROR: State representing when the most recent update request requested
+        a prepopulation job but the prepopulate job failed.
+    """
+    CACHE_PRE_POPULATE_STATE_UNSPECIFIED = 0
+    NOT_NEEDED = 1
+    IN_PROGRESS = 2
+    COMPLETE = 3
+    ERROR = 4
+
   atimeScrubDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   atimeScrubEnabled = _messages.BooleanField(2)
   cachePrePopulate = _messages.MessageField('CachePrePopulate', 3)
-  cifsChangeNotifyEnabled = _messages.BooleanField(4)
-  writeBackEnabled = _messages.BooleanField(5)
+  cachePrePopulateState = _messages.EnumField('CachePrePopulateStateValueValuesEnum', 4)
+  cifsChangeNotifyEnabled = _messages.BooleanField(5)
+  writeBackEnabled = _messages.BooleanField(6)
 
 
 class CacheParameters(_messages.Message):
@@ -843,17 +871,19 @@ class HostGroup(_messages.Message):
     r"""Output only. State of the host group.
 
     Values:
-      STATE_UNSPECIFIED: Unspecified state for host group
-      CREATING: Host group is creating
-      READY: Host group is ready
-      UPDATING: Host group is updating
-      DELETING: Host group is deleting
+      STATE_UNSPECIFIED: Unspecified state for host group.
+      CREATING: Host group is creating.
+      READY: Host group is ready.
+      UPDATING: Host group is updating.
+      DELETING: Host group is deleting.
+      DISABLED: Host group is disabled.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     READY = 2
     UPDATING = 3
     DELETING = 4
+    DISABLED = 5
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Required. Type of the host group.
@@ -1254,10 +1284,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListQuotaRulesResponse(_messages.Message):
@@ -2099,12 +2134,20 @@ class NetappProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class NetappProjectsLocationsStoragePoolsCreateRequest(_messages.Message):
@@ -3573,6 +3616,8 @@ class StoragePool(_messages.Message):
       RESTORING: Storage Pool State is Restoring
       DISABLED: Storage Pool State is Disabled
       ERROR: Storage Pool State is Error
+      DEGRADED: Storage Pool State is Degraded The storage pool is
+        operational, but with reduced performance.
     """
     STATE_UNSPECIFIED = 0
     READY = 1
@@ -3582,6 +3627,7 @@ class StoragePool(_messages.Message):
     RESTORING = 5
     DISABLED = 6
     ERROR = 7
+    DEGRADED = 8
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Optional. Type of the storage pool. This field is used to control

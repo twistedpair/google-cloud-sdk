@@ -3021,8 +3021,6 @@ class McpPolicy(_messages.Message):
   a cloud resource hierarchy.
 
   Fields:
-    contentSecurity: ContentSecurity contains the content security related
-      fields of a MCP policy. Deprecated. Use ContentSecurityPolicy instead.
     createTime: Output only. The time the policy was created. For singleton
       policies (such as the `default` policy), this is the first touch of the
       policy.
@@ -3038,12 +3036,11 @@ class McpPolicy(_messages.Message):
     updateTime: Output only. The time the policy was last updated.
   """
 
-  contentSecurity = _messages.MessageField('ContentSecurity', 1)
-  createTime = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  mcpEnableRules = _messages.MessageField('McpEnableRule', 4, repeated=True)
-  name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  createTime = _messages.StringField(1)
+  etag = _messages.StringField(2)
+  mcpEnableRules = _messages.MessageField('McpEnableRule', 3, repeated=True)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
 
 
 class McpPolicyList(_messages.Message):
@@ -5021,6 +5018,9 @@ class ServiceusageServicesListRequest(_messages.Message):
   r"""A ServiceusageServicesListRequest object.
 
   Fields:
+    filter: A filter to apply to the list of services. Supported filter
+      strings include: - `mcp_server:urls` True if service's mcp_server.urls
+      field is not empty.
     pageSize: The maximum number of services to return. The service may return
       fewer than this value. If unspecified, at most 50 services will be
       returned. The maximum value is 1000; values above 1000 will be coerced
@@ -5031,14 +5031,18 @@ class ServiceusageServicesListRequest(_messages.Message):
       that provided the page token.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
 
 
 class ServiceusageSharedServicesListRequest(_messages.Message):
   r"""A ServiceusageSharedServicesListRequest object.
 
   Fields:
+    filter: A filter to apply to the list of services. Supported filter
+      strings include: - `mcp_server:urls` True if service's mcp_server.urls
+      field is not empty.
     pageSize: The maximum number of services to return. The service may return
       fewer than this value. If unspecified, at most 50 services will be
       returned. The maximum value is 1000; values above 1000 will be coerced
@@ -5051,9 +5055,10 @@ class ServiceusageSharedServicesListRequest(_messages.Message):
       `projects/100`, `folders/101` or `organizations/102`.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class ServiceusageTestEnabledRequest(_messages.Message):

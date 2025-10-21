@@ -270,9 +270,21 @@ def MakeShareSettings(messages, args, setting_configs):
       return messages.ShareSettings(
           shareType=messages.ShareSettings.ShareTypeValueValuesEnum
           .SPECIFIC_PROJECTS,
-          projects=getattr(args, 'share_with', None))
+          projectMap=MakeProjectMapFromProjectList(
+              messages, getattr(args, 'share_with', None)))
   else:
     return None
+
+
+def MakeProjectMapFromProjectList(messages, projects):
+  additional_properties = []
+  for project in projects:
+    additional_properties.append(
+        messages.ShareSettings.ProjectMapValue.AdditionalProperty(
+            key=project,
+            value=messages.ShareSettingsProjectConfig(projectId=project)))
+  return messages.ShareSettings.ProjectMapValue(
+      additionalProperties=additional_properties)
 
 
 def MakePlanningStatus(messages, planning_status):

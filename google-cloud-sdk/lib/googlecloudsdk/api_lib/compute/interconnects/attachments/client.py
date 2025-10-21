@@ -18,6 +18,7 @@ import copy
 import json
 
 from apitools.base.py import encoding
+from googlecloudsdk.command_lib.compute.interconnects.attachments import flags
 from googlecloudsdk.core import log
 
 
@@ -109,6 +110,7 @@ class InterconnectAttachment(object):
       geneve_vni,
       default_appliance_ip_address,
       tunnel_endpoint_ip_address,
+      resource_manager_tags,
   ):
     """Make an interconnect attachment insert request."""
     interconnect_self_link = None
@@ -197,6 +199,10 @@ class InterconnectAttachment(object):
     if default_appliance_ip_address is not None:
       attachment.l2Forwarding.defaultApplianceIpAddress = (
           default_appliance_ip_address
+      )
+    if resource_manager_tags is not None:
+      attachment.params = flags.CreateInterconnectAttachmentParams(
+          self._messages, resource_manager_tags
       )
 
     if validate_only is not None:
@@ -486,6 +492,7 @@ class InterconnectAttachment(object):
       default_appliance_ip_address=None,
       tunnel_endpoint_ip_address=None,
       supports_400g=False,
+      resource_manager_tags=None,
   ):
     """Create an interconnectAttachment."""
     if edge_availability_domain is not None:
@@ -549,6 +556,7 @@ class InterconnectAttachment(object):
             geneve_vni,
             default_appliance_ip_address,
             tunnel_endpoint_ip_address,
+            resource_manager_tags,
         )
     ]
     if not only_generate_request:

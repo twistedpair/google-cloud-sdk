@@ -16,6 +16,7 @@
 """Common utility functions for Developer Connect Insights Configs."""
 
 import datetime
+from typing import Any, Dict, List, Set, Tuple
 
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
@@ -38,8 +39,8 @@ from googlecloudsdk.core.console import console_io
 
 _ROLES = (
     'roles/developerconnect.insightsAgent',
-    'roles/cloudasset.owner',
 )
+_EXCLUDED_PROJECTS = ['cloudrun']
 # Wait till service account is available for setIamPolicy
 _MAX_WAIT_TIME_IN_MS = 20 * 1000
 VERSION_MAP = {
@@ -51,7 +52,7 @@ class InsightsConfigInitializationError(exceptions.InternalError):
   """Error initializing the Developer Connect Insights Config."""
 
 
-def _GetP4SA(project, service_name):
+def _get_p4sa(project, service_name):
   """Gets the P4SA for the given project and location.
 
   If the P4SA does not exist for this project, it will be created. Otherwise,
@@ -68,7 +69,7 @@ def _GetP4SA(project, service_name):
   return response['email']
 
 
-def _ShouldRetryHttpError(
+def _should_retry_http_error(
     exc_type, unused_exc_value, unused_exc_traceback, unused_state
 ):
   """Whether to retry the request when receiving errors.
@@ -88,7 +89,7 @@ def _ShouldRetryHttpError(
 
 
 # The messages module can also be accessed from client.MESSAGES_MODULE
-def GetMessagesModule(release_track=base.ReleaseTrack.ALPHA):
+def get_messages_module(release_track=base.ReleaseTrack.ALPHA):
   api_version = VERSION_MAP.get(release_track)
   return apis.GetMessagesModule('developerconnect', api_version)
 
@@ -102,26 +103,25 @@ class InsightsConfigClient(object):
     self.client = apis.GetClientInstance('developerconnect', api_version)
     self._resource_parser = resources.Registry()
     self._resource_parser.RegisterApiByName('developerconnect', 'v1')
-    self.messages = GetMessagesModule(release_track)
+    self.messages = get_messages_module(release_track)
     self.api_version = api_version
     self.p4sa_email = None
 
-  def Create(self, insight_config_ref, app_hub, user_artifact_configs):
+  def create(self, insight_config_ref, app_hub, user_artifact_configs):
     """Creates the insight config."""
     app_hub_application = name.parse_app_hub_application_uri(app_hub)
     # Check if the app hub application project is the same as the project where
     # the insight config is being created.
-    are_projects_id_equal = (
-        app_hub_application.project_id() == insight_config_ref.projectsId
+    is_project_id_mismatch = (
+        app_hub_application.project_id != insight_config_ref.projectsId
     )
-    are_project_numbers_equal = (
-        str(app_hub_application.project_number())
-        == insight_config_ref.projectsId
+    is_project_num_mismatch = (
+        str(app_hub_application.project_number) != insight_config_ref.projectsId
     )
-    if not are_projects_id_equal and not are_project_numbers_equal:
+    if is_project_id_mismatch and is_project_num_mismatch:
       raise InsightsConfigInitializationError(
           'Mismatch: App Hub application project'
-          f' [{app_hub_application.project_id()}] must be the same as the'
+          f' [{app_hub_application.project_id}] must be the same as the'
           ' project where the insight config is being created'
           f' [{insight_config_ref.projectsId}].'
       )
@@ -130,28 +130,31 @@ class InsightsConfigClient(object):
     )
     # Handle the management project and get the dependent projects and gke
     # workloads.
-    dependent_projects, gke_workloads = (
-        self.FindGkeWorkloadsAndGrantSAPermissions(
+    dependent_projects, gke_workloads, cloud_run_services = (
+        self.find_apphub_resources_and_grant_sa_permissions(
             insight_config_ref, app_hub_application
         )
     )
-    cais_artifact_configs_dict = self.GetArtifactConfigsFromCAIS(gke_workloads)
-    merged_artifact_configs_dict = self.MergeArtifactConfigs(
+    cais_artifact_configs_dict = self.get_artifact_configs_from_cais(
+        gke_workloads, cloud_run_services
+    )
+    merged_artifact_configs_dict = self.merge_artifact_configs(
         cais_artifact_configs_dict, user_artifact_configs_dict
     )
 
     # Get the artifact configs and add new projects to the dependent projects
     # set.
-    artifact_projects, artifact_configs = self.BuildArtifactConfigs(
+    artifact_projects, artifact_configs = self.build_artifact_configs(
         merged_artifact_configs_dict, cais_artifact_configs_dict
     )
     # Add the artifact projects to the dependent projects set.
     dependent_projects.update(artifact_projects)
     # Get the P4SA and grant IAM roles to it.
     if dependent_projects:
-      self.InitServiceAccount(
+      # Sort projects for deterministic behavior, important for tests.
+      self.init_service_account(
           insight_config_ref.projectsId,
-          dependent_projects,
+          sorted(dependent_projects),
           management_project=False,
       )
     create_request = self.messages.DeveloperconnectProjectsLocationsInsightsConfigsCreateRequest(
@@ -174,12 +177,16 @@ class InsightsConfigClient(object):
           f' [{insight_config_ref.locationsId}].'
       )
 
-  def MergeArtifactConfigs(
-      self, artifact_configs_dict, user_provided_artifact_configs
-  ):
+  def merge_artifact_configs(
+      self,
+      artifact_configs_dict: Dict[str, get_messages_module().ArtifactConfig],
+      user_provided_artifact_configs: Dict[str, str],
+  ) -> Dict[str, get_messages_module().ArtifactConfig]:
     """Merges artifact configs from CAIS and user provided configs user provided configs will overwrite configs extracted from CAIS if URIs match.
     """
-    merged_artifact_configs_dict = {}
+    merged_artifact_configs_dict: Dict[
+        str, get_messages_module().ArtifactConfig
+    ] = {}
     # First, populate with CAIS-discovered configs
     if artifact_configs_dict:
       for uri, config_msg in artifact_configs_dict.items():
@@ -199,10 +206,10 @@ class InsightsConfigClient(object):
 
     return merged_artifact_configs_dict
 
-  def FindGkeWorkloadsAndGrantSAPermissions(
+  def find_apphub_resources_and_grant_sa_permissions(
       self, insight_config_ref, app_hub_application
   ):
-    """Finds the GKE workloads and grants SA permissions at the folder level for management project or returns the dependent projects for non-management projects.
+    """Finds the GKE workloads and Cloud Run services and grants SA permissions at the folder level for management project or returns the dependent projects for non-management projects.
 
     Args:
       insight_config_ref: The insight config reference.
@@ -210,53 +217,100 @@ class InsightsConfigClient(object):
 
     Returns:
       A tuple of dependent projects(based on if it is a management project or
-      not) and gke workloads.
+      not), gke workloads and cloud run services.
     """
-    dependent_projects, gke_workloads = self.GetRuntimes(
+    dependent_projects, gke_workloads, cloud_run_services = self.get_runtimes(
         app_hub_application.resource_name()
     )
     # If the app hub application is not a management project, return the
     # dependent projects from the runtime configs, we'll grant permissions to
     # this set of projects later.
-    if not name.is_management_project(app_hub_application.project_id()):
-      return dependent_projects, gke_workloads
+    if not name.is_management_project(app_hub_application.project_id):
+      return dependent_projects, gke_workloads, cloud_run_services
 
     # Management project, assign permissions to the folder and we don't need
     # dependent projects here.
-    self.AssignManagementPermissions(insight_config_ref, app_hub_application)
-    return set(), gke_workloads
+    self.assign_management_permissions(insight_config_ref, app_hub_application)
+    return set(), gke_workloads, cloud_run_services
 
-  def GetArtifactConfigsFromCAIS(self, gke_workloads):
+  def get_artifact_configs_from_cais(
+      self, gke_workloads: List[Any], cloud_run_services: List[Any]
+  ) -> Dict[str, get_messages_module().ArtifactConfig]:
     """Queries CAIS for artifacts associated with the gke workloads in the resources scope.
 
     Args:
       gke_workloads: A list of GKE workloads.
+      cloud_run_services: A list of Cloud Run services.
 
     Returns:
       A dict of artifact configs IC type.
     """
     # Use a dict to deduplicate artifact configs and allow users to overwrite
     # build projects.
-    artifact_configs_dict = {}
+    artifact_configs_dict: Dict[str, get_messages_module().ArtifactConfig] = {}
     for gke_workload in gke_workloads:
-      assets = discover_artifacts.QueryCaisForAssets(gke_workload)
-      artifact_uris = discover_artifacts.GetArtifactURIsFromAssets(assets)
-      for artifact in artifact_uris:
-        validated_artifact_uri = name.validate_artifact_uri(artifact)
-        if not validated_artifact_uri:
-          continue
-        base_uri = validated_artifact_uri.base_uri()
-        artifact_configs_dict[base_uri] = self.messages.ArtifactConfig(
-            uri=base_uri,
-            googleArtifactAnalysis=self.messages.GoogleArtifactAnalysis(
-                projectId=validated_artifact_uri.project_id()
-            ),
-        )
+      assets = discover_artifacts.query_cais_for_gke_assets(gke_workload)
+      artifact_uris = discover_artifacts.get_artifact_uris_from_gke_assets(
+          assets
+      )
+      artifact_configs_dict.update(
+          self.update_artifact_config_dict_from_artifact_uri(
+              artifact_uris, artifact_configs_dict
+          )
+      )
+    for cloud_run_service in cloud_run_services:
+      assets = discover_artifacts.query_cais_for_cloud_run_services(
+          cloud_run_service
+      )
+      artifact_uris = (
+          discover_artifacts.get_artifact_uris_from_cloud_run_assets(assets)
+      )
+      artifact_configs_dict.update(
+          self.update_artifact_config_dict_from_artifact_uri(
+              artifact_uris, artifact_configs_dict
+          )
+      )
     return artifact_configs_dict
 
-  def BuildArtifactConfigs(
-      self, merged_artifact_configs_dict, cais_artifact_configs_dict
-  ):
+  def update_artifact_config_dict_from_artifact_uri(
+      self,
+      artifact_uris: List[str],
+      artifact_configs_dict: Dict[str, get_messages_module().ArtifactConfig],
+  ) -> Dict[str, get_messages_module().ArtifactConfig]:
+    """Updates the artifact configs dict with the artifact uris.
+
+    Args:
+      artifact_uris: The artifact uris.
+      artifact_configs_dict: The artifact configs dict.
+
+    Returns:
+      The artifact configs dict.
+    """
+    for artifact in artifact_uris:
+      validated_artifact_uri = name.validate_artifact_uri(artifact)
+      # Skip if the artifact URI is invalid or the project is excluded.
+      if not validated_artifact_uri:
+        continue
+      if validated_artifact_uri.project_id in _EXCLUDED_PROJECTS:
+        continue
+      base_uri = validated_artifact_uri.base_uri
+      artifact_configs_dict[base_uri] = self.messages.ArtifactConfig(
+          uri=base_uri,
+          googleArtifactAnalysis=self.messages.GoogleArtifactAnalysis(
+              projectId=validated_artifact_uri.project_id
+          ),
+      )
+    return artifact_configs_dict
+
+  def build_artifact_configs(
+      self,
+      merged_artifact_configs_dict: Dict[
+          str, get_messages_module().ArtifactConfig
+      ],
+      cais_artifact_configs_dict: Dict[
+          str, get_messages_module().ArtifactConfig
+      ],
+  ) -> Tuple[Set[str], List[get_messages_module().ArtifactConfig]]:
     """Builds the artifact configs and returns the dependent projects and artifact configs.
 
     Args:
@@ -267,7 +321,7 @@ class InsightsConfigClient(object):
     Returns:
       A tuple of dependent projects and artifact configs.
     """
-    dependent_projects = set()
+    dependent_projects: Set[str] = set()
     # Print existing artifact configs if they exist.
     if not merged_artifact_configs_dict:
       log.status.Print('No existing artifact configurations found.')
@@ -291,7 +345,7 @@ class InsightsConfigClient(object):
             )
         )
         if change_build_project:
-          build_project = self.PromptForBuildProject(artifact_config.uri)
+          build_project = self.prompt_for_build_project(artifact_config.uri)
 
         merged_artifact_configs_dict[artifact_config.uri] = (
             self.messages.ArtifactConfig(
@@ -313,7 +367,7 @@ class InsightsConfigClient(object):
     )
     return dependent_projects, artifact_configs
 
-  def PromptForBuildProject(self, artifact_uri):
+  def prompt_for_build_project(self, artifact_uri: str) -> str:
     """Prompts the user for the build project."""
     found = False
     build_project = None
@@ -322,6 +376,8 @@ class InsightsConfigClient(object):
           'Please enter the build project for your artifact'
           f' [{artifact_uri}]: '
       )
+      if not build_project:
+        continue
 
       try:
         name.validate_build_project(build_project)
@@ -342,20 +398,20 @@ class InsightsConfigClient(object):
         log.warning(f'Error validating build project [{build_project}]: {e}')
     return build_project
 
-  def GetRuntimes(self, app_hub):
+  def get_gke_workloads_runtime(self, app_hub):
     """Gets the runtime configs.
 
     Args:
       app_hub: The app hub application.
 
     Returns:
-      A tuple of runtime configs projects and gke workloads associated with the
-      app hub application.
+      A tuple of gke runtime configs projects and gke workloads associated with
+      the app hub application.
     """
     runtime_configs_projects = set()
     gke_workloads = []
-    client = discover_apphub.DiscoveredWorkloadsClient()
-    workloads = client.List(
+    client = discover_apphub.DiscoveredApphubClient()
+    workloads = client.list_workloads(
         page_size=100,
         parent=app_hub,
     )
@@ -368,35 +424,90 @@ class InsightsConfigClient(object):
       gke_workload = name.parse_gke_deployment_uri(
           workload.workloadReference.uri
       )
-      if gke_workload:
-        # Add the *project id* to the runtime configs projects set, ensuring it
-        # is project id and not project number so that we don't add the same
-        # project multiple times.
-        runtime_configs_projects.add(
-            name.Project(
-                gke_workload.gke_namespace.gke_cluster.project
-            ).project_id
-        )
-        gke_workloads.append(gke_workload)
+      if not gke_workload:
+        continue
+      # Add the *project id* to the runtime configs projects set, ensuring it
+      # is project id and not project number so that we don't add the same
+      # project multiple times.
+      runtime_configs_projects.add(
+          name.Project(
+              gke_workload.gke_namespace.gke_cluster.project
+          ).project_id
+      )
+      gke_workloads.append(gke_workload)
     return runtime_configs_projects, gke_workloads
 
-  def AssignManagementPermissions(self, insight_config_ref, app_hub):
+  def get_cloud_run_services_runtime(self, app_hub):
+    """Gets the cloud run services.
+
+    Args:
+      app_hub: The app hub application.
+
+    Returns:
+      A tuple of cloud run runtime configs projects and cloud run services
+      associated with the app hub application.
+    """
+    runtime_configs_projects = set()
+    cloud_run_services = []
+    client = discover_apphub.DiscoveredApphubClient()
+    services = client.list_services(
+        page_size=100,
+        parent=app_hub,
+    )
+    for service in services:
+      # Skip if these fields are not set.
+      # This could happen if the service is detached.
+      if not service.serviceReference or not service.serviceReference.uri:
+        continue
+      cloud_run_service = name.parse_cloud_run_service_uri(
+          service.serviceReference.uri
+      )
+      if not cloud_run_service:
+        continue
+      # Add the *project id* to the runtime configs projects set, ensuring it
+      # is project id and not project number so that we don't add the same
+      # project multiple times.
+      runtime_configs_projects.add(cloud_run_service.project_id)
+      cloud_run_services.append(cloud_run_service)
+    return runtime_configs_projects, cloud_run_services
+
+  def get_runtimes(self, app_hub):
+    """Gets the runtime configs.
+
+    Args:
+      app_hub: The app hub application.
+
+    Returns:
+      A tuple of runtime configs projects, gke workloads, and cloud run services
+      associated with the app hub application.
+    """
+    if not app_hub:
+      return set(), [], []
+    gke_runtime_configs_projects, gke_workloads = (
+        self.get_gke_workloads_runtime(app_hub)
+    )
+    cloud_run_runtime_configs_projects, cloud_run_services = (
+        self.get_cloud_run_services_runtime(app_hub)
+    )
+    runtime_configs_projects = gke_runtime_configs_projects
+    runtime_configs_projects.update(cloud_run_runtime_configs_projects)
+    return runtime_configs_projects, gke_workloads, cloud_run_services
+
+  def assign_management_permissions(self, insight_config_ref, app_hub):
     """Assigns permissions to at the folder level for management project."""
     # Management project, get permissions on the folder.
     folder_number = projects_api.Get(
-        projects_util.ParseProject(
-            app_hub.project_id()
-        )
+        projects_util.ParseProject(app_hub.project_id)
     ).parent.id
     dependent_folder = [folder_number]
-    self.InitServiceAccount(
+    self.init_service_account(
         insight_config_ref.projectsId,
         dependent_folder,
         management_project=True,
     )
     return
 
-  def Update(
+  def update(
       self,
       insight_config_ref,
       discovery,
@@ -405,17 +516,19 @@ class InsightsConfigClient(object):
   ):
     """Updates the insight config."""
     if artifact_uri and build_project:
-      old_insights_config = self.HandleArtifactConfigs(
+      old_insights_config = self.handle_artifact_configs(
           insight_config_ref, artifact_uri, build_project
       )
     else:
-      old_insights_config = self.GetExistingInsightsConfig(insight_config_ref)
+      old_insights_config = self.get_existing_insights_config(
+          insight_config_ref
+      )
 
     if not name.is_management_project(
         name.extract_project(old_insights_config.appHubApplication)
     ):
-      dependent_projects = self.GetDependentProjects(old_insights_config)
-      self.InitServiceAccount(
+      dependent_projects = self.get_dependent_projects(old_insights_config)
+      self.init_service_account(
           insight_config_ref.projectsId,
           dependent_projects,
           management_project=False,
@@ -428,13 +541,13 @@ class InsightsConfigClient(object):
           )
       ).parent.id
       dependent_folder = [folder_number]
-      self.InitServiceAccount(
+      self.init_service_account(
           insight_config_ref.projectsId,
           dependent_folder,
           management_project=True,
       )
 
-    new_insights_config = self.InsightsConfigMessageType(old_insights_config)
+    new_insights_config = self.insights_config_message_type(old_insights_config)
     if discovery:
       new_insights_config.state = (
           self.messages.InsightsConfig.StateValueValuesEnum.PENDING
@@ -447,7 +560,7 @@ class InsightsConfigClient(object):
         request=update_request
     )
 
-  def HandleArtifactConfigs(self, insights_ref, artifact_uri, build_project):
+  def handle_artifact_configs(self, insights_ref, artifact_uri, build_project):
     """Handles the artifact config."""
     artifact_project = name.validate_artifact_uri(artifact_uri)
     if not artifact_project:
@@ -475,7 +588,7 @@ class InsightsConfigClient(object):
           .format(build_project, e)
       )
 
-    ic = self.GetExistingInsightsConfig(insights_ref)
+    ic = self.get_existing_insights_config(insights_ref)
     for index, artifact_config in enumerate(ic.artifactConfigs):
       if artifact_config.uri == artifact_uri:
         updated_artifact = self.messages.ArtifactConfig(
@@ -497,14 +610,14 @@ class InsightsConfigClient(object):
     )
     return ic
 
-  def InsightsConfigMessageType(self, current_insights_config):
+  def insights_config_message_type(self, current_insights_config):
     """Creates a new insights config message type."""
     return self.messages.InsightsConfig(
         state=current_insights_config.state,
         artifactConfigs=current_insights_config.artifactConfigs,
     )
 
-  def GetExistingInsightsConfig(self, insight_config_ref):
+  def get_existing_insights_config(self, insight_config_ref):
     """Gets the insight config."""
     try:
       return self.client.projects_locations_insightsConfigs.Get(
@@ -519,7 +632,7 @@ class InsightsConfigClient(object):
           f' [{insight_config_ref.locationsId}].'
       )
 
-  def GetDependentProjects(self, insights_config):
+  def get_dependent_projects(self, insights_config):
     """Gets the P4SA projects for the insight config."""
     projects = set()
     projects.add(name.extract_project(insights_config.appHubApplication))
@@ -527,7 +640,7 @@ class InsightsConfigClient(object):
       if artifact_config.uri:
         artifact_uri = name.validate_artifact_uri(artifact_config.uri)
         if artifact_uri:
-          projects.add(artifact_uri.project_id())
+          projects.add(artifact_uri.project_id)
       if (
           artifact_config.googleArtifactAnalysis
           and artifact_config.googleArtifactAnalysis.projectId
@@ -536,9 +649,10 @@ class InsightsConfigClient(object):
     for runtime_config in insights_config.runtimeConfigs:
       if runtime_config.uri:
         projects.add(name.extract_project(runtime_config.uri))
+    # Sort projects for deterministic behavior.
     return sorted(list(projects))
 
-  def InitServiceAccount(
+  def init_service_account(
       self, p4sa_project, dependent_resources, management_project
   ):
     """Get the Developer Connect P4SA, and grant IAM roles to it.
@@ -563,14 +677,14 @@ class InsightsConfigClient(object):
     """
     service_name = common.GetApiServiceName(self.api_version)
     if self.p4sa_email is None:
-      self.p4sa_email = _GetP4SA(p4sa_project, service_name)
+      self.p4sa_email = _get_p4sa(p4sa_project, service_name)
     if not self.p4sa_email:
       raise InsightsConfigInitializationError(
           'Failed to get P4SA for project {}.'.format(p4sa_project)
       )
     if management_project:
       if len(dependent_resources) == 1:
-        self.BindRolesToServiceAccount(
+        self.bind_roles_to_service_account(
             self.p4sa_email, dependent_resources[0], True
         )
       else:
@@ -582,9 +696,9 @@ class InsightsConfigClient(object):
       # Sort the projects to ensure deterministic behavior for tests.
       for project in sorted(dependent_resources):
         project_ref = projects_util.ParseProject(project)
-        self.BindRolesToServiceAccount(self.p4sa_email, project_ref, False)
+        self.bind_roles_to_service_account(self.p4sa_email, project_ref, False)
 
-  def BindRolesToServiceAccount(
+  def bind_roles_to_service_account(
       self, sa_email, resource_ref, management_project
   ):
     """Binds roles to the provided service account.
@@ -595,7 +709,7 @@ class InsightsConfigClient(object):
       management_project: bool, whether the resource is a management project.
     """
     for role in _ROLES:
-      self.PromptToBindRoleIfMissing(
+      self.prompt_to_bind_role_if_missing(
           sa_email,
           resource_ref,
           role,
@@ -603,7 +717,7 @@ class InsightsConfigClient(object):
           reason='required to update the Developer Connect Insights Config',
       )
 
-  def PromptToBindRoleIfMissing(
+  def prompt_to_bind_role_if_missing(
       self, sa_email, resource_ref, role, management_project, reason=''
   ):
     """Prompts to bind the role to the service account in project level if missing.
@@ -624,7 +738,7 @@ class InsightsConfigClient(object):
         iam_policy = folders.GetIamPolicy(resource_ref)
       else:
         iam_policy = projects_api.GetIamPolicy(resource_ref)
-      if self.HasRoleBinding(iam_policy, sa_email, role):
+      if self.has_role_binding(iam_policy, sa_email, role):
         return
 
       log.status.Print(
@@ -668,7 +782,7 @@ class InsightsConfigClient(object):
           role,
       )
 
-  def HasRoleBinding(self, iam_policy, sa_email, role):
+  def has_role_binding(self, iam_policy, sa_email, role):
     """Returns whether the given SA has the given role bound in given policy.
 
     Args:
@@ -681,12 +795,12 @@ class InsightsConfigClient(object):
         for b in iam_policy.bindings
     )
 
-  def GetOperationRef(self, operation):
+  def get_operation_ref(self, operation):
     """Converts an operation to a resource that can be used with `waiter.WaitFor`."""
     return self._resource_parser.ParseRelativeName(
         operation.name, 'securesourcemanager.projects.locations.operations')
 
-  def WaitForOperation(
+  def wait_for_operation(
       self,
       operation_ref,
       message,

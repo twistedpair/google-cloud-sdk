@@ -1751,6 +1751,7 @@ class ServerlessOperations(object):
     create_request = messages.RunNamespacesJobsCreateRequest(
         job=new_job.Message(), parent=parent
     )
+    created_job = None
     with metrics.RecordDuration(metric_names.CREATE_JOB):
       try:
         created_job = job.Job(
@@ -1760,6 +1761,8 @@ class ServerlessOperations(object):
         raise serverless_exceptions.DeploymentFailedError(
             'Job [{}] already exists.'.format(job_ref.Name())
         )
+      except api_exceptions.HttpBadRequestError as e:
+        exceptions.reraise(serverless_exceptions.HttpError(e))
 
     if not asyn:
       getter = functools.partial(self.GetJob, job_ref)
@@ -1792,10 +1795,14 @@ class ServerlessOperations(object):
     replace_request = messages.RunNamespacesJobsReplaceJobRequest(
         job=update_job.Message(), name=job_ref.RelativeName()
     )
+    returned_job = None
     with metrics.RecordDuration(metric_names.UPDATE_JOB):
-      returned_job = job.Job(
-          self._client.namespaces_jobs.ReplaceJob(replace_request), messages
-      )
+      try:
+        returned_job = job.Job(
+            self._client.namespaces_jobs.ReplaceJob(replace_request), messages
+        )
+      except api_exceptions.HttpBadRequestError as e:
+        exceptions.reraise(serverless_exceptions.HttpError(e))
 
     if not asyn:
       getter = functools.partial(self.GetJob, job_ref)

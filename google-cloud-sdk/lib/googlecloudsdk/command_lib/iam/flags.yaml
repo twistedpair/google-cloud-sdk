@@ -178,6 +178,16 @@ workload_identity_pool:
     help_text: |-
       Rotation window percentage indicating when certificate rotation should be initiated based on
       remaining lifetime.
+  use_default_shared_ca:
+    api_field: workloadIdentityPool.inlineCertificateIssuanceConfig.useDefaultSharedCa
+    arg_name: use-default-shared-ca
+    action: store_true_false
+    help_text: |-
+      Whether to use the default shared CA to issue certificates.
+      If this flag is enabled, certificates will be automatically provisioned from the default
+      shared CAs. A default CA in the same region as the workload will be selected to issue the
+      certificate. Enabling this flag will clear any existing `ca_pools` configuration to provision
+      the certificates.
   inline_trust_config_file:
     api_field: workloadIdentityPool.inlineTrustConfig
     type: "googlecloudsdk.calliope.arg_parsers:YAMLFileContents:"
@@ -206,6 +216,16 @@ workload_identity_pool:
               <certificate>
               -----END CERTIFICATE-----"
       ```
+  enable_mesh_ca_compatibility:
+    api_field: workloadIdentityPool.enableMeshCaCompatibility
+    arg_name: enable-mesh-ca-compatibility
+    action: store_true
+    help_text: |-
+      Whether to enable mesh CA compatibility for the trust domain.
+      If set to true, the generated trust bundle for the workloads in this trust domain will
+      include the Cloud Service Mesh certificate authority's root CA certificates. The certificate
+      chain for the workload in this trust domain will be signed by the Cloud Service Mesh
+      certificate authority root CA.
 
 workload_identity_pool_provider:
   display_name:
@@ -280,10 +300,9 @@ workload_identity_pool_provider:
 
       * `attribute.{custom_attribute}`: `principalSet://iam.googleapis.com/projects/{project}/locations/{location}/workloadIdentityPools/{pool}/attribute.{custom_attribute}/{value}`
 
-      Each value must be a [Common Expression Language]
-      (https://opensource.google/projects/cel) function that maps an
-      identity provider credential to the normalized attribute specified by the
-      corresponding map key.
+      Each value must be a [Common Expression Language](https://opensource.google/projects/cel)
+      function that maps an identity provider credential to the normalized attribute specified by
+      the corresponding map key.
 
       You can use the `assertion` keyword in the expression to access a JSON
       representation of the authentication credential issued by the provider.
@@ -404,6 +423,7 @@ workload_identity_pool_provider:
         ]
       }
       ```
+      .
 
   oidc_allowed_audiences:
     api_field: workloadIdentityPoolProvider.oidc.allowedAudiences
@@ -814,6 +834,7 @@ workforce_pool_provider:
         ]
       }
       ```
+      .
   saml_idp_metadata_path:
     api_field: workforcePoolProvider.saml.idpMetadataXml
     type: "googlecloudsdk.calliope.arg_parsers:FileContents:"
@@ -895,6 +916,17 @@ workforce_pool_provider:
 
       Use `enabled-for-groups` to enable SCIM-managed groups.
       Use `scim-usage-unspecified` to disable SCIM-managed groups.
+
+  attribute_sync_interval:
+    arg_name: attribute-sync-interval
+    api_field: workforcePoolProvider.attributeSyncInterval
+    help_text: |-
+      An interval that determines how often user attributes are synced from the
+      IdP. Must be between 30 minutes (1800s) and 12 hours (43200s). This
+      configuration is used only when the Google Cloud session length policy is
+      configured. When Google Cloud session length policy is configured and
+      `attribute_sync_interval` is not configured, attributes are synced after a
+      default interval of 12 hours (43200 seconds)
 
 workforce_pool_provider_key:
   use:

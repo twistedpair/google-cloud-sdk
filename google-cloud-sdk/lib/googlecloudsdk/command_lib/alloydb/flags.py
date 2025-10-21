@@ -723,6 +723,16 @@ def AddMachineType(parser, required=False):
       'c4a-highmem-48-lssd',
       'c4a-highmem-64-lssd',
       'c4a-highmem-72-lssd',
+      'c4-highmem-4-lssd',
+      'c4-highmem-8-lssd',
+      'c4-highmem-16-lssd',
+      'c4-highmem-24-lssd',
+      'c4-highmem-32-lssd',
+      'c4-highmem-48-lssd',
+      'c4-highmem-96-lssd',
+      'c4-highmem-144-lssd',
+      'c4-highmem-192-lssd',
+      'c4-highmem-288-lssd',
       'z3-highmem-14-standardlssd',
       'z3-highmem-22-standardlssd',
       'z3-highmem-44-standardlssd',
@@ -1749,12 +1759,13 @@ def AddRequireConnectors(parser):
   )
 
 
-def AddDatabaseVersion(parser, alloydb_messages):
+def AddDatabaseVersion(parser, alloydb_messages, release_track):
   """Adds Database Version flag.
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
     alloydb_messages: Message module.
+    release_track: The command version being used - GA/BETA/ALPHA.
   """
   choices = [
       alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_14,
@@ -1762,6 +1773,10 @@ def AddDatabaseVersion(parser, alloydb_messages):
       alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_16,
       alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_17,
   ]
+  if release_track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA):
+    choices.append(
+        alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_18
+    )
   parser.add_argument(
       '--database-version',
       required=False,

@@ -111,6 +111,18 @@ class AddAclEntryResponse(_messages.Message):
   aclCreated = _messages.BooleanField(2)
 
 
+class BrokerCapacityConfig(_messages.Message):
+  r"""Capacity configuration at a per-broker level within the Kafka cluster.
+  The config will be appled to each broker in the cluster.
+
+  Fields:
+    diskSizeGb: Optional. The disk to provision for each broker in Gigabytes.
+      Minimum: 100 GB.
+  """
+
+  diskSizeGb = _messages.IntegerField(1)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -203,6 +215,9 @@ class Cluster(_messages.Message):
     LabelsValue: Optional. Labels as key value pairs.
 
   Fields:
+    brokerCapacityConfig: Optional. Capacity configuration at a per-broker
+      level within the Kafka cluster. The config will be appled to each broker
+      in the cluster.
     brokersPerZone: Output only. Only populated when FULL view is requested.
       The number of brokers per zone.
     capacityConfig: Required. Capacity configuration for the Kafka cluster.
@@ -288,20 +303,21 @@ class Cluster(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  brokersPerZone = _messages.MessageField('BrokersPerZoneValue', 1)
-  capacityConfig = _messages.MessageField('CapacityConfig', 2)
-  createTime = _messages.StringField(3)
-  gcpConfig = _messages.MessageField('GcpConfig', 4)
-  kafkaVersion = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  rebalanceConfig = _messages.MessageField('RebalanceConfig', 8)
-  satisfiesPzi = _messages.BooleanField(9)
-  satisfiesPzs = _messages.BooleanField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  tlsConfig = _messages.MessageField('TlsConfig', 12)
-  updateOptions = _messages.MessageField('UpdateOptions', 13)
-  updateTime = _messages.StringField(14)
+  brokerCapacityConfig = _messages.MessageField('BrokerCapacityConfig', 1)
+  brokersPerZone = _messages.MessageField('BrokersPerZoneValue', 2)
+  capacityConfig = _messages.MessageField('CapacityConfig', 3)
+  createTime = _messages.StringField(4)
+  gcpConfig = _messages.MessageField('GcpConfig', 5)
+  kafkaVersion = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  rebalanceConfig = _messages.MessageField('RebalanceConfig', 9)
+  satisfiesPzi = _messages.BooleanField(10)
+  satisfiesPzs = _messages.BooleanField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  tlsConfig = _messages.MessageField('TlsConfig', 13)
+  updateOptions = _messages.MessageField('UpdateOptions', 14)
+  updateTime = _messages.StringField(15)
 
 
 class ConnectAccessConfig(_messages.Message):

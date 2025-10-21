@@ -14,6 +14,20 @@ from apitools.base.py import extra_types
 package = 'cloudbuild'
 
 
+class AcceleratorConfig(_messages.Message):
+  r"""Accelerator configuration for a VM instance for Trusted Pools in TBI.
+
+  Fields:
+    acceleratorCount: Optional. The number of guest accelerator cards exposed
+      to each VM.
+    acceleratorType: Optional. The type of accelerator attached to each VM.
+      For example, `nvidia-tesla-k80` for Nvidia Tesla K80.
+  """
+
+  acceleratorCount = _messages.IntegerField(1)
+  acceleratorType = _messages.StringField(2)
+
+
 class AnthosWorkerPool(_messages.Message):
   r"""Anthos CICD cluster option.
 
@@ -173,6 +187,25 @@ class Artifacts(_messages.Message):
   objects = _messages.MessageField('ArtifactObjects', 5)
   oci = _messages.MessageField('Oci', 6, repeated=True)
   pythonPackages = _messages.MessageField('PythonPackage', 7, repeated=True)
+
+
+class Autoscale(_messages.Message):
+  r"""Autoscaling configuration of the pool.
+
+  Fields:
+    maxWorkers: Required. The maximal number of workers in an autoscale
+      enabled pool.
+    minIdleWorkers: Required. The minimum number of idle workers the
+      autoscaler will aim to have in the pool at all times that are
+      immediately available to accept a surge in build traffic. The pool size
+      will still be constrained by min_workers and max_workers.
+    minWorkers: Required. The minimal number of workers in an autoscale
+      enabled pool.
+  """
+
+  maxWorkers = _messages.IntegerField(1)
+  minIdleWorkers = _messages.IntegerField(2)
+  minWorkers = _messages.IntegerField(3)
 
 
 class BatchCreateBitbucketServerConnectedRepositoriesRequest(_messages.Message):
@@ -898,6 +931,63 @@ class BuildOptions(_messages.Message):
   substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 18)
   volumes = _messages.MessageField('Volume', 19, repeated=True)
   workerPool = _messages.StringField(20)
+
+
+class BuildSecurityPolicy(_messages.Message):
+  r"""BuildSecurityPolicy defines the advanced security policies for the TBI
+  instance for Trusted Pools in TBI.
+
+  Enums:
+    BcidLevelValueValuesEnum: Output only. Immutable. Max BCID level the
+      instance should be able to meet (affects what security settings will be
+      enabled for the instance, regardless of whether lower BCID-level builds
+      are sent through or not)
+    WorkflowTypeValueValuesEnum: Output only. Immutable. Determines whether
+      this instance handles presubmit or postsubmit builds.
+
+  Fields:
+    bcidLevel: Output only. Immutable. Max BCID level the instance should be
+      able to meet (affects what security settings will be enabled for the
+      instance, regardless of whether lower BCID-level builds are sent through
+      or not)
+    enableNetworkEnforcement: Output only. Immutable. Determines whether
+      network proxy will be enabled for the instance or not.
+    enableTcaEnforcement: Output only. Immutable. Determines whether
+      additional restrictions needed to run TCA builds will be enabled on the
+      instance or not for Trusted Pools in TBI.
+    workflowType: Output only. Immutable. Determines whether this instance
+      handles presubmit or postsubmit builds.
+  """
+
+  class BcidLevelValueValuesEnum(_messages.Enum):
+    r"""Output only. Immutable. Max BCID level the instance should be able to
+    meet (affects what security settings will be enabled for the instance,
+    regardless of whether lower BCID-level builds are sent through or not)
+
+    Values:
+      BCID_LEVEL_UNSPECIFIED: Unspecified BCID level.
+      BCID_L2: BCID L2.
+    """
+    BCID_LEVEL_UNSPECIFIED = 0
+    BCID_L2 = 1
+
+  class WorkflowTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Immutable. Determines whether this instance handles
+    presubmit or postsubmit builds.
+
+    Values:
+      WORKFLOW_TYPE_UNSPECIFIED: Unspecified workflow type.
+      WORKFLOW_TYPE_PRESUBMIT: Presubmit workflow type.
+      WORKFLOW_TYPE_POSTSUBMIT: Postsubmit workflow type.
+    """
+    WORKFLOW_TYPE_UNSPECIFIED = 0
+    WORKFLOW_TYPE_PRESUBMIT = 1
+    WORKFLOW_TYPE_POSTSUBMIT = 2
+
+  bcidLevel = _messages.EnumField('BcidLevelValueValuesEnum', 1)
+  enableNetworkEnforcement = _messages.BooleanField(2)
+  enableTcaEnforcement = _messages.BooleanField(3)
+  workflowType = _messages.EnumField('WorkflowTypeValueValuesEnum', 4)
 
 
 class BuildStep(_messages.Message):
@@ -2799,13 +2889,16 @@ class CreateWorkerPoolOperationMetadata(_messages.Message):
   Fields:
     completeTime: Time the operation was completed.
     createTime: Time the operation was created.
+    trustedPoolMetadata: Output only. Metadata for the trusted pool creation
+      in TBI.
     workerPool: The resource name of the `WorkerPool` to create. Format:
       `projects/{project}/locations/{location}/workerPools/{worker_pool}`.
   """
 
   completeTime = _messages.StringField(1)
   createTime = _messages.StringField(2)
-  workerPool = _messages.StringField(3)
+  trustedPoolMetadata = _messages.MessageField('TrustedPoolMetadata', 3)
+  workerPool = _messages.StringField(4)
 
 
 class CronConfig(_messages.Message):
@@ -3888,6 +3981,39 @@ class Installation(_messages.Message):
   projectId = _messages.StringField(6)
   projectNum = _messages.IntegerField(7)
   repositorySettingList = _messages.MessageField('GitHubRepositorySettingList', 8)
+
+
+class LinuxPool(_messages.Message):
+  r"""This section is used to configure the Linux pool for Trusted Pools in
+  TBI.
+
+  Enums:
+    LinuxHostOsValueValuesEnum: Required. Linux host OS to use for the pool.
+
+  Fields:
+    diskConfig: Required. Disk configuration for the pool.
+    linuxHostOs: Required. Linux host OS to use for the pool.
+    machineConfig: Required. Machine configuration for the pool.
+    preferReusableVms: Optional. If true, the pool will prefer to use reusable
+      VMs.
+  """
+
+  class LinuxHostOsValueValuesEnum(_messages.Enum):
+    r"""Required. Linux host OS to use for the pool.
+
+    Values:
+      LINUX_HOST_OS_UNSPECIFIED: LINUX_HOST_OS_UNSPECIFIED
+      UBUNTU_OS: UBUNTU_OS
+      COS_OS: COS_OS
+    """
+    LINUX_HOST_OS_UNSPECIFIED = 0
+    UBUNTU_OS = 1
+    COS_OS = 2
+
+  diskConfig = _messages.MessageField('TrustedPoolDiskConfig', 1)
+  linuxHostOs = _messages.EnumField('LinuxHostOsValueValuesEnum', 2)
+  machineConfig = _messages.MessageField('TrustedPoolMachineConfig', 3)
+  preferReusableVms = _messages.BooleanField(4)
 
 
 class ListBitbucketServerConfigsResponse(_messages.Message):
@@ -5200,6 +5326,104 @@ class TimeSpan(_messages.Message):
   startTime = _messages.StringField(2)
 
 
+class TrustedPoolConfig(_messages.Message):
+  r"""Defines the configuration specific for Trusted Pools for TBI only.
+
+  Fields:
+    buildSecurityPolicy: Output only. Build security policy sets the security
+      requirements for the trusted pool.
+    defaultWorkloadAccount: Required. This BYOSA is used by the build to
+      access resources while the build is running for example build step
+      container images. This is a mandatory field. This cannot be the same as
+      the resource_access_account.
+    linuxPool: Linux pool sets the linux pool type.
+    resourceAccessAccount: Required. This BYOSA is used for fetching
+      sources/dependencies or pushing artifacts to output locations such as
+      Artifact Registry. This service account is used exclusively by the TBI
+      borg job to fetch configs from GoB and push/pull artifacts to/from
+      Artifact Registry and Cloud Storage.
+    workerCount: Required. Worker count sets the number of workers in the
+      pool.
+  """
+
+  buildSecurityPolicy = _messages.MessageField('BuildSecurityPolicy', 1)
+  defaultWorkloadAccount = _messages.StringField(2)
+  linuxPool = _messages.MessageField('LinuxPool', 3)
+  resourceAccessAccount = _messages.StringField(4)
+  workerCount = _messages.MessageField('WorkerCount', 5)
+
+
+class TrustedPoolDiskConfig(_messages.Message):
+  r"""This section is used to configure the disk config for Trusted Pools in
+  TBI.
+
+  Enums:
+    DiskTypeValueValuesEnum: Required. Disk Type to use for a VM.
+
+  Fields:
+    diskSizeGb: Required. Size of the disk attached to a VM in GB.
+    diskType: Required. Disk Type to use for a VM.
+  """
+
+  class DiskTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Disk Type to use for a VM.
+
+    Values:
+      DISK_TYPE_UNSPECIFIED: Unspecified disk type.
+      PD_STANDARD_DISK: Standard persistent disk.
+      PD_SSD_DISK: SSD persistent disk.
+    """
+    DISK_TYPE_UNSPECIFIED = 0
+    PD_STANDARD_DISK = 1
+    PD_SSD_DISK = 2
+
+  diskSizeGb = _messages.IntegerField(1)
+  diskType = _messages.EnumField('DiskTypeValueValuesEnum', 2)
+
+
+class TrustedPoolMachineConfig(_messages.Message):
+  r"""This section is used to configure the machine config for Trusted Pools
+  in TBI.
+
+  Fields:
+    acceleratorConfig: Optional. Accelerator configuration for a VM instance.
+    machineType: Required. Machine type of a VM such as `e2-standard-4`. See
+      https://cloud.google.com/compute/docs/machine-types for more
+      information.
+    minCpuPlatform: Optional. Specifies a minimum CPU platform. If specified,
+      the value will determine the Minimum CPU platform to be used by a VM
+      instance and the value can be set to `Intel Broadwell`, `Intel Skylake`,
+      etc. Otherwise, the default CPU platform for a given machine type is
+      used. For more information, see
+      https://cloud.google.com/compute/docs/instances/specify-min-cpu-
+      platform.
+  """
+
+  acceleratorConfig = _messages.MessageField('AcceleratorConfig', 1)
+  machineType = _messages.StringField(2)
+  minCpuPlatform = _messages.StringField(3)
+
+
+class TrustedPoolMetadata(_messages.Message):
+  r"""Metadata for the trusted pool creation in TBI.
+
+  Fields:
+    instanceCreationDone: Indicates if the instance creation operation is done
+      in TBI.
+    instanceOp: The operation name returned by TBI's create instance API.
+    poolCreationDone: Indicates if the pool creation operation is done in TBI.
+    poolOp: The operation name returned by TBI's create pool API.
+    uid: The unique identifier of the trusted pool. This is used as the
+      instance ID and pool ID in TBI.
+  """
+
+  instanceCreationDone = _messages.BooleanField(1)
+  instanceOp = _messages.StringField(2)
+  poolCreationDone = _messages.BooleanField(3)
+  poolOp = _messages.StringField(4)
+  uid = _messages.StringField(5)
+
+
 class UpdateBitbucketServerConfigOperationMetadata(_messages.Message):
   r"""Metadata for `UpdateBitbucketServerConfig` operation.
 
@@ -5439,6 +5663,19 @@ class WorkerConfig(_messages.Message):
   machineType = _messages.StringField(3)
 
 
+class WorkerCount(_messages.Message):
+  r"""This section is used to configure the number of workers in the trusted
+  pool for TBI only.
+
+  Fields:
+    autoscale: The autoscaling configuration of the pool.
+    staticCount: The number of workers in a static pool.
+  """
+
+  autoscale = _messages.MessageField('Autoscale', 1)
+  staticCount = _messages.IntegerField(2)
+
+
 class WorkerPool(_messages.Message):
   r"""Configuration for a `WorkerPool`. Cloud Build owns and maintains a pool
   of workers for general use and have no access to a project's private
@@ -5482,6 +5719,8 @@ class WorkerPool(_messages.Message):
       DEPRECATED due to the cancellation of Cloud Build 2nd gen.
     privatePoolV1Config: Private Pool configuration.
     state: Output only. `WorkerPool` state.
+    trustedPoolConfig: Trusted Pool configuration for running builds in
+      Trusted Build Infrastructure (TBI) environment.
     uid: Output only. A unique identifier for the `WorkerPool`.
     updateTime: Output only. Time at which the request to update the
       `WorkerPool` was received.
@@ -5542,8 +5781,9 @@ class WorkerPool(_messages.Message):
   privatePoolConfig = _messages.MessageField('PrivatePoolConfig', 8)
   privatePoolV1Config = _messages.MessageField('PrivatePoolV1Config', 9)
   state = _messages.EnumField('StateValueValuesEnum', 10)
-  uid = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  trustedPoolConfig = _messages.MessageField('TrustedPoolConfig', 11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -40,5 +40,5 @@ def translate_entrypoint_features(
         ' entrypoint is needed to start the app, please use the `--entrypoint`'
         ' flag to specify the entrypoint for the App.\n'
     )
-    logging.warning(warning_text)
+    logging.info(warning_text)
   return []

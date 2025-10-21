@@ -167,6 +167,7 @@ class MessageBusClientV1(base.EventarcClientBase):
       event_source,
       event_data,
       event_attributes,
+      destination_enrollment_ref,
   ):
     """Publish a Cloud Event to a MessageBus.
 
@@ -179,6 +180,8 @@ class MessageBusClientV1(base.EventarcClientBase):
       event_source: str, the source of the event.
       event_data: str, the data of the event.
       event_attributes: dict, the attributes of the event.
+      destination_enrollment_ref: Resource, the enrollment to deliver the event
+        to.
     """
 
     publish_req = self._publishing_messages.EventarcpublishingProjectsLocationsMessageBusesPublishRequest(
@@ -189,6 +192,11 @@ class MessageBusClientV1(base.EventarcClientBase):
             ),
             avroMessage=avro_message,
             jsonMessage=json_message,
+            destinationEnrollment=(
+                destination_enrollment_ref.RelativeName()
+                if destination_enrollment_ref
+                else None
+            ),
         ),
     )
 

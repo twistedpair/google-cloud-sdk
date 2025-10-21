@@ -761,7 +761,15 @@ def RetryOnInvalidArguments(func, **kwargs):
   try:
     results = func(**kwargs)
     return False, results
-  except apitools_exceptions.HttpBadRequestError:
+  except apitools_exceptions.HttpBadRequestError as e:
+    # If the error is a FAILED_PRECONDITION, do not retry the request.
+    if hasattr(e, "content") and e.content:
+      try:
+        content = json.loads(e.content)
+        if content["error"]["status"] == "FAILED_PRECONDITION":
+          raise e
+      except (json.JSONDecodeError, KeyError, TypeError):
+        pass
     if kwargs["server_filter"]:
       kwargs["server_filter"] = None
       # If server-side filter is not supported, discard the server-side paging

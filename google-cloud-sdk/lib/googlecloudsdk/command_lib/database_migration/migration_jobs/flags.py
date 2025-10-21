@@ -82,7 +82,6 @@ def AddDumpFlagsFlag(parser):
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(),
       help=help_text,
-      hidden=True,
   )
 
 

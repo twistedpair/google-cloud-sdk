@@ -5,6 +5,140 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 544.0.0 (2025-10-21)
+
+### AlloyDB
+
+* Added support for c4 machine-types in `gcloud alloydb instances create` and `gcloud alloydb instances update`.
+* Added support for `POSTGRES_18` as a version in `gcloud alloydb clusters create` for alpha & beta track.
+* Added support for `POSTGRES_18` as a version in `gcloud alloydb clusters migrate-cloud-sql` for alpha & beta track.
+
+### Artifact Registry
+
+* Added `gcloud artifacts versions export` to export artifacts by versions.
+* Added `gcloud artifacts tags export` to export artifacts by tags.
+
+### Cloud Interconnect
+
+* Added `--resource-manager-tags` flag to `gcloud compute interconnects create`
+  to add Resource Manager Tags to resources at creation.
+* Added `--resource-manager-tags` flag to
+  `gcloud beta compute interconnects attachments dedicated create`,
+  `gcloud beta compute interconnects attachments partner create`,
+  and `gcloud beta compute interconnects attachments provider create` commands
+  to add Resource Manager Tags to resources at creation.
+
+### Cloud Run
+
+* Added a prompt to `gcloud run jobs deploy`, `gcloud run jobs create`
+  and `gcloud run jobs update` to retry deploying a GPU job with
+  `--no-gpu-zonal-redundancy` flag. This confirmation prompt only shows up when
+  the original deployment enables GPU but does not specify GPU zonal redundancy,
+  and has access to GPU with zonal redundancy disabled.
+
+### Cloud SQL
+
+*   Added Customer-managed Active directory CLI flags
+    `--active-directory-mode`,
+    `--active-directory-dns-servers`,
+    `--active-directory-organizational-unit`,
+    `--active-directory-secret-manager-key`,
+    `--clear-active-directory-dns-servers` and
+    `--clear-active-directory` for `gcloud sql instances create`,
+    `gcloud sql instances patch` and `gcloud sql backups restore` to GA.
+*  Promoted read pool auto scale flags `--auto-scale-enabled`,
+    `--auto-scale-min-node-count`, `--auto-scale-max-node-count`,
+    `--auto-scale-target-metrics`, `--auto-scale-disable-scale-in`,
+    `--auto-scale-in-cooldown-seconds`, `--auto-scale-out-cooldown-seconds` to
+    GA track.
+
+### Cloud Scheduler
+
+*   Added `gcloud scheduler cmek-config` and `gcloud scheduler operations` command groups to GA.
+
+### Cloud TPU
+
+* Remove `gcloud compute tpus execution_groups` commands for 2VM.
+* Remove `gcloud compute tpus` commands for Node Architecture.
+
+### Compute Engine
+
+* Added `--on-repair-allow-changing-zone` flag to `gcloud compute instance-groups managed create` and `gcloud compute instance-groups managed update` in beta.
+* Promoted Future Reservations commands to v1.
+* Promoted `--full-view` flag `gcloud compute reservations sub-blocks describe` that allow users to see the availability of slices of TPU Hypercomputer reservations within sub-blocks, to beta and v1.
+* Promoted `--igmp-query` flag in `--network-interface` component of `gcloud compute instances create` command to GA.
+* Promoted `--igmp-query` flag in `gcloud compute instances network-interfaces update` to GA.
+* Promoted enums FIPS_202205 profile and min TLS version 1.3 to GA for SSL Policies.
+
+### Database Migration
+
+* Added `--dump-path` and `--dump-flags` flag to
+  `gcloud database-migration migration-jobs create` command to allow users to
+  supply dump flags for the migration job.
+* Added `--dump-path` and `--dump-flags` flag to
+  `gcloud database-migration migration-jobs update` command to allow users to
+  supply dump flags for the migration job.
+
+### Identity and Access Management
+
+*   Added `--scim-usage` flag to `gcloud iam workforce-pools providers
+    create-oidc|update-oidc|create-saml|update-saml` commands to support
+    creating and updating providers which use SCIM-managed groups for
+    authorization checks.
+
+### Kubernetes Engine
+
+* Added support for writable cgroups in node pools using `--containerd-config-from-file` flag.
+* Added `--enable-secret-sync`, `--enable-secret-sync-rotation` and
+  `secret-sync-rotation-interval` in `gcloud container cluster create|update`
+  commands for public preview.
+* Added `--autopilot-workload-policies` flag to `gcloud container clusters
+create` to allow NET_ADMIN capabilities similar to `--workload-policies` in
+`create-auto` and `update`.
+* Updated default value of `--num-nodes` flag in
+  `gcloud container node-pools create` command when `--placement-policy` is
+  specified for multi-host TPU machine types. The number of nodes will be
+  calculated by `(product of topology)/(# of chips per VM)`.
+
+### Network Security
+
+* Added `--enable-jumbo-frames` flag to `gcloud network-security firewall-endpoints create` to create a firewall endpoint capable of inspecting traffic with jumbo frames.
+
+### Oracle Database
+
+* Added `gcloud oracle-database` group in GA with the following commands:
+  * `gcloud oracle-database autonomous-database-backups list` command
+  * `gcloud oracle-database autonomous-databases` command group
+  * `gcloud oracle-database autonomous-db-versions list` command
+  * `gcloud oracle-database cloud-exadata-infrastructures` command group
+  * `gcloud oracle-database cloud-exadata-infrastructures db-servers list`
+  * `gcloud oracle-database cloud-vm-clusters` command group
+  * `gcloud oracle-database cloud-vm-clusters db-system-shapes list` command
+  * `gcloud oracle-database entitlements list` command
+  * `gcloud oracle-database gi-versions list` command
+  * `gcloud oracle-database db-versions list` command
+  * `gcloud oracle-database db-systems` command group
+  * `gcloud oracle-database databases` command group
+  * `gcloud oracle-database pluggable-databases` command group
+  * `gcloud oracle-database database-character-sets list` command
+  * `gcloud oracle-database db-system-initial-storage-sizes list` command
+  * `gcloud oracle-database exadb-vm-cluster` command group
+  * `gcloud oracle-database exascale-storage-vault` command group
+  * `gcloud oracle-database minor-version list` command
+
+### Security Command Center
+
+* Updated location argument description with instruction on how to bypass V1 API access errors.
+
+### Vmware Engine
+
+* Added `announcements` command to `gcloud vmware` to list maintenance announcements related to upgrades.
+* Added `upgrades` command to `gcloud vmware private-clouds` to `list` and `describe` schduled upgrades.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 543.0.0 (2025-10-14)
 
 ### Google Cloud CLI

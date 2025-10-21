@@ -23,7 +23,6 @@ def translate_add_required_flags(
 ) -> Sequence[str]:
   """Add required flags to gcloud run deploy command."""
   return [
-      '--allow-unauthenticated',
       f'--labels={_get_labels()}',
       f'--base-image={input_data["runtime"]}'
       if 'runtime' in input_data

@@ -21,6 +21,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.compute import resource_manager_tags_utils
 from googlecloudsdk.command_lib.util.apis import arg_utils
 
 _BANDWIDTH_CHOICES = collections.OrderedDict([
@@ -713,4 +714,35 @@ def AddCandidateCustomerRouterIpv6Address(parser):
       router interface for this interconnect attachment. Example:
       2001:db8::2/125
       """,
+  )
+
+
+def AddResourceManagerTags(parser):
+  """Adds the --resource-manager-tags flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--resource-manager-tags',
+      type=arg_parsers.ArgDict(),
+      metavar='KEY=VALUE',
+      help="""\
+          A comma-separated list of Resource Manager tags to apply to the interconnect.
+      """,
+  )
+
+
+def CreateInterconnectAttachmentParams(messages, resource_manager_tags):
+  """Converts resource manager tags argument into InterconnectAttachmentParams."""
+  resource_manager_tags_map = (
+      resource_manager_tags_utils.GetResourceManagerTags(
+          resource_manager_tags
+      )
+  )
+  params = messages.InterconnectAttachmentParams
+  additional_properties = [
+      params.ResourceManagerTagsValue.AdditionalProperty(key=key, value=value)
+      for key, value in sorted(resource_manager_tags_map.items())
+  ]
+  return params(
+      resourceManagerTags=params.ResourceManagerTagsValue(
+          additionalProperties=additional_properties
+      )
   )

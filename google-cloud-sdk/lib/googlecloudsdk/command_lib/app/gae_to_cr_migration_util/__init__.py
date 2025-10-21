@@ -80,8 +80,8 @@ class GAEToCRMigrationUtil():
     if args.appyaml:
       self.appyaml_path = os.path.relpath(args.appyaml)
     elif args.service is None or args.version is None:
-      logging.warning(
-          'appyaml not provided. Using app.yaml in current directory.\n'
+      print(
+          'Using app.yaml in current directory.\n'
       )
       self.appyaml_path = os.path.join(self.input_dir, self.DEFAULT_APPYAML)
     self.project = properties.VALUES.core.project.Get()

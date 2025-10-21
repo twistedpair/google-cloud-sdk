@@ -247,6 +247,10 @@ class SshTunnelArgs(object):
     instance: str, the instance name (or IP or FQDN for on-prem).
     region: str, the region name (on-prem only).
     network: str, the network name (on-prem only).
+    cloud_run_args: dict, The fields required to construct Cloud Run
+      SshTunnelArgs. If present, this field should contain fields for
+      'deployment_name', 'workload_type', and 'project_number'. Optionally can
+      contain 'instance_id' and 'container_id'.
     pass_through_args: [str], additional args to be passed to the inner gcloud.
   """
 
@@ -257,6 +261,7 @@ class SshTunnelArgs(object):
     self.instance = ''
     self.region = ''
     self.network = ''
+    self.cloud_run_args = None
     self.pass_through_args = []
 
   def _Members(self):
@@ -268,6 +273,7 @@ class SshTunnelArgs(object):
         self.region,
         self.network,
         self.pass_through_args,
+        self.cloud_run_args,
     )
 
   def __eq__(self, other):

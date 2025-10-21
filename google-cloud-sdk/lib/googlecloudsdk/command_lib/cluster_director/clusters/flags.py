@@ -700,13 +700,33 @@ def AddSlurmDefaultPartition(parser, api_version=None, hidden=False):
   )
 
 
-def AddSlurmLoginNode(parser, api_version=None, required=False, hidden=False):
+def AddSlurmLoginNode(
+    parser,
+    name="slurm-login-node",
+    api_version=None,
+    required=False,
+    hidden=False,
+    include_update_flags=False,
+):
   """Adds a slurm login node flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
-  parser.add_argument(
-      "--slurm-login-node",
-      help=textwrap.dedent("""
+  flag_name = name
+  if include_update_flags:
+    flag_name = f"update-{name}"
+    help_text = f"""
+        Parameters to update slurm cluster login node.
+        Only count and startupScript can be updated.
+
+        For e.g. --{flag_name} count=2,startupScript="echo hello"
+    """
+    spec = {
+        "count": int,
+        "startupScript": arg_parsers.ArgObject(),
+    }
+    req_keys = []
+  else:
+    help_text = """
         Parameters to define slurm cluster login node.
 
         For e.g. --slurm-login-node machineType={machineType},zone={zone},count={count},enableOSLogin=true,enablePublicIPs=true,startupScript="echo hello",labels="{key1=value1,key2=value2}"
@@ -721,18 +741,23 @@ def AddSlurmLoginNode(parser, api_version=None, required=False, hidden=False):
           - Either str or file_path
           - For file_path, only bash file format (.sh or .bash) is supported.
           - For file_path, only absolute path is supported.
-      """),
+      """
+    spec = {
+        "machineType": str,
+        "zone": str,
+        "count": int,
+        "enableOSLogin": bool,
+        "enablePublicIPs": bool,
+        "startupScript": arg_parsers.ArgObject(),
+        "labels": flag_types.LABEL,
+    }
+    req_keys = ["machineType", "zone"]
+  parser.add_argument(
+      f"--{flag_name}",
+      help=textwrap.dedent(help_text),
       type=arg_parsers.ArgObject(
-          spec={
-              "machineType": str,
-              "zone": str,
-              "count": int,
-              "enableOSLogin": bool,
-              "enablePublicIPs": bool,
-              "startupScript": arg_parsers.ArgObject(),
-              "labels": flag_types.LABEL,
-          },
-          required_keys=["machineType", "zone"],
+          spec=spec,
+          required_keys=req_keys,
           enable_shorthand=True,
       ),
       required=required,

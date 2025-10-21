@@ -47,7 +47,7 @@ def translate(appyaml: str, service: str, version: str, entrypoint_command: str)
       input_data, input_flatten_as_appyaml, input_type, entrypoint_command
   )
   if input_type == feature_helper.InputType.APP_YAML:
-    source_path = appyaml.rsplit('/app.yaml', 1)[0] if appyaml else ''
+    source_path = appyaml.rsplit('app.yaml', 1)[0] if appyaml else ''
     if not source_path:
       source_path = '.'
   else:

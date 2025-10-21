@@ -2568,7 +2568,7 @@ def ClearActiveDirectoryDNSServers(parser, hidden=False):
       '--clear-active-directory-dns-servers',
       required=False,
       help=(
-          'This will clear the DNS servers usedfor the Active Directory.'
+          'Removes the list of DNS Servers from the Active Directory Config.'
       ),
       hidden=hidden,
       **kwargs
@@ -2608,7 +2608,8 @@ def AddActiveDirectoryDNSServers(parser, hidden=False):
   """
   help_text = (
       'A comma-separated list of the DNS servers to be used for Active'
-      ' Directory. Only available for SQL Server instances.'
+      ' Directory. Only available for SQL Server instances. E.g:'
+      ' 10.0.0.1,10.0.0.2'
   )
 
   parser.add_argument(
@@ -2629,8 +2630,9 @@ def AddActiveDirectoryOrganizationalUnit(parser, hidden=False):
     hidden: if the field needs to be hidden.
   """
   help_text = (
-      'Defines the organizational unit to be used for Active Directory. Only '
-      'available for SQL Server instances.'
+      'Defines the organizational unit to be used for Active Directory. Only'
+      ' available for SQL Server instances. E.g:'
+      ' OU=Cloud,DC=ad,DC=example,DC=com'
   )
 
   parser.add_argument(
@@ -2651,7 +2653,7 @@ def AddClearActiveDirectory(parser, hidden=False):
   parser.add_argument(
       '--clear-active-directory',
       required=False,
-      help='This will clear the Active Directory configuration.',
+      help='Clears the Active Directory configuration.',
       hidden=hidden,
       **kwargs
   )
@@ -2957,12 +2959,13 @@ def AddEnableAutoUpgrade(parser, hidden=False):
 def AddReadPoolAutoScaleConfig(parser, hidden=False):
   """Adds flags for read pool auto-scale config."""
   read_pool_auto_scale_group = parser.add_group(
-      help='Options for configuring read pool auto-scale.', hidden=hidden
+      help='Options for configuring read pool auto scale.', hidden=hidden
   )
   read_pool_auto_scale_group.add_argument(
       '--auto-scale-enabled',
       action=arg_parsers.StoreTrueFalseAction,
-      help='Enable read pool auto-scaling.',
+      help='Enables read pool auto scaling. Supports automatically increasing'
+      ' and decreasing the read pool\'s node count based on need.',
   )
   read_pool_auto_scale_group.add_argument(
       '--auto-scale-min-node-count',
@@ -2979,21 +2982,24 @@ def AddReadPoolAutoScaleConfig(parser, hidden=False):
       type=arg_parsers.ArgDict(
           spec={
               'AVERAGE_CPU_UTILIZATION': float,
+              'AVERAGE_DB_CONNECTIONS': float,
           }
       ),
       metavar='METRIC=VALUE',
       help=(
-          'Target metrics for read pool auto-scaling. '
-          'Example: --auto-scale-target-metrics=AVERAGE_CPU_UTILIZATION=0.8'
+          'Target metrics for read pool auto scaling. Options are:'
+          ' AVERAGE_CPU_UTILIZATION and AVERAGE_DB_CONNECTIONS. Example:'
+          ' --auto-scale-target-metrics=AVERAGE_CPU_UTILIZATION=0.8'
       ),
   )
   read_pool_auto_scale_group.add_argument(
       '--auto-scale-disable-scale-in',
       action=arg_parsers.StoreTrueFalseAction,
       help=(
-          'Disable automatic read pool scale-in. Auto scale will only add nodes'
-          ' to the read pool. Automatic read pool scale-in is enabled by'
-          ' default.'
+          'Disables automatic read pool scale-in. When disabled, read pool auto'
+          ' scaling only supports increasing the read pool node count. By'
+          ' default, both automatic read pool scale-in and scale-out are'
+          ' enabled.'
       ),
   )
   read_pool_auto_scale_group.add_argument(
@@ -3001,7 +3007,9 @@ def AddReadPoolAutoScaleConfig(parser, hidden=False):
       type=arg_parsers.BoundedInt(lower_bound=60),
       help=(
           'The cooldown period for automatic read pool scale-in. '
-          'Minimum time between scale-in events.'
+          'Minimum time between scale-in events. Must be an integer value. For'
+          ' example, if the value is 60, then a scale-in event will not be'
+          ' triggered within 60 seconds of the last scale-in event.'
       ),
   )
   read_pool_auto_scale_group.add_argument(
@@ -3009,7 +3017,9 @@ def AddReadPoolAutoScaleConfig(parser, hidden=False):
       type=arg_parsers.BoundedInt(lower_bound=60),
       help=(
           'The cooldown period for automatic read pool scale-out. '
-          'Minimum time between scale-out events.'
+          'Minimum time between scale-out events. Must be an integer value. For'
+          ' example, if the value is 60, then a scale-out event will not be'
+          ' triggered within 60 seconds of the last scale-out event.'
       ),
   )
 
@@ -3648,11 +3658,11 @@ def AddSourceInstanceOverrideArgs(
 
   # go/keep-sorted start
   AddActivationPolicy(parser, hidden=for_pitr)
-  AddActiveDirectoryDNSServers(parser, hidden=True)
+  AddActiveDirectoryDNSServers(parser, hidden=for_pitr)
   AddActiveDirectoryDomain(parser, hidden=for_pitr)
-  AddActiveDirectoryMode(parser, hidden=True)
-  AddActiveDirectoryOrganizationalUnit(parser, hidden=True)
-  AddActiveDirectorySecretManagerKey(parser, hidden=True)
+  AddActiveDirectoryMode(parser, hidden=for_pitr)
+  AddActiveDirectoryOrganizationalUnit(parser, hidden=for_pitr)
+  AddActiveDirectorySecretManagerKey(parser, hidden=for_pitr)
   AddAllowedPscProjects(psc_setup_group, hidden=for_pitr)
   AddAssignIp(parser, hidden=for_pitr)
   AddAuthorizedNetworks(parser, hidden=for_pitr)
@@ -3661,7 +3671,7 @@ def AddSourceInstanceOverrideArgs(
   AddBackupLocation(parser, allow_empty=False, hidden=for_pitr)
   AddBackupStartTime(parser, hidden=for_pitr)
   AddCPU(parser, hidden=for_pitr)
-  AddClearActiveDirectory(parser, hidden=True)
+  AddClearActiveDirectory(parser, hidden=for_pitr)
   AddClearDiskEncryption(parser, hidden=for_pitr)
   AddClearNetwork(parser, hidden=for_pitr)
   AddConnectorEnforcement(parser, hidden=for_pitr)
@@ -3704,6 +3714,7 @@ def AddSourceInstanceOverrideArgs(
   AddMemory(parser, hidden=for_pitr)
   AddNetwork(parser, hidden=for_pitr)
   AddPscAutoConnections(parser, hidden=True)
+  AddReadPoolAutoScaleConfig(parser, hidden=True)
   AddRequireSsl(parser, hidden=for_pitr)
   AddRetainBackupsOnDelete(parser, hidden=True)
   AddRetainedBackupsCount(parser, hidden=for_pitr)
@@ -3722,7 +3733,7 @@ def AddSourceInstanceOverrideArgs(
   AddTimeout(
       parser, constants.INSTANCE_CREATION_TIMEOUT_SECONDS, hidden=for_pitr
   )
-  ClearActiveDirectoryDNSServers(parser, hidden=True)
+  ClearActiveDirectoryDNSServers(parser, hidden=for_pitr)
   kms_flag_overrides = {
       'kms-key': '--disk-encryption-key',
       'kms-keyring': '--disk-encryption-key-keyring',

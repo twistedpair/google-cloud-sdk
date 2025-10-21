@@ -6163,8 +6163,15 @@ class WorkforcePoolProvider(_messages.Message):
       For example, the following maps the `sub` claim of the incoming
       credential to the `subject` attribute on a Google token: ```
       {"google.subject": "assertion.sub"} ```
-    description: Optional. A user-specified description of the provider.
-      Cannot exceed 256 characters.
+    attributeSyncInterval: Optional. An interval that determines how often
+      user attributes are synced from the IdP. Must be between 30 minutes
+      (1800s) and 12 hours (43200s). This configuration is used only when the
+      Google Cloud session length policy is configured. When Google Cloud
+      session length policy is configured and `attribute_sync_interval` is not
+      configured, attributes are synced after a default interval of 12 hours
+      (43200 seconds).
+    description: Optional. A user-specified description of the provider. Cannot
+       exceed 256 characters.
     detailedAuditLogging: Optional. If true, populates additional debug
       information in Cloud Audit Logs for this provider. Logged attribute
       mappings and values can be found in `sts.googleapis.com` data access
@@ -6307,18 +6314,19 @@ class WorkforcePoolProvider(_messages.Message):
 
   attributeCondition = _messages.StringField(1)
   attributeMapping = _messages.MessageField('AttributeMappingValue', 2)
-  description = _messages.StringField(3)
-  detailedAuditLogging = _messages.BooleanField(4)
-  disabled = _messages.BooleanField(5)
-  displayName = _messages.StringField(6)
-  expireTime = _messages.StringField(7)
-  extendedAttributesOauth2Client = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderExtraAttributesOAuth2Client', 8)
-  extraAttributesOauth2Client = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderExtraAttributesOAuth2Client', 9)
-  name = _messages.StringField(10)
-  oidc = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderOidc', 11)
-  saml = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderSaml', 12)
-  scimUsage = _messages.EnumField('ScimUsageValueValuesEnum', 13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
+  attributeSyncInterval = _messages.StringField(3)
+  description = _messages.StringField(4)
+  detailedAuditLogging = _messages.BooleanField(5)
+  disabled = _messages.BooleanField(6)
+  displayName = _messages.StringField(7)
+  expireTime = _messages.StringField(8)
+  extendedAttributesOauth2Client = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderExtraAttributesOAuth2Client', 9)
+  extraAttributesOauth2Client = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderExtraAttributesOAuth2Client', 10)
+  name = _messages.StringField(11)
+  oidc = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderOidc', 12)
+  saml = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderSaml', 13)
+  scimUsage = _messages.EnumField('ScimUsageValueValuesEnum', 14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
 
 
 class WorkforcePoolProviderKey(_messages.Message):

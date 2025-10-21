@@ -258,7 +258,6 @@ def StartCloudSqlProxyV2(instance,
                          psc=False,
                          auto_ip=False,
                          debug_logs=False,
-                         sqladmin_api_endpoint=None,
                          run_connection_test=False):
   """Starts the Cloud SQL Proxy (v2) for instance on the given port.
 
@@ -272,7 +271,6 @@ def StartCloudSqlProxyV2(instance,
     psc: Whether to use PSC.
     auto_ip: Whether to use auto IP detection.
     debug_logs: Whether to enable verbose logs in proxy.
-    sqladmin_api_endpoint: Cloud SQL Admin API endpoint for Cloud SQL Proxy.
     run_connection_test: Whether to run connection test.
 
   Returns:
@@ -296,19 +294,15 @@ def StartCloudSqlProxyV2(instance,
     args.append('--debug-logs')
   if auto_iam_authn:
     args.append('--auto-iam-authn')
-  if sqladmin_api_endpoint:
-    args += ['--sqladmin-api-endpoint', sqladmin_api_endpoint]
+  if properties.VALUES.api_endpoint_overrides.sql.Get():
+    args += [
+        '--sqladmin-api-endpoint',
+        properties.VALUES.api_endpoint_overrides.sql.Get(),
+    ]
   if run_connection_test:
     args.append('--run-connection-test')
   if impersonate_service_account:
     args += ['--impersonate-service-account', impersonate_service_account]
-  else:
-    # Specify the credentials.
-    account = properties.VALUES.core.account.Get(required=True)
-    args += [
-        '--credentials-file',
-        config.Paths().LegacyCredentialsAdcPath(account),
-    ]
   proxy_args = execution_utils.ArgsForExecutableTool(command_path, *args)
   log.status.write(
       'Starting Cloud SQL Proxy: [{args}]\n'.format(args=' '.join(proxy_args))

@@ -935,3 +935,18 @@ class ArgMultiValueDict:
       arg_dict.setdefault(key, []).append(value)
 
     return arg_dict
+
+
+def AddOnRepairFlags(parser: parser_arguments.ArgumentInterceptor):
+  """Add on repair flags to the parser."""
+  allow_changing_zone_choices = {
+      'no': "(Default) MIG cannot change a VM's zone during a repair.",
+      'yes': 'MIG can select a different zone for the VM during a repair.',
+  }
+  parser.add_argument(
+      '--on-repair-allow-changing-zone',
+      metavar='ON_REPAIR_ALLOW_CHANGING_ZONE',
+      type=arg_utils.EnumNameToChoice,
+      choices=allow_changing_zone_choices,
+      help="Specifies whether the MIG can change a VM's zone during a repair.",
+  )

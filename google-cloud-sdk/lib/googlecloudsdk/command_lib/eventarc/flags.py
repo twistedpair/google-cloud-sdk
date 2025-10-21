@@ -496,6 +496,32 @@ def AddProviderNameArg(parser):
 
 def AddMessageBusPublishingArgs(parser):
   """Adds arguments for publishing to an Eventarc message bus."""
+  concept_parsers.ConceptParser(
+      [
+          presentation_specs.ResourcePresentationSpec(
+              'message_bus',
+              MessageBusResourceSpec(),
+              'Message bus to publish to.',
+              required=True,
+          ),
+          presentation_specs.ResourcePresentationSpec(
+              '--destination-enrollment',
+              EnrollmentResourceSpec(),
+              'The only Enrollment that the message should be delivered to.',
+              required=False,
+              hidden=True,
+              flag_name_overrides={
+                  'location': '',
+                  'project': '--destination-enrollment-project',
+              },
+          ),
+      ],
+      # This configures the fallthrough from the message bus' location to the
+      # primary flag for the enrollment's location.
+      command_level_fallthroughs={
+          '--destination-enrollment.location': ['message_bus.location'],
+      },
+  ).AddToParser(parser)
   payload_group = parser.add_mutually_exclusive_group(required=True)
   protobuf_payload_group = payload_group.add_group()
   AddEventPublishingArgs(protobuf_payload_group)
@@ -1750,4 +1776,71 @@ def AddLabelsArg(parser, help_text):
       help=help_text,
       type=arg_parsers.ArgDict(),
       metavar='KEY=VALUE',
+  )
+
+
+def AddCreatePipelineResourceArgs(parser):
+  """Adds resource arguments for creating an Eventarc Pipeline."""
+  concept_parsers.ConceptParser(
+      [
+          presentation_specs.ResourcePresentationSpec(
+              'pipeline',
+              PipelineResourceSpec(),
+              'The pipeline to create.',
+              required=True,
+          ),
+          presentation_specs.ResourcePresentationSpec(
+              '--error-message-bus',
+              MessageBusResourceSpec(),
+              'The error message bus of the pipeline.',
+              required=False,
+              hidden=True,
+              flag_name_overrides={
+                  'location': '--error-message-bus-location',
+                  'project': '--error-message-bus-project',
+              },
+          ),
+      ],
+      command_level_fallthroughs={
+          '--error-message-bus.location': ['pipeline.location'],
+      },
+  ).AddToParser(parser)
+
+
+def AddUpdatePipelineResourceArgs(parser):
+  """Adds resource arguments for updating an Eventarc Pipeline."""
+  error_message_bus_group = parser.add_mutually_exclusive_group(
+      required=False, hidden=True
+  )
+  concept_parsers.ConceptParser(
+      [
+          presentation_specs.ResourcePresentationSpec(
+              'pipeline',
+              PipelineResourceSpec(),
+              'The pipeline to update.',
+              required=True,
+          ),
+          presentation_specs.ResourcePresentationSpec(
+              '--error-message-bus',
+              MessageBusResourceSpec(),
+              'The error message bus of the pipeline to update.',
+              required=False,
+              hidden=True,
+              group=error_message_bus_group,
+              flag_name_overrides={
+                  'location': '--error-message-bus-location',
+                  'project': '--error-message-bus-project',
+              },
+          ),
+      ],
+      command_level_fallthroughs={
+          '--error-message-bus.location': ['pipeline.location'],
+      },
+  ).AddToParser(parser)
+  error_message_bus_group.add_argument(
+      '--clear-error-message-bus',
+      action='store_true',
+      help='Clear the error message bus of the pipeline.',
+      required=False,
+      hidden=True,
   )

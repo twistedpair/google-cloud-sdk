@@ -26,15 +26,19 @@ _CONTAINER_REGISTRY_URI_PATTERN = (
     r"^(.*gcr.io)/([^/]+)/([^@:]+)((@sha256:[a-f0-9]+)|(:[\w\-\.]+))?$"
 )
 _PROJECT_PATTERN = r"projects/([^/]+)"
-apphub_service_prefix = "//apphub.googleapis.com"
-gke_service_prefix = "//container.googleapis.com"
+APPHUB_SERVICE_PREFIX = "//apphub.googleapis.com"
+GKE_SERVICE_PREFIX = "//container.googleapis.com"
+RUN_SERVICE_PREFIX = "//run.googleapis.com"
 name_segment_re = r"([a-zA-Z0-9-._~%!$&'()*+,;=@]{1,64})"
 
 app_hub_application_path_regex = re.compile(
-    rf"^(?:{apphub_service_prefix}/)?projects/((?:[^:]+:.)?[a-z0-9\\-]+)/locations/([\w-]{{2,40}})/applications/{name_segment_re}$"
+    rf"^(?:{APPHUB_SERVICE_PREFIX}/)?projects/((?:[^:]+:.)?[a-z0-9\\-]+)/locations/([\w-]{{2,40}})/applications/{name_segment_re}$"
 )
 gke_deployment_path_regex = re.compile(
-    rf"^(?:{gke_service_prefix}/)?projects/((?:[^:]+:.)?[a-z0-9\\-]+)/(locations|zones)/([\w-]{{2,40}})/clusters/{name_segment_re}/k8s/namespaces/{name_segment_re}/apps/deployments/{name_segment_re}$"
+    rf"^(?:{GKE_SERVICE_PREFIX}/)?projects/((?:[^:]+:.)?[a-z0-9\\-]+)/(locations|zones)/([\w-]{{2,40}})/clusters/{name_segment_re}/k8s/namespaces/{name_segment_re}/apps/deployments/{name_segment_re}$"
+)
+cloud_run_service_path_regex = re.compile(
+    rf"^(?:{RUN_SERVICE_PREFIX}/)?projects/((?:[^:]+:.)?[a-z0-9\\-]+)/locations/([\w-]{{2,40}})/services/{name_segment_re}$"
 )
 
 # https://cloud.google.com/artifact-registry/docs/transition/gcr-repositories#gcr-domain-support
@@ -74,20 +78,17 @@ class ArtifactRegistryUri:
 
   def __init__(self, location, project, repository, image_name):
     self._location = location
-    self._project = project
+    self.project_id = project
     self._repository = repository
     self._image_name = image_name
 
-  def project_id(self):
-    """The project ID."""
-    return self._project
-
+  @property
   def base_uri(self):
     """The artifact URI without the SHA suffix."""
     # If the repository is a GCR host name, then the URI must be a gcr.io URI.
     if self._repository in _GCR_HOST_TO_AR_LOCATION:
-      return f"{self._repository}/{self._project}/{self._image_name}"
-    return f"{self._location}-docker.pkg.dev/{self._project}/{self._repository}/{self._image_name}"
+      return f"{self._repository}/{self.project_id}/{self._image_name}"
+    return f"{self._location}-docker.pkg.dev/{self.project_id}/{self._repository}/{self._image_name}"
 
 
 def validate_artifact_uri(uri):
@@ -136,7 +137,7 @@ class GKECluster:
     return self.cluster_id
 
   def resource_name(self):
-    return f"{gke_service_prefix}/projects/{self.project}/locations/{self.location_id}/clusters/{self.cluster_id}"
+    return f"{GKE_SERVICE_PREFIX}/projects/{self.project}/locations/{self.location_id}/clusters/{self.cluster_id}"
 
 
 class GKENamespace:
@@ -147,7 +148,7 @@ class GKENamespace:
     self.namespace_id = namespace_id
 
   def resource_name(self):
-    return f"{gke_service_prefix}/projects/{self.gke_cluster.project}/locations/{self.gke_cluster.location_id}/clusters/{self.gke_cluster.cluster_id}/k8s/namespaces/{self.namespace_id}"
+    return f"{GKE_SERVICE_PREFIX}/projects/{self.gke_cluster.project}/locations/{self.gke_cluster.location_id}/clusters/{self.gke_cluster.cluster_id}/k8s/namespaces/{self.namespace_id}"
 
 
 class GKEWorkload:
@@ -162,7 +163,7 @@ class GKEWorkload:
     self.deployment_id = deployment_id
 
   def resource_name(self):
-    return f"{gke_service_prefix}/projects/{self.gke_namespace.gke_cluster.project}/locations/{self.gke_namespace.gke_cluster.location_id}/clusters/{self.gke_namespace.gke_cluster.cluster_id}/k8s/namespaces/{self.gke_namespace.namespace_id}/apps/deployments/{self.deployment_id}"
+    return f"{GKE_SERVICE_PREFIX}/projects/{self.gke_namespace.gke_cluster.project}/locations/{self.gke_namespace.gke_cluster.location_id}/clusters/{self.gke_namespace.gke_cluster.cluster_id}/k8s/namespaces/{self.gke_namespace.namespace_id}/apps/deployments/{self.deployment_id}"
 
 
 def parse_gke_deployment_uri(uri):
@@ -184,24 +185,57 @@ def parse_gke_deployment_uri(uri):
   )
 
 
+class CloudRunService:
+  """Represents a Cloud Run service."""
+
+  def __init__(self, project, location_id, service_id):
+    """Initializes a CloudRunService instance.
+
+    Args:
+      project: The Project object.
+      location_id: The location of the service.
+      service_id: The ID of the service.
+    """
+    self.project_id = project.project_id
+    self.project_number = project.project_number
+    self.location_id = location_id
+    self.service_id = service_id
+
+  def resource_name(self):
+    return f"{RUN_SERVICE_PREFIX}/projects/{self.project_id}/locations/{self.location_id}/services/{self.service_id}"
+
+
+def parse_cloud_run_service_uri(uri):
+  """Parses a Cloud Run service URI into a CloudRunService object."""
+  match = cloud_run_service_path_regex.fullmatch(uri)
+  if not match or len(match.groups()) != 3:
+    return False
+  project = Project(match.group(1))
+  return CloudRunService(
+      project,
+      match.group(2),
+      match.group(3),
+  )
+
+
 class AppHubApplication:
   """Represents an App Hub Application."""
 
   def __init__(self, project, location_id, application_id):
-    self.project = project
+    """Initializes an AppHubApplication instance.
+
+    Args:
+      project: The Project object.
+      location_id: The location of the application.
+      application_id: The ID of the application.
+    """
+    self.project_id = project.project_id
+    self.project_number = project.project_number
     self.location_id = location_id
     self.application_id = application_id
 
   def resource_name(self):
-    return f"projects/{self.project.project_id}/locations/{self.location_id}/applications/{self.application_id}"
-
-  def project_id(self):
-    """Returns the project ID of the app hub application."""
-    return self.project.project_id
-
-  def project_number(self):
-    """Returns the project number of the app hub application."""
-    return self.project.project_number
+    return f"projects/{self.project_id}/locations/{self.location_id}/applications/{self.application_id}"
 
 
 def parse_app_hub_application_uri(uri):
@@ -222,7 +256,9 @@ def parse_app_hub_application_uri(uri):
     )
   location = match.group(2)
   application_id = match.group(3)
-  return AppHubApplication(project, location, application_id)
+  return AppHubApplication(
+      project, location, application_id
+  )
 
 
 def parse_artifact_configs(user_artifact_configs):
@@ -252,7 +288,7 @@ def parse_artifact_configs(user_artifact_configs):
         )
 
       if valid_uri:
-        artifact_configs_dict[valid_uri.base_uri()] = build_project
+        artifact_configs_dict[valid_uri.base_uri] = build_project
       else:
         raise ValueError(
             "Inalid user provided artifact uri, please check the format:"

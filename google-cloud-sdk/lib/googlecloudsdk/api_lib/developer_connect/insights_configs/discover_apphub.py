@@ -19,8 +19,8 @@ from googlecloudsdk.api_lib.apphub import utils as api_lib_utils
 from googlecloudsdk.calliope import base
 
 
-class DiscoveredWorkloadsClient(object):
-  """Client for workloads in apphub API."""
+class DiscoveredApphubClient(object):
+  """Client for workloads and services in App Hub API."""
 
   def __init__(self):
     release_track = base.ReleaseTrack.GA
@@ -29,8 +29,11 @@ class DiscoveredWorkloadsClient(object):
     self._app_workloads_client = (
         self.client.projects_locations_applications_workloads
     )
+    self._app_services_client = (
+        self.client.projects_locations_applications_services
+    )
 
-  def List(
+  def list_workloads(
       self,
       parent,
       limit=None,
@@ -63,4 +66,35 @@ class DiscoveredWorkloadsClient(object):
         batch_size_attribute='pageSize',
     )
 
+  def list_services(
+      self,
+      parent,
+      limit=None,
+      page_size=100,
+  ):
+    """List application services in the Projects/Location.
 
+    Args:
+      parent: str,
+        projects/{projectId}/locations/{location}/applications/{application}
+      limit: int or None, the total number of results to return. Default value
+        is None
+      page_size: int, the number of entries in each batch (affects requests
+        made, but not the yielded results). Default value is 100.
+
+    Returns:
+      Generator of matching application services.
+    """
+    list_req = (
+        self.messages.ApphubProjectsLocationsApplicationsServicesListRequest(
+            parent=parent
+        )
+    )
+    return list_pager.YieldFromList(
+        self._app_services_client,
+        list_req,
+        field='services',
+        batch_size=page_size,
+        limit=limit,
+        batch_size_attribute='pageSize',
+    )

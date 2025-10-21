@@ -454,6 +454,33 @@ class PolicysimulatorV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SearchScoped(self, request, global_params=None):
+      r"""Searches all the results for an activity backtest within a provided scope (i.e. under a specific parent resource).
+
+      Args:
+        request: (PolicysimulatorFoldersLocationsActivityBacktestsSearchScopedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1betaSearchScopedActivityBacktestResultsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchScoped')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchScoped.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/folders/{foldersId}/locations/{locationsId}/activityBacktests/{activityBacktestsId}:searchScoped',
+        http_method='GET',
+        method_id='policysimulator.folders.locations.activityBacktests.searchScoped',
+        ordered_params=['backtestName'],
+        path_params=['backtestName'],
+        query_params=['pageSize', 'pageToken', 'scope'],
+        relative_path='v1beta/{+backtestName}:searchScoped',
+        request_field='',
+        request_type_name='PolicysimulatorFoldersLocationsActivityBacktestsSearchScopedRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1betaSearchScopedActivityBacktestResultsResponse',
+        supports_download=False,
+    )
+
   class FoldersLocationsOrgPolicyViolationsPreviewsOperationsService(base_api.BaseApiService):
     """Service class for the folders_locations_orgPolicyViolationsPreviews_operations resource."""
 
@@ -557,7 +584,7 @@ class PolicysimulatorV1beta(base_api.BaseApiClient):
         method_id='policysimulator.folders.locations.replays.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta/{+name}',
         request_field='',
         request_type_name='PolicysimulatorFoldersLocationsReplaysOperationsListRequest',
@@ -769,7 +796,7 @@ class PolicysimulatorV1beta(base_api.BaseApiClient):
         method_id='policysimulator.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta/{+name}',
         request_field='',
         request_type_name='PolicysimulatorOperationsListRequest',
@@ -1151,6 +1178,33 @@ class PolicysimulatorV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SearchScoped(self, request, global_params=None):
+      r"""Searches all the results for an activity backtest within a provided scope (i.e. under a specific parent resource).
+
+      Args:
+        request: (PolicysimulatorOrganizationsLocationsActivityBacktestsSearchScopedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1betaSearchScopedActivityBacktestResultsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchScoped')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchScoped.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/organizations/{organizationsId}/locations/{locationsId}/activityBacktests/{activityBacktestsId}:searchScoped',
+        http_method='GET',
+        method_id='policysimulator.organizations.locations.activityBacktests.searchScoped',
+        ordered_params=['backtestName'],
+        path_params=['backtestName'],
+        query_params=['pageSize', 'pageToken', 'scope'],
+        relative_path='v1beta/{+backtestName}:searchScoped',
+        request_field='',
+        request_type_name='PolicysimulatorOrganizationsLocationsActivityBacktestsSearchScopedRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1betaSearchScopedActivityBacktestResultsResponse',
+        supports_download=False,
+    )
+
   class OrganizationsLocationsOrgPolicyViolationsPreviewsOperationsService(base_api.BaseApiService):
     """Service class for the organizations_locations_orgPolicyViolationsPreviews_operations resource."""
 
@@ -1500,7 +1554,7 @@ class PolicysimulatorV1beta(base_api.BaseApiClient):
         method_id='policysimulator.organizations.locations.replays.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta/{+name}',
         request_field='',
         request_type_name='PolicysimulatorOrganizationsLocationsReplaysOperationsListRequest',
@@ -2030,6 +2084,33 @@ class PolicysimulatorV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SearchScoped(self, request, global_params=None):
+      r"""Searches all the results for an activity backtest within a provided scope (i.e. under a specific parent resource).
+
+      Args:
+        request: (PolicysimulatorProjectsLocationsActivityBacktestsSearchScopedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1betaSearchScopedActivityBacktestResultsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchScoped')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchScoped.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/activityBacktests/{activityBacktestsId}:searchScoped',
+        http_method='GET',
+        method_id='policysimulator.projects.locations.activityBacktests.searchScoped',
+        ordered_params=['backtestName'],
+        path_params=['backtestName'],
+        query_params=['pageSize', 'pageToken', 'scope'],
+        relative_path='v1beta/{+backtestName}:searchScoped',
+        request_field='',
+        request_type_name='PolicysimulatorProjectsLocationsActivityBacktestsSearchScopedRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1betaSearchScopedActivityBacktestResultsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsOrgPolicyViolationsPreviewsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_orgPolicyViolationsPreviews_operations resource."""
 
@@ -2133,7 +2214,7 @@ class PolicysimulatorV1beta(base_api.BaseApiClient):
         method_id='policysimulator.projects.locations.replays.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta/{+name}',
         request_field='',
         request_type_name='PolicysimulatorProjectsLocationsReplaysOperationsListRequest',

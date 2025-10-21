@@ -6883,7 +6883,7 @@ The only supported workload policy is 'allow-net-admin'.
   )
 
 
-def AddAutopilotWorkloadPoliciesFlag(parser, hidden=True):
+def AddAutopilotWorkloadPoliciesFlag(parser, hidden=False):
   """Adds workload policies related flags to parser.
 
   This is for use in GKE Standard.
@@ -6912,7 +6912,7 @@ The only supported workload policy is 'allow-net-admin'.
   )
 
 
-def AddRemoveAutopilotWorkloadPoliciesFlag(parser, hidden=True):
+def AddRemoveAutopilotWorkloadPoliciesFlag(parser, hidden=False):
   """Adds Remove workload policies related flags to parser.
 
   This is for use in GKE Standard.
@@ -7363,7 +7363,7 @@ def AddSecretManagerEnableFlagGroup(
 
 
 def AddSecretSyncFlagGroup(
-    parser: parser_arguments.ArgumentInterceptor, hidden=True, is_update=False
+    parser: parser_arguments.ArgumentInterceptor, hidden=False, is_update=False
 ) -> None:
   """Adds --enable-secret-sync, --enable-secret-sync-rotation and --secret-sync-rotation-interval flags to the given parser.
 
@@ -7379,8 +7379,7 @@ def AddSecretSyncFlagGroup(
   )
   help_text = """\
         Enables the Secret Sync component. See
-        https://github.com/kubernetes-sigs/secrets-store-sync-controller
-        https://github.com/GoogleCloudPlatform/secrets-store-csi-driver-provider-gcp
+        https://cloud.google.com/secret-manager/docs/sync-k8-secrets
     """
   if is_update:
     secret_sync_group.add_argument(
@@ -8106,7 +8105,7 @@ Examples:
 
   parser.add_argument(
       '--autopilot-privileged-admission',
-      type=str,
+      type=arg_parsers.ArgList(),
       default=None,
       hidden=hidden,
       help=help_text,

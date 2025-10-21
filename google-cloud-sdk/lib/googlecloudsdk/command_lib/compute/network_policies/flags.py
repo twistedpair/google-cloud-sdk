@@ -24,7 +24,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
-_RULES_PRIORITY_UPPER_LIMIT: int = 2147483547
+_RULES_PRIORITY_UPPER_LIMIT: int = 2147483647
 _RESERVED_UPPER_PRIORITIES_COUNT: int = 1000
 _USER_CREATED_RULES_PRIORITY_UPPER_LIMIT: int = (
     _RULES_PRIORITY_UPPER_LIMIT - _RESERVED_UPPER_PRIORITIES_COUNT
@@ -147,7 +147,6 @@ def AddArgsAddRule(parser: argparse.ArgumentParser) -> None:
       parser,
       operation='added',
       required=True,
-      upper_limit=_USER_CREATED_RULES_PRIORITY_UPPER_LIMIT,
   )
   AddRuleName(parser, required=False)
   AddSrcIpRanges(parser, required=False)
@@ -175,12 +174,21 @@ def AddAction(parser: argparse.ArgumentParser, required: bool = False) -> None:
 
 def AddArgsRemoveRule(parser: argparse.ArgumentParser) -> None:
   """Adds the arguments for network policy remove rules method."""
-  AddRulePriority(parser, operation='removed', required=True)
+  AddRulePriority(
+      parser,
+      operation='removed',
+      required=True,
+  )
 
 
 def AddArgsDescribeRule(parser: argparse.ArgumentParser) -> None:
   """Adds the arguments for network policy describe rules method."""
-  AddRulePriority(parser, operation='described', required=True)
+  AddRulePriority(
+      parser,
+      operation='described',
+      required=True,
+      upper_limit=_RULES_PRIORITY_UPPER_LIMIT,
+  )
 
 
 def AddArgsUpdateRule(parser: argparse.ArgumentParser) -> None:
@@ -189,7 +197,6 @@ def AddArgsUpdateRule(parser: argparse.ArgumentParser) -> None:
       parser,
       operation='updated',
       required=True,
-      upper_limit=_USER_CREATED_RULES_PRIORITY_UPPER_LIMIT,
   )
   AddDescription(parser)
   AddDestIpRanges(parser)
@@ -240,7 +247,7 @@ def AddRulePriority(
     parser: argparse.ArgumentParser,
     operation: str,
     required: bool = False,
-    upper_limit: int = 2147483547,
+    upper_limit: int = _USER_CREATED_RULES_PRIORITY_UPPER_LIMIT,
 ) -> None:
   """Adds the rule priority argument to the argparse."""
   parser.add_argument(

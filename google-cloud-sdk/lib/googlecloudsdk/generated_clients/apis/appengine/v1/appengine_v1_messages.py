@@ -479,8 +479,8 @@ class AppengineAppsLocationsListRequest(_messages.Message):
   r"""A AppengineAppsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Do not use this field. It is unsupported and
-      is ignored unless explicitly documented otherwise. This is primarily for
+    extraLocationTypes: Optional. Unless explicitly documented otherwise,
+      don't use this unsupported field which is primarily intended for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like "displayName=tokyo", and is
@@ -517,12 +517,20 @@ class AppengineAppsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to true, operations that are reachable are
+      returned as normal, and those that are unreachable are returned in the
+      ListOperationsResponse.unreachable field.This can only be true when
+      reading across collections e.g. when parent is set to
+      "projects/example/locations/-".This field is not by default supported
+      and will result in an UNIMPLEMENTED error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class AppengineAppsPatchRequest(_messages.Message):
@@ -1769,11 +1777,12 @@ class DomainMapping(_messages.Message):
   Fields:
     id: Relative name of the domain serving the application. Example:
       example.com.
-    name: Full path to the DomainMapping resource in the API. Example:
-      apps/myapp/domainMapping/example.com.@OutputOnly
-    resourceRecords: The resource records required to configure this domain
-      mapping. These records must be added to the domain's DNS configuration
-      in order to serve the application via this domain mapping.@OutputOnly
+    name: Output only. Full path to the DomainMapping resource in the API.
+      Example: apps/myapp/domainMapping/example.com.@OutputOnly
+    resourceRecords: Output only. The resource records required to configure
+      this domain mapping. These records must be added to the domain's DNS
+      configuration in order to serve the application via this domain
+      mapping.@OutputOnly
     sslSettings: SSL configuration for this domain. If unconfigured, this
       domain will not serve with SSL.
   """
@@ -2259,10 +2268,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets ListOperationsRequest.return_partial_success and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListRuntimesResponse(_messages.Message):
@@ -3464,14 +3478,14 @@ class SslSettings(_messages.Message):
       SslManagementType.MANUAL on a CREATE or UPDATE request. You must be
       authorized to administer the AuthorizedCertificate resource to manually
       map it to a DomainMapping resource. Example: 12345.
-    pendingManagedCertificateId: ID of the managed AuthorizedCertificate
-      resource currently being provisioned, if applicable. Until the new
-      managed certificate has been successfully provisioned, the previous SSL
-      state will be preserved. Once the provisioning process completes, the
-      certificate_id field will reflect the new managed certificate and this
-      field will be left empty. To remove SSL support while there is still a
-      pending managed certificate, clear the certificate_id field with an
-      UpdateDomainMappingRequest.@OutputOnly
+    pendingManagedCertificateId: Output only. ID of the managed
+      AuthorizedCertificate resource currently being provisioned, if
+      applicable. Until the new managed certificate has been successfully
+      provisioned, the previous SSL state will be preserved. Once the
+      provisioning process completes, the certificate_id field will reflect
+      the new managed certificate and this field will be left empty. To remove
+      SSL support while there is still a pending managed certificate, clear
+      the certificate_id field with an UpdateDomainMappingRequest.@OutputOnly
     sslManagementType: SSL management type for this domain. If AUTOMATIC, a
       managed certificate is automatically provisioned. If MANUAL,
       certificate_id must be manually specified in order to configure SSL for

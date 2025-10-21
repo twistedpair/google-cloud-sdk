@@ -91,6 +91,21 @@ def available_service_flag(suffix='to act on', flag_name='service'):
       help='The name of the service(s) {0}.'.format(suffix))
 
 
+def service_flag(suffix='to act on', flag_name='service'):
+  return base.Argument(
+      flag_name, help='The name of the service {0}.'.format(suffix)
+  )
+
+
+def mcp_content_security_provider_flag(
+    suffix='to act on', flag_name='mcp_content_security_provider'
+):
+  return base.Argument(
+      flag_name,
+      help='The MCP content security provider {0}.'.format(suffix),
+  )
+
+
 # TODO(b/321801975) Link public documentation about consumer policy format
 # after public preview.
 def consumer_policy_file_flag():

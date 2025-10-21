@@ -1003,17 +1003,47 @@ class BigtableadminProjectsInstancesMaterializedViewsGetIamPolicyRequest(_messag
 class BigtableadminProjectsInstancesMaterializedViewsGetRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesMaterializedViewsGetRequest object.
 
+  Enums:
+    ViewValueValuesEnum: Optional. Describes which of the materialized view's
+      fields should be populated in the response. Defaults to SCHEMA_VIEW.
+
   Fields:
     name: Required. The unique name of the requested materialized view. Values
       are of the form `projects/{project}/instances/{instance}/materializedVie
       ws/{materialized_view}`.
+    view: Optional. Describes which of the materialized view's fields should
+      be populated in the response. Defaults to SCHEMA_VIEW.
   """
 
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. Describes which of the materialized view's fields should be
+    populated in the response. Defaults to SCHEMA_VIEW.
+
+    Values:
+      VIEW_UNSPECIFIED: Uses the default view for each method as documented in
+        its request.
+      SCHEMA_VIEW: Only populates fields related to the materialized view's
+        schema.
+      REPLICATION_VIEW: Only populates fields related to the materialized
+        view's replication state.
+      FULL: Populates all fields.
+    """
+    VIEW_UNSPECIFIED = 0
+    SCHEMA_VIEW = 1
+    REPLICATION_VIEW = 2
+    FULL = 3
+
   name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
 
 
 class BigtableadminProjectsInstancesMaterializedViewsListRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesMaterializedViewsListRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Optional. Describes which of the materialized view's
+      fields should be populated in the response. For now, only the default
+      value SCHEMA_VIEW is supported.
 
   Fields:
     pageSize: Optional. The maximum number of materialized views to return.
@@ -1026,11 +1056,34 @@ class BigtableadminProjectsInstancesMaterializedViewsListRequest(_messages.Messa
     parent: Required. The unique name of the instance for which the list of
       materialized views is requested. Values are of the form
       `projects/{project}/instances/{instance}`.
+    view: Optional. Describes which of the materialized view's fields should
+      be populated in the response. For now, only the default value
+      SCHEMA_VIEW is supported.
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. Describes which of the materialized view's fields should be
+    populated in the response. For now, only the default value SCHEMA_VIEW is
+    supported.
+
+    Values:
+      VIEW_UNSPECIFIED: Uses the default view for each method as documented in
+        its request.
+      SCHEMA_VIEW: Only populates fields related to the materialized view's
+        schema.
+      REPLICATION_VIEW: Only populates fields related to the materialized
+        view's replication state.
+      FULL: Populates all fields.
+    """
+    VIEW_UNSPECIFIED = 0
+    SCHEMA_VIEW = 1
+    REPLICATION_VIEW = 2
+    FULL = 3
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
 class BigtableadminProjectsInstancesMaterializedViewsPatchRequest(_messages.Message):
@@ -2829,6 +2882,39 @@ class GoogleBigtableAdminV2AuthorizedViewSubsetView(_messages.Message):
   rowPrefixes = _messages.BytesField(2, repeated=True)
 
 
+class GoogleBigtableAdminV2MaterializedViewClusterState(_messages.Message):
+  r"""The state of a materialized view's data in a particular cluster.
+
+  Enums:
+    ReplicationStateValueValuesEnum: Output only. The state of the
+      materialized view in this cluster.
+
+  Fields:
+    replicationState: Output only. The state of the materialized view in this
+      cluster.
+  """
+
+  class ReplicationStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the materialized view in this cluster.
+
+    Values:
+      STATE_NOT_KNOWN: The state of the materialized view is unknown in this
+        cluster.
+      INITIALIZING: The cluster or view was recently created, and the
+        materialized view must finish backfilling before it can begin serving
+        Data API requests.
+      READY: The materialized view can serve Data API requests from this
+        cluster. Depending on materialization and replication delay, reads may
+        not immediately reflect the state of the materialized view in other
+        clusters.
+    """
+    STATE_NOT_KNOWN = 0
+    INITIALIZING = 1
+    READY = 2
+
+  replicationState = _messages.EnumField('ReplicationStateValueValuesEnum', 1)
+
+
 class GoogleBigtableAdminV2TypeAggregate(_messages.Message):
   r"""A value that combines incremental updates into a summarized value. Data
   is never directly written or read using type `Aggregate`. Writes provide
@@ -3690,7 +3776,19 @@ class LogicalView(_messages.Message):
 class MaterializedView(_messages.Message):
   r"""A materialized view object that can be referenced in SQL queries.
 
+  Messages:
+    ClusterStatesValue: Output only. Map from cluster ID to per-cluster
+      materialized view state. If it could not be determined whether or not
+      the materialized view has data in a particular cluster (for example, if
+      its zone is unavailable), then there will be an entry for the cluster
+      with `STATE_NOT_KNOWN` state. Views: `REPLICATION_VIEW`, `FULL`.
+
   Fields:
+    clusterStates: Output only. Map from cluster ID to per-cluster
+      materialized view state. If it could not be determined whether or not
+      the materialized view has data in a particular cluster (for example, if
+      its zone is unavailable), then there will be an entry for the cluster
+      with `STATE_NOT_KNOWN` state. Views: `REPLICATION_VIEW`, `FULL`.
     deletionProtection: Set to true to make the MaterializedView protected
       against deletion. Views: `SCHEMA_VIEW`, `REPLICATION_VIEW`, `FULL`.
     etag: Optional. The etag for this materialized view. This may be sent on
@@ -3704,10 +3802,40 @@ class MaterializedView(_messages.Message):
       `SCHEMA_VIEW`, `FULL`.
   """
 
-  deletionProtection = _messages.BooleanField(1)
-  etag = _messages.StringField(2)
-  name = _messages.StringField(3)
-  query = _messages.StringField(4)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ClusterStatesValue(_messages.Message):
+    r"""Output only. Map from cluster ID to per-cluster materialized view
+    state. If it could not be determined whether or not the materialized view
+    has data in a particular cluster (for example, if its zone is
+    unavailable), then there will be an entry for the cluster with
+    `STATE_NOT_KNOWN` state. Views: `REPLICATION_VIEW`, `FULL`.
+
+    Messages:
+      AdditionalProperty: An additional property for a ClusterStatesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ClusterStatesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ClusterStatesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleBigtableAdminV2MaterializedViewClusterState attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleBigtableAdminV2MaterializedViewClusterState', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  clusterStates = _messages.MessageField('ClusterStatesValue', 1)
+  deletionProtection = _messages.BooleanField(2)
+  etag = _messages.StringField(3)
+  name = _messages.StringField(4)
+  query = _messages.StringField(5)
 
 
 class MemoryConfig(_messages.Message):

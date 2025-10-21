@@ -15,6 +15,8 @@
 
 """Utility functions for clusters command group."""
 
+from __future__ import annotations
+
 import collections
 import os
 import re
@@ -638,6 +640,23 @@ class ClusterUtil:
       if not slurm.partitions:
         raise exceptions.ToolException("Slurm partitions cannot be empty.")
       self.update_mask.add("orchestrator.slurm.partitions")
+
+    if self.args.IsSpecified("update_slurm_login_node"):
+      if not self.existing_cluster.orchestrator.slurm.loginNodes:
+        raise exceptions.ToolException(
+            "Login node is not part of existing cluster spec and cannot be"
+            " updated."
+        )
+      login_nodes = self.existing_cluster.orchestrator.slurm.loginNodes
+      login_node_patch = self.args.update_slurm_login_node
+
+      if (count := login_node_patch.get("count")) is not None:
+        login_nodes.count = count
+      if (startup_script := login_node_patch.get("startupScript")) is not None:
+        login_nodes.startupScript = self._GetBashScript(startup_script)
+      slurm.loginNodes = login_nodes
+      self.update_mask.add("orchestrator.slurm.login_nodes")
+
     return slurm
 
   def _GetNetworkName(self, network) -> str:

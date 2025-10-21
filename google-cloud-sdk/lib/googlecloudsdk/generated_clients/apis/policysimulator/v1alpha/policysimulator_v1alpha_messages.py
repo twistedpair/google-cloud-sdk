@@ -2132,9 +2132,11 @@ class GoogleCloudPolicysimulatorV1alphaIamV3PolicyBinding(_messages.Message):
     Values:
       POLICY_KIND_UNSPECIFIED: Unspecified policy kind; Not a valid state
       PRINCIPAL_ACCESS_BOUNDARY: Principal access boundary policy kind
+      TRUST_BOUNDARY: Trust boundary policy kind
     """
     POLICY_KIND_UNSPECIFIED = 0
     PRINCIPAL_ACCESS_BOUNDARY = 1
+    TRUST_BOUNDARY = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -2320,6 +2322,104 @@ class GoogleCloudPolicysimulatorV1alphaIamV3PrincipalAccessBoundaryPolicyRule(_m
   description = _messages.StringField(1)
   effect = _messages.EnumField('EffectValueValuesEnum', 2)
   resources = _messages.StringField(3, repeated=True)
+
+
+class GoogleCloudPolicysimulatorV1alphaIamV3TrustBoundaryPolicy(_messages.Message):
+  r"""The google.iam.v3.TrustBoundaryPolicy being simulated. See the original
+  proto for documentation.
+
+  Messages:
+    AnnotationsValue: Optional. User defined annotations. See
+      https://google.aip.dev/148#annotations for more details such as format
+      and size limitations
+
+  Fields:
+    annotations: Optional. User defined annotations. See
+      https://google.aip.dev/148#annotations for more details such as format
+      and size limitations
+    details: Optional. The details for the trust boundary policy.
+    displayName: Optional. The display name of the trust boundary policy. Must
+      be less than or equal to 63 characters.
+    etag: Optional. The etag for the trust boundary policy. If this is
+      provided on update, it must match the etag of the policy on the server.
+    name: Identifier. The name of the trust boundary policy. The following
+      format is supported: `organizations/{organization_id}/locations/{locatio
+      n}/trustBoundaryPolicies/{policy_id}`
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. User defined annotations. See
+    https://google.aip.dev/148#annotations for more details such as format and
+    size limitations
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  details = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaIamV3TrustBoundaryPolicyDetails', 2)
+  displayName = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  name = _messages.StringField(5)
+
+
+class GoogleCloudPolicysimulatorV1alphaIamV3TrustBoundaryPolicyDetails(_messages.Message):
+  r"""The google.iam.v3.TrustBoundaryPolicyDetails being simulated. See the
+  original proto for documentation.
+
+  Fields:
+    enforcementVersion: Optional. The version identifier (e.g., 1) specifying
+      the enforcement behavior of the Trust Boundary policy. This allows the
+      TB Platform to introduce changes to enforcement logic through new
+      versions, mitigating potential breaking changes. If left unspecified,
+      the version will default to the latest launched version.
+    rules: Required. The trust boundary policy rules. Only one rule is
+      supported at this time, requests with more than one will be rejected as
+      invalid.
+  """
+
+  enforcementVersion = _messages.StringField(1)
+  rules = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaIamV3TrustBoundaryPolicyRule', 2, repeated=True)
+
+
+class GoogleCloudPolicysimulatorV1alphaIamV3TrustBoundaryPolicyRule(_messages.Message):
+  r"""A copy of google.iam.v3.TrustBoundaryPolicyRule. See the original proto
+  for documentation.
+
+  Fields:
+    description: Optional. The description of the trust boundary policy rule.
+      Must be less than or equal to 256 characters.
+    locations: Describes the list of authorized locations. It is in the format
+      of value groups with the following syntax:
+      "//GoogleValueGroups/Locations/LOCATION" Where LOCATION can either be
+      "Mandatory/version_number_here" (the locations which are required for
+      inclusion for all customers) or a specific country-based location. Note
+      the Mandatory Locations value group will be versioned to allow Google to
+      remove locations from this group without causing breaking changes.
+      Examples: "//GoogleValueGroups/Locations/Mandatory/v1".
+      "//GoogleValueGroups/Locations/US". "//GoogleValueGroups/Locations/JP".
+  """
+
+  description = _messages.StringField(1)
+  locations = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudPolicysimulatorV1alphaListAccessPolicySimulationResultsResponse(_messages.Message):
@@ -3155,6 +3255,13 @@ class GoogleCloudPolicysimulatorV1alphaProposedChange(_messages.Message):
     updateIamV3PolicyBinding: Test an update to an IamV3PolicyBinding.
     updateIamV3PrincipalAccessBoundaryPolicy: Test an update to an
       IamV3PrincipalAccessBoundaryPolicy.
+    updateIamV3TrustBoundaryPolicy: Test an update to an
+      IamV3TrustBoundaryPolicy. Test a delete to an IamV3TrustBoundaryPolicy.
+      Deletion of an IamV3TrustBoundaryPolicy would result in access changing
+      from denied to allowed. This is currently out of scope.
+      DeleteIamV3TrustBoundaryPolicy delete_iam_v3_trust_boundary_policy = 14
+      [(google.api.field_visibility).restriction = "GOOGLE_INTERNAL,
+      TRUST_BOUNDARY_V3_GA_TRUSTED_TESTER"];
   """
 
   createIamV2Policy = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaCreateIamV2Policy', 1)
@@ -3165,6 +3272,7 @@ class GoogleCloudPolicysimulatorV1alphaProposedChange(_messages.Message):
   updateIamV2Policy = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaUpdateIamV2Policy', 6)
   updateIamV3PolicyBinding = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaUpdateIamV3PolicyBinding', 7)
   updateIamV3PrincipalAccessBoundaryPolicy = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaUpdateIamV3PrincipalAccessBoundaryPolicy', 8)
+  updateIamV3TrustBoundaryPolicy = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaUpdateIamV3TrustBoundaryPolicy', 9)
 
 
 class GoogleCloudPolicysimulatorV1alphaReplay(_messages.Message):
@@ -3436,6 +3544,20 @@ class GoogleCloudPolicysimulatorV1alphaSearchActivityBacktestResultsResponseSear
   inaccessibleResults = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaSearchActivityBacktestResultsResponseInacessibleResults', 2)
 
 
+class GoogleCloudPolicysimulatorV1alphaSearchScopedActivityBacktestResultsResponse(_messages.Message):
+  r"""Response message for SearchScopedActivityBacktestResults.
+
+  Fields:
+    activityBacktestResults: The results of the backtest.
+    nextPageToken: Optional. A token that you can use to retrieve the next
+      page of ActivityBacktestResult objects. If this field is omitted, there
+      are no subsequent pages.
+  """
+
+  activityBacktestResults = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaActivityBacktestResult', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class GoogleCloudPolicysimulatorV1alphaUpdateIamV2Policy(_messages.Message):
   r"""Test a change that updates an IamV2Policy using the
   google.iam.v2.UpdatePolicyRequest.
@@ -3476,6 +3598,21 @@ class GoogleCloudPolicysimulatorV1alphaUpdateIamV3PrincipalAccessBoundaryPolicy(
   """
 
   principalAccessBoundaryPolicy = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaIamV3PrincipalAccessBoundaryPolicy', 1)
+  updateMask = _messages.StringField(2)
+
+
+class GoogleCloudPolicysimulatorV1alphaUpdateIamV3TrustBoundaryPolicy(_messages.Message):
+  r"""Test a change that updates an IamV3TrustBoundaryPolicy using the
+  google.iam.v3.UpdateTrustBoundaryPolicyRequest.
+
+  Fields:
+    trustBoundaryPolicy: Required. The TrustBoundaryPolicy to update. The
+      TrustBoundaryPolicy's `name` field is used to identify the policy to
+      update.
+    updateMask: Optional. The list of fields to update.
+  """
+
+  trustBoundaryPolicy = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaIamV3TrustBoundaryPolicy', 1)
   updateMask = _messages.StringField(2)
 
 
@@ -4285,10 +4422,15 @@ class GoogleLongrunningListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('GoogleLongrunningOperation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class GoogleLongrunningOperation(_messages.Message):
@@ -4782,6 +4924,47 @@ class PolicysimulatorFoldersLocationsActivityBacktestsSearchResultsRequest(_mess
   pageToken = _messages.StringField(3)
 
 
+class PolicysimulatorFoldersLocationsActivityBacktestsSearchScopedRequest(_messages.Message):
+  r"""A PolicysimulatorFoldersLocationsActivityBacktestsSearchScopedRequest
+  object.
+
+  Fields:
+    backtestName: Required. The name of the activity backtest for which to
+      return results, in one of ## the following formats: ##
+      `organizations/{organization-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id}` ##
+      `folders/{folder-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id}`
+      `projects/{project-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id}` NOTE:
+      The CRM parent of the backtest itself (contained within `backtest_name`)
+      need not be the same as the parent of the result (contained within
+      `scope`).
+    pageSize: Optional. The maximum number of ActivityBacktestResult objects
+      to return. Defaults to 1000. Maximum value is 1000. Values above the
+      maximum are reduced to the maximum value.
+    pageToken: Optional. A page token, received from a previous
+      SearchScopedActivityBacktestResults call. Provide this token to retrieve
+      the next page of results. When paginating, all other parameters (except
+      page_size) provided to SearchScopedActivityBacktestResults must match
+      the call that provided the page token.
+    scope: Required. The scope within which activity backtest results should
+      be retrieved. Currently, the only supported scope is the CRM resource
+      that directly contains the results. Only results directly parented by
+      the resource will be returned. For example, specifying an organization
+      will only return results for organization-level access activities;
+      activities on resources contained by projects under the organization
+      will not be included. The scope should be provided in one of the
+      following formats: - `projects/{project}` - `folders/{folder}` -
+      `organizations/{organization}`
+  """
+
+  backtestName = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  scope = _messages.StringField(4)
+
+
 class PolicysimulatorFoldersLocationsOrgPolicyViolationsPreviewsOperationsGetRequest(_messages.Message):
   r"""A PolicysimulatorFoldersLocationsOrgPolicyViolationsPreviewsOperationsGe
   tRequest object.
@@ -4867,12 +5050,20 @@ class PolicysimulatorFoldersLocationsReplaysOperationsListRequest(_messages.Mess
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class PolicysimulatorFoldersLocationsReplaysResultsListRequest(_messages.Message):
@@ -4916,12 +5107,20 @@ class PolicysimulatorOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class PolicysimulatorOrganizationsLocationsAccessPolicySimulationsCreateRequest(_messages.Message):
@@ -5180,6 +5379,48 @@ class PolicysimulatorOrganizationsLocationsActivityBacktestsSearchResultsRequest
   pageToken = _messages.StringField(3)
 
 
+class PolicysimulatorOrganizationsLocationsActivityBacktestsSearchScopedRequest(_messages.Message):
+  r"""A
+  PolicysimulatorOrganizationsLocationsActivityBacktestsSearchScopedRequest
+  object.
+
+  Fields:
+    backtestName: Required. The name of the activity backtest for which to
+      return results, in one of ## the following formats: ##
+      `organizations/{organization-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id}` ##
+      `folders/{folder-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id}`
+      `projects/{project-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id}` NOTE:
+      The CRM parent of the backtest itself (contained within `backtest_name`)
+      need not be the same as the parent of the result (contained within
+      `scope`).
+    pageSize: Optional. The maximum number of ActivityBacktestResult objects
+      to return. Defaults to 1000. Maximum value is 1000. Values above the
+      maximum are reduced to the maximum value.
+    pageToken: Optional. A page token, received from a previous
+      SearchScopedActivityBacktestResults call. Provide this token to retrieve
+      the next page of results. When paginating, all other parameters (except
+      page_size) provided to SearchScopedActivityBacktestResults must match
+      the call that provided the page token.
+    scope: Required. The scope within which activity backtest results should
+      be retrieved. Currently, the only supported scope is the CRM resource
+      that directly contains the results. Only results directly parented by
+      the resource will be returned. For example, specifying an organization
+      will only return results for organization-level access activities;
+      activities on resources contained by projects under the organization
+      will not be included. The scope should be provided in one of the
+      following formats: - `projects/{project}` - `folders/{folder}` -
+      `organizations/{organization}`
+  """
+
+  backtestName = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  scope = _messages.StringField(4)
+
+
 class PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsCreateRequest(_messages.Message):
   r"""A PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsCreate
   Request object.
@@ -5415,12 +5656,20 @@ class PolicysimulatorOrganizationsLocationsReplaysOperationsListRequest(_message
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class PolicysimulatorOrganizationsLocationsReplaysResultsListRequest(_messages.Message):
@@ -5698,6 +5947,47 @@ class PolicysimulatorProjectsLocationsActivityBacktestsSearchResultsRequest(_mes
   pageToken = _messages.StringField(3)
 
 
+class PolicysimulatorProjectsLocationsActivityBacktestsSearchScopedRequest(_messages.Message):
+  r"""A PolicysimulatorProjectsLocationsActivityBacktestsSearchScopedRequest
+  object.
+
+  Fields:
+    backtestName: Required. The name of the activity backtest for which to
+      return results, in one of ## the following formats: ##
+      `organizations/{organization-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id}` ##
+      `folders/{folder-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id}`
+      `projects/{project-
+      id}/locations/{location}/activityBacktests/{activity_backtest_id}` NOTE:
+      The CRM parent of the backtest itself (contained within `backtest_name`)
+      need not be the same as the parent of the result (contained within
+      `scope`).
+    pageSize: Optional. The maximum number of ActivityBacktestResult objects
+      to return. Defaults to 1000. Maximum value is 1000. Values above the
+      maximum are reduced to the maximum value.
+    pageToken: Optional. A page token, received from a previous
+      SearchScopedActivityBacktestResults call. Provide this token to retrieve
+      the next page of results. When paginating, all other parameters (except
+      page_size) provided to SearchScopedActivityBacktestResults must match
+      the call that provided the page token.
+    scope: Required. The scope within which activity backtest results should
+      be retrieved. Currently, the only supported scope is the CRM resource
+      that directly contains the results. Only results directly parented by
+      the resource will be returned. For example, specifying an organization
+      will only return results for organization-level access activities;
+      activities on resources contained by projects under the organization
+      will not be included. The scope should be provided in one of the
+      following formats: - `projects/{project}` - `folders/{folder}` -
+      `organizations/{organization}`
+  """
+
+  backtestName = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  scope = _messages.StringField(4)
+
+
 class PolicysimulatorProjectsLocationsOrgPolicyViolationsPreviewsOperationsGetRequest(_messages.Message):
   r"""A PolicysimulatorProjectsLocationsOrgPolicyViolationsPreviewsOperationsG
   etRequest object.
@@ -5783,12 +6073,20 @@ class PolicysimulatorProjectsLocationsReplaysOperationsListRequest(_messages.Mes
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class PolicysimulatorProjectsLocationsReplaysResultsListRequest(_messages.Message):

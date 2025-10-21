@@ -23,12 +23,12 @@ import datetime
 
 # pylint: disable=unused-import, type imports needed for gRPC
 import google.appengine.logging.v1.request_log_pb2
-import google.cloud.appengine_v1.proto.audit_data_pb2
+import google.appengine.v1.audit_data_pb2
+import google.appengine.v1beta.audit_data_pb2
 import google.cloud.appengine_v1alpha.proto.audit_data_pb2
-import google.cloud.appengine_v1beta.proto.audit_data_pb2
-import google.cloud.bigquery_logging_v1.proto.audit_data_pb2
-import google.cloud.cloud_audit.proto.audit_log_pb2
-import google.cloud.iam_admin_v1.proto.audit_data_pb2
+import google.cloud.audit.audit_log_pb2
+import google.cloud.bigquery.logging.v1.audit_data_pb2
+import google.iam.admin.v1.audit_data_pb2
 import google.iam.v1.logging.audit_data_pb2
 import google.type.money_pb2
 # pylint: enable=unused-import

@@ -592,8 +592,8 @@ class CloudfunctionsProjectsLocationsListRequest(_messages.Message):
   r"""A CloudfunctionsProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Do not use this field. It is unsupported and
-      is ignored unless explicitly documented otherwise. This is primarily for
+    extraLocationTypes: Optional. Unless explicitly documented otherwise,
+      don't use this unsupported field which is primarily intended for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -630,12 +630,20 @@ class CloudfunctionsProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class CloudfunctionsProjectsLocationsRuntimesListRequest(_messages.Message):
@@ -684,6 +692,28 @@ class Date(_messages.Message):
 
 class DetachFunctionRequest(_messages.Message):
   r"""Request for the `DetachFunction` method."""
+
+
+class DirectVpcNetworkInterface(_messages.Message):
+  r"""The Direct VPC network interface. This is mutually exclusive with VPC
+  Connector.
+
+  Fields:
+    network: Optional. The name of the VPC network to which the function will
+      be connected. Specify either a VPC network or a subnet, or both. If you
+      specify only a network, the subnet uses the same name as the network.
+    subnetwork: Optional. The name of the VPC subnetwork that the Cloud
+      Function resource will get IPs from. Specify either a VPC network or a
+      subnet, or both. If both network and subnetwork are specified, the given
+      VPC subnetwork must belong to the given VPC network. If subnetwork is
+      not specified, the subnetwork with the same name with the network will
+      be used.
+    tags: Optional. Network tags applied to this Cloud Function resource.
+  """
+
+  network = _messages.StringField(1)
+  subnetwork = _messages.StringField(2)
+  tags = _messages.StringField(3, repeated=True)
 
 
 class EventFilter(_messages.Message):
@@ -1258,10 +1288,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListRuntimesResponse(_messages.Message):
@@ -1793,6 +1828,8 @@ class ServiceConfig(_messages.Message):
   (fully managed).
 
   Enums:
+    DirectVpcEgressValueValuesEnum: Optional. Egress settings for direct VPC.
+      If not provided, it defaults to VPC_EGRESS_PRIVATE_RANGES_ONLY.
     IngressSettingsValueValuesEnum: The ingress settings for the function,
       controlling what traffic can reach it.
     SecurityLevelValueValuesEnum: Security level configure whether the
@@ -1823,6 +1860,10 @@ class ServiceConfig(_messages.Message):
       y.go a full description.
     binaryAuthorizationPolicy: Optional. The binary authorization policy to be
       checked when deploying the Cloud Run service.
+    directVpcEgress: Optional. Egress settings for direct VPC. If not
+      provided, it defaults to VPC_EGRESS_PRIVATE_RANGES_ONLY.
+    directVpcNetworkInterface: Optional. The Direct VPC network interface for
+      the Cloud Function. Currently only a single Direct VPC is supported.
     environmentVariables: Environment variables that shall be available during
       function execution.
     ingressSettings: The ingress settings for the function, controlling what
@@ -1868,6 +1909,21 @@ class ServiceConfig(_messages.Message):
     vpcConnectorEgressSettings: The egress settings for the connector,
       controlling what traffic is diverted through it.
   """
+
+  class DirectVpcEgressValueValuesEnum(_messages.Enum):
+    r"""Optional. Egress settings for direct VPC. If not provided, it defaults
+    to VPC_EGRESS_PRIVATE_RANGES_ONLY.
+
+    Values:
+      DIRECT_VPC_EGRESS_UNSPECIFIED: Unspecified.
+      VPC_EGRESS_PRIVATE_RANGES_ONLY: Sends only traffic to internal addresses
+        through the VPC network.
+      VPC_EGRESS_ALL_TRAFFIC: Sends all outbound traffic through the VPC
+        network.
+    """
+    DIRECT_VPC_EGRESS_UNSPECIFIED = 0
+    VPC_EGRESS_PRIVATE_RANGES_ONLY = 1
+    VPC_EGRESS_ALL_TRAFFIC = 2
 
   class IngressSettingsValueValuesEnum(_messages.Enum):
     r"""The ingress settings for the function, controlling what traffic can
@@ -1950,21 +2006,23 @@ class ServiceConfig(_messages.Message):
   availableCpu = _messages.StringField(2)
   availableMemory = _messages.StringField(3)
   binaryAuthorizationPolicy = _messages.StringField(4)
-  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 5)
-  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 6)
-  maxInstanceCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  maxInstanceRequestConcurrency = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  minInstanceCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  revision = _messages.StringField(10)
-  secretEnvironmentVariables = _messages.MessageField('SecretEnvVar', 11, repeated=True)
-  secretVolumes = _messages.MessageField('SecretVolume', 12, repeated=True)
-  securityLevel = _messages.EnumField('SecurityLevelValueValuesEnum', 13)
-  service = _messages.StringField(14)
-  serviceAccountEmail = _messages.StringField(15)
-  timeoutSeconds = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  uri = _messages.StringField(17)
-  vpcConnector = _messages.StringField(18)
-  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 19)
+  directVpcEgress = _messages.EnumField('DirectVpcEgressValueValuesEnum', 5)
+  directVpcNetworkInterface = _messages.MessageField('DirectVpcNetworkInterface', 6, repeated=True)
+  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 7)
+  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 8)
+  maxInstanceCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  maxInstanceRequestConcurrency = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  minInstanceCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  revision = _messages.StringField(12)
+  secretEnvironmentVariables = _messages.MessageField('SecretEnvVar', 13, repeated=True)
+  secretVolumes = _messages.MessageField('SecretVolume', 14, repeated=True)
+  securityLevel = _messages.EnumField('SecurityLevelValueValuesEnum', 15)
+  service = _messages.StringField(16)
+  serviceAccountEmail = _messages.StringField(17)
+  timeoutSeconds = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  uri = _messages.StringField(19)
+  vpcConnector = _messages.StringField(20)
+  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 21)
 
 
 class SetIamPolicyRequest(_messages.Message):

@@ -263,6 +263,7 @@ def AddAllowUnencryptedBuildFlag(parser):
           ' without encrypting the build process. This means that only the'
           ' deployed container will be encrypted.'
       ),
+      hidden=True,
   )
 
 
@@ -371,6 +372,24 @@ def AddRegionArg(parser):
           'Region in which the resource can be found. '
           'Alternatively, set the property [run/region].'
       ),
+  )
+
+
+def AddInstanceArg(parser):
+  """Add an instance arg for SSH."""
+  parser.add_argument(
+      '--instance',
+      required=False,
+      help='ID of a specific instance to SSH into.',
+  )
+
+
+def AddContainerArg(parser):
+  """Add a container arg for SSH."""
+  parser.add_argument(
+      '--container',
+      required=False,
+      help='name of a specific container to SSH into.',
   )
 
 
@@ -701,21 +720,40 @@ def AddCloudSQLFlags(parser):
 def AddVolumesFlags(parser, release_track):
   """Add flags for adding and removing volumes."""
   group = parser.add_group()
-  group.add_argument(
-      '--add-volume',
-      type=arg_parsers.ArgDict(required_keys=['name', 'type']),
-      action='append',
-      metavar='KEY=VALUE',
-      help=(
-          'Adds a volume to the Cloud Run resource. To add more than one '
-          'volume, specify this flag multiple times.'
-          ' Volumes must have a `name` and `type` key. '
-          'Only certain values are supported for `type`. Depending on the '
-          'provided type, other keys will be required. The following types '
-          'are supported with the specified additional keys:\n\n'
-          + volumes.volume_help(release_track)
-      ),
-  )
+  if release_track == base.ReleaseTrack.ALPHA:
+    group.add_argument(
+        '--add-volume',
+        type=arg_parsers.ArgDict(required_keys=['type']),
+        action='append',
+        metavar='KEY=VALUE',
+        help=(
+            'Adds a volume to the Cloud Run resource. To add more than one '
+            'volume, specify this flag multiple times.'
+            ' Volumes must have a `type` key. '
+            'Volumes must have a `name` key if `mount-path` is not specified. '
+            'A `name` key is optional if `mount-path` is specified.'
+            'Only certain values are supported for `type`. Depending on the '
+            'provided type, other keys will be required. The following types '
+            'are supported with the specified additional keys:\n\n'
+            + volumes.volume_help(release_track)
+        ),
+    )
+  else:
+    group.add_argument(
+        '--add-volume',
+        type=arg_parsers.ArgDict(required_keys=['name', 'type']),
+        action='append',
+        metavar='KEY=VALUE',
+        help=(
+            'Adds a volume to the Cloud Run resource. To add more than one '
+            'volume, specify this flag multiple times.'
+            ' Volumes must have a `name` and `type` key. '
+            'Only certain values are supported for `type`. Depending on the '
+            'provided type, other keys will be required. The following types '
+            'are supported with the specified additional keys:\n\n'
+            + volumes.volume_help(release_track)
+        ),
+    )
   group.add_argument(
       '--remove-volume',
       type=arg_parsers.ArgList(),
@@ -2819,9 +2857,12 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
   if HasSecretsChanges(args):
     changes.extend(_GetSecretsChanges(args))
   if FlagIsExplicitlySet(args, 'add_volume') and args.add_volume:
+    # Volume names must be generated before calling AddVolumeChange
+    _ValidateAndMaybeGenerateVolumeNames(args, release_track)
     changes.append(
         config_changes.AddVolumeChange(args.add_volume, release_track)
     )
+    _MaybeAddVolumeMountChange(args, changes, release_track)
 
   if FlagIsExplicitlySet(args, 'add_volume_mount') and args.add_volume_mount:
     changes.append(
@@ -3092,6 +3133,67 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
         )
     )
   return changes
+
+
+def _ValidateAndMaybeGenerateVolumeNames(args, release_track):
+  """Validates used of the volumes shortcut and generates volume names when needed.
+
+  Specifically, it checks that the 'mount-path' parameter is not being used
+  with the --containers flag and that the volume type is an allowed type. If
+  validation succeeds and the volume also needs a name, one is generated.
+
+  Args:
+    args: The argparse namespace containing the parsed command line arguments.
+    release_track: The current release track (e.g., base.ReleaseTrack.ALPHA).
+  """
+  uses_containers_flag = FlagIsExplicitlySet(args, 'containers')
+  if release_track == base.ReleaseTrack.ALPHA:
+    for volume in args.add_volume:
+      # If mount-path is specified, the user is attempting to use the volumes
+      # shortcut.
+      if 'mount-path' in volume:
+        # The volumes shortcut is not compatible with the --containers flag.
+        if uses_containers_flag:
+          raise serverless_exceptions.ConfigurationError(
+              'When using the --containers flag, "mount-path" cannot be'
+              ' specified under the --add-volume flag. Instead, specify'
+              ' "mount-path" using the --add-volume-mount flag after the'
+              ' --container flag of the container the volume should be'
+              ' mounted to.'
+          )
+        # Generate a name if the user has not specified one.
+        if 'name' not in volume:
+          volume['name'] = config_changes.GenerateVolumeName(volume['type'])
+
+
+def _MaybeAddVolumeMountChange(args, changes, release_track):
+  """Adds a VolumeMountChange to the list of changes if applicable.
+
+  This function checks if new volume mounts should be added based on the
+  `--add-volume` flag in ALPHA release track. If a volume in `args.add_volume`
+  has a 'mount-path', a corresponding AddVolumeMountChange
+  is appended to the `changes` list.
+
+  Args:
+    args: The argparse namespace containing the parsed command line arguments.
+    changes: A list of configuration changes to append to.
+    release_track: The current release track (e.g., base.ReleaseTrack.ALPHA).
+  """
+  if release_track == base.ReleaseTrack.ALPHA:
+    new_volume_mounts = []
+    for volume in args.add_volume:
+      if 'mount-path' in volume and 'name' in volume:
+        volume_mount_args = {
+            'volume': volume['name'],
+            'mount-path': volume['mount-path'],
+        }
+        new_volume_mounts.append(volume_mount_args)
+    if new_volume_mounts:
+      changes.append(
+          config_changes.AddVolumeMountChange(
+              new_mounts=new_volume_mounts,
+          )
+      )
 
 
 def _GetContainerConfigurationChanges(container_args, container_name=None):
@@ -3526,6 +3628,35 @@ def GetRegion(args, prompt=False, region_label=None):
       # GetRegion
       args.region = region
       return region
+
+
+def GetProjectID(args):
+  """Get Project ID if provided, or raise error.
+
+  Project ID is decided in the following order:
+  - project argument;
+  - core/project gcloud config;
+
+  Also validate that the project ID is not a project number.
+
+  Args:
+    args: Namespace, The args namespace.
+
+  Returns:
+    A str representing project ID.
+  Raises:
+    ArgumentError: if project ID is not provided.
+  """
+  args.project = getattr(args, 'project', None)
+  base.RequireProjectID(args)
+  if args.project:
+    return args.project
+  if properties.VALUES.core.project.IsExplicitlySet():
+    return properties.VALUES.core.project.Get()
+  raise serverless_exceptions.ArgumentError(
+      'Missing required argument [project]. Set --project flag to PROJECT ID or'
+      ' set core/project property to PROJECT ID.'
+  )
 
 
 def GetAllowUnauthenticated(

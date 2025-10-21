@@ -477,6 +477,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'artifactscanguard': {
+        'v1alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.artifactscanguard.v1alpha',
+                    client_classpath='artifactscanguard_v1alpha_client.ArtifactscanguardV1alpha',
+                    base_url='https://artifactscanguard.googleapis.com/',
+                    messages_modulepath='artifactscanguard_v1alpha_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'assuredworkloads': {
         'v1':
             APIDef(

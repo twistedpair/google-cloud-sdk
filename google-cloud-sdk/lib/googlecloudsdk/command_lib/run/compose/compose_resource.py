@@ -27,10 +27,9 @@ The core responsibilities include:
 import json
 import os
 import re
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
-from googlecloudsdk.api_lib.run import api_enabler
 from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.api_lib.run import service
 from googlecloudsdk.api_lib.secrets import api as secrets_api
@@ -55,6 +54,15 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import files
+
+
+def _generate_gcs_bucket_name(compose_project_name: str, region: str) -> str:
+  """Generates a unique bucket name for the compose project."""
+  project_number = _get_project_number()
+  sanitized_project_name = compose_project_name.lower()
+  sanitized_project_name = re.sub(r'[^a-z0-9-]+', '-', sanitized_project_name)
+  sanitized_project_name = re.sub(r'-+', '-', sanitized_project_name)
+  return f'{project_number}-{sanitized_project_name}-{region}-compose'
 
 
 class SecretConfig:
@@ -126,11 +134,12 @@ class Config:
     config.bucket_name = data.get('bucket_name')
     return config
 
-  def handle(self, gcs_handler: 'GcsHandler') -> None:
+  def handle(self, bucket_name: str, region: str) -> None:
     """Handles the creation of resources for the config."""
     log.debug('Handling config: %s', self.name)
+    gcs_handler = GcsHandler(bucket_name, region)
     gcs_handler.ensure_bucket()
-    self.bucket_name = gcs_handler.bucket_name
+    self.bucket_name = bucket_name
     source = self.file
     if not source or not os.path.exists(source):
       raise exceptions.Error(
@@ -233,31 +242,22 @@ class NamedVolumeConfig:
 class GcsHandler:
   """Handles GCS operations for compose resources."""
 
-  def __init__(self, compose_project_name: str, region: str):
+  def __init__(self, bucket_name: str, region: str):
     log.debug(
-        'Initializing GcsHandler for project %s in region %s',
-        compose_project_name,
+        'Initializing GcsHandler for bucket %s in region %s',
+        bucket_name,
         region,
     )
-    self.compose_project_name = compose_project_name
+    self.bucket_name = bucket_name
     self.region = region
     self._gcs_client = storage_api.StorageClient()
-    self.bucket_name: Optional[str] = None
+    self._bucket_ensured = False
 
   def ensure_bucket(self):
     """Ensures the GCS bucket exists."""
-    if self.bucket_name is None:
-      self.bucket_name = self._generate_bucket_name()
+    if not self._bucket_ensured:
       self._ensure_bucket_exists(self.bucket_name)
-
-  # TODO(b/442334111): Move this function out of GCS handler.
-  def _generate_bucket_name(self) -> str:
-    """Generates a unique bucket name for the compose project."""
-    project_number = _get_project_number()
-    sanitized_project_name = self.compose_project_name.lower()
-    sanitized_project_name = re.sub(r'[^a-z0-9-]+', '-', sanitized_project_name)
-    sanitized_project_name = re.sub(r'-+', '-', sanitized_project_name)
-    return f'{project_number}-{sanitized_project_name}-{self.region}-compose'
+      self._bucket_ensured = True
 
   def _ensure_bucket_exists(self, bucket_name: str) -> None:
     """Creates the GCS bucket if it doesn't exist and sets IAM policy."""
@@ -354,16 +354,16 @@ class VolumeConfig:
     }
     return cls(bind_mount=bind_mount, named_volume=named_volume)
 
-  def handle(self, gcs_handler: 'GcsHandler') -> None:
+  def handle(self, bucket_name: str, region: str) -> None:
     """Handles all volume configurations."""
     if not self.bind_mount and not self.named_volume:
       log.debug('No volumes to handle.')
       return
 
     log.debug('Handling volume configurations.')
-
+    gcs_handler = GcsHandler(bucket_name, region)
     gcs_handler.ensure_bucket()
-    self.bucket_name = gcs_handler.bucket_name
+    self.bucket_name = bucket_name
 
     # Handle bind mounts
     for service_name, bind_mounts in self.bind_mount.items():
@@ -403,6 +403,28 @@ class ResourcesConfig:
     self.project = project
 
     self.configs = configs if configs is not None else []
+
+  def get_required_apis(self, no_build: bool = False) -> List[str]:
+    """Returns a list of APIs required for the resources in this config."""
+    required_apis = {
+        'run.googleapis.com',
+        'cloudresourcemanager.googleapis.com',
+    }
+
+    if self.source_builds and not no_build:
+      required_apis.update({
+          'cloudbuild.googleapis.com',
+          'storage.googleapis.com',
+          'artifactregistry.googleapis.com',
+      })
+    if self.secrets:
+      required_apis.update(
+          {'secretmanager.googleapis.com', 'iam.googleapis.com'}
+      )
+    if self.volumes.bind_mount or self.volumes.named_volume or self.configs:
+      required_apis.update({'storage.googleapis.com', 'iam.googleapis.com'})
+
+    return sorted(list(required_apis))
 
   @classmethod
   def from_json(cls, json_data: str) -> 'ResourcesConfig':
@@ -456,21 +478,7 @@ class ResourcesConfig:
     Returns:
       The ResourcesConfig instance after handling the resources.
     """
-    project_id = properties.VALUES.core.project.Get(required=True)
-    api_enabler.check_and_enable_apis(
-        project_id,
-        ['run.googleapis.com', 'cloudresourcemanager.googleapis.com'],
-    )
-
     if self.source_builds:
-      api_enabler.check_and_enable_apis(
-          project_id,
-          [
-              'cloudbuild.googleapis.com',
-              'storage.googleapis.com',
-              'artifactregistry.googleapis.com',
-          ],
-      )
       builder.handle(
           self.source_builds,
           repo,
@@ -485,10 +493,6 @@ class ResourcesConfig:
       tracker.StartStage(
           compose_tracker.StagedProgressTrackerStage.SECRETS.get_key()
       )
-      api_enabler.check_and_enable_apis(
-          project_id,
-          ['secretmanager.googleapis.com', 'iam.googleapis.com'],
-      )
       for name, secret_config in self.secrets.items():
         log.debug(f'Handling secret: {name}')
         secret_config.handle()
@@ -498,15 +502,12 @@ class ResourcesConfig:
 
     if self.volumes.bind_mount or self.volumes.named_volume or self.configs:
       log.debug('Initializing GCS handler for volumes and/or configs.')
-      gcs_handler = GcsHandler(self.project, region)
+      bucket_name = _generate_gcs_bucket_name(self.project, region)
       if self.volumes.bind_mount or self.volumes.named_volume:
         tracker.StartStage(
             compose_tracker.StagedProgressTrackerStage.VOLUMES.get_key()
         )
-        api_enabler.check_and_enable_apis(
-            project_id, ['storage.googleapis.com', 'iam.googleapis.com']
-        )
-        self.volumes.handle(gcs_handler)
+        self.volumes.handle(bucket_name, region)
         tracker.CompleteStage(
             compose_tracker.StagedProgressTrackerStage.VOLUMES.get_key()
         )
@@ -516,7 +517,7 @@ class ResourcesConfig:
         )
         for config in self.configs:
           log.debug('Handling config: %s', config.name)
-          config.handle(gcs_handler)
+          config.handle(bucket_name, region)
         tracker.CompleteStage(
             compose_tracker.StagedProgressTrackerStage.CONFIGS.get_key()
         )

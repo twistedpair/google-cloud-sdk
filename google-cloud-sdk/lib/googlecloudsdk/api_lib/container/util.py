@@ -137,6 +137,27 @@ NC_TOPOLOGY_MANAGER = 'topologyManager'
 NC_TOPOLOGY_MANAGER_POLICY = 'policy'
 NC_TOPOLOGY_MANAGER_SCOPE = 'scope'
 NC_SINGLE_PROCESS_OOMKILL = 'singleProcessOomKill'
+NC_KERNEL_OVERRIDES = 'kernelOverrides'
+NC_KERNEL_COMMANDLINE_OVERRIDES = 'kernelCommandlineOverrides'
+NC_KERNEL_SPEC_RSTACK_OVERFLOW = 'specRstackOverflow'
+NC_KERNEL_INIT_ON_ALLOC = 'initOnAlloc'
+NC_LRU_GEN = 'lruGen'
+NC_LRU_GEN_ENABLED = 'enabled'
+NC_LRU_GEN_MIN_TTL_MS = 'minTtlMs'
+
+NC_ADDITIONAL_ETC_HOSTS = 'additionalEtcHosts'
+NC_ADDITIONAL_ETC_SYSTEMD_RESOLVED_CONF = 'additionalEtcSystemdResolvedConf'
+NC_ADDITIONAL_ETC_RESOLV_CONF = 'additionalEtcResolvConf'
+NC_TIME_ZONE = 'timeZone'
+NC_CUSTOM_NODE_INIT = 'customNodeInit'
+NC_CUSTOM_NODE_INIT_SCRIPT = 'initScript'
+NC_CUSTOM_NODE_INIT_SCRIPT_GCS_URI = 'gcsUri'
+NC_CUSTOM_NODE_INIT_SCRIPT_GCS_GENERATION = 'gcsGeneration'
+NC_CUSTOM_NODE_INIT_SCRIPT_ARGS = 'args'
+NC_ETC_HOSTS_ENTRY_IP = 'ip'
+NC_ETC_HOSTS_ENTRY_HOST = 'host'
+NC_RESOLVED_CONF_ENTRY_KEY = 'key'
+NC_RESOLVED_CONF_ENTRY_VALUE = 'value'
 
 NC_SWAP_CONFIG = 'swapConfig'
 NC_SWAP_CONFIG_ENABLED = 'enabled'
@@ -150,6 +171,8 @@ NC_SWAP_CONFIG_SWAP_SIZE_PERCENT = 'swapSizePercent'
 NC_SWAP_CONFIG_DISK_COUNT = 'diskCount'
 NC_CC_PRIVATE_CR_CONFIG = 'privateRegistryAccessConfig'
 NC_CC_PRIVATE_CR_CONFIG_ENABLED = 'enabled'
+NC_CC_WRITABLE_CGROUPS = 'writableCgroups'
+NC_CC_WRITABLE_CGROUPS_ENABLED = 'enabled'
 NC_CC_CA_CONFIG = 'certificateAuthorityDomainConfig'
 NC_CC_GCP_SECRET_CONFIG = 'gcpSecretManagerCertificateConfig'
 NC_CC_GCP_SECRET_CONFIG_SECRET_URI = 'secretURI'
@@ -999,6 +1022,12 @@ def LoadSystemConfigFromYAML(
             NC_TRANSPARENT_HUGEPAGE_ENABLED: str,
             NC_TRANSPARENT_HUGEPAGE_DEFRAG: str,
             NC_SWAP_CONFIG: dict,
+            NC_KERNEL_OVERRIDES: dict,
+            NC_ADDITIONAL_ETC_HOSTS: list,
+            NC_ADDITIONAL_ETC_SYSTEMD_RESOLVED_CONF: list,
+            NC_ADDITIONAL_ETC_RESOLV_CONF: list,
+            NC_TIME_ZONE: str,
+            NC_CUSTOM_NODE_INIT: dict,
         },
     )
     node_config.linuxNodeConfig = messages.LinuxNodeConfig()
@@ -1245,6 +1274,167 @@ def LoadSystemConfigFromYAML(
             dedicated_local_ssd_profile_msg
         )
 
+    # Parse kernel overrides.
+    kernel_overrides_opts = linux_config_opts.get(NC_KERNEL_OVERRIDES)
+    if kernel_overrides_opts is not None:
+      node_config.linuxNodeConfig.kernelOverrides = messages.KernelOverrides()
+      _CheckNodeConfigFields(
+          NC_KERNEL_OVERRIDES,
+          kernel_overrides_opts,
+          {
+              NC_KERNEL_COMMANDLINE_OVERRIDES: dict,
+              NC_LRU_GEN: dict,
+          },
+      )
+      kernel_commandline = kernel_overrides_opts.get(
+          NC_KERNEL_COMMANDLINE_OVERRIDES
+      )
+      if kernel_commandline is not None:
+        spec_rstack_overflow = kernel_commandline.get(
+            NC_KERNEL_SPEC_RSTACK_OVERFLOW
+        )
+        init_on_alloc = kernel_commandline.get(NC_KERNEL_INIT_ON_ALLOC)
+        node_config.linuxNodeConfig.kernelOverrides.kernelCommandlineOverrides = (
+            messages.KernelCommandlineOverrides()
+        )
+        if spec_rstack_overflow is not None:
+          spec_rstack_overflow_off = 'SPEC_RSTACK_OVERFLOW_OFF'
+          if spec_rstack_overflow == spec_rstack_overflow_off:
+            node_config.linuxNodeConfig.kernelOverrides.kernelCommandlineOverrides.specRstackOverflow = (
+                messages.KernelCommandlineOverrides.SpecRstackOverflowValueValuesEnum.SPEC_RSTACK_OVERFLOW_OFF
+            )
+          else:
+            raise NodeConfigError(
+                'setting specRstackOverflow as {0} is not supported. The'
+                ' supported options is {1}'.format(
+                    spec_rstack_overflow, spec_rstack_overflow_off
+                )
+            )
+        if init_on_alloc is not None:
+          init_on_alloc_off = 'INIT_ON_ALLOC_OFF'
+          if init_on_alloc == init_on_alloc_off:
+            node_config.linuxNodeConfig.kernelOverrides.kernelCommandlineOverrides.initOnAlloc = (
+                messages.KernelCommandlineOverrides.InitOnAllocValueValuesEnum.INIT_ON_ALLOC_OFF
+            )
+          else:
+            raise NodeConfigError(
+                'setting initOnAlloc as {0} is not supported. The supported'
+                ' options is {1}'.format(init_on_alloc, init_on_alloc_off)
+            )
+      lru_gen = kernel_overrides_opts.get(NC_LRU_GEN)
+      if lru_gen is not None:
+        node_config.linuxNodeConfig.kernelOverrides.lruGen = messages.LRUGen()
+        lru_gen_enabled = lru_gen.get(NC_LRU_GEN_ENABLED)
+        min_ttl_ms = lru_gen.get(NC_LRU_GEN_MIN_TTL_MS)
+        if lru_gen_enabled is not None:
+          node_config.linuxNodeConfig.kernelOverrides.lruGen.enabled = (
+              lru_gen_enabled
+          )
+        if min_ttl_ms is not None:
+          node_config.linuxNodeConfig.kernelOverrides.lruGen.minTtlMs = (
+              min_ttl_ms
+          )
+
+    # Parse additional etc hosts.
+    additional_etc_hosts_opts = linux_config_opts.get(NC_ADDITIONAL_ETC_HOSTS)
+    node_config.linuxNodeConfig.additionalEtcHosts = []
+    if additional_etc_hosts_opts:
+      for i, opts in enumerate(additional_etc_hosts_opts):
+        _CheckNodeConfigFields(
+            '{0}[{1}]'.format(NC_ADDITIONAL_ETC_HOSTS, i),
+            opts,
+            {
+                NC_ETC_HOSTS_ENTRY_IP: str,
+                NC_ETC_HOSTS_ENTRY_HOST: str,
+            },
+        )
+        etc_hosts_entry = messages.EtcHostsEntry()
+        etc_hosts_entry.ip = opts.get(NC_ETC_HOSTS_ENTRY_IP)
+        etc_hosts_entry.host = opts.get(NC_ETC_HOSTS_ENTRY_HOST)
+        node_config.linuxNodeConfig.additionalEtcHosts.append(etc_hosts_entry)
+
+    # Parse additional etc systemd resolved conf.
+    additional_etc_systemd_resolved_conf_opts = linux_config_opts.get(
+        NC_ADDITIONAL_ETC_SYSTEMD_RESOLVED_CONF
+    )
+    node_config.linuxNodeConfig.additionalEtcSystemdResolvedConf = []
+    if additional_etc_systemd_resolved_conf_opts:
+      for i, opts in enumerate(additional_etc_systemd_resolved_conf_opts):
+        _CheckNodeConfigFields(
+            '{0}[{1}]'.format(NC_ADDITIONAL_ETC_SYSTEMD_RESOLVED_CONF, i),
+            opts,
+            {
+                NC_RESOLVED_CONF_ENTRY_KEY: str,
+                NC_RESOLVED_CONF_ENTRY_VALUE: list,
+            },
+        )
+        resolved_conf_entry = messages.ResolvedConfEntry()
+        resolved_conf_entry.key = opts.get(NC_RESOLVED_CONF_ENTRY_KEY)
+        resolved_conf_entry.value = opts.get(NC_RESOLVED_CONF_ENTRY_VALUE)
+        node_config.linuxNodeConfig.additionalEtcSystemdResolvedConf.append(
+            resolved_conf_entry
+        )
+
+    # Parse additional etc resolv conf.
+    additional_etc_resolv_conf_opts = linux_config_opts.get(
+        NC_ADDITIONAL_ETC_RESOLV_CONF
+    )
+    node_config.linuxNodeConfig.additionalEtcResolvConf = []
+    if additional_etc_resolv_conf_opts:
+      for i, opts in enumerate(additional_etc_resolv_conf_opts):
+        _CheckNodeConfigFields(
+            '{0}[{1}]'.format(NC_ADDITIONAL_ETC_RESOLV_CONF, i),
+            opts,
+            {
+                NC_RESOLVED_CONF_ENTRY_KEY: str,
+                NC_RESOLVED_CONF_ENTRY_VALUE: list,
+            },
+        )
+        resolved_conf_entry = messages.ResolvedConfEntry()
+        resolved_conf_entry.key = opts.get(NC_RESOLVED_CONF_ENTRY_KEY)
+        resolved_conf_entry.value = opts.get(NC_RESOLVED_CONF_ENTRY_VALUE)
+        node_config.linuxNodeConfig.additionalEtcResolvConf.append(
+            resolved_conf_entry
+        )
+
+    # Parse time zone.
+    time_zone_opts = linux_config_opts.get(NC_TIME_ZONE)
+    if time_zone_opts:
+      node_config.linuxNodeConfig.timeZone = time_zone_opts
+
+    # Parse custom node init.
+    custom_node_init_opts = linux_config_opts.get(NC_CUSTOM_NODE_INIT)
+    if custom_node_init_opts:
+      node_config.linuxNodeConfig.customNodeInit = messages.CustomNodeInit()
+      _CheckNodeConfigFields(
+          NC_CUSTOM_NODE_INIT,
+          custom_node_init_opts,
+          {NC_CUSTOM_NODE_INIT_SCRIPT: dict},
+      )
+      init_script_opts = custom_node_init_opts.get(NC_CUSTOM_NODE_INIT_SCRIPT)
+      node_config.linuxNodeConfig.customNodeInit.initScript = (
+          messages.InitScript()
+      )
+      if init_script_opts:
+        _CheckNodeConfigFields(
+            NC_CUSTOM_NODE_INIT_SCRIPT,
+            init_script_opts,
+            {
+                NC_CUSTOM_NODE_INIT_SCRIPT_GCS_URI: str,
+                NC_CUSTOM_NODE_INIT_SCRIPT_GCS_GENERATION: int,
+                NC_CUSTOM_NODE_INIT_SCRIPT_ARGS: list,
+            },
+        )
+        node_config.linuxNodeConfig.customNodeInit.initScript.gcsUri = (
+            init_script_opts.get(NC_CUSTOM_NODE_INIT_SCRIPT_GCS_URI)
+        )
+        node_config.linuxNodeConfig.customNodeInit.initScript.gcsGeneration = (
+            init_script_opts.get(NC_CUSTOM_NODE_INIT_SCRIPT_GCS_GENERATION)
+        )
+        init_args = init_script_opts.get(NC_CUSTOM_NODE_INIT_SCRIPT_ARGS)
+        if init_args is not None:
+          node_config.linuxNodeConfig.customNodeInit.initScript.args = init_args
+
 
 def CheckForCgroupModeV1(pool):
   """Check cgroup mode of the node pool and print a warning if it is V1."""
@@ -1278,12 +1468,12 @@ def LoadContainerdConfigFromYAML(containerd_config, content, messages):
       opts,
       {
           NC_CC_PRIVATE_CR_CONFIG: dict,
+          NC_CC_WRITABLE_CGROUPS: dict,
       },
   )
 
   # Parse private container registry options.
-  private_registry_opts = opts.get(NC_CC_PRIVATE_CR_CONFIG)
-  if private_registry_opts:
+  if private_registry_opts := opts.get(NC_CC_PRIVATE_CR_CONFIG):
     config_fields = {
         NC_CC_PRIVATE_CR_CONFIG_ENABLED: bool,
         NC_CC_CA_CONFIG: list,
@@ -1297,8 +1487,7 @@ def LoadContainerdConfigFromYAML(containerd_config, content, messages):
     containerd_config.privateRegistryAccessConfig.enabled = (
         private_registry_opts.get(NC_CC_PRIVATE_CR_CONFIG_ENABLED)
     )
-    ca_domain_opts = private_registry_opts.get(NC_CC_CA_CONFIG)
-    if ca_domain_opts:
+    if ca_domain_opts := private_registry_opts.get(NC_CC_CA_CONFIG):
       config_fields = {
           NC_CC_GCP_SECRET_CONFIG: dict,
           NC_CC_PRIVATE_CR_FQDNS_CONFIG: list,
@@ -1306,11 +1495,11 @@ def LoadContainerdConfigFromYAML(containerd_config, content, messages):
       containerd_config.privateRegistryAccessConfig.certificateAuthorityDomainConfig = (
           []
       )
-      for i, opts in enumerate(ca_domain_opts):
+      for i, ca_item in enumerate(ca_domain_opts):
         _CheckNodeConfigFields(
-            '{0}[{1}]'.format(NC_CC_CA_CONFIG, i), opts, config_fields
+            '{0}[{1}]'.format(NC_CC_CA_CONFIG, i), ca_item, config_fields
         )
-        gcp_secret_opts = opts.get(NC_CC_GCP_SECRET_CONFIG)
+        gcp_secret_opts = ca_item.get(NC_CC_GCP_SECRET_CONFIG)
         if not gcp_secret_opts:
           raise NodeConfigError(
               'privateRegistryAccessConfig.certificateAuthorityDomainConfig'
@@ -1328,10 +1517,23 @@ def LoadContainerdConfigFromYAML(containerd_config, content, messages):
         ca_config.gcpSecretManagerCertificateConfig.secretUri = (
             gcp_secret_opts.get(NC_CC_GCP_SECRET_CONFIG_SECRET_URI)
         )
-        ca_config.fqdns = opts.get(NC_CC_PRIVATE_CR_FQDNS_CONFIG)
+        ca_config.fqdns = ca_item.get(NC_CC_PRIVATE_CR_FQDNS_CONFIG)
         containerd_config.privateRegistryAccessConfig.certificateAuthorityDomainConfig.append(
             ca_config,
         )
+
+  # Parse writable cgroups options.
+  if writable_cgroups_opts := opts.get(NC_CC_WRITABLE_CGROUPS):
+    config_fields = {
+        NC_CC_WRITABLE_CGROUPS_ENABLED: bool,
+    }
+    _CheckNodeConfigFields(
+        NC_CC_WRITABLE_CGROUPS, writable_cgroups_opts, config_fields
+    )
+    containerd_config.writableCgroups = messages.WritableCgroups()
+    containerd_config.writableCgroups.enabled = writable_cgroups_opts.get(
+        NC_CC_WRITABLE_CGROUPS_ENABLED
+    )
 
 
 def _CheckNodeConfigFields(parent_name, parent, spec):

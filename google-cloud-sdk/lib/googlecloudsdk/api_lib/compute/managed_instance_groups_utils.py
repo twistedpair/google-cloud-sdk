@@ -1437,6 +1437,14 @@ def CreateInstanceLifecyclePolicy(messages, args):
         messages.InstanceGroupManagerInstanceLifecyclePolicy.OnFailedHealthCheckValueValuesEnum,
     )
 
+  if args.IsKnownAndSpecified('on_repair_allow_changing_zone'):
+    policy.onRepair = messages.InstanceGroupManagerInstanceLifecyclePolicyOnRepair(
+        allowChangingZone=arg_utils.ChoiceToEnum(
+            args.on_repair_allow_changing_zone,
+            messages.InstanceGroupManagerInstanceLifecyclePolicyOnRepair.AllowChangingZoneValueValuesEnum,
+        )
+    )
+
   return ValueOrNone(policy)
 
 

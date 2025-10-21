@@ -169,6 +169,8 @@ value_limited:
   - go121
   - go122
   - go123
+  - go124
+  - go125
   - nodejs
   - nodejs8
   - nodejs10
@@ -217,6 +219,8 @@ value_limited:
   - go121
   - go122
   - go123
+  - go124
+  - go125
   - nodejs8
   - nodejs10
   - nodejs12
