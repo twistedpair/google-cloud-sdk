@@ -387,6 +387,9 @@ def _GetServiceConfig(
   vpc_connector, vpc_egress_settings, vpc_updated_fields = (
       _GetVpcAndVpcEgressSettings(args, messages, existing_function)
   )
+  network_interfaces, direct_vpc_egress, direct_vpc_updated_fields = (
+      _GetDirectVpcNetworkSettings(args, messages, existing_function)
+  )
 
   ingress_settings, ingress_updated_fields = _GetIngressSettings(args, messages)
 
@@ -427,46 +430,46 @@ def _GetServiceConfig(
     updated_fields.add('service_config.binary_authorization_policy')
 
   service_updated_fields = frozenset.union(
-      vpc_updated_fields, ingress_updated_fields, updated_fields
+      vpc_updated_fields,
+      ingress_updated_fields,
+      updated_fields,
+      direct_vpc_updated_fields,
   )
 
-  return (
-      messages.ServiceConfig(
-          availableMemory=_ParseMemoryStrToK8sMemory(args.memory),
-          maxInstanceCount=None
-          if args.clear_max_instances
-          else args.max_instances,
-          minInstanceCount=None
-          if args.clear_min_instances
-          else args.min_instances,
-          serviceAccountEmail=args.run_service_account or args.service_account,
-          timeoutSeconds=args.timeout,
-          ingressSettings=ingress_settings,
-          vpcConnector=vpc_connector,
-          vpcConnectorEgressSettings=vpc_egress_settings,
-          allTrafficOnLatestRevision=(
-              args.serve_all_traffic_latest_revision or None
-          ),
-          environmentVariables=messages.ServiceConfig.EnvironmentVariablesValue(
-              additionalProperties=[
-                  messages.ServiceConfig.EnvironmentVariablesValue.AdditionalProperty(
-                      key=key, value=value
-                  )
-                  for key, value in sorted(env_vars.items())
-              ]
-          ),
-          secretEnvironmentVariables=secrets_util.SecretEnvVarsToMessages(
-              secret_env_vars, messages
-          ),
-          secretVolumes=secrets_util.SecretVolumesToMessages(
-              secret_volumes, messages, normalize_for_v2=True
-          ),
-          maxInstanceRequestConcurrency=concurrency,
-          availableCpu=_ValidateK8sCpuStr(cpu),
-          binaryAuthorizationPolicy=binary_authorization_policy,
+  service_config = messages.ServiceConfig(
+      availableMemory=_ParseMemoryStrToK8sMemory(args.memory),
+      maxInstanceCount=None if args.clear_max_instances else args.max_instances,
+      minInstanceCount=None if args.clear_min_instances else args.min_instances,
+      serviceAccountEmail=args.run_service_account or args.service_account,
+      timeoutSeconds=args.timeout,
+      ingressSettings=ingress_settings,
+      vpcConnector=vpc_connector,
+      vpcConnectorEgressSettings=vpc_egress_settings,
+      allTrafficOnLatestRevision=(
+          args.serve_all_traffic_latest_revision or None
       ),
-      service_updated_fields,
+      environmentVariables=messages.ServiceConfig.EnvironmentVariablesValue(
+          additionalProperties=[
+              messages.ServiceConfig.EnvironmentVariablesValue.AdditionalProperty(
+                  key=key, value=value
+              )
+              for key, value in sorted(env_vars.items())
+          ]
+      ),
+      secretEnvironmentVariables=secrets_util.SecretEnvVarsToMessages(
+          secret_env_vars, messages
+      ),
+      secretVolumes=secrets_util.SecretVolumesToMessages(
+          secret_volumes, messages, normalize_for_v2=True
+      ),
+      maxInstanceRequestConcurrency=concurrency,
+      availableCpu=_ValidateK8sCpuStr(cpu),
+      binaryAuthorizationPolicy=binary_authorization_policy,
+      directVpcEgress=direct_vpc_egress,
   )
+  if network_interfaces:
+    service_config.directVpcNetworkInterface = network_interfaces
+  return (service_config, service_updated_fields)
 
 
 def _ParseMemoryStrToK8sMemory(memory: str) -> Optional[str]:
@@ -970,6 +973,99 @@ def _GetVpcAndVpcEgressSettings(
     update_fields_set.add('service_config.vpc_connector_egress_settings')
 
   return vpc_connector, egress_settings, frozenset(update_fields_set)
+
+
+def _GetDirectVpcNetworkSettings(
+    args: parser_extensions.Namespace,
+    messages: types.ModuleType,
+    existing_function,
+) -> Tuple[
+    Optional[list[api_types.DirectVpcNetworkInterface]],
+    Optional[api_types.DirectVpcEgress],
+    FrozenSet[str],
+]:
+  """Constructs direct VPC network settings from command-line arguments.
+
+  Args:
+    args: The arguments that this command was invoked with.
+    messages: messages module, the GCFv2 message stubs.
+    existing_function: The pre-existing function.
+
+  Returns:
+    A tuple `(network_interfaces, direct_vpc_egress, updated_fields_set)`
+    where:
+    - `network_interfaces` is the list containing configuration of the Direct
+    VPC,
+    - `direct_vpc_egress` is the egress settings for the Direct VPC network,
+    - `updated_fields_set` is the set of update mask fields.
+  """
+  if getattr(args, 'clear_network', None):
+    return (
+        None,
+        None,
+        frozenset([
+            'service_config.direct_vpc_network_interface',
+            'service_config.direct_vpc_egress',
+        ]),
+    )
+
+  update_fields_set = set()
+  network_interface = None
+  existing_network_interface = None
+  if (
+      existing_function
+      and existing_function.serviceConfig
+      and existing_function.serviceConfig.directVpcNetworkInterface
+  ):
+    existing_network_interface = (
+        existing_function.serviceConfig.directVpcNetworkInterface[0]
+    )
+
+  network = getattr(args, 'network', None)
+  subnet = getattr(args, 'subnet', None)
+  network_tags = getattr(args, 'network_tags', None)
+  clear_network_tags = getattr(args, 'clear_network_tags', None)
+
+  has_direct_vpc_flags = network or subnet or network_tags or clear_network_tags
+
+  if has_direct_vpc_flags:
+    network_interface = messages.DirectVpcNetworkInterface()
+    network_interface.tags = []
+    if existing_network_interface:
+      network_interface.network = existing_network_interface.network
+      network_interface.subnetwork = existing_network_interface.subnetwork
+      network_interface.tags = existing_network_interface.tags or []
+
+    if network:
+      network_interface.network = network
+    if subnet:
+      network_interface.subnetwork = subnet
+    if network_tags:
+      network_interface.tags = network_tags
+    elif clear_network_tags:
+      network_interface.tags = []
+
+    update_fields_set.add('service_config.direct_vpc_network_interface')
+  elif existing_network_interface:
+    network_interface = existing_network_interface
+
+  direct_vpc_egress = None
+  if getattr(args, 'direct_vpc_egress', None):
+    if not network_interface:
+      raise exceptions.RequiredArgumentException(
+          'direct-vpc-egress',
+          'Direct VPC is required for setting `--direct-vpc-egress`.',
+      )
+
+    direct_vpc_egress = arg_utils.ChoiceEnumMapper(
+        arg_name='direct_vpc_egress',
+        message_enum=messages.ServiceConfig.DirectVpcEgressValueValuesEnum,
+        custom_mappings=flags.DIRECT_VPC_EGRESS_SETTINGS_MAPPING,
+    ).GetEnumForChoice(args.direct_vpc_egress)
+    update_fields_set.add('service_config.direct_vpc_egress')
+
+  network_interfaces = [network_interface] if network_interface else None
+  return network_interfaces, direct_vpc_egress, frozenset(update_fields_set)
 
 
 def _ValidateV1OnlyFlags(args: parser_extensions.Namespace) -> None:

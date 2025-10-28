@@ -581,7 +581,6 @@ class ClusterConfig(object):
       user_kwargs['cert_data'] = self.client_cert_data
       user_kwargs['key_data'] = self.client_key_data
     if self.has_dns_endpoint:
-      user_kwargs['dns_endpoint'] = self.dns_endpoint
       cluster_kwargs['has_dns_endpoint'] = True
     if self.has_impersonate_service_account:
       user_kwargs['impersonate_service_account'] = (

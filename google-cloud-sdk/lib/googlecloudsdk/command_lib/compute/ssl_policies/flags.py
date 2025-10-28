@@ -45,6 +45,7 @@ _TLS_VERSION_MAP = {
     '1.0': 'TLS_1_0',
     '1.1': 'TLS_1_1',
     '1.2': 'TLS_1_2',
+    '1.3': 'TLS_1_3',
 }
 
 
@@ -182,11 +183,15 @@ def GetProfileFlag(default=None):
               'features which are required. The list of all available features '
               'can be obtained using:\n\n'
               '  gcloud compute ssl-policies list-available-features\n'),
+          'FIPS_202205': (
+              'FIPS_202205 profile. Supports a reduced set of SSL features, '
+              'intended to meet stricter compliance requirements.'),
       },
       default=default,
       help=(
           'SSL policy profile. Changing profile from CUSTOM to '
-          'COMPATIBLE|MODERN|RESTRICTED will clear the custom-features field.'))
+          'COMPATIBLE|MODERN|RESTRICTED|FIPS_202205 will clear the '
+          'custom-features field.'))
 
 
 def GetMinTlsVersionFlag(default=None):
@@ -197,6 +202,7 @@ def GetMinTlsVersionFlag(default=None):
           '1.0': 'TLS 1.0.',
           '1.1': 'TLS 1.1.',
           '1.2': 'TLS 1.2.',
+          '1.3': 'TLS 1.3.',
       },
       default=default,
       help='Minimum TLS version.')

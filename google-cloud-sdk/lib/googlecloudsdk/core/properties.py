@@ -2506,7 +2506,10 @@ class _SectionCore(_Section):
         hidden=True)
 
     self.universe_domain = self._Add(
-        'universe_domain', hidden=True, default='googleapis.com')
+        'universe_domain',
+        help_text='Sets the domain of the universe to use for API requests.',
+        default='googleapis.com',
+    )
 
     self.credentialed_hosted_repo_domains = self._Add(
         'credentialed_hosted_repo_domains', hidden=True)
@@ -3822,6 +3825,17 @@ class _SectionStorage(_Section):
             'The size of the in-memory buffer that is flushed during bidi'
             ' streaming uploads. Ensure this is within your machine\'s RAM'
             ' limits.'
+        ),
+    )
+
+    self.bidi_streaming_finalize_writes = self._AddBool(
+        'bidi_streaming_finalize_writes',
+        default=False,
+        hidden=True,
+        help_text=(
+            'If True, the upload will be finalized when the last chunk is'
+            ' written. If False, objects will be left in the default'
+            ' unfinalized state.'
         ),
     )
 

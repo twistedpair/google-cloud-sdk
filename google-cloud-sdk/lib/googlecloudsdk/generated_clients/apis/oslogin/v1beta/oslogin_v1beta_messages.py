@@ -29,6 +29,9 @@ class GoogleCloudOsloginControlplaneRegionalV1betaSignSshPublicKeyRequest(_messa
     appEngineInstance: The App Engine instance to sign the SSH public key for.
       Expected format:
       apps/{app}/services/{service}/versions/{version}/instances/{instance}
+    cloudRunService: Optional. The Cloud Run service to sign the SSH public
+      key for. Expected format:
+      projects/{project}/locations/{location}/services/{service}
     computeInstance: The Compute instance to sign the SSH public key for.
       Expected format:
       projects/{project}/zones/{zone}/instances/{numeric_instance_id}
@@ -40,9 +43,10 @@ class GoogleCloudOsloginControlplaneRegionalV1betaSignSshPublicKeyRequest(_messa
   """
 
   appEngineInstance = _messages.StringField(1)
-  computeInstance = _messages.StringField(2)
-  serviceAccount = _messages.StringField(3)
-  sshPublicKey = _messages.StringField(4)
+  cloudRunService = _messages.StringField(2)
+  computeInstance = _messages.StringField(3)
+  serviceAccount = _messages.StringField(4)
+  sshPublicKey = _messages.StringField(5)
 
 
 class GoogleCloudOsloginControlplaneRegionalV1betaSignSshPublicKeyResponse(_messages.Message):

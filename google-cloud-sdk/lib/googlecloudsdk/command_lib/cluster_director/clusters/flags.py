@@ -177,14 +177,10 @@ def AddCreateFilestores(parser, api_version=None, hidden=False):
       help=textwrap.dedent("""
         Parameters to create a filestore instance.
 
-        For e.g. --create-filestores name=locations/{location}/instances/{filestore},tier=BASIC_HDD,capacityGb={filestoreSize},fileshare={fileshare}
+        For e.g. --create-filestores name=locations/{location}/instances/{filestore},tier=REGIONAL,capacityGb={filestoreSize},fileshare={fileshare}
 
         Supported tier values:
-        - BASIC_HDD
-        - BASIC_SSD
-        - HIGH_SCALE_SSD
         - ZONAL
-        - ENTERPRISE
         - REGIONAL
 
         Supported protocol values:

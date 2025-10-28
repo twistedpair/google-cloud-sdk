@@ -73,8 +73,8 @@ def AddStartTimeRangeFlag(parser):
         The key is either "from" or "to", and the value is a datetime.
         See $ gcloud topic datetimes for information on time formats.
 
-        *from*::: The earliest possible start time for the reservation.
-        *to*::: The latest possible start time for the reservation.
+        *from*:: The earliest possible start time for the reservation.
+        *to*:: The latest possible start time for the reservation.
 
         Example:
 
@@ -101,8 +101,8 @@ def AddEndTimeRangeFlag(parser):
         The key is either "from" or "to", and the value is a datetime.
         See $ gcloud topic datetimes for information on time formats.
 
-        *from*::: The earliest possible end time for the reservation.
-        *to*::: The latest possible end time for the reservation.
+        *from*:: The earliest possible end time for the reservation.
+        *to*:: The latest possible end time for the reservation.
 
         Example:
 
@@ -132,8 +132,8 @@ def AddDurationRangeFlag(parser):
 
         See $ gcloud topic datetimes for information on duration formats.
 
-        *min*::: The minimum duration of the Future Reservation.
-        *max*::: The maximum duration of the Future Reservation.
+        *min*:: The minimum duration of the Future Reservation.
+        *max*:: The maximum duration of the Future Reservation.
 
         Example:
 
@@ -158,6 +158,16 @@ def AddSkuPropertiesFlags(accelerator_properties_group):
       """The number of instances to check for availability."""
   )
   vm_count_flag.AddToParser(instance_properties_group)
+
+  # add --local-ssd
+  local_ssd_flag = reservation_flags.GetLocalSsdFlag()
+  local_ssd_flag.kwargs["help"] = """\
+  Manage the size and the interface of local SSD to use. See
+  https://cloud.google.com/compute/docs/disks/local-ssd for more information.
+  *interface*::: The kind of disk interface exposed to the VM for this SSD.
+  The only valid value is `nvme`.
+  *size*::: The size of the local SSD in base-2 GB."""
+  local_ssd_flag.AddToParser(instance_properties_group)
 
 
 def AddAggregatePropertiesFlags(accelerator_properties_group):
@@ -215,8 +225,6 @@ def AddDeploymentTypeFlag(parser):
   # Calendar Mode currently only supports Dense deployment as a MVP; this will
   # be the default. Once the Flexible deployment is supported we will use the
   # deployment-type flag from the Future Reservations.
-
-  # future_reservation_flags.GetDeploymentTypeFlag().AddToParser(parser)
 
   help_text = """\
   The deployment type for the reserved capacity.

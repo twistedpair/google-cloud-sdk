@@ -70,11 +70,14 @@ class FetchBenchmarkingDataRequest(_messages.Message):
       valid configurations.
     pricingModel: Optional. The pricing model to use for the benchmarking
       data. Defaults to `spot`.
+    workloadSpec: Optional. The workload specification to use for the
+      benchmarking data. If not provided, use case will default to `chatbot`.
   """
 
   instanceType = _messages.StringField(1)
   modelServerInfo = _messages.MessageField('ModelServerInfo', 2)
   pricingModel = _messages.StringField(3)
+  workloadSpec = _messages.MessageField('WorkloadSpec', 4)
 
 
 class FetchBenchmarkingDataResponse(_messages.Message):
@@ -165,6 +168,8 @@ class FetchProfilesRequest(_messages.Message):
     performanceRequirements: Optional. The performance requirements to filter
       profiles. Profiles that do not meet these requirements are filtered out.
       If not provided, all profiles are returned.
+    workloadSpec: Optional. The workload specification to filter profiles by.
+      If not provided, all use cases are returned.
   """
 
   model = _messages.StringField(1)
@@ -173,6 +178,7 @@ class FetchProfilesRequest(_messages.Message):
   pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(5)
   performanceRequirements = _messages.MessageField('PerformanceRequirements', 6)
+  workloadSpec = _messages.MessageField('WorkloadSpec', 7)
 
 
 class FetchProfilesResponse(_messages.Message):
@@ -196,6 +202,21 @@ class FetchProfilesResponse(_messages.Message):
   profile = _messages.MessageField('Profile', 4, repeated=True)
 
 
+class FetchUseCasesRequest(_messages.Message):
+  r"""Request message for GkeInferenceQuickstart.FetchUseCases."""
+
+
+class FetchUseCasesResponse(_messages.Message):
+  r"""Response message for GkeInferenceQuickstart.FetchUseCases.
+
+  Fields:
+    workloadSpecs: Output only. The workload specifications supported by the
+      service.
+  """
+
+  workloadSpecs = _messages.MessageField('WorkloadSpec', 1, repeated=True)
+
+
 class GenerateOptimizedManifestRequest(_messages.Message):
   r"""Request message for GkeInferenceQuickstart.GenerateOptimizedManifest.
 
@@ -217,6 +238,9 @@ class GenerateOptimizedManifestRequest(_messages.Message):
       generated.
     storageConfig: Optional. The storage configuration for the model. If not
       provided, the model is loaded from Huggingface.
+    useCase: Optional. The use case of the workload. Can be one of: `advanced
+      costumer support`, `code completion, `text summarization`, `chatbot`,
+      `text generation`, `deep research`. If not provided, `chatbot` is used.
   """
 
   acceleratorType = _messages.StringField(1)
@@ -224,6 +248,7 @@ class GenerateOptimizedManifestRequest(_messages.Message):
   modelServerInfo = _messages.MessageField('ModelServerInfo', 3)
   performanceRequirements = _messages.MessageField('PerformanceRequirements', 4)
   storageConfig = _messages.MessageField('StorageConfig', 5)
+  useCase = _messages.StringField(6)
 
 
 class GenerateOptimizedManifestResponse(_messages.Message):
@@ -345,6 +370,34 @@ class MillisecondRange(_messages.Message):
   min = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class ModelInfo(_messages.Message):
+  r"""Model information for a model deployment.
+
+  Fields:
+    attentionHeadsCount: Output only. The number of attention heads in the
+      model.
+    headDimensions: Output only. The number of dimensions in the model's
+      hidden layers.
+    hiddenLayersCount: Output only. The number of hidden layers in the model.
+    kvCacheSizePerToken: Output only. The size of the key value cache per
+      token.
+    kvHeadsCount: Output only. The number of key value heads in the model.
+    maxContextLength: Output only. The maximum context length of the model.
+    modelSizeGb: Output only. The size of the model in gigabytes.
+    parametersBillionsCount: Output only. The number of parameters in
+      billions.
+  """
+
+  attentionHeadsCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  headDimensions = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  hiddenLayersCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  kvCacheSizePerToken = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  kvHeadsCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  maxContextLength = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  modelSizeGb = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
+  parametersBillionsCount = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
+
+
 class ModelServerInfo(_messages.Message):
   r"""Model server information gives. Valid model server info combinations can
   be found using GkeInferenceQuickstart.FetchProfiles.
@@ -370,21 +423,33 @@ class PerformanceRange(_messages.Message):
   r"""Performance range for a model deployment.
 
   Fields:
+    itlRange: Output only. The range of inter-token latency (ITL) in
+      milliseconds. ITL is the latency between consecutive tokens being
+      generated.
     ntpotRange: Output only. The range of NTPOT (Normalized Time Per Output
       Token) in milliseconds. NTPOT is the request latency normalized by the
       number of output tokens, measured as request_latency /
       total_output_tokens.
+    throughputInputRange: Output only. The range of input tokens per second.
+      This is measured as the number of input tokens processed by the server
+      divided by the elapsed time in seconds.
     throughputOutputRange: Output only. The range of throughput in output
       tokens per second. This is measured as
       total_output_tokens_generated_by_server / elapsed_time_in_seconds.
+    throughputRange: Output only. The range of total tokens per second. This
+      is measured as the sum of input and output tokens processed by the
+      server divided by the elapsed time in seconds.
     ttftRange: Output only. The range of TTFT (Time To First Token) in
       milliseconds. TTFT is the time it takes to generate the first token for
       a request.
   """
 
-  ntpotRange = _messages.MessageField('MillisecondRange', 1)
-  throughputOutputRange = _messages.MessageField('TokensPerSecondRange', 2)
-  ttftRange = _messages.MessageField('MillisecondRange', 3)
+  itlRange = _messages.MessageField('MillisecondRange', 1)
+  ntpotRange = _messages.MessageField('MillisecondRange', 2)
+  throughputInputRange = _messages.MessageField('TokensPerSecondRange', 3)
+  throughputOutputRange = _messages.MessageField('TokensPerSecondRange', 4)
+  throughputRange = _messages.MessageField('TokensPerSecondRange', 5)
+  ttftRange = _messages.MessageField('MillisecondRange', 6)
 
 
 class PerformanceRequirements(_messages.Message):
@@ -393,6 +458,9 @@ class PerformanceRequirements(_messages.Message):
   Fields:
     targetCost: Optional. The target cost for running a profile's model
       server. If not provided, this requirement will not be enforced.
+    targetItlMilliseconds: Optional. The target inter-token latency (ITL) in
+      milliseconds. ITL is the latency between consecutive tokens being
+      generated. If not provided, this target will not be enforced.
     targetNtpotMilliseconds: Optional. The target Normalized Time Per Output
       Token (NTPOT) in milliseconds. NTPOT is calculated as `request_latency /
       total_output_tokens`. If not provided, this target will not be enforced.
@@ -402,8 +470,9 @@ class PerformanceRequirements(_messages.Message):
   """
 
   targetCost = _messages.MessageField('Cost', 1)
-  targetNtpotMilliseconds = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  targetTtftMilliseconds = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  targetItlMilliseconds = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  targetNtpotMilliseconds = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  targetTtftMilliseconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class PerformanceStats(_messages.Message):
@@ -411,6 +480,12 @@ class PerformanceStats(_messages.Message):
 
   Fields:
     cost: Output only. The cost of running the model deployment.
+    inputTokensPerSecond: Output only. The input tokens per second. This is
+      the throughput measured as the number of input tokens processed by the
+      server divided by the elapsed time in seconds.
+    itlMilliseconds: Output only. The inter-token latency (ITL) in
+      milliseconds. This is the latency between consecutive tokens being
+      generated.
     ntpotMilliseconds: Output only. The Normalized Time Per Output Token
       (NTPOT) in milliseconds. This is the request latency normalized by the
       number of output tokens, measured as request_latency /
@@ -421,16 +496,22 @@ class PerformanceStats(_messages.Message):
     queriesPerSecond: Output only. The number of queries per second. Note:
       This metric can vary widely based on context length and may not be a
       reliable measure of LLM throughput.
+    totalTokensPerSecond: Output only. The total tokens per second. This is
+      the throughput measured as the sum of input and output tokens processed
+      by the server divided by the elapsed time in seconds.
     ttftMilliseconds: Output only. The Time To First Token (TTFT) in
       milliseconds. This is the time it takes to generate the first token for
       a request.
   """
 
   cost = _messages.MessageField('Cost', 1, repeated=True)
-  ntpotMilliseconds = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  outputTokensPerSecond = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  queriesPerSecond = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
-  ttftMilliseconds = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  inputTokensPerSecond = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  itlMilliseconds = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  ntpotMilliseconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  outputTokensPerSecond = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  queriesPerSecond = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
+  totalTokensPerSecond = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  ttftMilliseconds = _messages.IntegerField(8, variant=_messages.Variant.INT32)
 
 
 class Profile(_messages.Message):
@@ -441,20 +522,25 @@ class Profile(_messages.Message):
       `nvidia-h100-80gb`.
     instanceType: Output only. The instance type. Expected format:
       `a2-highgpu-1g`.
+    modelInfo: Output only. The model information of the model in this
+      profile.
     modelServerInfo: Output only. The model server configuration. Use
       GkeInferenceQuickstart.FetchProfiles to find valid configurations.
     performanceStats: Output only. The performance statistics for this
       profile.
     resourcesUsed: Output only. The resources used by the model deployment.
     tpuTopology: Output only. The TPU topology (if applicable).
+    workloadSpec: Output only. The workload specification.
   """
 
   acceleratorType = _messages.StringField(1)
   instanceType = _messages.StringField(2)
-  modelServerInfo = _messages.MessageField('ModelServerInfo', 3)
-  performanceStats = _messages.MessageField('PerformanceStats', 4, repeated=True)
-  resourcesUsed = _messages.MessageField('ResourcesUsed', 5)
-  tpuTopology = _messages.StringField(6)
+  modelInfo = _messages.MessageField('ModelInfo', 3)
+  modelServerInfo = _messages.MessageField('ModelServerInfo', 4)
+  performanceStats = _messages.MessageField('PerformanceStats', 5, repeated=True)
+  resourcesUsed = _messages.MessageField('ResourcesUsed', 6)
+  tpuTopology = _messages.StringField(7)
+  workloadSpec = _messages.MessageField('WorkloadSpec', 8)
 
 
 class ResourcesUsed(_messages.Message):
@@ -559,6 +645,24 @@ class TokensPerSecondRange(_messages.Message):
 
   max = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   min = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class WorkloadSpec(_messages.Message):
+  r"""Workload specification for a workload.
+
+  Fields:
+    averageInputLength: Optional. The average input length of the workload.
+      Only works alongside average output length.
+    averageOutputLength: Optional. The average output length of the workload.
+      Only works alongside average input length.
+    useCase: Optional. The use case of the workload. Can be one of: `advanced
+      costumer support`, `code completion, `text summarization`, `chatbot`,
+      `text generation`, `deep research`.
+  """
+
+  averageInputLength = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  averageOutputLength = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  useCase = _messages.StringField(3)
 
 
 encoding.AddCustomJsonFieldMapping(

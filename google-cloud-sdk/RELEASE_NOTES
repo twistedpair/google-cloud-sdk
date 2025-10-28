@@ -5,6 +5,93 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 545.0.0 (2025-10-28)
+
+### Google Cloud CLI
+
+* Added warning message to indicate Python 3.9 support will be deprecated on January 27th, 2026.
+
+### App Engine
+
+* Updated the Java SDK to version 3.0.1 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v3.0.1>.
+* Updated Eclipse Jetty Web Server to versions 12.0.29 and 12.1.3.
+* Enabled java25 preview runtime deployment.
+
+### BigQuery
+
+* Improved exception chaining in BigQuery client.
+* Added logging for the actual unexpected credentials type when using Google Auth.
+* Added display for authorized stored procedures with user-specified roles in ACLs for `bq show`.
+* Added support for `--timestamp_target_precision` flag for `bq load`,
+    `bq mk (--table)` and `bq mkdef` commands. Use this flag to specify
+    timestamp subsecond precisions that will be supported by the destination
+    table. The feature is in preview.
+* Fixed reference type error in `bq set-iam-policy --reservation`.
+* Fixed a bug where several HTTP headers are not set properly for API requests in `bq rm`.
+
+### Cloud Bigtable
+
+*   Added `--view` flag to `gcloud bigtable materialized-views get` and
+    `gcloud bigtable materialized-views list` to specify which details of a
+    materialized view to retrieve. `list` command only supports schema view.
+
+### Cloud Composer
+
+* Added `--disable-private-environment` to `gcloud composer environments create` to explicitly allow the creation of public environments.
+
+### Cloud Dataplex
+
+* Added `--data-classification` flag to `gcloud dataplex aspect_types create`.
+
+### Cloud IAM
+
+* For `gcloud iam workforce-pools providers scim-tenants create` command, `--claim-mapping` flag is now required.
+* Eliminate need for `--project_id` to match service account project in service account key operations.
+
+### Cloud Run
+
+* Added logic to use high-CPU, high-bandwidth machines for source-deploy builds
+  of GPU-enabled Cloud Run services.
+* When deploying source code with `gcloud run deploy`, the configuration
+will now be validated before starting to build the code.
+
+### Compute Engine
+
+* Promoted regional `backend-buckets` in `gcloud compute` to beta.
+* Added `--local-ssd` flag to `gcloud compute advice calendar-mode` to allow specifying local SSD properties when requesting advice for future reservations.
+* Added `FIPS_202205` profile and min TLS version `1.3` to `--profile` and `--min-tls-version` flags for compute SSL policies in Google Cloud CLI.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.137.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Eventarc
+
+* Removed the deprecated `network_attachment` option from the examples in the help text for `gcloud eventarc pipelines create`.
+
+### Kubernetes Engine
+
+* Added `--add-maintenance-exclusion-until-end-of-support` in
+  `gcloud container clusters update` command to allow maintenance exclusion end
+  time to track cluster version's end of support.
+* Added `--accelerator-network-profile` flag to
+  `gcloud beta container node-pools create` for Public Preview. This flag allows
+  specifying an accelerator network profile when creating node pools.
+
+### Network Services
+
+*   Added support for endpoint urls in `--consumer-accept-list` and `--consumer-reject-list` in `gcloud beta compute service-attachments update` command.
+
+### Workbench
+
+*   Added `--data-disk-resource-policies` flags to `gcloud workbench instances create`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 544.0.0 (2025-10-21)
 
 ### AlloyDB

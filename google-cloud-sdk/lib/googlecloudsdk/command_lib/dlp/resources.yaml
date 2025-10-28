@@ -2,25 +2,35 @@ project:
   name: project
   collection: dlp.projects
   attributes:
-  - parameter_name: projectsId
+  - &project
+    parameter_name: projectsId
     attribute_name: project
     help: The project ID.
 
-project_content:
-  name: project_content
+content:
+  name: content
   collection: dlp.projects.content
   attributes:
-  - parameter_name: projectsId
-    attribute_name: project
-    help: The project ID.
+  - *project
 
-project_image:
-  name: project_image
+image:
+  name: image
   collection: dlp.projects.image
   attributes:
-  - parameter_name: projectsId
-    attribute_name: project
-    help: The project ID.
+  - *project
+
+location:
+  name: location
+  collection: dlp.projects.locations
+  attributes:
+  - *project
+  - parameter_name: locationsId
+    attribute_name: location
+    help: The location ID.
+    fallthroughs:
+    - value: "global"
+      hint: |
+        uses "global" by default
 
 job:
   name: job

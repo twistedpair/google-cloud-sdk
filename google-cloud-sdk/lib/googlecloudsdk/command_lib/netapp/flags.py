@@ -337,7 +337,6 @@ def GetHostGroupResourceSpec():
   return concepts.ResourceSpec(
       constants.HOST_GROUPS_COLLECTION,
       resource_name='host_group',
-      api_version=constants.BETA_API_VERSION,
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=GetLocationAttributeConfig(),
       hostGroupsId=GetHostGroupAttributeConfig(),

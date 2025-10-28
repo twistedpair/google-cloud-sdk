@@ -107,6 +107,21 @@ def GetSkuResources(args, messages):
   if args.machine_type:
     specific_sku_resources.machineType = args.machine_type
 
+  if args.local_ssd:
+    local_ssd_partitions = []
+    for ssd in args.local_ssd:
+      partition = messages.FutureResourcesSpecLocalSsdPartition(
+          diskSizeGb=ssd['size']
+      )
+      interface_str = ssd.get('interface')
+      if interface_str:
+        interface = messages.FutureResourcesSpecLocalSsdPartition.DiskInterfaceValueValuesEnum(
+            interface_str
+        )
+        partition.diskInterface = interface
+      local_ssd_partitions.append(partition)
+    specific_sku_resources.localSsdPartitions = local_ssd_partitions
+
   return specific_sku_resources
 
 

@@ -14,10 +14,6 @@
 # limitations under the License.
 """Client for interaction with AspectType API CRUD DATAPLEX."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
 import os
 
 from apitools.base.py import encoding
@@ -42,6 +38,13 @@ def GenerateAspectTypeForCreateRequest(args):
           args.metadata_template_file_name
       ),
   )
+
+  if hasattr(args, 'data_classification') and args.IsSpecified(
+      'data_classification'
+  ):
+    request.dataClassification = module.GoogleCloudDataplexV1AspectType.DataClassificationValueValuesEnum(
+        args.data_classification
+    )
 
   return request
 
@@ -177,4 +180,3 @@ def AspectTypeSetIamPolicyFromFile(aspect_type_ref, policy_file):
       policy_file,
       dataplex_api.GetMessageModule().GoogleIamV1Policy)
   return AspectTypeSetIamPolicy(aspect_type_ref, policy)
-

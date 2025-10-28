@@ -33,6 +33,8 @@ class HostGroupsClient(object):
       self._adapter = AlphaHostGroupsAdapter()
     elif self.release_track == base.ReleaseTrack.BETA:
       self._adapter = BetaHostGroupsAdapter()
+    elif self.release_track == base.ReleaseTrack.GA:
+      self._adapter = HostGroupsAdapter()
     else:
       raise ValueError(
           '[{}] is not a valid API version.'.format(
@@ -197,11 +199,11 @@ class HostGroupsClient(object):
     return self.WaitForOperation(operation_ref)
 
 
-class AlphaHostGroupsAdapter(object):
+class HostGroupsAdapter(object):
   """Adapter for the Cloud NetApp Files API Host Group resource."""
 
   def __init__(self):
-    self.release_track = base.ReleaseTrack.ALPHA
+    self.release_track = base.ReleaseTrack.GA
     self.client = netapp_api_util.GetClientInstance(
         release_track=self.release_track
     )
@@ -210,7 +212,7 @@ class AlphaHostGroupsAdapter(object):
     )
 
 
-class BetaHostGroupsAdapter(AlphaHostGroupsAdapter):
+class BetaHostGroupsAdapter(HostGroupsAdapter):
   """Adapter for the Beta Cloud NetApp Files API Host Group resource."""
 
   def __init__(self):
@@ -222,3 +224,18 @@ class BetaHostGroupsAdapter(AlphaHostGroupsAdapter):
     self.messages = netapp_api_util.GetMessagesModule(
         release_track=self.release_track
     )
+
+
+class AlphaHostGroupsAdapter(BetaHostGroupsAdapter):
+  """Adapter for the Cloud NetApp Files API Host Group resource."""
+
+  def __init__(self):
+    super(AlphaHostGroupsAdapter, self).__init__()
+    self.release_track = base.ReleaseTrack.ALPHA
+    self.client = netapp_api_util.GetClientInstance(
+        release_track=self.release_track
+    )
+    self.messages = netapp_api_util.GetMessagesModule(
+        release_track=self.release_track
+    )
+

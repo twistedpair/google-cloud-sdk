@@ -34,6 +34,9 @@ __protobuf__ = proto.module(
         'ToolUseExample',
         'FunctionDeclaration',
         'FunctionCall',
+        'FunctionResponsePart',
+        'FunctionResponseBlob',
+        'FunctionResponseFileData',
         'FunctionResponse',
         'ExecutableCode',
         'CodeExecutionResult',
@@ -86,9 +89,8 @@ class Tool(proto.Message):
             Tool to support Google Search in Model. Powered
             by Google.
         google_search_retrieval (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GoogleSearchRetrieval):
-            Optional. GoogleSearchRetrieval tool type.
-            Specialized retrieval tool that is powered by
-            Google search.
+            Optional. Specialized retrieval tool that is
+            powered by Google Search.
         google_maps (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GoogleMaps):
             Optional. GoogleMaps tool type.
             Tool to support Google Maps in Model.
@@ -103,22 +105,77 @@ class Tool(proto.Message):
         url_context (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.UrlContext):
             Optional. Tool to support URL context
             retrieval.
+        computer_use (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.Tool.ComputerUse):
+            Optional. Tool to support the model
+            interacting directly with the computer. If
+            enabled, it automatically populates computer-use
+            specific Function Declarations.
     """
+    class PhishBlockThreshold(proto.Enum):
+        r"""These are available confidence level user can set to block
+        malicious urls with chosen confidence and above. For
+        understanding different confidence of webrisk, please refer to
+        https://cloud.google.com/web-risk/docs/reference/rpc/google.cloud.webrisk.v1eap1#confidencelevel
+
+        Values:
+            PHISH_BLOCK_THRESHOLD_UNSPECIFIED (0):
+                Defaults to unspecified.
+            BLOCK_LOW_AND_ABOVE (30):
+                Blocks Low and above confidence URL that is
+                risky.
+            BLOCK_MEDIUM_AND_ABOVE (40):
+                Blocks Medium and above confidence URL that
+                is risky.
+            BLOCK_HIGH_AND_ABOVE (50):
+                Blocks High and above confidence URL that is
+                risky.
+            BLOCK_HIGHER_AND_ABOVE (55):
+                Blocks Higher and above confidence URL that
+                is risky.
+            BLOCK_VERY_HIGH_AND_ABOVE (60):
+                Blocks Very high and above confidence URL
+                that is risky.
+            BLOCK_ONLY_EXTREMELY_HIGH (100):
+                Blocks Extremely high confidence URL that is
+                risky.
+        """
+        PHISH_BLOCK_THRESHOLD_UNSPECIFIED = 0
+        BLOCK_LOW_AND_ABOVE = 30
+        BLOCK_MEDIUM_AND_ABOVE = 40
+        BLOCK_HIGH_AND_ABOVE = 50
+        BLOCK_HIGHER_AND_ABOVE = 55
+        BLOCK_VERY_HIGH_AND_ABOVE = 60
+        BLOCK_ONLY_EXTREMELY_HIGH = 100
 
     class GoogleSearch(proto.Message):
         r"""GoogleSearch tool type.
         Tool to support Google Search in Model. Powered by Google.
+
+
+        .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
 
         Attributes:
             exclude_domains (MutableSequence[str]):
                 Optional. List of domains to be excluded from the search
                 results. The default limit is 2000 domains. Example:
                 ["amazon.com", "facebook.com"].
+            blocking_confidence (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.Tool.PhishBlockThreshold):
+                Optional. Sites with confidence level chosen
+                & above this value will be blocked from the
+                search results.
+
+                This field is a member of `oneof`_ ``_blocking_confidence``.
         """
 
         exclude_domains: MutableSequence[str] = proto.RepeatedField(
             proto.STRING,
             number=3,
+        )
+        blocking_confidence: 'Tool.PhishBlockThreshold' = proto.Field(
+            proto.ENUM,
+            number=4,
+            optional=True,
+            enum='Tool.PhishBlockThreshold',
         )
 
     class CodeExecution(proto.Message):
@@ -129,6 +186,47 @@ class Tool(proto.Message):
         and output to this tool.
 
         """
+
+    class ComputerUse(proto.Message):
+        r"""Tool to support computer use.
+
+        Attributes:
+            environment (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.Tool.ComputerUse.Environment):
+                Required. The environment being operated.
+            excluded_predefined_functions (MutableSequence[str]):
+                Optional. By default, predefined functions
+                are included in the final model call. Some of
+                them can be explicitly excluded from being
+                automatically included. This can serve two
+                purposes:
+
+                1. Using a more restricted / different action
+                    space.
+                2. Improving the definitions / instructions of
+                    predefined functions.
+        """
+        class Environment(proto.Enum):
+            r"""Represents the environment being operated, such as a web
+            browser.
+
+            Values:
+                ENVIRONMENT_UNSPECIFIED (0):
+                    Defaults to browser.
+                ENVIRONMENT_BROWSER (1):
+                    Operates in a web browser.
+            """
+            ENVIRONMENT_UNSPECIFIED = 0
+            ENVIRONMENT_BROWSER = 1
+
+        environment: 'Tool.ComputerUse.Environment' = proto.Field(
+            proto.ENUM,
+            number=1,
+            enum='Tool.ComputerUse.Environment',
+        )
+        excluded_predefined_functions: MutableSequence[str] = proto.RepeatedField(
+            proto.STRING,
+            number=2,
+        )
 
     function_declarations: MutableSequence['FunctionDeclaration'] = proto.RepeatedField(
         proto.MESSAGE,
@@ -169,6 +267,11 @@ class Tool(proto.Message):
         proto.MESSAGE,
         number=10,
         message='UrlContext',
+    )
+    computer_use: ComputerUse = proto.Field(
+        proto.MESSAGE,
+        number=11,
+        message=ComputerUse,
     )
 
 
@@ -381,7 +484,7 @@ class FunctionCall(proto.Message):
             the client to execute the ``function_call`` and return the
             response with the matching ``id``.
         name (str):
-            Required. The name of the function to call. Matches
+            Optional. The name of the function to call. Matches
             [FunctionDeclaration.name].
         args (google.protobuf.struct_pb2.Struct):
             Optional. The function parameters and values in JSON object
@@ -401,6 +504,123 @@ class FunctionCall(proto.Message):
         proto.MESSAGE,
         number=2,
         message=struct_pb2.Struct,
+    )
+
+
+class FunctionResponsePart(proto.Message):
+    r"""A datatype containing media that is part of a ``FunctionResponse``
+    message.
+
+    A ``FunctionResponsePart`` consists of data which has an associated
+    datatype. A ``FunctionResponsePart`` can only contain one of the
+    accepted types in ``FunctionResponsePart.data``.
+
+    A ``FunctionResponsePart`` must have a fixed IANA MIME type
+    identifying the type and subtype of the media if the ``inline_data``
+    field is filled with raw bytes.
+
+    This message has `oneof`_ fields (mutually exclusive fields).
+    For each oneof, at most one member field can be set at the same time.
+    Setting any member of the oneof automatically clears all other
+    members.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        inline_data (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.FunctionResponseBlob):
+            Inline media bytes.
+
+            This field is a member of `oneof`_ ``data``.
+        file_data (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.FunctionResponseFileData):
+            URI based data.
+
+            This field is a member of `oneof`_ ``data``.
+    """
+
+    inline_data: 'FunctionResponseBlob' = proto.Field(
+        proto.MESSAGE,
+        number=1,
+        oneof='data',
+        message='FunctionResponseBlob',
+    )
+    file_data: 'FunctionResponseFileData' = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        oneof='data',
+        message='FunctionResponseFileData',
+    )
+
+
+class FunctionResponseBlob(proto.Message):
+    r"""Raw media bytes for function response.
+
+    Text should not be sent as raw bytes, use the 'text' field.
+
+    Attributes:
+        mime_type (str):
+            Required. The IANA standard MIME type of the
+            source data.
+        data (bytes):
+            Required. Raw bytes.
+        display_name (str):
+            Optional. Display name of the blob.
+
+            Used to provide a label or filename to distinguish blobs.
+
+            This field is only returned in PromptMessage for prompt
+            management. It is currently used in the Gemini
+            GenerateContent calls only when server side tools
+            (code_execution, google_search, and url_context) are
+            enabled.
+    """
+
+    mime_type: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    data: bytes = proto.Field(
+        proto.BYTES,
+        number=2,
+    )
+    display_name: str = proto.Field(
+        proto.STRING,
+        number=4,
+    )
+
+
+class FunctionResponseFileData(proto.Message):
+    r"""URI based data for function response.
+
+    Attributes:
+        mime_type (str):
+            Required. The IANA standard MIME type of the
+            source data.
+        file_uri (str):
+            Required. URI.
+        display_name (str):
+            Optional. Display name of the file data.
+
+            Used to provide a label or filename to distinguish file
+            datas.
+
+            This field is only returned in PromptMessage for prompt
+            management. It is currently used in the Gemini
+            GenerateContent calls only when server side tools
+            (code_execution, google_search, and url_context) are
+            enabled.
+    """
+
+    mime_type: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    file_uri: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    display_name: str = proto.Field(
+        proto.STRING,
+        number=3,
     )
 
 
@@ -426,6 +646,9 @@ class FunctionResponse(proto.Message):
             details (if any). If "output" and "error" keys
             are not specified, then whole "response" is
             treated as function output.
+        parts (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.FunctionResponsePart]):
+            Optional. Ordered ``Parts`` that constitute a function
+            response. Parts may have different IANA MIME types.
     """
 
     id: str = proto.Field(
@@ -440,6 +663,11 @@ class FunctionResponse(proto.Message):
         proto.MESSAGE,
         number=2,
         message=struct_pb2.Struct,
+    )
+    parts: MutableSequence['FunctionResponsePart'] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=4,
+        message='FunctionResponsePart',
     )
 
 
@@ -891,23 +1119,47 @@ class GoogleMaps(proto.Message):
     r"""Tool to retrieve public maps data for grounding, powered by
     Google.
 
+    Attributes:
+        enable_widget (bool):
+            Optional. If true, include the widget context
+            token in the response.
     """
+
+    enable_widget: bool = proto.Field(
+        proto.BOOL,
+        number=3,
+    )
 
 
 class EnterpriseWebSearch(proto.Message):
     r"""Tool to search public web data, powered by Vertex AI Search
     and Sec4 compliance.
 
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
     Attributes:
         exclude_domains (MutableSequence[str]):
             Optional. List of domains to be excluded from
             the search results. The default limit is 2000
             domains.
+        blocking_confidence (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.Tool.PhishBlockThreshold):
+            Optional. Sites with confidence level chosen
+            & above this value will be blocked from the
+            search results.
+
+            This field is a member of `oneof`_ ``_blocking_confidence``.
     """
 
     exclude_domains: MutableSequence[str] = proto.RepeatedField(
         proto.STRING,
         number=1,
+    )
+    blocking_confidence: 'Tool.PhishBlockThreshold' = proto.Field(
+        proto.ENUM,
+        number=4,
+        optional=True,
+        enum='Tool.PhishBlockThreshold',
     )
 
 
@@ -1009,8 +1261,12 @@ class FunctionCallingConfig(proto.Message):
                 Model behavior is same as when not passing any
                 function declarations.
             VALIDATED (5):
-                Model is constrained to predict either
-                function calls or natural language response.
+                Model is constrained to predict either function calls or
+                natural language response. If "allowed_function_names" are
+                set, the predicted function calls will be limited to any one
+                of "allowed_function_names", else the predicted function
+                calls will be any one of the provided
+                "function_declarations".
         """
         MODE_UNSPECIFIED = 0
         AUTO = 1

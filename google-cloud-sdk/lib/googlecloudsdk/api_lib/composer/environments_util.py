@@ -14,9 +14,6 @@
 # limitations under the License.
 """Utilities for calling the Composer Environments API."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
 
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.composer import util as api_util
@@ -80,8 +77,9 @@ class CreateEnvironmentFlags:
       assigned to a GKE cluster node.
     enable_ip_masq_agent: bool or None, when enabled, the GKE IP Masq Agent is
       deployed to the cluster.
-    private_environment: bool or None, create env cluster nodes with no public
-      IP addresses.
+    enable_private_environment: bool or None, create env cluster nodes with no
+      public IP addresses.
+    disable_private_environment: bool or None, disable private environment.
     private_endpoint: bool or None, managed env cluster using the private IP
       address of the master API endpoint.
     master_ipv4_cidr: IPv4 CIDR range to use for the cluster master network.
@@ -220,7 +218,8 @@ class CreateEnvironmentFlags:
       services_ipv4_cidr_block=None,
       max_pods_per_node=None,
       enable_ip_masq_agent=None,
-      private_environment=None,
+      enable_private_environment=None,
+      disable_private_environment=None,
       private_endpoint=None,
       master_ipv4_cidr=None,
       privately_used_public_ips=None,
@@ -300,7 +299,8 @@ class CreateEnvironmentFlags:
     self.services_ipv4_cidr_block = services_ipv4_cidr_block
     self.max_pods_per_node = max_pods_per_node
     self.enable_ip_masq_agent = enable_ip_masq_agent
-    self.private_environment = private_environment
+    self.enable_private_environment = enable_private_environment
+    self.disable_private_environment = disable_private_environment
     self.private_endpoint = private_endpoint
     self.master_ipv4_cidr = master_ipv4_cidr
     self.privately_used_public_ips = privately_used_public_ips
@@ -416,9 +416,11 @@ def _CreateConfig(messages, flags, is_composer_v1):
           flags.airflow_config_overrides or flags.python_version or
           flags.airflow_executor_type or flags.maintenance_window_start or
           flags.maintenance_window_end or flags.maintenance_window_recurrence or
-          flags.private_environment or flags.web_server_access_control or
-          flags.cloud_sql_machine_type or flags.web_server_machine_type or
-          flags.scheduler_cpu or flags.worker_cpu or flags.web_server_cpu or
+          flags.enable_private_environment or
+          flags.disable_private_environment or
+          flags.web_server_access_control or flags.cloud_sql_machine_type or
+          flags.web_server_machine_type or flags.scheduler_cpu or
+          flags.worker_cpu or flags.web_server_cpu or
           flags.scheduler_memory_gb or flags.worker_memory_gb or
           flags.web_server_memory_gb or flags.scheduler_storage_gb or
           flags.worker_storage_gb or flags.web_server_storage_gb or
@@ -533,7 +535,7 @@ def _CreateConfig(messages, flags, is_composer_v1):
             timeZone=flags.snapshot_schedule_timezone))
 
   if (
-      flags.private_environment
+      flags.enable_private_environment or flags.disable_private_environment
       or flags.enable_private_builds_only
       or flags.disable_private_builds_only
   ):
@@ -557,8 +559,15 @@ def _CreateConfig(messages, flags, is_composer_v1):
       networking_config = messages.NetworkingConfig(
           connectionType=connection_type)
 
+    if flags.enable_private_environment:
+      enable_private_environment = True
+    elif flags.disable_private_environment:
+      enable_private_environment = False
+    else:
+      enable_private_environment = None
+
     private_env_config_args = {
-        'enablePrivateEnvironment': flags.private_environment,
+        'enablePrivateEnvironment': enable_private_environment,
         'privateClusterConfig': private_cluster_config,
         'networkingConfig': networking_config,
     }

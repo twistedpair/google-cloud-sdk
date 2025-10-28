@@ -80,7 +80,7 @@ class Client:
       self,
       endpoint_group_id,
       parent,
-      mirroring_deployment_group,
+      deployment_groups,
       description,
       endpoint_group_type='DIRECT',
       labels=None,
@@ -90,8 +90,8 @@ class Client:
     Args:
       endpoint_group_id: The ID of the Endpoint Group to create.
       parent: The parent of the Endpoint Group to create.
-      mirroring_deployment_group: The Mirroring Deployment Group to associate
-        with the Endpoint Group.
+      deployment_groups: The Mirroring Deployment Group(s) to associate with the
+        Endpoint Group. Can be a single string or a list of strings.
       description: Description of the Endpoint Group.
       endpoint_group_type: Type of the Endpoint Group (DIRECT or BROKER).
       labels: Labels to apply to the Endpoint Group.
@@ -115,15 +115,18 @@ class Client:
           )
       )
       if endpoint_group_type == 'BROKER':
-        endpoint_group.mirroringDeploymentGroups = [mirroring_deployment_group]
+        if isinstance(deployment_groups, list):
+          endpoint_group.mirroringDeploymentGroups = deployment_groups
+        else:
+          endpoint_group.mirroringDeploymentGroups = [deployment_groups]
       elif endpoint_group_type == 'DIRECT':
-        endpoint_group.mirroringDeploymentGroup = mirroring_deployment_group
+        endpoint_group.mirroringDeploymentGroup = deployment_groups
       else:
         raise ValueError(
             f'Unsupported endpoint group type: {endpoint_group_type}'
         )
     else:
-      endpoint_group.mirroringDeploymentGroup = mirroring_deployment_group
+      endpoint_group.mirroringDeploymentGroup = deployment_groups
 
     create_request = self.messages.NetworksecurityProjectsLocationsMirroringEndpointGroupsCreateRequest(
         mirroringEndpointGroup=endpoint_group,
@@ -159,7 +162,7 @@ class Client:
     update_request = self.messages.NetworksecurityProjectsLocationsMirroringEndpointGroupsPatchRequest(
         name=name,
         mirroringEndpointGroup=endpoint_group,
-        updateMask=','.join(update_fields.keys())
+        updateMask=','.join(update_fields.keys()),
     )
     return self._endpoint_group_client.Patch(update_request)
 

@@ -865,6 +865,26 @@ def AddMaterializedViewResourceArg(parser, verb: str) -> None:
   ).AddToParser(parser)
 
 
+def AddViewOverMaterializedView(parser):
+  """Add argument for view to the parser."""
+  msgs = util.GetAdminMessages()
+  view_enum_type = (
+      msgs.BigtableadminProjectsInstancesMaterializedViewsGetRequest.ViewValueValuesEnum
+  )
+  mapper = arg_utils.ChoiceEnumMapper(
+      '--view',
+      view_enum_type,
+      custom_mappings={
+          'SCHEMA_VIEW': 'schema',
+          'REPLICATION_VIEW': 'replication',
+          'FULL': 'full',
+      },
+      help_str='Specifies what type of information to return about the view.',
+      default='schema',
+  )
+  mapper.choice_arg.AddToParser(parser)
+
+
 def AddBackupResourceArg(parser, verb):
   """Add backup positional resource argument to the parser."""
   concept_parsers.ConceptParser([

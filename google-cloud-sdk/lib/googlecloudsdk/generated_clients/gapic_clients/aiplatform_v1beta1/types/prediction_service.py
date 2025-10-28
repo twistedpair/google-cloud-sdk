@@ -22,10 +22,11 @@ import proto  # type: ignore
 from google.api import httpbody_pb2  # type: ignore
 from cloudsdk.google.protobuf import struct_pb2  # type: ignore
 from cloudsdk.google.protobuf import timestamp_pb2  # type: ignore
-from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types import content
+from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types import content as gca_content
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types import explanation
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types import tool
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types import types
+from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types import usage_metadata as gca_usage_metadata
 
 
 __protobuf__ = proto.module(
@@ -49,6 +50,7 @@ __protobuf__ = proto.module(
         'StreamingRawPredictResponse',
         'PredictLongRunningRequest',
         'FetchPredictOperationRequest',
+        'InvokeRequest',
         'ExplainRequest',
         'ExplainResponse',
         'CountTokensRequest',
@@ -59,6 +61,8 @@ __protobuf__ = proto.module(
         'PredictLongRunningResponse',
         'PredictLongRunningMetadata',
         'GenerateVideoResponse',
+        'EmbedContentRequest',
+        'EmbedContentResponse',
     },
 )
 
@@ -91,6 +95,10 @@ class PredictRequest(proto.Message):
             ][google.cloud.aiplatform.v1beta1.DeployedModel.model]
             [PredictSchemata's][google.cloud.aiplatform.v1beta1.Model.predict_schemata]
             [parameters_schema_uri][google.cloud.aiplatform.v1beta1.PredictSchemata.parameters_schema_uri].
+        labels (MutableMapping[str, str]):
+            Optional. The user labels for Imagen billing
+            usage only. Only Imagen supports labels. For
+            other use cases, it will be ignored.
     """
 
     endpoint: str = proto.Field(
@@ -106,6 +114,11 @@ class PredictRequest(proto.Message):
         proto.MESSAGE,
         number=3,
         message=struct_pb2.Value,
+    )
+    labels: MutableMapping[str, str] = proto.MapField(
+        proto.STRING,
+        proto.STRING,
+        number=4,
     )
 
 
@@ -652,6 +665,38 @@ class FetchPredictOperationRequest(proto.Message):
     )
 
 
+class InvokeRequest(proto.Message):
+    r"""Request message for
+    [PredictionService.Invoke][google.cloud.aiplatform.v1beta1.PredictionService.Invoke].
+
+    Attributes:
+        endpoint (str):
+            Required. The name of the Endpoint requested to serve the
+            prediction. Format:
+            ``projects/{project}/locations/{location}/endpoints/{endpoint}``
+        deployed_model_id (str):
+            ID of the DeployedModel that serves the
+            invoke request.
+        http_body (google.api.httpbody_pb2.HttpBody):
+            The invoke method input. Supports HTTP
+            headers and arbitrary data payload.
+    """
+
+    endpoint: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    deployed_model_id: str = proto.Field(
+        proto.STRING,
+        number=3,
+    )
+    http_body: httpbody_pb2.HttpBody = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        message=httpbody_pb2.HttpBody,
+    )
+
+
 class ExplainRequest(proto.Message):
     r"""Request message for
     [PredictionService.Explain][google.cloud.aiplatform.v1beta1.PredictionService.Explain].
@@ -858,27 +903,27 @@ class CountTokensRequest(proto.Message):
         number=2,
         message=struct_pb2.Value,
     )
-    contents: MutableSequence[content.Content] = proto.RepeatedField(
+    contents: MutableSequence[gca_content.Content] = proto.RepeatedField(
         proto.MESSAGE,
         number=4,
-        message=content.Content,
+        message=gca_content.Content,
     )
-    system_instruction: content.Content = proto.Field(
+    system_instruction: gca_content.Content = proto.Field(
         proto.MESSAGE,
         number=5,
         optional=True,
-        message=content.Content,
+        message=gca_content.Content,
     )
     tools: MutableSequence[tool.Tool] = proto.RepeatedField(
         proto.MESSAGE,
         number=6,
         message=tool.Tool,
     )
-    generation_config: content.GenerationConfig = proto.Field(
+    generation_config: gca_content.GenerationConfig = proto.Field(
         proto.MESSAGE,
         number=7,
         optional=True,
-        message=content.GenerationConfig,
+        message=gca_content.GenerationConfig,
     )
 
 
@@ -906,10 +951,10 @@ class CountTokensResponse(proto.Message):
         proto.INT32,
         number=2,
     )
-    prompt_tokens_details: MutableSequence[content.ModalityTokenCount] = proto.RepeatedField(
+    prompt_tokens_details: MutableSequence[gca_content.ModalityTokenCount] = proto.RepeatedField(
         proto.MESSAGE,
         number=3,
-        message=content.ModalityTokenCount,
+        message=gca_content.ModalityTokenCount,
     )
 
 
@@ -985,16 +1030,16 @@ class GenerateContentRequest(proto.Message):
         proto.STRING,
         number=5,
     )
-    contents: MutableSequence[content.Content] = proto.RepeatedField(
+    contents: MutableSequence[gca_content.Content] = proto.RepeatedField(
         proto.MESSAGE,
         number=2,
-        message=content.Content,
+        message=gca_content.Content,
     )
-    system_instruction: content.Content = proto.Field(
+    system_instruction: gca_content.Content = proto.Field(
         proto.MESSAGE,
         number=8,
         optional=True,
-        message=content.Content,
+        message=gca_content.Content,
     )
     cached_content: str = proto.Field(
         proto.STRING,
@@ -1015,20 +1060,20 @@ class GenerateContentRequest(proto.Message):
         proto.STRING,
         number=10,
     )
-    safety_settings: MutableSequence[content.SafetySetting] = proto.RepeatedField(
+    safety_settings: MutableSequence[gca_content.SafetySetting] = proto.RepeatedField(
         proto.MESSAGE,
         number=3,
-        message=content.SafetySetting,
+        message=gca_content.SafetySetting,
     )
-    model_armor_config: content.ModelArmorConfig = proto.Field(
+    model_armor_config: gca_content.ModelArmorConfig = proto.Field(
         proto.MESSAGE,
         number=11,
-        message=content.ModelArmorConfig,
+        message=gca_content.ModelArmorConfig,
     )
-    generation_config: content.GenerationConfig = proto.Field(
+    generation_config: gca_content.GenerationConfig = proto.Field(
         proto.MESSAGE,
         number=4,
-        message=content.GenerationConfig,
+        message=gca_content.GenerationConfig,
     )
 
 
@@ -1059,35 +1104,47 @@ class GenerateContentResponse(proto.Message):
 
     class PromptFeedback(proto.Message):
         r"""Content filter results for a prompt sent in the request.
+        Note: This is sent only in the first stream chunk and only if no
+        candidates were generated due to content violations.
 
         Attributes:
             block_reason (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GenerateContentResponse.PromptFeedback.BlockedReason):
-                Output only. Blocked reason.
+                Output only. The reason why the prompt was
+                blocked.
             safety_ratings (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.SafetyRating]):
-                Output only. Safety ratings.
+                Output only. A list of safety ratings for the
+                prompt. There is one rating per category.
             block_reason_message (str):
-                Output only. A readable block reason message.
+                Output only. A readable message that explains
+                the reason why the prompt was blocked.
         """
         class BlockedReason(proto.Enum):
-            r"""Blocked reason enumeration.
+            r"""The reason why the prompt was blocked.
 
             Values:
                 BLOCKED_REASON_UNSPECIFIED (0):
-                    Unspecified blocked reason.
+                    The blocked reason is unspecified.
                 SAFETY (1):
-                    Candidates blocked due to safety.
+                    The prompt was blocked for safety reasons.
                 OTHER (2):
-                    Candidates blocked due to other reason.
+                    The prompt was blocked for other reasons.
+                    For example, it may be due to the prompt's
+                    language, or because it contains other harmful
+                    content.
                 BLOCKLIST (3):
-                    Candidates blocked due to the terms which are
-                    included from the terminology blocklist.
+                    The prompt was blocked because it contains a
+                    term from the terminology blocklist.
                 PROHIBITED_CONTENT (4):
-                    Candidates blocked due to prohibited content.
+                    The prompt was blocked because it contains
+                    prohibited content.
                 MODEL_ARMOR (5):
-                    The user prompt was blocked by Model Armor.
+                    The prompt was blocked by Model Armor.
                 IMAGE_SAFETY (6):
-                    Candidates blocked due to unsafe image
-                    generation content.
+                    The prompt was blocked because it contains
+                    content that is unsafe for image generation.
+                JAILBREAK (7):
+                    The prompt was blocked as a jailbreak
+                    attempt.
             """
             BLOCKED_REASON_UNSPECIFIED = 0
             SAFETY = 1
@@ -1096,16 +1153,17 @@ class GenerateContentResponse(proto.Message):
             PROHIBITED_CONTENT = 4
             MODEL_ARMOR = 5
             IMAGE_SAFETY = 6
+            JAILBREAK = 7
 
         block_reason: 'GenerateContentResponse.PromptFeedback.BlockedReason' = proto.Field(
             proto.ENUM,
             number=1,
             enum='GenerateContentResponse.PromptFeedback.BlockedReason',
         )
-        safety_ratings: MutableSequence[content.SafetyRating] = proto.RepeatedField(
+        safety_ratings: MutableSequence[gca_content.SafetyRating] = proto.RepeatedField(
             proto.MESSAGE,
             number=2,
-            message=content.SafetyRating,
+            message=gca_content.SafetyRating,
         )
         block_reason_message: str = proto.Field(
             proto.STRING,
@@ -1113,53 +1171,65 @@ class GenerateContentResponse(proto.Message):
         )
 
     class UsageMetadata(proto.Message):
-        r"""Usage metadata about response(s).
+        r"""Usage metadata about the content generation request and
+        response. This message provides a detailed breakdown of token
+        usage and other relevant metrics.
 
         Attributes:
             prompt_token_count (int):
-                Number of tokens in the request. When ``cached_content`` is
-                set, this is still the total effective prompt size meaning
-                this includes the number of tokens in the cached content.
+                The total number of tokens in the prompt. This includes any
+                text, images, or other media provided in the request. When
+                ``cached_content`` is set, this also includes the number of
+                tokens in the cached content.
             candidates_token_count (int):
-                Number of tokens in the response(s).
-            tool_use_prompt_token_count (int):
-                Output only. Number of tokens present in
-                tool-use prompt(s).
-            thoughts_token_count (int):
-                Output only. Number of tokens present in
-                thoughts output.
+                The total number of tokens in the generated
+                candidates.
             total_token_count (int):
-                Total token count for prompt, response
-                candidates, and tool-use prompts (if present).
+                The total number of tokens for the entire request. This is
+                the sum of ``prompt_token_count``,
+                ``candidates_token_count``, ``tool_use_prompt_token_count``,
+                and ``thoughts_token_count``.
+            tool_use_prompt_token_count (int):
+                Output only. The number of tokens in the
+                results from tool executions, which are provided
+                back to the model as input, if applicable.
+            thoughts_token_count (int):
+                Output only. The number of tokens that were
+                part of the model's generated "thoughts" output,
+                if applicable.
             cached_content_token_count (int):
-                Output only. Number of tokens in the cached
-                part in the input (the cached content).
+                Output only. The number of tokens in the
+                cached content that was used for this request.
             prompt_tokens_details (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.ModalityTokenCount]):
-                Output only. List of modalities that were
-                processed in the request input.
+                Output only. A detailed breakdown of the
+                token count for each modality in the prompt.
             cache_tokens_details (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.ModalityTokenCount]):
-                Output only. List of modalities of the cached
-                content in the request input.
+                Output only. A detailed breakdown of the
+                token count for each modality in the cached
+                content.
             candidates_tokens_details (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.ModalityTokenCount]):
-                Output only. List of modalities that were
-                returned in the response.
+                Output only. A detailed breakdown of the
+                token count for each modality in the generated
+                candidates.
             tool_use_prompt_tokens_details (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.ModalityTokenCount]):
-                Output only. List of modalities that were
-                processed for tool-use request inputs.
+                Output only. A detailed breakdown by modality
+                of the token counts from the results of tool
+                executions, which are provided back to the model
+                as input.
             traffic_type (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GenerateContentResponse.UsageMetadata.TrafficType):
-                Output only. Traffic type. This shows whether
-                a request consumes Pay-As-You-Go or Provisioned
-                Throughput quota.
+                Output only. The traffic type for this
+                request.
         """
         class TrafficType(proto.Enum):
-            r"""Request traffic type. Indicates whether the request consumes
-            Pay-As-You-Go or Provisioned Throughput quota.
+            r"""The type of traffic that this request was processed with,
+            indicating which quota is consumed.
 
             Values:
                 TRAFFIC_TYPE_UNSPECIFIED (0):
                     Unspecified request traffic type.
                 ON_DEMAND (1):
-                    Type for Pay-As-You-Go traffic.
+                    The request was processed using Pay-As-You-Go
+                    quota.
                 PROVISIONED_THROUGHPUT (2):
                     Type for Provisioned Throughput traffic.
             """
@@ -1175,6 +1245,10 @@ class GenerateContentResponse(proto.Message):
             proto.INT32,
             number=2,
         )
+        total_token_count: int = proto.Field(
+            proto.INT32,
+            number=3,
+        )
         tool_use_prompt_token_count: int = proto.Field(
             proto.INT32,
             number=13,
@@ -1183,33 +1257,29 @@ class GenerateContentResponse(proto.Message):
             proto.INT32,
             number=14,
         )
-        total_token_count: int = proto.Field(
-            proto.INT32,
-            number=3,
-        )
         cached_content_token_count: int = proto.Field(
             proto.INT32,
             number=5,
         )
-        prompt_tokens_details: MutableSequence[content.ModalityTokenCount] = proto.RepeatedField(
+        prompt_tokens_details: MutableSequence[gca_content.ModalityTokenCount] = proto.RepeatedField(
             proto.MESSAGE,
             number=9,
-            message=content.ModalityTokenCount,
+            message=gca_content.ModalityTokenCount,
         )
-        cache_tokens_details: MutableSequence[content.ModalityTokenCount] = proto.RepeatedField(
+        cache_tokens_details: MutableSequence[gca_content.ModalityTokenCount] = proto.RepeatedField(
             proto.MESSAGE,
             number=10,
-            message=content.ModalityTokenCount,
+            message=gca_content.ModalityTokenCount,
         )
-        candidates_tokens_details: MutableSequence[content.ModalityTokenCount] = proto.RepeatedField(
+        candidates_tokens_details: MutableSequence[gca_content.ModalityTokenCount] = proto.RepeatedField(
             proto.MESSAGE,
             number=11,
-            message=content.ModalityTokenCount,
+            message=gca_content.ModalityTokenCount,
         )
-        tool_use_prompt_tokens_details: MutableSequence[content.ModalityTokenCount] = proto.RepeatedField(
+        tool_use_prompt_tokens_details: MutableSequence[gca_content.ModalityTokenCount] = proto.RepeatedField(
             proto.MESSAGE,
             number=12,
-            message=content.ModalityTokenCount,
+            message=gca_content.ModalityTokenCount,
         )
         traffic_type: 'GenerateContentResponse.UsageMetadata.TrafficType' = proto.Field(
             proto.ENUM,
@@ -1217,10 +1287,10 @@ class GenerateContentResponse(proto.Message):
             enum='GenerateContentResponse.UsageMetadata.TrafficType',
         )
 
-    candidates: MutableSequence[content.Candidate] = proto.RepeatedField(
+    candidates: MutableSequence[gca_content.Candidate] = proto.RepeatedField(
         proto.MESSAGE,
         number=2,
-        message=content.Candidate,
+        message=gca_content.Candidate,
     )
     model_version: str = proto.Field(
         proto.STRING,
@@ -1376,6 +1446,166 @@ class GenerateVideoResponse(proto.Message):
         proto.MESSAGE,
         number=4,
         message=Video,
+    )
+
+
+class EmbedContentRequest(proto.Message):
+    r"""Request message for
+    [PredictionService.EmbedContent][google.cloud.aiplatform.v1beta1.PredictionService.EmbedContent].
+
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        model (str):
+            Required. The name of the publisher model requested to serve
+            the prediction. Format:
+            ``projects/{project}/locations/{location}/publishers/*/models/*``
+
+            This field is a member of `oneof`_ ``_model``.
+        content (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.Content):
+            Required. Input content to be embedded.
+            Required.
+
+            This field is a member of `oneof`_ ``_content``.
+        title (str):
+            Optional. An optional title for the text.
+
+            This field is a member of `oneof`_ ``_title``.
+        task_type (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.EmbedContentRequest.EmbeddingTaskType):
+            Optional. The task type of the embedding.
+
+            This field is a member of `oneof`_ ``_task_type``.
+        output_dimensionality (int):
+            Optional. Optional reduced dimension for the
+            output embedding. If set, excessive values in
+            the output embedding are truncated from the end.
+
+            This field is a member of `oneof`_ ``_output_dimensionality``.
+        auto_truncate (bool):
+            Optional. Whether to silently truncate the
+            input content if it's longer than the maximum
+            sequence length.
+
+            This field is a member of `oneof`_ ``_auto_truncate``.
+    """
+    class EmbeddingTaskType(proto.Enum):
+        r"""Represents a downstream task the embeddings will be used for.
+
+        Values:
+            UNSPECIFIED (0):
+                Unset value, which will default to one of the
+                other enum values.
+            RETRIEVAL_QUERY (2):
+                Specifies the given text is a query in a
+                search/retrieval setting.
+            RETRIEVAL_DOCUMENT (3):
+                Specifies the given text is a document from
+                the corpus being searched.
+            SEMANTIC_SIMILARITY (4):
+                Specifies the given text will be used for
+                STS.
+            CLASSIFICATION (5):
+                Specifies that the given text will be
+                classified.
+            CLUSTERING (6):
+                Specifies that the embeddings will be used
+                for clustering.
+            QUESTION_ANSWERING (7):
+                Specifies that the embeddings will be used
+                for question answering.
+            FACT_VERIFICATION (8):
+                Specifies that the embeddings will be used
+                for fact verification.
+            CODE_RETRIEVAL_QUERY (9):
+                Specifies that the embeddings will be used
+                for code retrieval.
+        """
+        UNSPECIFIED = 0
+        RETRIEVAL_QUERY = 2
+        RETRIEVAL_DOCUMENT = 3
+        SEMANTIC_SIMILARITY = 4
+        CLASSIFICATION = 5
+        CLUSTERING = 6
+        QUESTION_ANSWERING = 7
+        FACT_VERIFICATION = 8
+        CODE_RETRIEVAL_QUERY = 9
+
+    model: str = proto.Field(
+        proto.STRING,
+        number=1,
+        optional=True,
+    )
+    content: gca_content.Content = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        optional=True,
+        message=gca_content.Content,
+    )
+    title: str = proto.Field(
+        proto.STRING,
+        number=4,
+        optional=True,
+    )
+    task_type: EmbeddingTaskType = proto.Field(
+        proto.ENUM,
+        number=5,
+        optional=True,
+        enum=EmbeddingTaskType,
+    )
+    output_dimensionality: int = proto.Field(
+        proto.INT32,
+        number=6,
+        optional=True,
+    )
+    auto_truncate: bool = proto.Field(
+        proto.BOOL,
+        number=7,
+        optional=True,
+    )
+
+
+class EmbedContentResponse(proto.Message):
+    r"""Response message for
+    [PredictionService.EmbedContent][google.cloud.aiplatform.v1beta1.PredictionService.EmbedContent].
+
+    Attributes:
+        embedding (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.EmbedContentResponse.Embedding):
+            The embedding generated from the input
+            content.
+        usage_metadata (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.UsageMetadata):
+            Metadata about the response(s).
+        truncated (bool):
+            Whether the input content was truncated
+            before generating the embedding.
+    """
+
+    class Embedding(proto.Message):
+        r"""A list of floats representing an embedding.
+
+        Attributes:
+            values (MutableSequence[float]):
+                Embedding vector values.
+        """
+
+        values: MutableSequence[float] = proto.RepeatedField(
+            proto.FLOAT,
+            number=1,
+        )
+
+    embedding: Embedding = proto.Field(
+        proto.MESSAGE,
+        number=1,
+        message=Embedding,
+    )
+    usage_metadata: gca_usage_metadata.UsageMetadata = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        message=gca_usage_metadata.UsageMetadata,
+    )
+    truncated: bool = proto.Field(
+        proto.BOOL,
+        number=4,
     )
 
 

@@ -484,9 +484,9 @@ class PythonVersion(object):
       )
       else (3, 13)
   )
-  UPCOMING_SUNSET_PY3_VERSION = None
-  UPCOMING_PY3_MIN_SUPPORTED_VERSION = None
-  UPCOMING_PY3_DEPRECATION_DATE = None
+  UPCOMING_SUNSET_PY3_VERSION = (3, 9)
+  UPCOMING_PY3_MIN_SUPPORTED_VERSION = (3, 10)
+  UPCOMING_PY3_DEPRECATION_DATE = 'January 27th, 2026'
   ENV_VAR_MESSAGE = """\
 
 If you have a compatible Python interpreter installed, you can use it by setting

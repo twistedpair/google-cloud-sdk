@@ -43,8 +43,10 @@ _REVERSE_CLOSURE = '/reverseClosure'
 _CONSUMER_SERVICE_RESOURCE = '%s/services/%s'
 _CONSUMER_POLICY_DEFAULT = '/consumerPolicies/%s'
 _MCP_POLICY_DEFAULT = '/mcpPolicies/%s'
-_CONTENT_SECURITY_POLICY_DEFAULT = '/contentSecurityPolicies/%s'
+# MCPListFilter is the filter for listing services with MCP endpoint.
+_MCP_LIST_FILTER = 'mcp_server:urls'
 _EFFECTIVE_POLICY = '/effectivePolicy'
+_EFFECTIVE_MCP_POLICY = '/effectiveMcpPolicy'
 _GOOGLE_CATEGORY_RESOURCE = 'categories/google'
 _LIMIT_OVERRIDE_RESOURCE = '%s/consumerOverrides/%s'
 _VALID_CONSUMER_PREFIX = frozenset({'projects/', 'folders/', 'organizations/'})
@@ -1137,7 +1139,7 @@ def AddEnableRule(
 
     return UpdateConsumerPolicyV2Beta(
         policy, policy_name, validateonly=validate_only
-    )
+    ), list(services_to_enabled)
   except (
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
@@ -1563,7 +1565,7 @@ def ListServicesV2Beta(
     project: str,
     enabled: bool,
     page_size: int,
-    limit=sys.maxsize,
+    limit: int,
     folder: str = None,
     organization: str = None,
 ):
@@ -1614,10 +1616,12 @@ def ListServicesV2Beta(
           services[service_name] = service_state.service.displayName
 
     else:
-      for public_service in _ListPublicServices(page_size, limit):
+      for public_service in _ListPublicServices(
+          page_size=page_size, limit=limit
+      ):
         services[public_service.name] = public_service.displayName
       for shared_service in _ListSharedServices(
-          resource_name, page_size, limit
+          resource_name, page_size=page_size, limit=limit
       ):
         services[shared_service.service.name] = (
             shared_service.service.displayName
@@ -1634,6 +1638,92 @@ def ListServicesV2Beta(
       apitools_exceptions.HttpNotFoundError,
   ) as e:
     exceptions.ReraiseError(e, exceptions.ListServicesException)
+
+
+def ListMcpServicesV2Beta(
+    project: str,
+    enabled: bool,
+    page_size: int,
+    limit: int,
+    folder: str = None,
+    organization: str = None,
+):
+  """Make API call to list services.
+
+  Args:
+    project: The project for which to list MCP services.
+    enabled: List only enabled  MCP services.
+    page_size: The page size to list.
+    limit: The max number of services to display.
+    folder: The folder for which to list MCP services.
+    organization: The organization for which to list MCP services.
+
+  Raises:
+    exceptions.ListMcpServicesException: when listing MCP services
+    fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    The list of MCP services
+  """
+
+  resource_name = _PROJECT_RESOURCE % project
+  if folder:
+    resource_name = _FOLDER_RESOURCE % folder
+
+  if organization:
+    resource_name = _ORGANIZATION_RESOURCE % organization
+
+  service_to_endpoint = {}
+  parent = []
+  try:
+    if enabled:
+      policy_name = resource_name + _EFFECTIVE_MCP_POLICY
+      effectivemcppolicy = GetEffectiveMcpPolicy(policy_name)
+
+      for rules in effectivemcppolicy.mcpEnableRules:
+        for mcp_service in rules.mcpServices:
+          parent.append(f'{resource_name}/{mcp_service.service}')
+          service_to_endpoint[mcp_service.service] = ''
+
+      for value in range(0, len(parent), 20):
+        response = BatchGetService(resource_name, parent[value : value + 20])
+        for service_state in response.services:
+          if limit == 0:
+            break
+          service_name = '/'.join(service_state.name.split('/')[2:])
+          # Only return services that have MCP endpoints.
+          if (
+              service_state.service.mcpServer
+              and service_state.service.mcpServer.urls
+          ):
+            service_to_endpoint[service_name] = (
+                service_state.service.mcpServer.urls[0]
+            )
+          limit -= 1
+
+    else:
+      for public_service in _ListPublicServices(
+          page_size, _MCP_LIST_FILTER, limit
+      ):
+        service_to_endpoint[public_service.name] = (
+            public_service.mcpServer.urls[0]
+        )
+    result = []
+    service_info = collections.namedtuple(
+        'ServiceList', ['name', 'mcp_endpoint']
+    )
+    for service in service_to_endpoint:
+      result.append(
+          service_info(name=service, mcp_endpoint=service_to_endpoint[service])
+      )
+
+    return result
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(e, exceptions.ListMcpServicesException)
 
 
 def ListServices(project, enabled, page_size, limit):
@@ -1748,6 +1838,50 @@ def GetOperationV2Beta(name: str):
       apitools_exceptions.HttpNotFoundError,
   ) as e:
     exceptions.ReraiseError(e, exceptions.OperationErrorException)
+
+
+def GenerateServiceIdentityForEnabledService(
+    container, enabled_services: list[str]
+):
+  """Generate a service identity for an enabled service.
+
+  Args:
+    container: The container to generate a service identity for.
+    enabled_services: The services to generate a service identity for.
+
+  Raises:
+    exceptions.GenerateServiceIdentityPermissionDeniedException: when
+    generating
+    service identity fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the
+    service.
+
+  Returns:
+    A dict with the email and uniqueId of the generated service identity. If
+    service does not have a default identity, the response will be an empty
+    dictionary.
+  """
+  client = _GetClientInstance(version=_V1BETA1_VERSION)
+  messages = client.MESSAGES_MODULE
+
+  # Generate service identity for all the services to be enabled.
+  for service in sorted(list(enabled_services)):
+    request = messages.ServiceusageServicesGenerateServiceIdentityRequest(
+        parent=f'projects/{container}/{service}'
+    )
+    try:
+      _ = client.services.GenerateServiceIdentity(request)
+    except apitools_exceptions.HttpBadRequestError:
+      # Bad request error is thrown if the service does not have a default
+      # identity.
+      continue  # Proceed to the next service.
+    except (
+        apitools_exceptions.HttpForbiddenError,
+        apitools_exceptions.HttpNotFoundError,
+    ) as e:
+      exceptions.ReraiseError(
+          e, exceptions.GenerateServiceIdentityPermissionDeniedException
+      )
 
 
 def GenerateServiceIdentity(
@@ -1970,11 +2104,12 @@ def _ValidateConsumer(consumer):
   raise exceptions.Error('invalid consumer format "%s".' % consumer)
 
 
-def _ListPublicServices(page_size=1000, limit=sys.maxsize):
+def _ListPublicServices(page_size=1000, list_filter='', limit=sys.maxsize):
   """Make API call to list public services.
 
   Args:
     page_size: The page size to list. default=1000
+    list_filter: The filter to list public services.
     limit: The max number of services to display.
 
   Raises:
@@ -1987,7 +2122,7 @@ def _ListPublicServices(page_size=1000, limit=sys.maxsize):
   client = _GetClientInstance(version=_V2BETA_VERSION)
   messages = client.MESSAGES_MODULE
 
-  request = messages.ServiceusageServicesListRequest()
+  request = messages.ServiceusageServicesListRequest(filter=list_filter)
 
   try:
     return list_pager.YieldFromList(
@@ -2005,12 +2140,15 @@ def _ListPublicServices(page_size=1000, limit=sys.maxsize):
     exceptions.ReraiseError(e, exceptions.ListPublicServicesException)
 
 
-def _ListSharedServices(parent, page_size=1000, limit=sys.maxsize):
+def _ListSharedServices(
+    parent, page_size=1000, list_filter='', limit=sys.maxsize
+):
   """Make API call to list shared services.
 
   Args:
     parent: The parent for which to list shared services.
     page_size: The page size to list. default=1000
+    list_filter: The filter to list shared services.
     limit: The max number of services to display.
 
   Raises:
@@ -2023,7 +2161,9 @@ def _ListSharedServices(parent, page_size=1000, limit=sys.maxsize):
   client = _GetClientInstance(version=_V2BETA_VERSION)
   messages = client.MESSAGES_MODULE
 
-  request = messages.ServiceusageSharedServicesListRequest(parent=parent)
+  request = messages.ServiceusageSharedServicesListRequest(
+      parent=parent, filter=list_filter
+  )
 
   try:
     return list_pager.YieldFromList(

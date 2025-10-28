@@ -148,11 +148,25 @@ def AddIgnoreFileFlag(parser, hidden=False):
 
 def AddMachineTypeFlag(parser, hidden=False):
   """Add a machine type flag."""
+  if properties.IsDefaultUniverse():
+    machine_type_choices = [
+        'E2_HIGHCPU_32',
+        'E2_HIGHCPU_8',
+        'E2_MEDIUM',
+        'N1_HIGHCPU_32',
+        'N1_HIGHCPU_8',
+    ]
+  else:
+    machine_type_choices = [
+        'C3_HIGHCPU_44',
+        'C3_HIGHCPU_8',
+        'C3_STANDARD_4',
+    ]
   global _machine_type_flag_map
   _machine_type_flag_map = arg_utils.ChoiceEnumMapper(
       '--machine-type', (cloudbuild_util.GetMessagesModule()
                         ).BuildOptions.MachineTypeValueValuesEnum,
-      include_filter=lambda s: six.text_type(s) != 'UNSPECIFIED',
+      include_filter=lambda s: six.text_type(s) in machine_type_choices,
       help_str='Machine type used to run the build.',
       hidden=hidden)
   _machine_type_flag_map.choice_arg.AddToParser(parser)

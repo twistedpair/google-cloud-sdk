@@ -53,6 +53,9 @@ def CreateDatabase(
     delete_protection_state,
     pitr_state,
     cmek_config,
+    mongodb_compatible_data_access_mode,
+    firestore_data_access_mode,
+    realtime_updates_mode,
     tags=None,
 ):
   """Performs a Firestore Admin v1 Database Creation.
@@ -66,6 +69,12 @@ def CreateDatabase(
     delete_protection_state: the value for deleteProtectionState, an Enum.
     pitr_state: the value for PitrState, an Enum.
     cmek_config: the CMEK config used to encrypt the database, an object.
+    mongodb_compatible_data_access_mode: The MongoDB compatible API data access
+      mode to use for this database, an Enum.
+    firestore_data_access_mode: The Firestore API data access mode to use for
+      this database, an Enum.
+    realtime_updates_mode: The Realtime Updates mode to use for this database,
+      an Enum.
     tags: the tags to attach to the database, a key-value dictionary, or None.
 
   Returns:
@@ -86,6 +95,9 @@ def CreateDatabase(
               deleteProtectionState=delete_protection_state,
               pointInTimeRecoveryEnablement=pitr_state,
               cmekConfig=cmek_config,
+              mongodbCompatibleDataAccessMode=mongodb_compatible_data_access_mode,
+              firestoreDataAccessMode=firestore_data_access_mode,
+              realtimeUpdatesMode=realtime_updates_mode,
               tags=tags_value,
           ),
       )

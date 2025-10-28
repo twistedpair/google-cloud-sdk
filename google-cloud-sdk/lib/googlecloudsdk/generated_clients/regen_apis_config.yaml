@@ -479,6 +479,8 @@ apis:
     alpha:
       discovery_doc: compute_alpha.json
       resources:
+        globalVmExtensionPolicies:
+          path: projects/{project}/global/vmExtensionPolicies/{globalVmExtensionPolicy}
         regionAcceleratorTypes:
           path: projects/{project}/regions/{region}/acceleratorTypes/{acceleratorType}
         regionMachineTypes:

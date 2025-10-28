@@ -3044,15 +3044,27 @@ the current time will be used. See $ gcloud topic datetimes for information on
 time formats.
 """,
   )
+  end_group = group.add_group(hidden=hidden, mutex=True, required=True)
 
-  group.add_argument(
+  end_group.add_argument(
       '--add-maintenance-exclusion-end',
       type=arg_parsers.Datetime.Parse,
-      required=True,
+      required=False,
       metavar='TIME_STAMP',
       help="""\
 End time of the exclusion window. Must take place after the start time. See
 $ gcloud topic datetimes for information on time formats.
+""",
+  )
+
+  end_group.add_argument(
+      '--add-maintenance-exclusion-until-end-of-support',
+      required=False,
+      action='store_true',
+      default=None,
+      hidden=hidden,
+      help="""\
+End time of the exclusion window is the end of the cluster's support.
 """,
   )
 
@@ -5935,6 +5947,51 @@ create boot disk with confidential mode
   )
 
 
+def AddRunnerPoolControlModeFlag(parser, hidden=False):
+  """Adds a --runner-pool-control-mode flag to the given parser."""
+  parser.add_argument(
+      '--runner-pool-control-mode',
+      choices=['confidential'],
+      help='Specifies that the new node pool is a control node pool.',
+      hidden=hidden,
+      default=None,
+  )
+
+
+def AddControlNodePoolFlag(parser, hidden=False):
+  """Adds a --control-node-pool flag to the given parser."""
+  parser.add_argument(
+      '--control-node-pool',
+      help=(
+          'The name of the control node pool to which this runner pool is'
+          ' linked.'
+      ),
+      hidden=hidden,
+      type=str,
+      default=None,
+  )
+
+
+def AddEnableAttestationFlag(parser, hidden=False):
+  """Adds an --enable-attestation flag to the given parser."""
+  parser.add_argument(
+      '--enable-attestation',
+      action='store_true',
+      default=None,
+      help='Enable attestation for the runner pool.',
+      hidden=hidden)
+
+
+def AddTeePolicyFlag(parser, hidden=False):
+  """Adds a --tee-policy flag to the given parser."""
+  parser.add_argument(
+      '--tee-policy',
+      help='The TEE policy to apply to the runner pool.',
+      hidden=hidden,
+      type=str,
+      default=None)
+
+
 def AddKubernetesObjectsExportConfig(parser, for_create=False):
   """Adds kubernetes-objects-changes-target and kubernetes-objects-snapshots-target flags to parser."""
   help_text = """\
@@ -7662,6 +7719,62 @@ Remove additional subnetwork named "my-subnet", including all the pod ipv4 range
       ),
       action='append',
       help=help_text,
+  )
+
+
+def AddDrainAdditionalIpRangesFlag(parser):
+  """Adds drain additional IP ranges flag to parser."""
+
+  help_text = """\
+Set status of additional subnetworks named "my-subnet" to DRAINING.
+
+Examples:
+
+  $ {command} example-cluster --drain-additional-ip-ranges=subnetwork=my-subnet
+"""
+
+  spec = {
+      'subnetwork': str,
+  }
+
+  parser.add_argument(
+      '--drain-additional-ip-ranges',
+      metavar='subnetwork=NAME',
+      type=arg_parsers.ArgDict(
+          spec=spec,
+          required_keys=['subnetwork'],
+      ),
+      action='append',
+      help=help_text,
+      hidden=True,
+  )
+
+
+def AddUndrainAdditionalIpRangesFlag(parser):
+  """Adds undrain additional IP ranges flag to parser."""
+
+  help_text = """\
+Set status of additional subnetworks named "my-subnet" to ACTIVE.
+
+Examples:
+
+  $ {command} example-cluster --undrain-additional-ip-ranges=subnetwork=my-subnet
+"""
+
+  spec = {
+      'subnetwork': str,
+  }
+
+  parser.add_argument(
+      '--undrain-additional-ip-ranges',
+      metavar='subnetwork=NAME',
+      type=arg_parsers.ArgDict(
+          spec=spec,
+          required_keys=['subnetwork'],
+      ),
+      action='append',
+      help=help_text,
+      hidden=True,
   )
 
 

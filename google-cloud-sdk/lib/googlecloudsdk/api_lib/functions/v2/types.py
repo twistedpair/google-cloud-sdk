@@ -47,6 +47,11 @@ ServiceConfig = Union[
 Source = Union[
     v2_messages.Source, v2alpha_messages.Source, v2beta_messages.Source
 ]
+DirectVpcNetworkInterface = Union[
+    v2_messages.DirectVpcNetworkInterface,
+    v2alpha_messages.DirectVpcNetworkInterface,
+    v2beta_messages.DirectVpcNetworkInterface,
+]
 
 
 # Enum types (these unfortunately can't be resolved from the type aliases above)
@@ -69,4 +74,9 @@ VpcConnectorEgressSettings = Union[
     v2_messages.ServiceConfig.VpcConnectorEgressSettingsValueValuesEnum,
     v2alpha_messages.ServiceConfig.VpcConnectorEgressSettingsValueValuesEnum,
     v2beta_messages.ServiceConfig.VpcConnectorEgressSettingsValueValuesEnum,
+]
+DirectVpcEgress = Union[
+    v2_messages.ServiceConfig.DirectVpcEgressValueValuesEnum,
+    v2alpha_messages.ServiceConfig.DirectVpcEgressValueValuesEnum,
+    v2beta_messages.ServiceConfig.DirectVpcEgressValueValuesEnum,
 ]

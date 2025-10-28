@@ -404,7 +404,6 @@ def AddCreateInstanceFlags(support_managed_euc, parser):
       ),
       type=arg_parsers.ArgList(),
       metavar='RESOURCE_POLICIES',
-      hidden=True,
   )
   kms_resource_args.AddKmsKeyResourceArg(
       parser=data_group,

@@ -47,3 +47,12 @@ def InsertAsync(client, ha_controller, ha_controller_ref, errors_to_collect):
       [(client.apitools_client.haControllers, 'Insert', request)],
       errors_to_collect
   )[0]
+
+
+def Get(client, ha_controller_ref):
+  """Send HA Controller get request."""
+  return client.apitools_client.haControllers.Get(
+      client.messages.ComputeHaControllersGetRequest(
+          **ha_controller_ref.AsDict()
+      )
+  )

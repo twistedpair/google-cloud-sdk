@@ -211,12 +211,20 @@ class DataplexOrganizationsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to true, operations that are reachable are
+      returned as normal, and those that are unreachable are returned in the
+      ListOperationsResponse.unreachable field.This can only be true when
+      reading across collections e.g. when parent is set to
+      "projects/example/locations/-".This field is not by default supported
+      and will result in an UNIMPLEMENTED error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class DataplexProjectsLocationsAspectTypesCreateRequest(_messages.Message):
@@ -1303,8 +1311,7 @@ class DataplexProjectsLocationsEntryGroupsEntriesGetRequest(_messages.Message):
         required aspects.
       CUSTOM: Returns aspects matching custom fields in GetEntryRequest. If
         the number of aspects exceeds 100, the first 100 will be returned.
-      ALL: Returns all aspects. If the number of aspects exceeds 100, the
-        first 100 will be returned.
+      ALL: <no description>
     """
     ENTRY_VIEW_UNSPECIFIED = 0
     BASIC = 1
@@ -3852,8 +3859,7 @@ class DataplexProjectsLocationsLookupEntryRequest(_messages.Message):
         required aspects.
       CUSTOM: Returns aspects matching custom fields in GetEntryRequest. If
         the number of aspects exceeds 100, the first 100 will be returned.
-      ALL: Returns all aspects. If the number of aspects exceeds 100, the
-        first 100 will be returned.
+      ALL: <no description>
     """
     ENTRY_VIEW_UNSPECIFIED = 0
     BASIC = 1
@@ -3985,12 +3991,20 @@ class DataplexProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to true, operations that are reachable are
+      returned as normal, and those that are unreachable are returned in the
+      ListOperationsResponse.unreachable field.This can only be true when
+      reading across collections e.g. when parent is set to
+      "projects/example/locations/-".This field is not by default supported
+      and will result in an UNIMPLEMENTED error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class DataplexProjectsLocationsSearchEntriesRequest(_messages.Message):
@@ -4331,6 +4345,8 @@ class GoogleCloudDataplexV1AspectType(_messages.Message):
   schema for a given Entry, for example, BigQuery Table Schema.
 
   Enums:
+    DataClassificationValueValuesEnum: Optional. Immutable. Stores data
+      classification of the aspect.
     TransferStatusValueValuesEnum: Output only. Denotes the transfer status of
       the Aspect Type. It is unspecified for Aspect Types created from
       Dataplex API.
@@ -4341,6 +4357,8 @@ class GoogleCloudDataplexV1AspectType(_messages.Message):
   Fields:
     authorization: Immutable. Defines the Authorization for this type.
     createTime: Output only. The time when the AspectType was created.
+    dataClassification: Optional. Immutable. Stores data classification of the
+      aspect.
     description: Optional. Description of the AspectType.
     displayName: Optional. User friendly display name.
     etag: The service computes this checksum. The client may send it on update
@@ -4358,6 +4376,17 @@ class GoogleCloudDataplexV1AspectType(_messages.Message):
       ID will be different.
     updateTime: Output only. The time when the AspectType was last updated.
   """
+
+  class DataClassificationValueValuesEnum(_messages.Enum):
+    r"""Optional. Immutable. Stores data classification of the aspect.
+
+    Values:
+      DATA_CLASSIFICATION_UNSPECIFIED: Denotes that the aspect contains only
+        metadata.
+      METADATA_AND_DATA: Metadata and data classification.
+    """
+    DATA_CLASSIFICATION_UNSPECIFIED = 0
+    METADATA_AND_DATA = 1
 
   class TransferStatusValueValuesEnum(_messages.Enum):
     r"""Output only. Denotes the transfer status of the Aspect Type. It is
@@ -4403,15 +4432,16 @@ class GoogleCloudDataplexV1AspectType(_messages.Message):
 
   authorization = _messages.MessageField('GoogleCloudDataplexV1AspectTypeAuthorization', 1)
   createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  metadataTemplate = _messages.MessageField('GoogleCloudDataplexV1AspectTypeMetadataTemplate', 7)
-  name = _messages.StringField(8)
-  transferStatus = _messages.EnumField('TransferStatusValueValuesEnum', 9)
-  uid = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  dataClassification = _messages.EnumField('DataClassificationValueValuesEnum', 3)
+  description = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  etag = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  metadataTemplate = _messages.MessageField('GoogleCloudDataplexV1AspectTypeMetadataTemplate', 8)
+  name = _messages.StringField(9)
+  transferStatus = _messages.EnumField('TransferStatusValueValuesEnum', 10)
+  uid = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class GoogleCloudDataplexV1AspectTypeAuthorization(_messages.Message):
@@ -11439,10 +11469,15 @@ class GoogleLongrunningListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets ListOperationsRequest.return_partial_success and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('GoogleLongrunningOperation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class GoogleLongrunningOperation(_messages.Message):

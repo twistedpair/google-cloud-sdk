@@ -922,6 +922,12 @@ class DropInfo(_messages.Message):
       L2_INTERCONNECT_DESTINATION_IP_MISMATCH: Packet is dropped due to
         destination IP not matching the appliance mapping IPs configured on
         the L2 Interconnect attachment.
+      NCC_ROUTE_WITHIN_HYBRID_SUBNET_UNSUPPORTED: Packet could be dropped
+        because it matches a route associated with an NCC spoke in the hybrid
+        subnet context, but such a configuration is not supported.
+      HYBRID_SUBNET_REGION_MISMATCH: Packet is dropped because the region of
+        the hybrid subnet is different from the region of the next hop of the
+        route matched within this hybrid subnet.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -1020,6 +1026,8 @@ class DropInfo(_messages.Message):
     L2_INTERCONNECT_UNSUPPORTED_PROTOCOL = 94
     L2_INTERCONNECT_UNSUPPORTED_PORT = 95
     L2_INTERCONNECT_DESTINATION_IP_MISMATCH = 96
+    NCC_ROUTE_WITHIN_HYBRID_SUBNET_UNSUPPORTED = 97
+    HYBRID_SUBNET_REGION_MISMATCH = 98
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   destinationGeolocationCode = _messages.StringField(2)
@@ -1263,6 +1271,8 @@ class Endpoint(_messages.Message):
     gkeMasterCluster: A cluster URI for [Google Kubernetes Engine cluster
       control plane](https://cloud.google.com/kubernetes-
       engine/docs/concepts/cluster-architecture).
+    gkePod: A [GKE Pod](https://cloud.google.com/kubernetes-
+      engine/docs/concepts/pod) URI.
     instance: A Compute Engine instance URI.
     ipAddress: The IP address of the endpoint, which can be an external or
       internal IP.
@@ -1366,16 +1376,17 @@ class Endpoint(_messages.Message):
   forwardingRuleTarget = _messages.EnumField('ForwardingRuleTargetValueValuesEnum', 7)
   fqdn = _messages.StringField(8)
   gkeMasterCluster = _messages.StringField(9)
-  instance = _messages.StringField(10)
-  ipAddress = _messages.StringField(11)
-  loadBalancerId = _messages.StringField(12)
-  loadBalancerType = _messages.EnumField('LoadBalancerTypeValueValuesEnum', 13)
-  network = _messages.StringField(14)
-  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 15)
-  port = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  projectId = _messages.StringField(17)
-  redisCluster = _messages.StringField(18)
-  redisInstance = _messages.StringField(19)
+  gkePod = _messages.StringField(10)
+  instance = _messages.StringField(11)
+  ipAddress = _messages.StringField(12)
+  loadBalancerId = _messages.StringField(13)
+  loadBalancerType = _messages.EnumField('LoadBalancerTypeValueValuesEnum', 14)
+  network = _messages.StringField(15)
+  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 16)
+  port = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  projectId = _messages.StringField(18)
+  redisCluster = _messages.StringField(19)
+  redisInstance = _messages.StringField(20)
 
 
 class EndpointInfo(_messages.Message):
@@ -1879,10 +1890,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListVpcFlowLogsConfigsResponse(_messages.Message):
@@ -2203,12 +2219,14 @@ class NatInfo(_messages.Message):
         internal address.
       CLOUD_NAT: Cloud NAT Gateway.
       PRIVATE_SERVICE_CONNECT: Private service connect NAT.
+      GKE_POD_IP_MASQUERADING: GKE Pod IP address masquerading.
     """
     TYPE_UNSPECIFIED = 0
     INTERNAL_TO_EXTERNAL = 1
     EXTERNAL_TO_INTERNAL = 2
     CLOUD_NAT = 3
     PRIVATE_SERVICE_CONNECT = 4
+    GKE_POD_IP_MASQUERADING = 5
 
   natGatewayName = _messages.StringField(1)
   networkUri = _messages.StringField(2)
@@ -2301,12 +2319,20 @@ class NetworkmanagementOrganizationsLocationsGlobalOperationsListRequest(_messag
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class NetworkmanagementOrganizationsLocationsListRequest(_messages.Message):
@@ -2658,12 +2684,20 @@ class NetworkmanagementProjectsLocationsGlobalOperationsListRequest(_messages.Me
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class NetworkmanagementProjectsLocationsListRequest(_messages.Message):

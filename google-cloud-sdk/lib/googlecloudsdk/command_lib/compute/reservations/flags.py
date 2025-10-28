@@ -334,6 +334,7 @@ def GetTpuVersion(required=True):
           'V5E': 'Cloud TPU v5e Lite',
           'V5P': 'Cloud TPU v5p',
           'V6E': 'Cloud TPU v6e',
+          'TPU7X': 'Cloud TPU v7x',
       },
       required=required,
       help=help_text,

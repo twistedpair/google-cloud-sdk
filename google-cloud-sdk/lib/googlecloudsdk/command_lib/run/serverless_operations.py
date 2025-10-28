@@ -803,14 +803,16 @@ class ServerlessOperations(object):
       svc = service.Service(
           copy.deepcopy(prefetch.Message()), self.messages_module
       )
-      # if there's a template change and the name is set, this would fail
-      # unless we clear the name. Use the same forcing logic as down below.
-      # just to make sure there's no issue.
-      if config_changes_mod.AdjustsTemplate(config_changes):
-        if generate_name:
-          self._AddRevisionForcingChange(prefetch, validate_config_changes)
-        else:
-          validate_config_changes.append(_NewRevisionNonceChange(_Nonce()))
+    elif prefetch is not None:
+      # prefetch is None if we tried to get it and it's a create, or
+      # false if this is a replace so we never looked for it.
+      svc = self.GetService(service_ref)
+    # source deploy always has a template change so we should always
+    # force a new revision name.
+    if generate_name:
+      self._AddRevisionForcingChange(svc, validate_config_changes)
+    else:
+      validate_config_changes.append(_NewRevisionNonceChange(_Nonce()))
 
     tracker.StartStage(stages.VALIDATE_SERVICE)
     tracker.UpdateHeaderMessage('Validating Service...')
@@ -910,16 +912,14 @@ class ServerlessOperations(object):
        request to create/update the service.
     """
     requires_build = build_source is not None and not skip_build
-    should_validate_service = requires_build and release_track in [
-        base.ReleaseTrack.ALPHA,
-        base.ReleaseTrack.BETA,
-    ]
+
     region = build_region or self._region
+
     if tracker is None:
       tracker = progress_tracker.NoOpStagedProgressTracker(
           stages.ServiceStages(
               allow_unauthenticated is not None,
-              include_validate_service=should_validate_service,
+              include_validate_service=requires_build,
               include_upload_source=build_source is not None,
               include_build=requires_build,
               include_create_repo=repo_to_create is not None,
@@ -958,10 +958,9 @@ class ServerlessOperations(object):
     elif requires_build:
       new_conn = self._conn_context.GetContextWithRegionOverride(region)
       with new_conn:
-        if should_validate_service:
-          self._ValidateServiceBeforeSourceDeploy(
-              tracker, service_ref, prefetch, config_changes, generate_name
-          )
+        self._ValidateServiceBeforeSourceDeploy(
+            tracker, service_ref, prefetch, config_changes, generate_name
+        )
         # TODO(b/355762514): Either remove or re-enable this validation.
         # self._ValidateService(service_ref, config_changes)
         (

@@ -16,6 +16,24 @@ from apitools.base.py import extra_types
 package = 'modelarmor'
 
 
+class AiPlatformFloorSetting(_messages.Message):
+  r"""message describing AiPlatformFloorSetting
+
+  Fields:
+    enableCloudLogging: Optional. If true, log Model Armor filter results to
+      Cloud Logging.
+    inspectAndBlock: Optional. If true, Model Armor filters will be run in
+      inspect and block mode. Requests that trip Model Armor filters will be
+      blocked.
+    inspectOnly: Optional. If true, Model Armor filters will be run in inspect
+      only mode. No action will be taken on the request.
+  """
+
+  enableCloudLogging = _messages.BooleanField(1)
+  inspectAndBlock = _messages.BooleanField(2)
+  inspectOnly = _messages.BooleanField(3)
+
+
 class ByteDataItem(_messages.Message):
   r"""Represents Byte Data item.
 
@@ -25,6 +43,8 @@ class ByteDataItem(_messages.Message):
   Fields:
     byteData: Required. Bytes Data
     byteDataType: Required. The type of byte data
+    fileLabel: Optional. Label of the file. This is used to identify the file
+      in the response.
   """
 
   class ByteDataTypeValueValuesEnum(_messages.Enum):
@@ -51,6 +71,7 @@ class ByteDataItem(_messages.Message):
 
   byteData = _messages.BytesField(1)
   byteDataType = _messages.EnumField('ByteDataTypeValueValuesEnum', 2)
+  fileLabel = _messages.StringField(3)
 
 
 class CsamFilterResult(_messages.Message):
@@ -162,26 +183,61 @@ class FilterResult(_messages.Message):
 class FloorSetting(_messages.Message):
   r"""Message describing FloorSetting resource
 
+  Enums:
+    IntegratedServicesValueListEntryValuesEnum:
+
   Fields:
+    aiPlatformFloorSetting: Optional. AI Platform floor setting.
     createTime: Output only. [Output only] Create timestamp
     enableFloorSettingEnforcement: Optional. Floor Settings enforcement
       status.
     filterConfig: Required. ModelArmor filter configuration.
     floorSettingMetadata: Optional. Metadata for FloorSetting
+    integratedServices: Optional. List of integrated services for which the
+      floor setting is applicable.
     name: Identifier. The resource name.
     updateTime: Output only. [Output only] Update timestamp
   """
 
-  createTime = _messages.StringField(1)
-  enableFloorSettingEnforcement = _messages.BooleanField(2)
-  filterConfig = _messages.MessageField('FilterConfig', 3)
-  floorSettingMetadata = _messages.MessageField('FloorSettingMetadata', 4)
-  name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  class IntegratedServicesValueListEntryValuesEnum(_messages.Enum):
+    r"""IntegratedServicesValueListEntryValuesEnum enum type.
+
+    Values:
+      INTEGRATED_SERVICE_UNSPECIFIED: Unspecified integrated service.
+      AI_PLATFORM: AI Platform.
+    """
+    INTEGRATED_SERVICE_UNSPECIFIED = 0
+    AI_PLATFORM = 1
+
+  aiPlatformFloorSetting = _messages.MessageField('AiPlatformFloorSetting', 1)
+  createTime = _messages.StringField(2)
+  enableFloorSettingEnforcement = _messages.BooleanField(3)
+  filterConfig = _messages.MessageField('FilterConfig', 4)
+  floorSettingMetadata = _messages.MessageField('FloorSettingMetadata', 5)
+  integratedServices = _messages.EnumField('IntegratedServicesValueListEntryValuesEnum', 6, repeated=True)
+  name = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
+class FloorSettingFloorSettingMetadataMultiLanguageDetection(_messages.Message):
+  r"""Metadata to enable multi language detection via floor setting.
+
+  Fields:
+    enableMultiLanguageDetection: Required. If true, multi language detection
+      will be enabled.
+  """
+
+  enableMultiLanguageDetection = _messages.BooleanField(1)
 
 
 class FloorSettingMetadata(_messages.Message):
-  r"""message describing FloorSetting Metadata"""
+  r"""message describing FloorSetting Metadata
+
+  Fields:
+    multiLanguageDetection: Optional. Metadata for multi language detection.
+  """
+
+  multiLanguageDetection = _messages.MessageField('FloorSettingFloorSettingMetadataMultiLanguageDetection', 1)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -500,8 +556,9 @@ class ModelarmorProjectsLocationsListRequest(_messages.Message):
   r"""A ModelarmorProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Unless explicitly documented otherwise,
+      don't use this unsupported field which is primarily intended for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).

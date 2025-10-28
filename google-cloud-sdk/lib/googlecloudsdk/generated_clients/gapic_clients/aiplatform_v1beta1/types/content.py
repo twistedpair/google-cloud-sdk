@@ -39,8 +39,11 @@ __protobuf__ = proto.module(
         'VideoMetadata',
         'PrebuiltVoiceConfig',
         'VoiceConfig',
+        'SpeakerVoiceConfig',
+        'MultiSpeakerVoiceConfig',
         'SpeechConfig',
         'ProactivityConfig',
+        'ImageConfig',
         'GenerationConfig',
         'SafetySetting',
         'SafetyRating',
@@ -89,6 +92,8 @@ class HarmCategory(proto.Enum):
         HARM_CATEGORY_IMAGE_SEXUALLY_EXPLICIT (9):
             The harm category is image sexually explicit
             content.
+        HARM_CATEGORY_JAILBREAK (10):
+            The harm category is for jailbreak prompts.
     """
     HARM_CATEGORY_UNSPECIFIED = 0
     HARM_CATEGORY_HATE_SPEECH = 1
@@ -100,6 +105,7 @@ class HarmCategory(proto.Enum):
     HARM_CATEGORY_IMAGE_DANGEROUS_CONTENT = 7
     HARM_CATEGORY_IMAGE_HARASSMENT = 8
     HARM_CATEGORY_IMAGE_SEXUALLY_EXPLICIT = 9
+    HARM_CATEGORY_JAILBREAK = 10
 
 
 class Modality(proto.Enum):
@@ -425,6 +431,49 @@ class VoiceConfig(proto.Message):
     )
 
 
+class SpeakerVoiceConfig(proto.Message):
+    r"""Configuration for a single speaker in a multi speaker setup.
+
+    Attributes:
+        speaker (str):
+            Required. The name of the speaker. This
+            should be the same as the speaker name used in
+            the prompt.
+        voice_config (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.VoiceConfig):
+            Required. The configuration for the voice of
+            this speaker.
+    """
+
+    speaker: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    voice_config: 'VoiceConfig' = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        message='VoiceConfig',
+    )
+
+
+class MultiSpeakerVoiceConfig(proto.Message):
+    r"""Configuration for a multi-speaker text-to-speech setup.
+    Enables the use of up to two distinct voices in a single
+    synthesis request.
+
+    Attributes:
+        speaker_voice_configs (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.SpeakerVoiceConfig]):
+            Required. A list of configurations for the
+            voices of the speakers. Exactly two speaker
+            voice configurations must be provided.
+    """
+
+    speaker_voice_configs: MutableSequence['SpeakerVoiceConfig'] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=2,
+        message='SpeakerVoiceConfig',
+    )
+
+
 class SpeechConfig(proto.Message):
     r"""The speech generation config.
 
@@ -434,6 +483,10 @@ class SpeechConfig(proto.Message):
         language_code (str):
             Optional. Language code (ISO 639. e.g. en-US)
             for the speech synthesization.
+        multi_speaker_voice_config (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.MultiSpeakerVoiceConfig):
+            The configuration for a multi-speaker text-to-speech
+            request. This field is mutually exclusive with
+            ``voice_config``.
     """
 
     voice_config: 'VoiceConfig' = proto.Field(
@@ -444,6 +497,11 @@ class SpeechConfig(proto.Message):
     language_code: str = proto.Field(
         proto.STRING,
         number=2,
+    )
+    multi_speaker_voice_config: 'MultiSpeakerVoiceConfig' = proto.Field(
+        proto.MESSAGE,
+        number=3,
+        message='MultiSpeakerVoiceConfig',
     )
 
 
@@ -467,6 +525,103 @@ class ProactivityConfig(proto.Message):
         proto.BOOL,
         number=2,
         optional=True,
+    )
+
+
+class ImageConfig(proto.Message):
+    r"""Config for image generation features.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        image_output_options (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.ImageConfig.ImageOutputOptions):
+            Optional. The image output format for
+            generated images.
+
+            This field is a member of `oneof`_ ``_image_output_options``.
+        aspect_ratio (str):
+            Optional. The desired aspect ratio for the
+            generated images. The following aspect ratios
+            are supported:
+
+            "1:1"
+            "2:3", "3:2"
+            "3:4", "4:3"
+            "4:5", "5:4"
+            "9:16", "16:9"
+            "21:9".
+
+            This field is a member of `oneof`_ ``_aspect_ratio``.
+        person_generation (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.ImageConfig.PersonGeneration):
+            Optional. Controls whether the model can
+            generate people.
+
+            This field is a member of `oneof`_ ``_person_generation``.
+    """
+    class PersonGeneration(proto.Enum):
+        r"""Enum that controls the generation of people.
+
+        Values:
+            PERSON_GENERATION_UNSPECIFIED (0):
+                Generation images of people unspecified.
+            ALLOW_ALL (1):
+                Generate images that include adults and
+                children.
+            ALLOW_ADULT (2):
+                Generate images of adults, but not children.
+            ALLOW_NONE (3):
+                Block generation of images of people.
+        """
+        PERSON_GENERATION_UNSPECIFIED = 0
+        ALLOW_ALL = 1
+        ALLOW_ADULT = 2
+        ALLOW_NONE = 3
+
+    class ImageOutputOptions(proto.Message):
+        r"""The image output format for generated images.
+
+        .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+        Attributes:
+            mime_type (str):
+                Optional. The image format that the output
+                should be saved as.
+
+                This field is a member of `oneof`_ ``_mime_type``.
+            compression_quality (int):
+                Optional. The compression quality of the
+                output image.
+
+                This field is a member of `oneof`_ ``_compression_quality``.
+        """
+
+        mime_type: str = proto.Field(
+            proto.STRING,
+            number=1,
+            optional=True,
+        )
+        compression_quality: int = proto.Field(
+            proto.INT32,
+            number=2,
+            optional=True,
+        )
+
+    image_output_options: ImageOutputOptions = proto.Field(
+        proto.MESSAGE,
+        number=1,
+        optional=True,
+        message=ImageOutputOptions,
+    )
+    aspect_ratio: str = proto.Field(
+        proto.STRING,
+        number=2,
+        optional=True,
+    )
+    person_generation: PersonGeneration = proto.Field(
+        proto.ENUM,
+        number=3,
+        optional=True,
+        enum=PersonGeneration,
     )
 
 
@@ -617,6 +772,11 @@ class GenerationConfig(proto.Message):
             emotions and adapt its responses accordingly.
 
             This field is a member of `oneof`_ ``_enable_affective_dialog``.
+        image_config (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.ImageConfig):
+            Optional. Config for image generation
+            features.
+
+            This field is a member of `oneof`_ ``_image_config``.
     """
     class Modality(proto.Enum):
         r"""The modalities of the response.
@@ -925,6 +1085,12 @@ class GenerationConfig(proto.Message):
         proto.BOOL,
         number=29,
         optional=True,
+    )
+    image_config: 'ImageConfig' = proto.Field(
+        proto.MESSAGE,
+        number=30,
+        optional=True,
+        message='ImageConfig',
     )
 
 
@@ -1263,6 +1429,9 @@ class Candidate(proto.Message):
                 generated when function calling is not enabled
                 or the function is not in the function
                 declaration).
+            NO_IMAGE (16):
+                The model was expected to generate an image,
+                but none was generated.
         """
         FINISH_REASON_UNSPECIFIED = 0
         STOP = 1
@@ -1280,6 +1449,7 @@ class Candidate(proto.Message):
         IMAGE_RECITATION = 13
         IMAGE_OTHER = 14
         UNEXPECTED_TOOL_CALL = 15
+        NO_IMAGE = 16
 
     index: int = proto.Field(
         proto.INT32,
@@ -1620,15 +1790,15 @@ class GroundingChunk(proto.Message):
 
         Attributes:
             uri (str):
-                URI reference of the chunk.
+                URI reference of the place.
 
                 This field is a member of `oneof`_ ``_uri``.
             title (str):
-                Title of the chunk.
+                Title of the place.
 
                 This field is a member of `oneof`_ ``_title``.
             text (str):
-                Text of the chunk.
+                Text of the place answer.
 
                 This field is a member of `oneof`_ ``_text``.
             place_id (str):
@@ -1650,88 +1820,37 @@ class GroundingChunk(proto.Message):
                 review_snippets (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GroundingChunk.Maps.PlaceAnswerSources.ReviewSnippet]):
                     Snippets of reviews that are used to generate
                     the answer.
-                flag_content_uri (str):
-                    A link where users can flag a problem with
-                    the generated answer.
             """
-
-            class AuthorAttribution(proto.Message):
-                r"""Author attribution for a photo or review.
-
-                Attributes:
-                    display_name (str):
-                        Name of the author of the Photo or Review.
-                    uri (str):
-                        URI of the author of the Photo or Review.
-                    photo_uri (str):
-                        Profile photo URI of the author of the Photo
-                        or Review.
-                """
-
-                display_name: str = proto.Field(
-                    proto.STRING,
-                    number=1,
-                )
-                uri: str = proto.Field(
-                    proto.STRING,
-                    number=2,
-                )
-                photo_uri: str = proto.Field(
-                    proto.STRING,
-                    number=3,
-                )
 
             class ReviewSnippet(proto.Message):
                 r"""Encapsulates a review snippet.
 
                 Attributes:
-                    review (str):
-                        A reference representing this place review
-                        which may be used to look up this place review
-                        again.
-                    author_attribution (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GroundingChunk.Maps.PlaceAnswerSources.AuthorAttribution):
-                        This review's author.
-                    relative_publish_time_description (str):
-                        A string of formatted recent time, expressing
-                        the review time relative to the current time in
-                        a form appropriate for the language and country.
-                    flag_content_uri (str):
-                        A link where users can flag a problem with
-                        the review.
+                    review_id (str):
+                        Id of the review referencing the place.
                     google_maps_uri (str):
                         A link to show the review on Google Maps.
+                    title (str):
+                        Title of the review.
                 """
 
-                review: str = proto.Field(
+                review_id: str = proto.Field(
                     proto.STRING,
                     number=1,
-                )
-                author_attribution: 'GroundingChunk.Maps.PlaceAnswerSources.AuthorAttribution' = proto.Field(
-                    proto.MESSAGE,
-                    number=4,
-                    message='GroundingChunk.Maps.PlaceAnswerSources.AuthorAttribution',
-                )
-                relative_publish_time_description: str = proto.Field(
-                    proto.STRING,
-                    number=5,
-                )
-                flag_content_uri: str = proto.Field(
-                    proto.STRING,
-                    number=6,
                 )
                 google_maps_uri: str = proto.Field(
                     proto.STRING,
                     number=7,
+                )
+                title: str = proto.Field(
+                    proto.STRING,
+                    number=8,
                 )
 
             review_snippets: MutableSequence['GroundingChunk.Maps.PlaceAnswerSources.ReviewSnippet'] = proto.RepeatedField(
                 proto.MESSAGE,
                 number=1,
                 message='GroundingChunk.Maps.PlaceAnswerSources.ReviewSnippet',
-            )
-            flag_content_uri: str = proto.Field(
-                proto.STRING,
-                number=3,
             )
 
         uri: str = proto.Field(
@@ -1855,7 +1974,32 @@ class GroundingMetadata(proto.Message):
             Google Maps grounding.
 
             This field is a member of `oneof`_ ``_google_maps_widget_context_token``.
+        source_flagging_uris (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GroundingMetadata.SourceFlaggingUri]):
+            Optional. Output only. List of source
+            flagging uris. This is currently populated only
+            for Google Maps grounding.
     """
+
+    class SourceFlaggingUri(proto.Message):
+        r"""Source content flagging uri for a place or review. This is
+        currently populated only for Google Maps grounding.
+
+        Attributes:
+            source_id (str):
+                Id of the place or review.
+            flag_content_uri (str):
+                A link where users can flag a problem with
+                the source (place or review).
+        """
+
+        source_id: str = proto.Field(
+            proto.STRING,
+            number=1,
+        )
+        flag_content_uri: str = proto.Field(
+            proto.STRING,
+            number=2,
+        )
 
     web_search_queries: MutableSequence[str] = proto.RepeatedField(
         proto.STRING,
@@ -1891,6 +2035,11 @@ class GroundingMetadata(proto.Message):
         proto.STRING,
         number=8,
         optional=True,
+    )
+    source_flagging_uris: MutableSequence[SourceFlaggingUri] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=10,
+        message=SourceFlaggingUri,
     )
 
 

@@ -1644,6 +1644,8 @@ class DockerImage(_messages.Message):
       'metadata.buildTime' field in the Version resource. The build time is
       returned to the client as an RFC 3339 string, which can be easily used
       with the JavaScript Date constructor.
+    imageManifests: Optional. For multi-arch images (manifest lists), this
+      field contains the list of image manifests.
     imageSizeBytes: Calculated size of the image. This field is returned as
       the 'metadata.imageSizeBytes' field in the Version resource.
     mediaType: Media type of this image, e.g.
@@ -1670,14 +1672,15 @@ class DockerImage(_messages.Message):
 
   artifactType = _messages.StringField(1)
   buildTime = _messages.StringField(2)
-  imageSizeBytes = _messages.IntegerField(3)
-  mediaType = _messages.StringField(4)
-  name = _messages.StringField(5)
-  subjectDigest = _messages.StringField(6)
-  tags = _messages.StringField(7, repeated=True)
-  updateTime = _messages.StringField(8)
-  uploadTime = _messages.StringField(9)
-  uri = _messages.StringField(10)
+  imageManifests = _messages.MessageField('ImageManifest', 3, repeated=True)
+  imageSizeBytes = _messages.IntegerField(4)
+  mediaType = _messages.StringField(5)
+  name = _messages.StringField(6)
+  subjectDigest = _messages.StringField(7)
+  tags = _messages.StringField(8, repeated=True)
+  updateTime = _messages.StringField(9)
+  uploadTime = _messages.StringField(10)
+  uri = _messages.StringField(11)
 
 
 class DockerRepository(_messages.Message):
@@ -1756,9 +1759,9 @@ class ExportArtifactRequest(_messages.Message):
       will be overwritten.
     sourceTag: The artifact tag to export. Format:projects/{project}/locations
       /{location}/repositories/{repository}/packages/{package}/tags/{tag}
-    sourceVersion: Required. The artifact version to export. Format: projects/
-      {project}/locations/{location}/repositories/{repository}/packages/{packa
-      ge}/versions/{version}
+    sourceVersion: The artifact version to export. Format: projects/{project}/
+      locations/{location}/repositories/{repository}/packages/{package}/versio
+      ns/{version}
   """
 
   gcsPath = _messages.StringField(1)
@@ -2233,6 +2236,37 @@ class Hash(_messages.Message):
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
   value = _messages.BytesField(2)
+
+
+class ImageManifest(_messages.Message):
+  r"""Details of a single image manifest within a multi-arch image.
+
+  Fields:
+    architecture: Optional. The CPU architecture of the image. Values are
+      provided by the Docker client and are not validated by Artifact
+      Registry. Example values include "amd64", "arm64", "ppc64le", "s390x",
+      "riscv64", "mips64le", etc.
+    digest: Optional. The manifest digest, in the format "sha256:".
+    mediaType: Optional. The media type of the manifest, e.g.,
+      "application/vnd.docker.distribution.manifest.v2+json"
+    os: Optional. The operating system of the image. Values are provided by
+      the Docker client and are not validated by Artifact Registry. Example
+      values include "linux", "windows", "darwin", "aix", etc.
+    osFeatures: Optional. The required OS features for the image, for example
+      on Windows `win32k`
+    osVersion: Optional. The OS version of the image, for example on Windows
+      `10.0.14393.1066
+    variant: Optional. The variant of the CPU in the image, for example `v7`
+      to specify ARMv7 when architecture is `arm`.
+  """
+
+  architecture = _messages.StringField(1)
+  digest = _messages.StringField(2)
+  mediaType = _messages.StringField(3)
+  os = _messages.StringField(4)
+  osFeatures = _messages.StringField(5, repeated=True)
+  osVersion = _messages.StringField(6)
+  variant = _messages.StringField(7)
 
 
 class ImportAptArtifactsErrorInfo(_messages.Message):
@@ -3267,10 +3301,13 @@ class RemoteRepositoryConfig(_messages.Message):
       REMOTE_TYPE_UNSPECIFIED: <no description>
       MIRROR: <no description>
       CACHE_LAYER: <no description>
+      SHARED_CACHE: SHARED_CACHE defines shared cache remote repository
+        subtype.
     """
     REMOTE_TYPE_UNSPECIFIED = 0
     MIRROR = 1
     CACHE_LAYER = 2
+    SHARED_CACHE = 3
 
   aptRepository = _messages.MessageField('AptRepository', 1)
   commonRepository = _messages.MessageField('CommonRemoteRepository', 2)

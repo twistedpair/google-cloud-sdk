@@ -40,16 +40,6 @@ class MissingEnvVarError(Error):
   """An exception raised when required environment variables are missing."""
 
 
-class DNSEndpointOrUseApplicationDefaultCredentialsError(Error):
-  """Error for retrieving DNSEndpoint of a cluster that has none."""
-
-  def __init__(self):
-    super(DNSEndpointOrUseApplicationDefaultCredentialsError, self).__init__(
-        'Only one of --dns-endpoint or USE_APPLICATION_DEFAULT_CREDENTIALS'
-        ' should be set at a time.'
-    )
-
-
 GKE_GCLOUD_AUTH_PLUGIN_CACHE_FILE_NAME = 'gke_gcloud_auth_plugin_cache'
 
 
@@ -253,7 +243,6 @@ def User(
     cert_data=None,
     key_path=None,
     key_data=None,
-    dns_endpoint=None,
     impersonate_service_account=None,
     iam_token=None,
 ):
@@ -270,7 +259,6 @@ def User(
     cert_data: str, base64 encoded client certificate data.
     key_path: str, path to client key file.
     key_data: str, base64 encoded client key data.
-    dns_endpoint: str, cluster's DNS endpoint.
     impersonate_service_account: str, service account to impersonate.
     iam_token: str, IAM token to use for authentication.
 
@@ -309,7 +297,7 @@ def User(
           token_key=auth_provider_token_key,
       )
     else:
-      user['exec'] = _ExecAuthPlugin(dns_endpoint, impersonate_service_account)
+      user['exec'] = _ExecAuthPlugin(impersonate_service_account)
 
   if cert_path and cert_data:
     raise Error('cannot specify both cert_path and cert_data')
@@ -377,7 +365,7 @@ which is needed for continued use of kubectl, was not found or is not executable
 """ + GKE_GCLOUD_AUTH_INSTALL_HINT
 
 
-def _ExecAuthPlugin(dns_endpoint=None, impersonate_service_account=None):
+def _ExecAuthPlugin(impersonate_service_account=None):
   """Generate and return an exec auth plugin config.
 
   Constructs an exec auth plugin config entry readable by kubectl.
@@ -392,7 +380,6 @@ def _ExecAuthPlugin(dns_endpoint=None, impersonate_service_account=None):
   https://github.com/kubernetes/cloud-provider-gcp/tree/master/cmd/gke-gcloud-auth-plugin
 
   Args:
-    dns_endpoint: str, DNS endpoint.
     impersonate_service_account: str, service account to impersonate.
 
   Returns:
@@ -405,9 +392,6 @@ def _ExecAuthPlugin(dns_endpoint=None, impersonate_service_account=None):
   use_application_default_credentials = (
       properties.VALUES.container.use_app_default_credentials.GetBool()
   )
-  if dns_endpoint and use_application_default_credentials:
-    raise DNSEndpointOrUseApplicationDefaultCredentialsError()
-
   command = _GetGkeGcloudPluginCommandAndPrintWarning()
 
   exec_cfg = {

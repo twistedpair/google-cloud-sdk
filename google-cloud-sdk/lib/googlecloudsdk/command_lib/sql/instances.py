@@ -306,8 +306,8 @@ def _ShowFailoverReplicaDeprecationWarning():
 
 def _ShowAcceleratedReplicaModeWarning():
   log.warning(
-      'Setting the accelerated replica mode for a replica may '
-      'cause recreate of the replica instance in case of crash.'
+      'Enabling accelerated replica mode on a replica may cause it to be '
+      'recreated in the event of an unplanned restart.'
   )
 
 

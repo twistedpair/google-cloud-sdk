@@ -33,9 +33,9 @@ import pytz
 
 
 VALID_PLANS = ['12-month', '36-month']
-EXTENDED_VALID_PLANS = ['12-month', '36-month', '60-month']
+EXTENDED_VALID_PLANS = ['12-month', '24-month', '36-month', '60-month']
 VALID_UPDATE_PLANS = ['36-month']
-EXTENDED_VALID_UPDATE_PLANS = ['36-month', '60-month']
+EXTENDED_VALID_UPDATE_PLANS = ['24-month', '36-month', '60-month']
 RFC3339_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DATE_ONLY_FORMAT = '%Y-%m-%d'
 _REQUIRED_RESOURCES = sorted(['vcpu', 'memory'])
@@ -56,6 +56,10 @@ def _GetFlagToPlanMap(messages):
       '12-month': messages.Commitment.PlanValueValuesEnum.TWELVE_MONTH,
       '36-month': messages.Commitment.PlanValueValuesEnum.THIRTY_SIX_MONTH,
   }
+  if hasattr(messages.Commitment.PlanValueValuesEnum, 'TWENTY_FOUR_MONTH'):
+    result['24-month'] = (
+        messages.Commitment.PlanValueValuesEnum.TWENTY_FOUR_MONTH
+    )
   if hasattr(messages.Commitment.PlanValueValuesEnum, 'SIXTY_MONTH'):
     result['60-month'] = messages.Commitment.PlanValueValuesEnum.SIXTY_MONTH
   return result
@@ -179,9 +183,10 @@ def AddCreateFlags(
     support_existing_reservation=False,
     support_reservation_sharing_policy=False,
     support_60_month_plan=False,
+    support_24_month_plan=False,
 ):
   """Add general arguments for `commitments create` flag."""
-  AddPlanForCreate(parser, support_60_month_plan)
+  AddPlanForCreate(parser, support_60_month_plan, support_24_month_plan)
   AddReservationArgGroup(
       parser,
       support_share_setting,
@@ -195,27 +200,31 @@ def AddCreateFlags(
   AddCustomEndTime(parser)
 
 
-def AddUpdateFlags(parser, support_60_month_plan=False):
+def AddUpdateFlags(
+    parser, support_60_month_plan=False, support_24_month_plan=False
+):
   """Add general arguments for `commitments update` flag."""
   AddAutoRenew(parser)
-  AddPlanForUpdate(parser, support_60_month_plan)
+  AddPlanForUpdate(parser, support_60_month_plan, support_24_month_plan)
 
 
-def AddPlanForCreate(parser, support_60_month_plan):
+def AddPlanForCreate(parser, support_60_month_plan, support_24_month_plan):
   return parser.add_argument(
       '--plan',
       required=True,
-      choices=EXTENDED_VALID_PLANS if support_60_month_plan else VALID_PLANS,
+      choices=EXTENDED_VALID_PLANS
+      if support_60_month_plan or support_24_month_plan
+      else VALID_PLANS,
       help='Duration of the commitment.',
   )
 
 
-def AddPlanForUpdate(parser, support_60_month_plan):
+def AddPlanForUpdate(parser, support_60_month_plan, support_24_month_plan):
   return parser.add_argument(
       '--plan',
       required=False,
       choices=EXTENDED_VALID_UPDATE_PLANS
-      if support_60_month_plan
+      if support_60_month_plan or support_24_month_plan
       else VALID_UPDATE_PLANS,
       help='Duration of the commitment.',
   )
@@ -252,7 +261,9 @@ def AddLicenceBasedFlags(parser):
   parser.add_argument(
       '--amount', required=True, type=int, help='Number of licenses purchased.'
   )
-  AddPlanForCreate(parser, support_60_month_plan=False)
+  AddPlanForCreate(
+      parser, support_60_month_plan=False, support_24_month_plan=False
+  )
 
 
 def AddSplitSourceCommitment(parser):

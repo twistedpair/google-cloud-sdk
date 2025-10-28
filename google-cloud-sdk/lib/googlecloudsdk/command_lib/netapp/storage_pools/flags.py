@@ -41,16 +41,6 @@ STORAGE_POOLS_LIST_FORMAT = """\
         type
     )"""
 
-STORAGE_POOLS_LIST_FORMAT_GA = """\
-    table(
-        name.basename():label=STORAGE_POOL_NAME:sort=1,
-        name.segment(3):label=LOCATION,
-        serviceLevel,
-        capacityGib,
-        network,
-        state,
-        volumeCapacityGib
-    )"""
 
 ## Helper functions to add args / flags for Storage Pools gcloud commands ##
 
@@ -372,13 +362,13 @@ def AddStoragePoolCreateArgs(parser, release_track):
   AddStoragePoolCustomPerformanceEnabledArg(parser)
   AddStoragePoolTotalThroughputArg(parser)
   AddStoragePoolTotalIopsArg(parser)
+  AddStoragePoolTypeArg(parser, messages)
   AddStoragePoolQosTypeArg(parser, messages)
   if (release_track == base.ReleaseTrack.ALPHA or
       release_track == base.ReleaseTrack.BETA):
     AddStoragePoolHotTierSizeArg(parser)
     AddStoragePoolEnableHotTierAutoResizeArg(parser)
     AddStoragePoolUnifiedPoolArg(parser)
-    AddStoragePoolTypeArg(parser, messages)
 
 
 def AddStoragePoolDeleteArgs(parser):

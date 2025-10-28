@@ -43,19 +43,30 @@ def translate(appyaml: str, service: str, version: str, entrypoint_command: str)
       if input_type == feature_helper.InputType.APP_YAML
       else _convert_admin_api_input_to_app_yaml(input_data)
   )
+  source_path = _get_source_path(input_type, appyaml)
+
   flags: Sequence[str] = _get_cloud_run_flags(
-      input_data, input_flatten_as_appyaml, input_type, entrypoint_command
+      input_data,
+      input_flatten_as_appyaml,
+      input_type,
+      entrypoint_command,
+      source_path,
   )
+  return _generate_output(target_service, flags, source_path)
+
+
+def _get_source_path(input_type: feature_helper.InputType, appyaml: str) -> str:
+  """Gets the source path for the Cloud Run deploy command."""
   if input_type == feature_helper.InputType.APP_YAML:
     source_path = appyaml.rsplit('app.yaml', 1)[0] if appyaml else ''
     if not source_path:
       source_path = '.'
+    return source_path
   else:
-    source_path = input(
+    return input(
         'Is the source code located in the current directory? If not, please'
         ' provide its path relative to the current directory: '
-    )
-  return _generate_output(target_service, flags, source_path)
+    ) + '/'
 
 
 def _convert_admin_api_input_to_app_yaml(
@@ -106,6 +117,7 @@ def _get_cloud_run_flags(
     input_flatten_as_appyaml: Mapping[str, any],
     input_type: feature_helper.InputType,
     entrypoint_command: str,
+    source_path: str,
 ) -> Sequence[str]:
   """Gets the cloud run flags for the given input data."""
 
@@ -134,7 +146,7 @@ def _get_cloud_run_flags(
           project,
       )
       + entrypoint.translate_entrypoint_features(entrypoint_command)
-      + required_flags.translate_add_required_flags(input_data)
+      + required_flags.translate_add_required_flags(input_data, source_path)
       + cpu_memory.translate_app_resources(input_data)
   )
 

@@ -1365,6 +1365,8 @@ class UpdateClusterOptions(object):
       enable_insecure_binding_system_unauthenticated=None,
       additional_ip_ranges=None,
       remove_additional_ip_ranges=None,
+      drain_additional_ip_ranges=None,
+      undrain_additional_ip_ranges=None,
       enable_private_nodes=None,
       enable_dns_access=None,
       disable_l4_lb_firewall_reconciliation=None,
@@ -1590,6 +1592,8 @@ class UpdateClusterOptions(object):
     )
     self.additional_ip_ranges = additional_ip_ranges
     self.remove_additional_ip_ranges = remove_additional_ip_ranges
+    self.drain_additional_ip_ranges = drain_additional_ip_ranges
+    self.undrain_additional_ip_ranges = undrain_additional_ip_ranges
     self.enable_private_nodes = enable_private_nodes
     self.enable_dns_access = enable_dns_access
     self.disable_l4_lb_firewall_reconciliation = (
@@ -1752,6 +1756,10 @@ class CreateNodePoolOptions(object):
       data_cache_count=None,
       accelerator_network_profile=None,
       enable_kernel_module_signature_enforcement=None,
+      runner_pool_control_mode=None,
+      control_node_pool=None,
+      enable_attestation=None,
+      tee_policy=None,
   ):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
@@ -1857,6 +1865,10 @@ class CreateNodePoolOptions(object):
     self.enable_kernel_module_signature_enforcement = (
         enable_kernel_module_signature_enforcement
     )
+    self.runner_pool_control_mode = runner_pool_control_mode
+    self.control_node_pool = control_node_pool
+    self.enable_attestation = enable_attestation
+    self.tee_policy = tee_policy
 
 
 class UpdateNodePoolOptions(object):
@@ -5476,12 +5488,14 @@ class APIAdapter(object):
     ):
       cluster = self.GetCluster(cluster_ref)
       desired_ip_ranges = {}
+      desired_statuses = {}
       if cluster.ipAllocationPolicy:
         config = cluster.ipAllocationPolicy.additionalIpRangesConfigs
         if config:
           for ip_range in config:
             secondary_ranges = set(ip_range.podIpv4RangeNames)
             desired_ip_ranges[ip_range.subnetwork] = secondary_ranges
+            desired_statuses[ip_range.subnetwork] = ip_range.status
 
       if options.additional_ip_ranges is not None:
         for ip_range in options.additional_ip_ranges:
@@ -5495,6 +5509,7 @@ class APIAdapter(object):
           )
           secondary_ranges.add(ip_range['pod-ipv4-range'])
           desired_ip_ranges[subnetwork] = secondary_ranges
+          desired_statuses[subnetwork] = None
 
       if options.remove_additional_ip_ranges is not None:
         for ip_remove in options.remove_additional_ip_ranges:
@@ -5526,12 +5541,74 @@ class APIAdapter(object):
                   self.messages.AdditionalIPRangesConfig(
                       subnetwork=subnetwork,
                       podIpv4RangeNames=list(secondary_ranges),
+                      status=desired_statuses[subnetwork],
                   )
                   for subnetwork, secondary_ranges in desired_ip_ranges.items()
               ]
           )
       )
 
+    if (
+        options.drain_additional_ip_ranges is not None
+        or options.undrain_additional_ip_ranges is not None
+    ):
+      cluster = self.GetCluster(cluster_ref)
+      desired_ip_ranges = {}
+      desired_statuses = {}
+      if cluster.ipAllocationPolicy:
+        config = cluster.ipAllocationPolicy.additionalIpRangesConfigs
+        if config:
+          for ip_range in config:
+            secondary_ranges = set(ip_range.podIpv4RangeNames)
+            desired_ip_ranges[ip_range.subnetwork] = secondary_ranges
+            desired_statuses[ip_range.subnetwork] = ip_range.status
+
+      if options.drain_additional_ip_ranges is not None:
+        for subnet_to_drain in options.drain_additional_ip_ranges:
+          subnetwork = SubnetworkNameToPath(
+              subnet_to_drain['subnetwork'],
+              cluster_ref.projectId,
+              cluster_ref.zone,
+          )
+          if subnetwork not in desired_ip_ranges:
+            raise util.Error(
+                ADDITIONAL_SUBNETWORKS_NOT_FOUND.format(subnetwork=subnetwork)
+            )
+          secondary_ranges = desired_ip_ranges[subnetwork]
+          desired_ip_ranges[subnetwork] = secondary_ranges
+          desired_statuses[subnetwork] = (
+              self.messages.AdditionalIPRangesConfig.StatusValueValuesEnum.DRAINING
+          )
+
+      if options.undrain_additional_ip_ranges is not None:
+        for subnet_to_undrain in options.undrain_additional_ip_ranges:
+          subnetwork = SubnetworkNameToPath(
+              subnet_to_undrain['subnetwork'],
+              cluster_ref.projectId,
+              cluster_ref.zone
+          )
+          if subnetwork not in desired_ip_ranges:
+            raise util.Error(
+                ADDITIONAL_SUBNETWORKS_NOT_FOUND.format(subnetwork=subnetwork)
+            )
+          secondary_ranges = desired_ip_ranges[subnetwork]
+          desired_ip_ranges[subnetwork] = secondary_ranges
+          desired_statuses[subnetwork] = (
+              self.messages.AdditionalIPRangesConfig.StatusValueValuesEnum.ACTIVE
+          )
+
+      update = self.messages.ClusterUpdate(
+          desiredAdditionalIpRangesConfig=self.messages.DesiredAdditionalIPRangesConfig(
+              additionalIpRangesConfigs=[
+                  self.messages.AdditionalIPRangesConfig(
+                      subnetwork=subnetwork,
+                      podIpv4RangeNames=list(secondary_ranges),
+                      status=desired_statuses[subnetwork],
+                  )
+                  for subnetwork, secondary_ranges in desired_ip_ranges.items()
+              ]
+          )
+      )
     if options.disable_l4_lb_firewall_reconciliation:
       update = self.messages.ClusterUpdate(
           desiredDisableL4LbFirewallReconciliation=True
@@ -6315,6 +6392,31 @@ class APIAdapter(object):
     _AddReservationAffinityToNodeConfig(node_config, options, self.messages)
     _AddSandboxConfigToNodeConfig(node_config, options, self.messages)
     _AddWindowsNodeConfigToNodeConfig(node_config, options, self.messages)
+
+    if options.runner_pool_control_mode == 'confidential':
+      node_config.runnerPoolControl = self.messages.RunnerPoolControl(
+          mode=self.messages.RunnerPoolControl.ModeValueValuesEnum.CONFIDENTIAL
+      )
+    elif options.control_node_pool:
+      node_config.runnerPoolConfig = self.messages.RunnerPoolConfig(
+          controlNodePool=options.control_node_pool,
+          attestation=self.messages.AttestationConfig(),
+      )
+      if options.enable_attestation:
+        node_config.runnerPoolConfig.attestation.mode = (
+            self.messages.AttestationConfig.ModeValueValuesEnum.ENABLED
+        )
+      else:
+        node_config.runnerPoolConfig.attestation.mode = (
+            self.messages.AttestationConfig.ModeValueValuesEnum.DISABLED
+        )
+      if options.tee_policy:
+        node_config.runnerPoolConfig.attestation.teePolicy = options.tee_policy
+    elif options.enable_attestation or options.tee_policy:
+      raise util.Error(
+          '--enable-attestation and --tee-policy can only be specified with '
+          '--control-node-pool.'
+      )
 
     # if we are creating a multi-host TPU (tpu_topology or a resource policy
     # is specified) and num_nodes is not specified, calculate the
@@ -7383,6 +7485,7 @@ class APIAdapter(object):
       window_start,
       window_end,
       window_scope,
+      window_until_end_of_support,
   ):
     """Adds a maintenance exclusion to the cluster's maintenance policy.
 
@@ -7395,6 +7498,8 @@ class APIAdapter(object):
         None.
       window_end: End time of the window as a datetime.datetime.
       window_scope: Scope that the current exclusion will apply to.
+      window_until_end_of_support: End time of the window is the end of the
+        cluster version's support.
 
     Returns:
       Operation from this cluster update.
@@ -7419,6 +7524,15 @@ class APIAdapter(object):
               window_name
           )
       )
+    if (
+        window_end is not None
+        and window_until_end_of_support
+    ) or (window_end is None and not window_until_end_of_support):
+      raise util.Error(
+          'Maintenance exclusion must contain exactly one of:'
+          ' --add-maintenance-exclusion-end,'
+          ' --add-maintenance-exclusion-until-end-of-support'
+      )
 
     # Note: we're using external/python/gcloud_deps/apitools/base/protorpclite
     # which does *not* handle maps very nicely. We actually have a
@@ -7426,8 +7540,11 @@ class APIAdapter(object):
     # field that has key and value fields. See
     # third_party/apis/container/v1alpha1/container_v1alpha1_messages.py.
     exclusions = existing_policy.window.maintenanceExclusions
+    end_time = None
+    if window_end:
+      end_time = window_end.isoformat()
     window = self.messages.TimeWindow(
-        startTime=window_start.isoformat(), endTime=window_end.isoformat()
+        startTime=window_start.isoformat(), endTime=end_time
     )
     if window_scope is not None:
       if window_scope == 'no_upgrades':
@@ -7442,6 +7559,15 @@ class APIAdapter(object):
         window.maintenanceExclusionOptions = self.messages.MaintenanceExclusionOptions(
             scope=self.messages.MaintenanceExclusionOptions.ScopeValueValuesEnum.NO_MINOR_OR_NODE_UPGRADES
         )
+    if window_until_end_of_support:
+      if window.maintenanceExclusionOptions is None:
+        window.maintenanceExclusionOptions = self.messages.MaintenanceExclusionOptions(
+            endTimeBehavior=(
+                self.messages.MaintenanceExclusionOptions.EndTimeBehaviorValueValuesEnum.UNTIL_END_OF_SUPPORT)  # pylint: disable=line-too-long
+        )
+      else:
+        window.maintenanceExclusionOptions.endTimeBehavior = (
+            self.messages.MaintenanceExclusionOptions.EndTimeBehaviorValueValuesEnum.UNTIL_END_OF_SUPPORT)  # pylint: disable=line-too-long
 
     exclusions.additionalProperties.append(
         exclusions.AdditionalProperty(key=window_name, value=window)
@@ -9203,12 +9329,14 @@ class V1Beta1Adapter(V1Adapter):
     ):
       cluster = self.GetCluster(cluster_ref)
       desired_ip_ranges = {}
+      desired_statuses = {}
       if cluster.ipAllocationPolicy:
         config = cluster.ipAllocationPolicy.additionalIpRangesConfigs
         if config:
           for ip_range in config:
             secondary_ranges = set(ip_range.podIpv4RangeNames)
             desired_ip_ranges[ip_range.subnetwork] = secondary_ranges
+            desired_statuses[ip_range.subnetwork] = ip_range.status
 
       if options.additional_ip_ranges is not None:
         for ip_range in options.additional_ip_ranges:
@@ -9222,6 +9350,7 @@ class V1Beta1Adapter(V1Adapter):
           )
           secondary_ranges.add(ip_range['pod-ipv4-range'])
           desired_ip_ranges[subnetwork] = secondary_ranges
+          desired_statuses[subnetwork] = None
 
       if options.remove_additional_ip_ranges is not None:
         for ip_remove in options.remove_additional_ip_ranges:
@@ -9253,6 +9382,69 @@ class V1Beta1Adapter(V1Adapter):
                   self.messages.AdditionalIPRangesConfig(
                       subnetwork=subnetwork,
                       podIpv4RangeNames=list(secondary_ranges),
+                      status=desired_statuses[subnetwork],
+                  )
+                  for subnetwork, secondary_ranges in desired_ip_ranges.items()
+              ]
+          )
+      )
+
+    if (
+        options.drain_additional_ip_ranges is not None
+        or options.undrain_additional_ip_ranges is not None
+    ):
+      cluster = self.GetCluster(cluster_ref)
+      desired_ip_ranges = {}
+      desired_statuses = {}
+      if cluster.ipAllocationPolicy:
+        config = cluster.ipAllocationPolicy.additionalIpRangesConfigs
+        if config:
+          for ip_range in config:
+            secondary_ranges = set(ip_range.podIpv4RangeNames)
+            desired_ip_ranges[ip_range.subnetwork] = secondary_ranges
+            desired_statuses[ip_range.subnetwork] = ip_range.status
+
+      if options.drain_additional_ip_ranges is not None:
+        for subnet_to_drain in options.drain_additional_ip_ranges:
+          subnetwork = SubnetworkNameToPath(
+              subnet_to_drain['subnetwork'],
+              cluster_ref.projectId,
+              cluster_ref.zone,
+          )
+          if subnetwork not in desired_ip_ranges:
+            raise util.Error(
+                ADDITIONAL_SUBNETWORKS_NOT_FOUND.format(subnetwork=subnetwork)
+            )
+          secondary_ranges = desired_ip_ranges[subnetwork]
+          desired_ip_ranges[subnetwork] = secondary_ranges
+          desired_statuses[subnetwork] = (
+              self.messages.AdditionalIPRangesConfig.StatusValueValuesEnum.DRAINING
+          )
+
+      if options.undrain_additional_ip_ranges is not None:
+        for subnet_to_undrain in options.undrain_additional_ip_ranges:
+          subnetwork = SubnetworkNameToPath(
+              subnet_to_undrain['subnetwork'],
+              cluster_ref.projectId,
+              cluster_ref.zone
+          )
+          if subnetwork not in desired_ip_ranges:
+            raise util.Error(
+                ADDITIONAL_SUBNETWORKS_NOT_FOUND.format(subnetwork=subnetwork)
+            )
+          secondary_ranges = desired_ip_ranges[subnetwork]
+          desired_ip_ranges[subnetwork] = secondary_ranges
+          desired_statuses[subnetwork] = (
+              self.messages.AdditionalIPRangesConfig.StatusValueValuesEnum.ACTIVE
+          )
+
+      update = self.messages.ClusterUpdate(
+          desiredAdditionalIpRangesConfig=self.messages.DesiredAdditionalIPRangesConfig(
+              additionalIpRangesConfigs=[
+                  self.messages.AdditionalIPRangesConfig(
+                      subnetwork=subnetwork,
+                      podIpv4RangeNames=list(secondary_ranges),
+                      status=desired_statuses[subnetwork],
                   )
                   for subnetwork, secondary_ranges in desired_ip_ranges.items()
               ]
@@ -9344,7 +9536,6 @@ class V1Beta1Adapter(V1Adapter):
       update = self.messages.ClusterUpdate(
           desiredNetworkTierConfig=_GetNetworkTierConfig(options, self.messages)
       )
-
     return update
 
   def UpdateCluster(self, cluster_ref, options):

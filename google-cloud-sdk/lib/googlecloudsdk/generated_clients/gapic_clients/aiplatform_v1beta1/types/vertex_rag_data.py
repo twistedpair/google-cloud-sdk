@@ -1497,12 +1497,12 @@ class RagManagedDbConfig(proto.Message):
     Attributes:
         enterprise (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.RagManagedDbConfig.Enterprise):
             Sets the RagManagedDb to the Enterprise tier.
-            This is the default tier if not explicitly
-            chosen.
 
             This field is a member of `oneof`_ ``tier``.
         scaled (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.RagManagedDbConfig.Scaled):
             Sets the RagManagedDb to the Scaled tier.
+            This is the default tier if not explicitly
+            chosen.
 
             This field is a member of `oneof`_ ``tier``.
         basic (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.RagManagedDbConfig.Basic):

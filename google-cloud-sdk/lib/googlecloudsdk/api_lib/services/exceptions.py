@@ -29,6 +29,10 @@ class ListServicesException(Error):
   """List services command."""
 
 
+class ListMcpServicesException(Error):
+  """List MCP services command."""
+
+
 class GetServicePermissionDeniedException(Error):
   """Permission denied exception for get service command."""
 

@@ -260,6 +260,7 @@ class OsloginClient(object):
       service_account='',
       compute_instance=None,
       app_engine_instance=None,
+      cloud_run_deployment=None,
   ):
     """Sign an SSH public key scoped to a given instance.
 
@@ -269,33 +270,41 @@ class OsloginClient(object):
       region: str, The region where the signed SSH public key may be used.
       service_account: str, The service account associated with the VM.
       compute_instance: str, The Compute instance to sign the SSH public key
-        for. Only one of compute_instance or app_engine_instance should be
-        specified. The format for this field is
+        for. Only one of compute_instance, app_engine_instance or
+        cloud_run_deployment should be specified. The format for this field is
         'projects/{project}/zones/{zone}/instances/{instance_id}'.
       app_engine_instance: str, The App Engine instance to sign the SSH public
-        key for. Only one of compute_instance or app_engine_instance should be
-        specified. The format for this field is
+        key for. Only one of compute_instance, app_engine_instance or
+        cloud_run_deployment should be specified. The format for this field is
         'services/{service}/versions/{version}/instances/{instance}'.
+      cloud_run_deployment: str, The Cloud Run deployment to sign the SSH public
+        key for. Only one of compute_instance, app_engine_instance, or
+        cloud_run_deployment should be specified. The format for this field is
+        'projects/{project}/locations/{location}/services/{service}'.
 
     Raises:
-      ValueError: If both or neither compute_instance and
-        app_engine_instance are specified.
+      ValueError: If more than one or none of compute_instance,
+        app_engine_instance, and cloud_run_service are specified.
 
     Returns:
       A signed SSH public key.
     """
-    if (compute_instance and app_engine_instance) or (
-        not compute_instance and not app_engine_instance
-    ):
+    number_of_instances = (
+        bool(compute_instance)
+        + bool(app_engine_instance)
+        + bool(cloud_run_deployment)
+    )
+    if number_of_instances != 1:
       raise ValueError(
-          'Exactly one of compute_instance or app_engine_instance must be'
-          ' specified.'
+          'Exactly one of compute_instance, app_engine_instance, or '
+          'cloud_run_service must be specified.'
       )
     request_kwargs = {
         'sshPublicKey': public_key,
         'serviceAccount': service_account,
         'computeInstance': compute_instance,
         'appEngineInstance': app_engine_instance,
+        'cloudRunService': cloud_run_deployment,
     }
     message_kwargs = {
         'parent': 'projects/{0}/locations/{1}'.format(project_id, region),

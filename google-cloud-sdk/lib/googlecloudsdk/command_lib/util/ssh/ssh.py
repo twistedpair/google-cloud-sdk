@@ -579,6 +579,14 @@ class Keys(object):
           log.debug('Failed to create sentinel file: [{}]'.format(e))
 
 
+def CertFileFromCloudRunDeployment(project, region, deployment):
+  cert_dir = os.path.realpath(files.ExpandHomeDir(CERTIFICATE_DIR))
+  return os.path.join(
+      cert_dir,
+      '{}_{}_{}-cert.pub'.format(project, region, deployment),
+  )
+
+
 def CertFileFromAppEngineInstance(project, service, version, instance):
   cert_dir = os.path.realpath(files.ExpandHomeDir(CERTIFICATE_DIR))
   return os.path.join(
@@ -592,6 +600,25 @@ def CertFileFromComputeInstance(project_id, zone, instance_id):
   return os.path.join(
       cert_dir, '{}_{}_{}-cert.pub'.format(project_id, zone, instance_id)
   )
+
+
+def WriteCloudRunCertificate(cert, project, region, deployment):
+  """Writes a certificate associated with the key pair for Cloud Run.
+
+  Args:
+    cert: string, The SSH certificate data.
+    project: string, The project ID of the instance.
+    region: string, The region of the deployment.
+    deployment: string, The deployment name.
+  """
+  cert_dir = os.path.realpath(files.ExpandHomeDir(CERTIFICATE_DIR))
+  files.MakeDir(cert_dir, mode=0o700)
+
+  filepath = CertFileFromCloudRunDeployment(project, region, deployment)
+  try:
+    files.WriteFileContents(filepath, cert)
+  except files.Error as e:
+    log.debug('Failed to update the certificate {}: [{}]'.format(filepath, e))
 
 
 def WriteAppEngineCertificate(cert, project, service, version, instance):
@@ -647,8 +674,12 @@ def DeleteCertificateFile(project_id, zone, instance_id):
 
 
 def ValidateCertificate(
-    oslogin_state, project_id=None, zone=None, instance_id=None,
+    oslogin_state,
+    project_id=None,
+    zone=None,
+    instance_id=None,
     app_engine_params=None,
+    cloud_run_params=None,
 ):
   """Checks if the certificate is currently valid for a given instance.
 
@@ -658,7 +689,9 @@ def ValidateCertificate(
     zone: string, The zone of the instance.
     instance_id: string, The instance ID.
     app_engine_params: dict, values of (appsId, servicesId, versionId,
-        instanceId, serviceAccount, region) for App Engine instances.
+      instanceId, serviceAccount, region) for App Engine instances.
+    cloud_run_params: dict, values of (region, deployment_name, project_id) for
+      Cloud Run deployments.
   """
   def IsCertValid(cert):
     time_format = '%Y-%m-%dT%H:%M:%S'
@@ -676,6 +709,12 @@ def ValidateCertificate(
         app_engine_params['servicesId'],
         app_engine_params['versionsId'],
         app_engine_params['instancesId'],
+    )
+  elif cloud_run_params:
+    cert_file = CertFileFromCloudRunDeployment(
+        project_id,
+        cloud_run_params['region'],
+        cloud_run_params['deployment_name'],
     )
   else:
     cert_file = CertFileFromComputeInstance(project_id, zone, instance_id)
@@ -1104,6 +1143,31 @@ def _IsInstanceWindows(instance, messages=None):
   )
 
 
+def _SignAndWriteCloudRunCertificate(
+    oslogin,
+    public_key,
+    cloud_run_params,
+):
+  """Signs and writes a certificate for the given Cloud Run service."""
+  project_id = cloud_run_params['project_id']
+  region = cloud_run_params['region']
+  deployment_name = cloud_run_params['deployment_name']
+  sign_response = oslogin.SignSshPublicKeyForInstance(
+      public_key,
+      project_id,
+      region,
+      cloud_run_deployment=(
+          f'projects/{project_id}/locations/{region}/services/{deployment_name}'
+      ),
+  )
+  WriteCloudRunCertificate(
+      sign_response.signedSshPublicKey,
+      project_id,
+      region,
+      deployment_name,
+  )
+
+
 def _SignAndWriteAppEngineCertificate(
     oslogin,
     public_key,
@@ -1163,6 +1227,7 @@ def GetOsloginState(
     expiration_time,
     release_track,
     app_engine_params=None,
+    cloud_run_params=None,
     username_requested=False,
     instance_enable_oslogin=None,
     instance_enable_2fa=None,
@@ -1187,9 +1252,13 @@ def GetOsloginState(
       the new expiry.
     release_track: release_track, The object representing the release track.
     app_engine_params: dict, The fields required to identify an App Engine
-      instance. This should be None for Compute instances. If present, this
-      should contain fields for 'appsId', 'servicesId', 'versionsId',
-      'instancesId', and 'serviceAccount'.
+      instance. This should be None for Compute instances and Cloud Run
+      deployments. If present, this should contain fields for 'appsId',
+      'servicesId', 'versionsId', 'instancesId', and 'serviceAccount'.
+    cloud_run_params: dict, The fields required to identify a Cloud Run
+      deployment. This should be None for Compute and App Engine instances. If
+      present, this should contain fields for 'deployment_name', 'project_id',
+      and 'region'.
     username_requested: bool, True if the user has passed a specific username in
       the args.
     instance_enable_oslogin: True if the instance's metadata indicates that OS
@@ -1215,12 +1284,15 @@ def GetOsloginState(
   """
   oslogin_state = OsloginState(user=requested_user)
 
-  oslogin_enabled = FeatureEnabledInMetadata(
-      instance,
-      project,
-      OSLOGIN_ENABLE_METADATA_KEY,
-      instance_override=instance_enable_oslogin,
-  )
+  if cloud_run_params:
+    oslogin_enabled = True
+  else:
+    oslogin_enabled = FeatureEnabledInMetadata(
+        instance,
+        project,
+        OSLOGIN_ENABLE_METADATA_KEY,
+        instance_override=instance_enable_oslogin,
+    )
 
   if not oslogin_enabled:
     # OS Login is disabled by default.
@@ -1233,25 +1305,31 @@ def GetOsloginState(
     return oslogin_state
 
   oslogin_state.oslogin_enabled = oslogin_enabled
-  oslogin_state.oslogin_2fa_enabled = FeatureEnabledInMetadata(
-      instance,
-      project,
-      OSLOGIN_ENABLE_2FA_METADATA_KEY,
-      instance_override=instance_enable_2fa,
-  )
-  oslogin_state.security_keys_enabled = FeatureEnabledInMetadata(
-      instance,
-      project,
-      OSLOGIN_ENABLE_SK_METADATA_KEY,
-      instance_override=instance_enable_security_keys,
-  )
   oslogin_state.third_party_user = IsThirdPartyUser()
-  oslogin_state.require_certificates = FeatureEnabledInMetadata(
-      instance,
-      project,
-      OSLOGIN_ENABLE_CERTIFICATES_METADATA_KEY,
-      instance_override=instance_require_certificates,
-  )
+
+  if cloud_run_params:
+    oslogin_state.oslogin_2fa_enabled = False
+    oslogin_state.security_keys_enabled = False
+    oslogin_state.require_certificates = True
+  else:
+    oslogin_state.oslogin_2fa_enabled = FeatureEnabledInMetadata(
+        instance,
+        project,
+        OSLOGIN_ENABLE_2FA_METADATA_KEY,
+        instance_override=instance_enable_2fa,
+    )
+    oslogin_state.security_keys_enabled = FeatureEnabledInMetadata(
+        instance,
+        project,
+        OSLOGIN_ENABLE_SK_METADATA_KEY,
+        instance_override=instance_enable_security_keys,
+    )
+    oslogin_state.require_certificates = FeatureEnabledInMetadata(
+        instance,
+        project,
+        OSLOGIN_ENABLE_CERTIFICATES_METADATA_KEY,
+        instance_override=instance_require_certificates,
+    )
 
   env = Environment.Current()
   if env.suite == Suite.PUTTY:
@@ -1283,6 +1361,12 @@ def GetOsloginState(
     user_email = quote(user_email, safe=':@')
     if app_engine_params:
       ValidateCertificate(oslogin_state, app_engine_params)
+    elif cloud_run_params:
+      ValidateCertificate(
+          oslogin_state,
+          cloud_run_params=cloud_run_params,
+          project_id=cloud_run_params['project_id'],
+      )
     else:
       ValidateCertificate(oslogin_state, project.name, zone, instance.id)
     if not oslogin_state.signed_ssh_key:
@@ -1290,6 +1374,12 @@ def GetOsloginState(
         if app_engine_params:
           _SignAndWriteAppEngineCertificate(
               oslogin, public_key, project, region, app_engine_params
+          )
+        elif cloud_run_params:
+          _SignAndWriteCloudRunCertificate(
+              oslogin,
+              public_key,
+              cloud_run_params,
           )
         else:
           _SignAndWriteComputeCertificate(
@@ -1305,13 +1395,17 @@ def GetOsloginState(
           _SignAndWriteAppEngineCertificate(
               oslogin, public_key, project, region, app_engine_params
           )
+        elif cloud_run_params:
+          _SignAndWriteCloudRunCertificate(
+              oslogin, public_key, cloud_run_params
+          )
         else:
           _SignAndWriteComputeCertificate(
               oslogin, public_key, project, region, zone, instance
           )
     login_profile = oslogin.GetLoginProfile(
         user_email,
-        project.name,
+        cloud_run_params['project_id'] if cloud_run_params else project.name,
         include_security_keys=oslogin_state.security_keys_enabled,
     )
   # Check to see if public key is already in profile and POSIX information
@@ -1332,7 +1426,7 @@ def GetOsloginState(
       )
     login_profile = oslogin.GetLoginProfile(
         user_email,
-        project.name,
+        cloud_run_params['project_id'] if cloud_run_params else project.name,
         include_security_keys=oslogin_state.security_keys_enabled,
     )
     if oslogin_state.security_keys_enabled:

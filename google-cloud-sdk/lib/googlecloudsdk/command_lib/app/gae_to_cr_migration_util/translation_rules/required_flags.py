@@ -16,18 +16,26 @@
 """Add required flags to output gcloud run deploy command."""
 
 from collections.abc import Mapping, Sequence
+import os
 
 
 def translate_add_required_flags(
     input_data: Mapping[str, any],
+    source_path: str,
 ) -> Sequence[str]:
   """Add required flags to gcloud run deploy command."""
-  return [
-      f'--labels={_get_labels()}',
-      f'--base-image={input_data["runtime"]}'
-      if 'runtime' in input_data
-      else '',
-  ]
+  required_flags = [f'--labels={_get_labels()}']
+  if _check_dockerfile_exists(source_path):
+    required_flags.extend([
+        '--clear-base-image',
+    ])
+  else:
+    required_flags.extend([
+        f'--base-image={input_data["runtime"]}'
+        if 'runtime' in input_data
+        else '',
+    ])
+  return required_flags
 
 
 def _get_labels() -> str:
@@ -36,3 +44,11 @@ def _get_labels() -> str:
       'migrated-from',
       'gcloud-gae2cr-version=1',
   ])
+
+
+def _check_dockerfile_exists(source_path: str) -> bool:
+  """Checks if a Dockerfile exists in the same directory as the app.yaml file."""
+  dockerfile_path = os.path.join(
+      os.path.dirname(source_path), 'Dockerfile'
+  )
+  return os.path.exists(dockerfile_path)

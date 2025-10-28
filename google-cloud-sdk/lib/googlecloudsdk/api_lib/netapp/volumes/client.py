@@ -614,12 +614,8 @@ class VolumesAdapter(object):
       self.ParseHybridReplicationParameters(
           volume, hybrid_replication_parameters, self.release_track
       )
-    if (
-        self.release_track == base.ReleaseTrack.ALPHA
-        or self.release_track == base.ReleaseTrack.BETA
-    ):
-      if block_devices is not None:
-        self.ParseBlockDevices(volume, block_devices)
+    if block_devices is not None:
+      self.ParseBlockDevices(volume, block_devices)
     if cache_parameters is not None:
       self.ParseCacheParameters(volume, cache_parameters)
     return volume
@@ -700,10 +696,7 @@ class VolumesAdapter(object):
       self.ParseCacheParameters(volume_config, cache_parameters)
     if throughput_mibps is not None:
       volume_config.throughputMibps = throughput_mibps
-    if block_devices is not None and self.release_track in [
-        base.ReleaseTrack.ALPHA,
-        base.ReleaseTrack.BETA,
-    ]:
+    if block_devices is not None:
       self.ParseBlockDevices(volume_config, block_devices)
     return volume_config
 

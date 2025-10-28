@@ -40,16 +40,16 @@ class NodeAffinityFileParseError(core_exceptions.Error):
 
 
 def AddHaControllerNameArgToParser(parser, api_version=None):
-  """Adds an HA Controller name resource argument."""
+  """Adds an HA Controller name resource_data argument."""
   ha_controller_data = yaml_data.ResourceYAMLData.FromPath(
       "compute.ha_controllers.ha_controller"
   )
-  resource_spec = concepts.ResourceSpec.FromYaml(
+  resource_data_spec = concepts.ResourceSpec.FromYaml(
       ha_controller_data.GetData(), is_positional=True, api_version=api_version
   )
   presentation_spec = presentation_specs.ResourcePresentationSpec(
       name="ha_controller",
-      concept_spec=resource_spec,
+      concept_spec=resource_data_spec,
       required=True,
       group_help="Name of an HA Controller.",
   )
@@ -133,10 +133,10 @@ def MakeNetworkConfiguration(
 
 
 def SetResourceName(unused_ref, unused_args, request):
-  """Set resource.name to the provided haController ID.
+  """Set resource_data.name to the provided haController ID.
 
   Args:
-    unused_ref: An unused resource ref to the parsed resource.
+    unused_ref: An unused resource_data ref to the parsed resource_data.
     unused_args: The unused argparse namespace.
     request: The request to modify.
 
@@ -228,3 +228,19 @@ def EnumTypeToChoices(enum_type: messages.Enum) -> str:
           [arg_utils.EnumNameToChoice(n) for n in enum_type.names()]
       )
   )
+
+
+def FixExportStructure(
+    resource_data: dict[str, str]) -> dict[str, str]:
+  """Changes the API structure to the export structure."""
+  if "zoneConfigurations" in resource_data:
+    resource_data["zoneConfiguration"] = resource_data["zoneConfigurations"]
+    del resource_data["zoneConfigurations"]
+  if (
+      "networkingAutoConfiguration" in resource_data
+      and "internal" in resource_data["networkingAutoConfiguration"]
+  ):
+    resource_data["networkingAutoConfiguration"] = resource_data[
+        "networkingAutoConfiguration"
+    ]["internal"]
+  return resource_data

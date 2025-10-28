@@ -1,0 +1,24 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: compute alpha HaControllerNetworkingAutoConfigurationInternal export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  ipAddress:
+    description: |-
+      IP addresses will be automatically allocated according to StackType if not
+      provided.
+    type: string
+  ipv6Address:
+    description: A string attribute.
+    type: string
+  stackType:
+    description: |-
+      Determine which IP addresses to automatically create. Field and option
+      naming consistent with NetworkInterface configuration on Instances.
+    type: string
+    enum:
+    - IPV4_IPV6
+    - IPV4_ONLY
+    - IPV6_ONLY

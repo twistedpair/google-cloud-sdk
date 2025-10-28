@@ -24,6 +24,7 @@ The core responsibilities include:
   2.  Providing classes to represent these resources (e.g., Cloud Build).
   3.  Orchestrating the creation of these resources in Google Cloud.
 """
+
 import json
 import os
 import re
@@ -41,6 +42,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.run import config_changes
 from googlecloudsdk.command_lib.run import connection_context
+from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.run import flags as run_flags
 from googlecloudsdk.command_lib.run import platforms
 from googlecloudsdk.command_lib.run import serverless_operations
@@ -717,7 +719,7 @@ def deploy_application(
     )
     new_service = service.Service(raw_service, run_messages)
   except messages_util.ScalarTypeMismatchError as e:
-    exceptions.MaybeRaiseCustomFieldMismatch(
+    serverless_exceptions.MaybeRaiseCustomFieldMismatch(
         e,
         help_text=(
             'Please make sure that the YAML file matches the Knative '

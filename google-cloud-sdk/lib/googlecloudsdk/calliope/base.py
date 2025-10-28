@@ -956,6 +956,57 @@ def NonDefaultUniverseOnly(cmd_class):
   return cmd_class
 
 
+def _RegionalEndpointMode(mode):
+  """Returns decorator that sets regional endpoint mode on commands/groups.
+
+  Args:
+    mode: Value of properties.VALUES.regional.endpoint_mode to set.
+  Returns:
+    Decorator function that modifies the Filter/Run method to set the given
+    endpoint mode for the group/command in question.
+  """
+
+  def DecorateCommand(cmd_class):
+    """Wrapper Function that creates actual decorated class.
+
+    Args:
+      cmd_class: base.Command or base.Group subclass to be decorated
+
+    Returns:
+      The decorated class.
+    """
+    # Respect the user property, if explicitly set.
+    if properties.VALUES.regional.endpoint_mode.IsExplicitlySet():
+      return cmd_class
+
+    def RunDecorator(run_func):
+      @wraps(run_func)
+      def WrappedRun(*args, **kw):
+        properties.VALUES.SetInvocationValue(
+            properties.VALUES.regional.endpoint_mode, mode, None)
+        return run_func(*args, **kw)
+      return WrappedRun
+
+    if issubclass(cmd_class, Group):
+      cmd_class.Filter = RunDecorator(cmd_class.Filter)
+    else:
+      cmd_class.Run = RunDecorator(cmd_class.Run)
+
+    return cmd_class
+
+  return DecorateCommand
+
+
+def RegionalEndpointsOnly(cmd_class):
+  decorator = _RegionalEndpointMode(properties.VALUES.regional.REGIONAL_ONLY)
+  return decorator(cmd_class)
+
+
+def RegionalEndpointsPreferred(cmd_class):
+  decorator = _RegionalEndpointMode(properties.VALUES.regional.AUTO)
+  return decorator(cmd_class)
+
+
 def UnicodeIsSupported(cmd_class):
   """Decorator for calliope commands and groups that support unicode.
 

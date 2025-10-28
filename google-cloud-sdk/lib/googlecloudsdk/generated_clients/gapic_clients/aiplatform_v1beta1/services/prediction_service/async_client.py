@@ -40,9 +40,11 @@ from cloudsdk.google.protobuf import struct_pb2  # type: ignore
 from cloudsdk.google.protobuf import timestamp_pb2  # type: ignore
 from google.rpc import status_pb2  # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types import content
+from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types import content as gca_content
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types import explanation
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types import prediction_service
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types import types
+from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types import usage_metadata
 from .transports.base import PredictionServiceTransport, DEFAULT_CLIENT_INFO
 from .transports.grpc_asyncio import PredictionServiceGrpcAsyncIOTransport
 from .client import PredictionServiceClient
@@ -1610,6 +1612,159 @@ class PredictionServiceAsyncClient:
         # Done; return the response.
         return response
 
+    def invoke(self,
+            request: Optional[Union[prediction_service.InvokeRequest, dict]] = None,
+            *,
+            endpoint: Optional[str] = None,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> Awaitable[AsyncIterable[httpbody_pb2.HttpBody]]:
+        r"""Forwards arbitrary HTTP requests for both streaming and
+        non-streaming cases. To use this method,
+        [invoke_route_prefix][Model.container_spec.invoke_route_prefix]
+        must be set to allow the paths that will be specified in the
+        request.
+
+        .. code-block:: python
+
+            # This snippet has been automatically generated and should be regarded as a
+            # code template only.
+            # It will require modifications to work:
+            # - It may require correct/in-range values for request initialization.
+            # - It may require specifying regional endpoints when creating the service
+            #   client as shown in:
+            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
+            from googlecloudsdk.generated_clients.gapic_clients import aiplatform_v1beta1
+
+            async def sample_invoke():
+                # Create a client
+                client = aiplatform_v1beta1.PredictionServiceAsyncClient()
+
+                # Initialize request argument(s)
+                request = aiplatform_v1beta1.InvokeRequest(
+                    endpoint="endpoint_value",
+                )
+
+                # Make the request
+                stream = await client.invoke(request=request)
+
+                # Handle the response
+                async for response in stream:
+                    print(response)
+
+        Args:
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.InvokeRequest, dict]]):
+                The request object. Request message for
+                [PredictionService.Invoke][google.cloud.aiplatform.v1beta1.PredictionService.Invoke].
+            endpoint (:class:`str`):
+                Required. The name of the Endpoint requested to serve
+                the prediction. Format:
+                ``projects/{project}/locations/{location}/endpoints/{endpoint}``
+
+                This corresponds to the ``endpoint`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+
+        Returns:
+            AsyncIterable[google.api.httpbody_pb2.HttpBody]:
+                Message that represents an arbitrary HTTP body. It should only be used for
+                   payload formats that can't be represented as JSON,
+                   such as raw binary or an HTML page.
+
+                   This message can be used both in streaming and
+                   non-streaming API methods in the request as well as
+                   the response.
+
+                   It can be used as a top-level request field, which is
+                   convenient if one wants to extract parameters from
+                   either the URL or HTTP template into the request
+                   fields and also want access to the raw HTTP body.
+
+                   Example:
+
+                      message GetResourceRequest {
+                         // A unique request id. string request_id = 1;
+
+                         // The raw HTTP body is bound to this field.
+                         google.api.HttpBody http_body = 2;
+
+                      }
+
+                      service ResourceService {
+                         rpc GetResource(GetResourceRequest)
+                            returns (google.api.HttpBody);
+
+                         rpc UpdateResource(google.api.HttpBody)
+                            returns (google.protobuf.Empty);
+
+                      }
+
+                   Example with streaming methods:
+
+                      service CaldavService {
+                         rpc GetCalendar(stream google.api.HttpBody)
+                            returns (stream google.api.HttpBody);
+
+                         rpc UpdateCalendar(stream google.api.HttpBody)
+                            returns (stream google.api.HttpBody);
+
+                      }
+
+                   Use of this type only changes how the request and
+                   response bodies are handled, all other features will
+                   continue to work unchanged.
+
+        """
+        # Create or coerce a protobuf request object.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
+        has_flattened_params = any([endpoint])
+        if request is not None and has_flattened_params:
+            raise ValueError("If the `request` argument is set, then none of "
+                             "the individual field arguments should be set.")
+
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, prediction_service.InvokeRequest):
+            request = prediction_service.InvokeRequest(request)
+
+        # If we have keyword arguments corresponding to fields on the
+        # request, apply these.
+        if endpoint is not None:
+            request.endpoint = endpoint
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = self._client._transport._wrapped_methods[self._client._transport.invoke]
+
+        # Certain fields should be provided within the metadata header;
+        # add these here.
+        metadata = tuple(metadata) + (
+            gapic_v1.routing_header.to_grpc_metadata((
+                ("endpoint", request.endpoint),
+            )),
+        )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
+
+        # Send the request.
+        response = rpc(
+            request,
+            retry=retry,
+            timeout=timeout,
+            metadata=metadata,
+        )
+
+        # Done; return the response.
+        return response
+
     async def explain(self,
             request: Optional[Union[prediction_service.ExplainRequest, dict]] = None,
             *,
@@ -2293,6 +2448,119 @@ class PredictionServiceAsyncClient:
 
         # Send the request.
         response = rpc(
+            request,
+            retry=retry,
+            timeout=timeout,
+            metadata=metadata,
+        )
+
+        # Done; return the response.
+        return response
+
+    async def embed_content(self,
+            request: Optional[Union[prediction_service.EmbedContentRequest, dict]] = None,
+            *,
+            model: Optional[str] = None,
+            content: Optional[gca_content.Content] = None,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> prediction_service.EmbedContentResponse:
+        r"""Embed content with multimodal inputs.
+
+        .. code-block:: python
+
+            # This snippet has been automatically generated and should be regarded as a
+            # code template only.
+            # It will require modifications to work:
+            # - It may require correct/in-range values for request initialization.
+            # - It may require specifying regional endpoints when creating the service
+            #   client as shown in:
+            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
+            from googlecloudsdk.generated_clients.gapic_clients import aiplatform_v1beta1
+
+            async def sample_embed_content():
+                # Create a client
+                client = aiplatform_v1beta1.PredictionServiceAsyncClient()
+
+                # Initialize request argument(s)
+                request = aiplatform_v1beta1.EmbedContentRequest(
+                )
+
+                # Make the request
+                response = await client.embed_content(request=request)
+
+                # Handle the response
+                print(response)
+
+        Args:
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.EmbedContentRequest, dict]]):
+                The request object. Request message for
+                [PredictionService.EmbedContent][google.cloud.aiplatform.v1beta1.PredictionService.EmbedContent].
+            model (:class:`str`):
+                Required. The name of the publisher model requested to
+                serve the prediction. Format:
+                ``projects/{project}/locations/{location}/publishers/*/models/*``
+
+                This corresponds to the ``model`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            content (:class:`googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.Content`):
+                Required. Input content to be
+                embedded. Required.
+
+                This corresponds to the ``content`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+
+        Returns:
+            googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.EmbedContentResponse:
+                Response message for
+                   [PredictionService.EmbedContent][google.cloud.aiplatform.v1beta1.PredictionService.EmbedContent].
+
+        """
+        # Create or coerce a protobuf request object.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
+        has_flattened_params = any([model, content])
+        if request is not None and has_flattened_params:
+            raise ValueError("If the `request` argument is set, then none of "
+                             "the individual field arguments should be set.")
+
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, prediction_service.EmbedContentRequest):
+            request = prediction_service.EmbedContentRequest(request)
+
+        # If we have keyword arguments corresponding to fields on the
+        # request, apply these.
+        if model is not None:
+            request.model = model
+        if content is not None:
+            request.content = content
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = self._client._transport._wrapped_methods[self._client._transport.embed_content]
+
+        # Certain fields should be provided within the metadata header;
+        # add these here.
+        metadata = tuple(metadata) + (
+            gapic_v1.routing_header.to_grpc_metadata((
+                ("model", request.model),
+            )),
+        )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
+
+        # Send the request.
+        response = await rpc(
             request,
             retry=retry,
             timeout=timeout,

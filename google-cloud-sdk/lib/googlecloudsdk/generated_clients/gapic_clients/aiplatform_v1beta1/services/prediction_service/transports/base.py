@@ -180,6 +180,11 @@ class PredictionServiceTransport(abc.ABC):
                 default_timeout=None,
                 client_info=client_info,
             ),
+            self.invoke: gapic_v1.method.wrap_method(
+                self.invoke,
+                default_timeout=None,
+                client_info=client_info,
+            ),
             self.explain: gapic_v1.method.wrap_method(
                 self.explain,
                 default_timeout=None,
@@ -202,6 +207,11 @@ class PredictionServiceTransport(abc.ABC):
             ),
             self.chat_completions: gapic_v1.method.wrap_method(
                 self.chat_completions,
+                default_timeout=None,
+                client_info=client_info,
+            ),
+            self.embed_content: gapic_v1.method.wrap_method(
+                self.embed_content,
                 default_timeout=None,
                 client_info=client_info,
             ),
@@ -325,6 +335,15 @@ class PredictionServiceTransport(abc.ABC):
         raise NotImplementedError()
 
     @property
+    def invoke(self) -> Callable[
+            [prediction_service.InvokeRequest],
+            Union[
+                httpbody_pb2.HttpBody,
+                Awaitable[httpbody_pb2.HttpBody]
+            ]]:
+        raise NotImplementedError()
+
+    @property
     def explain(self) -> Callable[
             [prediction_service.ExplainRequest],
             Union[
@@ -366,6 +385,15 @@ class PredictionServiceTransport(abc.ABC):
             Union[
                 httpbody_pb2.HttpBody,
                 Awaitable[httpbody_pb2.HttpBody]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def embed_content(self) -> Callable[
+            [prediction_service.EmbedContentRequest],
+            Union[
+                prediction_service.EmbedContentResponse,
+                Awaitable[prediction_service.EmbedContentResponse]
             ]]:
         raise NotImplementedError()
 

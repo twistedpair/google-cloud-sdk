@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import textwrap
+
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import parser_arguments
 
@@ -38,7 +40,7 @@ class ClusterUpgradeFlags:
         '--show-linked-cluster-upgrade',
         action='store_true',
         default=None,
-        help="""\
+        help=textwrap.dedent("""\
         Shows the cluster upgrade feature information for the current fleet as
         well as information for all other fleets linked in the same rollout
         sequence (provided that the caller has permission to view the upstream
@@ -50,7 +52,7 @@ class ClusterUpgradeFlags:
         sequence containing the current fleet, run:
 
           $ {command} --show-linked-cluster-upgrade
-        """,
+        """),
     )
 
   def AddDefaultUpgradeSoakingFlag(self):
@@ -58,7 +60,12 @@ class ClusterUpgradeFlags:
     self.parser.add_argument(
         '--default-upgrade-soaking',
         type=arg_parsers.Duration(),
-        help="""\
+        help=textwrap.dedent("""\
+        Note: This flag only applies to Rollout Sequencing v1, not Rollout
+        Sequencing v2 (which uses custom stages). If using Rollout
+        Sequencing v1 and this flag is not provided, a default value of 7
+        days will be used.
+
         Configures the default soaking duration for each upgrade propagating
         through the current fleet to become "COMPLETE". Soaking begins after
         all clusters in the fleet are on the target version, or after 30 days
@@ -71,7 +78,7 @@ class ClusterUpgradeFlags:
         run:
 
           $ {command} --default-upgrade-soaking=7d
-        """,
+        """),
     )
 
   def AddUpgradeSoakingOverrideFlags(self, with_destructive=False):
@@ -94,7 +101,7 @@ class ClusterUpgradeFlags:
         '--remove-upgrade-soaking-overrides',
         action='store_true',
         default=None,
-        help="""\
+        help=textwrap.dedent("""\
         Removes soaking time overrides for all upgrades propagating through the
         current fleet. Consequently, all upgrades will follow the soak time
         configured by `--default-upgrade-soaking` until new overrides are
@@ -104,7 +111,7 @@ class ClusterUpgradeFlags:
         To remove all configured soaking time overrides, run:
 
           $ {command} --remove-upgrade-soaking-overrides
-        """,
+        """),
     )
 
   def _AddUpgradeSoakingOverrideFlags(
@@ -115,7 +122,7 @@ class ClusterUpgradeFlags:
     Args:
       group: The group that should contain the upgrade soaking override flags.
     """
-    group = group.add_group(help="""\
+    group = group.add_group(help=textwrap.dedent("""\
         Upgrade soaking override.
 
         Defines a specific soaking time override for a particular upgrade
@@ -128,7 +135,7 @@ class ClusterUpgradeFlags:
           $ {command} \
               --add-upgrade-soaking-override=12h \
               --upgrade-selector=name="k8s_control_plane",version="1.23.1-gke.1000"
-        """)
+        """))
     self._AddAddUpgradeSoakingOverrideFlag(group)
     self._AddUpgradeSelectorFlag(group)
 
@@ -144,13 +151,13 @@ class ClusterUpgradeFlags:
         '--add-upgrade-soaking-override',
         type=arg_parsers.Duration(),
         required=True,
-        help="""\
+        help=textwrap.dedent("""\
         Overrides the soaking time for a particular upgrade name and version
         propagating through the current fleet. Set soaking to 0 days to bypass
         soaking and fast-forward the upgrade to the downstream fleet.
 
         See `$ gcloud topic datetimes` for information on duration formats.
-        """,
+        """),
     )
 
   def _AddUpgradeSelectorFlag(
@@ -166,11 +173,11 @@ class ClusterUpgradeFlags:
         '--upgrade-selector',
         type=UpgradeSelector(),
         required=True,
-        help="""\
+        help=textwrap.dedent("""\
         Name and version of the upgrade to be overridden where version is a
         full GKE version. Currently, name can be either `k8s_control_plane` or
         `k8s_node`.
-        """,
+        """),
     )
 
   def AddUpstreamFleetFlags(self, with_destructive=False):
@@ -192,7 +199,7 @@ class ClusterUpgradeFlags:
     group.add_argument(
         '--upstream-fleet',
         type=str,
-        help="""\
+        help=textwrap.dedent("""\
         The upstream fleet. GKE will finish upgrades on the upstream fleet
         before applying the same upgrades to the current fleet.
 
@@ -200,7 +207,7 @@ class ClusterUpgradeFlags:
 
         $ {command} \
             --upstream-fleet={upstream_fleet}
-        """,
+        """),
     )
 
   def _AddResetUpstreamFleetFlag(
@@ -215,7 +222,7 @@ class ClusterUpgradeFlags:
         '--reset-upstream-fleet',
         action='store_true',
         default=None,
-        help="""\
+        help=textwrap.dedent("""\
         Clears the relationship between the current fleet and its upstream
         fleet in the rollout sequence.
 
@@ -223,7 +230,7 @@ class ClusterUpgradeFlags:
         run:
 
           $ {command} --reset-upstream-fleet
-        """,
+        """),
     )
 
 

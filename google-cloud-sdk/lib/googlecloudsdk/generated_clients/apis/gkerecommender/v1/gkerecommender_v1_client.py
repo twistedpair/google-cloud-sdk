@@ -45,6 +45,7 @@ class GkerecommenderV1(base_api.BaseApiClient):
     self.models = self.ModelsService(self)
     self.optimizedManifest = self.OptimizedManifestService(self)
     self.profiles = self.ProfilesService(self)
+    self.useCases = self.UseCasesService(self)
 
   class BenchmarkingDataService(base_api.BaseApiService):
     """Service class for the benchmarkingData resource."""
@@ -259,5 +260,41 @@ class GkerecommenderV1(base_api.BaseApiClient):
         request_field='<request>',
         request_type_name='FetchProfilesRequest',
         response_type_name='FetchProfilesResponse',
+        supports_download=False,
+    )
+
+  class UseCasesService(base_api.BaseApiService):
+    """Service class for the useCases resource."""
+
+    _NAME = 'useCases'
+
+    def __init__(self, client):
+      super(GkerecommenderV1.UseCasesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Fetch(self, request, global_params=None):
+      r"""Fetches all of the use cases available in the GKE Inference Quickstart database.
+
+      Args:
+        request: (FetchUseCasesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FetchUseCasesResponse) The response message.
+      """
+      config = self.GetMethodConfig('Fetch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Fetch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='gkerecommender.useCases.fetch',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v1/useCases:fetch',
+        request_field='<request>',
+        request_type_name='FetchUseCasesRequest',
+        response_type_name='FetchUseCasesResponse',
         supports_download=False,
     )

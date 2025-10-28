@@ -1,0 +1,18 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: compute alpha HaControllerZoneConfiguration export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  nodeAffinities:
+    description: |-
+      A set of node affinity configurations. Refer toConfiguring node affinity
+      for more information. Overrides reservationAffinity.
+    type: array
+    items:
+      $ref: HaControllerZoneConfigurationNodeAffinity.yaml
+  reservationAffinity:
+    description: |-
+      Specifies the reservations that the instance can consume from.
+    $ref: HaControllerZoneConfigurationReservationAffinity.yaml

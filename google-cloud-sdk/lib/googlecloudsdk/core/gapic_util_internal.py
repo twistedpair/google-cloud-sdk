@@ -303,6 +303,8 @@ def ShouldRecover(credentials):
       ShouldRecoverFromQuotaProject(credentials)
   ]
   def _ShouldRecover(future):
+    if not isinstance(future, grpc.RpcError):
+      return False
     for method in recovery_methods:
       if method(future):
         return True

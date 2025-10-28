@@ -71,6 +71,10 @@ class AiplatformV1beta1(base_api.BaseApiClient):
     self.projects_locations_edgeDevices_operations = self.ProjectsLocationsEdgeDevicesOperationsService(self)
     self.projects_locations_edgeDevices = self.ProjectsLocationsEdgeDevicesService(self)
     self.projects_locations_endpoints_chat = self.ProjectsLocationsEndpointsChatService(self)
+    self.projects_locations_endpoints_deployedModels_invoke = self.ProjectsLocationsEndpointsDeployedModelsInvokeService(self)
+    self.projects_locations_endpoints_deployedModels = self.ProjectsLocationsEndpointsDeployedModelsService(self)
+    self.projects_locations_endpoints_invoke = self.ProjectsLocationsEndpointsInvokeService(self)
+    self.projects_locations_endpoints_openapi = self.ProjectsLocationsEndpointsOpenapiService(self)
     self.projects_locations_endpoints_operations = self.ProjectsLocationsEndpointsOperationsService(self)
     self.projects_locations_endpoints = self.ProjectsLocationsEndpointsService(self)
     self.projects_locations_evaluationItems_operations = self.ProjectsLocationsEvaluationItemsOperationsService(self)
@@ -156,6 +160,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
     self.projects_locations_reasoningEngines_examples_operations = self.ProjectsLocationsReasoningEnginesExamplesOperationsService(self)
     self.projects_locations_reasoningEngines_examples = self.ProjectsLocationsReasoningEnginesExamplesService(self)
     self.projects_locations_reasoningEngines_memories_operations = self.ProjectsLocationsReasoningEnginesMemoriesOperationsService(self)
+    self.projects_locations_reasoningEngines_memories_revisions = self.ProjectsLocationsReasoningEnginesMemoriesRevisionsService(self)
     self.projects_locations_reasoningEngines_memories = self.ProjectsLocationsReasoningEnginesMemoriesService(self)
     self.projects_locations_reasoningEngines_operations = self.ProjectsLocationsReasoningEnginesOperationsService(self)
     self.projects_locations_reasoningEngines_sandboxEnvironments_operations = self.ProjectsLocationsReasoningEnginesSandboxEnvironmentsOperationsService(self)
@@ -189,9 +194,12 @@ class AiplatformV1beta1(base_api.BaseApiClient):
     self.projects_locations_tuningJobs = self.ProjectsLocationsTuningJobsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_modelGardenEula = self.ProjectsModelGardenEulaService(self)
+    self.projects_publishers_models = self.ProjectsPublishersModelsService(self)
+    self.projects_publishers = self.ProjectsPublishersService(self)
     self.projects = self.ProjectsService(self)
     self.publishers_models = self.PublishersModelsService(self)
     self.publishers = self.PublishersService(self)
+    self.reasoningEngines_memories_revisions = self.ReasoningEnginesMemoriesRevisionsService(self)
     self.reasoningEngines_memories = self.ReasoningEnginesMemoriesService(self)
     self.reasoningEngines_sessions_events = self.ReasoningEnginesSessionsEventsService(self)
     self.reasoningEngines_sessions = self.ReasoningEnginesSessionsService(self)
@@ -996,7 +1004,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.agents.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsAgentsOperationsListRequest',
@@ -1151,7 +1159,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.apps.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsAppsOperationsListRequest',
@@ -1596,7 +1604,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.customJobs.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsCustomJobsOperationsListRequest',
@@ -1886,7 +1894,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.dataLabelingJobs.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsDataLabelingJobsOperationsListRequest',
@@ -2176,7 +2184,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.datasets.annotationSpecs.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsDatasetsAnnotationSpecsOperationsListRequest',
@@ -2358,7 +2366,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.datasets.dataItems.annotations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsDatasetsDataItemsAnnotationsOperationsListRequest',
@@ -2540,7 +2548,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.datasets.dataItems.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsDatasetsDataItemsOperationsListRequest',
@@ -2894,7 +2902,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.datasets.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsDatasetsOperationsListRequest',
@@ -3039,7 +3047,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.datasets.savedQueries.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsDatasetsSavedQueriesOperationsListRequest',
@@ -3528,7 +3536,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.deploymentResourcePools.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsDeploymentResourcePoolsOperationsListRequest',
@@ -3845,7 +3853,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.edgeDevices.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsEdgeDevicesOperationsListRequest',
@@ -3923,6 +3931,127 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+endpoint}/chat/completions',
         request_field='googleApiHttpBody',
         request_type_name='AiplatformProjectsLocationsEndpointsChatCompletionsRequest',
+        response_type_name='GoogleApiHttpBody',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsEndpointsDeployedModelsInvokeService(base_api.BaseApiService):
+    """Service class for the projects_locations_endpoints_deployedModels_invoke resource."""
+
+    _NAME = 'projects_locations_endpoints_deployedModels_invoke'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.ProjectsLocationsEndpointsDeployedModelsInvokeService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Invoke(self, request, global_params=None):
+      r"""Forwards arbitrary HTTP requests for both streaming and non-streaming cases. To use this method, invoke_route_prefix must be set to allow the paths that will be specified in the request.
+
+      Args:
+        request: (AiplatformProjectsLocationsEndpointsDeployedModelsInvokeInvokeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleApiHttpBody) The response message.
+      """
+      config = self.GetMethodConfig('Invoke')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Invoke.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}/deployedModels/{deployedModelId}/invoke/{invokeId}',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.endpoints.deployedModels.invoke.invoke',
+        ordered_params=['endpoint', 'deployedModelId', 'invokeId'],
+        path_params=['deployedModelId', 'endpoint', 'invokeId'],
+        query_params=[],
+        relative_path='v1beta1/{+endpoint}/deployedModels/{deployedModelId}/invoke/{+invokeId}',
+        request_field='googleCloudAiplatformV1beta1InvokeRequest',
+        request_type_name='AiplatformProjectsLocationsEndpointsDeployedModelsInvokeInvokeRequest',
+        response_type_name='GoogleApiHttpBody',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsEndpointsDeployedModelsService(base_api.BaseApiService):
+    """Service class for the projects_locations_endpoints_deployedModels resource."""
+
+    _NAME = 'projects_locations_endpoints_deployedModels'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.ProjectsLocationsEndpointsDeployedModelsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ProjectsLocationsEndpointsInvokeService(base_api.BaseApiService):
+    """Service class for the projects_locations_endpoints_invoke resource."""
+
+    _NAME = 'projects_locations_endpoints_invoke'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.ProjectsLocationsEndpointsInvokeService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Invoke(self, request, global_params=None):
+      r"""Forwards arbitrary HTTP requests for both streaming and non-streaming cases. To use this method, invoke_route_prefix must be set to allow the paths that will be specified in the request.
+
+      Args:
+        request: (AiplatformProjectsLocationsEndpointsInvokeInvokeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleApiHttpBody) The response message.
+      """
+      config = self.GetMethodConfig('Invoke')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Invoke.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}/invoke/{invokeId}',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.endpoints.invoke.invoke',
+        ordered_params=['endpoint', 'invokeId'],
+        path_params=['endpoint', 'invokeId'],
+        query_params=[],
+        relative_path='v1beta1/{+endpoint}/invoke/{+invokeId}',
+        request_field='googleCloudAiplatformV1beta1InvokeRequest',
+        request_type_name='AiplatformProjectsLocationsEndpointsInvokeInvokeRequest',
+        response_type_name='GoogleApiHttpBody',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsEndpointsOpenapiService(base_api.BaseApiService):
+    """Service class for the projects_locations_endpoints_openapi resource."""
+
+    _NAME = 'projects_locations_endpoints_openapi'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.ProjectsLocationsEndpointsOpenapiService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Embeddings(self, request, global_params=None):
+      r"""Forwards arbitrary HTTP requests for both streaming and non-streaming cases. To use this method, invoke_route_prefix must be set to allow the paths that will be specified in the request.
+
+      Args:
+        request: (AiplatformProjectsLocationsEndpointsOpenapiEmbeddingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleApiHttpBody) The response message.
+      """
+      config = self.GetMethodConfig('Embeddings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Embeddings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/endpoints/openapi/embeddings',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.endpoints.openapi.embeddings',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=['deployedModelId'],
+        relative_path='v1beta1/{+endpoint}/embeddings',
+        request_field='googleApiHttpBody',
+        request_type_name='AiplatformProjectsLocationsEndpointsOpenapiEmbeddingsRequest',
         response_type_name='GoogleApiHttpBody',
         supports_download=False,
     )
@@ -4037,7 +4166,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.endpoints.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsEndpointsOperationsListRequest',
@@ -4840,7 +4969,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.evaluationItems.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsEvaluationItemsOperationsListRequest',
@@ -5076,7 +5205,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.evaluationRuns.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsEvaluationRunsOperationsListRequest',
@@ -5339,7 +5468,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.evaluationSets.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsEvaluationSetsOperationsListRequest',
@@ -5602,7 +5731,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.evaluationTasks.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsEvaluationTasksOperationsListRequest',
@@ -5757,7 +5886,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.exampleStores.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsExampleStoresOperationsListRequest',
@@ -6155,7 +6284,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.extensionControllers.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsExtensionControllersOperationsListRequest',
@@ -6310,7 +6439,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.extensions.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsExtensionsOperationsListRequest',
@@ -6718,7 +6847,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.featureGroups.featureMonitors.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsOperationsListRequest',
@@ -6981,7 +7110,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.featureGroups.features.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsFeatureGroupsFeaturesOperationsListRequest',
@@ -7271,7 +7400,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.featureGroups.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsFeatureGroupsOperationsListRequest',
@@ -7679,7 +7808,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.featureOnlineStores.featureViews.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsOperationsListRequest',
@@ -7829,6 +7958,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1beta1FetchFeatureValuesRequest',
         request_type_name='AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsFetchFeatureValuesRequest',
         response_type_name='GoogleCloudAiplatformV1beta1FetchFeatureValuesResponse',
+        supports_download=False,
+    )
+
+    def GenerateFetchAccessToken(self, request, global_params=None):
+      r"""RPC to generate an access token for the given feature view. FeatureViews under the same FeatureOnlineStore share the same access token.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsGenerateFetchAccessTokenRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1GenerateFetchAccessTokenResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateFetchAccessToken')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateFetchAccessToken.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/featureOnlineStores/{featureOnlineStoresId}/featureViews/{featureViewsId}:generateFetchAccessToken',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.featureOnlineStores.featureViews.generateFetchAccessToken',
+        ordered_params=['featureView'],
+        path_params=['featureView'],
+        query_params=[],
+        relative_path='v1beta1/{+featureView}:generateFetchAccessToken',
+        request_field='googleCloudAiplatformV1beta1GenerateFetchAccessTokenRequest',
+        request_type_name='AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsGenerateFetchAccessTokenRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1GenerateFetchAccessTokenResponse',
         supports_download=False,
     )
 
@@ -8158,7 +8314,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.featureOnlineStores.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsFeatureOnlineStoresOperationsListRequest',
@@ -8529,7 +8685,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.featurestores.entityTypes.features.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesOperationsListRequest',
@@ -8846,7 +9002,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.featurestores.entityTypes.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsFeaturestoresEntityTypesOperationsListRequest',
@@ -9379,7 +9535,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.featurestores.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsFeaturestoresOperationsListRequest',
@@ -9804,7 +9960,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.hyperparameterTuningJobs.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsHyperparameterTuningJobsOperationsListRequest',
@@ -10094,7 +10250,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.indexEndpoints.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsIndexEndpointsOperationsListRequest',
@@ -10519,7 +10675,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.indexes.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsIndexesOperationsListRequest',
@@ -10890,7 +11046,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.metadataStores.artifacts.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsMetadataStoresArtifactsOperationsListRequest',
@@ -11234,7 +11390,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.metadataStores.contexts.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsMetadataStoresContextsOperationsListRequest',
@@ -11659,7 +11815,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.metadataStores.executions.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsMetadataStoresExecutionsOperationsListRequest',
@@ -12121,7 +12277,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.metadataStores.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsMetadataStoresOperationsListRequest',
@@ -12384,7 +12540,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.migratableResources.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsMigratableResourcesOperationsListRequest',
@@ -12593,7 +12749,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.modelDeploymentMonitoringJobs.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsModelDeploymentMonitoringJobsOperationsListRequest',
@@ -13082,7 +13238,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.modelMonitors.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsModelMonitorsOperationsListRequest',
@@ -13426,7 +13582,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.models.evaluations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsModelsEvaluationsOperationsListRequest',
@@ -13753,7 +13909,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.models.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsModelsOperationsListRequest',
@@ -14522,7 +14678,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.notebookExecutionJobs.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsNotebookExecutionJobsOperationsListRequest',
@@ -14839,7 +14995,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.notebookRuntimeTemplates.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsNotebookRuntimeTemplatesOperationsListRequest',
@@ -15210,7 +15366,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.notebookRuntimes.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsNotebookRuntimesOperationsListRequest',
@@ -15608,7 +15764,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsOperationsListRequest',
@@ -15753,7 +15909,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.persistentResources.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsPersistentResourcesOperationsListRequest',
@@ -16070,7 +16226,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.pipelineJobs.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsPipelineJobsOperationsListRequest',
@@ -16365,6 +16521,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1beta1CountTokensRequest',
         request_type_name='AiplatformProjectsLocationsPublishersModelsCountTokensRequest',
         response_type_name='GoogleCloudAiplatformV1beta1CountTokensResponse',
+        supports_download=False,
+    )
+
+    def EmbedContent(self, request, global_params=None):
+      r"""Embed content with multimodal inputs.
+
+      Args:
+        request: (AiplatformProjectsLocationsPublishersModelsEmbedContentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1EmbedContentResponse) The response message.
+      """
+      config = self.GetMethodConfig('EmbedContent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EmbedContent.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/publishers/{publishersId}/models/{modelsId}:embedContent',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.publishers.models.embedContent',
+        ordered_params=['model'],
+        path_params=['model'],
+        query_params=[],
+        relative_path='v1beta1/{+model}:embedContent',
+        request_field='googleCloudAiplatformV1beta1EmbedContentRequest',
+        request_type_name='AiplatformProjectsLocationsPublishersModelsEmbedContentRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1EmbedContentResponse',
         supports_download=False,
     )
 
@@ -16812,7 +16995,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.ragCorpora.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsRagCorporaOperationsListRequest',
@@ -16957,7 +17140,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.ragCorpora.ragFiles.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsRagCorporaRagFilesOperationsListRequest',
@@ -17365,7 +17548,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.ragEngineConfig.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsRagEngineConfigOperationsListRequest',
@@ -17648,7 +17831,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.reasoningEngines.memories.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsReasoningEnginesMemoriesOperationsListRequest',
@@ -17680,6 +17863,70 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AiplatformProjectsLocationsReasoningEnginesMemoriesOperationsWaitRequest',
         response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsReasoningEnginesMemoriesRevisionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_reasoningEngines_memories_revisions resource."""
+
+    _NAME = 'projects_locations_reasoningEngines_memories_revisions'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.ProjectsLocationsReasoningEnginesMemoriesRevisionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get a Memory Revision.
+
+      Args:
+        request: (AiplatformProjectsLocationsReasoningEnginesMemoriesRevisionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1MemoryRevision) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/reasoningEngines/{reasoningEnginesId}/memories/{memoriesId}/revisions/{revisionsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.reasoningEngines.memories.revisions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsReasoningEnginesMemoriesRevisionsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1MemoryRevision',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List Memory Revisions for a Memory.
+
+      Args:
+        request: (AiplatformProjectsLocationsReasoningEnginesMemoriesRevisionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ListMemoryRevisionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/reasoningEngines/{reasoningEnginesId}/memories/{memoriesId}/revisions',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.reasoningEngines.memories.revisions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/revisions',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsReasoningEnginesMemoriesRevisionsListRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ListMemoryRevisionsResponse',
         supports_download=False,
     )
 
@@ -17882,6 +18129,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Rollback(self, request, global_params=None):
+      r"""Rollback Memory to a specific revision.
+
+      Args:
+        request: (AiplatformProjectsLocationsReasoningEnginesMemoriesRollbackRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Rollback')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Rollback.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/reasoningEngines/{reasoningEnginesId}/memories/{memoriesId}:rollback',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.reasoningEngines.memories.rollback',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:rollback',
+        request_field='googleCloudAiplatformV1beta1RollbackMemoryRequest',
+        request_type_name='AiplatformProjectsLocationsReasoningEnginesMemoriesRollbackRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsReasoningEnginesOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_reasoningEngines_operations resource."""
 
@@ -17992,7 +18266,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.reasoningEngines.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsReasoningEnginesOperationsListRequest',
@@ -18137,7 +18411,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.reasoningEngines.sandboxEnvironments.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsReasoningEnginesSandboxEnvironmentsOperationsListRequest',
@@ -18464,7 +18738,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.reasoningEngines.sessions.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsReasoningEnginesSessionsOperationsListRequest',
@@ -18980,7 +19254,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.schedules.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsSchedulesOperationsListRequest',
@@ -19442,7 +19716,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.solvers.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsSolversOperationsListRequest',
@@ -19570,7 +19844,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.specialistPools.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsSpecialistPoolsOperationsListRequest',
@@ -19860,7 +20134,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.studies.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsStudiesOperationsListRequest',
@@ -20005,7 +20279,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.studies.trials.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsStudiesTrialsOperationsListRequest',
@@ -20575,7 +20849,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.tensorboards.experiments.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsOperationsListRequest',
@@ -20720,7 +20994,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.tensorboards.experiments.runs.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsRunsOperationsListRequest',
@@ -20865,7 +21139,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesOperationsListRequest',
@@ -21634,7 +21908,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.tensorboards.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsTensorboardsOperationsListRequest',
@@ -22005,7 +22279,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.trainingPipelines.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsTrainingPipelinesOperationsListRequest',
@@ -22846,6 +23120,53 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsPublishersModelsService(base_api.BaseApiService):
+    """Service class for the projects_publishers_models resource."""
+
+    _NAME = 'projects_publishers_models'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.ProjectsPublishersModelsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def EnableModel(self, request, global_params=None):
+      r"""Enables model for the project if prerequisites are met (e.g. completed questionnaire and consents, or an active Private Offer).
+
+      Args:
+        request: (AiplatformProjectsPublishersModelsEnableModelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1EnableModelResponse) The response message.
+      """
+      config = self.GetMethodConfig('EnableModel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EnableModel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/publishers/{publishersId}/models/{modelsId}:enableModel',
+        http_method='POST',
+        method_id='aiplatform.projects.publishers.models.enableModel',
+        ordered_params=['parent', 'name'],
+        path_params=['name', 'parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/{+name}:enableModel',
+        request_field='googleCloudAiplatformV1beta1EnableModelRequest',
+        request_type_name='AiplatformProjectsPublishersModelsEnableModelRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1EnableModelResponse',
+        supports_download=False,
+    )
+
+  class ProjectsPublishersService(base_api.BaseApiService):
+    """Service class for the projects_publishers resource."""
+
+    _NAME = 'projects_publishers'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.ProjectsPublishersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
@@ -23227,6 +23548,70 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+  class ReasoningEnginesMemoriesRevisionsService(base_api.BaseApiService):
+    """Service class for the reasoningEngines_memories_revisions resource."""
+
+    _NAME = 'reasoningEngines_memories_revisions'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.ReasoningEnginesMemoriesRevisionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get a Memory Revision.
+
+      Args:
+        request: (AiplatformReasoningEnginesMemoriesRevisionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1MemoryRevision) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/reasoningEngines/{reasoningEnginesId}/memories/{memoriesId}/revisions/{revisionsId}',
+        http_method='GET',
+        method_id='aiplatform.reasoningEngines.memories.revisions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformReasoningEnginesMemoriesRevisionsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1MemoryRevision',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List Memory Revisions for a Memory.
+
+      Args:
+        request: (AiplatformReasoningEnginesMemoriesRevisionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ListMemoryRevisionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/reasoningEngines/{reasoningEnginesId}/memories/{memoriesId}/revisions',
+        http_method='GET',
+        method_id='aiplatform.reasoningEngines.memories.revisions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/revisions',
+        request_field='',
+        request_type_name='AiplatformReasoningEnginesMemoriesRevisionsListRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ListMemoryRevisionsResponse',
+        supports_download=False,
+    )
+
   class ReasoningEnginesMemoriesService(base_api.BaseApiService):
     """Service class for the reasoningEngines_memories resource."""
 
@@ -23423,6 +23808,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1beta1RetrieveMemoriesRequest',
         request_type_name='AiplatformReasoningEnginesMemoriesRetrieveRequest',
         response_type_name='GoogleCloudAiplatformV1beta1RetrieveMemoriesResponse',
+        supports_download=False,
+    )
+
+    def Rollback(self, request, global_params=None):
+      r"""Rollback Memory to a specific revision.
+
+      Args:
+        request: (AiplatformReasoningEnginesMemoriesRollbackRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Rollback')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Rollback.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/reasoningEngines/{reasoningEnginesId}/memories/{memoriesId}:rollback',
+        http_method='POST',
+        method_id='aiplatform.reasoningEngines.memories.rollback',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:rollback',
+        request_field='googleCloudAiplatformV1beta1RollbackMemoryRequest',
+        request_type_name='AiplatformReasoningEnginesMemoriesRollbackRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

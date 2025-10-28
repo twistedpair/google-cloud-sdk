@@ -751,10 +751,7 @@ def AddVolumeCreateArgs(parser, release_track):
   AddVolumeTieringPolicyArg(parser, messages, release_track)
   AddVolumeHybridReplicationParametersArg(parser, messages, release_track)
   AddVolumeCacheParametersArg(parser)
-  if release_track in [
-      calliope_base.ReleaseTrack.ALPHA, calliope_base.ReleaseTrack.BETA,
-  ]:
-    AddVolumeBlockDevicesArg(parser, messages)
+  AddVolumeBlockDevicesArg(parser, messages)
   labels_util.AddCreateLabelsFlags(parser)
 
 
@@ -800,10 +797,7 @@ def AddVolumeUpdateArgs(parser, release_track):
   AddVolumeThroughputMibpsArg(parser)
   AddVolumeTieringPolicyArg(parser, messages, release_track)
   AddVolumeCacheParametersArg(parser)
-  if release_track in [
-      calliope_base.ReleaseTrack.ALPHA, calliope_base.ReleaseTrack.BETA,
-  ]:
-    AddVolumeBlockDevicesArg(parser, messages)
+  AddVolumeBlockDevicesArg(parser, messages)
   labels_util.AddUpdateLabelsFlags(parser)
 
 

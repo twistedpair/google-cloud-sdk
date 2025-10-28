@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from googlecloudsdk.api_lib.iam import util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
@@ -404,3 +406,17 @@ def ModifyHardDeleteFlagInRequest(ref, args, request):
     )
   return request
 
+
+def EraseProjectHook(unused_ref, unused_args, request):
+  """Hook to erase the project identifier from the request.
+
+  Args:
+    unused_ref: The resource reference of the response.
+    unused_args: The arguments of the command.
+    request: The request of the command.
+
+  Returns:
+    The modified apitools request message.
+  """
+  request.name = re.sub('projects/[^/]+/', 'projects/-/', request.name)
+  return request

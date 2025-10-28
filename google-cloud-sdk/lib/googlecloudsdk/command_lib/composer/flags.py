@@ -14,9 +14,6 @@
 # limitations under the License.
 """Helpers and common arguments for Composer commands."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
 
 import argparse
 import ipaddress
@@ -1070,16 +1067,26 @@ ENABLE_PRIVATE_ENVIRONMENT_FLAG = base.Argument(
     default=None,
     action='store_true',
     help="""\
-    Environment cluster is created with no public IP addresses on the cluster
-    nodes.
+    Disables internet connection from any Composer component.
 
-    If not specified, cluster nodes will be assigned public IP addresses.
-
-    When used with Composer 3, disable internet connection from any Composer
-    component.
+    When used with Composer 2, the environment cluster is created with
+    no public IP addresses on the cluster nodes. If not specified,
+    cluster nodes will be assigned public IP addresses.
 
     When used with Composer 1.x, cannot be specified unless `--enable-ip-alias`
     is also specified.
+    """,
+)
+
+DISABLE_PRIVATE_ENVIRONMENT_FLAG = base.Argument(
+    '--disable-private-environment',
+    default=None,
+    action='store_true',
+    help="""\
+    Enables internet connection for Composer components.
+
+    When used with Composer 2, this means the environment cluster is
+    created with public IP addresses on the cluster nodes.
 
     """,
 )
@@ -1674,6 +1681,7 @@ def AddPrivateIpEnvironmentFlags(update_type_group, release_track):
   """
   group = update_type_group.add_group(help='Private Clusters')
   ENABLE_PRIVATE_ENVIRONMENT_FLAG.AddToParser(group)
+  DISABLE_PRIVATE_ENVIRONMENT_FLAG.AddToParser(group)
   ENABLE_PRIVATE_ENDPOINT_FLAG.AddToParser(group)
   MASTER_IPV4_CIDR_FLAG.AddToParser(group)
   WEB_SERVER_IPV4_CIDR_FLAG.AddToParser(group)

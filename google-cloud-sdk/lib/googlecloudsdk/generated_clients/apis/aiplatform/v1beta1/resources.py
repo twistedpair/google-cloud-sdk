@@ -1268,6 +1268,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_REASONINGENGINES_MEMORIES_REVISIONS = (
+      'projects.locations.reasoningEngines.memories.revisions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'reasoningEngines/{reasoningEnginesId}/memories/{memoriesId}/'
+              'revisions/{revisionsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_REASONINGENGINES_OPERATIONS = (
       'projects.locations.reasoningEngines.operations',
       '{+name}',
@@ -1603,6 +1615,17 @@ class Collections(enum.Enum):
       {
           '':
               'reasoningEngines/{reasoningEnginesId}/memories/{memoriesId}',
+      },
+      ['name'],
+      True
+  )
+  REASONINGENGINES_MEMORIES_REVISIONS = (
+      'reasoningEngines.memories.revisions',
+      '{+name}',
+      {
+          '':
+              'reasoningEngines/{reasoningEnginesId}/memories/{memoriesId}/'
+              'revisions/{revisionsId}',
       },
       ['name'],
       True

@@ -58,6 +58,10 @@ EGRESS_SETTINGS_MAPPING = {
     'PRIVATE_RANGES_ONLY': 'private-ranges-only',
     'ALL_TRAFFIC': 'all',
 }
+DIRECT_VPC_EGRESS_SETTINGS_MAPPING = {
+    'VPC_EGRESS_PRIVATE_RANGES_ONLY': 'private-ranges-only',
+    'VPC_EGRESS_ALL_TRAFFIC': 'all',
+}
 
 SECURITY_LEVEL_MAPPING = {
     'SECURE_ALWAYS': 'secure-always',
@@ -522,6 +526,112 @@ def AddVPCConnectorMutexGroup(parser):
         Clears the VPC connector field.
       """,
   )
+
+
+def _AddVpcNetworkFlag(parser):
+  """Add flags for setting VPC network."""
+  parser.add_argument(
+      '--network',
+      help=(
+          'The VPC network that the Cloud Function will be able to send'
+          ' traffic to. If --subnet is also specified, subnet must be a'
+          ' subnetwork of the network specified by this --network flag. To'
+          ' clear existing VPC network settings, use --clear-network.'
+      ),
+      hidden=True,
+  )
+
+
+def _AddVpcSubnetFlag(parser):
+  """Add flags for setting VPC subnetwork."""
+  parser.add_argument(
+      '--subnet',
+      help=(
+          'The VPC subnetwork that the Cloud Function will get IPs from. The'
+          ' subnetwork must be `/26` or larger. If --network is also specified,'
+          ' subnet must be a subnetwork of the network specified by the'
+          ' --network flag. If --network is not specified, network will be'
+          ' looked up from this subnetwork. To clear existing VPC network'
+          ' settings, use --clear-network.'
+      ),
+      hidden=True,
+  )
+
+
+def _AddVpcNetworkTagsFlag(parser):
+  """Add flags for setting VPC network tags."""
+  parser.add_argument(
+      '--network-tags',
+      type=arg_parsers.ArgList(),
+      metavar='TAGS',
+      help=(
+          'Applies the given network tags (comma separated) to the '
+          'Cloud Function. '
+          'To clear existing tags, use --clear-network-tags.'
+      ),
+      hidden=True,
+  )
+
+
+def _AddClearVpcNetworkTagsFlag(parser):
+  """Add flags for clearing VPC network tags."""
+  parser.add_argument(
+      '--clear-network-tags',
+      action='store_true',
+      help=(
+          'Clears all existing network tags from the Cloud Function.'
+      ),
+      hidden=True,
+  )
+
+
+def _AddDirectVpcEgressFlag(parser):
+  """Add flags for setting Direct VPC egress settings."""
+  direct_vpc_egress_arg = base.ChoiceArgument(
+      '--direct-vpc-egress',
+      choices=[x.lower() for x in EGRESS_SETTINGS],
+      help_str=(
+          'Specify which of the outbound traffic to send through Direct VPC'
+          ' egress. Configuring DirectVPC network is required to use this flag.'
+      ),
+      hidden=True,
+  )
+  direct_vpc_egress_arg.AddToParser(parser)
+
+
+def _AddNetworkInterfaceGroupFlags(parser):
+  """Add flag for specifying Direct VPC network interface to the parser."""
+  group = parser.add_argument_group(
+      'Direct VPC egress setting flags group.', hidden=True
+  )
+  _AddVpcNetworkFlag(group)
+  _AddVpcSubnetFlag(group)
+
+  tags_group = group.add_group(mutex=True, hidden=True)
+  _AddVpcNetworkTagsFlag(tags_group)
+  _AddClearVpcNetworkTagsFlag(tags_group)
+
+
+def _AddClearVpcNetworkFlag(parser):
+  """Add flags for clearing VPC network."""
+  parser.add_argument(
+      '--clear-network',
+      action='store_true',
+      help=(
+          'Disconnect this Cloud Function from the Direct VPC network it is'
+          ' connected to.'
+      ),
+      hidden=True,
+  )
+
+
+def AddAllDirectVpcFlags(parser):
+  """Add flags for all Direct VPC network related settings."""
+  ni_group = parser.add_group(mutex=True, hidden=True)
+  _AddNetworkInterfaceGroupFlags(ni_group)
+  _AddClearVpcNetworkFlag(ni_group)
+
+  _AddDirectVpcEgressFlag(parser)
 
 
 def AddBuildWorkerPoolMutexGroup(parser):

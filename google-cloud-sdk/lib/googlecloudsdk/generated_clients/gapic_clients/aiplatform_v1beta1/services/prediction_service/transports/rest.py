@@ -100,6 +100,14 @@ class PredictionServiceRestInterceptor:
                 logging.log(f"Received response: {response}")
                 return response
 
+            def pre_embed_content(self, request, metadata):
+                logging.log(f"Received request: {request}")
+                return request, metadata
+
+            def post_embed_content(self, response):
+                logging.log(f"Received response: {response}")
+                return response
+
             def pre_explain(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
@@ -121,6 +129,14 @@ class PredictionServiceRestInterceptor:
                 return request, metadata
 
             def post_generate_content(self, response):
+                logging.log(f"Received response: {response}")
+                return response
+
+            def pre_invoke(self, request, metadata):
+                logging.log(f"Received request: {request}")
+                return request, metadata
+
+            def post_invoke(self, response):
                 logging.log(f"Received response: {response}")
                 return response
 
@@ -241,6 +257,22 @@ class PredictionServiceRestInterceptor:
         it is returned to user code.
         """
         return response
+    def pre_embed_content(self, request: prediction_service.EmbedContentRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[prediction_service.EmbedContentRequest, Sequence[Tuple[str, str]]]:
+        """Pre-rpc interceptor for embed_content
+
+        Override in a subclass to manipulate the request or metadata
+        before they are sent to the PredictionService server.
+        """
+        return request, metadata
+
+    def post_embed_content(self, response: prediction_service.EmbedContentResponse) -> prediction_service.EmbedContentResponse:
+        """Post-rpc interceptor for embed_content
+
+        Override in a subclass to manipulate the response
+        after it is returned by the PredictionService server but before
+        it is returned to user code.
+        """
+        return response
     def pre_explain(self, request: prediction_service.ExplainRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[prediction_service.ExplainRequest, Sequence[Tuple[str, str]]]:
         """Pre-rpc interceptor for explain
 
@@ -283,6 +315,22 @@ class PredictionServiceRestInterceptor:
 
     def post_generate_content(self, response: prediction_service.GenerateContentResponse) -> prediction_service.GenerateContentResponse:
         """Post-rpc interceptor for generate_content
+
+        Override in a subclass to manipulate the response
+        after it is returned by the PredictionService server but before
+        it is returned to user code.
+        """
+        return response
+    def pre_invoke(self, request: prediction_service.InvokeRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[prediction_service.InvokeRequest, Sequence[Tuple[str, str]]]:
+        """Pre-rpc interceptor for invoke
+
+        Override in a subclass to manipulate the request or metadata
+        before they are sent to the PredictionService server.
+        """
+        return request, metadata
+
+    def post_invoke(self, response: rest_streaming.ResponseIterator) -> rest_streaming.ResponseIterator:
+        """Post-rpc interceptor for invoke
 
         Override in a subclass to manipulate the response
         after it is returned by the PredictionService server but before
@@ -893,6 +941,92 @@ class PredictionServiceRestTransport(PredictionServiceTransport):
             resp = self._interceptor.post_direct_raw_predict(resp)
             return resp
 
+    class _EmbedContent(PredictionServiceRestStub):
+        def __hash__(self):
+            return hash("EmbedContent")
+
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
+        }
+
+        @classmethod
+        def _get_unset_required_fields(cls, message_dict):
+            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+
+        def __call__(self,
+                request: prediction_service.EmbedContentRequest, *,
+                retry: OptionalRetry=gapic_v1.method.DEFAULT,
+                timeout: Optional[float]=None,
+                metadata: Sequence[Tuple[str, str]]=(),
+                ) -> prediction_service.EmbedContentResponse:
+            r"""Call the embed content method over HTTP.
+
+            Args:
+                request (~.prediction_service.EmbedContentRequest):
+                    The request object. Request message for
+                [PredictionService.EmbedContent][google.cloud.aiplatform.v1beta1.PredictionService.EmbedContent].
+                retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                    should be retried.
+                timeout (float): The timeout for this request.
+                metadata (Sequence[Tuple[str, str]]): Strings which should be
+                    sent along with the request as metadata.
+
+            Returns:
+                ~.prediction_service.EmbedContentResponse:
+                    Response message for
+                [PredictionService.EmbedContent][google.cloud.aiplatform.v1beta1.PredictionService.EmbedContent].
+
+            """
+
+            http_options: List[Dict[str, str]] = [{
+                'method': 'post',
+                'uri': '/v1beta1/{model=projects/*/locations/*/publishers/*/models/*}:embedContent',
+                'body': '*',
+            },
+            ]
+            request, metadata = self._interceptor.pre_embed_content(request, metadata)
+            pb_request = prediction_service.EmbedContentRequest.pb(request)
+            transcoded_request = path_template.transcode(http_options, pb_request)
+
+            # Jsonify the request body
+
+            body = json_format.MessageToJson(
+                transcoded_request['body'],
+                use_integers_for_enums=False
+            )
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+
+            # Jsonify the query params
+            query_params = json.loads(json_format.MessageToJson(
+                transcoded_request['query_params'],
+                use_integers_for_enums=False,
+            ))
+            query_params.update(self._get_unset_required_fields(query_params))
+
+            # Send the request
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(self._session, method)(
+                "{host}{uri}".format(host=self._host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                data=body,
+                )
+
+            # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
+            # subclass.
+            if response.status_code >= 400:
+                raise core_exceptions.from_http_response(response)
+
+            # Return the response
+            resp = prediction_service.EmbedContentResponse()
+            pb_resp = prediction_service.EmbedContentResponse.pb(resp)
+
+            json_format.Parse(response.content, pb_resp, ignore_unknown_fields=True)
+            resp = self._interceptor.post_embed_content(resp)
+            return resp
+
     class _Explain(PredictionServiceRestStub):
         def __hash__(self):
             return hash("Explain")
@@ -1179,6 +1313,146 @@ class PredictionServiceRestTransport(PredictionServiceTransport):
 
             json_format.Parse(response.content, pb_resp, ignore_unknown_fields=True)
             resp = self._interceptor.post_generate_content(resp)
+            return resp
+
+    class _Invoke(PredictionServiceRestStub):
+        def __hash__(self):
+            return hash("Invoke")
+
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
+        }
+
+        @classmethod
+        def _get_unset_required_fields(cls, message_dict):
+            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+
+        def __call__(self,
+                request: prediction_service.InvokeRequest, *,
+                retry: OptionalRetry=gapic_v1.method.DEFAULT,
+                timeout: Optional[float]=None,
+                metadata: Sequence[Tuple[str, str]]=(),
+                ) -> rest_streaming.ResponseIterator:
+            r"""Call the invoke method over HTTP.
+
+            Args:
+                request (~.prediction_service.InvokeRequest):
+                    The request object. Request message for
+                [PredictionService.Invoke][google.cloud.aiplatform.v1beta1.PredictionService.Invoke].
+                retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                    should be retried.
+                timeout (float): The timeout for this request.
+                metadata (Sequence[Tuple[str, str]]): Strings which should be
+                    sent along with the request as metadata.
+
+            Returns:
+                ~.httpbody_pb2.HttpBody:
+                    Message that represents an arbitrary HTTP body. It
+                should only be used for payload formats that can't be
+                represented as JSON, such as raw binary or an HTML page.
+
+                This message can be used both in streaming and
+                non-streaming API methods in the request as well as the
+                response.
+
+                It can be used as a top-level request field, which is
+                convenient if one wants to extract parameters from
+                either the URL or HTTP template into the request fields
+                and also want access to the raw HTTP body.
+
+                Example:
+
+                ::
+
+                    message GetResourceRequest {
+                      // A unique request id.
+                      string request_id = 1;
+
+                      // The raw HTTP body is bound to this field.
+                      google.api.HttpBody http_body = 2;
+
+                    }
+
+                    service ResourceService {
+                      rpc GetResource(GetResourceRequest)
+                        returns (google.api.HttpBody);
+                      rpc UpdateResource(google.api.HttpBody)
+                        returns (google.protobuf.Empty);
+
+                    }
+
+                Example with streaming methods:
+
+                ::
+
+                    service CaldavService {
+                      rpc GetCalendar(stream google.api.HttpBody)
+                        returns (stream google.api.HttpBody);
+                      rpc UpdateCalendar(stream google.api.HttpBody)
+                        returns (stream google.api.HttpBody);
+
+                    }
+
+                Use of this type only changes how the request and
+                response bodies are handled, all other features will
+                continue to work unchanged.
+
+            """
+
+            http_options: List[Dict[str, str]] = [{
+                'method': 'post',
+                'uri': '/v1beta1/{endpoint=projects/*/locations/*/endpoints/*}/invoke/**',
+                'body': '*',
+            },
+{
+                'method': 'post',
+                'uri': '/v1beta1/{endpoint=projects/*/locations/*/endpoints/*}/deployedModels/{deployed_model_id}/invoke/**',
+                'body': '*',
+            },
+{
+                'method': 'post',
+                'uri': '/v1beta1/{endpoint=projects/*/locations/*/endpoints/openapi}/embeddings',
+                'body': 'http_body',
+            },
+            ]
+            request, metadata = self._interceptor.pre_invoke(request, metadata)
+            pb_request = prediction_service.InvokeRequest.pb(request)
+            transcoded_request = path_template.transcode(http_options, pb_request)
+
+            # Jsonify the request body
+
+            body = json_format.MessageToJson(
+                transcoded_request['body'],
+                use_integers_for_enums=False
+            )
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+
+            # Jsonify the query params
+            query_params = json.loads(json_format.MessageToJson(
+                transcoded_request['query_params'],
+                use_integers_for_enums=False,
+            ))
+            query_params.update(self._get_unset_required_fields(query_params))
+
+            # Send the request
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(self._session, method)(
+                "{host}{uri}".format(host=self._host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                data=body,
+                )
+
+            # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
+            # subclass.
+            if response.status_code >= 400:
+                raise core_exceptions.from_http_response(response)
+
+            # Return the response
+            resp = rest_streaming.ResponseIterator(response, httpbody_pb2.HttpBody)
+            resp = self._interceptor.post_invoke(resp)
             return resp
 
     class _Predict(PredictionServiceRestStub):
@@ -1932,6 +2206,14 @@ class PredictionServiceRestTransport(PredictionServiceTransport):
         return self._DirectRawPredict(self._session, self._host, self._interceptor) # type: ignore
 
     @property
+    def embed_content(self) -> Callable[
+            [prediction_service.EmbedContentRequest],
+            prediction_service.EmbedContentResponse]:
+        # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
+        # In C++ this would require a dynamic_cast
+        return self._EmbedContent(self._session, self._host, self._interceptor) # type: ignore
+
+    @property
     def explain(self) -> Callable[
             [prediction_service.ExplainRequest],
             prediction_service.ExplainResponse]:
@@ -1954,6 +2236,14 @@ class PredictionServiceRestTransport(PredictionServiceTransport):
         # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
         # In C++ this would require a dynamic_cast
         return self._GenerateContent(self._session, self._host, self._interceptor) # type: ignore
+
+    @property
+    def invoke(self) -> Callable[
+            [prediction_service.InvokeRequest],
+            httpbody_pb2.HttpBody]:
+        # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
+        # In C++ this would require a dynamic_cast
+        return self._Invoke(self._session, self._host, self._interceptor) # type: ignore
 
     @property
     def predict(self) -> Callable[

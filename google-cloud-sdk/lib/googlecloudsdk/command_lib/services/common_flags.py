@@ -148,6 +148,17 @@ def bypass_api_usage_check():
   )
 
 
+def skip_mcp_endpoint_check_flag(parser):
+  return base.Argument(
+      '--skip-mcp-endpoint-check',
+      action='store_true',
+      help=(
+          ' If true, the system will bypass the check for MCP endpoint while'
+          ' enabling a service.'
+      ),
+  ).AddToParser(parser)
+
+
 def _create_key_resource_arg(help_txt, api_version, required=True):
   return presentation_specs.ResourcePresentationSpec(
       'key', _get_key_resource_spec(api_version), help_txt, required=required
