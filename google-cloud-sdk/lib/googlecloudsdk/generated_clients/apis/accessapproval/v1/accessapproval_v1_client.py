@@ -84,7 +84,7 @@ class AccessapprovalV1(base_api.BaseApiClient):
     )
 
     def Dismiss(self, request, global_params=None):
-      r"""Dismisses a request. Returns the updated ApprovalRequest. NOTE: This does not deny access to the resource if another request has been made and approved. It is equivalent in effect to ignoring the request altogether. Returns NOT_FOUND if the request does not exist. Returns FAILED_PRECONDITION if the request exists but is not in a pending state.
+      r"""Dismisses a request. Returns the updated ApprovalRequest. NOTE: When a request is dismissed, it is considered ignored. Dismissing a request does not prevent access granted by other Access Approval requests. Returns NOT_FOUND if the request does not exist. Returns FAILED_PRECONDITION if the request exists but is not in a pending state.
 
       Args:
         request: (AccessapprovalFoldersApprovalRequestsDismissRequest) input message
@@ -138,7 +138,7 @@ class AccessapprovalV1(base_api.BaseApiClient):
     )
 
     def Invalidate(self, request, global_params=None):
-      r"""Invalidates an existing ApprovalRequest. Returns the updated ApprovalRequest. NOTE: This does not deny access to the resource if another request has been made and approved. It only invalidates a single approval. Returns FAILED_PRECONDITION if the request exists but is not in an approved state.
+      r"""Invalidates an existing ApprovalRequest. Returns the updated ApprovalRequest. NOTE: This action revokes Google access based on this approval request. If the resource has other active approvals, access will remain granted. Returns FAILED_PRECONDITION if the request exists but is not in an approved state.
 
       Args:
         request: (AccessapprovalFoldersApprovalRequestsInvalidateRequest) input message
@@ -202,7 +202,7 @@ class AccessapprovalV1(base_api.BaseApiClient):
           }
 
     def DeleteAccessApprovalSettings(self, request, global_params=None):
-      r"""Deletes the settings associated with a project, folder, or organization. This will have the effect of disabling Access Approval for the project, folder, or organization, but only if all ancestors also have Access Approval disabled. If Access Approval is enabled at a higher level of the hierarchy, then Access Approval will still be enabled at this level as the settings are inherited.
+      r"""Deletes the settings associated with a project, folder, or organization. This will have the effect of disabling Access Approval for the resource. Access Approval may remain active based on parent resource settings. To confirm the effective settings, call GetAccessApprovalSettings and verify effective setting is disabled.
 
       Args:
         request: (AccessapprovalFoldersDeleteAccessApprovalSettingsRequest) input message
@@ -229,7 +229,7 @@ class AccessapprovalV1(base_api.BaseApiClient):
     )
 
     def GetAccessApprovalSettings(self, request, global_params=None):
-      r"""Gets the settings associated with a project, folder, or organization.
+      r"""Gets the Access Approval settings associated with a project, folder, or organization.
 
       Args:
         request: (AccessapprovalFoldersGetAccessApprovalSettingsRequest) input message
@@ -347,7 +347,7 @@ class AccessapprovalV1(base_api.BaseApiClient):
     )
 
     def Dismiss(self, request, global_params=None):
-      r"""Dismisses a request. Returns the updated ApprovalRequest. NOTE: This does not deny access to the resource if another request has been made and approved. It is equivalent in effect to ignoring the request altogether. Returns NOT_FOUND if the request does not exist. Returns FAILED_PRECONDITION if the request exists but is not in a pending state.
+      r"""Dismisses a request. Returns the updated ApprovalRequest. NOTE: When a request is dismissed, it is considered ignored. Dismissing a request does not prevent access granted by other Access Approval requests. Returns NOT_FOUND if the request does not exist. Returns FAILED_PRECONDITION if the request exists but is not in a pending state.
 
       Args:
         request: (AccessapprovalOrganizationsApprovalRequestsDismissRequest) input message
@@ -401,7 +401,7 @@ class AccessapprovalV1(base_api.BaseApiClient):
     )
 
     def Invalidate(self, request, global_params=None):
-      r"""Invalidates an existing ApprovalRequest. Returns the updated ApprovalRequest. NOTE: This does not deny access to the resource if another request has been made and approved. It only invalidates a single approval. Returns FAILED_PRECONDITION if the request exists but is not in an approved state.
+      r"""Invalidates an existing ApprovalRequest. Returns the updated ApprovalRequest. NOTE: This action revokes Google access based on this approval request. If the resource has other active approvals, access will remain granted. Returns FAILED_PRECONDITION if the request exists but is not in an approved state.
 
       Args:
         request: (AccessapprovalOrganizationsApprovalRequestsInvalidateRequest) input message
@@ -465,7 +465,7 @@ class AccessapprovalV1(base_api.BaseApiClient):
           }
 
     def DeleteAccessApprovalSettings(self, request, global_params=None):
-      r"""Deletes the settings associated with a project, folder, or organization. This will have the effect of disabling Access Approval for the project, folder, or organization, but only if all ancestors also have Access Approval disabled. If Access Approval is enabled at a higher level of the hierarchy, then Access Approval will still be enabled at this level as the settings are inherited.
+      r"""Deletes the settings associated with a project, folder, or organization. This will have the effect of disabling Access Approval for the resource. Access Approval may remain active based on parent resource settings. To confirm the effective settings, call GetAccessApprovalSettings and verify effective setting is disabled.
 
       Args:
         request: (AccessapprovalOrganizationsDeleteAccessApprovalSettingsRequest) input message
@@ -492,7 +492,7 @@ class AccessapprovalV1(base_api.BaseApiClient):
     )
 
     def GetAccessApprovalSettings(self, request, global_params=None):
-      r"""Gets the settings associated with a project, folder, or organization.
+      r"""Gets the Access Approval settings associated with a project, folder, or organization.
 
       Args:
         request: (AccessapprovalOrganizationsGetAccessApprovalSettingsRequest) input message
@@ -610,7 +610,7 @@ class AccessapprovalV1(base_api.BaseApiClient):
     )
 
     def Dismiss(self, request, global_params=None):
-      r"""Dismisses a request. Returns the updated ApprovalRequest. NOTE: This does not deny access to the resource if another request has been made and approved. It is equivalent in effect to ignoring the request altogether. Returns NOT_FOUND if the request does not exist. Returns FAILED_PRECONDITION if the request exists but is not in a pending state.
+      r"""Dismisses a request. Returns the updated ApprovalRequest. NOTE: When a request is dismissed, it is considered ignored. Dismissing a request does not prevent access granted by other Access Approval requests. Returns NOT_FOUND if the request does not exist. Returns FAILED_PRECONDITION if the request exists but is not in a pending state.
 
       Args:
         request: (AccessapprovalProjectsApprovalRequestsDismissRequest) input message
@@ -664,7 +664,7 @@ class AccessapprovalV1(base_api.BaseApiClient):
     )
 
     def Invalidate(self, request, global_params=None):
-      r"""Invalidates an existing ApprovalRequest. Returns the updated ApprovalRequest. NOTE: This does not deny access to the resource if another request has been made and approved. It only invalidates a single approval. Returns FAILED_PRECONDITION if the request exists but is not in an approved state.
+      r"""Invalidates an existing ApprovalRequest. Returns the updated ApprovalRequest. NOTE: This action revokes Google access based on this approval request. If the resource has other active approvals, access will remain granted. Returns FAILED_PRECONDITION if the request exists but is not in an approved state.
 
       Args:
         request: (AccessapprovalProjectsApprovalRequestsInvalidateRequest) input message
@@ -728,7 +728,7 @@ class AccessapprovalV1(base_api.BaseApiClient):
           }
 
     def DeleteAccessApprovalSettings(self, request, global_params=None):
-      r"""Deletes the settings associated with a project, folder, or organization. This will have the effect of disabling Access Approval for the project, folder, or organization, but only if all ancestors also have Access Approval disabled. If Access Approval is enabled at a higher level of the hierarchy, then Access Approval will still be enabled at this level as the settings are inherited.
+      r"""Deletes the settings associated with a project, folder, or organization. This will have the effect of disabling Access Approval for the resource. Access Approval may remain active based on parent resource settings. To confirm the effective settings, call GetAccessApprovalSettings and verify effective setting is disabled.
 
       Args:
         request: (AccessapprovalProjectsDeleteAccessApprovalSettingsRequest) input message
@@ -755,7 +755,7 @@ class AccessapprovalV1(base_api.BaseApiClient):
     )
 
     def GetAccessApprovalSettings(self, request, global_params=None):
-      r"""Gets the settings associated with a project, folder, or organization.
+      r"""Gets the Access Approval settings associated with a project, folder, or organization.
 
       Args:
         request: (AccessapprovalProjectsGetAccessApprovalSettingsRequest) input message

@@ -1579,7 +1579,6 @@ def AddTagsFlag(parser):
       type=arg_parsers.ArgDict(),
       action=arg_parsers.UpdateAction,
       help=help_text,
-      hidden=True,
   )
 
 

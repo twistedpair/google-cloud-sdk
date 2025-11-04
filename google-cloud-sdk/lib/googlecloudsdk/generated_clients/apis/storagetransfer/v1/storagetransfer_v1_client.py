@@ -489,7 +489,7 @@ class StoragetransferV1(base_api.BaseApiClient):
         method_id='storagetransfer.transferOperations.list',
         ordered_params=['name', 'filter'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='StoragetransferTransferOperationsListRequest',

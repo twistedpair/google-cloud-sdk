@@ -238,7 +238,7 @@ def UpdateInvestigation(
 
   client = GetClientInstance()
   messages = GetMessagesModule()
-  investigation = messages.Investigation(dataVersion=2, observations={})
+  investigation = messages.Investigation(observations={})
   mask = []
 
   investigation.name = investigation_resource.RelativeName()

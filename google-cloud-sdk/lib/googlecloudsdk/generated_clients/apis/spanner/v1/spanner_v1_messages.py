@@ -510,10 +510,10 @@ class BatchCreateSessionsRequest(_messages.Message):
 
   Fields:
     sessionCount: Required. The number of sessions to be created in this batch
-      call. The API can return fewer than the requested number of sessions. If
-      a specific number of sessions are desired, the client can make
-      additional calls to `BatchCreateSessions` (adjusting session_count as
-      necessary).
+      call. At least one session is created. The API can return fewer than the
+      requested number of sessions. If a specific number of sessions are
+      desired, the client can make additional calls to `BatchCreateSessions`
+      (adjusting session_count as necessary).
     sessionTemplate: Parameters to apply to each created session.
   """
 
@@ -760,6 +760,13 @@ class ChildLink(_messages.Message):
   childIndex = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   type = _messages.StringField(2)
   variable = _messages.StringField(3)
+
+
+class ClientContext(_messages.Message):
+  r"""Container for various pieces of client-owned context attached to a
+  request.
+  """
+
 
 
 class ColumnMetadata(_messages.Message):
@@ -3394,10 +3401,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListScansResponse(_messages.Message):
@@ -4987,6 +4999,8 @@ class RequestOptions(_messages.Message):
     PriorityValueValuesEnum: Priority for the request.
 
   Fields:
+    clientContext: Optional. Optional context that may be needed for some
+      requests.
     priority: Priority for the request.
     requestTag: A per-request tag which can be applied to queries or reads,
       used for statistics collection. Both `request_tag` and `transaction_tag`
@@ -5023,9 +5037,10 @@ class RequestOptions(_messages.Message):
     PRIORITY_MEDIUM = 2
     PRIORITY_HIGH = 3
 
-  priority = _messages.EnumField('PriorityValueValuesEnum', 1)
-  requestTag = _messages.StringField(2)
-  transactionTag = _messages.StringField(3)
+  clientContext = _messages.MessageField('ClientContext', 1)
+  priority = _messages.EnumField('PriorityValueValuesEnum', 2)
+  requestTag = _messages.StringField(3)
+  transactionTag = _messages.StringField(4)
 
 
 class RestoreDatabaseEncryptionConfig(_messages.Message):
@@ -5404,9 +5419,9 @@ class Session(_messages.Message):
       associated with a given session. See https://goo.gl/xmQnxf for more
       information on and examples of labels.
     multiplexed: Optional. If `true`, specifies a multiplexed session. Use a
-      multiplexed session for multiple, concurrent read-only operations. Don't
-      use them for read-write transactions, partitioned reads, or partitioned
-      queries. Use `sessions.create` to create multiplexed sessions. Don't use
+      multiplexed session for multiple, concurrent operations including any
+      combination of read-only and read-write transactions. Use
+      `sessions.create` to create multiplexed sessions. Don't use
       BatchCreateSessions to create a multiplexed session. You can't delete or
       list multiplexed sessions.
     name: Output only. The name of the session. This is always system-
@@ -5680,12 +5695,20 @@ class SpannerProjectsInstanceConfigsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class SpannerProjectsInstanceConfigsPatchRequest(_messages.Message):
@@ -5770,12 +5793,20 @@ class SpannerProjectsInstanceConfigsSsdCachesOperationsListRequest(_messages.Mes
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class SpannerProjectsInstanceConfigsSsdCachesPatchRequest(_messages.Message):
@@ -6060,12 +6091,20 @@ class SpannerProjectsInstancesBackupsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class SpannerProjectsInstancesBackupsPatchRequest(_messages.Message):
@@ -6524,12 +6563,20 @@ class SpannerProjectsInstancesDatabasesOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class SpannerProjectsInstancesDatabasesPatchRequest(_messages.Message):
@@ -7052,12 +7099,20 @@ class SpannerProjectsInstancesInstancePartitionsOperationsListRequest(_messages.
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class SpannerProjectsInstancesInstancePartitionsPatchRequest(_messages.Message):
@@ -7162,12 +7217,20 @@ class SpannerProjectsInstancesOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class SpannerProjectsInstancesPatchRequest(_messages.Message):
@@ -7735,7 +7798,7 @@ class TransactionOptions(_messages.Message):
         and any concurrent updates that have occurred since that snapshot.
         Consequently, in contrast to `SERIALIZABLE` transactions, only write-
         write conflicts are detected in snapshot transactions. This isolation
-        level does not support Read-only and Partitioned DML transactions.
+        level does not support read-only and partitioned DML transactions.
         When `REPEATABLE_READ` is specified on a read-write transaction, the
         locking semantics default to `OPTIMISTIC`.
     """

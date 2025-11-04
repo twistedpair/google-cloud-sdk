@@ -20,6 +20,7 @@ import textwrap
 from googlecloudsdk.api_lib.hypercomputecluster import utils as api_utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.command_lib.cluster_director.clusters import flag_types
 from googlecloudsdk.command_lib.cluster_director.clusters import utils
 
@@ -167,13 +168,21 @@ def AddSubnetSource(parser, api_version=None, required=False, hidden=False):
   )
 
 
-def AddCreateFilestores(parser, api_version=None, hidden=False):
+def AddCreateFilestores(
+    parser,
+    name="create-filestores",
+    api_version=None,
+    hidden=False,
+    include_update_flags=False,
+):
   """Adds a create filestores flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
   messages = api_utils.GetMessagesModule(api_utils.GetReleaseTrack(api_version))
+  if include_update_flags:
+    name = "add-new-filestore-instances"
   parser.add_argument(
-      "--create-filestores",
+      f"--{name}",
       help=textwrap.dedent("""
         Parameters to create a filestore instance.
 
@@ -209,34 +218,63 @@ def AddCreateFilestores(parser, api_version=None, hidden=False):
   )
 
 
-def AddFilestores(parser, api_version=None, hidden=False):
+def AddFilestores(
+    parser,
+    name="filestores",
+    api_version=None,
+    hidden=False,
+    include_update_flags=False,
+):
   """Adds a filestores flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
+  remove_flag_name = "remove-filestore-instances"
+  if include_update_flags:
+    name = "add-filestore-instances"
   parser.add_argument(
-      "--filestores",
-      help=textwrap.dedent("""
+      f"--{name}",
+      help=textwrap.dedent(f"""
         Reference of existing filestore instance.
 
-        For e.g. --filestores locations/{location}/instances/{filestore}
+        For e.g. --{name} locations/{{location}}/instances/{{filestore}}
       """),
       type=arg_parsers.ArgList(element_type=str),
       action=arg_parsers.FlattenAction(),
       hidden=hidden,
   )
+  if include_update_flags:
+    parser.add_argument(
+        f"--{remove_flag_name}",
+        help=textwrap.dedent(f"""
+          Parameters to remove filestore instance config by filestore name.
+
+          For e.g. --{remove_flag_name} locations/{{location}}/instances/{{filestore1}},locations/{{location}}/instances/{{filestore2}},...
+        """),
+        type=arg_parsers.ArgList(element_type=str),
+        action=arg_parsers.FlattenAction(),
+        hidden=hidden,
+    )
 
 
-def AddCreateGcsBuckets(parser, api_version=None, hidden=False):
+def AddCreateGcsBuckets(
+    parser: parser_arguments.ArgumentInterceptor,
+    name: str = "create-buckets",
+    api_version: str = None,
+    hidden: bool = False,
+    include_update_flags: bool = False,
+):
   """Adds a create Google Cloud Storage buckets flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
   messages = api_utils.GetMessagesModule(api_utils.GetReleaseTrack(api_version))
+  if include_update_flags:
+    name = "add-new-storage-buckets"
   parser.add_argument(
-      "--create-buckets",
-      help=textwrap.dedent("""
+      f"--{name}",
+      help=textwrap.dedent(f"""
         Parameters to create a Google Cloud Storage bucket.
 
-        For e.g. --create-buckets name={bucket-path}
+        For e.g. --{name} name={{bucket-path}}
 
         Supported storageClass values:
         - STANDARD
@@ -270,33 +308,62 @@ def AddCreateGcsBuckets(parser, api_version=None, hidden=False):
   )
 
 
-def AddGcsBuckets(parser, api_version=None, hidden=False):
+def AddGcsBuckets(
+    parser: parser_arguments.ArgumentInterceptor,
+    name: str = "buckets",
+    api_version: str = None,
+    hidden: bool = False,
+    include_update_flags: bool = False,
+):
   """Adds a Google Cloud Storage buckets flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
+  remove_flag_name = f"remove-storage-{name}"
+  if include_update_flags:
+    name = f"add-storage-{name}"
   parser.add_argument(
-      "--buckets",
-      help=textwrap.dedent("""
+      f"--{name}",
+      help=textwrap.dedent(f"""
         Reference of existing Google Cloud Storage bucket.
 
-        For e.g. --buckets {bucket-path}
+        For e.g. --{name} {{bucket-path}}
       """),
       type=arg_parsers.ArgList(element_type=str),
       action=arg_parsers.FlattenAction(),
       hidden=hidden,
   )
+  if include_update_flags:
+    parser.add_argument(
+        f"--{remove_flag_name}",
+        help=textwrap.dedent(f"""
+          Parameters to remove Google Cloud Storage bucket by bucket name.
+
+          For e.g. --{remove_flag_name} {{bucket1}},{{bucket2}},...
+        """),
+        type=arg_parsers.ArgList(element_type=str),
+        action=arg_parsers.FlattenAction(),
+        hidden=hidden,
+    )
 
 
-def AddCreateLustres(parser, api_version=None, hidden=False):
+def AddCreateLustres(
+    parser: parser_arguments.ArgumentInterceptor,
+    name: str = "create-lustres",
+    api_version: str = None,
+    hidden: bool = False,
+    include_update_flags: bool = False,
+):
   """Adds a create lustres flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
+  if include_update_flags:
+    name = "add-new-lustre-instances"
   parser.add_argument(
-      "--create-lustres",
-      help=textwrap.dedent("""
+      f"--{name}",
+      help=textwrap.dedent(f"""
         Parameters to create a Lustre instance.
 
-        For e.g. --create-lustres name=locations/{location}/instances/{lustre},capacityGb={lustreSize},filesystem={filesystem}
+        For e.g. --{name} name=locations/{{location}}/instances/{{lustre}},capacityGb={{lustreSize}},filesystem={{filesystem}}
       """),
       type=arg_parsers.ArgObject(
           spec={
@@ -314,21 +381,42 @@ def AddCreateLustres(parser, api_version=None, hidden=False):
   )
 
 
-def AddLustres(parser, api_version=None, hidden=False):
+def AddLustres(
+    parser,
+    name="lustres",
+    api_version=None,
+    hidden=False,
+    include_update_flags=False,
+):
   """Adds a lustres flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
+  remove_flag_name = "remove-lustre-instances"
+  if include_update_flags:
+    name = "add-lustre-instances"
   parser.add_argument(
-      "--lustres",
-      help=textwrap.dedent("""
+      f"--{name}",
+      help=textwrap.dedent(f"""
         Reference of existing Lustre instance.
 
-        For e.g. --lustres locations/{location}/instances/{lustre}
+        For e.g. --{name} locations/{{location}}/instances/{{lustre}}
       """),
       type=arg_parsers.ArgList(element_type=str),
       action=arg_parsers.FlattenAction(),
       hidden=hidden,
   )
+  if include_update_flags:
+    parser.add_argument(
+        f"--{remove_flag_name}",
+        help=textwrap.dedent(f"""
+          Parameters to remove lustre instance config by lustre name.
+
+          For e.g. --{remove_flag_name} locations/{{location}}/instances/{{lustre1}},locations/{{location}}/instances/{{lustre2}},...
+        """),
+        type=arg_parsers.ArgList(element_type=str),
+        action=arg_parsers.FlattenAction(),
+        hidden=hidden,
+    )
 
 
 def AddOnDemandInstances(

@@ -161,6 +161,9 @@ class AlertPolicyCheckStatus(_messages.Message):
       `projects/{project}/locations/{location}/alertPolicies/{alertPolicy}`.
     failedAlertPolicies: Output only. The alert policies that were found to be
       firing during this check. This will be empty if no incidents were found.
+    failureMessage: Output only. Additional information about the alert policy
+      check failure, if available. This will be empty if the alert policy
+      check succeeded.
     id: Output only. The ID of this analysis.
     labels: Output only. The resolved labels used to filter for specific
       incidents.
@@ -193,8 +196,9 @@ class AlertPolicyCheckStatus(_messages.Message):
 
   alertPolicies = _messages.StringField(1, repeated=True)
   failedAlertPolicies = _messages.MessageField('FailedAlertPolicy', 2, repeated=True)
-  id = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
+  failureMessage = _messages.StringField(3)
+  id = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
 
 
 class Analysis(_messages.Message):
@@ -2269,12 +2273,20 @@ class ClouddeployProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class ClouddeployProjectsLocationsTargetsCreateRequest(_messages.Message):
@@ -2542,6 +2554,52 @@ class ConfigTask(_messages.Message):
 
 class Container(_messages.Message):
   r"""Container definition for the containers task.
+
+  Messages:
+    EnvValue: Optional. Environment variables that are set in the container.
+
+  Fields:
+    args: Optional. Args is the container arguments to use. This overrides the
+      default arguments defined in the container image.
+    command: Optional. Command is the container entrypoint to use. This
+      overrides the default entrypoint defined in the container image.
+    env: Optional. Environment variables that are set in the container.
+    image: Required. Image is the container image to use.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class EnvValue(_messages.Message):
+    r"""Optional. Environment variables that are set in the container.
+
+    Messages:
+      AdditionalProperty: An additional property for a EnvValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type EnvValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EnvValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  args = _messages.StringField(1, repeated=True)
+  command = _messages.StringField(2, repeated=True)
+  env = _messages.MessageField('EnvValue', 3)
+  image = _messages.StringField(4)
+
+
+class ContainerTask(_messages.Message):
+  r"""This task is represented by a container that is executed in the Cloud
+  Build execution environment.
 
   Messages:
     EnvValue: Optional. Environment variables that are set in the container.
@@ -4270,10 +4328,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListReleasesResponse(_messages.Message):
@@ -6215,7 +6278,8 @@ class RolloutUpdateEvent(_messages.Message):
 
     Values:
       ROLLOUT_UPDATE_TYPE_UNSPECIFIED: Rollout update type unspecified.
-      PENDING: rollout state updated to pending.
+      PENDING: Rollout state updated to pending (release has succeeded,
+        waiting on the rollout to start).
       PENDING_RELEASE: Rollout state updated to pending release.
       IN_PROGRESS: Rollout state updated to in progress.
       CANCELLING: Rollout state updated to cancelling.
@@ -7158,12 +7222,15 @@ class Task(_messages.Message):
   Fields:
     config: Optional. This task is represented by either a task in the Deploy
       Config or a custom action in the Skaffold Config.
+    container: Optional. This task is represented by a container that is
+      executed in the Cloud Build execution environment.
     containersTask: Optional. This task is represented by a set of containers
       that are executed in parallel in the Cloud Build execution environment.
   """
 
   config = _messages.MessageField('ConfigTask', 1)
-  containersTask = _messages.MessageField('ContainersTask', 2)
+  container = _messages.MessageField('ContainerTask', 2)
+  containersTask = _messages.MessageField('ContainersTask', 3)
 
 
 class TerminateJobRunRequest(_messages.Message):

@@ -1763,7 +1763,7 @@ class DatabaseInstance(_messages.Message):
     Values:
       SQL_SUSPENSION_REASON_UNSPECIFIED: This is an unknown suspension reason.
       BILLING_ISSUE: The instance is suspended due to billing issues (for
-        example:, GCP account issue)
+        example:, account issue)
       LEGAL_ISSUE: The instance is suspended due to illegal content (for
         example:, child pornography, copyrighted material, etc.).
       OPERATIONAL_ISSUE: The instance is causing operational issues (for
@@ -2807,7 +2807,7 @@ class ImportContext(_messages.Message):
       bakType: Type of the bak content, FULL or DIFF.
       encryptionOptions: A EncryptionOptionsValue attribute.
       noRecovery: Whether or not the backup importing will restore database
-        with NORECOVERY option Applies only to Cloud SQL for SQL Server.
+        with NORECOVERY option. Applies only to Cloud SQL for SQL Server.
       recoveryOnly: Whether or not the backup importing request will just
         bring database online without downloading Bak content only one of
         "no_recovery" and "recovery_only" can be true otherwise error will
@@ -3232,6 +3232,13 @@ class IpConfiguration(_messages.Message):
   Enums:
     ServerCaModeValueValuesEnum: Specify what type of CA is used for the
       server certificate.
+    ServerCertificateRotationModeValueValuesEnum: Optional. Controls the
+      automatic server certificate rotation feature. This feature is disabled
+      by default. When enabled, the server certificate will be automatically
+      rotated during Cloud SQL scheduled maintenance or self-service
+      maintenance updates up to six months before it expires. This setting can
+      only be set if server_ca_mode is either GOOGLE_MANAGED_CAS_CA or
+      CUSTOMER_MANAGED_CAS_CA.
     SslModeValueValuesEnum: Specify how SSL/TLS is enforced in database
       connections. If you must use the `require_ssl` flag for backward
       compatibility, then only the following value pairs are valid: For
@@ -3280,6 +3287,13 @@ class IpConfiguration(_messages.Message):
     serverCaPool: Optional. The resource name of the server CA pool for an
       instance with `CUSTOMER_MANAGED_CAS_CA` as the `server_ca_mode`. Format:
       projects/{PROJECT}/locations/{REGION}/caPools/{CA_POOL_ID}
+    serverCertificateRotationMode: Optional. Controls the automatic server
+      certificate rotation feature. This feature is disabled by default. When
+      enabled, the server certificate will be automatically rotated during
+      Cloud SQL scheduled maintenance or self-service maintenance updates up
+      to six months before it expires. This setting can only be set if
+      server_ca_mode is either GOOGLE_MANAGED_CAS_CA or
+      CUSTOMER_MANAGED_CAS_CA.
     sslMode: Specify how SSL/TLS is enforced in database connections. If you
       must use the `require_ssl` flag for backward compatibility, then only
       the following value pairs are valid: For PostgreSQL and MySQL: *
@@ -3313,6 +3327,29 @@ class IpConfiguration(_messages.Message):
     GOOGLE_MANAGED_INTERNAL_CA = 1
     GOOGLE_MANAGED_CAS_CA = 2
     CUSTOMER_MANAGED_CAS_CA = 3
+
+  class ServerCertificateRotationModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Controls the automatic server certificate rotation feature.
+    This feature is disabled by default. When enabled, the server certificate
+    will be automatically rotated during Cloud SQL scheduled maintenance or
+    self-service maintenance updates up to six months before it expires. This
+    setting can only be set if server_ca_mode is either GOOGLE_MANAGED_CAS_CA
+    or CUSTOMER_MANAGED_CAS_CA.
+
+    Values:
+      SERVER_CERTIFICATE_ROTATION_MODE_UNSPECIFIED: Unspecified: no automatic
+        server certificate rotation.
+      NO_AUTOMATIC_ROTATION: No automatic server certificate rotation. The
+        user must [manage server certificate rotation](/sql/docs/mysql/manage-
+        ssl-instance#rotate-server-certificate-cas) on their side.
+      AUTOMATIC_ROTATION_DURING_MAINTENANCE: Automatic server certificate
+        rotation during Cloud SQL scheduled maintenance or self-service
+        maintenance updates. Requires `server_ca_mode` to be
+        `GOOGLE_MANAGED_CAS_CA` or `CUSTOMER_MANAGED_CAS_CA`.
+    """
+    SERVER_CERTIFICATE_ROTATION_MODE_UNSPECIFIED = 0
+    NO_AUTOMATIC_ROTATION = 1
+    AUTOMATIC_ROTATION_DURING_MAINTENANCE = 2
 
   class SslModeValueValuesEnum(_messages.Enum):
     r"""Specify how SSL/TLS is enforced in database connections. If you must
@@ -3370,7 +3407,8 @@ class IpConfiguration(_messages.Message):
   reservedIpRange = _messages.StringField(9)
   serverCaMode = _messages.EnumField('ServerCaModeValueValuesEnum', 10)
   serverCaPool = _messages.StringField(11)
-  sslMode = _messages.EnumField('SslModeValueValuesEnum', 12)
+  serverCertificateRotationMode = _messages.EnumField('ServerCertificateRotationModeValueValuesEnum', 12)
+  sslMode = _messages.EnumField('SslModeValueValuesEnum', 13)
 
 
 class IpMapping(_messages.Message):
@@ -4055,9 +4093,35 @@ class PerformDiskShrinkContext(_messages.Message):
   targetSizeGb = _messages.IntegerField(1)
 
 
+class PerformanceCaptureConfig(_messages.Message):
+  r"""Performance Capture configuration.
+
+  Fields:
+    enabled: Optional. Enable or disable the Performance Capture.
+    probeThreshold: Optional. The minimum number of consecutive readings above
+      threshold that triggers instance state capture.
+    probingIntervalSeconds: Optional. The time interval in seconds between any
+      two probes.
+    runningThreadsThreshold: Optional. The minimum number of server threads
+      running to trigger the capture on primary.
+    secondsBehindSourceThreshold: Optional. The minimum number of seconds
+      replica must be lagging behind primary to trigger capture on replica.
+    transactionDurationThreshold: Optional. The amount of time in seconds that
+      a transaction needs to have been open before the watcher starts
+      recording it.
+  """
+
+  enabled = _messages.BooleanField(1)
+  probeThreshold = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  probingIntervalSeconds = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  runningThreadsThreshold = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  secondsBehindSourceThreshold = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  transactionDurationThreshold = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
 class PointInTimeRestoreContext(_messages.Message):
   r"""Context to perform a point-in-time restore of an instance managed by
-  Google Cloud Backup and Disaster Recovery.
+  Backup and Disaster Recovery (DR) Service.
 
   Fields:
     allocatedIpRange: Optional. The name of the allocated IP range for the
@@ -4070,7 +4134,7 @@ class PointInTimeRestoreContext(_messages.Message):
     databaseNames: Optional. (SQL Server only) Clone only the specified
       databases from the source instance. If you don't specify any databases,
       then Cloud SQL clones all databases for the instance.
-    datasource: The Google Cloud Backup and Disaster Recovery Datasource URI.
+    datasource: The Backup and Disaster Recovery (DR) Service Datasource URI.
       Format: projects/{project}/locations/{region}/backupVaults/{backupvault}
       /dataSources/{datasource}.
     pointInTime: Required. The date and time to which you want to restore the
@@ -4623,6 +4687,8 @@ class Settings(_messages.Message):
       networks. If this field is not specified when creating a new instance,
       NOT_REQUIRED is used. If this field is not specified when patching or
       updating an existing instance, it is left unchanged in the instance.
+    DataApiAccessValueValuesEnum: This parameter controls whether to allow
+      using Data API to connect to the instance. Not allowed by default.
     DataDiskTypeValueValuesEnum: The type of data disk: `PD_SSD` (default) or
       `PD_HDD`. Not used for First Generation instances.
     EditionValueValuesEnum: Optional. The edition of the instance.
@@ -4678,6 +4744,8 @@ class Settings(_messages.Message):
       instances. Indicates whether database flags for crash-safe replication
       are enabled. This property was only applicable to First Generation
       instances.
+    dataApiAccess: This parameter controls whether to allow using Data API to
+      connect to the instance. Not allowed by default.
     dataCacheConfig: Configuration for data cache.
     dataDiskProvisionedIops: Optional. Provisioned number of I/O operations
       per second for the data disk. This field is only used for hyperdisk-
@@ -4727,6 +4795,7 @@ class Settings(_messages.Message):
       specifies when the instance can be restarted for maintenance purposes.
     passwordValidationPolicy: The local user password validation policy of the
       instance.
+    performanceCaptureConfig: Optional. Configuration for Performance Capture.
     pricingPlan: The pricing plan for this instance. This can be either
       `PER_USE` or `PACKAGE`. Only `PER_USE` is supported for Second
       Generation instances.
@@ -4820,6 +4889,22 @@ class Settings(_messages.Message):
     CONNECTOR_ENFORCEMENT_UNSPECIFIED = 0
     NOT_REQUIRED = 1
     REQUIRED = 2
+
+  class DataApiAccessValueValuesEnum(_messages.Enum):
+    r"""This parameter controls whether to allow using Data API to connect to
+    the instance. Not allowed by default.
+
+    Values:
+      DATA_API_ACCESS_UNSPECIFIED: Unspecified, effectively the same as
+        `DISALLOW_DATA_API`.
+      DISALLOW_DATA_API: Disallow using Data API to connect to the instance.
+      ALLOW_DATA_API: Allow using Data API to connect to the instance. For
+        private IP instances, this allows authorized users to access the
+        instance from the public internet using Data API.
+    """
+    DATA_API_ACCESS_UNSPECIFIED = 0
+    DISALLOW_DATA_API = 1
+    ALLOW_DATA_API = 2
 
   class DataDiskTypeValueValuesEnum(_messages.Enum):
     r"""The type of data disk: `PD_SSD` (default) or `PD_HDD`. Not used for
@@ -4921,42 +5006,44 @@ class Settings(_messages.Message):
   connectionPoolConfig = _messages.MessageField('ConnectionPoolConfig', 10)
   connectorEnforcement = _messages.EnumField('ConnectorEnforcementValueValuesEnum', 11)
   crashSafeReplicationEnabled = _messages.BooleanField(12)
-  dataCacheConfig = _messages.MessageField('DataCacheConfig', 13)
-  dataDiskProvisionedIops = _messages.IntegerField(14)
-  dataDiskProvisionedThroughput = _messages.IntegerField(15)
-  dataDiskSizeGb = _messages.IntegerField(16)
-  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 17)
-  databaseFlags = _messages.MessageField('DatabaseFlags', 18, repeated=True)
-  databaseReplicationEnabled = _messages.BooleanField(19)
-  dbAlignedAtomicWritesConfig = _messages.MessageField('DbAlignedAtomicWritesConfig', 20)
-  deletionProtectionEnabled = _messages.BooleanField(21)
-  denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 22, repeated=True)
-  edition = _messages.EnumField('EditionValueValuesEnum', 23)
-  enableDataplexIntegration = _messages.BooleanField(24)
-  enableGoogleMlIntegration = _messages.BooleanField(25)
-  finalBackupConfig = _messages.MessageField('FinalBackupConfig', 26)
-  insightsConfig = _messages.MessageField('InsightsConfig', 27)
-  instanceVersion = _messages.StringField(28)
-  ipConfiguration = _messages.MessageField('IpConfiguration', 29)
-  kind = _messages.StringField(30)
-  locationPreference = _messages.MessageField('LocationPreference', 31)
-  maintenanceVersion = _messages.StringField(32)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 33)
-  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 34)
-  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 35)
-  readPoolAutoScaleConfig = _messages.MessageField('ReadPoolAutoScaleConfig', 36)
-  recreateReplicasOnPrimaryCrash = _messages.BooleanField(37)
-  replicationLagMaxSeconds = _messages.IntegerField(38, variant=_messages.Variant.INT32)
-  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 39)
-  retainBackupsOnDelete = _messages.BooleanField(40)
-  settingsVersion = _messages.IntegerField(41)
-  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 42)
-  storageAutoResize = _messages.BooleanField(43)
-  storageAutoResizeLimit = _messages.IntegerField(44)
-  tier = _messages.StringField(45)
-  timeZone = _messages.StringField(46)
-  uncMappings = _messages.MessageField('UncMapping', 47, repeated=True)
-  userLabels = _messages.MessageField('UserLabelsValue', 48)
+  dataApiAccess = _messages.EnumField('DataApiAccessValueValuesEnum', 13)
+  dataCacheConfig = _messages.MessageField('DataCacheConfig', 14)
+  dataDiskProvisionedIops = _messages.IntegerField(15)
+  dataDiskProvisionedThroughput = _messages.IntegerField(16)
+  dataDiskSizeGb = _messages.IntegerField(17)
+  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 18)
+  databaseFlags = _messages.MessageField('DatabaseFlags', 19, repeated=True)
+  databaseReplicationEnabled = _messages.BooleanField(20)
+  dbAlignedAtomicWritesConfig = _messages.MessageField('DbAlignedAtomicWritesConfig', 21)
+  deletionProtectionEnabled = _messages.BooleanField(22)
+  denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 23, repeated=True)
+  edition = _messages.EnumField('EditionValueValuesEnum', 24)
+  enableDataplexIntegration = _messages.BooleanField(25)
+  enableGoogleMlIntegration = _messages.BooleanField(26)
+  finalBackupConfig = _messages.MessageField('FinalBackupConfig', 27)
+  insightsConfig = _messages.MessageField('InsightsConfig', 28)
+  instanceVersion = _messages.StringField(29)
+  ipConfiguration = _messages.MessageField('IpConfiguration', 30)
+  kind = _messages.StringField(31)
+  locationPreference = _messages.MessageField('LocationPreference', 32)
+  maintenanceVersion = _messages.StringField(33)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 34)
+  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 35)
+  performanceCaptureConfig = _messages.MessageField('PerformanceCaptureConfig', 36)
+  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 37)
+  readPoolAutoScaleConfig = _messages.MessageField('ReadPoolAutoScaleConfig', 38)
+  recreateReplicasOnPrimaryCrash = _messages.BooleanField(39)
+  replicationLagMaxSeconds = _messages.IntegerField(40, variant=_messages.Variant.INT32)
+  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 41)
+  retainBackupsOnDelete = _messages.BooleanField(42)
+  settingsVersion = _messages.IntegerField(43)
+  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 44)
+  storageAutoResize = _messages.BooleanField(45)
+  storageAutoResizeLimit = _messages.IntegerField(46)
+  tier = _messages.StringField(47)
+  timeZone = _messages.StringField(48)
+  uncMappings = _messages.MessageField('UncMapping', 49, repeated=True)
+  userLabels = _messages.MessageField('UserLabelsValue', 50)
 
 
 class SqlActiveDirectoryConfig(_messages.Message):

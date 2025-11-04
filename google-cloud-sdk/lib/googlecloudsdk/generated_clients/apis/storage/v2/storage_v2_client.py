@@ -39,14 +39,55 @@ class StorageV2(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.folders_locations_intelligenceFindings = self.FoldersLocationsIntelligenceFindingsService(self)
     self.folders_locations = self.FoldersLocationsService(self)
     self.folders = self.FoldersService(self)
+    self.organizations_locations_intelligenceFindings = self.OrganizationsLocationsIntelligenceFindingsService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations = self.OrganizationsService(self)
     self.projects_buckets_folders = self.ProjectsBucketsFoldersService(self)
     self.projects_buckets = self.ProjectsBucketsService(self)
+    self.projects_locations_intelligenceFindings_revisions = self.ProjectsLocationsIntelligenceFindingsRevisionsService(self)
+    self.projects_locations_intelligenceFindings = self.ProjectsLocationsIntelligenceFindingsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class FoldersLocationsIntelligenceFindingsService(base_api.BaseApiService):
+    """Service class for the folders_locations_intelligenceFindings resource."""
+
+    _NAME = 'folders_locations_intelligenceFindings'
+
+    def __init__(self, client):
+      super(StorageV2.FoldersLocationsIntelligenceFindingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Summarize(self, request, global_params=None):
+      r"""Summarize the intelligence findings for the specified scope(org, folder or project).
+
+      Args:
+        request: (StorageFoldersLocationsIntelligenceFindingsSummarizeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SummarizeIntelligenceFindingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('Summarize')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Summarize.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/intelligenceFindings:summarize',
+        http_method='GET',
+        method_id='storage.folders.locations.intelligenceFindings.summarize',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken', 'resourceScope'],
+        relative_path='v2/{+parent}/intelligenceFindings:summarize',
+        request_field='',
+        request_type_name='StorageFoldersLocationsIntelligenceFindingsSummarizeRequest',
+        response_type_name='SummarizeIntelligenceFindingsResponse',
+        supports_download=False,
+    )
 
   class FoldersLocationsService(base_api.BaseApiService):
     """Service class for the folders_locations resource."""
@@ -175,6 +216,43 @@ class StorageV2(base_api.BaseApiClient):
       super(StorageV2.FoldersService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class OrganizationsLocationsIntelligenceFindingsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_intelligenceFindings resource."""
+
+    _NAME = 'organizations_locations_intelligenceFindings'
+
+    def __init__(self, client):
+      super(StorageV2.OrganizationsLocationsIntelligenceFindingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Summarize(self, request, global_params=None):
+      r"""Summarize the intelligence findings for the specified scope(org, folder or project).
+
+      Args:
+        request: (StorageOrganizationsLocationsIntelligenceFindingsSummarizeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SummarizeIntelligenceFindingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('Summarize')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Summarize.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/intelligenceFindings:summarize',
+        http_method='GET',
+        method_id='storage.organizations.locations.intelligenceFindings.summarize',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken', 'resourceScope'],
+        relative_path='v2/{+parent}/intelligenceFindings:summarize',
+        request_field='',
+        request_type_name='StorageOrganizationsLocationsIntelligenceFindingsSummarizeRequest',
+        response_type_name='SummarizeIntelligenceFindingsResponse',
+        supports_download=False,
+    )
 
   class OrganizationsLocationsService(base_api.BaseApiService):
     """Service class for the organizations_locations resource."""
@@ -483,6 +561,161 @@ class StorageV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='StorageProjectsBucketsGetStorageLayoutRequest',
         response_type_name='StorageLayout',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsIntelligenceFindingsRevisionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_intelligenceFindings_revisions resource."""
+
+    _NAME = 'projects_locations_intelligenceFindings_revisions'
+
+    def __init__(self, client):
+      super(StorageV2.ProjectsLocationsIntelligenceFindingsRevisionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the `IntelligenceFindingRevision` resource.
+
+      Args:
+        request: (StorageProjectsLocationsIntelligenceFindingsRevisionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (IntelligenceFindingRevision) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/intelligenceFindings/{intelligenceFindingsId}/revisions/{revisionsId}',
+        http_method='GET',
+        method_id='storage.projects.locations.intelligenceFindings.revisions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='StorageProjectsLocationsIntelligenceFindingsRevisionsGetRequest',
+        response_type_name='IntelligenceFindingRevision',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all the revisions of an `IntelligenceFinding` resource.
+
+      Args:
+        request: (StorageProjectsLocationsIntelligenceFindingsRevisionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListIntelligenceFindingRevisionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/intelligenceFindings/{intelligenceFindingsId}/revisions',
+        http_method='GET',
+        method_id='storage.projects.locations.intelligenceFindings.revisions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/revisions',
+        request_field='',
+        request_type_name='StorageProjectsLocationsIntelligenceFindingsRevisionsListRequest',
+        response_type_name='ListIntelligenceFindingRevisionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsIntelligenceFindingsService(base_api.BaseApiService):
+    """Service class for the projects_locations_intelligenceFindings resource."""
+
+    _NAME = 'projects_locations_intelligenceFindings'
+
+    def __init__(self, client):
+      super(StorageV2.ProjectsLocationsIntelligenceFindingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the `IntelligenceFinding` for a project.
+
+      Args:
+        request: (StorageProjectsLocationsIntelligenceFindingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (IntelligenceFinding) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/intelligenceFindings/{intelligenceFindingsId}',
+        http_method='GET',
+        method_id='storage.projects.locations.intelligenceFindings.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='StorageProjectsLocationsIntelligenceFindingsGetRequest',
+        response_type_name='IntelligenceFinding',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the `IntelligenceFinding` resources for the specified the project.
+
+      Args:
+        request: (StorageProjectsLocationsIntelligenceFindingsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListIntelligenceFindingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/intelligenceFindings',
+        http_method='GET',
+        method_id='storage.projects.locations.intelligenceFindings.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/intelligenceFindings',
+        request_field='',
+        request_type_name='StorageProjectsLocationsIntelligenceFindingsListRequest',
+        response_type_name='ListIntelligenceFindingsResponse',
+        supports_download=False,
+    )
+
+    def Summarize(self, request, global_params=None):
+      r"""Summarize the intelligence findings for the specified scope(org, folder or project).
+
+      Args:
+        request: (StorageProjectsLocationsIntelligenceFindingsSummarizeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SummarizeIntelligenceFindingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('Summarize')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Summarize.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/intelligenceFindings:summarize',
+        http_method='GET',
+        method_id='storage.projects.locations.intelligenceFindings.summarize',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken', 'resourceScope'],
+        relative_path='v2/{+parent}/intelligenceFindings:summarize',
+        request_field='',
+        request_type_name='StorageProjectsLocationsIntelligenceFindingsSummarizeRequest',
+        response_type_name='SummarizeIntelligenceFindingsResponse',
         supports_download=False,
     )
 

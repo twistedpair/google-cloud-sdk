@@ -29,12 +29,17 @@ properties:
     description: |-
       Lifetime of cookies in seconds. This setting is applicable to Application
       Load Balancers and Traffic Director and requires GENERATED_COOKIE or
-      HTTP_COOKIE session affinity. If set to 0, the cookie is non-persistent
+      HTTP_COOKIE session affinity.  If set to 0, the cookie is non-persistent
       and lasts only until the end of the browser session (or equivalent). The
-      maximum allowed value is two weeks (1,209,600). Not supported when the
+      maximum allowed value is two weeks (1,209,600).  Not supported when the
       backend service is referenced by a URL map that is bound to target gRPC
       proxy that has validateForProxyless field set to true.
     type: integer
+  allowMultinetwork:
+    description: |-
+      A boolean flag enabling multi-network mesh. This field is only allowed
+      with load balancing scheme set to INTERNAL_SELF_MANAGED.
+    type: boolean
   backends:
     description: The list of backends that serve this BackendService.
     type: array
@@ -64,7 +69,8 @@ properties:
       Connection Tracking configuration for this BackendService. Connection
       tracking policy settings are only available for external passthrough
       Network Load Balancers and internal passthrough Network Load
-      Balancers. connectionTrackingPolicy cannot be specified with haPolicy.
+      Balancers.  connectionTrackingPolicy cannot be specified with
+      haPolicy.
     $ref: BackendServiceConnectionTrackingPolicy.yaml
   consistentHash:
     description: |-
@@ -74,18 +80,19 @@ properties:
       The affinity to a particular destination host will be lost when one or
       more hosts are added/removed from the destination service. This field
       specifies parameters that control consistent hashing. This field is
-      only applicable when localityLbPolicy is set to MAGLEV or RING_HASH.
-      This field is applicable to either: - A regional backend service with
-      the service_protocol set to HTTP, HTTPS, HTTP2 or H2C, and
-      load_balancing_scheme set to INTERNAL_MANAGED. - A global backend
-      service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED.
+      only applicable whenlocalityLbPolicy is set to MAGLEV orRING_HASH.
+      This field is applicable to either:        - A regional backend
+      service with the service_protocol set to HTTP,    HTTPS, HTTP2 or H2C,
+      and load_balancing_scheme set to    INTERNAL_MANAGED.     - A global
+      backend service with the    load_balancing_scheme set to
+      INTERNAL_SELF_MANAGED.
     $ref: ConsistentHashLoadBalancerSettings.yaml
   creationTimestamp:
-    description: '[Output Only] Creation timestamp in RFC3339 text format.'
+    description: '[Output Only] Creation timestamp inRFC3339 text format.'
     type: string
   customMetrics:
     description: |-
-      List of custom metrics that are used for the WEIGHTED_ROUND_ROBIN
+      List of custom metrics that are used for theWEIGHTED_ROUND_ROBIN
       locality_lb_policy.
     type: array
     items:
@@ -138,7 +145,7 @@ properties:
       can be changed to EXTERNAL_MANAGED. Optionally, the
       TEST_BY_PERCENTAGE state can be used to migrate traffic by
       percentage using
-      externalManagedMigrationTestingPercentage. Rolling back a
+      externalManagedMigrationTestingPercentage.  Rolling back a
       migration requires the states to be set in reverse order.
       So changing the scheme from EXTERNAL_MANAGED to EXTERNAL
       requires the state to be set to TEST_ALL_TRAFFIC at the
@@ -154,13 +161,13 @@ properties:
     description: |-
       Determines the fraction of requests that should be
       processed by the Global external Application Load
-      Balancer. The value of this field must be in the range [0,
-      100]. Session affinity options will slightly affect this
-      routing behavior, for more details, see: Session Affinity.
-      This value can only be set if the loadBalancingScheme in
-      the BackendService is set to EXTERNAL (when using the
-      classic Application Load Balancer) and the migration state
-      is TEST_BY_PERCENTAGE.
+      Balancer.  The value of this field must be in the range
+      [0, 100]. Session affinity options will slightly affect
+      this routing behavior, for more details, see:Session
+      Affinity.  This value can only be set if the
+      loadBalancingScheme in the BackendService is set to
+      EXTERNAL (when using the classic Application Load
+      Balancer) and the migration state is TEST_BY_PERCENTAGE.
     type: number
   failoverPolicy:
     description: |-
@@ -181,33 +188,33 @@ properties:
       locking. This field will be ignored when inserting a
       BackendService. An up-to-date fingerprint must be provided
       in order to update the BackendService, otherwise the
-      request will fail with error 412 conditionNotMet. To see
+      request will fail with error 412 conditionNotMet.  To see
       the latest fingerprint, make a get() request to retrieve a
       BackendService.
     type: string
   haPolicy:
     description: |-
       Configures self-managed High Availability (HA) for
-      External and Internal Protocol Forwarding. The backends of
-      this regional backend service must only specify zonal
-      network endpoint groups (NEGs) of type GCE_VM_IP. When
+      External and Internal Protocol Forwarding.  The backends
+      of this regional backend service must only specify zonal
+      network endpoint groups (NEGs) of type GCE_VM_IP.  When
       haPolicy is set for an Internal Passthrough Network Load
       Balancer, the regional backend service must set the
       network field. All zonal NEGs must belong to the same
       network. However, individual NEGs can belong to different
-      subnetworks of that network. When haPolicy is specified,
+      subnetworks of that network.  When haPolicy is specified,
       the set of attached network endpoints across all backends
       comprise an High Availability domain from which one
       endpoint is selected as the active endpoint (the leader)
-      that receives all traffic. haPolicy can be added only at
+      that receives all traffic.  haPolicy can be added only at
       backend service creation time. Once set up, it cannot be
-      deleted. Note that haPolicy is not for load balancing, and
-      therefore cannot be specified with sessionAffinity,
-      connectionTrackingPolicy, and failoverPolicy. haPolicy
+      deleted.  Note that haPolicy is not for load balancing,
+      and therefore cannot be specified with sessionAffinity,
+      connectionTrackingPolicy, and failoverPolicy.  haPolicy
       requires customers to be responsible for tracking backend
       endpoint health and electing a leader among the healthy
       endpoints. Therefore, haPolicy cannot be specified with
-      healthChecks. haPolicy can only be specified for External
+      healthChecks.  haPolicy can only be specified for External
       Passthrough Network Load Balancers and Internal
       Passthrough Network Load Balancers.
     $ref: BackendServiceHAPolicy.yaml
@@ -222,7 +229,7 @@ properties:
       instance group or zonal NEG backends must have a health
       check unless haPolicy is specified. Backend services with
       internet or serverless NEG backends must not have a health
-      check. healthChecks[] cannot be specified with haPolicy.
+      check.  healthChecks[] cannot be specified with haPolicy.
     type: array
     items:
       type: string
@@ -237,30 +244,31 @@ properties:
     description: |-
       Specifies a preference for traffic sent from the proxy
       to the backend (or from the client to the backend for
-      proxyless gRPC). The possible values are: - IPV4_ONLY:
-      Only send IPv4 traffic to the backends of the backend
-      service (Instance Group, Managed Instance Group,
-      Network Endpoint Group), regardless of traffic from
-      the client to the proxy. Only IPv4 health checks are
-      used to check the health of the backends. This is the
-      default setting. - PREFER_IPV6: Prioritize the
-      connection to the endpoint's IPv6 address over its
-      IPv4 address (provided there is a healthy IPv6
-      address). - IPV6_ONLY: Only send IPv6 traffic to the
-      backends of the backend service (Instance Group,
-      Managed Instance Group, Network Endpoint Group),
-      regardless of traffic from the client to the proxy.
-      Only IPv6 health checks are used to check the health
-      of the backends. This field is applicable to either: -
+      proxyless gRPC). The possible values are:        -
+      IPV4_ONLY: Only send IPv4 traffic to the backends of
+      the    backend service (Instance Group, Managed
+      Instance Group, Network Endpoint    Group), regardless
+      of traffic from the client to the proxy. Only IPv4
+      health checks are used to check the health of the
+      backends. This is the    default setting.    -
+      PREFER_IPV6: Prioritize the connection to the
+      endpoint's IPv6 address over its IPv4 address
+      (provided there is a healthy IPv6 address).    -
+      IPV6_ONLY: Only send IPv6 traffic to the backends of
+      the backend service (Instance Group, Managed Instance
+      Group, Network Endpoint    Group), regardless of
+      traffic from the client to the proxy. Only IPv6
+      health checks are used to check the health of the
+      backends. This field is applicable to either:        -
       Advanced global external Application Load Balancer
-      (load balancing scheme EXTERNAL_MANAGED), - Regional
-      external Application Load Balancer, - Internal proxy
-      Network Load Balancer (load balancing scheme
-      INTERNAL_MANAGED), - Regional internal Application
-      Load Balancer (load balancing scheme
-      INTERNAL_MANAGED), - Traffic Director with Envoy
-      proxies and proxyless gRPC (load balancing scheme
-      INTERNAL_SELF_MANAGED).
+      (load balancing    scheme EXTERNAL_MANAGED), -
+      Regional external Application Load    Balancer,     -
+      Internal proxy Network Load Balancer (load balancing
+      scheme INTERNAL_MANAGED),     - Regional internal
+      Application Load    Balancer (load balancing scheme
+      INTERNAL_MANAGED),     -  Traffic    Director with
+      Envoy proxies and proxyless gRPC (load balancing
+      scheme    INTERNAL_SELF_MANAGED).
     type: string
     enum:
     - IPV4_ONLY
@@ -276,12 +284,13 @@ properties:
     description: |-
       Specifies the load balancer type. A backend service
       created for one type of load balancer cannot be used
-      with another. For more information, refer to Choosing
-      a load balancer.
+      with another. For more information, refer toChoosing a
+      load balancer.
     type: string
     enum:
     - EXTERNAL
     - EXTERNAL_MANAGED
+    - EXTERNAL_PASSTHROUGH
     - INTERNAL
     - INTERNAL_MANAGED
     - INTERNAL_SELF_MANAGED
@@ -294,8 +303,8 @@ properties:
       for either the localityLbPolicies[].policy or the
       localityLbPolicies[].customPolicy field.
       localityLbPolicies overrides any value set in the
-      localityLbPolicy field. For an example of how to use
-      this field, see Define a list of preferred policies.
+      localityLbPolicy field.  For an example of how to use
+      this field, seeDefine a list of preferred policies.
       Caution: This field and its children are intended for
       use in a service mesh that includes gRPC clients only.
       Envoy proxies can't use backend services that have
@@ -306,18 +315,30 @@ properties:
   localityLbPolicy:
     description: |-
       The load balancing algorithm used within the scope
-      of the locality. The possible values are: -
+      of the locality. The possible values are:        -
       ROUND_ROBIN: This is a simple policy in which each
-      healthy backend is selected in round robin order.
-      This is the default. - LEAST_REQUEST: An O(1)
-      algorithm which selects two random healthy hosts
-      and picks the host which has fewer active
-      requests. - RING_HASH: The ring/modulo hash load
-      balancer implements consistent hashing to
+      healthy    backend is selected in round robin
+      order. This is the default.    - LEAST_REQUEST: An
+      O(1) algorithm which    selects two random healthy
+      hosts and picks the host which has fewer active
+      requests.    - RING_HASH: The ring/modulo hash
+      load balancer implements    consistent hashing to
       backends. The algorithm has the property that the
       addition/removal of a host from a set of N hosts
-      only affects 1/N of the requests. - RANDOM: The
-      load balancer selects a random healthy host. -
+      only affects 1/N of the    requests.    - RANDOM:
+      The load balancer selects a random healthy
+      host.    - ORIGINAL_DESTINATION: Backend host is
+      selected    based on the client connection
+      metadata, i.e., connections are opened to    the
+      same address as the destination address of the
+      incoming connection    before the connection was
+      redirected to the load balancer.    - MAGLEV: used
+      as a drop in replacement for the ring hash    load
+      balancer. Maglev is not as stable as ring hash but
+      has faster table    lookup build times and host
+      selection times. For more information about
+      Maglev, see Maglev:    A Fast and Reliable
+      Software Network Load Balancer.    -
     type: string
     enum:
     - INVALID_LB_POLICY
@@ -344,13 +365,13 @@ properties:
       from the beginning of the stream until the
       response has been completely processed, including
       all retries. A stream that does not complete in
-      this duration is closed. If not specified, there
+      this duration is closed.  If not specified, there
       will be no timeout limit, i.e. the maximum
-      duration is infinite. This value can be overridden
-      in the PathMatcher configuration of the UrlMap
-      that references this backend service. This field
-      is only allowed when the loadBalancingScheme of
-      the backend service is INTERNAL_SELF_MANAGED.
+      duration is infinite.  This value can be
+      overridden in the PathMatcher configuration of the
+      UrlMap that references this backend service.  This
+      field is only allowed when the loadBalancingScheme
+      of the backend service is INTERNAL_SELF_MANAGED.
     $ref: Duration.yaml
   metadatas:
     description: |-
@@ -362,7 +383,7 @@ properties:
     description: |-
       Name of the resource. Provided by the client when
       the resource is created. The name must be 1-63
-      characters long, and comply with RFC1035.
+      characters long, and comply withRFC1035.
       Specifically, the name must be 1-63 characters
       long and match the regular expression
       `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
@@ -378,10 +399,10 @@ properties:
       Internal Passthrough Network Load Balancers when
       the haPolicy is enabled, and for External
       Passthrough Network Load Balancers when the
-      haPolicy fastIpMove is enabled. This field can
+      haPolicy fastIpMove is enabled.  This field can
       only be specified when the load balancing scheme
-      is set to INTERNAL, or when the load balancing
-      scheme is set to EXTERNAL and haPolicy fastIpMove
+      is set toINTERNAL, or when the load balancing
+      scheme is set toEXTERNAL and haPolicy fastIpMove
       is enabled.
     type: string
   networkPassThroughLbTrafficPolicy:
@@ -397,7 +418,7 @@ properties:
       backend endpoints from the load balancing pool of
       each individual proxy instance that processes the
       traffic for the given backend service. If not set,
-      this feature is considered disabled. Results of
+      this feature is considered disabled.  Results of
       the outlier detection algorithm (ejection of
       endpoints from the load balancing pool and
       returning them back to the pool) are executed
@@ -409,24 +430,25 @@ properties:
       the proxies, and while this happens, other proxies
       may continue to send requests to the same
       unhealthy endpoint until they detect and eject the
-      unhealthy endpoint. Applicable backend endpoints
-      can be: - VM instances in an Instance Group -
-      Endpoints in a Zonal NEG (GCE_VM_IP,
-      GCE_VM_IP_PORT) - Endpoints in a Hybrid
-      Connectivity NEG (NON_GCP_PRIVATE_IP_PORT) -
+      unhealthy endpoint.  Applicable backend endpoints
+      can be:        - VM instances in an Instance Group
+      - Endpoints in a Zonal NEG (GCE_VM_IP,
+      GCE_VM_IP_PORT)    - Endpoints in a Hybrid
+      Connectivity NEG (NON_GCP_PRIVATE_IP_PORT)    -
       Serverless NEGs, that resolve to Cloud Run, App
-      Engine, or Cloud Functions Services - Private
-      Service Connect NEGs, that resolve to Google-
-      managed regional API endpoints or managed services
-      published using Private Service Connect Applicable
-      backend service types can be: - A global backend
-      service with the loadBalancingScheme set to
-      INTERNAL_SELF_MANAGED or EXTERNAL_MANAGED. - A
-      regional backend service with the serviceProtocol
-      set to HTTP, HTTPS, HTTP2 or H2C, and
-      loadBalancingScheme set to INTERNAL_MANAGED or
+      Engine, or Cloud    Functions Services     -
+      Private Service Connect NEGs, that resolve to
+      Google-managed regional API endpoints or managed
+      services published using    Private Service
+      Connect Applicable backend service types can be:
+      - A global backend service with the
+      loadBalancingScheme set to
+      INTERNAL_SELF_MANAGED or EXTERNAL_MANAGED.     - A
+      regional backend    service with the
+      serviceProtocol set to HTTP, HTTPS, HTTP2 or H2C,
+      and loadBalancingScheme set to INTERNAL_MANAGED or
       EXTERNAL_MANAGED. Not supported for Serverless
-      NEGs. Not supported when the backend service is
+      NEGs.    Not supported when the backend service is
       referenced by a URL map that is bound to target
       gRPC proxy that has validateForProxyless field set
       to true.
@@ -461,16 +483,17 @@ properties:
   protocol:
     description: |-
       The protocol this BackendService uses to
-      communicate with backends. Possible values are
+      communicate with backends.  Possible values are
       HTTP, HTTPS, HTTP2, H2C, TCP, SSL, UDP or GRPC.
       depending on the chosen load balancer or Traffic
       Director configuration. Refer to the documentation
       for the load balancers or for Traffic Director for
-      more information. Must be set to GRPC when the
+      more information.  Must be set to GRPC when the
       backend service is referenced by a URL map that is
       bound to target gRPC proxy.
     type: string
     enum:
+    - ALL
     - GRPC
     - H2C
     - HTTP
@@ -518,7 +541,7 @@ properties:
   serviceLbPolicy:
     description: |-
       URL to networkservices.ServiceLbPolicy
-      resource. Can only be set if load balancing
+      resource.  Can only be set if load balancing
       scheme is EXTERNAL_MANAGED, INTERNAL_MANAGED
       or INTERNAL_SELF_MANAGED and the scope is
       global.
@@ -530,11 +553,11 @@ properties:
       supported when the backend service is
       referenced by a URL map that is bound to
       target gRPC proxy that has
-      validateForProxyless field set to true. For
+      validateForProxyless field set to true.  For
       more details, see: [Session
       Affinity](https://cloud.google.com/load-
       balancing/docs/backend-
-      service#session_affinity). sessionAffinity
+      service#session_affinity).  sessionAffinity
       cannot be specified with haPolicy.
     type: string
     enum:
@@ -551,8 +574,8 @@ properties:
     description: |-
       Describes the HTTP cookie used for stateful
       session affinity. This field is applicable and
-      required if the sessionAffinity is set to
-      STRONG_COOKIE_AFFINITY.
+      required if the sessionAffinity is set
+      toSTRONG_COOKIE_AFFINITY.
     $ref: BackendServiceHttpCookie.yaml
   subsetting:
     description: |-
@@ -565,10 +588,10 @@ properties:
       balancer. For more information see, Backend
       service settings. The default is 30 seconds.
       The full range of timeout values allowed goes
-      from 1 through 2,147,483,647 seconds. This
+      from 1 through 2,147,483,647 seconds.  This
       value can be overridden in the PathMatcher
       configuration of the UrlMap that references
-      this backend service. Not supported when the
+      this backend service.  Not supported when the
       backend service is referenced by a URL map
       that is bound to target gRPC proxy that has
       validateForProxyless field set to true.
@@ -587,3 +610,22 @@ properties:
     type: array
     items:
       $ref: BackendServiceUsedBy.yaml
+  vpcNetworkScope:
+    description: |-
+      The network scope of the backends that can
+      be added to the backend service. This
+      field can be either GLOBAL_VPC_NETWORK
+      orREGIONAL_VPC_NETWORK.  A backend service
+      with the VPC scope set to
+      GLOBAL_VPC_NETWORK is only allowed to have
+      backends in global VPC networks.  When the
+      VPC scope is set to REGIONAL_VPC_NETWORK
+      the backend service is only allowed to
+      have backends in regional networks in the
+      same scope as the backend service. Note:
+      if not specified then GLOBAL_VPC_NETWORK
+      will be used.
+    type: string
+    enum:
+    - GLOBAL_VPC_NETWORK
+    - REGIONAL_VPC_NETWORK

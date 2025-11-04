@@ -94,7 +94,7 @@ class PrivilegedaccessmanagerV1(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new grant in a given project, folder, or organization and location.
+      r"""Creates a grant in a given project, folder, or organization and location.
 
       Args:
         request: (PrivilegedaccessmanagerFoldersLocationsEntitlementsGrantsCreateRequest) input message
@@ -510,7 +510,7 @@ class PrivilegedaccessmanagerV1(base_api.BaseApiClient):
         method_id='privilegedaccessmanager.folders.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1/{+name}/operations',
         request_field='',
         request_type_name='PrivilegedaccessmanagerFoldersLocationsOperationsListRequest',
@@ -694,7 +694,7 @@ class PrivilegedaccessmanagerV1(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new grant in a given project, folder, or organization and location.
+      r"""Creates a grant in a given project, folder, or organization and location.
 
       Args:
         request: (PrivilegedaccessmanagerOrganizationsLocationsEntitlementsGrantsCreateRequest) input message
@@ -1110,7 +1110,7 @@ class PrivilegedaccessmanagerV1(base_api.BaseApiClient):
         method_id='privilegedaccessmanager.organizations.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1/{+name}/operations',
         request_field='',
         request_type_name='PrivilegedaccessmanagerOrganizationsLocationsOperationsListRequest',
@@ -1257,7 +1257,7 @@ class PrivilegedaccessmanagerV1(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new grant in a given project, folder, or organization and location.
+      r"""Creates a grant in a given project, folder, or organization and location.
 
       Args:
         request: (PrivilegedaccessmanagerProjectsLocationsEntitlementsGrantsCreateRequest) input message
@@ -1673,7 +1673,7 @@ class PrivilegedaccessmanagerV1(base_api.BaseApiClient):
         method_id='privilegedaccessmanager.projects.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1/{+name}/operations',
         request_field='',
         request_type_name='PrivilegedaccessmanagerProjectsLocationsOperationsListRequest',

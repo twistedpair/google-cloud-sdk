@@ -220,6 +220,33 @@ class CloudnumberregistryV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ShowUtilization(self, request, global_params=None):
+      r"""Gets the details of a single CustomRange and its utilization.
+
+      Args:
+        request: (CloudnumberregistryProjectsLocationsCustomRangesShowUtilizationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ShowCustomRangeUtilizationResponse) The response message.
+      """
+      config = self.GetMethodConfig('ShowUtilization')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ShowUtilization.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/customRanges/{customRangesId}:showUtilization',
+        http_method='GET',
+        method_id='cloudnumberregistry.projects.locations.customRanges.showUtilization',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:showUtilization',
+        request_field='',
+        request_type_name='CloudnumberregistryProjectsLocationsCustomRangesShowUtilizationRequest',
+        response_type_name='ShowCustomRangeUtilizationResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsDiscoveredRangesService(base_api.BaseApiService):
     """Service class for the projects_locations_discoveredRanges resource."""
 
@@ -311,6 +338,33 @@ class CloudnumberregistryV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ShowUtilization(self, request, global_params=None):
+      r"""Gets the details of a single DiscoveredRange and its utilization.
+
+      Args:
+        request: (CloudnumberregistryProjectsLocationsDiscoveredRangesShowUtilizationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ShowDiscoveredRangeUtilizationResponse) The response message.
+      """
+      config = self.GetMethodConfig('ShowUtilization')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ShowUtilization.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/discoveredRanges/{discoveredRangesId}:showUtilization',
+        http_method='GET',
+        method_id='cloudnumberregistry.projects.locations.discoveredRanges.showUtilization',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:showUtilization',
+        request_field='',
+        request_type_name='CloudnumberregistryProjectsLocationsDiscoveredRangesShowUtilizationRequest',
+        response_type_name='ShowDiscoveredRangeUtilizationResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsIpamAdminScopesService(base_api.BaseApiService):
     """Service class for the projects_locations_ipamAdminScopes resource."""
 
@@ -320,6 +374,33 @@ class CloudnumberregistryV1alpha(base_api.BaseApiClient):
       super(CloudnumberregistryV1alpha.ProjectsLocationsIpamAdminScopesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Cleanup(self, request, global_params=None):
+      r"""Cleans up a single IpamAdminScope.
+
+      Args:
+        request: (CloudnumberregistryProjectsLocationsIpamAdminScopesCleanupRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Cleanup')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cleanup.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/ipamAdminScopes/{ipamAdminScopesId}:cleanup',
+        http_method='POST',
+        method_id='cloudnumberregistry.projects.locations.ipamAdminScopes.cleanup',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:cleanup',
+        request_field='cleanupIpamAdminScopeRequest',
+        request_type_name='CloudnumberregistryProjectsLocationsIpamAdminScopesCleanupRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
     def Create(self, request, global_params=None):
       r"""Creates a new IpamAdminScope in a given project and location.
@@ -371,6 +452,33 @@ class CloudnumberregistryV1alpha(base_api.BaseApiClient):
         relative_path='v1alpha/{+name}',
         request_field='',
         request_type_name='CloudnumberregistryProjectsLocationsIpamAdminScopesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Disable(self, request, global_params=None):
+      r"""Disables a single IpamAdminScope.
+
+      Args:
+        request: (CloudnumberregistryProjectsLocationsIpamAdminScopesDisableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Disable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Disable.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/ipamAdminScopes/{ipamAdminScopesId}:disable',
+        http_method='POST',
+        method_id='cloudnumberregistry.projects.locations.ipamAdminScopes.disable',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:disable',
+        request_field='disableIpamAdminScopeRequest',
+        request_type_name='CloudnumberregistryProjectsLocationsIpamAdminScopesDisableRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -566,7 +674,7 @@ class CloudnumberregistryV1alpha(base_api.BaseApiClient):
         method_id='cloudnumberregistry.projects.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1alpha/{+name}/operations',
         request_field='',
         request_type_name='CloudnumberregistryProjectsLocationsOperationsListRequest',

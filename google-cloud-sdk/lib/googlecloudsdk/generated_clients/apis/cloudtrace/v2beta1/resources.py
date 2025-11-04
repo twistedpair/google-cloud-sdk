@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://cloudtrace.googleapis.com/v2beta1/'
-DOCS_URL = 'https://cloud.google.com/trace'
+DOCS_URL = 'https://cloud.google.com/trace/'
 
 
 class Collections(enum.Enum):

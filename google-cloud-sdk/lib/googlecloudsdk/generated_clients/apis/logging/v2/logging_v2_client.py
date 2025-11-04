@@ -913,7 +913,7 @@ class LoggingV2(base_api.BaseApiClient):
         method_id='logging.billingAccounts.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v2/{+name}/operations',
         request_field='',
         request_type_name='LoggingBillingAccountsLocationsOperationsListRequest',
@@ -1504,7 +1504,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def QueryLocal(self, request, global_params=None):
-      r"""Runs a (possibly multi-step) SQL query asynchronously in the customer project and returns handles that can be used to fetch the results of each step. View references are translated to linked dataset tables, and references to other raw BigQuery tables are permitted.
+      r"""Deprecated: Use QueryData instead.Runs a (possibly multi-step) SQL query asynchronously in the customer project and returns handles that can be used to fetch the results of each step. View references are translated to linked dataset tables, and references to other raw BigQuery tables are permitted.
 
       Args:
         request: (QueryDataLocalRequest) input message
@@ -2900,7 +2900,7 @@ class LoggingV2(base_api.BaseApiClient):
         method_id='logging.folders.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v2/{+name}/operations',
         request_field='',
         request_type_name='LoggingFoldersLocationsOperationsListRequest',
@@ -4188,7 +4188,7 @@ class LoggingV2(base_api.BaseApiClient):
         method_id='logging.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v2/{+name}/operations',
         request_field='',
         request_type_name='LoggingLocationsOperationsListRequest',
@@ -5394,7 +5394,7 @@ class LoggingV2(base_api.BaseApiClient):
         method_id='logging.organizations.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v2/{+name}/operations',
         request_field='',
         request_type_name='LoggingOrganizationsLocationsOperationsListRequest',
@@ -7036,7 +7036,7 @@ class LoggingV2(base_api.BaseApiClient):
         method_id='logging.projects.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v2/{+name}/operations',
         request_field='',
         request_type_name='LoggingProjectsLocationsOperationsListRequest',
@@ -7798,7 +7798,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def ValidateLocal(self, request, global_params=None):
-      r"""Validates a query before passing it to QueryDataLocal and returns query metadata synchronously.
+      r"""Deprecated: Use ValidateQuery instead.Validates a query before passing it to QueryDataLocal and returns query metadata synchronously.
 
       Args:
         request: (QueryDataLocalRequest) input message

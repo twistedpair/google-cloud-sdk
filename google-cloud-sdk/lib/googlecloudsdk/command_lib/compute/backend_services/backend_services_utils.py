@@ -904,7 +904,7 @@ def ApplyTlsSettingsArgs(
     location: The location of the backend service.
     release_track: The release track of the backend service.
   """
-  if args.tls_settings:
+  if hasattr(args, 'tls_settings') and args.tls_settings:
     tls_settings = client.messages.BackendServiceTlsSettings()
     for key, value in args.tls_settings.items():
       if key == 'authenticationConfig':
@@ -922,6 +922,10 @@ def ApplyTlsSettingsArgs(
         raise exceptions.InvalidArgumentException(
             '--tls-settings', 'Invalid key: %s' % key
         )
+    backend_service.tlsSettings = tls_settings
+  elif hasattr(args, 'identity') and args.identity:
+    tls_settings = client.messages.BackendServiceTlsSettings()
+    tls_settings.identity = args.identity
     backend_service.tlsSettings = tls_settings
 
 

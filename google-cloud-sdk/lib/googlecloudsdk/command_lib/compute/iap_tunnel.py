@@ -754,17 +754,20 @@ class IAPWebsocketTunnelHelper(object):
     proxy_info = http_proxy.GetHttpProxyInfo()
     if callable(proxy_info):
       proxy_info = proxy_info(method='https')
-    return utils.IapTunnelTargetInfo(project=self._project,
-                                     zone=self._zone,
-                                     instance=self._instance,
-                                     interface=self._interface,
-                                     port=self._port,
-                                     url_override=self._iap_tunnel_url_override,
-                                     proxy_info=proxy_info,
-                                     region=self._region,
-                                     network=self._network,
-                                     host=self._host,
-                                     dest_group=self._dest_group)
+    return utils.IapTunnelTargetInfo(
+        project=self._project,
+        zone=self._zone,
+        instance=self._instance,
+        interface=self._interface,
+        port=self._port,
+        url_override=self._iap_tunnel_url_override,
+        proxy_info=proxy_info,
+        region=self._region,
+        network=self._network,
+        host=self._host,
+        dest_group=self._dest_group,
+        cloud_run_args=None,
+    )
 
   def RunReceiveLocalData(self, conn, socket_address, user_agent, conn_id=0):
     """Receive data from provided local connection and send over WebSocket.

@@ -60,6 +60,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.globalOperations = self.GlobalOperationsService(self)
     self.globalOrganizationOperations = self.GlobalOrganizationOperationsService(self)
     self.globalPublicDelegatedPrefixes = self.GlobalPublicDelegatedPrefixesService(self)
+    self.globalVmExtensionPolicies = self.GlobalVmExtensionPoliciesService(self)
     self.healthChecks = self.HealthChecksService(self)
     self.httpHealthChecks = self.HttpHealthChecksService(self)
     self.httpsHealthChecks = self.HttpsHealthChecksService(self)
@@ -136,6 +137,8 @@ class ComputeBeta(base_api.BaseApiClient):
     self.reservationSubBlocks = self.ReservationSubBlocksService(self)
     self.reservations = self.ReservationsService(self)
     self.resourcePolicies = self.ResourcePoliciesService(self)
+    self.rolloutPlans = self.RolloutPlansService(self)
+    self.rollouts = self.RolloutsService(self)
     self.routers = self.RoutersService(self)
     self.routes = self.RoutesService(self)
     self.securityPolicies = self.SecurityPoliciesService(self)
@@ -4859,6 +4862,181 @@ patch format and processing rules.
         supports_download=False,
     )
 
+  class GlobalVmExtensionPoliciesService(base_api.BaseApiService):
+    """Service class for the globalVmExtensionPolicies resource."""
+
+    _NAME = 'globalVmExtensionPolicies'
+
+    def __init__(self, client):
+      super(ComputeBeta.GlobalVmExtensionPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves the list of all VM Extension Policy resources.
+available to the specified project.
+
+To prevent failure, it's recommended that you set the
+`returnPartialSuccess` parameter to `true`.
+
+      Args:
+        request: (ComputeGlobalVmExtensionPoliciesAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VmExtensionPolicyAggregatedListResponse) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.globalVmExtensionPolicies.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
+        relative_path='projects/{project}/aggregated/vmExtensionPolicies',
+        request_field='',
+        request_type_name='ComputeGlobalVmExtensionPoliciesAggregatedListRequest',
+        response_type_name='VmExtensionPolicyAggregatedListResponse',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Purge scoped resources (zonal policies) from a global VM extension.
+policy, and then delete the global VM extension policy. Purge of the scoped
+resources is a pre-condition of the global VM extension policy deletion.
+The deletion of the global VM extension policy happens after the purge
+rollout is done, so it's not a part of the LRO. It's an automatic process
+that triggers in the backend.
+
+      Args:
+        request: (ComputeGlobalVmExtensionPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.globalVmExtensionPolicies.delete',
+        ordered_params=['project', 'globalVmExtensionPolicy'],
+        path_params=['globalVmExtensionPolicy', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/vmExtensionPolicies/{globalVmExtensionPolicy}/delete',
+        request_field='globalVmExtensionPolicyRolloutOperationRolloutInput',
+        request_type_name='ComputeGlobalVmExtensionPoliciesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a global VM extension policy.
+
+      Args:
+        request: (ComputeGlobalVmExtensionPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GlobalVmExtensionPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.globalVmExtensionPolicies.get',
+        ordered_params=['project', 'globalVmExtensionPolicy'],
+        path_params=['globalVmExtensionPolicy', 'project'],
+        query_params=[],
+        relative_path='projects/{project}/global/vmExtensionPolicies/{globalVmExtensionPolicy}',
+        request_field='',
+        request_type_name='ComputeGlobalVmExtensionPoliciesGetRequest',
+        response_type_name='GlobalVmExtensionPolicy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a new project level GlobalVmExtensionPolicy.
+
+      Args:
+        request: (ComputeGlobalVmExtensionPoliciesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.globalVmExtensionPolicies.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/vmExtensionPolicies',
+        request_field='globalVmExtensionPolicy',
+        request_type_name='ComputeGlobalVmExtensionPoliciesInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists global VM extension policies.
+
+      Args:
+        request: (ComputeGlobalVmExtensionPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GlobalVmExtensionPolicyList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.globalVmExtensionPolicies.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/global/vmExtensionPolicies',
+        request_field='',
+        request_type_name='ComputeGlobalVmExtensionPoliciesListRequest',
+        response_type_name='GlobalVmExtensionPolicyList',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Updates a global VM extension policy.
+
+      Args:
+        request: (ComputeGlobalVmExtensionPoliciesUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.globalVmExtensionPolicies.update',
+        ordered_params=['project', 'globalVmExtensionPolicy'],
+        path_params=['globalVmExtensionPolicy', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/vmExtensionPolicies/{globalVmExtensionPolicy}',
+        request_field='globalVmExtensionPolicyResource',
+        request_type_name='ComputeGlobalVmExtensionPoliciesUpdateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class HealthChecksService(base_api.BaseApiService):
     """Service class for the healthChecks resource."""
 
@@ -6233,6 +6411,32 @@ group.
         request_field='',
         request_type_name='ComputeInstanceGroupManagersGetRequest',
         response_type_name='InstanceGroupManager',
+        supports_download=False,
+    )
+
+    def GetAvailableAcceleratorTopologies(self, request, global_params=None):
+      r"""Returns information about available accelerator topologies for a given MIG.
+
+      Args:
+        request: (ComputeInstanceGroupManagersGetAvailableAcceleratorTopologiesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstanceGroupManagersGetAvailableAcceleratorTopologiesResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetAvailableAcceleratorTopologies')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetAvailableAcceleratorTopologies.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instanceGroupManagers.getAvailableAcceleratorTopologies',
+        ordered_params=['project', 'zone', 'resourceId'],
+        path_params=['project', 'resourceId', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{resourceId}/getAvailableAcceleratorTopologies',
+        request_field='',
+        request_type_name='ComputeInstanceGroupManagersGetAvailableAcceleratorTopologiesRequest',
+        response_type_name='InstanceGroupManagersGetAvailableAcceleratorTopologiesResponse',
         supports_download=False,
     )
 
@@ -13510,8 +13714,10 @@ This has billing implications.  Projects in the hierarchy with effective
 hierarchical security policies will be automatically enrolled into Cloud
 Armor Enterprise if not already enrolled.
 
-Use of this API to modify firewall policies is deprecated. Use
-firewallPolicies.addAssociation instead if possible.
+Use this API to modify Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to modify firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.addAssociation
+instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesAddAssociationRequest) input message
@@ -13539,6 +13745,10 @@ firewallPolicies.addAssociation instead if possible.
     def AddRule(self, request, global_params=None):
       r"""Inserts a rule into a security policy.
 
+Use this API to modify Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to modify firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.addRule instead.
+
       Args:
         request: (ComputeOrganizationSecurityPoliciesAddRuleRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -13565,8 +13775,10 @@ firewallPolicies.addAssociation instead if possible.
     def CopyRules(self, request, global_params=None):
       r"""Copies rules to the specified security policy.
 
-Use of this API to modify firewall policies is deprecated. Use
-firewallPolicies.copyRules instead.
+Use this API to modify Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to modify firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.cloneRules
+instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesCopyRulesRequest) input message
@@ -13594,8 +13806,9 @@ firewallPolicies.copyRules instead.
     def Delete(self, request, global_params=None):
       r"""Deletes the specified policy.
 
-Use of this API to remove firewall policies is deprecated. Use
-firewallPolicies.delete instead.
+Use this API to remove Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to remove firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.delete instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesDeleteRequest) input message
@@ -13623,8 +13836,9 @@ firewallPolicies.delete instead.
     def Get(self, request, global_params=None):
       r"""List all of the ordered rules present in a single specified policy.
 
-Use of this API to read firewall policies is deprecated. Use
-firewallPolicies.get instead.
+Use this API to read Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to read firewall policies. This usage is now
+disabled for most organizations. Use firewallPolicies.get instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesGetRequest) input message
@@ -13652,8 +13866,10 @@ firewallPolicies.get instead.
     def GetAssociation(self, request, global_params=None):
       r"""Gets an association with the specified name.
 
-Use of this API to read firewall policies is deprecated. Use
-firewallPolicies.getAssociation instead if possible.
+Use this API to read Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to read firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.getAssociation
+instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesGetAssociationRequest) input message
@@ -13681,8 +13897,9 @@ firewallPolicies.getAssociation instead if possible.
     def GetRule(self, request, global_params=None):
       r"""Gets a rule at the specified priority.
 
-Use of this API to read firewall policies is deprecated. Use
-firewallPolicies.getRule instead.
+Use this API to read Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to read firewall policies. This usage is now
+disabled for most organizations. Use firewallPolicies.getRule instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesGetRuleRequest) input message
@@ -13711,8 +13928,9 @@ firewallPolicies.getRule instead.
       r"""Creates a new policy in the specified organization using the data included.
 in the request.
 
-Use of this API to insert firewall policies is deprecated. Use
-firewallPolicies.insert instead.
+Use this API to add Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to add firewall policies. This usage is now
+disabled for most organizations. Use firewallPolicies.insert instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesInsertRequest) input message
@@ -13741,8 +13959,9 @@ firewallPolicies.insert instead.
       r"""List all the policies that have been configured for the specified.
 organization.
 
-Use of this API to read firewall policies is deprecated. Use
-firewallPolicies.list instead.
+Use this API to read Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to read firewall policies. This usage is now
+disabled for most organizations. Use firewallPolicies.list instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesListRequest) input message
@@ -13770,8 +13989,10 @@ firewallPolicies.list instead.
     def ListAssociations(self, request, global_params=None):
       r"""Lists associations of a specified target, i.e., organization or folder.
 
-Use of this API to read firewall policies is deprecated. Use
-firewallPolicies.listAssociations instead if possible.
+Use this API to read Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to read firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.listAssociations
+instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesListAssociationsRequest) input message
@@ -13826,8 +14047,9 @@ expressions.
     def Move(self, request, global_params=None):
       r"""Moves the specified security policy.
 
-Use of this API to modify firewall policies is deprecated. Use
-firewallPolicies.move instead.
+Use this API to modify Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to modify firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.move instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesMoveRequest) input message
@@ -13855,8 +14077,9 @@ firewallPolicies.move instead.
     def Patch(self, request, global_params=None):
       r"""Patches the specified policy with the data included in the request.
 
-Use of this API to modify firewall policies is deprecated. Use
-firewallPolicies.patch instead.
+Use this API to modify Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to modify firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.patch instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesPatchRequest) input message
@@ -13884,8 +14107,10 @@ firewallPolicies.patch instead.
     def PatchRule(self, request, global_params=None):
       r"""Patches a rule at the specified priority.
 
-Use of this API to modify firewall policies is deprecated. Use
-firewallPolicies.patchRule instead.
+Use this API to modify Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to modify firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.patchRule
+instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesPatchRuleRequest) input message
@@ -13913,8 +14138,10 @@ firewallPolicies.patchRule instead.
     def RemoveAssociation(self, request, global_params=None):
       r"""Removes an association for the specified security policy.
 
-Use of this API to modify firewall policies is deprecated. Use
-firewallPolicies.removeAssociation instead if possible.
+Use this API to modify Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to modify firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.removeAssociation
+instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesRemoveAssociationRequest) input message
@@ -13941,6 +14168,11 @@ firewallPolicies.removeAssociation instead if possible.
 
     def RemoveRule(self, request, global_params=None):
       r"""Deletes a rule at the specified priority.
+
+Use this API to modify Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to modify firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.removeRule
+instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesRemoveRuleRequest) input message
@@ -23423,6 +23655,234 @@ Replaces any existing policy.
         request_field='testPermissionsRequest',
         request_type_name='ComputeResourcePoliciesTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class RolloutPlansService(base_api.BaseApiService):
+    """Service class for the rolloutPlans resource."""
+
+    _NAME = 'rolloutPlans'
+
+    def __init__(self, client):
+      super(ComputeBeta.RolloutPlansService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a RolloutPlan.
+
+      Args:
+        request: (ComputeRolloutPlansDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.rolloutPlans.delete',
+        ordered_params=['project', 'rolloutPlan'],
+        path_params=['project', 'rolloutPlan'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/rolloutPlans/{rolloutPlan}',
+        request_field='',
+        request_type_name='ComputeRolloutPlansDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single project-scoped RolloutPlan.
+
+      Args:
+        request: (ComputeRolloutPlansGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RolloutPlan) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.rolloutPlans.get',
+        ordered_params=['project', 'rolloutPlan'],
+        path_params=['project', 'rolloutPlan'],
+        query_params=[],
+        relative_path='projects/{project}/global/rolloutPlans/{rolloutPlan}',
+        request_field='',
+        request_type_name='ComputeRolloutPlansGetRequest',
+        response_type_name='RolloutPlan',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a new RolloutPlan in a given project and location.
+
+      Args:
+        request: (ComputeRolloutPlansInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.rolloutPlans.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/rolloutPlans',
+        request_field='rolloutPlan',
+        request_type_name='ComputeRolloutPlansInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists RolloutPlans in a given project and location.
+
+      Args:
+        request: (ComputeRolloutPlansListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RolloutPlansListResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.rolloutPlans.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/global/rolloutPlans',
+        request_field='',
+        request_type_name='ComputeRolloutPlansListRequest',
+        response_type_name='RolloutPlansListResponse',
+        supports_download=False,
+    )
+
+  class RolloutsService(base_api.BaseApiService):
+    """Service class for the rollouts resource."""
+
+    _NAME = 'rollouts'
+
+    def __init__(self, client):
+      super(ComputeBeta.RolloutsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Cancels a Rollout.
+
+      Args:
+        request: (ComputeRolloutsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.rollouts.cancel',
+        ordered_params=['project', 'rollout'],
+        path_params=['project', 'rollout'],
+        query_params=['requestId', 'rollback'],
+        relative_path='projects/{project}/global/rollouts/{rollout}',
+        request_field='',
+        request_type_name='ComputeRolloutsCancelRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a Rollout.
+
+      Args:
+        request: (ComputeRolloutsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.rollouts.delete',
+        ordered_params=['project', 'rollout'],
+        path_params=['project', 'rollout'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/rollouts/{rollout}',
+        request_field='',
+        request_type_name='ComputeRolloutsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single project-scoped Rollout.
+
+      Args:
+        request: (ComputeRolloutsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Rollout) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.rollouts.get',
+        ordered_params=['project', 'rollout'],
+        path_params=['project', 'rollout'],
+        query_params=[],
+        relative_path='projects/{project}/global/rollouts/{rollout}',
+        request_field='',
+        request_type_name='ComputeRolloutsGetRequest',
+        response_type_name='Rollout',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Rollouts in a given project and location.
+
+      Args:
+        request: (ComputeRolloutsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RolloutsListResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.rollouts.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/global/rollouts',
+        request_field='',
+        request_type_name='ComputeRolloutsListRequest',
+        response_type_name='RolloutsListResponse',
         supports_download=False,
     )
 

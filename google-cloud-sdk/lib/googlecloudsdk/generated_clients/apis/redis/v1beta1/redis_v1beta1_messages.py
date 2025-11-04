@@ -840,6 +840,8 @@ class ConfigBasedSignalData(_messages.Message):
         exposed to public access.
       SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS: Represents if a resources requires
         all incoming connections to use SSL or not.
+      SIGNAL_TYPE_EXTENDED_SUPPORT: Represents if a resource version is in
+        extended support.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_OUTDATED_MINOR_VERSION = 1
@@ -847,6 +849,7 @@ class ConfigBasedSignalData(_messages.Message):
     SIGNAL_TYPE_NO_ROOT_PASSWORD = 3
     SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS = 4
     SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS = 5
+    SIGNAL_TYPE_EXTENDED_SUPPORT = 6
 
   fullResourceName = _messages.StringField(1)
   lastRefreshTime = _messages.StringField(2)
@@ -941,7 +944,7 @@ class CustomMetadataData(_messages.Message):
 
 class DatabaseResourceFeed(_messages.Message):
   r"""DatabaseResourceFeed is the top level proto to be used to ingest
-  different database resource level events into Condor platform. Next ID: 11
+  different database resource level events into Condor platform. Next ID: 13
 
   Enums:
     FeedTypeValueValuesEnum: Required. Type feed to be ingested into condor
@@ -951,6 +954,8 @@ class DatabaseResourceFeed(_messages.Message):
       BackupDR.
     configBasedSignalData: Config based signal data is used to ingest signals
       that are generated based on the configuration of the database resource.
+    databaseResourceSignalData: Database resource signal data is used to
+      ingest signals from database resource signal feeds.
     feedTimestamp: Required. Timestamp when feed is generated.
     feedType: Required. Type feed to be ingested into condor
     observabilityMetricData: A ObservabilityMetricData attribute.
@@ -978,6 +983,7 @@ class DatabaseResourceFeed(_messages.Message):
       RECOMMENDATION_SIGNAL_DATA: Database resource recommendation signal data
       CONFIG_BASED_SIGNAL_DATA: Database config based signal data
       BACKUPDR_METADATA: Database resource metadata from BackupDR
+      DATABASE_RESOURCE_SIGNAL_DATA: Database resource signal data
     """
     FEEDTYPE_UNSPECIFIED = 0
     RESOURCE_METADATA = 1
@@ -986,17 +992,19 @@ class DatabaseResourceFeed(_messages.Message):
     RECOMMENDATION_SIGNAL_DATA = 4
     CONFIG_BASED_SIGNAL_DATA = 5
     BACKUPDR_METADATA = 6
+    DATABASE_RESOURCE_SIGNAL_DATA = 7
 
   backupdrMetadata = _messages.MessageField('BackupDRMetadata', 1)
   configBasedSignalData = _messages.MessageField('ConfigBasedSignalData', 2)
-  feedTimestamp = _messages.StringField(3)
-  feedType = _messages.EnumField('FeedTypeValueValuesEnum', 4)
-  observabilityMetricData = _messages.MessageField('ObservabilityMetricData', 5)
-  recommendationSignalData = _messages.MessageField('DatabaseResourceRecommendationSignalData', 6)
-  resourceHealthSignalData = _messages.MessageField('DatabaseResourceHealthSignalData', 7)
-  resourceId = _messages.MessageField('DatabaseResourceId', 8)
-  resourceMetadata = _messages.MessageField('DatabaseResourceMetadata', 9)
-  skipIngestion = _messages.BooleanField(10)
+  databaseResourceSignalData = _messages.MessageField('DatabaseResourceSignalData', 3)
+  feedTimestamp = _messages.StringField(4)
+  feedType = _messages.EnumField('FeedTypeValueValuesEnum', 5)
+  observabilityMetricData = _messages.MessageField('ObservabilityMetricData', 6)
+  recommendationSignalData = _messages.MessageField('DatabaseResourceRecommendationSignalData', 7)
+  resourceHealthSignalData = _messages.MessageField('DatabaseResourceHealthSignalData', 8)
+  resourceId = _messages.MessageField('DatabaseResourceId', 9)
+  resourceMetadata = _messages.MessageField('DatabaseResourceMetadata', 10)
+  skipIngestion = _messages.BooleanField(11)
 
 
 class DatabaseResourceHealthSignalData(_messages.Message):
@@ -1350,6 +1358,10 @@ class DatabaseResourceHealthSignalData(_messages.Message):
       SIGNAL_TYPE_REPLICATION_LAG: Replication delay.
       SIGNAL_TYPE_OUTDATED_VERSION: Outdated version.
       SIGNAL_TYPE_OUTDATED_CLIENT: Outdated client.
+      SIGNAL_TYPE_DATABOOST_DISABLED: Databoost is disabled.
+      SIGNAL_TYPE_RECOMMENDED_MAINTENANCE_POLICIES: Recommended maintenance
+        policy.
+      SIGNAL_TYPE_EXTENDED_SUPPORT: Resource version is in extended support.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -1453,6 +1465,9 @@ class DatabaseResourceHealthSignalData(_messages.Message):
     SIGNAL_TYPE_REPLICATION_LAG = 99
     SIGNAL_TYPE_OUTDATED_VERSION = 100
     SIGNAL_TYPE_OUTDATED_CLIENT = 101
+    SIGNAL_TYPE_DATABOOST_DISABLED = 102
+    SIGNAL_TYPE_RECOMMENDED_MAINTENANCE_POLICIES = 103
+    SIGNAL_TYPE_EXTENDED_SUPPORT = 104
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -1572,7 +1587,7 @@ class DatabaseResourceId(_messages.Message):
 
 
 class DatabaseResourceMetadata(_messages.Message):
-  r"""Common model for database resource instance metadata. Next ID: 26
+  r"""Common model for database resource instance metadata. Next ID: 29
 
   Enums:
     CurrentStateValueValuesEnum: Current state of the instance.
@@ -1608,6 +1623,7 @@ class DatabaseResourceMetadata(_messages.Message):
     instanceType: The type of the instance. Specified at creation time.
     location: The resource location. REQUIRED
     machineConfiguration: Machine configuration for this resource.
+    maintenanceInfo: Optional. Maintenance info for the resource.
     primaryResourceId: Identifier for this resource's immediate parent/primary
       resource if the current resource is a replica or derived form of another
       Database resource. Else it would be NULL. REQUIRED if the immediate
@@ -1631,6 +1647,8 @@ class DatabaseResourceMetadata(_messages.Message):
     updationTime: The time at which the resource was updated and recorded at
       partner service.
     userLabelSet: User-provided labels associated with the resource
+    zone: The resource zone. This is only applicable for zonal resources and
+      will be empty for regional and multi-regional resources.
   """
 
   class CurrentStateValueValuesEnum(_messages.Enum):
@@ -1661,10 +1679,12 @@ class DatabaseResourceMetadata(_messages.Message):
         edition enum.
       EDITION_ENTERPRISE: Represents the enterprise edition.
       EDITION_ENTERPRISE_PLUS: Represents the enterprise plus edition.
+      EDITION_STANDARD: Represents the standard edition.
     """
     EDITION_UNSPECIFIED = 0
     EDITION_ENTERPRISE = 1
     EDITION_ENTERPRISE_PLUS = 2
+    EDITION_STANDARD = 3
 
   class ExpectedStateValueValuesEnum(_messages.Enum):
     r"""The state that the instance is expected to be in. For example, an
@@ -1752,15 +1772,17 @@ class DatabaseResourceMetadata(_messages.Message):
   instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 13)
   location = _messages.StringField(14)
   machineConfiguration = _messages.MessageField('MachineConfiguration', 15)
-  primaryResourceId = _messages.MessageField('DatabaseResourceId', 16)
-  primaryResourceLocation = _messages.StringField(17)
-  product = _messages.MessageField('Product', 18)
-  resourceContainer = _messages.StringField(19)
-  resourceName = _messages.StringField(20)
-  suspensionReason = _messages.EnumField('SuspensionReasonValueValuesEnum', 21)
-  tagsSet = _messages.MessageField('Tags', 22)
-  updationTime = _messages.StringField(23)
-  userLabelSet = _messages.MessageField('UserLabels', 24)
+  maintenanceInfo = _messages.MessageField('ResourceMaintenanceInfo', 16)
+  primaryResourceId = _messages.MessageField('DatabaseResourceId', 17)
+  primaryResourceLocation = _messages.StringField(18)
+  product = _messages.MessageField('Product', 19)
+  resourceContainer = _messages.StringField(20)
+  resourceName = _messages.StringField(21)
+  suspensionReason = _messages.EnumField('SuspensionReasonValueValuesEnum', 22)
+  tagsSet = _messages.MessageField('Tags', 23)
+  updationTime = _messages.StringField(24)
+  userLabelSet = _messages.MessageField('UserLabels', 25)
+  zone = _messages.StringField(26)
 
 
 class DatabaseResourceRecommendationSignalData(_messages.Message):
@@ -2055,6 +2077,10 @@ class DatabaseResourceRecommendationSignalData(_messages.Message):
       SIGNAL_TYPE_REPLICATION_LAG: Replication delay.
       SIGNAL_TYPE_OUTDATED_VERSION: Outdated version.
       SIGNAL_TYPE_OUTDATED_CLIENT: Outdated client.
+      SIGNAL_TYPE_DATABOOST_DISABLED: Databoost is disabled.
+      SIGNAL_TYPE_RECOMMENDED_MAINTENANCE_POLICIES: Recommended maintenance
+        policy.
+      SIGNAL_TYPE_EXTENDED_SUPPORT: Resource version is in extended support.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -2158,6 +2184,9 @@ class DatabaseResourceRecommendationSignalData(_messages.Message):
     SIGNAL_TYPE_REPLICATION_LAG = 99
     SIGNAL_TYPE_OUTDATED_VERSION = 100
     SIGNAL_TYPE_OUTDATED_CLIENT = 101
+    SIGNAL_TYPE_DATABOOST_DISABLED = 102
+    SIGNAL_TYPE_RECOMMENDED_MAINTENANCE_POLICIES = 103
+    SIGNAL_TYPE_EXTENDED_SUPPORT = 104
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):
@@ -2192,6 +2221,73 @@ class DatabaseResourceRecommendationSignalData(_messages.Message):
   recommenderSubtype = _messages.StringField(6)
   resourceName = _messages.StringField(7)
   signalType = _messages.EnumField('SignalTypeValueValuesEnum', 8)
+
+
+class DatabaseResourceSignalData(_messages.Message):
+  r"""Database resource signal data. This is used to send signals to Condor
+  which are based on the DB/Instance/Fleet level configurations. These will be
+  used to send signals for all inventory types. Next ID: 7
+
+  Enums:
+    SignalStateValueValuesEnum: Required. Output only. Signal state of the
+      signal
+    SignalTypeValueValuesEnum: Required. Signal type of the signal
+
+  Fields:
+    fullResourceName: Required. Full Resource name of the source resource.
+    lastRefreshTime: Required. Last time signal was refreshed
+    resourceId: Database resource id.
+    signalBoolValue: Signal data for boolean signals.
+    signalState: Required. Output only. Signal state of the signal
+    signalType: Required. Signal type of the signal
+  """
+
+  class SignalStateValueValuesEnum(_messages.Enum):
+    r"""Required. Output only. Signal state of the signal
+
+    Values:
+      SIGNAL_STATE_UNSPECIFIED: Unspecified signal state.
+      ACTIVE: Signal is active and requires attention.
+      INACTIVE: Signal is inactive and does not require attention.
+      DISMISSED: Signal is dismissed by the user and should not be shown to
+        the user again.
+    """
+    SIGNAL_STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    INACTIVE = 2
+    DISMISSED = 3
+
+  class SignalTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Signal type of the signal
+
+    Values:
+      SIGNAL_TYPE_UNSPECIFIED: Unspecified signal type.
+      SIGNAL_TYPE_OUTDATED_MINOR_VERSION: Outdated Minor Version
+      SIGNAL_TYPE_DATABASE_AUDITING_DISABLED: Represents database auditing is
+        disabled.
+      SIGNAL_TYPE_NO_ROOT_PASSWORD: Represents if a database has a password
+        configured for the root account or not.
+      SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS: Represents if a resource is
+        exposed to public access.
+      SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS: Represents if a resources requires
+        all incoming connections to use SSL or not.
+      SIGNAL_TYPE_EXTENDED_SUPPORT: Represents if a resource version is in
+        extended support.
+    """
+    SIGNAL_TYPE_UNSPECIFIED = 0
+    SIGNAL_TYPE_OUTDATED_MINOR_VERSION = 1
+    SIGNAL_TYPE_DATABASE_AUDITING_DISABLED = 2
+    SIGNAL_TYPE_NO_ROOT_PASSWORD = 3
+    SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS = 4
+    SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS = 5
+    SIGNAL_TYPE_EXTENDED_SUPPORT = 6
+
+  fullResourceName = _messages.StringField(1)
+  lastRefreshTime = _messages.StringField(2)
+  resourceId = _messages.MessageField('DatabaseResourceId', 3)
+  signalBoolValue = _messages.BooleanField(4)
+  signalState = _messages.EnumField('SignalStateValueValuesEnum', 5)
+  signalType = _messages.EnumField('SignalTypeValueValuesEnum', 6)
 
 
 class Date(_messages.Message):
@@ -3074,10 +3170,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -3736,6 +3837,7 @@ class Product(_messages.Message):
       PRODUCT_TYPE_FIRESTORE: Firestore product area in GCP.
       PRODUCT_TYPE_COMPUTE_ENGINE: Compute Engine self managed databases
       PRODUCT_TYPE_ORACLE_ON_GCP: Oracle product area in GCP
+      PRODUCT_TYPE_BIGQUERY: BigQuery product area in GCP
       PRODUCT_TYPE_OTHER: Other refers to rest of other product type. This is
         to be when product type is known, but it is not present in this enum.
     """
@@ -3752,7 +3854,8 @@ class Product(_messages.Message):
     PRODUCT_TYPE_FIRESTORE = 10
     PRODUCT_TYPE_COMPUTE_ENGINE = 11
     PRODUCT_TYPE_ORACLE_ON_GCP = 12
-    PRODUCT_TYPE_OTHER = 13
+    PRODUCT_TYPE_BIGQUERY = 13
+    PRODUCT_TYPE_OTHER = 14
 
   engine = _messages.EnumField('EngineValueValuesEnum', 1)
   minorVersion = _messages.StringField(2)
@@ -4504,12 +4607,20 @@ class RedisProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class RemoteCluster(_messages.Message):
@@ -4593,6 +4704,117 @@ class RescheduleMaintenanceRequest(_messages.Message):
 
   rescheduleType = _messages.EnumField('RescheduleTypeValueValuesEnum', 1)
   scheduleTime = _messages.StringField(2)
+
+
+class ResourceMaintenanceDenySchedule(_messages.Message):
+  r"""Deny maintenance period for the database resource. It specifies the time
+  range during which the maintenance cannot start. This is configured by the
+  customer.
+
+  Fields:
+    endDate: Optional. Deny period end date.
+    startDate: Optional. The start date of the deny maintenance period.
+    time: Optional. Time in UTC when the deny period starts on start_date and
+      ends on end_date.
+  """
+
+  endDate = _messages.MessageField('Date', 1)
+  startDate = _messages.MessageField('Date', 2)
+  time = _messages.MessageField('TimeOfDay', 3)
+
+
+class ResourceMaintenanceInfo(_messages.Message):
+  r"""MaintenanceInfo to capture the maintenance details of database resource.
+
+  Fields:
+    denyMaintenanceSchedules: Optional. List of Deny maintenance period for
+      the database resource.
+    maintenanceSchedule: Optional. Maintenance window for the database
+      resource.
+    maintenanceVersion: Optional. Current Maintenance version of the database
+      resource. Example: "MYSQL_8_0_41.R20250531.01_15"
+  """
+
+  denyMaintenanceSchedules = _messages.MessageField('ResourceMaintenanceDenySchedule', 1, repeated=True)
+  maintenanceSchedule = _messages.MessageField('ResourceMaintenanceSchedule', 2)
+  maintenanceVersion = _messages.StringField(3)
+
+
+class ResourceMaintenanceSchedule(_messages.Message):
+  r"""Maintenance window for the database resource. It specifies preferred
+  time and day of the week and phase in some cases, when the maintenance can
+  start. This is configured by the customer.
+
+  Enums:
+    DayValueValuesEnum: Optional. Preferred day of the week for maintenance,
+      e.g. MONDAY, TUESDAY, etc.
+    PhaseValueValuesEnum: Optional. Phase of the maintenance window. This is
+      to capture order of maintenance. For example, for Cloud SQL resources,
+      this can be used to capture if the maintenance window is in Week1,
+      Week2, Week5, etc. Non production resources are usually part of early
+      phase. For more details, refer to Cloud SQL resources -
+      https://cloud.google.com/sql/docs/mysql/maintenance
+
+  Fields:
+    day: Optional. Preferred day of the week for maintenance, e.g. MONDAY,
+      TUESDAY, etc.
+    phase: Optional. Phase of the maintenance window. This is to capture order
+      of maintenance. For example, for Cloud SQL resources, this can be used
+      to capture if the maintenance window is in Week1, Week2, Week5, etc. Non
+      production resources are usually part of early phase. For more details,
+      refer to Cloud SQL resources -
+      https://cloud.google.com/sql/docs/mysql/maintenance
+    time: Optional. Preferred time to start the maintenance operation on the
+      specified day.
+  """
+
+  class DayValueValuesEnum(_messages.Enum):
+    r"""Optional. Preferred day of the week for maintenance, e.g. MONDAY,
+    TUESDAY, etc.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
+    """
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  class PhaseValueValuesEnum(_messages.Enum):
+    r"""Optional. Phase of the maintenance window. This is to capture order of
+    maintenance. For example, for Cloud SQL resources, this can be used to
+    capture if the maintenance window is in Week1, Week2, Week5, etc. Non
+    production resources are usually part of early phase. For more details,
+    refer to Cloud SQL resources -
+    https://cloud.google.com/sql/docs/mysql/maintenance
+
+    Values:
+      PHASE_UNSPECIFIED: Phase is unspecified.
+      ANY: Any phase.
+      WEEK1: Week 1.
+      WEEK2: Week 2.
+      WEEK5: Week 5.
+    """
+    PHASE_UNSPECIFIED = 0
+    ANY = 1
+    WEEK1 = 2
+    WEEK2 = 3
+    WEEK5 = 4
+
+  day = _messages.EnumField('DayValueValuesEnum', 1)
+  phase = _messages.EnumField('PhaseValueValuesEnum', 2)
+  time = _messages.MessageField('TimeOfDay', 3)
 
 
 class RetentionSettings(_messages.Message):

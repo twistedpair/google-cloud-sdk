@@ -337,7 +337,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the existing alerts for the Metrics scope.
+      r"""Lists the existing alerts for the metrics scope of the project.
 
       Args:
         request: (MonitoringProjectsAlertsListRequest) input message

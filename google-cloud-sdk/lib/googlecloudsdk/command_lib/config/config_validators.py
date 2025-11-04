@@ -246,7 +246,11 @@ def WarnIfSettingProjectWithNoAccess(scope, project):
     project_ref = command_lib_util.ParseProject(project)
     try:
       with base.WithLegacyQuota():
-        projects_api.Get(project_ref, disable_api_enablement_check=True)
+        project = projects_api.Get(
+            project_ref, disable_api_enablement_check=True
+        )
+        # Check project environment tag
+        command_lib_util.CheckAndPrintEnvironmentTagMessage(project)
     except (
         apitools_exceptions.HttpError,
         c_store.NoCredentialsForAccountException,

@@ -726,6 +726,8 @@ class ConfigManagementFeatureState(_messages.Message):
       cluster's fleet membership name.
     configSyncState: Current sync status
     hierarchyControllerState: Hierarchy Controller status
+    kubernetesApiServerVersion: Output only. The Kubernetes API server version
+      of the cluster.
     membershipConfig: Membership configuration in the cluster. This represents
       the actual state in the cluster, while the MembershipConfig in the
       FeatureSpec represents the intended state
@@ -737,9 +739,10 @@ class ConfigManagementFeatureState(_messages.Message):
   clusterName = _messages.StringField(2)
   configSyncState = _messages.MessageField('ConfigSyncState', 3)
   hierarchyControllerState = _messages.MessageField('HierarchyControllerState', 4)
-  membershipConfig = _messages.MessageField('MembershipConfig', 5)
-  operatorState = _messages.MessageField('OperatorState', 6)
-  policyControllerState = _messages.MessageField('PolicyControllerState', 7)
+  kubernetesApiServerVersion = _messages.StringField(5)
+  membershipConfig = _messages.MessageField('MembershipConfig', 6)
+  operatorState = _messages.MessageField('OperatorState', 7)
+  policyControllerState = _messages.MessageField('PolicyControllerState', 8)
 
 
 class ConfigSync(_messages.Message):
@@ -2366,12 +2369,20 @@ class GkehubProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class GoogleConfig(_messages.Message):
@@ -2867,10 +2878,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListReferencesRequest(_messages.Message):

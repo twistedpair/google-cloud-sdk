@@ -4179,3 +4179,20 @@ def AddRequestValidForDurationArgs(parser):
       demand.
       """,
   )
+
+
+def AddWorkloadIdentityConfigArgs(parser):
+  parser.add_argument(
+      '--identity',
+      type=str,
+      help="""\
+      The workload identity to use for the instance.
+      """,
+  )
+  parser.add_argument(
+      '--identity-certificate',
+      action=arg_parsers.StoreTrueFalseAction,
+      help="""\
+      Enables or disables managed workload identities on a VM.
+      """,
+  )

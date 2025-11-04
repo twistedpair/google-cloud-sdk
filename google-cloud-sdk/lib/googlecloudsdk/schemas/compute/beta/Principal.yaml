@@ -72,7 +72,7 @@ properties:
       A map of Istio attribute to expected values.
       Exact match, prefix match, and suffix match
       are supported for values. For example,
-      `request.headers[version]: ?v1?`. The
+      `request.headers[version]: "v1"`. The
       properties are ANDed together.
     $ref: PropertiesValue.yaml
   users:

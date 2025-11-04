@@ -648,7 +648,11 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       environment. Supported for Cloud Composer environments in versions
       composer-2.*.*-airflow-*.*.* and newer. * `config.environmentSize` * The
       size of the Cloud Composer environment. Supported for Cloud Composer
-      environments in versions composer-2.*.*-airflow-*.*.* and newer.
+      environments in versions composer-2.*.*-airflow-*.*.* and newer. *
+      `config.softwareConfig.auditLogsReplicationMode` * The Airflow audit
+      logs replication mode for the Cloud Composer environment. Supported for
+      Cloud Composer environments in versions composer-3-airflow-*.*.*-build.*
+      and newer.
   """
 
   environment = _messages.MessageField('Environment', 1)
@@ -921,12 +925,20 @@ class ComposerProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class ComposerWorkload(_messages.Message):
@@ -1843,10 +1855,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListTaskInstancesResponse(_messages.Message):
@@ -2584,6 +2601,9 @@ class SoftwareConfig(_messages.Message):
       the [executor](https://airflow.apache.org/code.html?highlight=executor#e
       xecutors) by which task instances are run on Airflow. If this field is
       unspecified, the `airflowExecutorType` defaults to `celery`.
+    AuditLogsReplicationModeValueValuesEnum: Optional. The selected mode of
+      audit logs replication. This field is supported for Cloud Composer
+      environments in versions composer-3-airflow-*.*.*-build.* and newer.
     WebServerPluginsModeValueValuesEnum: Optional. Whether or not the web
       server uses custom plugins. If unspecified, the field defaults to
       `PLUGINS_ENABLED`. This field is supported for Cloud Composer
@@ -2638,6 +2658,9 @@ class SoftwareConfig(_messages.Message):
       tps://airflow.apache.org/code.html?highlight=executor#executors) by
       which task instances are run on Airflow. If this field is unspecified,
       the `airflowExecutorType` defaults to `celery`.
+    auditLogsReplicationMode: Optional. The selected mode of audit logs
+      replication. This field is supported for Cloud Composer environments in
+      versions composer-3-airflow-*.*.*-build.* and newer.
     cloudDataLineageIntegration: Optional. The configuration for Cloud Data
       Lineage integration.
     envVariables: Optional. Additional environment variables to provide to the
@@ -2706,6 +2729,23 @@ class SoftwareConfig(_messages.Message):
     AIRFLOW_EXECUTOR_TYPE_UNSPECIFIED = 0
     CELERY = 1
     KUBERNETES = 2
+
+  class AuditLogsReplicationModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The selected mode of audit logs replication. This field is
+    supported for Cloud Composer environments in versions
+    composer-3-airflow-*.*.*-build.* and newer.
+
+    Values:
+      AUDIT_LOGS_REPLICATION_MODE_UNSPECIFIED: The user's choice of logs
+        replication mode is unspecified.
+      AUDIT_LOGS_REPLICATION_DISABLED: The user opted out of audit logs
+        replication.
+      AUDIT_LOGS_REPLICATION_ENABLED: The user opted in to audit logs
+        replication.
+    """
+    AUDIT_LOGS_REPLICATION_MODE_UNSPECIFIED = 0
+    AUDIT_LOGS_REPLICATION_DISABLED = 1
+    AUDIT_LOGS_REPLICATION_ENABLED = 2
 
   class WebServerPluginsModeValueValuesEnum(_messages.Enum):
     r"""Optional. Whether or not the web server uses custom plugins. If
@@ -2825,13 +2865,14 @@ class SoftwareConfig(_messages.Message):
 
   airflowConfigOverrides = _messages.MessageField('AirflowConfigOverridesValue', 1)
   airflowExecutorType = _messages.EnumField('AirflowExecutorTypeValueValuesEnum', 2)
-  cloudDataLineageIntegration = _messages.MessageField('CloudDataLineageIntegration', 3)
-  envVariables = _messages.MessageField('EnvVariablesValue', 4)
-  imageVersion = _messages.StringField(5)
-  pypiPackages = _messages.MessageField('PypiPackagesValue', 6)
-  pythonVersion = _messages.StringField(7)
-  schedulerCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  webServerPluginsMode = _messages.EnumField('WebServerPluginsModeValueValuesEnum', 9)
+  auditLogsReplicationMode = _messages.EnumField('AuditLogsReplicationModeValueValuesEnum', 3)
+  cloudDataLineageIntegration = _messages.MessageField('CloudDataLineageIntegration', 4)
+  envVariables = _messages.MessageField('EnvVariablesValue', 5)
+  imageVersion = _messages.StringField(6)
+  pypiPackages = _messages.MessageField('PypiPackagesValue', 7)
+  pythonVersion = _messages.StringField(8)
+  schedulerCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  webServerPluginsMode = _messages.EnumField('WebServerPluginsModeValueValuesEnum', 10)
 
 
 class SourceCode(_messages.Message):

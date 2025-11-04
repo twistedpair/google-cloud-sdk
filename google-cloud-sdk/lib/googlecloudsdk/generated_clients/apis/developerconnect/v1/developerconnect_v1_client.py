@@ -350,7 +350,7 @@ class DeveloperconnectV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a GitRepositoryLink. Upon linking a Git Repository, Developer Connect will configure the Git Repository to send webhook events to Developer Connect. Connections that use Firebase GitHub Application will have events forwarded to the Firebase service. All other Connections will have events forwarded to Cloud Build.
+      r"""Creates a GitRepositoryLink. Upon linking a Git Repository, Developer Connect will configure the Git Repository to send webhook events to Developer Connect. Connections that use Firebase GitHub Application will have events forwarded to the Firebase service. Connections that use Gemini Code Assist will have events forwarded to Gemini Code Assist service. All other Connections will have events forwarded to Cloud Build.
 
       Args:
         request: (DeveloperconnectProjectsLocationsConnectionsGitRepositoryLinksCreateRequest) input message
@@ -974,7 +974,7 @@ class DeveloperconnectV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete a single Insight.
+      r"""Deletes a single Insight.
 
       Args:
         request: (DeveloperconnectProjectsLocationsInsightsConfigsDeleteRequest) input message

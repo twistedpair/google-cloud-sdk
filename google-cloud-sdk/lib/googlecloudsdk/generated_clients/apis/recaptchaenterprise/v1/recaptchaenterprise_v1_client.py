@@ -434,12 +434,12 @@ class RecaptchaenterpriseV1(base_api.BaseApiClient):
       Args:
         request: (RecaptchaenterpriseProjectsKeysGetPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (GoogleCloudRecaptchaenterpriseV1Policy) The response message.
       """
       config = self.GetMethodConfig('GetPolicy')
-      return self._RunMethod(config, request, global_params=global_params)
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
     GetPolicy.method_config = lambda: base_api.ApiMethodInfo(
         flat_path='v1/projects/{projectsId}/keys/{keysId}/policy',
@@ -621,15 +621,14 @@ class RecaptchaenterpriseV1(base_api.BaseApiClient):
       r"""Updates the policy for a key.
 
       Args:
-        request: (RecaptchaenterpriseProjectsKeysUpdatePolicyRequest) input
-          message
+        request: (RecaptchaenterpriseProjectsKeysUpdatePolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (GoogleCloudRecaptchaenterpriseV1Policy) The response message.
       """
       config = self.GetMethodConfig('UpdatePolicy')
-      return self._RunMethod(config, request, global_params=global_params)
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
     UpdatePolicy.method_config = lambda: base_api.ApiMethodInfo(
         flat_path='v1/projects/{projectsId}/keys/{keysId}/policy',

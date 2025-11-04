@@ -401,17 +401,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_SERVICEACCOUNTS_IDENTITYBINDINGS = (
-      'projects.serviceAccounts.identityBindings',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/serviceAccounts/{serviceAccountsId}/'
-              'identityBindings/{identityBindingsId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_SERVICEACCOUNTS_KEYS = (
       'projects.serviceAccounts.keys',
       '{+name}',

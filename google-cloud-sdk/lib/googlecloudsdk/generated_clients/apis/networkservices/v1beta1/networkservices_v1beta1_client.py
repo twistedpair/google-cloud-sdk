@@ -3063,7 +3063,7 @@ class NetworkservicesV1beta1(base_api.BaseApiClient):
         method_id='networkservices.projects.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta1/{+name}/operations',
         request_field='',
         request_type_name='NetworkservicesProjectsLocationsOperationsListRequest',

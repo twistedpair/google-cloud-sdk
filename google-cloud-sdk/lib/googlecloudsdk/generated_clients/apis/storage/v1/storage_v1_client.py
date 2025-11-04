@@ -570,7 +570,7 @@ class StorageV1(base_api.BaseApiClient):
         method_id='storage.buckets.list',
         ordered_params=['project'],
         path_params=[],
-        query_params=['maxResults', 'pageToken', 'prefix', 'project', 'projection', 'softDeleted', 'userProject'],
+        query_params=['maxResults', 'pageToken', 'prefix', 'project', 'projection', 'returnPartialSuccess', 'softDeleted', 'userProject'],
         relative_path='b',
         request_field='',
         request_type_name='StorageBucketsListRequest',

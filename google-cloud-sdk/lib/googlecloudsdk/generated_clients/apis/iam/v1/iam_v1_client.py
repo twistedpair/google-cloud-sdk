@@ -73,7 +73,6 @@ class IamV1(base_api.BaseApiClient):
     self.projects_locations_workloadIdentityPools = self.ProjectsLocationsWorkloadIdentityPoolsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_roles = self.ProjectsRolesService(self)
-    self.projects_serviceAccounts_identityBindings = self.ProjectsServiceAccountsIdentityBindingsService(self)
     self.projects_serviceAccounts_keys = self.ProjectsServiceAccountsKeysService(self)
     self.projects_serviceAccounts = self.ProjectsServiceAccountsService(self)
     self.projects = self.ProjectsService(self)
@@ -580,7 +579,7 @@ class IamV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new WorkforcePoolProviderScimToken in a WorkforcePoolProviderScimTenant. You cannot reuse the name of a deleted SCIM token until 30 days after deletion.
+      r"""Agentspace only. Creates a new WorkforcePoolProviderScimToken in a WorkforcePoolProviderScimTenant. You cannot reuse the name of a deleted SCIM token until 30 days after deletion.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersScimTenantsTokensCreateRequest) input message
@@ -607,7 +606,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a WorkforcePoolProviderScimToken. You can undelete a scim token for 30 days. After 30 days, deletion is permanent. You cannot update deleted scim tokens. However, you can view and list them.
+      r"""Agentspace only. Deletes a WorkforcePoolProviderScimToken. You can undelete a SCIM token for 30 days. After 30 days, the SCIM token is permanently deleted. You cannot update deleted SCIM tokens, however, you can view and list them.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersScimTenantsTokensDeleteRequest) input message
@@ -634,7 +633,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets an individual WorkforcePoolProviderScimToken.
+      r"""Agentspace only. Gets an individual WorkforcePoolProviderScimToken.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersScimTenantsTokensGetRequest) input message
@@ -661,7 +660,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all non-deleted WorkforcePoolProviderScimTokenss in a WorkforcePoolProviderScimTenant. If `show_deleted` is set to `true`, then deleted SCIM tokens are also listed.
+      r"""Agentspace only. Lists all non-deleted WorkforcePoolProviderScimTokenss in a WorkforcePoolProviderScimTenant. If `show_deleted` is set to `true`, then deleted SCIM tokens are also listed.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersScimTenantsTokensListRequest) input message
@@ -688,7 +687,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates an existing WorkforcePoolProviderScimToken.
+      r"""Agentspace only. Updates an existing WorkforcePoolProviderScimToken.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersScimTenantsTokensPatchRequest) input message
@@ -715,7 +714,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Undelete(self, request, global_params=None):
-      r"""Undeletes a WorkforcePoolProviderScimToken, as long as it was deleted fewer than 30 days ago.
+      r"""Agentspace only. Undeletes a WorkforcePoolProviderScimToken,that was deleted fewer than 30 days ago.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersScimTenantsTokensUndeleteRequest) input message
@@ -752,7 +751,7 @@ class IamV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new WorkforcePoolProviderScimTenant in a WorkforcePoolProvider. You cannot reuse the name of a deleted scim tenant until 30 days after deletion.
+      r"""Agentspace only. Creates a new WorkforcePoolProviderScimTenant in a WorkforcePoolProvider. You cannot reuse the name of a deleted SCIM tenant until 30 days after deletion.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersScimTenantsCreateRequest) input message
@@ -779,7 +778,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a WorkforcePoolProviderScimTenant. You can undelete a scim tenant for 30 days. After 30 days, deletion is permanent. You cannot update deleted scim tenants. However, you can view and list them.
+      r"""Agentspace only. Deletes a WorkforcePoolProviderScimTenant. You can undelete a SCIM tenant for 30 days. After 30 days, deletion is permanent. You cannot update deleted SCIM tenants. However, you can view and list them.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersScimTenantsDeleteRequest) input message
@@ -806,7 +805,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets an individual WorkforcePoolProviderScimTenant.
+      r"""Agentspace only. Gets an individual WorkforcePoolProviderScimTenant.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersScimTenantsGetRequest) input message
@@ -833,7 +832,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all non-deleted WorkforcePoolProviderScimTenants in a WorkforcePoolProvider. If `show_deleted` is set to `true`, then deleted scim tenants are also listed.
+      r"""Agentspace only. Lists all non-deleted WorkforcePoolProviderScimTenants in a WorkforcePoolProvider. If `show_deleted` is set to `true`, then deleted SCIM tenants are also listed.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersScimTenantsListRequest) input message
@@ -860,7 +859,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates an existing WorkforcePoolProviderScimTenant.
+      r"""Agentspace only. Updates an existing WorkforcePoolProviderScimTenant.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersScimTenantsPatchRequest) input message
@@ -887,7 +886,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Undelete(self, request, global_params=None):
-      r"""Undeletes a WorkforcePoolProviderScimTenant, as long as it was deleted fewer than 30 days ago.
+      r"""Agentspace only. Undeletes a WorkforcePoolProviderScimTenant, that was deleted fewer than 30 days ago.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersScimTenantsUndeleteRequest) input message
@@ -4112,124 +4111,6 @@ class IamV1(base_api.BaseApiClient):
         request_field='undeleteRoleRequest',
         request_type_name='IamProjectsRolesUndeleteRequest',
         response_type_name='Role',
-        supports_download=False,
-    )
-
-  class ProjectsServiceAccountsIdentityBindingsService(base_api.BaseApiService):
-    """Service class for the projects_serviceAccounts_identityBindings resource."""
-
-    _NAME = 'projects_serviceAccounts_identityBindings'
-
-    def __init__(self, client):
-      super(IamV1.ProjectsServiceAccountsIdentityBindingsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Create method for the projects_serviceAccounts_identityBindings service.
-
-      Args:
-        request: (IamProjectsServiceAccountsIdentityBindingsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ServiceAccountIdentityBinding) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/identityBindings',
-        http_method='POST',
-        method_id='iam.projects.serviceAccounts.identityBindings.create',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}/identityBindings',
-        request_field='createServiceAccountIdentityBindingRequest',
-        request_type_name='IamProjectsServiceAccountsIdentityBindingsCreateRequest',
-        response_type_name='ServiceAccountIdentityBinding',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Delete method for the projects_serviceAccounts_identityBindings service.
-
-      Args:
-        request: (IamProjectsServiceAccountsIdentityBindingsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/identityBindings/{identityBindingsId}',
-        http_method='DELETE',
-        method_id='iam.projects.serviceAccounts.identityBindings.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}',
-        request_field='',
-        request_type_name='IamProjectsServiceAccountsIdentityBindingsDeleteRequest',
-        response_type_name='Empty',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Get method for the projects_serviceAccounts_identityBindings service.
-
-      Args:
-        request: (IamProjectsServiceAccountsIdentityBindingsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ServiceAccountIdentityBinding) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/identityBindings/{identityBindingsId}',
-        http_method='GET',
-        method_id='iam.projects.serviceAccounts.identityBindings.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}',
-        request_field='',
-        request_type_name='IamProjectsServiceAccountsIdentityBindingsGetRequest',
-        response_type_name='ServiceAccountIdentityBinding',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""List method for the projects_serviceAccounts_identityBindings service.
-
-      Args:
-        request: (IamProjectsServiceAccountsIdentityBindingsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListServiceAccountIdentityBindingsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/identityBindings',
-        http_method='GET',
-        method_id='iam.projects.serviceAccounts.identityBindings.list',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}/identityBindings',
-        request_field='',
-        request_type_name='IamProjectsServiceAccountsIdentityBindingsListRequest',
-        response_type_name='ListServiceAccountIdentityBindingsResponse',
         supports_download=False,
     )
 

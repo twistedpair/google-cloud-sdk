@@ -101,7 +101,7 @@ class SpeechV1(base_api.BaseApiClient):
         method_id='speech.operations.list',
         ordered_params=[],
         path_params=[],
-        query_params=['filter', 'name', 'pageSize', 'pageToken'],
+        query_params=['filter', 'name', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1/operations',
         request_field='',
         request_type_name='SpeechOperationsListRequest',

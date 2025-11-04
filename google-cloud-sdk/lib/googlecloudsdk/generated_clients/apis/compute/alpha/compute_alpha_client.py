@@ -128,6 +128,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.regionNetworkPolicies = self.RegionNetworkPoliciesService(self)
     self.regionNotificationEndpoints = self.RegionNotificationEndpointsService(self)
     self.regionOperations = self.RegionOperationsService(self)
+    self.regionRecoverableSnapshots = self.RegionRecoverableSnapshotsService(self)
     self.regionSecurityPolicies = self.RegionSecurityPoliciesService(self)
     self.regionSnapshotSettings = self.RegionSnapshotSettingsService(self)
     self.regionSnapshots = self.RegionSnapshotsService(self)
@@ -14640,8 +14641,10 @@ This has billing implications.  Projects in the hierarchy with effective
 hierarchical security policies will be automatically enrolled into Cloud
 Armor Enterprise if not already enrolled.
 
-Use of this API to modify firewall policies is deprecated. Use
-firewallPolicies.addAssociation instead if possible.
+Use this API to modify Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to modify firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.addAssociation
+instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesAddAssociationRequest) input message
@@ -14669,6 +14672,10 @@ firewallPolicies.addAssociation instead if possible.
     def AddRule(self, request, global_params=None):
       r"""Inserts a rule into a security policy.
 
+Use this API to modify Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to modify firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.addRule instead.
+
       Args:
         request: (ComputeOrganizationSecurityPoliciesAddRuleRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -14695,8 +14702,10 @@ firewallPolicies.addAssociation instead if possible.
     def CopyRules(self, request, global_params=None):
       r"""Copies rules to the specified security policy.
 
-Use of this API to modify firewall policies is deprecated. Use
-firewallPolicies.copyRules instead.
+Use this API to modify Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to modify firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.cloneRules
+instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesCopyRulesRequest) input message
@@ -14724,8 +14733,9 @@ firewallPolicies.copyRules instead.
     def Delete(self, request, global_params=None):
       r"""Deletes the specified policy.
 
-Use of this API to remove firewall policies is deprecated. Use
-firewallPolicies.delete instead.
+Use this API to remove Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to remove firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.delete instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesDeleteRequest) input message
@@ -14753,8 +14763,9 @@ firewallPolicies.delete instead.
     def Get(self, request, global_params=None):
       r"""List all of the ordered rules present in a single specified policy.
 
-Use of this API to read firewall policies is deprecated. Use
-firewallPolicies.get instead.
+Use this API to read Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to read firewall policies. This usage is now
+disabled for most organizations. Use firewallPolicies.get instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesGetRequest) input message
@@ -14782,8 +14793,10 @@ firewallPolicies.get instead.
     def GetAssociation(self, request, global_params=None):
       r"""Gets an association with the specified name.
 
-Use of this API to read firewall policies is deprecated. Use
-firewallPolicies.getAssociation instead if possible.
+Use this API to read Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to read firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.getAssociation
+instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesGetAssociationRequest) input message
@@ -14811,8 +14824,9 @@ firewallPolicies.getAssociation instead if possible.
     def GetRule(self, request, global_params=None):
       r"""Gets a rule at the specified priority.
 
-Use of this API to read firewall policies is deprecated. Use
-firewallPolicies.getRule instead.
+Use this API to read Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to read firewall policies. This usage is now
+disabled for most organizations. Use firewallPolicies.getRule instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesGetRuleRequest) input message
@@ -14841,8 +14855,9 @@ firewallPolicies.getRule instead.
       r"""Creates a new policy in the specified organization using the data included.
 in the request.
 
-Use of this API to insert firewall policies is deprecated. Use
-firewallPolicies.insert instead.
+Use this API to add Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to add firewall policies. This usage is now
+disabled for most organizations. Use firewallPolicies.insert instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesInsertRequest) input message
@@ -14871,8 +14886,9 @@ firewallPolicies.insert instead.
       r"""List all the policies that have been configured for the specified.
 organization.
 
-Use of this API to read firewall policies is deprecated. Use
-firewallPolicies.list instead.
+Use this API to read Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to read firewall policies. This usage is now
+disabled for most organizations. Use firewallPolicies.list instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesListRequest) input message
@@ -14900,8 +14916,10 @@ firewallPolicies.list instead.
     def ListAssociations(self, request, global_params=None):
       r"""Lists associations of a specified target, i.e., organization or folder.
 
-Use of this API to read firewall policies is deprecated. Use
-firewallPolicies.listAssociations instead if possible.
+Use this API to read Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to read firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.listAssociations
+instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesListAssociationsRequest) input message
@@ -14956,8 +14974,9 @@ expressions.
     def Move(self, request, global_params=None):
       r"""Moves the specified security policy.
 
-Use of this API to modify firewall policies is deprecated. Use
-firewallPolicies.move instead.
+Use this API to modify Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to modify firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.move instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesMoveRequest) input message
@@ -14985,8 +15004,9 @@ firewallPolicies.move instead.
     def Patch(self, request, global_params=None):
       r"""Patches the specified policy with the data included in the request.
 
-Use of this API to modify firewall policies is deprecated. Use
-firewallPolicies.patch instead.
+Use this API to modify Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to modify firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.patch instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesPatchRequest) input message
@@ -15014,8 +15034,10 @@ firewallPolicies.patch instead.
     def PatchRule(self, request, global_params=None):
       r"""Patches a rule at the specified priority.
 
-Use of this API to modify firewall policies is deprecated. Use
-firewallPolicies.patchRule instead.
+Use this API to modify Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to modify firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.patchRule
+instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesPatchRuleRequest) input message
@@ -15043,8 +15065,10 @@ firewallPolicies.patchRule instead.
     def RemoveAssociation(self, request, global_params=None):
       r"""Removes an association for the specified security policy.
 
-Use of this API to modify firewall policies is deprecated. Use
-firewallPolicies.removeAssociation instead if possible.
+Use this API to modify Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to modify firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.removeAssociation
+instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesRemoveAssociationRequest) input message
@@ -15071,6 +15095,11 @@ firewallPolicies.removeAssociation instead if possible.
 
     def RemoveRule(self, request, global_params=None):
       r"""Deletes a rule at the specified priority.
+
+Use this API to modify Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to modify firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.removeRule
+instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesRemoveRuleRequest) input message
@@ -22496,6 +22525,202 @@ This method is called on a best-effort basis. Specifically:
         request_field='',
         request_type_name='ComputeRegionOperationsWaitRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class RegionRecoverableSnapshotsService(base_api.BaseApiService):
+    """Service class for the regionRecoverableSnapshots resource."""
+
+    _NAME = 'regionRecoverableSnapshots'
+
+    def __init__(self, client):
+      super(ComputeAlpha.RegionRecoverableSnapshotsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified RecoverableSnapshot. Deleting a recoverable snapshot.
+will delete the underlying PD snapshot and is irreversible.
+
+      Args:
+        request: (ComputeRegionRecoverableSnapshotsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.regionRecoverableSnapshots.delete',
+        ordered_params=['project', 'region', 'recoverableSnapshot'],
+        path_params=['project', 'recoverableSnapshot', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/recoverableSnapshots/{recoverableSnapshot}',
+        request_field='',
+        request_type_name='ComputeRegionRecoverableSnapshotsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified RecoverableSnapshot resource.
+
+      Args:
+        request: (ComputeRegionRecoverableSnapshotsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RecoverableSnapshot) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionRecoverableSnapshots.get',
+        ordered_params=['project', 'region', 'recoverableSnapshot'],
+        path_params=['project', 'recoverableSnapshot', 'region'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/recoverableSnapshots/{recoverableSnapshot}',
+        request_field='',
+        request_type_name='ComputeRegionRecoverableSnapshotsGetRequest',
+        response_type_name='RecoverableSnapshot',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
+
+      Args:
+        request: (ComputeRegionRecoverableSnapshotsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionRecoverableSnapshots.getIamPolicy',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/regions/{region}/recoverableSnapshots/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name='ComputeRegionRecoverableSnapshotsGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves the list of RecoverableSnapshot resources contained within.
+the specified region.
+
+      Args:
+        request: (ComputeRegionRecoverableSnapshotsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RecoverableSnapshotList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionRecoverableSnapshots.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/recoverableSnapshots',
+        request_field='',
+        request_type_name='ComputeRegionRecoverableSnapshotsListRequest',
+        response_type_name='RecoverableSnapshotList',
+        supports_download=False,
+    )
+
+    def Recover(self, request, global_params=None):
+      r"""Recovers the specified RecoverableSnapshot.
+
+      Args:
+        request: (ComputeRegionRecoverableSnapshotsRecoverRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Recover')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Recover.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionRecoverableSnapshots.recover',
+        ordered_params=['project', 'region', 'recoverableSnapshot'],
+        path_params=['project', 'recoverableSnapshot', 'region'],
+        query_params=['requestId', 'snapshotName'],
+        relative_path='projects/{project}/regions/{region}/recoverableSnapshots/{recoverableSnapshot}/recover',
+        request_field='',
+        request_type_name='ComputeRegionRecoverableSnapshotsRecoverRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
+
+      Args:
+        request: (ComputeRegionRecoverableSnapshotsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionRecoverableSnapshots.setIamPolicy',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/recoverableSnapshots/{resource}/setIamPolicy',
+        request_field='regionSetPolicyRequest',
+        request_type_name='ComputeRegionRecoverableSnapshotsSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRegionRecoverableSnapshotsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionRecoverableSnapshots.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/recoverableSnapshots/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeRegionRecoverableSnapshotsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 

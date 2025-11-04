@@ -1290,7 +1290,9 @@ def AddNetwork(parser):
 
 
 def AddBackendServiceTlsSettings(
-    parser: Any, add_clear_argument: bool = False
+    parser: Any,
+    add_clear_argument: bool = False,
+    support_identity: bool = False,
 ) -> None:
   """Adds a --tls-settings flag to the given parser."""
   group = parser.add_mutually_exclusive_group()
@@ -1313,6 +1315,32 @@ def AddBackendServiceTlsSettings(
       default=None,
       help=help_text,
   )
+  if support_identity:
+    group.add_argument(
+        '--identity',
+        type=str,
+        help="""\
+        Assigns the Managed Identity for the BackendService Workload.
+        Use this property to configure the load balancer back-end to use
+        certificates and roots of trust provisioned by the Managed Workload
+        Identity system. The `identity` property is the
+        scheme-less SPIFFE ID to use in the SVID presented by the Load
+        Balancer Workload. The SPIFFE ID must be a resource starting with the
+        `trustDomain` property value, followed by the path to the Managed
+        Workload Identity. Supported SPIFFE ID format:
+        //<trust_domain>/ns/<namespace>/sa/<subject>
+        The Trust Domain within the Managed Identity must refer to a valid
+        Workload Identity Pool. The TrustConfig and CertificateIssuanceConfig
+        will be inherited from the Workload Identity Pool. Restrictions:
+        If you set the `identity` property, you cannot manually set
+        the following fields: tlsSettings.sni, tlsSettings.subjectAltNames,
+        tlsSettings.authenticationConfig.
+        When defining a `identity` for a RegionBackendServices, the
+        corresponding Workload Identity Pool must have a ca_pool
+        configured in the same region. The system will set up a read-only
+        tlsSettings.authenticationConfig for the Managed Identity.
+        """,
+    )
 
   if add_clear_argument:
     group.add_argument(

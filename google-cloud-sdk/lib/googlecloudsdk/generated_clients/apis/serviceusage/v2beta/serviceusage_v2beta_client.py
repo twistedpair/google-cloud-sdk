@@ -39,68 +39,16 @@ class ServiceusageV2beta(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.categories_categoryServices = self.CategoriesCategoryServicesService(self)
-    self.categories = self.CategoriesService(self)
     self.consumerPolicies = self.ConsumerPoliciesService(self)
     self.contentSecurityPolicies = self.ContentSecurityPoliciesService(self)
     self.mcpPolicies = self.McpPoliciesService(self)
     self.operations = self.OperationsService(self)
-    self.services_apis_apiVersions_apiOperations = self.ServicesApisApiVersionsApiOperationsService(self)
-    self.services_apis_apiVersions = self.ServicesApisApiVersionsService(self)
-    self.services_apis = self.ServicesApisService(self)
     self.services_groups_expandedMembers = self.ServicesGroupsExpandedMembersService(self)
     self.services_groups_members = self.ServicesGroupsMembersService(self)
     self.services_groups = self.ServicesGroupsService(self)
     self.services = self.ServicesService(self)
     self.sharedServices = self.SharedServicesService(self)
     self.v2beta = self.V2betaService(self)
-
-  class CategoriesCategoryServicesService(base_api.BaseApiService):
-    """Service class for the categories_categoryServices resource."""
-
-    _NAME = 'categories_categoryServices'
-
-    def __init__(self, client):
-      super(ServiceusageV2beta.CategoriesCategoryServicesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      r"""List the services that belong to a given category. The supported categories are: `categories/google` and `categories/partner`.
-
-      Args:
-        request: (ServiceusageCategoriesCategoryServicesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListCategoryServicesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2beta/{v2betaId}/{v2betaId1}/categories/{categoriesId}/categoryServices',
-        http_method='GET',
-        method_id='serviceusage.categories.categoryServices.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
-        relative_path='v2beta/{+parent}/categoryServices',
-        request_field='',
-        request_type_name='ServiceusageCategoriesCategoryServicesListRequest',
-        response_type_name='ListCategoryServicesResponse',
-        supports_download=False,
-    )
-
-  class CategoriesService(base_api.BaseApiService):
-    """Service class for the categories resource."""
-
-    _NAME = 'categories'
-
-    def __init__(self, client):
-      super(ServiceusageV2beta.CategoriesService, self).__init__(client)
-      self._upload_configs = {
-          }
 
   class ConsumerPoliciesService(base_api.BaseApiService):
     """Service class for the consumerPolicies resource."""
@@ -381,90 +329,6 @@ class ServiceusageV2beta(base_api.BaseApiClient):
         request_field='',
         request_type_name='ServiceusageOperationsListRequest',
         response_type_name='ListOperationsResponse',
-        supports_download=False,
-    )
-
-  class ServicesApisApiVersionsApiOperationsService(base_api.BaseApiService):
-    """Service class for the services_apis_apiVersions_apiOperations resource."""
-
-    _NAME = 'services_apis_apiVersions_apiOperations'
-
-    def __init__(self, client):
-      super(ServiceusageV2beta.ServicesApisApiVersionsApiOperationsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      r"""List the API operations of a given API version.
-
-      Args:
-        request: (ServiceusageServicesApisApiVersionsApiOperationsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListApiOperationsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2beta/{v2betaId}/{v2betaId1}/services/{servicesId}/apis/{apisId}/apiVersions/{apiVersionsId}/apiOperations',
-        http_method='GET',
-        method_id='serviceusage.services.apis.apiVersions.apiOperations.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
-        relative_path='v2beta/{+parent}/apiOperations',
-        request_field='',
-        request_type_name='ServiceusageServicesApisApiVersionsApiOperationsListRequest',
-        response_type_name='ListApiOperationsResponse',
-        supports_download=False,
-    )
-
-  class ServicesApisApiVersionsService(base_api.BaseApiService):
-    """Service class for the services_apis_apiVersions resource."""
-
-    _NAME = 'services_apis_apiVersions'
-
-    def __init__(self, client):
-      super(ServiceusageV2beta.ServicesApisApiVersionsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-  class ServicesApisService(base_api.BaseApiService):
-    """Service class for the services_apis resource."""
-
-    _NAME = 'services_apis'
-
-    def __init__(self, client):
-      super(ServiceusageV2beta.ServicesApisService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      r"""List APIs exposed by the given service.
-
-      Args:
-        request: (ServiceusageServicesApisListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListServiceApisResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2beta/{v2betaId}/{v2betaId1}/services/{servicesId}/apis',
-        http_method='GET',
-        method_id='serviceusage.services.apis.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
-        relative_path='v2beta/{+parent}/apis',
-        request_field='',
-        request_type_name='ServiceusageServicesApisListRequest',
-        response_type_name='ListServiceApisResponse',
         supports_download=False,
     )
 

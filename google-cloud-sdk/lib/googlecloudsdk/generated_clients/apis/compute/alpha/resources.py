@@ -694,6 +694,14 @@ class Collections(enum.Enum):
       ['project', 'region', 'operation'],
       True
   )
+  REGIONRECOVERABLESNAPSHOTS = (
+      'regionRecoverableSnapshots',
+      'projects/{project}/regions/{region}/recoverableSnapshots/'
+      '{recoverableSnapshot}',
+      {},
+      ['project', 'region', 'recoverableSnapshot'],
+      True
+  )
   REGIONSECURITYPOLICIES = (
       'regionSecurityPolicies',
       'projects/{project}/regions/{region}/securityPolicies/{securityPolicy}',

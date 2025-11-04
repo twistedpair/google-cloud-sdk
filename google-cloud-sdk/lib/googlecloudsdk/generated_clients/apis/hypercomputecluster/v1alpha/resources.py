@@ -75,6 +75,30 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_MACHINELEARNINGRUNS_PROFILERSESSIONS = (
+      'projects.locations.machineLearningRuns.profilerSessions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'machineLearningRuns/{machineLearningRunsId}/profilerSessions/'
+              '{profilerSessionsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_MACHINELEARNINGRUNS_PROFILERTARGETS = (
+      'projects.locations.machineLearningRuns.profilerTargets',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'machineLearningRuns/{machineLearningRunsId}/profilerTargets/'
+              '{profilerTargetsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

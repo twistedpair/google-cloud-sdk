@@ -137,6 +137,80 @@ def AddRaiFilterSettingsGroup(parser):
   )
 
 
+def AddIntegratedServices(parser):
+  """Add flags for specifying integrated services."""
+  group = parser.add_group(
+      mutex=True,
+      help=(
+          'Manage integrated services to apply Model Armor floor settings.'
+          ' Integrated services will have Model Armor sanitization enabled'
+          ' project-wide.'
+      ),
+  )
+  group.add_argument(
+      _ArgOrFlag('add-integrated-services', False),
+      metavar='INTEGRATED_SERVICE',
+      type=arg_parsers.ArgList(),
+      help=(
+          'Set the list of integrated services for the floor setting. This can'
+          ' be used to enable project-wide Model Armor sanitization for the'
+          ' respective services.'
+      ),
+  )
+  group.add_argument(
+      _ArgOrFlag('remove-integrated-services', False),
+      metavar='INTEGRATED_SERVICE',
+      type=arg_parsers.ArgList(),
+      help='Remove specified service(s) from the list of integrated services.',
+  )
+  group.add_argument(
+      _ArgOrFlag('clear-integrated-services', False),
+      action='store_true',
+      help='Clear all integrated services from the floor setting.',
+  )
+
+
+def AddVertexAiFloorSetting(parser):
+  """Add flags for specifying vertex ai floor setting."""
+  group = parser.add_group(
+      mutex=False, help='Options for Vertex AI sanitization.'
+  )
+  group.add_argument(
+      _ArgOrFlag('enable-vertex-ai-cloud-logging', False),
+      help=(
+          'Enable Cloud Logging for Vertex AI sanitization to log Model'
+          ' Armor sanitization results.'
+      ),
+      action='store_true',
+      default=False,
+  )
+  group.add_argument(
+      _ArgOrFlag('vertex-ai-enforcement-type', False),
+      dest='vertex_ai_enforcement_type',
+      help=(
+          'Specifies the enforcement mode for Vertex AI sanitization, such as'
+          ' "INSPECT_ONLY" or "INSPECT_AND_BLOCK".'
+          ' Default is "INSPECT_ONLY".'
+      ),
+  )
+
+
+def AddMultiLanguageDetection(parser):
+  """Add flags for specifying multi language detection."""
+  group = parser.add_group(
+      mutex=False, help='Multi language detection enablement.'
+  )
+  group.add_argument(
+      _ArgOrFlag('enable-multi-language-detection', False),
+      help=(
+          'Enable multi-language detection for floor setting, allowing Model'
+          ' Armor to process content in multiple languages.'
+      ),
+      action='store_true',
+      default=False,
+  )
+
+
 def _ArgOrFlag(name, positional):
   """Returns the argument name in resource argument format or flag format.
 

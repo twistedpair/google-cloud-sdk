@@ -52,6 +52,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_DATASTORES = (
+      'projects.locations.datastores',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/datastores/'
+              '{datastoresId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_NETWORKPEERINGS = (
       'projects.locations.networkPeerings',
       '{+name}',

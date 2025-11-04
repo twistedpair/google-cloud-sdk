@@ -269,6 +269,33 @@ class NetworkmanagementV1alpha1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def DownloadInstallScript(self, request, global_params=None):
+      r"""Downloads an install script for MonitoringPoints for a given network monitoring provider.
+
+      Args:
+        request: (NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPointsDownloadInstallScriptRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('DownloadInstallScript')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DownloadInstallScript.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/networkMonitoringProviders/{networkMonitoringProvidersId}/monitoringPoints:downloadInstallScript',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.networkMonitoringProviders.monitoringPoints.downloadInstallScript',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['_password', 'hostname', 'monitoringPointType', 'ntpServerAddress', 'ntpServerSecondaryAddress', 'staticIpAddress_dnsServerAddress', 'staticIpAddress_dnsServerSecondaryAddress', 'staticIpAddress_domain', 'staticIpAddress_gatewayAddress', 'staticIpAddress_ipAddress', 'staticIpAddress_netmask', 'timeZone_id', 'timeZone_version', 'useDhcp'],
+        relative_path='v1alpha1/{+parent}/monitoringPoints:downloadInstallScript',
+        request_field='',
+        request_type_name='NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPointsDownloadInstallScriptRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets the MonitoringPoint resource.
 
@@ -507,7 +534,7 @@ class NetworkmanagementV1alpha1(base_api.BaseApiClient):
         method_id='networkmanagement.projects.locations.networkMonitoringProviders.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['force'],
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='NetworkmanagementProjectsLocationsNetworkMonitoringProvidersDeleteRequest',
@@ -706,7 +733,7 @@ class NetworkmanagementV1alpha1(base_api.BaseApiClient):
         method_id='networkmanagement.projects.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1alpha1/{+name}/operations',
         request_field='',
         request_type_name='NetworkmanagementProjectsLocationsOperationsListRequest',

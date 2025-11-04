@@ -87,6 +87,19 @@ lbTcpExtension:
     help: |
       The ID of the `LbTcpExtension`.
 
+swpSecurityExtension:
+  name: SwpSecurityExtension
+  collection: networkservices.projects.locations.swpSecurityExtensions
+  request_id_field: swpSecurityExtensionId
+  attributes:
+  - *project
+  - *location
+  - &swpSecurityExtension:
+    parameter_name: swpSecurityExtensionsId
+    attribute_name: swp_security_extension
+    help: |
+      The ID of the `SwpSecurityExtension`.
+
 lbObservabilityExtension:
   name: LbObservabilityExtension
   collection: networkservices.projects.locations.lbObservabilityExtensions

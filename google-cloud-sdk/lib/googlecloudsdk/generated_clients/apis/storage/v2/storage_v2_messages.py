@@ -33,21 +33,43 @@ class Autoclass(_messages.Message):
 
   Fields:
     enabled: Optional. Enables Autoclass.
-    terminalStorageClass: An object in an Autoclass bucket will eventually
-      cool down to the terminal storage class if there is no access to the
-      object. The only valid values are NEARLINE and ARCHIVE.
+    terminalStorageClass: An object in an Autoclass bucket eventually cools
+      down to the terminal storage class if there is no access to the object.
+      The only valid values are NEARLINE and ARCHIVE.
     terminalStorageClassUpdateTime: Output only. Latest instant at which the
       autoclass terminal storage class was updated.
     toggleTime: Output only. Latest instant at which the `enabled` field was
       set to true after being disabled/unconfigured or set to false after
       being enabled. If Autoclass is enabled when the bucket is created, the
-      toggle_time is set to the bucket creation time.
+      value of the `toggle_time` field is set to the bucket `create_time`.
   """
 
   enabled = _messages.BooleanField(1)
   terminalStorageClass = _messages.StringField(2)
   terminalStorageClassUpdateTime = _messages.StringField(3)
   toggleTime = _messages.StringField(4)
+
+
+class BandwidthQuotaNearLimit(_messages.Message):
+  r"""Represents a finding about bandwidth consumption approaching quota
+  limits within a project. This corresponds to the
+  `BANDWIDTH_QUOTA_NEAR_LIMIT` finding type.
+
+  Fields:
+    percentageIncrease: Output only. The percentage increase in bandwidth
+      consumption for the project.
+    topBuckets: Output only. A list of top buckets driving the increase in
+      bandwidth consumption.
+    topLocations: Output only. A list of top locations driving the increase in
+      bandwidth consumption.
+    totalBandwidthConsumptionBytes: Output only. The total bandwidth
+      consumption in bytes.
+  """
+
+  percentageIncrease = _messages.FloatField(1)
+  topBuckets = _messages.MessageField('IntelligenceFindingBandwidthQuotaNearLimitBucketContribution', 2, repeated=True)
+  topLocations = _messages.MessageField('LocationalContribution', 3, repeated=True)
+  totalBandwidthConsumptionBytes = _messages.IntegerField(4)
 
 
 class Billing(_messages.Message):
@@ -69,18 +91,18 @@ class Bucket(_messages.Message):
 
   Fields:
     acl: Optional. Access controls on the bucket. If
-      iam_config.uniform_bucket_level_access is enabled on this bucket,
+      `iam_config.uniform_bucket_level_access` is enabled on this bucket,
       requests to set, read, or modify acl is an error.
     autoclass: Optional. The bucket's Autoclass configuration. If there is no
-      configuration, the Autoclass feature will be disabled and have no effect
-      on the bucket.
-    billing: Optional. The bucket's billing config.
+      configuration, the Autoclass feature is disabled and has no effect on
+      the bucket.
+    billing: Optional. The bucket's billing configuration.
     bucketId: Output only. The user-chosen part of the bucket name. The
       `{bucket}` portion of the `name` field. For globally unique buckets,
-      this is equal to the "bucket name" of other Cloud Storage APIs. Example:
-      "pub".
-    cors: Optional. The bucket's [Cross-Origin Resource
-      Sharing](https://www.w3.org/TR/cors/) (CORS) config.
+      this is equal to the `bucket name` of other Cloud Storage APIs. Example:
+      `pub`.
+    cors: Optional. The bucket's [CORS](https://www.w3.org/TR/cors/)
+      configuration.
     createTime: Output only. The creation time of the bucket.
     customPlacementConfig: Optional. Configuration that, if present, specifies
       the data placement for a [configurable dual-
@@ -88,41 +110,39 @@ class Bucket(_messages.Message):
     defaultEventBasedHold: Optional. The default value for event-based hold on
       newly created objects in this bucket. Event-based hold is a way to
       retain objects indefinitely until an event occurs, signified by the
-      hold's release. After being released, such objects will be subject to
+      hold's release. After being released, such objects are subject to
       bucket-level retention (if any). One sample use case of this flag is for
       banks to hold loan documents for at least 3 years after loan is paid in
       full. Here, bucket-level retention is 3 years and the event is loan
-      being paid in full. In this example, these objects will be held intact
-      for any number of years until the event has occurred (event-based hold
-      on the object is released) and then 3 more years after that. That means
+      being paid in full. In this example, these objects are held intact for
+      any number of years until the event has occurred (event-based hold on
+      the object is released) and then 3 more years after that. That means
       retention duration of the objects begins from the moment event-based
       hold transitioned from true to false. Objects under event-based hold
       cannot be deleted, overwritten or archived until the hold is removed.
     defaultObjectAcl: Optional. Default access controls to apply to new
       objects when no ACL is provided. If
-      iam_config.uniform_bucket_level_access is enabled on this bucket,
+      `iam_config.uniform_bucket_level_access` is enabled on this bucket,
       requests to set, read, or modify acl is an error.
     encryption: Optional. Encryption config for a bucket.
     etag: The etag of the bucket. If included in the metadata of an
-      UpdateBucketRequest, the operation will only be performed if the etag
+      `UpdateBucketRequest`, the operation is only performed if the `etag`
       matches that of the bucket.
     generation: Output only. The generation of the bucket.
     hardDeleteTime: Output only. The hard delete time of the bucket.
     hierarchicalNamespace: Optional. The bucket's hierarchical namespace
       configuration. If there is no configuration, the hierarchical namespace
-      feature will be disabled and have no effect on the bucket.
-    iamConfig: Optional. The bucket's IAM config.
+      feature is disabled and has no effect on the bucket.
+    iamConfig: Optional. The bucket's IAM configuration.
     ipFilter: Optional. The bucket's IP filter configuration.
     labels: Optional. User-provided labels, in key/value pairs.
-    lifecycle: Optional. The bucket's lifecycle config. See [Lifecycle
+    lifecycle: Optional. The bucket's lifecycle configuration. See [Lifecycle
       Management](https://developers.google.com/storage/docs/lifecycle) for
       more information.
     location: Immutable. The location of the bucket. Object data for objects
       in the bucket resides in physical storage within this region. Defaults
-      to `US`. See the https://developers.google.com/storage/docs/concepts-
-      techniques#specifyinglocations" for the authoritative list. Attempting
-      to update this field after the bucket is created will result in an
-      error.
+      to `US`. Attempting to update this field after the bucket is created
+      results in an error.
     locationType: Output only. The location type of the bucket (region, dual-
       region, multi-region, etc).
     logging: Optional. The bucket's logging config, which defines the
@@ -132,28 +152,28 @@ class Bucket(_messages.Message):
     name: Identifier. The name of the bucket. Format:
       `projects/{project}/buckets/{bucket}`
     objectRetention: Optional. The bucket's object retention configuration.
-      Must be enabled before objects in the bucket may have retention
+      Must be enabled before objects in the bucket might have retention
       configured.
     owner: Output only. The owner of the bucket. This is always the project
       team's owner group.
     project: Immutable. The project which owns this bucket, in the format of
-      "projects/{projectIdentifier}". {projectIdentifier} can be the project
-      ID or project number. Output values will always be in project number
+      `projects/{projectIdentifier}`. `{projectIdentifier}` can be the project
+      ID or project number. Output values are always in the project number
       format.
     retentionPolicy: Optional. The bucket's retention policy. The retention
       policy enforces a minimum retention time for all objects contained in
       the bucket, based on their creation time. Any attempt to overwrite or
-      delete objects younger than the retention period will result in a
-      PERMISSION_DENIED error. An unlocked retention policy can be modified or
-      removed from the bucket via a storage.buckets.update operation. A locked
-      retention policy cannot be removed or shortened in duration for the
-      lifetime of the bucket. Attempting to remove or decrease period of a
-      locked retention policy will result in a PERMISSION_DENIED error.
+      delete objects younger than the retention period results in a
+      `PERMISSION_DENIED` error. An unlocked retention policy can be modified
+      or removed from the bucket via a storage.buckets.update operation. A
+      locked retention policy cannot be removed or shortened in duration for
+      the lifetime of the bucket. Attempting to remove or decrease period of a
+      locked retention policy results in a `PERMISSION_DENIED` error.
     rpo: Optional. The recovery point objective for cross-region replication
       of the bucket. Applicable only for dual- and multi-region buckets.
-      "DEFAULT" uses default replication. "ASYNC_TURBO" enables turbo
+      `DEFAULT` uses default replication. `ASYNC_TURBO` enables turbo
       replication, valid for dual-region buckets only. If rpo is not specified
-      when the bucket is created, it defaults to "DEFAULT". For more
+      when the bucket is created, it defaults to `DEFAULT`. For more
       information, see [Turbo
       replication](https://cloud.google.com/storage/docs/availability-
       durability#turbo-replication).
@@ -167,13 +187,13 @@ class Bucket(_messages.Message):
       no storageClass is specified for a newly-created object. This defines
       how objects in the bucket are stored and determines the SLA and the cost
       of storage. If this value is not specified when the bucket is created,
-      it will default to `STANDARD`. For more information, see [Storage
+      it defaults to `STANDARD`. For more information, see [Storage
       classes](https://developers.google.com/storage/docs/storage-classes).
     updateTime: Output only. The modification time of the bucket.
-    versioning: Optional. The bucket's versioning config.
+    versioning: Optional. The bucket's versioning configuration.
     website: Optional. The bucket's website config, controlling how the
       service behaves when accessing bucket contents as a web site. See the
-      [Static Website Examples](https://cloud.google.com/storage/docs/static-
+      [Static website examples](https://cloud.google.com/storage/docs/static-
       website) for more information.
   """
 
@@ -253,15 +273,15 @@ class BucketAccessControl(_messages.Message):
       * The group `example@googlegroups.com` would be `group-
       example@googlegroups.com` * All members of the Google Apps for Business
       domain `example.com` would be `domain-example.com` For project entities,
-      `project-{team}-{projectnumber}` format will be returned on response.
+      `project-{team}-{projectnumber}` format is returned on response.
     entityAlt: Output only. The alternative entity format, if exists. For
-      project entities, `project-{team}-{projectid}` format will be returned
-      on response.
+      project entities, `project-{team}-{projectid}` format is returned in the
+      response.
     entityId: Optional. The ID for the entity, if any.
-    etag: Optional. The etag of the BucketAccessControl. If included in the
-      metadata of an update or delete request message, the operation operation
-      will only be performed if the etag matches that of the bucket's
-      BucketAccessControl.
+    etag: Optional. The `etag` of the `BucketAccessControl`. If included in
+      the metadata of an update or delete request message, the operation
+      operation is only performed if the etag matches that of the bucket's
+      `BucketAccessControl`.
     id: Optional. The ID of the access-control entry.
     projectTeam: Optional. The project team associated with the entity, if
       any.
@@ -325,6 +345,25 @@ class CloudStorageLocations(_messages.Message):
   locations = _messages.StringField(1, repeated=True)
 
 
+class ColdlineAndArchivalStorageOperationsSpike(_messages.Message):
+  r"""Represents a finding about a spike in Class A/B operations on Coldline
+  or Archive Cloud Storage objects. This corresponds to the
+  `COLD_AND_ARCHIVAL_STORAGE_OPERATIONS_SPIKE` finding type.
+
+  Fields:
+    percentageIncrease: Output only. The percentage increase in operations
+      across the project.
+    topBuckets: Output only. A list of the top buckets driving the increase in
+      operations.
+    totalOperationsCount: Output only. The total count of operations across
+      the project.
+  """
+
+  percentageIncrease = _messages.FloatField(1)
+  topBuckets = _messages.MessageField('IntelligenceFindingColdlineAndArchivalStorageOperationsSpikeBucketContribution', 2, repeated=True)
+  totalOperationsCount = _messages.IntegerField(3)
+
+
 class CommonLongRunningOperationMetadata(_messages.Message):
   r"""The message contains metadata that is common to all Storage Control
   long-running operations, present in its `google.longrunning.Operation`
@@ -366,8 +405,8 @@ class Condition(_messages.Message):
     daysSinceNoncurrentTime: This condition is relevant only for versioned
       objects. An object version satisfies this condition only if these many
       days have been passed since it became noncurrent. The value of the field
-      must be a nonnegative integer. If it's zero, the object version will
-      become eligible for Lifecycle action as soon as it becomes noncurrent.
+      must be a nonnegative integer. If it's zero, the object version becomes
+      eligible for Lifecycle action as soon as it becomes noncurrent.
     isLive: Relevant only for versioned objects. If the value is `true`, this
       condition matches live objects; if the value is `false`, it matches
       archived objects.
@@ -375,13 +414,14 @@ class Condition(_messages.Message):
       condition is satisfied when the name of the object matches the RE2
       pattern. Note: This feature is currently in the "Early Access" launch
       stage and is only available to an allowlisted set of users; that means
-      that this feature may be changed in backward-incompatible ways and that
-      it is not guaranteed to be released. An empty pattern matches nothing.
+      that this feature might be changed in backward-incompatible ways and
+      that it is not guaranteed to be released. An empty pattern matches
+      nothing.
     matchesPrefix: Optional. List of object name prefixes. If any prefix
       exactly matches the beginning of the object name, the condition
       evaluates to true.
     matchesStorageClass: Optional. Objects having any of the storage classes
-      specified by this condition will be matched. Values include
+      specified by this condition are matched. Values include
       `MULTI_REGIONAL`, `REGIONAL`, `NEARLINE`, `COLDLINE`, `STANDARD`, and
       `DURABLE_REDUCED_AVAILABILITY`.
     matchesSuffix: Optional. List of object name suffixes. If any suffix
@@ -420,12 +460,12 @@ class Cors(_messages.Message):
       Control-Max-Age header](https://www.w3.org/TR/cors/#access-control-max-
       age-response-header) used in preflight responses.
     method: Optional. The list of HTTP methods on which to include CORS
-      response headers, (`GET`, `OPTIONS`, `POST`, etc) Note: "*" is permitted
+      response headers, (`GET`, `OPTIONS`, `POST`, etc) Note: `*` is permitted
       in the list of methods, and means "any method".
-    origin: Optional. The list of Origins eligible to receive CORS response
-      headers. See [RFC 6454](https://tools.ietf.org/html/rfc6454) for more on
-      origins. Note: "*" is permitted in the list of origins, and means "any
-      Origin".
+    origin: Optional. The list of origins eligible to receive CORS response
+      headers. For more information about origins, see [RFC
+      6454](https://tools.ietf.org/html/rfc6454). Note: `*` is permitted in
+      the list of origins, and means `any origin`.
     responseHeader: Optional. The list of HTTP headers other than the [simple
       response headers](https://www.w3.org/TR/cors/#simple-response-headers)
       to give permission for the user-agent to share across domains.
@@ -435,6 +475,24 @@ class Cors(_messages.Message):
   method = _messages.StringField(2, repeated=True)
   origin = _messages.StringField(3, repeated=True)
   responseHeader = _messages.StringField(4, repeated=True)
+
+
+class CrossRegionEgressSpike(_messages.Message):
+  r"""Represents a finding about a spike in cross-region egress from Cloud
+  Storage. This corresponds to the `CROSS_REGION_EGRESS_SPIKE` finding type.
+
+  Fields:
+    percentageIncrease: Output only. The percentage increase in cross-region
+      egress across the project.
+    topBuckets: Output only. A list of top buckets driving the increase in
+      cross-region egress.
+    totalEgressBytes: Output only. The total cross-region egress volume in
+      bytes across the project.
+  """
+
+  percentageIncrease = _messages.FloatField(1)
+  topBuckets = _messages.MessageField('IntelligenceFindingCrossRegionEgressSpikeBucketContribution', 2, repeated=True)
+  totalEgressBytes = _messages.IntegerField(3)
 
 
 class CustomPlacementConfig(_messages.Message):
@@ -456,8 +514,8 @@ class CustomerManagedEncryptionEnforcementConfig(_messages.Message):
     effectiveTime: Time from which the config was effective. This is service-
       provided.
     restrictionMode: Restriction mode for customer-managed encryption for new
-      objects within the bucket. Valid values are: "NotRestricted",
-      "FullyRestricted". If `NotRestricted` or unset, creation of new objects
+      objects within the bucket. Valid values are: `NotRestricted` and
+      `FullyRestricted`. If `NotRestricted` or unset, creation of new objects
       with customer-managed encryption is allowed. If `FullyRestricted`, new
       objects can't be created using customer-managed encryption.
   """
@@ -473,8 +531,8 @@ class CustomerSuppliedEncryptionEnforcementConfig(_messages.Message):
     effectiveTime: Time from which the config was effective. This is service-
       provided.
     restrictionMode: Restriction mode for customer-supplied encryption for new
-      objects within the bucket. Valid values are: "NotRestricted",
-      "FullyRestricted". If `NotRestricted` or unset, creation of new objects
+      objects within the bucket. Valid values are: `NotRestricted` and
+      `FullyRestricted`. If `NotRestricted` or unset, creation of new objects
       with customer-supplied encryption is allowed. If `FullyRestricted`, new
       objects can't be created using customer-supplied encryption.
   """
@@ -597,8 +655,8 @@ class Encryption(_messages.Message):
       objects created in this bucket must comply with enforcement config.
       Changing this has no effect on existing objects; it applies to new
       objects only.
-    defaultKmsKey: Optional. The name of the Cloud KMS key that will be used
-      to encrypt objects inserted into this bucket, if no encryption method is
+    defaultKmsKey: Optional. The name of the Cloud KMS key that is used to
+      encrypt objects inserted into this bucket, if no encryption method is
       specified.
     googleManagedEncryptionEnforcementConfig: Optional. If omitted, then new
       objects with GMEK encryption-type is allowed. If set, then new objects
@@ -628,6 +686,84 @@ class Filter(_messages.Message):
   excludedCloudStorageLocations = _messages.MessageField('CloudStorageLocations', 2)
   includedCloudStorageBuckets = _messages.MessageField('CloudStorageBuckets', 3)
   includedCloudStorageLocations = _messages.MessageField('CloudStorageLocations', 4)
+
+
+class FindingSummary(_messages.Message):
+  r"""A summary of findings generated for an organization, a folder, or a
+  project.
+
+  Enums:
+    CategoryValueValuesEnum: Output only. The category of finding.
+    SeverityValueValuesEnum: Severity of the finding.
+    TypeValueValuesEnum: Output only. The type of the finding.
+
+  Fields:
+    category: Output only. The category of finding.
+    createTime: Output only. The creation time of the earliest finding that
+      this summary is based on.
+    severity: Severity of the finding.
+    summaryDetails: Output only. List of `SummaryDetails`.
+    targetResource: Output only. The fully qualified Cloud resource name for
+      which this summary was generated. eg:
+      `//cloudresourcemanager.googleapis.com/projects/p1`
+    type: Output only. The type of the finding.
+    updateTime: Output only. The time of the most recent update among all the
+      findings that this summary is based on.
+  """
+
+  class CategoryValueValuesEnum(_messages.Enum):
+    r"""Output only. The category of finding.
+
+    Values:
+      FINDING_CATEGORY_UNSPECIFIED: Category is unspecified.
+      FINDING_CATEGORY_DATA_MANAGEMENT: Category is 'Data Management'.
+      FINDING_CATEGORY_PERFORMANCE: Category is 'Performance'.
+    """
+    FINDING_CATEGORY_UNSPECIFIED = 0
+    FINDING_CATEGORY_DATA_MANAGEMENT = 1
+    FINDING_CATEGORY_PERFORMANCE = 2
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""Severity of the finding.
+
+    Values:
+      FINDING_SEVERITY_UNSPECIFIED: Severity is unspecified.
+      FINDING_SEVERITY_CRITICAL: Severity is critical.
+    """
+    FINDING_SEVERITY_UNSPECIFIED = 0
+    FINDING_SEVERITY_CRITICAL = 1
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of the finding.
+
+    Values:
+      FINDING_TYPE_UNSPECIFIED: Finding type is unspecified.
+      FINDING_TYPE_COLDLINE_AND_ARCHIVAL_STORAGE_OPERATIONS_SPIKE: Finding is
+        about a spike in Class A/B operations on Coldline or Archive Cloud
+        Storage objects.
+      FINDING_TYPE_THROTTLED_REQUEST_SPIKE: Finding is about a spike in
+        throttled requests (429 errors) within a project.
+      FINDING_TYPE_CROSS_REGION_EGRESS_SPIKE: Finding is about a spike in
+        cross region egress in Cloud Storage.
+      FINDING_TYPE_STORAGE_GROWTH_ABOVE_TREND: Finding is about growth in
+        storage above the expected trend.
+      FINDING_TYPE_BANDWIDTH_QUOTA_NEAR_LIMIT: Finding is about bandwidth
+        consumption approaching the quota limit.
+    """
+    FINDING_TYPE_UNSPECIFIED = 0
+    FINDING_TYPE_COLDLINE_AND_ARCHIVAL_STORAGE_OPERATIONS_SPIKE = 1
+    FINDING_TYPE_THROTTLED_REQUEST_SPIKE = 2
+    FINDING_TYPE_CROSS_REGION_EGRESS_SPIKE = 3
+    FINDING_TYPE_STORAGE_GROWTH_ABOVE_TREND = 4
+    FINDING_TYPE_BANDWIDTH_QUOTA_NEAR_LIMIT = 5
+
+  category = _messages.EnumField('CategoryValueValuesEnum', 1)
+  createTime = _messages.StringField(2)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 3)
+  summaryDetails = _messages.MessageField('SummaryDetails', 4, repeated=True)
+  targetResource = _messages.StringField(5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
 
 
 class Folder(_messages.Message):
@@ -662,8 +798,8 @@ class GoogleManagedEncryptionEnforcementConfig(_messages.Message):
     effectiveTime: Time from which the config was effective. This is service-
       provided.
     restrictionMode: Restriction mode for google-managed encryption for new
-      objects within the bucket. Valid values are: "NotRestricted",
-      "FullyRestricted". If `NotRestricted` or unset, creation of new objects
+      objects within the bucket. Valid values are: `NotRestricted` and
+      `FullyRestricted`. If `NotRestricted` or unset, creation of new objects
       with google-managed encryption is allowed. If `FullyRestricted`, new
       objects can't be created using google-managed encryption.
   """
@@ -673,9 +809,11 @@ class GoogleManagedEncryptionEnforcementConfig(_messages.Message):
 
 
 class GoogleStorageV2CustomPlacementConfig(_messages.Message):
-  r"""Configuration for Custom Dual Regions. It should specify precisely two
-  eligible regions within the same Multiregion. More information on regions
-  see [Bucket locations](https://cloud.google.com/storage/docs/locations).
+  r"""Configuration for [configurable dual-
+  regions](https://cloud.google.com/storage/docs/locations#configurable). It
+  should specify precisely two eligible regions within the same multi-region.
+  For details, see
+  [locations](https://cloud.google.com/storage/docs/locations).
 
   Fields:
     dataLocations: Optional. List of locations to use for data placement.
@@ -708,8 +846,8 @@ class IamConfig(_messages.Message):
   r"""Bucket restriction options.
 
   Fields:
-    publicAccessPrevention: Optional. Whether IAM will enforce public access
-      prevention. Valid values are "enforced" or "inherited".
+    publicAccessPrevention: Optional. Whether IAM enforces public access
+      prevention. Valid values are `enforced` or `inherited`.
     uniformBucketLevelAccess: Optional. Bucket restriction options currently
       enforced on the bucket.
   """
@@ -796,6 +934,505 @@ class IntelligenceConfig(_messages.Message):
   updateTime = _messages.StringField(7)
 
 
+class IntelligenceFinding(_messages.Message):
+  r"""The `IntelligenceFinding` resource that represents a security,
+  performance, or cost-related finding about a project or bucket.
+
+  Enums:
+    CategoryValueValuesEnum: Output only. Category of this finding.
+    SeverityValueValuesEnum: Output only. Severity of the finding.
+    TypeValueValuesEnum: Output only. Type of this finding.
+
+  Fields:
+    associatedResources: Output only. Contains GCP resource names that are
+      relevant to this `IntelligenceFinding`. The `target_resource` is also
+      added as part of `associated_resources`. eg: -
+      `storage.googleapis.com/projects/_/buckets/b1` -
+      `cloudresourecemanager.googleapis.com/projects/p1`
+    bandwidthQuotaNearLimit: Output only. `IntelligenceFinding` about a
+      bandwidth consumption approaching the quota limit.
+    category: Output only. Category of this finding.
+    coldlineAndArchivalStorageOperationsSpike: Output only.
+      `IntelligenceFinding` about a spike in Class A/B operations on Coldline
+      or Archive Cloud Storage objects.
+    createTime: Output only. The time at which the finding was created.
+    crossRegionEgressSpike: Output only. `IntelligenceFinding` about a spike
+      in cross-region egress.
+    description: Output only. A short description about the finding.
+    name: Identifier. The resource name of `IntelligenceFinding`. Format: `pro
+      jects/{project}/locations/{location}/intelligenceFindings/{intelligence_
+      finding}`
+    observationPeriod: Output only. The time interval during which the
+      underlying data was used to generate this `IntelligenceFinding`.
+    severity: Output only. Severity of the finding.
+    storageGrowthAboveTrend: Output only. `IntelligenceFinding` about growth
+      in storage above the expected trend.
+    targetResource: Output only. The fully qualified resource name of the
+      resource that this `IntelligenceFinding` applies to. eg: -
+      `storage.googleapis.com/projects/_/buckets/b1` -
+      `cloudresourecemanager.googleapis.com/projects/p1`
+    throttledRequestsSpike: Output only. `IntelligenceFinding` about a spike
+      in throttled requests (429 errors) within a project.
+    type: Output only. Type of this finding.
+    updateTime: Output only. The time at which the finding was last updated.
+  """
+
+  class CategoryValueValuesEnum(_messages.Enum):
+    r"""Output only. Category of this finding.
+
+    Values:
+      FINDING_CATEGORY_UNSPECIFIED: Category is unspecified.
+      FINDING_CATEGORY_DATA_MANAGEMENT: Category is 'Data Management'.
+      FINDING_CATEGORY_PERFORMANCE: Category is 'Performance'.
+    """
+    FINDING_CATEGORY_UNSPECIFIED = 0
+    FINDING_CATEGORY_DATA_MANAGEMENT = 1
+    FINDING_CATEGORY_PERFORMANCE = 2
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""Output only. Severity of the finding.
+
+    Values:
+      FINDING_SEVERITY_UNSPECIFIED: Severity is unspecified.
+      FINDING_SEVERITY_CRITICAL: Severity is critical.
+    """
+    FINDING_SEVERITY_UNSPECIFIED = 0
+    FINDING_SEVERITY_CRITICAL = 1
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Type of this finding.
+
+    Values:
+      FINDING_TYPE_UNSPECIFIED: Finding type is unspecified.
+      FINDING_TYPE_COLDLINE_AND_ARCHIVAL_STORAGE_OPERATIONS_SPIKE: Finding is
+        about a spike in Class A/B operations on Coldline or Archive Cloud
+        Storage objects.
+      FINDING_TYPE_THROTTLED_REQUEST_SPIKE: Finding is about a spike in
+        throttled requests (429 errors) within a project.
+      FINDING_TYPE_CROSS_REGION_EGRESS_SPIKE: Finding is about a spike in
+        cross region egress in Cloud Storage.
+      FINDING_TYPE_STORAGE_GROWTH_ABOVE_TREND: Finding is about growth in
+        storage above the expected trend.
+      FINDING_TYPE_BANDWIDTH_QUOTA_NEAR_LIMIT: Finding is about bandwidth
+        consumption approaching the quota limit.
+    """
+    FINDING_TYPE_UNSPECIFIED = 0
+    FINDING_TYPE_COLDLINE_AND_ARCHIVAL_STORAGE_OPERATIONS_SPIKE = 1
+    FINDING_TYPE_THROTTLED_REQUEST_SPIKE = 2
+    FINDING_TYPE_CROSS_REGION_EGRESS_SPIKE = 3
+    FINDING_TYPE_STORAGE_GROWTH_ABOVE_TREND = 4
+    FINDING_TYPE_BANDWIDTH_QUOTA_NEAR_LIMIT = 5
+
+  associatedResources = _messages.StringField(1, repeated=True)
+  bandwidthQuotaNearLimit = _messages.MessageField('BandwidthQuotaNearLimit', 2)
+  category = _messages.EnumField('CategoryValueValuesEnum', 3)
+  coldlineAndArchivalStorageOperationsSpike = _messages.MessageField('ColdlineAndArchivalStorageOperationsSpike', 4)
+  createTime = _messages.StringField(5)
+  crossRegionEgressSpike = _messages.MessageField('CrossRegionEgressSpike', 6)
+  description = _messages.StringField(7)
+  name = _messages.StringField(8)
+  observationPeriod = _messages.MessageField('Interval', 9)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 10)
+  storageGrowthAboveTrend = _messages.MessageField('StorageGrowthAboveTrend', 11)
+  targetResource = _messages.StringField(12)
+  throttledRequestsSpike = _messages.MessageField('ThrottledRequestSpike', 13)
+  type = _messages.EnumField('TypeValueValuesEnum', 14)
+  updateTime = _messages.StringField(15)
+
+
+class IntelligenceFindingBandwidthQuotaNearLimitBucketContribution(_messages.Message):
+  r"""Represents the bandwidth consumption details for a bucket.
+
+  Fields:
+    bucket: Output only. The name of the bucket.
+    contribution: Output only. The details about the contribution of the
+      bucket.
+    error: Output only. The error related to accessing the details about the
+      contribution of the bucket.
+    percentageIncrease: Output only. The percentage increase in bandwidth
+      consumption for the bucket.
+    totalBandwidthConsumptionBytes: Output only. The total bandwidth
+      consumption in bytes for the bucket.
+  """
+
+  bucket = _messages.StringField(1)
+  contribution = _messages.MessageField('IntelligenceFindingBandwidthQuotaNearLimitBucketContributionContribution', 2)
+  error = _messages.MessageField('Status', 3)
+  percentageIncrease = _messages.FloatField(4)
+  totalBandwidthConsumptionBytes = _messages.IntegerField(5)
+
+
+class IntelligenceFindingBandwidthQuotaNearLimitBucketContributionContribution(_messages.Message):
+  r"""Represents the contribution of the bucket towards the
+  `IntelligenceFinding`.
+
+  Fields:
+    topPrefixes: Output only. A list of top object prefixes driving the
+      increase in bandwidth consumption.
+    topServiceAccounts: Output only. A list of top service accounts driving
+      the increase in bandwidth consumption.
+  """
+
+  topPrefixes = _messages.MessageField('IntelligenceFindingBandwidthQuotaNearLimitBucketContributionContributionPrefixContribution', 1, repeated=True)
+  topServiceAccounts = _messages.MessageField('IntelligenceFindingBandwidthQuotaNearLimitBucketContributionContributionServiceAccountContribution', 2, repeated=True)
+
+
+class IntelligenceFindingBandwidthQuotaNearLimitBucketContributionContributionPrefixContribution(_messages.Message):
+  r"""Represents the bandwidth consumption details for an object prefix.
+
+  Fields:
+    percentageIncrease: Output only. The percentage increase in bandwidth
+      consumption for the object prefix.
+    prefix: Output only. The object prefix. Format: `a/b/c`, `a/b/d`, etc.
+    totalBandwidthConsumptionBytes: Output only. The total bandwidth
+      consumption in bytes for the object prefix.
+  """
+
+  percentageIncrease = _messages.FloatField(1)
+  prefix = _messages.StringField(2)
+  totalBandwidthConsumptionBytes = _messages.IntegerField(3)
+
+
+class IntelligenceFindingBandwidthQuotaNearLimitBucketContributionContributionServiceAccountContribution(_messages.Message):
+  r"""Represents the bandwidth consumption details for a service account.
+
+  Fields:
+    percentageIncrease: Output only. The percentage increase in bandwidth
+      consumption for the service account.
+    serviceAccount: Output only. The identifier of the service account.
+      Format: `serviceAccount:name@domain.com`, eg
+      :`serviceAccount:name@project-id.iam.gserviceaccount.com`, etc.
+    totalBandwidthConsumptionBytes: Output only. The total bandwidth
+      consumption in bytes for the service account.
+  """
+
+  percentageIncrease = _messages.FloatField(1)
+  serviceAccount = _messages.StringField(2)
+  totalBandwidthConsumptionBytes = _messages.IntegerField(3)
+
+
+class IntelligenceFindingColdlineAndArchivalStorageOperationsSpikeBucketContribution(_messages.Message):
+  r"""Represents the operation spike details for a bucket.
+
+  Fields:
+    bucket: Output only. The name of the bucket.
+    contribution: Output only. The details about the contribution of the
+      bucket.
+    error: Output only. The error related to accessing the details about the
+      contribution of the bucket.
+    percentageIncrease: Output only. The percentage increase in operations for
+      the bucket.
+    totalOperationsCount: Output only. The total count of operations for the
+      bucket.
+  """
+
+  bucket = _messages.StringField(1)
+  contribution = _messages.MessageField('IntelligenceFindingColdlineAndArchivalStorageOperationsSpikeBucketContributionContribution', 2)
+  error = _messages.MessageField('Status', 3)
+  percentageIncrease = _messages.FloatField(4)
+  totalOperationsCount = _messages.IntegerField(5)
+
+
+class IntelligenceFindingColdlineAndArchivalStorageOperationsSpikeBucketContributionContribution(_messages.Message):
+  r"""Represents the contribution of the bucket towards the
+  `IntelligenceFinding`.
+
+  Fields:
+    topPrefixes: Output only. A list of the top object prefixes driving the
+      increase in operations.
+    topServiceAccounts: Output only. A list of the top service accounts
+      driving the increase in operations.
+  """
+
+  topPrefixes = _messages.MessageField('IntelligenceFindingColdlineAndArchivalStorageOperationsSpikeBucketContributionContributionPrefixContribution', 1, repeated=True)
+  topServiceAccounts = _messages.MessageField('IntelligenceFindingColdlineAndArchivalStorageOperationsSpikeBucketContributionContributionServiceAccountContribution', 2, repeated=True)
+
+
+class IntelligenceFindingColdlineAndArchivalStorageOperationsSpikeBucketContributionContributionPrefixContribution(_messages.Message):
+  r"""Represents the operation spike details for an object prefix.
+
+  Fields:
+    percentageIncrease: Output only. The percentage increase in operations for
+      the object prefix.
+    prefix: Output only. The object prefix. Format: `a/b/c`, 'a/b/d', etc.
+    totalOperationsCount: Output only. The total count of operations for the
+      object prefix.
+  """
+
+  percentageIncrease = _messages.FloatField(1)
+  prefix = _messages.StringField(2)
+  totalOperationsCount = _messages.IntegerField(3)
+
+
+class IntelligenceFindingColdlineAndArchivalStorageOperationsSpikeBucketContributionContributionServiceAccountContribution(_messages.Message):
+  r"""Represents the operation spike details for a service account.
+
+  Fields:
+    percentageIncrease: Output only. The percentage increase in operations for
+      the service account.
+    serviceAccount: Output only. The identifier of the service account.
+      Format: `serviceAccount:name@domain.com` eg: `name@project-
+      id.iam.gserviceaccount.com`
+    totalOperationsCount: Output only. The total count of operations for the
+      service account.
+  """
+
+  percentageIncrease = _messages.FloatField(1)
+  serviceAccount = _messages.StringField(2)
+  totalOperationsCount = _messages.IntegerField(3)
+
+
+class IntelligenceFindingCrossRegionEgressSpikeBucketContribution(_messages.Message):
+  r"""Represents the cross-region egress spike details for a bucket.
+
+  Fields:
+    bucket: Output only. The name of the bucket.
+    contribution: Output only. The details about the contribution of the
+      bucket.
+    error: Output only. The error related to accessing the details about the
+      contribution of the bucket.
+    percentageIncrease: Output only. The percentage increase in cross-region
+      egress for the bucket.
+    totalEgressBytes: Output only. The total cross-region egress volume in
+      bytes for the bucket.
+  """
+
+  bucket = _messages.StringField(1)
+  contribution = _messages.MessageField('IntelligenceFindingCrossRegionEgressSpikeBucketContributionContribution', 2)
+  error = _messages.MessageField('Status', 3)
+  percentageIncrease = _messages.FloatField(4)
+  totalEgressBytes = _messages.IntegerField(5)
+
+
+class IntelligenceFindingCrossRegionEgressSpikeBucketContributionContribution(_messages.Message):
+  r"""Represents the contribution of the bucket towards the
+  `IntelligenceFinding`.
+
+  Fields:
+    topPrefixes: Output only. A list of the top object prefixes driving the
+      increase in cross-region egress.
+    topServiceAccounts: Output only. A list of the top service accounts
+      driving the increase in cross-region egress.
+  """
+
+  topPrefixes = _messages.MessageField('IntelligenceFindingCrossRegionEgressSpikeBucketContributionContributionPrefixContribution', 1, repeated=True)
+  topServiceAccounts = _messages.MessageField('IntelligenceFindingCrossRegionEgressSpikeBucketContributionContributionServiceAccountContribution', 2, repeated=True)
+
+
+class IntelligenceFindingCrossRegionEgressSpikeBucketContributionContributionPrefixContribution(_messages.Message):
+  r"""Represents the cross-region egress spike details for an object prefix.
+
+  Fields:
+    percentageIncrease: Output only. The percentage increase in cross-region
+      egress for the object prefix.
+    prefix: Output only. The object prefix. Format: `a/b/c`, 'a/b/d', etc.
+    totalEgressBytes: Output only. The total cross-region egress volume in
+      bytes from the object prefix.
+  """
+
+  percentageIncrease = _messages.FloatField(1)
+  prefix = _messages.StringField(2)
+  totalEgressBytes = _messages.IntegerField(3)
+
+
+class IntelligenceFindingCrossRegionEgressSpikeBucketContributionContributionServiceAccountContribution(_messages.Message):
+  r"""Represents the cross-region egress spike details for the service
+  account.
+
+  Fields:
+    percentageIncrease: Output only. The percentage increase in cross-region
+      egress for the service account.
+    serviceAccount: Output only. The identifier of the service account.
+      Format: `serviceAccount:name@domain.com` eg: `name@project-
+      id.iam.gserviceaccount.com`
+    totalEgressBytes: Output only. The total cross-region egress volume in
+      bytes for the service account.
+  """
+
+  percentageIncrease = _messages.FloatField(1)
+  serviceAccount = _messages.StringField(2)
+  totalEgressBytes = _messages.IntegerField(3)
+
+
+class IntelligenceFindingRevision(_messages.Message):
+  r"""An `IntelligenceFindingRevision` represents a specific revision of an
+  `IntelligenceFinding` resource.
+
+  Fields:
+    createTime: Output only. The timestamp when the revision was created.
+    name: Output only. The resource name of `IntelligenceFindingRevision`.
+      Format: `projects/{project}/locations/{location}/intelligenceFindings/{i
+      ntelligence_finding}/revisions/{revision}`
+    snapshot: Output only. The snapshot of the `IntelligenceFinding` at the
+      time the revision was created. This field contains the full finding
+      details as they existed for the revision.
+  """
+
+  createTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  snapshot = _messages.MessageField('IntelligenceFinding', 3)
+
+
+class IntelligenceFindingStorageGrowthAboveTrendBucketContribution(_messages.Message):
+  r"""Represents the storage growth details for a bucket.
+
+  Fields:
+    bucket: Output only. The name of the bucket.
+    contribution: Output only. The details about the contribution of the
+      bucket.
+    error: Output only. The error related to accessing the details about the
+      contribution of the bucket.
+    percentageIncrease: Output only. The percentage increase in storage growth
+      for the bucket.
+    totalStorageGrowthBytes: Output only. The total storage growth in bytes
+      for the bucket.
+  """
+
+  bucket = _messages.StringField(1)
+  contribution = _messages.MessageField('IntelligenceFindingStorageGrowthAboveTrendBucketContributionContribution', 2)
+  error = _messages.MessageField('Status', 3)
+  percentageIncrease = _messages.FloatField(4)
+  totalStorageGrowthBytes = _messages.IntegerField(5)
+
+
+class IntelligenceFindingStorageGrowthAboveTrendBucketContributionContribution(_messages.Message):
+  r"""Represents the contribution of the bucket towards the
+  `IntelligenceFinding`.
+
+  Fields:
+    topPrefixes: Output only. A list of top object prefixes driving the
+      increase in storage growth.
+    topServiceAccounts: Output only. A list of the top service accounts
+      driving the increase in storage growth.
+  """
+
+  topPrefixes = _messages.MessageField('IntelligenceFindingStorageGrowthAboveTrendBucketContributionContributionPrefixContribution', 1, repeated=True)
+  topServiceAccounts = _messages.MessageField('IntelligenceFindingStorageGrowthAboveTrendBucketContributionContributionServiceAccountContribution', 2, repeated=True)
+
+
+class IntelligenceFindingStorageGrowthAboveTrendBucketContributionContributionPrefixContribution(_messages.Message):
+  r"""Represents the storage growth details for an object prefix.
+
+  Fields:
+    percentageIncrease: Output only. The percentage increase in storage growth
+      for the object prefix.
+    prefix: Output only. The object prefix. Format: `a/b/c`, 'a/b/d', etc.
+    totalStorageGrowthBytes: Output only. The total storage growth in bytes
+      for the object prefix.
+  """
+
+  percentageIncrease = _messages.FloatField(1)
+  prefix = _messages.StringField(2)
+  totalStorageGrowthBytes = _messages.IntegerField(3)
+
+
+class IntelligenceFindingStorageGrowthAboveTrendBucketContributionContributionServiceAccountContribution(_messages.Message):
+  r"""Represents the storage growth details for a service account.
+
+  Fields:
+    percentageIncrease: Output only. The percentage increase in storage growth
+      for the service account.
+    serviceAccount: Output only. The identifier of the service account.
+      Format: `serviceAccount:name@domain.com` eg: `name@project-
+      id.iam.gserviceaccount.com`
+    totalStorageGrowthBytes: Output only. The total storage growth in bytes
+      for the service account.
+  """
+
+  percentageIncrease = _messages.FloatField(1)
+  serviceAccount = _messages.StringField(2)
+  totalStorageGrowthBytes = _messages.IntegerField(3)
+
+
+class IntelligenceFindingThrottledRequestSpikeBucketContribution(_messages.Message):
+  r"""Represents the throttled requests details for a bucket.
+
+  Fields:
+    bucket: Output only. The name of the bucket.
+    contribution: Output only. The details about the contribution of the
+      bucket.
+    error: Output only. The error related to accessing the details about the
+      contribution of the bucket.
+    percentageIncrease: Output only. The percentage increase in throttled
+      requests for the bucket.
+    throttledRequests: Output only. The count of throttled requests for the
+      bucket.
+  """
+
+  bucket = _messages.StringField(1)
+  contribution = _messages.MessageField('IntelligenceFindingThrottledRequestSpikeBucketContributionContribution', 2)
+  error = _messages.MessageField('Status', 3)
+  percentageIncrease = _messages.FloatField(4)
+  throttledRequests = _messages.IntegerField(5)
+
+
+class IntelligenceFindingThrottledRequestSpikeBucketContributionContribution(_messages.Message):
+  r"""Represents the contribution of the bucket towards the
+  `IntelligenceFinding`.
+
+  Fields:
+    topPrefixes: Output only. A list of top object prefixes driving the
+      increase in throttled requests.
+    topServiceAccounts: Output only. A list of the top service accounts
+      driving the increase in throttled requests.
+  """
+
+  topPrefixes = _messages.MessageField('IntelligenceFindingThrottledRequestSpikeBucketContributionContributionPrefixContribution', 1, repeated=True)
+  topServiceAccounts = _messages.MessageField('IntelligenceFindingThrottledRequestSpikeBucketContributionContributionServiceAccountContribution', 2, repeated=True)
+
+
+class IntelligenceFindingThrottledRequestSpikeBucketContributionContributionPrefixContribution(_messages.Message):
+  r"""Represents throttled requests details for an object prefix.
+
+  Fields:
+    percentageIncrease: The percentage increase in throttled requests for the
+      object prefix.
+    prefix: Output only. The object prefix. Format: `a/b/c`, 'a/b/d', etc.
+    throttledRequests: Output only. The count of throttled requests for the
+      object prefix.
+  """
+
+  percentageIncrease = _messages.FloatField(1)
+  prefix = _messages.StringField(2)
+  throttledRequests = _messages.IntegerField(3)
+
+
+class IntelligenceFindingThrottledRequestSpikeBucketContributionContributionServiceAccountContribution(_messages.Message):
+  r"""Represents the throttled requests details for a service account.
+
+  Fields:
+    percentageIncrease: Output only. The percentage increase in throttled
+      requests for the service account.
+    serviceAccount: Output only. The identifier of the service account.
+      Format: `serviceAccount:name@domain.com` eg: `name@project-
+      id.iam.gserviceaccount.com`
+    throttledRequests: Output only. The count of throttled requests for the
+      service account.
+  """
+
+  percentageIncrease = _messages.FloatField(1)
+  serviceAccount = _messages.StringField(2)
+  throttledRequests = _messages.IntegerField(3)
+
+
+class Interval(_messages.Message):
+  r"""Represents a time interval, encoded as a Timestamp start (inclusive) and
+  a Timestamp end (exclusive). The start must be less than or equal to the
+  end. When the start equals the end, the interval is empty (matches no time).
+  When both start and end are unspecified, the interval matches any time.
+
+  Fields:
+    endTime: Optional. Exclusive end of the interval. If specified, a
+      Timestamp matching this interval will have to be before the end.
+    startTime: Optional. Inclusive start of the interval. If specified, a
+      Timestamp matching this interval will have to be the same or after the
+      start.
+  """
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
+
+
 class IpFilter(_messages.Message):
   r"""The [bucket IP filtering](https://cloud.google.com/storage/docs/ip-
   filtering-overview) configuration. Specifies the network sources that can
@@ -803,17 +1440,17 @@ class IpFilter(_messages.Message):
 
   Fields:
     allowAllServiceAgentAccess: Whether or not to allow all P4SA access to the
-      bucket. When set to true, IP filter config validation will not apply.
+      bucket. When set to true, IP filter config validation doesn't apply.
     allowCrossOrgVpcs: Optional. Whether or not to allow VPCs from orgs
       different than the bucket's parent org to access the bucket. When set to
       true, validations on the existence of the VPCs won't be performed. If
-      set to false, each VPC network source will be checked to belong to the
-      same org as the bucket as well as validated for existence.
+      set to false, each VPC network source is checked to belong to the same
+      org as the bucket as well as validated for existence.
     mode: The state of the IP filter configuration. Valid values are `Enabled`
       and `Disabled`. When set to `Enabled`, IP filtering rules are applied to
       a bucket and all incoming requests to the bucket are evaluated against
       these rules. When set to `Disabled`, IP filtering rules are not applied
-      to a bucket.".
+      to a bucket.
     publicNetworkSource: Public IPs allowed to operate or access the bucket.
     vpcNetworkSources: Optional. The list of network sources that are allowed
       to access operations on the bucket or the underlying objects.
@@ -827,12 +1464,12 @@ class IpFilter(_messages.Message):
 
 
 class Lifecycle(_messages.Message):
-  r"""Lifecycle properties of a bucket. For more information, see
-  https://cloud.google.com/storage/docs/lifecycle.
+  r"""Lifecycle properties of a bucket. For more information, see [Object
+  Lifecycle Management](https://cloud.google.com/storage/docs/lifecycle).
 
   Fields:
     rule: Optional. A lifecycle management rule, which is made of an action to
-      take and the condition(s) under which the action will be taken.
+      take and the condition under which the action is taken.
   """
 
   rule = _messages.MessageField('Rule', 1, repeated=True)
@@ -850,6 +1487,53 @@ class ListFoldersResponse(_messages.Message):
 
   folders = _messages.MessageField('Folder', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListIntelligenceFindingRevisionsResponse(_messages.Message):
+  r"""Response message to list `IntelligenceFindingRevision` resources
+  associated with a project.
+
+  Fields:
+    intelligenceFindingRevisions: The `IntelligenceFindingRevision` resources
+      from the specified project.
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page.
+  """
+
+  intelligenceFindingRevisions = _messages.MessageField('IntelligenceFindingRevision', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListIntelligenceFindingsResponse(_messages.Message):
+  r"""Response message to list the `IntelligenceFinding` resources associated
+  with a project.
+
+  Fields:
+    intelligenceFindings: The `IntelligenceFinding` resources from the
+      specified project.
+    nextPageToken: A token to retrieve the next page of results. Pass this
+      value in the `page_token` field in the subsequent call.
+  """
+
+  intelligenceFindings = _messages.MessageField('IntelligenceFinding', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class LocationalContribution(_messages.Message):
+  r"""Represents the bandwidth consumption details for a specific location.
+
+  Fields:
+    location: Output only. The location where the bandwidth consumption spike
+      occurred. Format: `us-central1`, `us`, `global`, etc.
+    percentageIncrease: Output only. The percentage increase in bandwidth
+      consumption for the location.
+    totalBandwidthConsumptionBytes: Output only. The total bandwidth
+      consumption in bytes for the location.
+  """
+
+  location = _messages.StringField(1)
+  percentageIncrease = _messages.FloatField(2)
+  totalBandwidthConsumptionBytes = _messages.IntegerField(3)
 
 
 class Logging(_messages.Message):
@@ -1048,15 +1732,15 @@ class ObjectAccessControl(_messages.Message):
       * The group `example@googlegroups.com` would be `group-
       example@googlegroups.com`. * All members of the Google Apps for Business
       domain `example.com` would be `domain-example.com`. For project
-      entities, `project-{team}-{projectnumber}` format will be returned on
+      entities, `project-{team}-{projectnumber}` format is returned in the
       response.
     entityAlt: Output only. The alternative entity format, if exists. For
-      project entities, `project-{team}-{projectid}` format will be returned
-      on response.
+      project entities, `project-{team}-{projectid}` format is returned in the
+      response.
     entityId: Optional. The ID for the entity, if any.
     etag: Optional. The etag of the ObjectAccessControl. If included in the
-      metadata of an update or delete request message, the operation will only
-      be performed if the etag matches that of the live object's
+      metadata of an update or delete request message, the operation is only
+      performed if the etag matches that of the live object's
       ObjectAccessControl.
     id: Optional. The ID of the access-control entry.
     projectTeam: Optional. The project team associated with the entity, if
@@ -1291,7 +1975,7 @@ class RetentionPolicy(_messages.Message):
       retained. Retention duration must be greater than zero and less than 100
       years. Note that enforcement of retention periods less than a day is not
       guaranteed. Such periods should only be used for testing purposes. Any
-      `nanos` value specified will be rounded down to the nearest second.
+      `nanos` value specified is rounded down to the nearest second.
   """
 
   effectiveTime = _messages.StringField(1)
@@ -1301,12 +1985,11 @@ class RetentionPolicy(_messages.Message):
 
 class Rule(_messages.Message):
   r"""A lifecycle Rule, combining an action to take on an object and a
-  condition which will trigger that action.
+  condition which triggers that action.
 
   Fields:
     action: Optional. The action to take.
-    condition: Optional. The condition(s) under which the action will be
-      taken.
+    condition: Optional. The condition under which the action is taken.
   """
 
   action = _messages.MessageField('Action', 1)
@@ -1504,6 +2187,69 @@ class StorageFoldersLocationsGetManagementHubRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class StorageFoldersLocationsIntelligenceFindingsSummarizeRequest(_messages.Message):
+  r"""A StorageFoldersLocationsIntelligenceFindingsSummarizeRequest object.
+
+  Enums:
+    ResourceScopeValueValuesEnum: Optional. Determines the granularity of the
+      findings when the `parent` is an organization or folder. - `PARENT` (or
+      not set): A single summary is returned for each insight type, aggregated
+      across the entire `parent` scope. - `PROJECT`: A separate summary is
+      returned for each insight type for every project within the `parent`
+      scope. The only supported values are `PARENT` and `PROJECT`. If no value
+      is specified, the API behaviour defaults to the `PARENT`.
+
+  Fields:
+    filter: Optional. The filter expression, following AIP-160. Supports
+      filtering by FindingType.
+    pageSize: Optional. The maximum number of findings to return. The maximum
+      value is `100`; values above `100` will be coerced to `100`. The default
+      value is `100`.
+    pageToken: Optional. A page token, received from a previous
+      `SummarizeIntelligenceFindings` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `SummarizeIntelligenceFindings` must match the call that provided the
+      page token.
+    parent: Required. The scope to summarize the findings for. Format: -
+      `organizations/{organization}/locations/{location}` -
+      `folders/{folder}/locations/{location}` -
+      `projects/{project}/locations/{location}`
+    resourceScope: Optional. Determines the granularity of the findings when
+      the `parent` is an organization or folder. - `PARENT` (or not set): A
+      single summary is returned for each insight type, aggregated across the
+      entire `parent` scope. - `PROJECT`: A separate summary is returned for
+      each insight type for every project within the `parent` scope. The only
+      supported values are `PARENT` and `PROJECT`. If no value is specified,
+      the API behaviour defaults to the `PARENT`.
+  """
+
+  class ResourceScopeValueValuesEnum(_messages.Enum):
+    r"""Optional. Determines the granularity of the findings when the `parent`
+    is an organization or folder. - `PARENT` (or not set): A single summary is
+    returned for each insight type, aggregated across the entire `parent`
+    scope. - `PROJECT`: A separate summary is returned for each insight type
+    for every project within the `parent` scope. The only supported values are
+    `PARENT` and `PROJECT`. If no value is specified, the API behaviour
+    defaults to the `PARENT`.
+
+    Values:
+      RESOURCE_SCOPE_UNSPECIFIED: The default behavior. Falls back to PARENT
+        behaviour
+      PARENT: Summaries are aggregated at the level of the `parent` resource.
+      PROJECT: Summaries are broken down by each project within the `parent`
+        scope.
+    """
+    RESOURCE_SCOPE_UNSPECIFIED = 0
+    PARENT = 1
+    PROJECT = 2
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  resourceScope = _messages.EnumField('ResourceScopeValueValuesEnum', 5)
+
+
 class StorageFoldersLocationsUpdateIntelligenceConfigRequest(_messages.Message):
   r"""A StorageFoldersLocationsUpdateIntelligenceConfigRequest object.
 
@@ -1554,6 +2300,23 @@ class StorageFoldersLocationsUpdateManagementHubRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class StorageGrowthAboveTrend(_messages.Message):
+  r"""Represents a finding about a storage growth above the expected trend.
+  This corresponds to the `STORAGE_GROWTH_ABOVE_TREND` finding type.
+
+  Fields:
+    percentageIncrease: Output only. The percentage increase in storage
+      growth.
+    topBuckets: Output only. A list of top buckets driving the increase in
+      storage growth.
+    totalStorageGrowthBytes: Output only. The total storage growth in bytes.
+  """
+
+  percentageIncrease = _messages.FloatField(1)
+  topBuckets = _messages.MessageField('IntelligenceFindingStorageGrowthAboveTrendBucketContribution', 2, repeated=True)
+  totalStorageGrowthBytes = _messages.IntegerField(3)
+
+
 class StorageLayout(_messages.Message):
   r"""The storage layout configuration of a bucket.
 
@@ -1600,6 +2363,70 @@ class StorageOrganizationsLocationsGetManagementHubRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class StorageOrganizationsLocationsIntelligenceFindingsSummarizeRequest(_messages.Message):
+  r"""A StorageOrganizationsLocationsIntelligenceFindingsSummarizeRequest
+  object.
+
+  Enums:
+    ResourceScopeValueValuesEnum: Optional. Determines the granularity of the
+      findings when the `parent` is an organization or folder. - `PARENT` (or
+      not set): A single summary is returned for each insight type, aggregated
+      across the entire `parent` scope. - `PROJECT`: A separate summary is
+      returned for each insight type for every project within the `parent`
+      scope. The only supported values are `PARENT` and `PROJECT`. If no value
+      is specified, the API behaviour defaults to the `PARENT`.
+
+  Fields:
+    filter: Optional. The filter expression, following AIP-160. Supports
+      filtering by FindingType.
+    pageSize: Optional. The maximum number of findings to return. The maximum
+      value is `100`; values above `100` will be coerced to `100`. The default
+      value is `100`.
+    pageToken: Optional. A page token, received from a previous
+      `SummarizeIntelligenceFindings` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `SummarizeIntelligenceFindings` must match the call that provided the
+      page token.
+    parent: Required. The scope to summarize the findings for. Format: -
+      `organizations/{organization}/locations/{location}` -
+      `folders/{folder}/locations/{location}` -
+      `projects/{project}/locations/{location}`
+    resourceScope: Optional. Determines the granularity of the findings when
+      the `parent` is an organization or folder. - `PARENT` (or not set): A
+      single summary is returned for each insight type, aggregated across the
+      entire `parent` scope. - `PROJECT`: A separate summary is returned for
+      each insight type for every project within the `parent` scope. The only
+      supported values are `PARENT` and `PROJECT`. If no value is specified,
+      the API behaviour defaults to the `PARENT`.
+  """
+
+  class ResourceScopeValueValuesEnum(_messages.Enum):
+    r"""Optional. Determines the granularity of the findings when the `parent`
+    is an organization or folder. - `PARENT` (or not set): A single summary is
+    returned for each insight type, aggregated across the entire `parent`
+    scope. - `PROJECT`: A separate summary is returned for each insight type
+    for every project within the `parent` scope. The only supported values are
+    `PARENT` and `PROJECT`. If no value is specified, the API behaviour
+    defaults to the `PARENT`.
+
+    Values:
+      RESOURCE_SCOPE_UNSPECIFIED: The default behavior. Falls back to PARENT
+        behaviour
+      PARENT: Summaries are aggregated at the level of the `parent` resource.
+      PROJECT: Summaries are broken down by each project within the `parent`
+        scope.
+    """
+    RESOURCE_SCOPE_UNSPECIFIED = 0
+    PARENT = 1
+    PROJECT = 2
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  resourceScope = _messages.EnumField('ResourceScopeValueValuesEnum', 5)
 
 
 class StorageOrganizationsLocationsUpdateIntelligenceConfigRequest(_messages.Message):
@@ -1815,6 +2642,139 @@ class StorageProjectsLocationsGetManagementHubRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class StorageProjectsLocationsIntelligenceFindingsGetRequest(_messages.Message):
+  r"""A StorageProjectsLocationsIntelligenceFindingsGetRequest object.
+
+  Fields:
+    name: Required. The name of the `IntelligenceFinding` resource. Format: `p
+      rojects/{project}/locations/{location}/intelligenceFindings/{intelligenc
+      e_finding}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class StorageProjectsLocationsIntelligenceFindingsListRequest(_messages.Message):
+  r"""A StorageProjectsLocationsIntelligenceFindingsListRequest object.
+
+  Fields:
+    filter: Optional. The filter expression to be applied. Supports filtering
+      by `FindingType`, `associated_resources` and `target_resource`.
+    pageSize: Optional. The maximum number of `IntelligenceFinding` resources
+      to return. The maximum value is `100`; values above `100` will be
+      coerced to `100`. The default value is `100`.
+    pageToken: Optional. A page token, received from a previous
+      `ListIntelligenceFindings` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `ListIntelligenceFindings` must match the call that provided the page
+      token.
+    parent: Required. The parent of the `IntelligenceFinding` resource.
+      Format: `projects/{project}/locations/{location}`
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class StorageProjectsLocationsIntelligenceFindingsRevisionsGetRequest(_messages.Message):
+  r"""A StorageProjectsLocationsIntelligenceFindingsRevisionsGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the `IntelligenceFindingRevision` resource. ##
+      Format: `projects/{project}/locations/{location}/intelligenceFindings/{i
+      ntelligence_finding}/revisions/{revision}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class StorageProjectsLocationsIntelligenceFindingsRevisionsListRequest(_messages.Message):
+  r"""A StorageProjectsLocationsIntelligenceFindingsRevisionsListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. The maximum number of `IntelligenceFindingRevision`
+      resources to return. The maximum value is `100`; values above `100` will
+      be coerced to `100`. The default value is `100`.
+    pageToken: Optional. A page token, received from a previous
+      `ListIntelligenceFindingRevisions` call. Provide this to retrieve the
+      subsequent page.
+    parent: Required. The parent of the `IntelligenceFindingRevision`
+      resource. ## Format: `projects/{project}/locations/{location}/intelligen
+      ceFindings/{intelligence_finding}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class StorageProjectsLocationsIntelligenceFindingsSummarizeRequest(_messages.Message):
+  r"""A StorageProjectsLocationsIntelligenceFindingsSummarizeRequest object.
+
+  Enums:
+    ResourceScopeValueValuesEnum: Optional. Determines the granularity of the
+      findings when the `parent` is an organization or folder. - `PARENT` (or
+      not set): A single summary is returned for each insight type, aggregated
+      across the entire `parent` scope. - `PROJECT`: A separate summary is
+      returned for each insight type for every project within the `parent`
+      scope. The only supported values are `PARENT` and `PROJECT`. If no value
+      is specified, the API behaviour defaults to the `PARENT`.
+
+  Fields:
+    filter: Optional. The filter expression, following AIP-160. Supports
+      filtering by FindingType.
+    pageSize: Optional. The maximum number of findings to return. The maximum
+      value is `100`; values above `100` will be coerced to `100`. The default
+      value is `100`.
+    pageToken: Optional. A page token, received from a previous
+      `SummarizeIntelligenceFindings` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `SummarizeIntelligenceFindings` must match the call that provided the
+      page token.
+    parent: Required. The scope to summarize the findings for. Format: -
+      `organizations/{organization}/locations/{location}` -
+      `folders/{folder}/locations/{location}` -
+      `projects/{project}/locations/{location}`
+    resourceScope: Optional. Determines the granularity of the findings when
+      the `parent` is an organization or folder. - `PARENT` (or not set): A
+      single summary is returned for each insight type, aggregated across the
+      entire `parent` scope. - `PROJECT`: A separate summary is returned for
+      each insight type for every project within the `parent` scope. The only
+      supported values are `PARENT` and `PROJECT`. If no value is specified,
+      the API behaviour defaults to the `PARENT`.
+  """
+
+  class ResourceScopeValueValuesEnum(_messages.Enum):
+    r"""Optional. Determines the granularity of the findings when the `parent`
+    is an organization or folder. - `PARENT` (or not set): A single summary is
+    returned for each insight type, aggregated across the entire `parent`
+    scope. - `PROJECT`: A separate summary is returned for each insight type
+    for every project within the `parent` scope. The only supported values are
+    `PARENT` and `PROJECT`. If no value is specified, the API behaviour
+    defaults to the `PARENT`.
+
+    Values:
+      RESOURCE_SCOPE_UNSPECIFIED: The default behavior. Falls back to PARENT
+        behaviour
+      PARENT: Summaries are aggregated at the level of the `parent` resource.
+      PROJECT: Summaries are broken down by each project within the `parent`
+        scope.
+    """
+    RESOURCE_SCOPE_UNSPECIFIED = 0
+    PARENT = 1
+    PROJECT = 2
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  resourceScope = _messages.EnumField('ResourceScopeValueValuesEnum', 5)
+
+
 class StorageProjectsLocationsUpdateIntelligenceConfigRequest(_messages.Message):
   r"""A StorageProjectsLocationsUpdateIntelligenceConfigRequest object.
 
@@ -1865,6 +2825,74 @@ class StorageProjectsLocationsUpdateManagementHubRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class SummarizeIntelligenceFindingsResponse(_messages.Message):
+  r"""Response message to summarize the intelligence findings for a specified
+  scope(org, folder or project).
+
+  Fields:
+    findingSummaries: The list of `FindingSummary` summaries.
+    nextPageToken: A token to retrieve the next page of results. Pass this
+      value in the `page_token` field in the subsequent call to
+      `SummarizeIntelligenceFindings` to retrieve the next page of results.
+  """
+
+  findingSummaries = _messages.MessageField('FindingSummary', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class SummaryDetails(_messages.Message):
+  r"""Details about the `FindingSummary` resource.
+
+  Enums:
+    ResourceTypeValueValuesEnum: Output only. The type of Cloud resource this
+      summary detail applies to.
+
+  Fields:
+    count: The count of impacted resources.
+    description: Output only. A short description about the FindingSummary
+    percentage: The percentage of impacted resources.
+    resourceType: Output only. The type of Cloud resource this summary detail
+      applies to.
+  """
+
+  class ResourceTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of Cloud resource this summary detail applies
+    to.
+
+    Values:
+      RESOURCE_TYPE_UNSPECIFIED: Resource type is unspecified.
+      PROJECT: Resource type is project.
+      BUCKET: Resource type is bucket.
+    """
+    RESOURCE_TYPE_UNSPECIFIED = 0
+    PROJECT = 1
+    BUCKET = 2
+
+  count = _messages.IntegerField(1)
+  description = _messages.StringField(2)
+  percentage = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 4)
+
+
+class ThrottledRequestSpike(_messages.Message):
+  r"""Represents a finding about a spike in throttled requests (429 errors)
+  within a project. This corresponds to the `THROTTLED_REQUEST_SPIKE` finding
+  type.
+
+  Fields:
+    percentageIncrease: Output only. The percentage increase in throttled
+      requests across the project.
+    throttledRequests: Output only. The count of throttled requests across the
+      project.
+    topBuckets: Output only. A list of top buckets driving the increase in
+      throttled requests.
+  """
+
+  percentageIncrease = _messages.FloatField(1)
+  throttledRequests = _messages.IntegerField(2)
+  topBuckets = _messages.MessageField('IntelligenceFindingThrottledRequestSpikeBucketContribution', 3, repeated=True)
+
+
 class TrialConfig(_messages.Message):
   r"""The trial configuration of the `IntelligenceConfig` resource.
 
@@ -1892,8 +2920,9 @@ class UniformBucketLevelAccess(_messages.Message):
 
 
 class Versioning(_messages.Message):
-  r"""Properties of a bucket related to versioning. For more on Cloud Storage
-  versioning, see https://cloud.google.com/storage/docs/object-versioning.
+  r"""Properties of a bucket related to versioning. For more information about
+  Cloud Storage versioning, see [Object
+  versioning](https://cloud.google.com/storage/docs/object-versioning).
 
   Fields:
     enabled: Optional. While set to true, versioning is fully enabled for this
@@ -1924,17 +2953,17 @@ class VpcNetworkSource(_messages.Message):
 
 class Website(_messages.Message):
   r"""Properties of a bucket related to accessing the contents as a static
-  website. For more on hosting a static website via Cloud Storage, see
-  https://cloud.google.com/storage/docs/hosting-static-website.
+  website. For details, see [hosting a static website using Cloud
+  Storage](https://cloud.google.com/storage/docs/hosting-static-website).
 
   Fields:
     mainPageSuffix: Optional. If the requested object path is missing, the
-      service will ensure the path has a trailing '/', append this suffix, and
+      service ensures the path has a trailing '/', append this suffix, and
       attempt to retrieve the resulting object. This allows the creation of
       `index.html` objects to represent directory pages.
     notFoundPage: Optional. If the requested object path is missing, and any
-      `mainPageSuffix` object is missing, if applicable, the service will
-      return the named object from this bucket as the content for a [404 Not
+      `mainPageSuffix` object is missing, if applicable, the service returns
+      the named object from this bucket as the content for a [404 Not
       Found](https://tools.ietf.org/html/rfc7231#section-6.5.4) result.
   """
 

@@ -1778,6 +1778,8 @@ class BigtableColumn(_messages.Message):
       in this column are exposed. 'onlyReadLatest' can also be set at the
       column family level. However, the setting at this level takes precedence
       if 'onlyReadLatest' is set at both levels.
+    protoConfig: Optional. Protobuf-specific configurations, only takes effect
+      when the encoding is PROTO_BINARY.
     qualifierEncoded: [Required] Qualifier of the column. Columns in the
       parent column family that has this exact qualifier are exposed as `.`
       field. If the qualifier is valid UTF-8 string, it can be specified in
@@ -1799,9 +1801,10 @@ class BigtableColumn(_messages.Message):
   encoding = _messages.StringField(1)
   fieldName = _messages.StringField(2)
   onlyReadLatest = _messages.BooleanField(3)
-  qualifierEncoded = _messages.BytesField(4)
-  qualifierString = _messages.StringField(5)
-  type = _messages.StringField(6)
+  protoConfig = _messages.MessageField('BigtableProtoConfig', 4)
+  qualifierEncoded = _messages.BytesField(5)
+  qualifierString = _messages.StringField(6)
+  type = _messages.StringField(7)
 
 
 class BigtableColumnFamily(_messages.Message):
@@ -1823,6 +1826,8 @@ class BigtableColumnFamily(_messages.Message):
       are exposed for all columns in this column family. This can be
       overridden for a specific column by listing that column in 'columns' and
       specifying a different setting for that column.
+    protoConfig: Optional. Protobuf-specific configurations, only takes effect
+      when the encoding is PROTO_BINARY.
     type: Optional. The type to convert the value in cells of this column
       family. The values are expected to be encoded using HBase Bytes.toBytes
       function when using the BINARY encoding value. Following BigQuery types
@@ -1836,7 +1841,8 @@ class BigtableColumnFamily(_messages.Message):
   encoding = _messages.StringField(2)
   familyId = _messages.StringField(3)
   onlyReadLatest = _messages.BooleanField(4)
-  type = _messages.StringField(5)
+  protoConfig = _messages.MessageField('BigtableProtoConfig', 5)
+  type = _messages.StringField(6)
 
 
 class BigtableOptions(_messages.Message):
@@ -1869,6 +1875,22 @@ class BigtableOptions(_messages.Message):
   ignoreUnspecifiedColumnFamilies = _messages.BooleanField(2)
   outputColumnFamiliesAsJson = _messages.BooleanField(3)
   readRowkeyAsString = _messages.BooleanField(4)
+
+
+class BigtableProtoConfig(_messages.Message):
+  r"""Information related to a Bigtable protobuf column.
+
+  Fields:
+    protoMessageName: Optional. The fully qualified proto message name of the
+      protobuf. In the format of "foo.bar.Message".
+    schemaBundleId: Optional. The ID of the Bigtable SchemaBundle resource
+      associated with this protobuf. The ID should be referred to within the
+      parent table, e.g., `foo` rather than `projects/{project}/instances/{ins
+      tance}/tables/{table}/schemaBundles/foo`.
+  """
+
+  protoMessageName = _messages.StringField(1)
+  schemaBundleId = _messages.StringField(2)
 
 
 class BinaryClassificationMetrics(_messages.Message):
@@ -3532,6 +3554,17 @@ class ExternalDataConfiguration(_messages.Message):
       expected format is a IANA timezone string (e.g. America/Los_Angeles).
     timestampFormat: Optional. Format used to parse TIMESTAMP values. Supports
       C-style and SQL-style values.
+    timestampTargetPrecision: Precisions (maximum number of total digits in
+      base 10) for seconds of TIMESTAMP types that are allowed to the
+      destination table for autodetection mode. Available for the formats:
+      CSV. For the CSV Format, Possible values include: Not Specified, [], or
+      [6]: timestamp(6) for all auto detected TIMESTAMP columns [6, 12]:
+      timestamp(6) for all auto detected TIMESTAMP columns that have less than
+      6 digits of subseconds. timestamp(12) for all auto detected TIMESTAMP
+      columns that have more than 6 digits of subseconds. [12]: timestamp(12)
+      for all auto detected TIMESTAMP columns. The order of the elements in
+      this array is ignored. Inputs that have higher precision than the
+      highest target precision in this array will be truncated.
   """
 
   class DecimalTargetTypesValueListEntryValuesEnum(_messages.Enum):
@@ -3640,6 +3673,7 @@ class ExternalDataConfiguration(_messages.Message):
   timeFormat = _messages.StringField(24)
   timeZone = _messages.StringField(25)
   timestampFormat = _messages.StringField(26)
+  timestampTargetPrecision = _messages.IntegerField(27, repeated=True, variant=_messages.Variant.INT32)
 
 
 class ExternalDatasetReference(_messages.Message):
@@ -4130,6 +4164,24 @@ class IncrementalResultStats(_messages.Message):
   resultSetLastReplaceTime = _messages.StringField(3)
 
 
+class IndexPruningStats(_messages.Message):
+  r"""Statistics for index pruning.
+
+  Fields:
+    baseTable: The base table reference.
+    indexId: The index id.
+    postIndexPruningParallelInputCount: The number of parallel inputs after
+      index pruning.
+    preIndexPruningParallelInputCount: The number of parallel inputs before
+      index pruning.
+  """
+
+  baseTable = _messages.MessageField('TableReference', 1)
+  indexId = _messages.StringField(2)
+  postIndexPruningParallelInputCount = _messages.IntegerField(3)
+  preIndexPruningParallelInputCount = _messages.IntegerField(4)
+
+
 class IndexUnusedReason(_messages.Message):
   r"""Reason about why no search index was used in the search query (or sub-
   query).
@@ -4394,11 +4446,12 @@ class JobConfiguration(_messages.Message):
       invalid query will return the same error it would if it wasn't a dry
       run. Behavior of non-query jobs is undefined.
     extract: [Pick one] Configures an extract job.
-    jobTimeoutMs: Optional. Job timeout in milliseconds. If this time limit is
-      exceeded, BigQuery will attempt to stop a longer job, but may not always
-      succeed in canceling it before the job completes. For example, a job
-      that takes more than 60 seconds to complete has a better chance of being
-      stopped than a job that takes 10 seconds to complete.
+    jobTimeoutMs: Optional. Job timeout in milliseconds relative to the job
+      creation time. If this time limit is exceeded, BigQuery attempts to stop
+      the job, but might not always succeed in canceling it before the job
+      completes. For example, a job that takes more than 60 seconds to
+      complete has a better chance of being stopped than a job that takes 10
+      seconds to complete.
     jobType: Output only. The type of the job. Can be QUERY, LOAD, EXTRACT,
       COPY or UNKNOWN.
     labels: The labels associated with this job. You can use these to organize
@@ -4408,10 +4461,12 @@ class JobConfiguration(_messages.Message):
       values are optional. Label keys must start with a letter and each label
       in the list must have a different key.
     load: [Pick one] Configures a load job.
-    maxSlots: Optional. INTERNAL: DO NOT USE. The maximum rate of slot
-      consumption to allow for this job. If set, the number of slots used to
-      execute the job will be throttled to try and keep its slot consumption
-      below the requested rate.
+    maxSlots: Optional. A target limit on the rate of slot consumption by this
+      job. If set to a value > 0, BigQuery will attempt to limit the rate of
+      slot consumption by this job to keep it below the configured limit, even
+      if the job is eligible for more slots based on fair scheduling. The
+      unused slots will be available for other jobs and queries to use. Note:
+      This feature is not yet generally available.
     query: [Pick one] Configures a query job.
     reservation: Optional. The reservation that job would use. User can
       specify a reservation to execute the job. If reservation is not set,
@@ -4749,6 +4804,17 @@ class JobConfigurationLoad(_messages.Message):
     timeZone: Optional. Default time zone that will apply when parsing
       timestamp values that have no specific time zone.
     timestampFormat: Optional. Date format used for parsing TIMESTAMP values.
+    timestampTargetPrecision: Precisions (maximum number of total digits in
+      base 10) for seconds of TIMESTAMP types that are allowed to the
+      destination table for autodetection mode. Available for the formats:
+      CSV. For the CSV Format, Possible values include: Not Specified, [], or
+      [6]: timestamp(6) for all auto detected TIMESTAMP columns [6, 12]:
+      timestamp(6) for all auto detected TIMESTAMP columns that have less than
+      6 digits of subseconds. timestamp(12) for all auto detected TIMESTAMP
+      columns that have more than 6 digits of subseconds. [12]: timestamp(12)
+      for all auto detected TIMESTAMP columns. The order of the elements in
+      this array is ignored. Inputs that have higher precision than the
+      highest target precision in this array will be truncated.
     useAvroLogicalTypes: Optional. If sourceFormat is set to "AVRO", indicates
       whether to interpret logical types as the corresponding BigQuery data
       type (for example, TIMESTAMP), instead of using the raw type (for
@@ -4897,8 +4963,9 @@ class JobConfigurationLoad(_messages.Message):
   timePartitioning = _messages.MessageField('TimePartitioning', 40)
   timeZone = _messages.StringField(41)
   timestampFormat = _messages.StringField(42)
-  useAvroLogicalTypes = _messages.BooleanField(43)
-  writeDisposition = _messages.StringField(44)
+  timestampTargetPrecision = _messages.IntegerField(43, repeated=True, variant=_messages.Variant.INT32)
+  useAvroLogicalTypes = _messages.BooleanField(44)
+  writeDisposition = _messages.StringField(45)
 
 
 class JobConfigurationQuery(_messages.Message):
@@ -5310,6 +5377,12 @@ class JobStatistics(_messages.Message):
       the parent.
     query: Output only. Statistics for a query job.
     quotaDeferments: Output only. Quotas which delayed this job's start time.
+    reservationGroupPath: Output only. The reservation group path of the
+      reservation assigned to this job. This field has a limit of 10 nested
+      reservation groups. This is to maintain consistency between reservatins
+      info schema and jobs info schema. The first reservation group is the
+      root reservation group and the last is the leaf or lowest level
+      reservation group.
     reservationUsage: Output only. Job resource usage breakdown by
       reservation. This field reported misleading information and will no
       longer be populated.
@@ -5376,15 +5449,16 @@ class JobStatistics(_messages.Message):
   parentJobId = _messages.StringField(11)
   query = _messages.MessageField('JobStatistics2', 12)
   quotaDeferments = _messages.StringField(13, repeated=True)
-  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 14, repeated=True)
-  reservation_id = _messages.StringField(15)
-  rowLevelSecurityStatistics = _messages.MessageField('RowLevelSecurityStatistics', 16)
-  scriptStatistics = _messages.MessageField('ScriptStatistics', 17)
-  sessionInfo = _messages.MessageField('SessionInfo', 18)
-  startTime = _messages.IntegerField(19)
-  totalBytesProcessed = _messages.IntegerField(20)
-  totalSlotMs = _messages.IntegerField(21)
-  transactionInfo = _messages.MessageField('TransactionInfo', 22)
+  reservationGroupPath = _messages.StringField(14, repeated=True)
+  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 15, repeated=True)
+  reservation_id = _messages.StringField(16)
+  rowLevelSecurityStatistics = _messages.MessageField('RowLevelSecurityStatistics', 17)
+  scriptStatistics = _messages.MessageField('ScriptStatistics', 18)
+  sessionInfo = _messages.MessageField('SessionInfo', 19)
+  startTime = _messages.IntegerField(20)
+  totalBytesProcessed = _messages.IntegerField(21)
+  totalSlotMs = _messages.IntegerField(22)
+  transactionInfo = _messages.MessageField('TransactionInfo', 23)
 
 
 class JobStatistics2(_messages.Message):
@@ -6938,10 +7012,12 @@ class QueryRequest(_messages.Message):
       result set is large. In addition to this limit, responses are also
       limited to 10 MB. By default, there is no maximum row count, and only
       the byte limit applies.
-    maxSlots: Optional. INTERNAL: DO NOT USE. The maximum rate of slot
-      consumption to allow for this job. If set, the number of slots used to
-      execute the job will be throttled to try and keep its slot consumption
-      below the requested rate. This limit is best effort.
+    maxSlots: Optional. A target limit on the rate of slot consumption by this
+      query. If set to a value > 0, BigQuery will attempt to limit the rate of
+      slot consumption by this query to keep it below the configured limit,
+      even if the query is eligible for more slots based on fair scheduling.
+      The unused slots will be available for other jobs and queries to use.
+      Note: This feature is not yet generally available.
     maximumBytesBilled: Optional. Limits the bytes billed for this query.
       Queries with bytes billed above this limit will fail (without incurring
       a charge). If unspecified, the project default is used.
@@ -7845,6 +7921,10 @@ class SearchStatistics(_messages.Message):
       query.
 
   Fields:
+    indexPruningStats: Search index pruning statistics, one for each base
+      table that has a search index. If a base table does not have a search
+      index or the index does not help with pruning on the base table, then
+      there is no pruning statistics for that table.
     indexUnusedReasons: When `indexUsageMode` is `UNUSED` or `PARTIALLY_USED`,
       this field explains why indexes were not used in all or part of the
       search query. If `indexUsageMode` is `FULLY_USED`, this field is not
@@ -7872,8 +7952,9 @@ class SearchStatistics(_messages.Message):
     PARTIALLY_USED = 2
     FULLY_USED = 3
 
-  indexUnusedReasons = _messages.MessageField('IndexUnusedReason', 1, repeated=True)
-  indexUsageMode = _messages.EnumField('IndexUsageModeValueValuesEnum', 2)
+  indexPruningStats = _messages.MessageField('IndexPruningStats', 1, repeated=True)
+  indexUnusedReasons = _messages.MessageField('IndexUnusedReason', 2, repeated=True)
+  indexUsageMode = _messages.EnumField('IndexUsageModeValueValuesEnum', 3)
 
 
 class SerDeInfo(_messages.Message):
@@ -9100,6 +9181,10 @@ class TableFieldSchema(_messages.Message):
     roundingMode: Optional. Specifies the rounding mode to be used when
       storing values of NUMERIC and BIGNUMERIC type.
     scale: Optional. See documentation for precision.
+    timestampPrecision: Optional. Precision (maximum number of total digits in
+      base 10) for seconds of TIMESTAMP type. Possible values include: * 6
+      (Default, for TIMESTAMP type with microsecond precision) * 12 (For
+      TIMESTAMP type with picosecond precision)
     type: Required. The field data type. Possible values include: * STRING *
       BYTES * INTEGER (or INT64) * FLOAT (or FLOAT64) * BOOLEAN (or BOOL) *
       TIMESTAMP * DATE * TIME * DATETIME * GEOGRAPHY * NUMERIC * BIGNUMERIC *
@@ -9173,7 +9258,8 @@ class TableFieldSchema(_messages.Message):
   rangeElementType = _messages.MessageField('RangeElementTypeValue', 13)
   roundingMode = _messages.EnumField('RoundingModeValueValuesEnum', 14)
   scale = _messages.IntegerField(15)
-  type = _messages.StringField(16)
+  timestampPrecision = _messages.IntegerField(16, default=6)
+  type = _messages.StringField(17)
 
 
 class TableList(_messages.Message):

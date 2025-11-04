@@ -6563,8 +6563,8 @@ class NetworksecurityProjectsLocationsListRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Unless explicitly documented otherwise,
-      don't use this unsupported field which is primarily intended for
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -10308,6 +10308,8 @@ class WildfireAnalysisProfile(_messages.Message):
       inline cloud analysis.
     wildfireInlineMlOverrides: Optional. Configuration for overriding inline
       ML WildFire actions per protocol.
+    wildfireInlineMlSetting: Optional. Settings for WildFire Inline ML
+      analysis.
     wildfireInlineMlSettings: Optional. Settings for WildFire Inline ML
       analysis.
     wildfireOverrides: Optional. Configuration for overriding WildFire actions
@@ -10317,14 +10319,18 @@ class WildfireAnalysisProfile(_messages.Message):
       lookup. Default value is false.
     wildfireSubmissionRules: Optional. Configurations for WildFire file
       submissions.
+    wildfireThreatOverrides: Optional. Configuration for overriding WildFire
+      threats action by threat_id match.
   """
 
   wildfireInlineCloudAnalysisRules = _messages.MessageField('WildfireInlineCloudAnalysisRule', 1, repeated=True)
   wildfireInlineMlOverrides = _messages.MessageField('WildfireInlineMlOverride', 2, repeated=True)
-  wildfireInlineMlSettings = _messages.MessageField('WildfireInlineMlSettings', 3, repeated=True)
-  wildfireOverrides = _messages.MessageField('WildfireOverride', 4, repeated=True)
-  wildfireRealtimeLookup = _messages.BooleanField(5)
-  wildfireSubmissionRules = _messages.MessageField('WildfireSubmissionRule', 6, repeated=True)
+  wildfireInlineMlSetting = _messages.MessageField('WildfireInlineMlSettings', 3)
+  wildfireInlineMlSettings = _messages.MessageField('WildfireInlineMlSettings', 4, repeated=True)
+  wildfireOverrides = _messages.MessageField('WildfireOverride', 5, repeated=True)
+  wildfireRealtimeLookup = _messages.BooleanField(6)
+  wildfireSubmissionRules = _messages.MessageField('WildfireSubmissionRule', 7, repeated=True)
+  wildfireThreatOverrides = _messages.MessageField('WildfireThreatOverride', 8, repeated=True)
 
 
 class WildfireInlineCloudAnalysisRule(_messages.Message):
@@ -10356,14 +10362,18 @@ class WildfireInlineCloudAnalysisRule(_messages.Message):
     Values:
       WILDFIRE_INLINE_CLOUD_ANALYSIS_ACTION_UNSPECIFIED: WildFire Inline Cloud
         Analysis action not specified.
-      ALLOW: The files that caught by WildFire Inline Cloud Analysis will be
+      ALLOW: The files caught by WildFire Inline Cloud Analysis will be
         allowed to transmit.
-      DENY: The files that caught by WildFire Inline Cloud Analysis will be
-        denied to transmit.
+      DENY: The files caught by WildFire Inline Cloud Analysis will be denied
+        to transmit.
+      ALERT: The files caught by WildFire Inline Cloud Analysis will be
+        allowed to transmit, but a wildfire_submission_log entry will be sent
+        to the consumer project.
     """
     WILDFIRE_INLINE_CLOUD_ANALYSIS_ACTION_UNSPECIFIED = 0
     ALLOW = 1
     DENY = 2
+    ALERT = 3
 
   class DirectionValueValuesEnum(_messages.Enum):
     r"""Required. Direction for the file to be analyzed by WildFire Inline
@@ -10499,18 +10509,51 @@ class WildfireInlineMlOverride(_messages.Message):
 class WildfireInlineMlSettings(_messages.Message):
   r"""Defines the settings for WildFire Inline ML analysis.
 
-  Enums:
-    InlineMlConfigsValueListEntryValuesEnum:
-
   Fields:
     fileExceptions: Optional. List of files to exclude from WildFire Inline ML
       analysis.
-    inlineMlConfigs: Required. List of Inline ML configs to enable in WildFire
+    inlineMlConfigs: Optional. List of Inline ML configs to enable in WildFire
       Inline ML analysis.
   """
 
-  class InlineMlConfigsValueListEntryValuesEnum(_messages.Enum):
-    r"""InlineMlConfigsValueListEntryValuesEnum enum type.
+  fileExceptions = _messages.MessageField('WildfireInlineMlFileException', 1, repeated=True)
+  inlineMlConfigs = _messages.MessageField('WildfireInlineMlSettingsInlineMlConfig', 2, repeated=True)
+
+
+class WildfireInlineMlSettingsInlineMlConfig(_messages.Message):
+  r"""Configuration for WildFire Inline ML analysis per file type.
+
+  Enums:
+    ActionValueValuesEnum: Required. Action to take when a threat is detected
+      using Inline ML.
+    FileTypeValueValuesEnum: Required. File type to configure Inline ML for.
+
+  Fields:
+    action: Required. Action to take when a threat is detected using Inline
+      ML.
+    fileType: Required. File type to configure Inline ML for.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""Required. Action to take when a threat is detected using Inline ML.
+
+    Values:
+      INLINE_ML_ACTION_UNSPECIFIED: Inline ML threat action not specified.
+      DISABLE: Disable WildFire Inline ML for the associated file type.
+      ALERT: Enable WildFire Inline ML for the associated file type. Overrides
+        any protocol level settings with action stricter than ALERT to ALERT
+        so that the malicious files detected generate a threat log to the
+        consumer project but are not blocked.
+      ENABLE: Enable WildFire Inline ML for the associated file type,
+        malicious files detected will be blocked.
+    """
+    INLINE_ML_ACTION_UNSPECIFIED = 0
+    DISABLE = 1
+    ALERT = 2
+    ENABLE = 3
+
+  class FileTypeValueValuesEnum(_messages.Enum):
+    r"""Required. File type to configure Inline ML for.
 
     Values:
       INLINE_ML_CONFIG_UNSPECIFIED: Inline ML config not specified.
@@ -10541,8 +10584,8 @@ class WildfireInlineMlSettings(_messages.Message):
     OOXML = 7
     MACHO = 8
 
-  fileExceptions = _messages.MessageField('WildfireInlineMlFileException', 1, repeated=True)
-  inlineMlConfigs = _messages.EnumField('InlineMlConfigsValueListEntryValuesEnum', 2, repeated=True)
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  fileType = _messages.EnumField('FileTypeValueValuesEnum', 2)
 
 
 class WildfireOverride(_messages.Message):
@@ -10693,6 +10736,41 @@ class WildfireSubmissionRuleCustomFileTypes(_messages.Message):
     SCRIPT = 10
 
   fileTypes = _messages.EnumField('FileTypesValueListEntryValuesEnum', 1, repeated=True)
+
+
+class WildfireThreatOverride(_messages.Message):
+  r"""Defines what action to take for a specific WildFire threat_id match.
+
+  Enums:
+    ActionValueValuesEnum: Required. Threat action override.
+
+  Fields:
+    action: Required. Threat action override.
+    threatId: Required. Threat ID to match.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""Required. Threat action override.
+
+    Values:
+      WILDFIRE_THREAT_ACTION_UNSPECIFIED: Threat action not specified.
+      WILDFIRE_DEFAULT_ACTION: The default action (as specified by the vendor)
+        is taken.
+      WILDFIRE_ALLOW: The packet matching this rule will be allowed to
+        transmit.
+      WILDFIRE_ALERT: The packet matching this rule will be allowed to
+        transmit, but a threat_log entry will be sent to the consumer project.
+      WILDFIRE_DENY: The packet matching this rule will be dropped, and a
+        threat_log entry will be sent to the consumer project.
+    """
+    WILDFIRE_THREAT_ACTION_UNSPECIFIED = 0
+    WILDFIRE_DEFAULT_ACTION = 1
+    WILDFIRE_ALLOW = 2
+    WILDFIRE_ALERT = 3
+    WILDFIRE_DENY = 4
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  threatId = _messages.StringField(2)
 
 
 class WildfireVerdictChangeRequest(_messages.Message):

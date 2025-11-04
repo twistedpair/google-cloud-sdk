@@ -43,6 +43,7 @@ class AlloydbV1alpha(base_api.BaseApiClient):
     self.projects_locations_clusters_instances = self.ProjectsLocationsClustersInstancesService(self)
     self.projects_locations_clusters_users = self.ProjectsLocationsClustersUsersService(self)
     self.projects_locations_clusters = self.ProjectsLocationsClustersService(self)
+    self.projects_locations_endpoints = self.ProjectsLocationsEndpointsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_supportedDatabaseFlags = self.ProjectsLocationsSupportedDatabaseFlagsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -979,6 +980,70 @@ class AlloydbV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsEndpointsService(base_api.BaseApiService):
+    """Service class for the projects_locations_endpoints resource."""
+
+    _NAME = 'projects_locations_endpoints'
+
+    def __init__(self, client):
+      super(AlloydbV1alpha.ProjectsLocationsEndpointsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single Endpoint.
+
+      Args:
+        request: (AlloydbProjectsLocationsEndpointsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Endpoint) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}',
+        http_method='GET',
+        method_id='alloydb.projects.locations.endpoints.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='AlloydbProjectsLocationsEndpointsGetRequest',
+        response_type_name='Endpoint',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Endpoints in a given project and location.
+
+      Args:
+        request: (AlloydbProjectsLocationsEndpointsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListEndpointsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/endpoints',
+        http_method='GET',
+        method_id='alloydb.projects.locations.endpoints.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/endpoints',
+        request_field='',
+        request_type_name='AlloydbProjectsLocationsEndpointsListRequest',
+        response_type_name='ListEndpointsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
@@ -1089,7 +1154,7 @@ class AlloydbV1alpha(base_api.BaseApiClient):
         method_id='alloydb.projects.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1alpha/{+name}/operations',
         request_field='',
         request_type_name='AlloydbProjectsLocationsOperationsListRequest',

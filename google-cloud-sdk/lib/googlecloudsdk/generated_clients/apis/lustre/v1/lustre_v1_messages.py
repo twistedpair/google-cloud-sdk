@@ -187,6 +187,12 @@ class Instance(_messages.Message):
     gkeSupportEnabled: Optional. Indicates whether you want to enable support
       for GKE clients. By default, GKE clients are not supported. Deprecated.
       No longer required for GKE instance creation.
+    kmsKey: Optional. Immutable. The Cloud KMS key name to use for data
+      encryption. If not set, the instance will use Google-managed encryption
+      keys. If set, the instance will use customer-managed encryption keys.
+      The key must be in the same region as the instance. The key format is: p
+      rojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{k
+      ey}
     labels: Optional. Labels as key value pairs.
     mountPoint: Output only. Mount point of the instance in the format
       `IP_ADDRESS@tcp:/FILESYSTEM`.
@@ -202,6 +208,8 @@ class Instance(_messages.Message):
       the format of projects/{project}/locations/{location}/resourcePolicies/{
       resource_policy}
     state: Output only. The state of the instance.
+    stateReason: Output only. The reason why the instance is in a certain
+      state (e.g. SUSPENDED).
     uid: Output only. Unique ID of the resource. This is unrelated to the
       access rules which allow specifying the root squash uid.
     updateTime: Output only. Timestamp when the instance was last updated.
@@ -259,15 +267,17 @@ class Instance(_messages.Message):
   description = _messages.StringField(4)
   filesystem = _messages.StringField(5)
   gkeSupportEnabled = _messages.BooleanField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  mountPoint = _messages.StringField(8)
-  name = _messages.StringField(9)
-  network = _messages.StringField(10)
-  perUnitStorageThroughput = _messages.IntegerField(11)
-  placementPolicy = _messages.StringField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  uid = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
+  kmsKey = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  mountPoint = _messages.StringField(9)
+  name = _messages.StringField(10)
+  network = _messages.StringField(11)
+  perUnitStorageThroughput = _messages.IntegerField(12)
+  placementPolicy = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  stateReason = _messages.StringField(15)
+  uid = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -570,8 +580,8 @@ class LustreProjectsLocationsListRequest(_messages.Message):
   r"""A LustreProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Unless explicitly documented otherwise,
-      don't use this unsupported field which is primarily intended for
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is

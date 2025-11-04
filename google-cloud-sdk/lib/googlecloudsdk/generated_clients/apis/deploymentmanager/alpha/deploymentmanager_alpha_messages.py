@@ -2204,12 +2204,14 @@ class Operation(_messages.Message):
           result in the creation of a VM that uses global DNS.
         RATE_LIMIT_EXCEEDED: Resource can't be retrieved due to api quota
           exceeded.
-        RESERVED_ENTRY_135: Reserved entries for quickly adding new warnings
+        UPCOMING_MAINTENANCES_UNAVAILABLE: Upcoming maintenance schedule is
+          unavailable for the resource.
+        RESERVED_ENTRY_136: Reserved entries for quickly adding new warnings
           without breaking dependent clients.
-        RESERVED_ENTRY_136: <no description>
         RESERVED_ENTRY_139: <no description>
         RESERVED_ENTRY_141: <no description>
         RESERVED_ENTRY_142: <no description>
+        RESERVED_ENTRY_143: <no description>
       """
       DEPRECATED_RESOURCE_USED = 0
       NO_RESULTS_ON_PAGE = 1
@@ -2246,11 +2248,12 @@ class Operation(_messages.Message):
       QUOTA_INFO_UNAVAILABLE = 32
       RESOURCE_USES_GLOBAL_DNS = 33
       RATE_LIMIT_EXCEEDED = 34
-      RESERVED_ENTRY_135 = 35
+      UPCOMING_MAINTENANCES_UNAVAILABLE = 35
       RESERVED_ENTRY_136 = 36
       RESERVED_ENTRY_139 = 37
       RESERVED_ENTRY_141 = 38
       RESERVED_ENTRY_142 = 39
+      RESERVED_ENTRY_143 = 40
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -2651,12 +2654,14 @@ class Resource(_messages.Message):
           result in the creation of a VM that uses global DNS.
         RATE_LIMIT_EXCEEDED: Resource can't be retrieved due to api quota
           exceeded.
-        RESERVED_ENTRY_135: Reserved entries for quickly adding new warnings
+        UPCOMING_MAINTENANCES_UNAVAILABLE: Upcoming maintenance schedule is
+          unavailable for the resource.
+        RESERVED_ENTRY_136: Reserved entries for quickly adding new warnings
           without breaking dependent clients.
-        RESERVED_ENTRY_136: <no description>
         RESERVED_ENTRY_139: <no description>
         RESERVED_ENTRY_141: <no description>
         RESERVED_ENTRY_142: <no description>
+        RESERVED_ENTRY_143: <no description>
       """
       DEPRECATED_RESOURCE_USED = 0
       NO_RESULTS_ON_PAGE = 1
@@ -2693,11 +2698,12 @@ class Resource(_messages.Message):
       QUOTA_INFO_UNAVAILABLE = 32
       RESOURCE_USES_GLOBAL_DNS = 33
       RATE_LIMIT_EXCEEDED = 34
-      RESERVED_ENTRY_135 = 35
+      UPCOMING_MAINTENANCES_UNAVAILABLE = 35
       RESERVED_ENTRY_136 = 36
       RESERVED_ENTRY_139 = 37
       RESERVED_ENTRY_141 = 38
       RESERVED_ENTRY_142 = 39
+      RESERVED_ENTRY_143 = 40
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -2994,12 +3000,14 @@ class ResourceUpdate(_messages.Message):
           result in the creation of a VM that uses global DNS.
         RATE_LIMIT_EXCEEDED: Resource can't be retrieved due to api quota
           exceeded.
-        RESERVED_ENTRY_135: Reserved entries for quickly adding new warnings
+        UPCOMING_MAINTENANCES_UNAVAILABLE: Upcoming maintenance schedule is
+          unavailable for the resource.
+        RESERVED_ENTRY_136: Reserved entries for quickly adding new warnings
           without breaking dependent clients.
-        RESERVED_ENTRY_136: <no description>
         RESERVED_ENTRY_139: <no description>
         RESERVED_ENTRY_141: <no description>
         RESERVED_ENTRY_142: <no description>
+        RESERVED_ENTRY_143: <no description>
       """
       DEPRECATED_RESOURCE_USED = 0
       NO_RESULTS_ON_PAGE = 1
@@ -3036,11 +3044,12 @@ class ResourceUpdate(_messages.Message):
       QUOTA_INFO_UNAVAILABLE = 32
       RESOURCE_USES_GLOBAL_DNS = 33
       RATE_LIMIT_EXCEEDED = 34
-      RESERVED_ENTRY_135 = 35
+      UPCOMING_MAINTENANCES_UNAVAILABLE = 35
       RESERVED_ENTRY_136 = 36
       RESERVED_ENTRY_139 = 37
       RESERVED_ENTRY_141 = 38
       RESERVED_ENTRY_142 = 39
+      RESERVED_ENTRY_143 = 40
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.

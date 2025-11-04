@@ -29,8 +29,8 @@ from googlecloudsdk.api_lib.iam import policies
 from googlecloudsdk.api_lib.resource_manager import folders
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.projects import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
-import six
 
 PROJECTS_COLLECTION = 'cloudresourcemanager.projects'
 PROJECTS_API_VERSION = projects_util.DEFAULT_API_VERSION
@@ -60,9 +60,30 @@ _VALID_PROJECT_REGEX = re.compile(
     r'$')
 
 
+_ENV_STANDARD_TO_VARIANT_VALUE_MAPPING = {
+    # Production
+    'Production': {'Prod', 'prod', 'Production', 'production'},
+    # Development
+    'Development': {'Dev', 'dev', 'Development', 'development'},
+    # Test
+    'Test': {'Test', 'test', 'Testing', 'testing QA', 'qa',
+             'Quality assurance', 'quality assurance'},
+    # Staging
+    'Staging': {'Staging', 'staging', 'Stage', 'stage'},
+}
+
+_ENV_VARIANT_TO_STANDARD_VALUE_MAPPING = {}
+for (
+    standard_value,
+    variant_values,
+) in _ENV_STANDARD_TO_VARIANT_VALUE_MAPPING.items():
+  for variant_value in variant_values:
+    _ENV_VARIANT_TO_STANDARD_VALUE_MAPPING[variant_value] = standard_value
+
+
 def ValidateProjectIdentifier(project):
   """Checks to see if the project string is valid project name or number."""
-  if not isinstance(project, six.string_types):
+  if not isinstance(project, str):
     return False
 
   if project.isdigit() or _VALID_PROJECT_REGEX.match(project):
@@ -243,3 +264,45 @@ def GetIamPolicyWithAncestors(project_id, include_deny, release_track):
     raise exceptions.AncestorsIamPolicyAccessDeniedError(
         'User is not permitted to access IAM policy for one or more of the'
         ' ancestors')
+
+
+def GetEnvironmentTag(tags):
+  """Returns the environment tag for the project."""
+  for tag in tags.additionalProperties:
+    if tag.key == 'environment':
+      return tag
+  return None
+
+
+def GetStandardEnvironmentValue(value):
+  return _ENV_VARIANT_TO_STANDARD_VALUE_MAPPING.get(value, None)
+
+
+def CheckAndPrintEnvironmentTagMessage(project):
+  """Checks for environment tag and prints a message."""
+  env_tag = GetEnvironmentTag(project.tags) if project.tags else None
+  if env_tag:
+    env_standard_value = GetStandardEnvironmentValue(env_tag.value)
+    if env_standard_value:
+      log.status.Print(
+          "INFORMATION: Project '{0}' is tagged as 'environment: {1}'. Making"
+          " changes could affect your '{2}' apps. If incorrect, you can update"
+          " it by managing the tag binding for the 'environment' key using"
+          ' `gcloud resource-manager tags bindings create`.'.format(
+              project.projectId, env_tag.value, env_standard_value
+          )
+      )
+    else:
+      log.status.Print(
+          "INFORMATION: Project '{0}' has an 'environment' tag key with invalid"
+          " value. Use either 'Production', 'Development', 'Test', or"
+          " 'Staging'. Add an 'environment' tag using `gcloud resource-manager"
+          ' tags bindings create`.'.format(project.projectId)
+      )
+  else:
+    log.status.Print(
+        "INFORMATION: Project '{0}' has no 'environment' tag set. Use either"
+        " 'Production', 'Development', 'Test', or 'Staging'. Add an"
+        " 'environment' tag using `gcloud resource-manager tags bindings"
+        ' create`.'.format(project.projectId)
+    )

@@ -244,3 +244,16 @@ def FixExportStructure(
         "networkingAutoConfiguration"
     ]["internal"]
   return resource_data
+
+
+def FixImportStructure(
+    resource_data: dict[str, str]) -> dict[str, str]:
+  """Changes and completes the export structure to the API structure."""
+  if "zoneConfiguration" in resource_data:
+    resource_data["zoneConfigurations"] = resource_data["zoneConfiguration"]
+    del resource_data["zoneConfiguration"]
+  if ("networkingAutoConfiguration" in resource_data):
+    resource_data["networkingAutoConfiguration"] = {"internal": resource_data[
+        "networkingAutoConfiguration"
+    ]}
+  return resource_data

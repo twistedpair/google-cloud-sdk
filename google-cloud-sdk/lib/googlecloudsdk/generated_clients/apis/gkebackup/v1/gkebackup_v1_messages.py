@@ -131,7 +131,7 @@ class Backup(_messages.Message):
     manual: Output only. This flag indicates whether this Backup resource was
       created manually by a user or via a schedule in the BackupPlan. A value
       of True means that the Backup was created manually.
-    name: Output only. The fully qualified name of the Backup.
+    name: Output only. Identifier. The fully qualified name of the Backup.
       `projects/*/locations/*/backupPlans/*/backups/*`
     permissiveMode: Output only. If false, Backup will fail when Backup for
       GKE detects Kubernetes configuration that is non-standard or requires
@@ -411,9 +411,9 @@ class BackupPlan(_messages.Message):
 
   Messages:
     LabelsValue: Optional. A set of custom labels supplied by user.
-    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
-      to the BackupPlan resource. For example: "123/environment":
-      "production", "123/costCenter": "marketing"
+    TagsValue: Optional. Tag keys/values directly bound to the BackupPlan
+      resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
 
   Fields:
     backupChannel: Output only. The fully qualified name of the BackupChannel
@@ -452,8 +452,8 @@ class BackupPlan(_messages.Message):
       successful Backup. This is sourced from a successful Backup's
       complete_time field. This field is added to maintain consistency with
       BackupPlanBinding to display last successful backup time.
-    name: Output only. The full name of the BackupPlan resource. Format:
-      `projects/*/locations/*/backupPlans/*`
+    name: Output only. Identifier. The full name of the BackupPlan resource.
+      Format: `projects/*/locations/*/backupPlans/*`
     protectedPodCount: Output only. The number of Kubernetes Pods backed up in
       the last successful Backup created via this BackupPlan.
     regionalSnapshots: Optional. This flag specifies whether to create
@@ -474,9 +474,9 @@ class BackupPlan(_messages.Message):
       in the current `state`. This field is only meant for human readability
       and should not be used programmatically as this field is not guaranteed
       to be consistent.
-    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
-      the BackupPlan resource. For example: "123/environment": "production",
-      "123/costCenter": "marketing"
+    tags: Optional. Tag keys/values directly bound to the BackupPlan resource.
+      For example: "123/environment": "production", "123/costCenter":
+      "marketing"
     uid: Output only. Server generated global unique identifier of
       [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier)
       format.
@@ -533,9 +533,9 @@ class BackupPlan(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TagsValue(_messages.Message):
-    r"""Optional. Input only. Immutable. Tag keys/values directly bound to the
-    BackupPlan resource. For example: "123/environment": "production",
-    "123/costCenter": "marketing"
+    r"""Optional. Tag keys/values directly bound to the BackupPlan resource.
+    For example: "123/environment": "production", "123/costCenter":
+    "marketing"
 
     Messages:
       AdditionalProperty: An additional property for a TagsValue object.
@@ -1000,7 +1000,7 @@ class ExclusionWindow(_messages.Message):
       hours)
     singleOccurrenceDate: No recurrence. The exclusion window occurs only once
       and on this date in UTC.
-    startTime: Required. Specifies the start time of the window using time of
+    startTime: Optional. Specifies the start time of the window using time of
       the day in UTC.
   """
 
@@ -1385,7 +1385,7 @@ class GkebackupProjectsLocationsBackupPlansBackupsPatchRequest(_messages.Message
 
   Fields:
     backup: A Backup resource to be passed as the request body.
-    name: Output only. The fully qualified name of the Backup.
+    name: Output only. Identifier. The fully qualified name of the Backup.
       `projects/*/locations/*/backupPlans/*/backups/*`
     updateMask: Optional. This is used to specify the fields to be overwritten
       in the Backup targeted for update. The values for each of these updated
@@ -1640,8 +1640,8 @@ class GkebackupProjectsLocationsBackupPlansPatchRequest(_messages.Message):
 
   Fields:
     backupPlan: A BackupPlan resource to be passed as the request body.
-    name: Output only. The full name of the BackupPlan resource. Format:
-      `projects/*/locations/*/backupPlans/*`
+    name: Output only. Identifier. The full name of the BackupPlan resource.
+      Format: `projects/*/locations/*/backupPlans/*`
     updateMask: Optional. This is used to specify the fields to be overwritten
       in the BackupPlan targeted for update. The values for each of these
       updated fields will be taken from the `backup_plan` provided with this
@@ -1766,12 +1766,20 @@ class GkebackupProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class GkebackupProjectsLocationsRestoreChannelsCreateRequest(_messages.Message):
@@ -2063,8 +2071,8 @@ class GkebackupProjectsLocationsRestorePlansPatchRequest(_messages.Message):
   r"""A GkebackupProjectsLocationsRestorePlansPatchRequest object.
 
   Fields:
-    name: Output only. The full name of the RestorePlan resource. Format:
-      `projects/*/locations/*/restorePlans/*`.
+    name: Output only. Identifier. The full name of the RestorePlan resource.
+      Format: `projects/*/locations/*/restorePlans/*`.
     restorePlan: A RestorePlan resource to be passed as the request body.
     updateMask: Optional. This is used to specify the fields to be overwritten
       in the RestorePlan targeted for update. The values for each of these
@@ -2187,8 +2195,8 @@ class GkebackupProjectsLocationsRestorePlansRestoresPatchRequest(_messages.Messa
   r"""A GkebackupProjectsLocationsRestorePlansRestoresPatchRequest object.
 
   Fields:
-    name: Output only. The full name of the Restore resource. Format:
-      `projects/*/locations/*/restorePlans/*/restores/*`
+    name: Output only. Identifier. The full name of the Restore resource.
+      Format: `projects/*/locations/*/restorePlans/*/restores/*`
     restore: A Restore resource to be passed as the request body.
     updateMask: Optional. This is used to specify the fields to be overwritten
       in the Restore targeted for update. The values for each of these updated
@@ -2385,10 +2393,15 @@ class GoogleLongrunningListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('GoogleLongrunningOperation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class GoogleLongrunningOperation(_messages.Message):
@@ -3170,8 +3183,8 @@ class Restore(_messages.Message):
       `MERGE_SKIP_ON_CONFLICT`, `MERGE_REPLACE_VOLUME_ON_CONFLICT` or
       `MERGE_REPLACE_ON_CONFLICT`.
     labels: A set of custom labels supplied by user.
-    name: Output only. The full name of the Restore resource. Format:
-      `projects/*/locations/*/restorePlans/*/restores/*`
+    name: Output only. Identifier. The full name of the Restore resource.
+      Format: `projects/*/locations/*/restorePlans/*/restores/*`
     resourcesExcludedCount: Output only. Number of resources excluded during
       the restore execution.
     resourcesFailedCount: Output only. Number of resources that failed to be
@@ -3550,9 +3563,9 @@ class RestorePlan(_messages.Message):
 
   Messages:
     LabelsValue: Optional. A set of custom labels supplied by user.
-    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
-      to the RestorePlan resource. For example: "123/environment":
-      "production", "123/costCenter": "marketing"
+    TagsValue: Optional. Tag keys/values directly bound to the RestorePlan
+      resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
 
   Fields:
     backupPlan: Required. Immutable. A reference to the BackupPlan from which
@@ -3577,8 +3590,8 @@ class RestorePlan(_messages.Message):
       request to `UpdateRestorePlan` or `DeleteRestorePlan` to ensure that
       their change will be applied to the same version of the resource.
     labels: Optional. A set of custom labels supplied by user.
-    name: Output only. The full name of the RestorePlan resource. Format:
-      `projects/*/locations/*/restorePlans/*`.
+    name: Output only. Identifier. The full name of the RestorePlan resource.
+      Format: `projects/*/locations/*/restorePlans/*`.
     restoreChannel: Output only. The fully qualified name of the
       RestoreChannel to be used to create a RestorePlan. This field is set
       only if the `backup_plan` is in a different project than the
@@ -3591,8 +3604,8 @@ class RestorePlan(_messages.Message):
       in the current `state`. This field is only meant for human readability
       and should not be used programmatically as this field is not guaranteed
       to be consistent.
-    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
-      the RestorePlan resource. For example: "123/environment": "production",
+    tags: Optional. Tag keys/values directly bound to the RestorePlan
+      resource. For example: "123/environment": "production",
       "123/costCenter": "marketing"
     uid: Output only. Server generated global unique identifier of
       [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier)
@@ -3645,9 +3658,9 @@ class RestorePlan(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TagsValue(_messages.Message):
-    r"""Optional. Input only. Immutable. Tag keys/values directly bound to the
-    RestorePlan resource. For example: "123/environment": "production",
-    "123/costCenter": "marketing"
+    r"""Optional. Tag keys/values directly bound to the RestorePlan resource.
+    For example: "123/environment": "production", "123/costCenter":
+    "marketing"
 
     Messages:
       AdditionalProperty: An additional property for a TagsValue object.

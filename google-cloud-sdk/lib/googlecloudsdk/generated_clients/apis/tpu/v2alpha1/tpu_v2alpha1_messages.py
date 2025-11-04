@@ -384,6 +384,16 @@ class GetGuestAttributesResponse(_messages.Message):
   guestAttributes = _messages.MessageField('GuestAttributes', 1, repeated=True)
 
 
+class GetMaintenanceInfoResponse(_messages.Message):
+  r"""Response for GetMaintenanceInfo.
+
+  Fields:
+    nodeUpcomingMaintenances: The list of upcoming maintenance entries.
+  """
+
+  nodeUpcomingMaintenances = _messages.MessageField('NodeUpcomingMaintenanceInfo', 1, repeated=True)
+
+
 class Guaranteed(_messages.Message):
   r"""Guaranteed tier definition.
 
@@ -502,10 +512,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListQueuedResourcesResponse(_messages.Message):
@@ -1039,6 +1054,20 @@ class NodeSpec(_messages.Message):
   node = _messages.MessageField('Node', 2)
   nodeId = _messages.StringField(3)
   parent = _messages.StringField(4)
+
+
+class NodeUpcomingMaintenanceInfo(_messages.Message):
+  r"""A tuple containing node name / ID and maintenance info.
+
+  Fields:
+    nodeName: Unqualified node name.
+    nodeUid: UID of this node.
+    upcomingMaintenance: Upcoming maintenance info for this node.
+  """
+
+  nodeName = _messages.StringField(1)
+  nodeUid = _messages.IntegerField(2)
+  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 3)
 
 
 class Operation(_messages.Message):
@@ -2104,12 +2133,20 @@ class TpuProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class TpuProjectsLocationsQueuedResourcesCreateRequest(_messages.Message):
@@ -2146,6 +2183,16 @@ class TpuProjectsLocationsQueuedResourcesDeleteRequest(_messages.Message):
   force = _messages.BooleanField(1)
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
+
+
+class TpuProjectsLocationsQueuedResourcesGetMaintenanceInfoRequest(_messages.Message):
+  r"""A TpuProjectsLocationsQueuedResourcesGetMaintenanceInfoRequest object.
+
+  Fields:
+    name: Required. The QueuedResource name.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class TpuProjectsLocationsQueuedResourcesGetRequest(_messages.Message):

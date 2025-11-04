@@ -343,18 +343,25 @@ class Aggregation(_messages.Message):
 
 class Alert(_messages.Message):
   r"""An alert is the representation of a violation of an alert policy. It is
-  a read only resource that cannot be modified by the accompanied API.
+  a read-only resource that cannot be modified by the accompanied API.
 
   Enums:
     StateValueValuesEnum: Output only. The current state of the alert.
 
   Fields:
     closeTime: The time when the alert was closed.
+    log: The log information associated with the alert. This field is only
+      populated for log-based alerts.
+    metadata: The metadata of the monitored resource.
+    metric: The metric type and any metric labels preserved from the
+      incident's generating condition.
     name: Identifier. The name of the alert.The format is:
       projects/[PROJECT_ID_OR_NUMBER]/alerts/[ALERT_ID] The [ALERT_ID] is a
       system-assigned unique identifier for the alert.
     openTime: The time when the alert was opened.
     policy: The snapshot of the alert policy that generated this alert.
+    resource: The monitored resource type and any monitored resource labels
+      preserved from the incident's generating condition.
     state: Output only. The current state of the alert.
   """
 
@@ -363,20 +370,22 @@ class Alert(_messages.Message):
 
     Values:
       STATE_UNSPECIFIED: The alert state is unspecified.
-      OPENED: The alert is open. Will be deprecated in favor of OPEN.
       OPEN: The alert is open.
       CLOSED: The alert is closed.
     """
     STATE_UNSPECIFIED = 0
-    OPENED = 1
-    OPEN = 2
-    CLOSED = 3
+    OPEN = 1
+    CLOSED = 2
 
   closeTime = _messages.StringField(1)
-  name = _messages.StringField(2)
-  openTime = _messages.StringField(3)
-  policy = _messages.MessageField('PolicySnapshot', 4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
+  log = _messages.MessageField('LogMetadata', 2)
+  metadata = _messages.MessageField('MonitoredResourceMetadata', 3)
+  metric = _messages.MessageField('Metric', 4)
+  name = _messages.StringField(5)
+  openTime = _messages.StringField(6)
+  policy = _messages.MessageField('PolicySnapshot', 7)
+  resource = _messages.MessageField('MonitoredResource', 8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
 
 
 class AlertPolicy(_messages.Message):
@@ -2454,6 +2463,44 @@ class LogMatch(_messages.Message):
 
   filter = _messages.StringField(1)
   labelExtractors = _messages.MessageField('LabelExtractorsValue', 2)
+
+
+class LogMetadata(_messages.Message):
+  r"""Information about the log for log-based alerts.
+
+  Messages:
+    ExtractedLabelsValue: The labels extracted from the log.
+
+  Fields:
+    extractedLabels: The labels extracted from the log.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExtractedLabelsValue(_messages.Message):
+    r"""The labels extracted from the log.
+
+    Messages:
+      AdditionalProperty: An additional property for a ExtractedLabelsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ExtractedLabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExtractedLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  extractedLabels = _messages.MessageField('ExtractedLabelsValue', 1)
 
 
 class MeshIstio(_messages.Message):
@@ -4709,11 +4756,11 @@ class MonitoringProjectsAlertsListRequest(_messages.Message):
       belonging to the alert or its subfields.
     orderBy: Optional. A comma-separated list of fields in Alert to use for
       sorting. The default sort direction is ascending. To specify descending
-      order for a field, add a "desc" modifier.The currently supported fields
-      are: - open_time - close_timeFor example: close_time desc, open_timewill
-      return the alerts closed most recently, with ties broken in the order of
-      older alerts listed first.If the field is not set, the results are
-      sorted by "open_time desc".
+      order for a field, add a desc modifier. The following fields are
+      supported: open_time close_timeFor example, close_time desc, open_time
+      will return the alerts closed most recently, with ties broken in the
+      order of older alerts listed first.If the field is not set, the results
+      are sorted by open_time desc.
     pageSize: Optional. The maximum number of results to return in a single
       response. If not set to a positive number, at most 50 alerts will be
       returned. The maximum value is 1000; values above 1000 will be coerced

@@ -28,7 +28,7 @@ properties:
   baseEjectionTime:
     description: |-
       The base time that a backend endpoint is ejected for. Defaults to 30000ms
-      or 30s. After a backend endpoint is returned back to the load balancing
+      or 30s.  After a backend endpoint is returned back to the load balancing
       pool, it can be ejected again in another ejection analysis. Thus, the
       total ejection time is equal to the base ejection time multiplied by the
       number of times the backend endpoint has been ejected. Defaults to 30000ms
@@ -86,8 +86,8 @@ properties:
       enough request volume to detect success rate outliers. If the number of
       backend endpoints is fewer than this setting, outlier detection via
       success rate statistics is not performed for any backend endpoint in the
-      load balancing pool. Defaults to 5. Not supported when the backend service
-      uses Serverless NEG.
+      load balancing pool. Defaults to 5.  Not supported when the backend
+      service uses Serverless NEG.
     type: integer
   successRateRequestVolume:
     description: |-
@@ -95,7 +95,7 @@ properties:
       interval (as defined by the interval duration above) to include this
       backend endpoint in success rate based outlier detection. If the volume is
       lower than this setting, outlier detection via success rate statistics is
-      not performed for that backend endpoint. Defaults to 100. Not supported
+      not performed for that backend endpoint. Defaults to 100.  Not supported
       when the backend service uses Serverless NEG.
     type: integer
   successRateStdevFactor:
@@ -106,6 +106,6 @@ properties:
       deviation of the mean success rate: mean - (stdev *
       successRateStdevFactor). This factor is divided by a thousand to get a
       double. That is, if the desired factor is 1.9, the runtime value should be
-      1900. Defaults to 1900. Not supported when the backend service uses
+      1900. Defaults to 1900.  Not supported when the backend service uses
       Serverless NEG.
     type: integer

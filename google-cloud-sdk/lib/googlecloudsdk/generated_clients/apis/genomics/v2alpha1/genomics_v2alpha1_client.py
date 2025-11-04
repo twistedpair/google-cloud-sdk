@@ -164,7 +164,7 @@ class GenomicsV2alpha1(base_api.BaseApiClient):
         method_id='genomics.projects.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v2alpha1/{+name}',
         request_field='',
         request_type_name='GenomicsProjectsOperationsListRequest',

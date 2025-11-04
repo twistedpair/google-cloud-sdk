@@ -398,6 +398,8 @@ class BackupVault(_messages.Message):
   Enums:
     BackupVaultTypeValueValuesEnum: Optional. Type of backup vault to be
       created. Default is IN_REGION.
+    EncryptionStateValueValuesEnum: Output only. Field indicating encryption
+      state of CMEK backups.
     StateValueValuesEnum: Output only. The backup vault state.
 
   Messages:
@@ -415,6 +417,8 @@ class BackupVault(_messages.Message):
     destinationBackupVault: Output only. Name of the Backup vault created in
       backup region. Format: `projects/{project_id}/locations/{location}/backu
       pVaults/{backup_vault_id}`
+    encryptionState: Output only. Field indicating encryption state of CMEK
+      backups.
     kmsConfig: Optional. Specifies the KMS config to be used for backup
       encryption.
     labels: Resource labels to represent user provided metadata.
@@ -439,6 +443,22 @@ class BackupVault(_messages.Message):
     BACKUP_VAULT_TYPE_UNSPECIFIED = 0
     IN_REGION = 1
     CROSS_REGION = 2
+
+  class EncryptionStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Field indicating encryption state of CMEK backups.
+
+    Values:
+      ENCRYPTION_STATE_UNSPECIFIED: Encryption state not set.
+      ENCRYPTION_STATE_PENDING: Encryption state is pending.
+      ENCRYPTION_STATE_COMPLETED: Encryption is complete.
+      ENCRYPTION_STATE_IN_PROGRESS: Encryption is in progress.
+      ENCRYPTION_STATE_FAILED: Encryption has failed.
+    """
+    ENCRYPTION_STATE_UNSPECIFIED = 0
+    ENCRYPTION_STATE_PENDING = 1
+    ENCRYPTION_STATE_COMPLETED = 2
+    ENCRYPTION_STATE_IN_PROGRESS = 3
+    ENCRYPTION_STATE_FAILED = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The backup vault state.
@@ -488,12 +508,13 @@ class BackupVault(_messages.Message):
   createTime = _messages.StringField(4)
   description = _messages.StringField(5)
   destinationBackupVault = _messages.StringField(6)
-  kmsConfig = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  sourceBackupVault = _messages.StringField(10)
-  sourceRegion = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
+  encryptionState = _messages.EnumField('EncryptionStateValueValuesEnum', 7)
+  kmsConfig = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  sourceBackupVault = _messages.StringField(11)
+  sourceRegion = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
 
 
 class BlockDevice(_messages.Message):
@@ -1092,12 +1113,16 @@ class KmsConfig(_messages.Message):
     createTime: Output only. Create time of the KmsConfig.
     cryptoKeyName: Required. Customer managed crypto key resource full name.
       Format: projects/{project}/locations/{location}/keyRings/{key_ring}/cryp
-      toKeys/{key}.
+      toKeys/{crypto_key}.
     description: Description of the KmsConfig.
     instructions: Output only. Instructions to provide the access to the
       customer provided encryption key.
     labels: Labels as key value pairs
     name: Identifier. Name of the KmsConfig.
+    primaryCryptoKeyVersion: Output only. Active key version corresponding to
+      the crypto key name. Format: projects/{project}/locations/{location}/key
+      Rings/{key_ring}/cryptoKeys/{crypto_key}/cryptoKeyVersions/{crypto_key_v
+      ersion}.
     serviceAccount: Output only. The Service account which will have access to
       the customer provided encryption key.
     state: Output only. State of the KmsConfig.
@@ -1167,9 +1192,10 @@ class KmsConfig(_messages.Message):
   instructions = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
-  serviceAccount = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  stateDetails = _messages.StringField(9)
+  primaryCryptoKeyVersion = _messages.StringField(7)
+  serviceAccount = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  stateDetails = _messages.StringField(10)
 
 
 class ListActiveDirectoriesResponse(_messages.Message):
@@ -2073,8 +2099,8 @@ class NetappProjectsLocationsListRequest(_messages.Message):
   r"""A NetappProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Unless explicitly documented otherwise,
-      don't use this unsupported field which is primarily intended for
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is

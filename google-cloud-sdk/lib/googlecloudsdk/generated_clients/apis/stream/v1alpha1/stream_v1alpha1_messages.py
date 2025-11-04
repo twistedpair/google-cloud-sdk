@@ -785,8 +785,11 @@ class GoogleApiServicecontrolV1Operation(_messages.Message):
     startTime: Required. Start time of the operation.
     traceSpans: Unimplemented. A list of Cloud Trace spans. The span names
       shall contain the id of the destination project which can be either the
-      produce or the consumer project. Design: go/chemist-cloud-trace-
-      reporting
+      produce or the consumer project. **IMPORTANT**: DO NOT USE. Although
+      never implemented externally, this was implemented for internal
+      consumers/clients. However, this is being deprecated. Please see: -
+      go/ct:migrate-to-otlp - go/ct:1p-ingestion-integration-policy -
+      go/ct:drz-and-legacy-integ-proposal
     userLabels: Private Preview. This feature is only available for approved
       services. User defined labels for the resource that this operation is
       associated with. Functional spec: go/unified-cloud-labels-proposal
@@ -976,7 +979,12 @@ class GoogleApiServicecontrolV1TraceSpan(_messages.Message):
   end-to-end latency, and one or more subspans for its sub-operations. A trace
   can also contain multiple root spans, or none at all. Spans do not need to
   be contiguous-there may be gaps or overlaps between spans in a trace. This
-  message is equivalent with google.devtools.cloudtrace.v2.Span.
+  message is a subset of google.devtools.cloudtrace.v2.Span. Note that this
+  message corresponds to a legacy Cloud Trace API. New Cloud Trace ingestion
+  should be done using the "Telemetry API", which alignes with the Open
+  Telemetry representation of a span. Please do not use in any new code
+  (except for the purposes of enabling migration from writing to Chemist to
+  writing to the Telemetry API). See also: go/ct:migrate-to-otlp
 
   Enums:
     SpanKindValueValuesEnum: Distinguishes between spans generated in a
@@ -1146,10 +1154,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListReferencesRequest(_messages.Message):
@@ -1937,12 +1950,20 @@ class StreamProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class StreamProjectsLocationsStreamContentsBuildRequest(_messages.Message):

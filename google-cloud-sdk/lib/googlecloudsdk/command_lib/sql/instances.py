@@ -225,6 +225,14 @@ def _ParseConnectorEnforcement(sql_messages, connector_enforcement):
   )
 
 
+def _ParseDataApiAccess(sql_messages, data_api_access):
+  return (
+      sql_messages.Settings.DataApiAccessValueValuesEnum.lookup_by_name(
+          data_api_access.upper()
+      )
+  )
+
+
 def _ParseSslMode(sql_messages, ssl_mode):
   return sql_messages.IpConfiguration.SslModeValueValuesEnum.lookup_by_name(
       ssl_mode.upper()
@@ -554,6 +562,11 @@ class _BaseInstances(object):
 
     # BETA args.
     if IsBetaOrNewer(release_track):
+      if args.IsSpecified('data_api_access'):
+        settings.dataApiAccess = _ParseDataApiAccess(
+            sql_messages, args.data_api_access
+        )
+
       if args.IsSpecified('storage_auto_increase_limit'):
         # Resize limit should be settable if the original instance has resize
         # turned on, or if the instance to be created has resize flag.

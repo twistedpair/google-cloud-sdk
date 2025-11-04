@@ -980,11 +980,12 @@ class DeployApplicationRequest(_messages.Message):
       provide a service account, the deployment will fail. Format:
       projects/{PROJECT}/serviceAccounts/{EMAIL_ADDRESS}
     workerPool: Optional. The user-specified Worker Pool resource in which the
-      Cloud Build job will execute, in the following format:
+      Cloud Build job will execute. Format:
       projects/{project}/locations/{location}/workerPools/{workerPoolId} If
-      this field is unspecified, the default Cloud Build worker pool will be
-      used. If omitted and application resource ref provided has worker_pool
-      defined, that worker pool is used.
+      this flag is omitted, the worker pool already defined on the application
+      will be used. If no worker pool is defined on the application, the
+      default Cloud Build worker pool is used. The worker pool must exist in
+      the same region as the application.
   """
 
   replace = _messages.BooleanField(1)
@@ -1214,8 +1215,8 @@ class DesigncenterProjectsLocationsListRequest(_messages.Message):
   r"""A DesigncenterProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Unless explicitly documented otherwise,
-      don't use this unsupported field which is primarily intended for
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -3617,11 +3618,12 @@ class PreviewApplicationRequest(_messages.Message):
       provide a service account, the preview will fail. Format:
       projects/{PROJECT}/serviceAccounts/{EMAIL_ADDRESS}
     workerPool: Optional. The user-specified Worker Pool resource in which the
-      Cloud Build job will execute. Format
+      Cloud Build job will execute. Format:
       projects/{project}/locations/{location}/workerPools/{workerPoolId} If
-      this field is unspecified, the default Cloud Build worker pool will be
-      used. If omitted and application resource ref provided has worker_pool
-      defined, that worker pool is used.
+      this flag is omitted, the worker pool already defined on the application
+      will be used. If no worker pool is defined on the application, the
+      default Cloud Build worker pool is used. The worker pool must exist in
+      the same region as the application.
   """
 
   serviceAccount = _messages.StringField(1)
@@ -4070,6 +4072,13 @@ class Space(_messages.Message):
   r"""Space is a top level resource for managing teams building applications
   through Application Design Center.
 
+  Messages:
+    TagsValue: Optional. Input only. Immutable. Tags are key/values bound to
+      space resource. Example: ``` "123/environment": "production"
+      "123/costCenter": "marketing" ``` For more information on tag creation
+      and management, see https://cloud.google.com/resource-
+      manager/docs/tags/tags-overview.
+
   Fields:
     createTime: Output only. Space creation timestamp.
     description: Optional. Description for the space.
@@ -4086,8 +4095,39 @@ class Space(_messages.Message):
       example, if the Cloud Storage bucket URI is gs:\/\/{$bucket_name}, the
       format is {$bucket_name}.
     name: Identifier. The space name.
+    tags: Optional. Input only. Immutable. Tags are key/values bound to space
+      resource. Example: ``` "123/environment": "production" "123/costCenter":
+      "marketing" ``` For more information on tag creation and management, see
+      https://cloud.google.com/resource-manager/docs/tags/tags-overview.
     updateTime: Output only. Space update timestamp
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tags are key/values bound to space
+    resource. Example: ``` "123/environment": "production" "123/costCenter":
+    "marketing" ``` For more information on tag creation and management, see
+    https://cloud.google.com/resource-manager/docs/tags/tags-overview.
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
@@ -4095,7 +4135,8 @@ class Space(_messages.Message):
   enableGcpSharedTemplates = _messages.BooleanField(4)
   gcsBucket = _messages.StringField(5)
   name = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  tags = _messages.MessageField('TagsValue', 7)
+  updateTime = _messages.StringField(8)
 
 
 class StandardQueryParameters(_messages.Message):

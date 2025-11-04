@@ -502,7 +502,7 @@ class TpuV2alpha1(base_api.BaseApiClient):
         method_id='tpu.projects.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v2alpha1/{+name}/operations',
         request_field='',
         request_type_name='TpuProjectsLocationsOperationsListRequest',
@@ -598,6 +598,33 @@ class TpuV2alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='TpuProjectsLocationsQueuedResourcesGetRequest',
         response_type_name='QueuedResource',
+        supports_download=False,
+    )
+
+    def GetMaintenanceInfo(self, request, global_params=None):
+      r"""Gets the maintenance info for a queued resource.
+
+      Args:
+        request: (TpuProjectsLocationsQueuedResourcesGetMaintenanceInfoRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GetMaintenanceInfoResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetMaintenanceInfo')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetMaintenanceInfo.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}/queuedResources/{queuedResourcesId}:getMaintenanceInfo',
+        http_method='GET',
+        method_id='tpu.projects.locations.queuedResources.getMaintenanceInfo',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2alpha1/{+name}:getMaintenanceInfo',
+        request_field='',
+        request_type_name='TpuProjectsLocationsQueuedResourcesGetMaintenanceInfoRequest',
+        response_type_name='GetMaintenanceInfoResponse',
         supports_download=False,
     )
 

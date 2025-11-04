@@ -407,6 +407,7 @@ class Cluster(_messages.Message):
     autoscalingSettings: Optional. Configuration of the autoscaling applied to
       this cluster.
     createTime: Output only. Creation time of this resource.
+    datastoreMountConfig: Output only. Configuration of a mounted datastore.
     management: Output only. True if the cluster is a management cluster;
       false otherwise. There can only be one management cluster in a private
       cloud and it has to be the first one.
@@ -480,16 +481,17 @@ class Cluster(_messages.Message):
 
   autoscalingSettings = _messages.MessageField('AutoscalingSettings', 1)
   createTime = _messages.StringField(2)
-  management = _messages.BooleanField(3)
-  name = _messages.StringField(4)
-  nodeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  nodeCustomCoreCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  nodeTypeConfigs = _messages.MessageField('NodeTypeConfigsValue', 7)
-  nodeTypeId = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  stretchedClusterConfig = _messages.MessageField('StretchedClusterConfig', 10)
-  uid = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  datastoreMountConfig = _messages.MessageField('DatastoreMountConfig', 3, repeated=True)
+  management = _messages.BooleanField(4)
+  name = _messages.StringField(5)
+  nodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  nodeCustomCoreCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  nodeTypeConfigs = _messages.MessageField('NodeTypeConfigsValue', 8)
+  nodeTypeId = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  stretchedClusterConfig = _messages.MessageField('StretchedClusterConfig', 11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class Constraints(_messages.Message):
@@ -526,6 +528,156 @@ class Credentials(_messages.Message):
 
   password = _messages.StringField(1)
   username = _messages.StringField(2)
+
+
+class Datastore(_messages.Message):
+  r"""Represents a datastore resource.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the Datastore.
+
+  Fields:
+    clusters: Output only. Clusters to which the datastore is attached.
+    createTime: Output only. Creation time of this resource.
+    description: Optional. User-provided description for this datastore
+    etag: Optional. Checksum that may be sent on update and delete requests to
+      ensure that the user-provided value is up to date before the server
+      processes a request. The server computes checksums based on the value of
+      other fields in the request.
+    name: Output only. Identifier. The resource name of this datastore.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1/datastores/datastore`
+    nfsDatastore: Required. Settings for the NFS datastore.
+    state: Output only. The state of the Datastore.
+    uid: Output only. System-generated unique identifier for the resource.
+    updateTime: Output only. Last update time of this resource.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the Datastore.
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value should never be used.
+      CREATING: The NFS volume is being created.
+      ACTIVE: The NFS volume is active.
+      UPDATING: The NFS volume is being updated.
+      DELETING: The NFS volume is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    UPDATING = 3
+    DELETING = 4
+
+  clusters = _messages.StringField(1, repeated=True)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  name = _messages.StringField(5)
+  nfsDatastore = _messages.MessageField('NfsDatastore', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+
+
+class DatastoreMountConfig(_messages.Message):
+  r"""The Datastore Mount configuration
+
+  Enums:
+    AccessModeValueValuesEnum: Optional. NFS is accessed by hosts in read mode
+      Optional. Default value used will be READ_WRITE
+    NfsVersionValueValuesEnum: Optional. The NFS protocol supported by the NFS
+      volume. Default value used will be NFS_V3
+    SecurityTypeValueValuesEnum: Optional. ONLY required when NFS 4.1 version
+      is used
+
+  Fields:
+    accessMode: Optional. NFS is accessed by hosts in read mode Optional.
+      Default value used will be READ_WRITE
+    datastore: Required. The resource name of the datastore to unmount. The
+      datastore requested to be mounted should be in same region/zone as the
+      cluster. Resource names are schemeless URIs that follow the conventions
+      in https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1/datastores/my-datastore`
+    datastoreNetwork: Required. The network configuration for the datastore.
+    fileShare: Output only. File share name.
+    nfsVersion: Optional. The NFS protocol supported by the NFS volume.
+      Default value used will be NFS_V3
+    securityType: Optional. ONLY required when NFS 4.1 version is used
+    servers: Output only. Server IP addresses of the NFS volume. For NFS 3,
+      you can only provide a single server IP address or DNS names.
+  """
+
+  class AccessModeValueValuesEnum(_messages.Enum):
+    r"""Optional. NFS is accessed by hosts in read mode Optional. Default
+    value used will be READ_WRITE
+
+    Values:
+      ACCESS_MODE_UNSPECIFIED: The default value. This value should never be
+        used.
+      READ_ONLY: NFS is accessed by hosts in read mode
+      READ_WRITE: NFS is accessed by hosts in read and write mode
+    """
+    ACCESS_MODE_UNSPECIFIED = 0
+    READ_ONLY = 1
+    READ_WRITE = 2
+
+  class NfsVersionValueValuesEnum(_messages.Enum):
+    r"""Optional. The NFS protocol supported by the NFS volume. Default value
+    used will be NFS_V3
+
+    Values:
+      NFS_VERSION_UNSPECIFIED: The default value. This value should never be
+        used.
+      NFS_V3: NFS 3
+    """
+    NFS_VERSION_UNSPECIFIED = 0
+    NFS_V3 = 1
+
+  class SecurityTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. ONLY required when NFS 4.1 version is used
+
+    Values:
+      SECURITY_TYPE_UNSPECIFIED: The default value. This value should never be
+        used.
+    """
+    SECURITY_TYPE_UNSPECIFIED = 0
+
+  accessMode = _messages.EnumField('AccessModeValueValuesEnum', 1)
+  datastore = _messages.StringField(2)
+  datastoreNetwork = _messages.MessageField('DatastoreNetwork', 3)
+  fileShare = _messages.StringField(4)
+  nfsVersion = _messages.EnumField('NfsVersionValueValuesEnum', 5)
+  securityType = _messages.EnumField('SecurityTypeValueValuesEnum', 6)
+  servers = _messages.StringField(7, repeated=True)
+
+
+class DatastoreNetwork(_messages.Message):
+  r"""The network configuration for the datastore.
+
+  Fields:
+    connectionCount: Optional. The number of connections of the NFS volume.
+      Spported from vsphere 8.0u1
+    mtu: Optional. The Maximal Transmission Unit (MTU) of the datastore.
+      System sets default MTU size. It prefers the VPC peering MTU, falling
+      back to the VEN MTU if no peering MTU is found. when detected, and
+      falling back to the VEN MTU otherwise.
+    networkPeering: Output only. The resource name of the network peering,
+      used to access the file share by clients on private cloud. Resource
+      names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. e.g. projects/my-
+      project/locations/us-central1/networkPeerings/my-network-peering
+    subnet: Required. The resource name of the subnet Resource names are
+      schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. e.g. projects/my-
+      project/locations/us-central1/subnets/my-subnet
+  """
+
+  connectionCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  mtu = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  networkPeering = _messages.StringField(3)
+  subnet = _messages.StringField(4)
 
 
 class DnsBindPermission(_messages.Message):
@@ -801,6 +953,27 @@ class ForwardingRule(_messages.Message):
 
   domain = _messages.StringField(1)
   nameServers = _messages.StringField(2, repeated=True)
+
+
+class GoogleFileService(_messages.Message):
+  r"""Google service file service configuration
+
+  Fields:
+    filestoreInstance: Google filestore instance resource name e.g.
+      projects/my-project/locations/me-west1-b/instances/my-instance
+    netappVolume: Google netapp volume resource name e.g. projects/my-
+      project/locations/me-west1-b/volumes/my-volume
+  """
+
+  filestoreInstance = _messages.StringField(1)
+  netappVolume = _messages.StringField(2)
+
+
+class GoogleVmwareFileService(_messages.Message):
+  r"""Volume message captures user inputs for creation of file services
+  managed by GCVE
+  """
+
 
 
 class GrantDnsBindPermissionRequest(_messages.Message):
@@ -1087,6 +1260,21 @@ class ListClustersResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListDatastoresResponse(_messages.Message):
+  r"""Response message for VmwareEngine.ListDatastores
+
+  Fields:
+    datastores: A list of Datastores.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    unreachable: Unreachable resources.
+  """
+
+  datastores = _messages.MessageField('Datastore', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListExternalAccessRulesResponse(_messages.Message):
   r"""Response message for VmwareEngine.ListExternalAccessRules
 
@@ -1263,10 +1451,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListPeeringRoutesResponse(_messages.Message):
@@ -1698,6 +1891,26 @@ class ManagementDnsZoneBinding(_messages.Message):
   vpcNetwork = _messages.StringField(9)
 
 
+class MountDatastoreRequest(_messages.Message):
+  r"""Mount Datastore Request message
+
+  Fields:
+    datastoreMountConfig: Required. The datastore mount configuration.
+    ignoreColocation: Optional. If set to true, the colocation requirement
+      will be ignored. If set to false, the colocation requirement will be
+      enforced. If not set, the colocation requirement will be enforced.
+      Colocation requirement is the requirement that the cluster must be in
+      the same region/zone of datastore(regional/zonal datastore).
+    requestId: Optional. The request ID must be a valid UUID with the
+      exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  datastoreMountConfig = _messages.MessageField('DatastoreMountConfig', 1)
+  ignoreColocation = _messages.BooleanField(2)
+  requestId = _messages.StringField(3)
+
+
 class NetworkConfig(_messages.Message):
   r"""Network configuration in the consumer project with which the peering has
   to be done.
@@ -1975,6 +2188,20 @@ class NetworkService(_messages.Message):
 
   enabled = _messages.BooleanField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
+class NfsDatastore(_messages.Message):
+  r"""The NFS datastore configuration.
+
+  Fields:
+    googleFileService: Google service file service configuration
+    googleVmwareFileService: GCVE file service configuration
+    thirdPartyFileService: Third party file service configuration
+  """
+
+  googleFileService = _messages.MessageField('GoogleFileService', 1)
+  googleVmwareFileService = _messages.MessageField('GoogleVmwareFileService', 2)
+  thirdPartyFileService = _messages.MessageField('ThirdPartyFileService', 3)
 
 
 class Node(_messages.Message):
@@ -2716,57 +2943,25 @@ class PrivateConnection(_messages.Message):
   vmwareEngineNetworkCanonical = _messages.StringField(13)
 
 
-class ProjectState(_messages.Message):
-  r"""Describes a Project State. This contains migration state as well as
-  network type of the project
-
-  Enums:
-    MigrationStateValueValuesEnum: Output only. The migration state of the
-      alias.
-    NetworkTypeValueValuesEnum: Output only. The network type of the alias.
+class RefreshVmAuthTokenRequest(_messages.Message):
+  r"""Request message for VmwareEngine.RefreshVmAuthToken
 
   Fields:
-    migrationState: Output only. The migration state of the alias.
-    name: Output only. Name of the resource which represents the Project state
-      of a given project
-    networkType: Output only. The network type of the alias.
+    ipAddress: Required. The IP address of the virtual machine.
+    vmId: Required. The BIOS unique identifier (UUID) of the VM requesting the
+      token.
   """
 
-  class MigrationStateValueValuesEnum(_messages.Enum):
-    r"""Output only. The migration state of the alias.
+  ipAddress = _messages.StringField(1)
+  vmId = _messages.StringField(2)
 
-    Values:
-      MIGRATION_STATE_UNSPECIFIED: Default migration state. This value should
-        never be used.
-      PENDING: Indicates migration is yet to be performed.
-      COMPLETED: Indicates migration is successfully completed.
-      IN_PROGRESS: Indicates migration in progress.
-      NOT_REQUIRED: This value indicates there was no migration state for the
-        alias defined in the system. This would be the case for the aliases
-        that are new i.e., do not have resource at the time of cutover.
-    """
-    MIGRATION_STATE_UNSPECIFIED = 0
-    PENDING = 1
-    COMPLETED = 2
-    IN_PROGRESS = 3
-    NOT_REQUIRED = 4
 
-  class NetworkTypeValueValuesEnum(_messages.Enum):
-    r"""Output only. The network type of the alias.
+class RefreshVmAuthTokenResponse(_messages.Message):
+  r"""/ Response message for VmwareEngine.RefreshVmAuthToken This message is
+  intentionally empty. The success or failure of the operation is indicated by
+  the RPC status code.
+  """
 
-    Values:
-      NETWORK_TYPE_UNSPECIFIED: Default network type. This value should never
-        be used.
-      LEGACY: Indicates project is using legacy resources.
-      STANDARD: Indicates project is using standard resources.
-    """
-    NETWORK_TYPE_UNSPECIFIED = 0
-    LEGACY = 1
-    STANDARD = 2
-
-  migrationState = _messages.EnumField('MigrationStateValueValuesEnum', 1)
-  name = _messages.StringField(2)
-  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 3)
 
 
 class RepairManagementDnsZoneBindingRequest(_messages.Message):
@@ -3162,6 +3357,24 @@ class TestIamPermissionsResponse(_messages.Message):
   permissions = _messages.StringField(1, repeated=True)
 
 
+class ThirdPartyFileService(_messages.Message):
+  r"""Third party file service configuration
+
+  Fields:
+    fileShare: Required. Required Mount Folder name
+    network: Required. Required to identify vpc peering used for NFS access
+      network name of NFS's vpc e.g. projects/project-id/global/networks/my-
+      network_id
+    servers: Required. Server IP addresses of the NFS file service. NFS v3,
+      provide a single IP address or DNS name. Multiple servers can be
+      supported in future when NFS 4.1 protocol support is enabled.
+  """
+
+  fileShare = _messages.StringField(1)
+  network = _messages.StringField(2)
+  servers = _messages.StringField(3, repeated=True)
+
+
 class Thresholds(_messages.Message):
   r"""Thresholds define the utilization of resources triggering scale-out and
   scale-in operations.
@@ -3251,6 +3464,23 @@ class UndeletePrivateCloudRequest(_messages.Message):
   """
 
   requestId = _messages.StringField(1)
+
+
+class UnmountDatastoreRequest(_messages.Message):
+  r"""Unmount Datastore Request messag
+
+  Fields:
+    datastore: Required. The resource name of the datastore to unmount.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1/datastores/my-datastore`
+    requestId: Optional. The request ID must be a valid UUID with the
+      exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  datastore = _messages.StringField(1)
+  requestId = _messages.StringField(2)
 
 
 class Upgrade(_messages.Message):
@@ -3771,6 +4001,141 @@ class VmwareengineProjectsLocationsAnnouncementsListRequest(_messages.Message):
   parent = _messages.StringField(5, required=True)
 
 
+class VmwareengineProjectsLocationsDatastoresCreateRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsDatastoresCreateRequest object.
+
+  Fields:
+    datastore: A Datastore resource to be passed as the request body.
+    datastoreId: Required. The user-provided identifier of the datastore to be
+      created. This identifier must be unique among each `Datastore` within
+      the parent and becomes the final token in the name URI. The identifier
+      must meet the following requirements: * Only contains 1-63 alphanumeric
+      characters and hyphens * Begins with an alphabetical character * Ends
+      with a non-hyphen character * Not formatted as a UUID * Complies with
+      [RFC 1034](https://datatracker.ietf.org/doc/html/rfc1034) (section 3.5)
+    parent: Required. The resource name of the location to create the new
+      datastore in. Resource names are schemeless URIs that follow the
+      conventions in https://cloud.google.com/apis/design/resource_names. For
+      example: `projects/my-project/locations/us-central1`
+    requestId: Optional. The request ID must be a valid UUID with the
+      exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  datastore = _messages.MessageField('Datastore', 1)
+  datastoreId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class VmwareengineProjectsLocationsDatastoresDeleteRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsDatastoresDeleteRequest object.
+
+  Fields:
+    etag: Optional. Checksum used to ensure that the user-provided value is up
+      to date before the server processes the request. The server compares
+      provided checksum with the current checksum of the resource. If the
+      user-provided value is out of date, this request returns an `ABORTED`
+      error.
+    name: Required. The resource name of the Datastore to be deleted. Resource
+      names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1/datastore/my-datastore`
+    requestId: Optional. The request ID must be a valid UUID with the
+      exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class VmwareengineProjectsLocationsDatastoresGetRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsDatastoresGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the Datastore to retrieve. Resource
+      names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1/datastores/my-datastore`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class VmwareengineProjectsLocationsDatastoresListRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsDatastoresListRequest object.
+
+  Fields:
+    filter: Optional. A filter expression that matches resources returned in
+      the response. The expression must specify the field name, a comparison
+      operator, and the value that you want to use for filtering. The value
+      must be a string, a number, or a boolean. The comparison operator must
+      be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of
+      datastores, you can exclude the ones named `example-datastore` by
+      specifying `name != "example-datastore"`. To filter on multiple
+      expressions, provide each separate expression within parentheses. For
+      example: ``` (name = "example-datastore") (createTime >
+      "2021-04-12T08:15:10.40Z") ``` By default, each expression is an `AND`
+      expression. However, you can include `AND` and `OR` expressions
+      explicitly. For example: ``` (name = "example-datastore-1") AND
+      (createTime > "2021-04-12T08:15:10.40Z") OR (name = "example-
+      datastore-2") ```
+    orderBy: Optional. Sorts list results by a certain order. By default,
+      returned results are ordered by `name` in ascending order. You can also
+      sort results in descending order based on the `name` value using
+      `orderBy="name desc"`. Currently, only ordering by `name` is supported.
+    pageSize: Optional. The maximum number of results to return in one page.
+      The maximum value is coerced to 1000. The default value of this field is
+      500.
+    pageToken: Optional. A page token, received from a previous
+      `ListDatastores` call. Provide this to retrieve the subsequent page.
+      When paginating, all other parameters provided to `ListDatastores` must
+      match the call that provided the page token.
+    parent: Required. The resource name of the location to query for
+      Datastores. Resource names are schemeless URIs that follow the
+      conventions in https://cloud.google.com/apis/design/resource_names. For
+      example: `projects/my-project/locations/us-central1`
+    requestId: Optional. The request ID must be a valid UUID with the
+      exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  requestId = _messages.StringField(6)
+
+
+class VmwareengineProjectsLocationsDatastoresPatchRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsDatastoresPatchRequest object.
+
+  Fields:
+    datastore: A Datastore resource to be passed as the request body.
+    name: Output only. Identifier. The resource name of this datastore.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1/datastores/datastore`
+    requestId: Optional. The request ID must be a valid UUID with the
+      exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the Datastore resource by the update. The fields
+      specified in the `update_mask` are relative to the resource, not the
+      full request. A field will be overwritten if it is in the mask. If the
+      user does not provide a mask then all fields will be overwritten. Only
+      the following fields can be updated: `description`.
+  """
+
+  datastore = _messages.MessageField('Datastore', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
 class VmwareengineProjectsLocationsDnsBindPermissionGrantRequest(_messages.Message):
   r"""A VmwareengineProjectsLocationsDnsBindPermissionGrantRequest object.
 
@@ -3817,17 +4182,6 @@ class VmwareengineProjectsLocationsGetDnsBindPermissionRequest(_messages.Message
       Resource names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/global/dnsBindPermission`
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class VmwareengineProjectsLocationsGetProjectStateRequest(_messages.Message):
-  r"""A VmwareengineProjectsLocationsGetProjectStateRequest object.
-
-  Fields:
-    name: Required. The name of the project state resource to retrieve. For
-      example: `projects/{project}/location/{location}/projectState`
   """
 
   name = _messages.StringField(1, required=True)
@@ -4479,12 +4833,20 @@ class VmwareengineProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class VmwareengineProjectsLocationsPrivateCloudsClustersCreateRequest(_messages.Message):
@@ -4614,6 +4976,25 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersListRequest(_messages.Me
   parent = _messages.StringField(5, required=True)
 
 
+class VmwareengineProjectsLocationsPrivateCloudsClustersMountDatastoreRequest(_messages.Message):
+  r"""A
+  VmwareengineProjectsLocationsPrivateCloudsClustersMountDatastoreRequest
+  object.
+
+  Fields:
+    mountDatastoreRequest: A MountDatastoreRequest resource to be passed as
+      the request body.
+    name: Required. The resource name of the cluster to mount the datastore.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
+      cloud/clusters/my-cluster`
+  """
+
+  mountDatastoreRequest = _messages.MessageField('MountDatastoreRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class VmwareengineProjectsLocationsPrivateCloudsClustersNodesGetRequest(_messages.Message):
   r"""A VmwareengineProjectsLocationsPrivateCloudsClustersNodesGetRequest
   object.
@@ -4713,6 +5094,25 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersTestIamPermissionsReques
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsClustersUnmountDatastoreRequest(_messages.Message):
+  r"""A
+  VmwareengineProjectsLocationsPrivateCloudsClustersUnmountDatastoreRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the cluster to unmount the datastore.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
+      cloud/clusters/my-cluster`
+    unmountDatastoreRequest: A UnmountDatastoreRequest resource to be passed
+      as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  unmountDatastoreRequest = _messages.MessageField('UnmountDatastoreRequest', 2)
 
 
 class VmwareengineProjectsLocationsPrivateCloudsCreateRequest(_messages.Message):
@@ -5760,6 +6160,24 @@ class VmwareengineProjectsLocationsPrivateCloudsPrivateCloudDeletionNowRequest(_
 
   acceleratePrivateCloudDeletionRequest = _messages.MessageField('AcceleratePrivateCloudDeletionRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsRefreshVmAuthTokenRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsRefreshVmAuthTokenRequest
+  object.
+
+  Fields:
+    privateCloud: Required. The resource name of the private cloud to be
+      queried for firewall rules. Resource names are schemeless URIs that
+      follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      projects/my-project/locations/us-central1-a/privateClouds/my-cloud
+    refreshVmAuthTokenRequest: A RefreshVmAuthTokenRequest resource to be
+      passed as the request body.
+  """
+
+  privateCloud = _messages.StringField(1, required=True)
+  refreshVmAuthTokenRequest = _messages.MessageField('RefreshVmAuthTokenRequest', 2)
 
 
 class VmwareengineProjectsLocationsPrivateCloudsResetNsxCredentialsRequest(_messages.Message):

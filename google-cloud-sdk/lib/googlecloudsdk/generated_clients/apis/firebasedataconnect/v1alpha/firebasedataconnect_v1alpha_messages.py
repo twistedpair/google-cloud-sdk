@@ -392,12 +392,20 @@ class FirebasedataconnectProjectsLocationsOperationsListRequest(_messages.Messag
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class FirebasedataconnectProjectsLocationsServicesConnectorsCreateRequest(_messages.Message):
@@ -947,16 +955,19 @@ class GraphqlError(_messages.Message):
   surfaces `GraphqlError` in various APIs: - Upon compile error,
   `UpdateSchema` and `UpdateConnector` return Code.Invalid_Argument with a
   list of `GraphqlError` in error details. - Upon query compile error,
-  `ExecuteGraphql` and `ExecuteGraphqlRead` return Code.OK with a list of
-  `GraphqlError` in response body. - Upon query execution error,
-  `ExecuteGraphql`, `ExecuteGraphqlRead`, `ExecuteMutation` and `ExecuteQuery`
-  all return Code.OK with a list of `GraphqlError` in response body.
+  `ExecuteGraphql`, `ExecuteGraphqlRead` and `IntrospectGraphql` return
+  Code.OK with a list of `GraphqlError` in response body. - Upon query
+  execution error, `ExecuteGraphql`, `ExecuteGraphqlRead`, `ExecuteMutation`,
+  `ExecuteQuery`, `IntrospectGraphql`, `ImpersonateQuery` and
+  `ImpersonateMutation` all return Code.OK with a list of `GraphqlError` in
+  response body.
 
   Fields:
     extensions: Additional error information.
     locations: The source locations where the error occurred. Locations should
       help developers and toolings identify the source of error quickly.
       Included in admin endpoints (`ExecuteGraphql`, `ExecuteGraphqlRead`,
+      `IntrospectGraphql`, `ImpersonateQuery`, `ImpersonateMutation`,
       `UpdateSchema` and `UpdateConnector`) to reference the provided GraphQL
       GQL document. Omitted in `ExecuteMutation` and `ExecuteQuery` since the
       caller shouldn't have access access the underlying GQL source.
@@ -981,6 +992,8 @@ class GraphqlErrorExtensions(_messages.Message):
   Enums:
     CodeValueValuesEnum: Maps to canonical gRPC codes. If not specified, it
       represents `Code.INTERNAL`.
+    WarningLevelValueValuesEnum: Warning level describes the severity and
+      required action to suppress this warning when Firebase CLI run into it.
 
   Fields:
     code: Maps to canonical gRPC codes. If not specified, it represents
@@ -995,9 +1008,10 @@ class GraphqlErrorExtensions(_messages.Message):
     file: The source file name where the error occurred. Included only for
       `UpdateSchema` and `UpdateConnector`, it corresponds to `File.path` of
       the provided `Source`.
-    resource: Distinguish which schema or connector the error originates from.
-      It should be set on errors from control plane APIs (e.g. `UpdateSchema`,
-      `UpdateConnector`).
+    warningLevel: Warning level describes the severity and required action to
+      suppress this warning when Firebase CLI run into it.
+    workarounds: Workarounds provide suggestions to address the compile errors
+      or warnings.
   """
 
   class CodeValueValuesEnum(_messages.Enum):
@@ -1107,10 +1121,28 @@ class GraphqlErrorExtensions(_messages.Message):
     UNAVAILABLE = 15
     DATA_LOSS = 16
 
+  class WarningLevelValueValuesEnum(_messages.Enum):
+    r"""Warning level describes the severity and required action to suppress
+    this warning when Firebase CLI run into it.
+
+    Values:
+      WARNING_LEVEL_UNKNOWN: Warning level is not specified.
+      LOG_ONLY: Display a warning without action needed.
+      INTERACTIVE_ACK: Request a confirmation in interactive deployment flow.
+      REQUIRE_ACK: Require an explicit confirmation in all deployment flows.
+      REQUIRE_FORCE: Require --force in all deployment flows.
+    """
+    WARNING_LEVEL_UNKNOWN = 0
+    LOG_ONLY = 1
+    INTERACTIVE_ACK = 2
+    REQUIRE_ACK = 3
+    REQUIRE_FORCE = 4
+
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   debugDetails = _messages.StringField(2)
   file = _messages.StringField(3)
-  resource = _messages.StringField(4)
+  warningLevel = _messages.EnumField('WarningLevelValueValuesEnum', 4)
+  workarounds = _messages.MessageField('Workaround', 5, repeated=True)
 
 
 class GraphqlRequest(_messages.Message):
@@ -1372,10 +1404,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListSchemasResponse(_messages.Message):
@@ -2026,6 +2063,20 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class Workaround(_messages.Message):
+  r"""Workaround provides suggestions to address errors and warnings.
+
+  Fields:
+    description: Description of this workaround.
+    reason: Why would this workaround address the error and warning.
+    replace: A suggested code snippet to fix the error and warning.
+  """
+
+  description = _messages.StringField(1)
+  reason = _messages.StringField(2)
+  replace = _messages.StringField(3)
 
 
 encoding.AddCustomJsonFieldMapping(

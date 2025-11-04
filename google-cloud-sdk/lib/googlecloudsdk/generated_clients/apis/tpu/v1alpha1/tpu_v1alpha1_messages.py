@@ -15,7 +15,8 @@ package = 'tpu'
 
 
 class AcceleratorType(_messages.Message):
-  r"""A accelerator type that a Node can be configured with.
+  r"""DEPRECATED: Please use TPU API v2alpha1 instead. A accelerator type that
+  a Node can be configured with.
 
   Fields:
     name: The resource name.
@@ -36,7 +37,8 @@ class Empty(_messages.Message):
 
 
 class ListAcceleratorTypesResponse(_messages.Message):
-  r"""Response for ListAcceleratorTypes.
+  r"""DEPRECATED: Please use TPU API v2alpha1 instead. Response for
+  ListAcceleratorTypes.
 
   Fields:
     acceleratorTypes: The listed nodes.
@@ -63,7 +65,7 @@ class ListLocationsResponse(_messages.Message):
 
 
 class ListNodesResponse(_messages.Message):
-  r"""Response for ListNodes.
+  r"""DEPRECATED: Please use TPU API v2alpha1 instead. Response for ListNodes.
 
   Fields:
     nextPageToken: The next page token or empty if none.
@@ -83,14 +85,20 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListTensorFlowVersionsResponse(_messages.Message):
-  r"""Response for ListTensorFlowVersions.
+  r"""DEPRECATED: Please use TPU API v2alpha1 instead. Response for
+  ListTensorFlowVersions.
 
   Fields:
     nextPageToken: The next page token or empty if none.
@@ -184,7 +192,8 @@ class Location(_messages.Message):
 
 
 class NetworkEndpoint(_messages.Message):
-  r"""A network endpoint over which a TPU worker can be reached.
+  r"""DEPRECATED: Please use TPU API v2alpha1 instead. A network endpoint over
+  which a TPU worker can be reached.
 
   Fields:
     ipAddress: The IP address of this network endpoint.
@@ -196,7 +205,7 @@ class NetworkEndpoint(_messages.Message):
 
 
 class Node(_messages.Message):
-  r"""A TPU instance.
+  r"""DEPRECATED: Please use TPU API v2alpha1 instead. A TPU instance.
 
   Enums:
     ApiVersionValueValuesEnum: Output only. The API version that created this
@@ -501,7 +510,8 @@ class Operation(_messages.Message):
 
 
 class OperationMetadata(_messages.Message):
-  r"""Metadata describing an Operation
+  r"""DEPRECATED: Please use TPU API v2alpha1 instead. Metadata describing an
+  Operation
 
   Fields:
     apiVersion: API version.
@@ -525,7 +535,8 @@ class OperationMetadata(_messages.Message):
 
 
 class ReimageNodeRequest(_messages.Message):
-  r"""Request for ReimageNode.
+  r"""DEPRECATED: Please use TPU API v2alpha1 instead. Request for
+  ReimageNode.
 
   Fields:
     tensorflowVersion: The version for reimage to create.
@@ -535,7 +546,8 @@ class ReimageNodeRequest(_messages.Message):
 
 
 class SchedulingConfig(_messages.Message):
-  r"""Sets the scheduling options for this node.
+  r"""DEPRECATED: Please use TPU API v2alpha1 instead. Sets the scheduling
+  options for this node.
 
   Fields:
     preemptible: Defines whether the node is preemptible.
@@ -610,7 +622,9 @@ class StandardQueryParameters(_messages.Message):
 
 
 class StartNodeRequest(_messages.Message):
-  r"""Request for StartNode."""
+  r"""DEPRECATED: Please use TPU API v2alpha1 instead. Request for StartNode.
+  """
+
 
 
 class Status(_messages.Message):
@@ -665,11 +679,13 @@ class Status(_messages.Message):
 
 
 class StopNodeRequest(_messages.Message):
-  r"""Request for StopNode."""
+  r"""DEPRECATED: Please use TPU API v2alpha1 instead. Request for StopNode.
+  """
+
 
 
 class Symptom(_messages.Message):
-  r"""A Symptom instance.
+  r"""DEPRECATED: Please use TPU API v2alpha1 instead. A Symptom instance.
 
   Enums:
     SymptomTypeValueValuesEnum: Type of the Symptom.
@@ -711,7 +727,8 @@ class Symptom(_messages.Message):
 
 
 class TensorFlowVersion(_messages.Message):
-  r"""A tensorflow version that a Node can be configured with.
+  r"""DEPRECATED: Please use TPU API v2alpha1 instead. A tensorflow version
+  that a Node can be configured with.
 
   Fields:
     name: The resource name.
@@ -915,12 +932,20 @@ class TpuProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class TpuProjectsLocationsTensorflowVersionsGetRequest(_messages.Message):

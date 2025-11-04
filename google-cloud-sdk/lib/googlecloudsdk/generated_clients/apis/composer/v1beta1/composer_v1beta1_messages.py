@@ -318,6 +318,21 @@ class ComposerProjectsLocationsEnvironmentsLoadSnapshotRequest(_messages.Message
   loadSnapshotRequest = _messages.MessageField('LoadSnapshotRequest', 2)
 
 
+class ComposerProjectsLocationsEnvironmentsMigrateRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsMigrateRequest object.
+
+  Fields:
+    migrateEnvironmentRequest: A MigrateEnvironmentRequest resource to be
+      passed as the request body.
+    name: Required. The resource name of the environment to migrate, in the
+      form: "projects/{projectId}/locations/{locationId}/environments/{environ
+      mentId}"
+  """
+
+  migrateEnvironmentRequest = _messages.MessageField('MigrateEnvironmentRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
   r"""A ComposerProjectsLocationsEnvironmentsPatchRequest object.
 
@@ -693,12 +708,20 @@ class ComposerProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class ComposerWorkload(_messages.Message):
@@ -1251,6 +1274,22 @@ class FetchDatabasePropertiesResponse(_messages.Message):
   secondaryGceZone = _messages.StringField(3)
 
 
+class FilestoreConfig(_messages.Message):
+  r"""The configuration for data storage in the environment using Filestore.
+
+  Fields:
+    instance: Required. The resource name of the Filestore instance, in the
+      format
+      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`.
+    path: Required. Path within the Filestore instance that will be mounted in
+      the Airflow components. Starts with the volume share. For example, given
+      the instance 10.10.10.10:/vol1 the mount path can be "/vol1/some/path".
+  """
+
+  instance = _messages.StringField(1)
+  path = _messages.StringField(2)
+
+
 class IPAllocationPolicy(_messages.Message):
   r"""Configuration for controlling how IPs are allocated in the GKE cluster.
 
@@ -1373,10 +1412,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListUserWorkloadsConfigMapsResponse(_messages.Message):
@@ -1487,6 +1531,59 @@ class MasterAuthorizedNetworksConfig(_messages.Message):
 
   cidrBlocks = _messages.MessageField('CidrBlock', 1, repeated=True)
   enabled = _messages.BooleanField(2)
+
+
+class MigrateEnvironmentRequest(_messages.Message):
+  r"""Request to migrate a Composer 2 environment to Composer 3 in place.
+
+  Enums:
+    GkeClusterRetentionPolicyValueValuesEnum: Required. The retention policy
+      for the GKE cluster associated with the Cloud Composer 2 environment.
+      The cluster can be retained or deleted after the migration.
+
+  Fields:
+    gkeClusterRetentionPolicy: Required. The retention policy for the GKE
+      cluster associated with the Cloud Composer 2 environment. The cluster
+      can be retained or deleted after the migration.
+    imageVersion: Required. Target image version to which the environment will
+      be migrated. This has to be a Composer 3 version with a specific Airflow
+      version and build in format `composer-3-airflow-x.y.z-build.t`, or one
+      of the version aliases: `composer-3-airflow-x`, `composer-3-airflow-x.y`
+      or `composer-3-airflow-x.y.z`. Only migration to Composer 3 version is
+      supported. See also [version list](/composer/docs/composer-versions) and
+      [versioning overview](/composer/docs/composer-versioning-overview).
+    maintenanceWindow: Optional. The configuration settings for Cloud Composer
+      maintenance window. This configuration is applied to the migrated
+      environment. The following example: ``` {
+      "startTime":"2019-08-01T01:00:00Z" "endTime":"2019-08-01T07:00:00Z"
+      "recurrence":"FREQ=WEEKLY;BYDAY=TU,WE" } ``` would define a maintenance
+      window between 01 and 07 hours UTC during each Tuesday and Wednesday.
+    workloadsConfig: Optional. The workloads configuration settings for the
+      Cloud Composer environment. It will be applied to the migrated
+      environment. The workloads include Airflow scheduler, web server,
+      triggerer, dag processor and workers.
+  """
+
+  class GkeClusterRetentionPolicyValueValuesEnum(_messages.Enum):
+    r"""Required. The retention policy for the GKE cluster associated with the
+    Cloud Composer 2 environment. The cluster can be retained or deleted after
+    the migration.
+
+    Values:
+      GKE_CLUSTER_RETENTION_POLICY_UNSPECIFIED: Default value.
+      DELETE_GKE_CLUSTER: GKE cluster will be deleted after environment
+        migration.
+      RETAIN_GKE_CLUSTER: GKE cluster will be retained after environment
+        migration.
+    """
+    GKE_CLUSTER_RETENTION_POLICY_UNSPECIFIED = 0
+    DELETE_GKE_CLUSTER = 1
+    RETAIN_GKE_CLUSTER = 2
+
+  gkeClusterRetentionPolicy = _messages.EnumField('GkeClusterRetentionPolicyValueValuesEnum', 1)
+  imageVersion = _messages.StringField(2)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 3)
+  workloadsConfig = _messages.MessageField('WorkloadsConfig', 4)
 
 
 class NetworkingConfig(_messages.Message):
@@ -2403,9 +2500,12 @@ class StorageConfig(_messages.Message):
   Fields:
     bucket: Optional. The name of the Cloud Storage bucket used by the
       environment. No `gs://` prefix.
+    filestoreConfig: Optional. The configuration for data storage in the
+      environment using Filestore.
   """
 
   bucket = _messages.StringField(1)
+  filestoreConfig = _messages.MessageField('FilestoreConfig', 2)
 
 
 class TaskLogsRetentionConfig(_messages.Message):

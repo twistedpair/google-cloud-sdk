@@ -18,7 +18,7 @@ package = 'documentai'
 
 class CloudAiDocumentaiLabHifiaToolsValidationValidatorInput(_messages.Message):
   r"""Definition of the validation rules. Those are the input to the validator
-  logic and they are used to validate a document.
+  logic and they are used to validate a document. Next ID: 3
 
   Fields:
     validationRules: A
@@ -30,12 +30,15 @@ class CloudAiDocumentaiLabHifiaToolsValidationValidatorInput(_messages.Message):
 
 
 class CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRule(_messages.Message):
-  r"""A CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRule
-  object.
+  r"""Next ID: 9
 
   Fields:
+    childAlignmentRule: A CloudAiDocumentaiLabHifiaToolsValidationValidatorInp
+      utValidationRuleChildAlignmentRule attribute.
     description: Description of the validation rule. This has no use but for
       documentation
+    entityAlignmentRule: A CloudAiDocumentaiLabHifiaToolsValidationValidatorIn
+      putValidationRuleEntityAlignmentRule attribute.
     fieldOccurrences: A CloudAiDocumentaiLabHifiaToolsValidationValidatorInput
       ValidationRuleFieldOccurrences attribute.
     fieldRegex: A CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValida
@@ -43,13 +46,61 @@ class CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRule(_mess
     formValidation: A CloudAiDocumentaiLabHifiaToolsValidationValidatorInputVa
       lidationRuleFormValidation attribute.
     name: Name of the validation rule.
+    ruleId: Unique identifier of the rule. Optional.
   """
 
-  description = _messages.StringField(1)
-  fieldOccurrences = _messages.MessageField('CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleFieldOccurrences', 2)
-  fieldRegex = _messages.MessageField('CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleFieldRegex', 3)
-  formValidation = _messages.MessageField('CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleFormValidation', 4)
-  name = _messages.StringField(5)
+  childAlignmentRule = _messages.MessageField('CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleChildAlignmentRule', 1)
+  description = _messages.StringField(2)
+  entityAlignmentRule = _messages.MessageField('CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleEntityAlignmentRule', 3)
+  fieldOccurrences = _messages.MessageField('CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleFieldOccurrences', 4)
+  fieldRegex = _messages.MessageField('CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleFieldRegex', 5)
+  formValidation = _messages.MessageField('CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleFormValidation', 6)
+  name = _messages.StringField(7)
+  ruleId = _messages.StringField(8)
+
+
+class CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleAlignmentRule(_messages.Message):
+  r"""A rule for checking field alignment. Horizontal alignment checks if
+  fields are on the same row by comparing y-coordinates of bounding box
+  centers, while vertical alignment checks if fields are on the same column by
+  comparing x-coordinates of bounding box centers.
+
+  Enums:
+    AlignmentTypeValueValuesEnum:
+
+  Fields:
+    alignmentType: A AlignmentTypeValueValuesEnum attribute.
+    tolerance: The tolerance to use when comparing coordinates.
+  """
+
+  class AlignmentTypeValueValuesEnum(_messages.Enum):
+    r"""AlignmentTypeValueValuesEnum enum type.
+
+    Values:
+      ALIGNMENT_TYPE_UNSPECIFIED: <no description>
+      ALIGNMENT_TYPE_HORIZONTAL: <no description>
+      ALIGNMENT_TYPE_VERTICAL: <no description>
+    """
+    ALIGNMENT_TYPE_UNSPECIFIED = 0
+    ALIGNMENT_TYPE_HORIZONTAL = 1
+    ALIGNMENT_TYPE_VERTICAL = 2
+
+  alignmentType = _messages.EnumField('AlignmentTypeValueValuesEnum', 1)
+  tolerance = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
+class CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleChildAlignmentRule(_messages.Message):
+  r"""A rule that aligns specified child fields with a parent field.
+
+  Fields:
+    alignmentRule: The alignment rule to apply to the child fields.
+    childFields: The child fields to be aligned within the parent field.
+    parentField: The full path of the parent field.
+  """
+
+  alignmentRule = _messages.MessageField('CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleAlignmentRule', 1)
+  childFields = _messages.MessageField('CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleField', 2, repeated=True)
+  parentField = _messages.MessageField('CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleField', 3)
 
 
 class CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleConstant(_messages.Message):
@@ -60,6 +111,18 @@ class CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleConsta
   """
 
   floatValue = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+
+
+class CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleEntityAlignmentRule(_messages.Message):
+  r"""A rule that aligns specified fields with each other.
+
+  Fields:
+    alignmentRule: The alignment rule to apply to the fields.
+    fields: The fields to be aligned.
+  """
+
+  alignmentRule = _messages.MessageField('CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleAlignmentRule', 1)
+  fields = _messages.MessageField('CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleField', 2, repeated=True)
 
 
 class CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRuleField(_messages.Message):
@@ -285,12 +348,20 @@ class DocumentaiProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class DocumentaiProjectsLocationsProcessorTypesGetRequest(_messages.Message):
@@ -653,6 +724,174 @@ class DocumentaiProjectsLocationsProcessorsSetDefaultProcessorVersionRequest(_me
   processor = _messages.StringField(2, required=True)
 
 
+class DocumentaiProjectsLocationsSchemasCreateRequest(_messages.Message):
+  r"""A DocumentaiProjectsLocationsSchemasCreateRequest object.
+
+  Fields:
+    googleCloudDocumentaiV1NextSchema: A GoogleCloudDocumentaiV1NextSchema
+      resource to be passed as the request body.
+    parent: Required. The parent (project and location) under which to create
+      the Schema. Format: `projects/{project}/locations/{location}`
+  """
+
+  googleCloudDocumentaiV1NextSchema = _messages.MessageField('GoogleCloudDocumentaiV1NextSchema', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DocumentaiProjectsLocationsSchemasDeleteRequest(_messages.Message):
+  r"""A DocumentaiProjectsLocationsSchemasDeleteRequest object.
+
+  Fields:
+    force: Optional. If set to true, any child resources of this Schema will
+      also be deleted. (Otherwise, the request will only work if the Schema
+      has no child resources.)
+    name: Required. The name of the Schema to be deleted. Format:
+      `projects/{project}/locations/{location}/schemas/{schema}`
+  """
+
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class DocumentaiProjectsLocationsSchemasGetRequest(_messages.Message):
+  r"""A DocumentaiProjectsLocationsSchemasGetRequest object.
+
+  Fields:
+    name: Required. The name of the Schema to get. Format:
+      `projects/{project}/locations/{location}/schemas/{schema}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DocumentaiProjectsLocationsSchemasListRequest(_messages.Message):
+  r"""A DocumentaiProjectsLocationsSchemasListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of schema groups to return. If
+      unspecified, at most `10` Schema will be returned. The maximum value is
+      `20`. Values above `20` will be coerced to `20`.
+    pageToken: Optional. We will return the schema groups sorted by creation
+      time. The page token will point to the next Schema.
+    parent: Required. Format: `projects/{project}/locations/{location}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DocumentaiProjectsLocationsSchemasPatchRequest(_messages.Message):
+  r"""A DocumentaiProjectsLocationsSchemasPatchRequest object.
+
+  Fields:
+    googleCloudDocumentaiV1NextSchema: A GoogleCloudDocumentaiV1NextSchema
+      resource to be passed as the request body.
+    name: Identifier. The resource name of the Schema. Format:
+      `projects/{project}/locations/{location}/schemas/{schema}`
+    updateMask: Optional. The update mask to apply to the resource. **Note:**
+      Only the following fields can be updated: - display_name. - labels.
+  """
+
+  googleCloudDocumentaiV1NextSchema = _messages.MessageField('GoogleCloudDocumentaiV1NextSchema', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class DocumentaiProjectsLocationsSchemasSchemaVersionsCreateRequest(_messages.Message):
+  r"""A DocumentaiProjectsLocationsSchemasSchemaVersionsCreateRequest object.
+
+  Fields:
+    googleCloudDocumentaiV1SchemaVersion: A
+      GoogleCloudDocumentaiV1SchemaVersion resource to be passed as the
+      request body.
+    parent: Required. The parent (project and location) under which to create
+      the SchemaVersion. Format:
+      `projects/{project}/locations/{location}/schemas/{schema}`
+  """
+
+  googleCloudDocumentaiV1SchemaVersion = _messages.MessageField('GoogleCloudDocumentaiV1SchemaVersion', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DocumentaiProjectsLocationsSchemasSchemaVersionsDeleteRequest(_messages.Message):
+  r"""A DocumentaiProjectsLocationsSchemasSchemaVersionsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the SchemaVersion to delete. Format: `projects
+      /{project}/locations/{location}/schemas/{schema}/schemaVersions/{schema_
+      version}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DocumentaiProjectsLocationsSchemasSchemaVersionsGenerateRequest(_messages.Message):
+  r"""A DocumentaiProjectsLocationsSchemasSchemaVersionsGenerateRequest
+  object.
+
+  Fields:
+    googleCloudDocumentaiV1GenerateSchemaVersionRequest: A
+      GoogleCloudDocumentaiV1GenerateSchemaVersionRequest resource to be
+      passed as the request body.
+    parent: Required. The parent (project, location and schema) under which to
+      generate the SchemaVersion. Format:
+      `projects/{project}/locations/{location}/schemas/{schema}`
+  """
+
+  googleCloudDocumentaiV1GenerateSchemaVersionRequest = _messages.MessageField('GoogleCloudDocumentaiV1GenerateSchemaVersionRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DocumentaiProjectsLocationsSchemasSchemaVersionsGetRequest(_messages.Message):
+  r"""A DocumentaiProjectsLocationsSchemasSchemaVersionsGetRequest object.
+
+  Fields:
+    name: Required. The name of the SchemaVersion to get. Format: `projects/{p
+      roject}/locations/{location}/schemas/{schema}/schemaVersions/{schema_ver
+      sion}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DocumentaiProjectsLocationsSchemasSchemaVersionsListRequest(_messages.Message):
+  r"""A DocumentaiProjectsLocationsSchemasSchemaVersionsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of SchemaVersion to return. If
+      unspecified, at most `10` SchemaVersion will be returned. The maximum
+      value is `20`. Values above `20` will be coerced to `20`.
+    pageToken: Optional. We will return the SchemaVersion sorted by creation
+      time. The page token will point to the next SchemaVersion.
+    parent: Required. Format:
+      `projects/{project}/locations/{location}/schemas/{schema}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DocumentaiProjectsLocationsSchemasSchemaVersionsPatchRequest(_messages.Message):
+  r"""A DocumentaiProjectsLocationsSchemasSchemaVersionsPatchRequest object.
+
+  Fields:
+    googleCloudDocumentaiV1SchemaVersion: A
+      GoogleCloudDocumentaiV1SchemaVersion resource to be passed as the
+      request body.
+    name: Identifier. The resource name of the SchemaVersion. Format: `project
+      s/{project}/locations/{location}/schemas/{schema}/schemaVersions/{schema
+      _version}`
+    updateMask: Optional. The update mask to apply to the resource. **Note:**
+      Only the following fields can be updated: - display_name. - labels.
+  """
+
+  googleCloudDocumentaiV1SchemaVersion = _messages.MessageField('GoogleCloudDocumentaiV1SchemaVersion', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class DocumentaiProjectsOperationsGetRequest(_messages.Message):
   r"""A DocumentaiProjectsOperationsGetRequest object.
 
@@ -975,6 +1214,157 @@ class GoogleCloudDocumentaiUiv1beta3DocumentIdUnmanagedDocumentId(_messages.Mess
   docId = _messages.StringField(1)
 
 
+class GoogleCloudDocumentaiUiv1beta3DocumentSchema(_messages.Message):
+  r"""The schema defines the output of the processed document by a processor.
+
+  Fields:
+    description: Description of the schema.
+    displayName: Display name to show to users.
+    entityTypes: Entity types of the schema.
+    metadata: Metadata of the schema.
+  """
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  entityTypes = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3DocumentSchemaEntityType', 3, repeated=True)
+  metadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3DocumentSchemaMetadata', 4)
+
+
+class GoogleCloudDocumentaiUiv1beta3DocumentSchemaEntityType(_messages.Message):
+  r"""EntityType is the wrapper of a label of the corresponding model with
+  detailed attributes and limitations for entity-based processors. Multiple
+  types can also compose a dependency tree to represent nested types.
+
+  Fields:
+    baseTypes: The entity type that this type is derived from. For now, one
+      and only one should be set.
+    description: The description of the entity type. Could be used to provide
+      more information about the entity type for model calls.
+    displayName: User defined name for the type.
+    entityTypeMetadata: Metadata for the entity type.
+    enumValues: If specified, lists all the possible values for this entity.
+      This should not be more than a handful of values. If the number of
+      values is >10 or could change frequently use the
+      `EntityType.value_ontology` field and specify a list of all possible
+      values in a value ontology file.
+    name: Name of the type. It must be unique within the schema file and
+      cannot be a "Common Type". The following naming conventions are used: -
+      Use `snake_casing`. - Name matching is case-sensitive. - Maximum 64
+      characters. - Must start with a letter. - Allowed characters: ASCII
+      letters `[a-z0-9_-]`. (For backward compatibility internal
+      infrastructure and tooling can handle any ascii character.) - The `/` is
+      sometimes used to denote a property of a type. For example
+      `line_item/amount`. This convention is deprecated, but will still be
+      honored for backward compatibility.
+    properties: Description the nested structure, or composition of an entity.
+  """
+
+  baseTypes = _messages.StringField(1, repeated=True)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  entityTypeMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3EntityTypeMetadata', 4)
+  enumValues = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3DocumentSchemaEntityTypeEnumValues', 5)
+  name = _messages.StringField(6)
+  properties = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3DocumentSchemaEntityTypeProperty', 7, repeated=True)
+
+
+class GoogleCloudDocumentaiUiv1beta3DocumentSchemaEntityTypeEnumValues(_messages.Message):
+  r"""Defines the a list of enum values.
+
+  Fields:
+    values: The individual values that this enum values type can include.
+  """
+
+  values = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudDocumentaiUiv1beta3DocumentSchemaEntityTypeProperty(_messages.Message):
+  r"""Defines properties that can be part of the entity type.
+
+  Enums:
+    MethodValueValuesEnum: Specifies how the entity's value is obtained.
+    OccurrenceTypeValueValuesEnum: Occurrence type limits the number of
+      instances an entity type appears in the document.
+
+  Fields:
+    description: The description of the property. Could be used to provide
+      more information about the property for model calls.
+    displayName: User defined name for the property.
+    method: Specifies how the entity's value is obtained.
+    name: The name of the property. Follows the same guidelines as the
+      EntityType name.
+    occurrenceType: Occurrence type limits the number of instances an entity
+      type appears in the document.
+    propertyMetadata: Any additional metadata about the property can be added
+      here.
+    valueType: A reference to the value type of the property. This type is
+      subject to the same conventions as the `Entity.base_types` field.
+  """
+
+  class MethodValueValuesEnum(_messages.Enum):
+    r"""Specifies how the entity's value is obtained.
+
+    Values:
+      METHOD_UNSPECIFIED: Unspecified method. It defaults to `EXTRACT`.
+      EXTRACT: The entity's value is directly extracted as-is from the
+        document text.
+      DERIVE: The entity's value is derived through inference and is not
+        necessarily an exact text extraction from the document.
+    """
+    METHOD_UNSPECIFIED = 0
+    EXTRACT = 1
+    DERIVE = 2
+
+  class OccurrenceTypeValueValuesEnum(_messages.Enum):
+    r"""Occurrence type limits the number of instances an entity type appears
+    in the document.
+
+    Values:
+      OCCURRENCE_TYPE_UNSPECIFIED: Unspecified occurrence type.
+      OPTIONAL_ONCE: There will be zero or one instance of this entity type.
+        The same entity instance may be mentioned multiple times.
+      OPTIONAL_MULTIPLE: The entity type will appear zero or multiple times.
+      REQUIRED_ONCE: The entity type will only appear exactly once. The same
+        entity instance may be mentioned multiple times.
+      REQUIRED_MULTIPLE: The entity type will appear once or more times.
+    """
+    OCCURRENCE_TYPE_UNSPECIFIED = 0
+    OPTIONAL_ONCE = 1
+    OPTIONAL_MULTIPLE = 2
+    REQUIRED_ONCE = 3
+    REQUIRED_MULTIPLE = 4
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  method = _messages.EnumField('MethodValueValuesEnum', 3)
+  name = _messages.StringField(4)
+  occurrenceType = _messages.EnumField('OccurrenceTypeValueValuesEnum', 5)
+  propertyMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3PropertyMetadata', 6)
+  valueType = _messages.StringField(7)
+
+
+class GoogleCloudDocumentaiUiv1beta3DocumentSchemaMetadata(_messages.Message):
+  r"""Metadata for global schema behavior.
+
+  Fields:
+    documentAllowMultipleLabels: If true, on a given page, there can be
+      multiple `document` annotations covering it.
+    documentSplitter: If true, a `document` entity type can be applied to
+      subdocument (splitting). Otherwise, it can only be applied to the entire
+      document (classification).
+    prefixedNamingOnProperties: If set, all the nested entities must be
+      prefixed with the parents.
+    skipNamingValidation: If set, we will skip the naming format validation in
+      the schema. So the string values in `DocumentSchema.EntityType.name` and
+      `DocumentSchema.EntityType.Property.name` will not be checked.
+  """
+
+  documentAllowMultipleLabels = _messages.BooleanField(1)
+  documentSplitter = _messages.BooleanField(2)
+  prefixedNamingOnProperties = _messages.BooleanField(3)
+  skipNamingValidation = _messages.BooleanField(4)
+
+
 class GoogleCloudDocumentaiUiv1beta3EnableProcessorMetadata(_messages.Message):
   r"""The long-running operation metadata for the EnableProcessor method.
 
@@ -990,6 +1380,26 @@ class GoogleCloudDocumentaiUiv1beta3EnableProcessorResponse(_messages.Message):
   proto for adding fields in future.
   """
 
+
+
+class GoogleCloudDocumentaiUiv1beta3EntityTypeMetadata(_messages.Message):
+  r"""Metadata about an entity type.
+
+  Fields:
+    fieldTierMetadata: Field tier metadata on the property
+    humanReviewLabelingMetadata: Human review labeling config on the entity.
+    humanReviewMetadata: Human review config on the entity.
+    inactive: Whether the entity type should be considered inactive.
+    schemaEditabilityMetadata: Schema editability metadata on the entity.
+    schemaInferenceMetadata: Schema inference metadata on the entity.
+  """
+
+  fieldTierMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3FieldTierMetadata', 1)
+  humanReviewLabelingMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3HumanReviewLabelingMetadata', 2)
+  humanReviewMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3HumanReviewValidationMetadata', 3)
+  inactive = _messages.BooleanField(4)
+  schemaEditabilityMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3SchemaEditabilityMetadata', 5)
+  schemaInferenceMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3SchemaInferenceMetadata', 6)
 
 
 class GoogleCloudDocumentaiUiv1beta3EvaluateProcessorVersionMetadata(_messages.Message):
@@ -1010,6 +1420,61 @@ class GoogleCloudDocumentaiUiv1beta3EvaluateProcessorVersionResponse(_messages.M
   """
 
   evaluation = _messages.StringField(1)
+
+
+class GoogleCloudDocumentaiUiv1beta3EvaluationMetrics(_messages.Message):
+  r"""Evaluation metrics, either in aggregate or about a specific entity.
+
+  Fields:
+    f1Score: The calculated f1 score.
+    falseNegativesCount: The amount of false negatives.
+    falsePositivesCount: The amount of false positives.
+    groundTruthDocumentCount: The amount of documents with a ground truth
+      occurrence.
+    groundTruthOccurrencesCount: The amount of occurrences in ground truth
+      documents.
+    precision: The calculated precision.
+    predictedDocumentCount: The amount of documents with a predicted
+      occurrence.
+    predictedOccurrencesCount: The amount of occurrences in predicted
+      documents.
+    recall: The calculated recall.
+    totalDocumentsCount: The amount of documents that had an occurrence of
+      this label.
+    truePositivesCount: The amount of true positives.
+  """
+
+  f1Score = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  falseNegativesCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  falsePositivesCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  groundTruthDocumentCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  groundTruthOccurrencesCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  precision = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
+  predictedDocumentCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  predictedOccurrencesCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  recall = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
+  totalDocumentsCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  truePositivesCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudDocumentaiUiv1beta3EvaluationReference(_messages.Message):
+  r"""Gives a short summary of an evaluation, and links to the evaluation
+  itself.
+
+  Fields:
+    aggregateMetrics: An aggregate of the statistics for the evaluation with
+      fuzzy matching on.
+    aggregateMetricsExact: An aggregate of the statistics for the evaluation
+      with fuzzy matching off.
+    evaluation: The resource name of the evaluation.
+    operation: The resource name of the Long Running Operation for the
+      evaluation.
+  """
+
+  aggregateMetrics = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3EvaluationMetrics', 1)
+  aggregateMetricsExact = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3EvaluationMetrics', 2)
+  evaluation = _messages.StringField(3)
+  operation = _messages.StringField(4)
 
 
 class GoogleCloudDocumentaiUiv1beta3ExportDocumentsMetadata(_messages.Message):
@@ -1095,6 +1560,65 @@ class GoogleCloudDocumentaiUiv1beta3ExportProcessorVersionResponse(_messages.Mes
   gcsUri = _messages.StringField(1)
 
 
+class GoogleCloudDocumentaiUiv1beta3FieldExtractionMetadata(_messages.Message):
+  r"""Metadata for how this field value is extracted.
+
+  Fields:
+    entityQuery: Entity query config.
+    summaryOptions: Summary options config.
+  """
+
+  entityQuery = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3FieldExtractionMetadataEntityQuery', 1)
+  summaryOptions = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3SummaryOptions', 2)
+
+
+class GoogleCloudDocumentaiUiv1beta3FieldExtractionMetadataEntityQuery(_messages.Message):
+  r"""Message for entity query.
+
+  Fields:
+    userEntityQuery: The original entity query inputed by the user.
+  """
+
+  userEntityQuery = _messages.StringField(1)
+
+
+class GoogleCloudDocumentaiUiv1beta3FieldTierMetadata(_messages.Message):
+  r"""Metadata for the field tier of a property.
+
+  Fields:
+    tierLevel: Integer that indicates the tier of a property. e.g. Invoice has
+      entities that are classified as tier 1 which is the most important,
+      while tier 2 and tier 3 less so. This attribute can be used to filter
+      schema attributes before running eval. e.g. compute F1 score for only
+      tier 1 entities. If not present this attribute should be inferred as 1.
+  """
+
+  tierLevel = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudDocumentaiUiv1beta3HumanReviewLabelingMetadata(_messages.Message):
+  r"""Metadata for human review labeling config.
+
+  Fields:
+    enableNormalizationEditing: Whether to enable normalization editing.
+  """
+
+  enableNormalizationEditing = _messages.BooleanField(1)
+
+
+class GoogleCloudDocumentaiUiv1beta3HumanReviewValidationMetadata(_messages.Message):
+  r"""Metadata for Human Review config.
+
+  Fields:
+    confidenceThreshold: The confidence threshold if human review validation
+      is enabled.
+    enableValidation: Whether to enable human review validation.
+  """
+
+  confidenceThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  enableValidation = _messages.BooleanField(2)
+
+
 class GoogleCloudDocumentaiUiv1beta3ImportDocumentsMetadata(_messages.Message):
   r"""Metadata of the import document operation.
 
@@ -1169,6 +1693,284 @@ class GoogleCloudDocumentaiUiv1beta3ImportProcessorVersionResponse(_messages.Mes
   """
 
   processorVersion = _messages.StringField(1)
+
+
+class GoogleCloudDocumentaiUiv1beta3Processor(_messages.Message):
+  r"""The first-class citizen for Document AI. Each processor defines how to
+  extract structural information from a document.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the processor.
+
+  Fields:
+    activeSchemaVersion: Optional. SchemaVersion used by the Processor. It is
+      the same as Processor's DatasetSchema.schema_version Format is `projects
+      /{project}/locations/{location}/schemas/{schema}/schemaVersions/{schema_
+      version}
+    createTime: Output only. The time the processor was created.
+    defaultProcessorVersion: The default processor version.
+    displayName: The display name of the processor.
+    kmsKeyName: The [KMS key](https://cloud.google.com/security-key-
+      management) used for encryption and decryption in CMEK scenarios.
+    name: Output only. Immutable. The resource name of the processor. Format:
+      `projects/{project}/locations/{location}/processors/{processor}`
+    processEndpoint: Output only. Immutable. The http endpoint that can be
+      called to invoke processing.
+    processorVersionAliases: Output only. The processor version aliases.
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
+    state: Output only. The state of the processor.
+    type: The processor type, such as: `OCR_PROCESSOR`, `INVOICE_PROCESSOR`.
+      To get a list of processor types, see FetchProcessorTypes.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the processor.
+
+    Values:
+      STATE_UNSPECIFIED: The processor is in an unspecified state.
+      ENABLED: The processor is enabled, i.e., has an enabled version which
+        can currently serve processing requests and all the feature
+        dependencies have been successfully initialized.
+      DISABLED: The processor is disabled.
+      ENABLING: The processor is being enabled, will become `ENABLED` if
+        successful.
+      DISABLING: The processor is being disabled, will become `DISABLED` if
+        successful.
+      CREATING: The processor is being created, will become either `ENABLED`
+        (for successful creation) or `FAILED` (for failed ones). Once a
+        processor is in this state, it can then be used for document
+        processing, but the feature dependencies of the processor might not be
+        fully created yet.
+      FAILED: The processor failed during creation or initialization of
+        feature dependencies. The user should delete the processor and
+        recreate one as all the functionalities of the processor are disabled.
+      DELETING: The processor is being deleted, will be removed if successful.
+    """
+    STATE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+    ENABLING = 3
+    DISABLING = 4
+    CREATING = 5
+    FAILED = 6
+    DELETING = 7
+
+  activeSchemaVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  defaultProcessorVersion = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  kmsKeyName = _messages.StringField(5)
+  name = _messages.StringField(6)
+  processEndpoint = _messages.StringField(7)
+  processorVersionAliases = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3ProcessorVersionAlias', 8, repeated=True)
+  satisfiesPzi = _messages.BooleanField(9)
+  satisfiesPzs = _messages.BooleanField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  type = _messages.StringField(12)
+
+
+class GoogleCloudDocumentaiUiv1beta3ProcessorVersion(_messages.Message):
+  r"""A processor version is an implementation of a processor. Each processor
+  can have multiple versions, pretrained by Google internally or uptrained by
+  the customer. A processor can only have one default version at a time. Its
+  document-processing behavior is defined by that version.
+
+  Enums:
+    ModelTypeValueValuesEnum: Output only. The model type of this processor
+      version.
+    StateValueValuesEnum: Output only. The state of the processor version.
+
+  Fields:
+    createTime: Output only. The time the processor version was created.
+    deploymentAllowed: Output only. Denotes that this `ProcessorVersion` can
+      be deployed and undeployed.
+    deprecationInfo: Output only. If set, information about the eventual
+      deprecation of this version.
+    displayName: The display name of the processor version.
+    documentSchema: Output only. The schema of the processor version.
+      Describes the output.
+    genAiModelInfo: Output only. Information about Generative AI model-based
+      processor versions.
+    googleManaged: Output only. Denotes that this `ProcessorVersion` is
+      managed by Google.
+    kmsKeyName: Output only. The KMS key name used for encryption.
+    kmsKeyVersionName: Output only. The KMS key version with which data is
+      encrypted.
+    latestEvaluation: Output only. The most recently invoked evaluation for
+      the processor version.
+    modelType: Output only. The model type of this processor version.
+    name: Identifier. The resource name of the processor version. Format: `pro
+      jects/{project}/locations/{location}/processors/{processor}/processorVer
+      sions/{processor_version}`
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
+    schema: The schema of the processor version. Describes the output.
+    state: Output only. The state of the processor version.
+  """
+
+  class ModelTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The model type of this processor version.
+
+    Values:
+      MODEL_TYPE_UNSPECIFIED: The processor version has unspecified model
+        type.
+      MODEL_TYPE_GENERATIVE: The processor version has generative model type.
+      MODEL_TYPE_CUSTOM: The processor version has custom model type.
+    """
+    MODEL_TYPE_UNSPECIFIED = 0
+    MODEL_TYPE_GENERATIVE = 1
+    MODEL_TYPE_CUSTOM = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the processor version.
+
+    Values:
+      STATE_UNSPECIFIED: The processor version is in an unspecified state.
+      DEPLOYED: The processor version is deployed and can be used for
+        processing.
+      DEPLOYING: The processor version is being deployed.
+      UNDEPLOYED: The processor version is not deployed and cannot be used for
+        processing.
+      UNDEPLOYING: The processor version is being undeployed.
+      CREATING: The processor version is being created.
+      DELETING: The processor version is being deleted.
+      FAILED: The processor version failed and is in an indeterminate state.
+      IMPORTING: The processor version is being imported.
+    """
+    STATE_UNSPECIFIED = 0
+    DEPLOYED = 1
+    DEPLOYING = 2
+    UNDEPLOYED = 3
+    UNDEPLOYING = 4
+    CREATING = 5
+    DELETING = 6
+    FAILED = 7
+    IMPORTING = 8
+
+  createTime = _messages.StringField(1)
+  deploymentAllowed = _messages.BooleanField(2)
+  deprecationInfo = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3ProcessorVersionDeprecationInfo', 3)
+  displayName = _messages.StringField(4)
+  documentSchema = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3DocumentSchema', 5)
+  genAiModelInfo = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3ProcessorVersionGenAiModelInfo', 6)
+  googleManaged = _messages.BooleanField(7)
+  kmsKeyName = _messages.StringField(8)
+  kmsKeyVersionName = _messages.StringField(9)
+  latestEvaluation = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3EvaluationReference', 10)
+  modelType = _messages.EnumField('ModelTypeValueValuesEnum', 11)
+  name = _messages.StringField(12)
+  satisfiesPzi = _messages.BooleanField(13)
+  satisfiesPzs = _messages.BooleanField(14)
+  schema = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3Schema', 15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+
+
+class GoogleCloudDocumentaiUiv1beta3ProcessorVersionAlias(_messages.Message):
+  r"""Contains the alias and the aliased resource name of processor version.
+
+  Fields:
+    alias: The alias in the form of `processor_version` resource name.
+    processorVersion: The resource name of aliased processor version.
+  """
+
+  alias = _messages.StringField(1)
+  processorVersion = _messages.StringField(2)
+
+
+class GoogleCloudDocumentaiUiv1beta3ProcessorVersionDeprecationInfo(_messages.Message):
+  r"""Information about the upcoming deprecation of this processor version.
+
+  Fields:
+    deprecationTime: The time at which this processor version will be
+      deprecated.
+    replacementProcessorVersion: If set, the processor version that will be
+      used as a replacement.
+  """
+
+  deprecationTime = _messages.StringField(1)
+  replacementProcessorVersion = _messages.StringField(2)
+
+
+class GoogleCloudDocumentaiUiv1beta3ProcessorVersionGenAiModelInfo(_messages.Message):
+  r"""Information about Generative AI model-based processor versions.
+
+  Fields:
+    customGenAiModelInfo: Information for a custom Generative AI model created
+      by the user.
+    foundationGenAiModelInfo: Information for a pretrained Google-managed
+      foundation model.
+  """
+
+  customGenAiModelInfo = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3ProcessorVersionGenAiModelInfoCustomGenAiModelInfo', 1)
+  foundationGenAiModelInfo = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3ProcessorVersionGenAiModelInfoFoundationGenAiModelInfo', 2)
+
+
+class GoogleCloudDocumentaiUiv1beta3ProcessorVersionGenAiModelInfoCustomGenAiModelInfo(_messages.Message):
+  r"""Information for a custom Generative AI model created by the user. These
+  are created with `Create New Version` in either the `Call foundation model`
+  or `Fine tuning` tabs.
+
+  Enums:
+    CustomModelTypeValueValuesEnum: The type of custom model created by the
+      user.
+
+  Fields:
+    baseProcessorVersionId: The base processor version ID for the custom
+      model.
+    customModelType: The type of custom model created by the user.
+  """
+
+  class CustomModelTypeValueValuesEnum(_messages.Enum):
+    r"""The type of custom model created by the user.
+
+    Values:
+      CUSTOM_MODEL_TYPE_UNSPECIFIED: The model type is unspecified.
+      VERSIONED_FOUNDATION: The model is a versioned foundation model.
+      FINE_TUNED: The model is a finetuned foundation model.
+    """
+    CUSTOM_MODEL_TYPE_UNSPECIFIED = 0
+    VERSIONED_FOUNDATION = 1
+    FINE_TUNED = 2
+
+  baseProcessorVersionId = _messages.StringField(1)
+  customModelType = _messages.EnumField('CustomModelTypeValueValuesEnum', 2)
+
+
+class GoogleCloudDocumentaiUiv1beta3ProcessorVersionGenAiModelInfoFoundationGenAiModelInfo(_messages.Message):
+  r"""Information for a pretrained Google-managed foundation model.
+
+  Fields:
+    finetuningAllowed: Whether finetuning is allowed for this base processor
+      version.
+    minTrainLabeledDocuments: The minimum number of labeled documents in the
+      training dataset required for finetuning.
+  """
+
+  finetuningAllowed = _messages.BooleanField(1)
+  minTrainLabeledDocuments = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudDocumentaiUiv1beta3PropertyMetadata(_messages.Message):
+  r"""Metadata about a property.
+
+  Fields:
+    fieldExtractionMetadata: Field extraction metadata on the property.
+    fieldTierMetadata: Field tier metadata on the property
+    humanReviewLabelingMetadata: Human review labeling config on the property.
+    humanReviewMetadata: Human review validation config on the property.
+    inactive: Whether the property should be considered as "inactive".
+    schemaEditabilityMetadata: Schema editability metadata on the property.
+    schemaInferenceMetadata: Schema inference metadata on the property.
+  """
+
+  fieldExtractionMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3FieldExtractionMetadata', 1)
+  fieldTierMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3FieldTierMetadata', 2)
+  humanReviewLabelingMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3HumanReviewLabelingMetadata', 3)
+  humanReviewMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3HumanReviewValidationMetadata', 4)
+  inactive = _messages.BooleanField(5)
+  schemaEditabilityMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3SchemaEditabilityMetadata', 6)
+  schemaInferenceMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3SchemaInferenceMetadata', 7)
 
 
 class GoogleCloudDocumentaiUiv1beta3ResyncDatasetMetadata(_messages.Message):
@@ -1327,6 +2129,145 @@ class GoogleCloudDocumentaiUiv1beta3SampleDocumentsResponseSelectedDocument(_mes
   documentId = _messages.StringField(1)
 
 
+class GoogleCloudDocumentaiUiv1beta3Schema(_messages.Message):
+  r"""The schema defines the output of the processed document by a processor.
+
+  Fields:
+    description: Description of the schema.
+    displayName: Display name to show to users.
+    entityTypes: Entity types of the schema.
+  """
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  entityTypes = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3SchemaEntityType', 3, repeated=True)
+
+
+class GoogleCloudDocumentaiUiv1beta3SchemaEditabilityMetadata(_messages.Message):
+  r"""Metadata that specifies whether a label is editable and reasons why.
+  These fields are read-only. Changing these fields has no impact on the
+  backend.
+
+  Fields:
+    editable: Explicit flag that controls whether the label is editable.
+    processorVersions: Full resource name of processor versions that contain
+      this label. e.g. `projects/{project}/locations/{location}/processors/{pr
+      ocessor}/processorVersions/{processorVersion}`
+  """
+
+  editable = _messages.BooleanField(1)
+  processorVersions = _messages.StringField(2, repeated=True)
+
+
+class GoogleCloudDocumentaiUiv1beta3SchemaEntityType(_messages.Message):
+  r"""EntityType is the wrapper of a label of the corresponding model with
+  detailed attributes and limitations for entity-based processors. Multiple
+  types can also compose a dependency tree to represent nested types.
+
+  Enums:
+    MethodValueValuesEnum: Specifies how the entity's value is obtained.
+    OccurrenceTypeValueValuesEnum: Occurrence type limits the number of times
+      an entity type appears in the document.
+    SourceValueValuesEnum: Source of this entity type.
+
+  Fields:
+    baseType: A string attribute.
+    description: Description of the entity type.
+    enumValues: If specified, lists all the possible values for this entity.
+    hide: If the entity type is hidden in the schema. This provides the
+      functionality to temporally "disable" an entity without deleting it.
+    method: Specifies how the entity's value is obtained.
+    occurrenceType: Occurrence type limits the number of times an entity type
+      appears in the document.
+    properties: Describing the nested structure of an entity. An EntityType
+      may consist of several other EntityTypes. For example, in a document
+      there can be an EntityType `ID`, which consists of EntityType `name` and
+      `address`, with corresponding attributes, such as TEXT for both types
+      and ONCE for occurrence types.
+    source: Source of this entity type.
+    type: Name of the type. It must satisfy the following constraints: 1. Must
+      be unique within the set of same level types (with case-insensitive
+      match). 2. Maximum 64 characters. 3. Must start with a letter. 4.
+      Allowed characters: ASCII letters [a-zA-Z], ASCII digits [0-9], or one
+      of the following punctuation characters: * underscore '_' (recommended)
+      * hyphen '-' (allowed, not recommended) * colon ':' (allowed, not
+      recommended) NOTE: Whitespace characters are not allowed. 5. Cannot end
+      with a punctuation character. 6. Cannot contain the following restricted
+      strings: "google", "DocumentAI" (case-insensitive match). 7. A slash
+      character '/' is reserved as a separator in flattened representations of
+      nested entity types (e.g., "line_item/amount") in which case each part
+      (e.g., "line_item", "amount") must comply with the rules defined above.
+      We recommend using the snake case ("snake_case") in entity type names.
+  """
+
+  class MethodValueValuesEnum(_messages.Enum):
+    r"""Specifies how the entity's value is obtained.
+
+    Values:
+      METHOD_UNSPECIFIED: Unspecified method. It defaults to `EXTRACT`.
+      EXTRACT: The entity's value is directly extracted as-is from the
+        document text.
+      DERIVE: The entity's value is derived through inference and is not
+        necessarily an exact text extraction from the document.
+    """
+    METHOD_UNSPECIFIED = 0
+    EXTRACT = 1
+    DERIVE = 2
+
+  class OccurrenceTypeValueValuesEnum(_messages.Enum):
+    r"""Occurrence type limits the number of times an entity type appears in
+    the document.
+
+    Values:
+      OCCURRENCE_TYPE_UNSPECIFIED: Unspecified occurrence type.
+      OPTIONAL_ONCE: The entity type will appear zero times or once.
+      OPTIONAL_MULTIPLE: The entity type will appear zero or multiple times.
+      REQUIRED_ONCE: The entity type will only appear exactly once.
+      REQUIRED_MULTIPLE: The entity type will appear once or more times.
+    """
+    OCCURRENCE_TYPE_UNSPECIFIED = 0
+    OPTIONAL_ONCE = 1
+    OPTIONAL_MULTIPLE = 2
+    REQUIRED_ONCE = 3
+    REQUIRED_MULTIPLE = 4
+
+  class SourceValueValuesEnum(_messages.Enum):
+    r"""Source of this entity type.
+
+    Values:
+      SOURCE_UNSPECIFIED: Unspecified source.
+      PREDEFINED: The entity type is in the predefined schema of a pretrained
+        version of a processor.
+      USER_INPUT: The entity type is added by the users either: - during an
+        uptraining of an existing processor, or - during the process of
+        creating a customized processor.
+    """
+    SOURCE_UNSPECIFIED = 0
+    PREDEFINED = 1
+    USER_INPUT = 2
+
+  baseType = _messages.StringField(1)
+  description = _messages.StringField(2)
+  enumValues = _messages.StringField(3, repeated=True)
+  hide = _messages.BooleanField(4)
+  method = _messages.EnumField('MethodValueValuesEnum', 5)
+  occurrenceType = _messages.EnumField('OccurrenceTypeValueValuesEnum', 6)
+  properties = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3SchemaEntityType', 7, repeated=True)
+  source = _messages.EnumField('SourceValueValuesEnum', 8)
+  type = _messages.StringField(9)
+
+
+class GoogleCloudDocumentaiUiv1beta3SchemaInferenceMetadata(_messages.Message):
+  r"""Metadata for schema inference. Only used on dataset.schema for schema
+  inference, can be safely ignored elsewhere.
+
+  Fields:
+    inferred: True if is inferred by schema inference.
+  """
+
+  inferred = _messages.BooleanField(1)
+
+
 class GoogleCloudDocumentaiUiv1beta3SetDefaultProcessorVersionMetadata(_messages.Message):
   r"""The long-running operation metadata for the SetDefaultProcessorVersion
   method.
@@ -1340,6 +2281,48 @@ class GoogleCloudDocumentaiUiv1beta3SetDefaultProcessorVersionMetadata(_messages
 
 class GoogleCloudDocumentaiUiv1beta3SetDefaultProcessorVersionResponse(_messages.Message):
   r"""Response message for the SetDefaultProcessorVersion method."""
+
+
+class GoogleCloudDocumentaiUiv1beta3SummaryOptions(_messages.Message):
+  r"""Metadata for document summarization.
+
+  Enums:
+    FormatValueValuesEnum: The format the summary should be in.
+    LengthValueValuesEnum: How long the summary should be.
+
+  Fields:
+    format: The format the summary should be in.
+    length: How long the summary should be.
+  """
+
+  class FormatValueValuesEnum(_messages.Enum):
+    r"""The format the summary should be in.
+
+    Values:
+      FORMAT_UNSPECIFIED: Default.
+      PARAGRAPH: Format the output in paragraphs.
+      BULLETS: Format the output in bullets.
+    """
+    FORMAT_UNSPECIFIED = 0
+    PARAGRAPH = 1
+    BULLETS = 2
+
+  class LengthValueValuesEnum(_messages.Enum):
+    r"""How long the summary should be.
+
+    Values:
+      LENGTH_UNSPECIFIED: Default.
+      BRIEF: A brief summary of one or two sentences.
+      MODERATE: A paragraph-length summary.
+      COMPREHENSIVE: The longest option available.
+    """
+    LENGTH_UNSPECIFIED = 0
+    BRIEF = 1
+    MODERATE = 2
+    COMPREHENSIVE = 3
+
+  format = _messages.EnumField('FormatValueValuesEnum', 1)
+  length = _messages.EnumField('LengthValueValuesEnum', 2)
 
 
 class GoogleCloudDocumentaiUiv1beta3TrainProcessorVersionMetadata(_messages.Message):
@@ -1429,6 +2412,17 @@ class GoogleCloudDocumentaiUiv1beta3UpdateLabelerPoolOperationMetadata(_messages
 
   Fields:
     commonMetadata: The basic metadata of the long-running operation.
+  """
+
+  commonMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata', 1)
+
+
+class GoogleCloudDocumentaiUiv1beta3UpdateProcessorVersionMetadata(_messages.Message):
+  r"""The long-running operation metadata for the UpdateProcessorVersion
+  method.
+
+  Fields:
+    commonMetadata: The basic metadata for the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata', 1)
@@ -1729,7 +2723,18 @@ class GoogleCloudDocumentaiV1Document(_messages.Message):
     documentLayout: Parsed layout of the document.
     entities: A list of entities detected on Document.text. For document
       shards, entities in this list may cross shard boundaries.
+    entitiesRevisionId: The entity revision id that `document.entities` field
+      is based on. If this field is set and `entities_revisions` is not empty,
+      the entities in `document.entities` field are the entities in the entity
+      revision with this id and `document.entity_validation_output` field is
+      the `entity_validation_output` field in this entity revision.
+    entitiesRevisions: A list of entity revisions. The entity revisions are
+      appended to the document in the processing order. This field can be used
+      for comparing the entity extraction results at different stages of the
+      processing.
     entityRelations: Placeholder. Relationship among Document.entities.
+    entityValidationOutput: The entity validation output for the document.
+      This is the validation output for `document.entities` field.
     error: Any error that occurred while processing this document.
     mimeType: An IANA published [media type (MIME
       type)](https://www.iana.org/assignments/media-types/media-types.xhtml).
@@ -1755,16 +2760,19 @@ class GoogleCloudDocumentaiV1Document(_messages.Message):
   docid = _messages.StringField(3)
   documentLayout = _messages.MessageField('GoogleCloudDocumentaiV1DocumentDocumentLayout', 4)
   entities = _messages.MessageField('GoogleCloudDocumentaiV1DocumentEntity', 5, repeated=True)
-  entityRelations = _messages.MessageField('GoogleCloudDocumentaiV1DocumentEntityRelation', 6, repeated=True)
-  error = _messages.MessageField('GoogleRpcStatus', 7)
-  mimeType = _messages.StringField(8)
-  pages = _messages.MessageField('GoogleCloudDocumentaiV1DocumentPage', 9, repeated=True)
-  revisions = _messages.MessageField('GoogleCloudDocumentaiV1DocumentRevision', 10, repeated=True)
-  shardInfo = _messages.MessageField('GoogleCloudDocumentaiV1DocumentShardInfo', 11)
-  text = _messages.StringField(12)
-  textChanges = _messages.MessageField('GoogleCloudDocumentaiV1DocumentTextChange', 13, repeated=True)
-  textStyles = _messages.MessageField('GoogleCloudDocumentaiV1DocumentStyle', 14, repeated=True)
-  uri = _messages.StringField(15)
+  entitiesRevisionId = _messages.StringField(6)
+  entitiesRevisions = _messages.MessageField('GoogleCloudDocumentaiV1DocumentEntitiesRevision', 7, repeated=True)
+  entityRelations = _messages.MessageField('GoogleCloudDocumentaiV1DocumentEntityRelation', 8, repeated=True)
+  entityValidationOutput = _messages.MessageField('GoogleCloudDocumentaiV1DocumentEntityValidationOutput', 9)
+  error = _messages.MessageField('GoogleRpcStatus', 10)
+  mimeType = _messages.StringField(11)
+  pages = _messages.MessageField('GoogleCloudDocumentaiV1DocumentPage', 12, repeated=True)
+  revisions = _messages.MessageField('GoogleCloudDocumentaiV1DocumentRevision', 13, repeated=True)
+  shardInfo = _messages.MessageField('GoogleCloudDocumentaiV1DocumentShardInfo', 14)
+  text = _messages.StringField(15)
+  textChanges = _messages.MessageField('GoogleCloudDocumentaiV1DocumentTextChange', 16, repeated=True)
+  textStyles = _messages.MessageField('GoogleCloudDocumentaiV1DocumentStyle', 17, repeated=True)
+  uri = _messages.StringField(18)
 
 
 class GoogleCloudDocumentaiV1DocumentChunkedDocument(_messages.Message):
@@ -1957,6 +2965,20 @@ class GoogleCloudDocumentaiV1DocumentDocumentLayoutDocumentLayoutBlockLayoutText
   type = _messages.StringField(3)
 
 
+class GoogleCloudDocumentaiV1DocumentEntitiesRevision(_messages.Message):
+  r"""Entity revision.
+
+  Fields:
+    entities: The entities in this revision.
+    entityValidationOutput: The entity validation output for this revision.
+    revisionId: The revision id.
+  """
+
+  entities = _messages.MessageField('GoogleCloudDocumentaiV1DocumentEntity', 1, repeated=True)
+  entityValidationOutput = _messages.MessageField('GoogleCloudDocumentaiV1DocumentEntityValidationOutput', 2)
+  revisionId = _messages.StringField(3)
+
+
 class GoogleCloudDocumentaiV1DocumentEntity(_messages.Message):
   r"""An entity that could be a phrase in the text or a property that belongs
   to the document. It is a known entity type, such as a person, an
@@ -2037,7 +3059,8 @@ class GoogleCloudDocumentaiV1DocumentEntityNormalizedValue(_messages.Message):
     integerValue: Integer value.
     moneyValue: Money value. See also: https://github.com/googleapis/googleapi
       s/blob/master/google/type/money.proto
-    signatureValue: A boolean attribute.
+    signatureValue: A signature - a graphical representation of a person's
+      name, often used to sign a document.
     text: Optional. An optional field to store a normalized string. For some
       entity types, one of respective `structured_value` fields may also be
       populated. Also not all the types of `structured_value` will be
@@ -2072,6 +3095,60 @@ class GoogleCloudDocumentaiV1DocumentEntityRelation(_messages.Message):
   objectId = _messages.StringField(1)
   relation = _messages.StringField(2)
   subjectId = _messages.StringField(3)
+
+
+class GoogleCloudDocumentaiV1DocumentEntityValidationOutput(_messages.Message):
+  r"""The output of the validation given the document and the validation
+  rules.
+
+  Fields:
+    passAllRules: The overall result of the validation, true if all applicable
+      rules are valid.
+    validationResults: The result of each validation rule.
+  """
+
+  passAllRules = _messages.BooleanField(1)
+  validationResults = _messages.MessageField('GoogleCloudDocumentaiV1DocumentEntityValidationOutputValidationResult', 2, repeated=True)
+
+
+class GoogleCloudDocumentaiV1DocumentEntityValidationOutputValidationResult(_messages.Message):
+  r"""Validation result for a single validation rule.
+
+  Enums:
+    ValidationResultTypeValueValuesEnum: The result of the validation rule.
+
+  Fields:
+    rule: Optional. The name of the rule resource that is used for validation.
+      Format: `projects/{project}/locations/{location}/rules/{rule}`
+    ruleDescription: The description of the validation rule.
+    ruleName: The display name of the validation rule.
+    validationDetails: The detailed information of the running the validation
+      process using the entity from the document based on the validation rule.
+    validationResultType: The result of the validation rule.
+  """
+
+  class ValidationResultTypeValueValuesEnum(_messages.Enum):
+    r"""The result of the validation rule.
+
+    Values:
+      VALIDATION_RESULT_TYPE_UNSPECIFIED: The validation result type is
+        unspecified.
+      VALIDATION_RESULT_TYPE_VALID: The validation is valid.
+      VALIDATION_RESULT_TYPE_INVALID: The validation is invalid.
+      VALIDATION_RESULT_TYPE_SKIPPED: The validation is skipped.
+      VALIDATION_RESULT_TYPE_NOT_APPLICABLE: The validation is not applicable.
+    """
+    VALIDATION_RESULT_TYPE_UNSPECIFIED = 0
+    VALIDATION_RESULT_TYPE_VALID = 1
+    VALIDATION_RESULT_TYPE_INVALID = 2
+    VALIDATION_RESULT_TYPE_SKIPPED = 3
+    VALIDATION_RESULT_TYPE_NOT_APPLICABLE = 4
+
+  rule = _messages.StringField(1)
+  ruleDescription = _messages.StringField(2)
+  ruleName = _messages.StringField(3)
+  validationDetails = _messages.StringField(4)
+  validationResultType = _messages.EnumField('ValidationResultTypeValueValuesEnum', 5)
 
 
 class GoogleCloudDocumentaiV1DocumentOutputConfig(_messages.Message):
@@ -2974,6 +4051,16 @@ class GoogleCloudDocumentaiV1DocumentTextChange(_messages.Message):
   textAnchor = _messages.MessageField('GoogleCloudDocumentaiV1DocumentTextAnchor', 3)
 
 
+class GoogleCloudDocumentaiV1Documents(_messages.Message):
+  r"""A set of inline documents.
+
+  Fields:
+    documents: The list of documents.
+  """
+
+  documents = _messages.MessageField('GoogleCloudDocumentaiV1Document', 1, repeated=True)
+
+
 class GoogleCloudDocumentaiV1EnableProcessorMetadata(_messages.Message):
   r"""The long-running operation metadata for the EnableProcessor method.
 
@@ -3255,6 +4342,51 @@ class GoogleCloudDocumentaiV1GcsPrefix(_messages.Message):
   gcsUriPrefix = _messages.StringField(1)
 
 
+class GoogleCloudDocumentaiV1GenerateSchemaVersionRequest(_messages.Message):
+  r"""Request message for GenerateSchemaVersion.
+
+  Fields:
+    baseSchemaVersion: The base schema version name to use for the schema
+      generation. Format: `projects/{project}/locations/{location}/schemas/{sc
+      hema}/schemaVersions/{schema_version}`
+    gcsDocuments: The set of documents placed on Cloud Storage.
+    gcsPrefix: The common prefix of documents placed on Cloud Storage.
+    generateSchemaVersionParams: Optional. User specified parameters for the
+      schema generation.
+    inlineDocuments: The set of documents specified inline.
+    rawDocuments: The set of raw documents.
+  """
+
+  baseSchemaVersion = _messages.StringField(1)
+  gcsDocuments = _messages.MessageField('GoogleCloudDocumentaiV1GcsDocuments', 2)
+  gcsPrefix = _messages.MessageField('GoogleCloudDocumentaiV1GcsPrefix', 3)
+  generateSchemaVersionParams = _messages.MessageField('GoogleCloudDocumentaiV1GenerateSchemaVersionRequestGenerateSchemaVersionParams', 4)
+  inlineDocuments = _messages.MessageField('GoogleCloudDocumentaiV1Documents', 5)
+  rawDocuments = _messages.MessageField('GoogleCloudDocumentaiV1RawDocuments', 6)
+
+
+class GoogleCloudDocumentaiV1GenerateSchemaVersionRequestGenerateSchemaVersionParams(_messages.Message):
+  r"""The parameters for the schema generation.
+
+  Fields:
+    history: Optional. Previous prompt-answers in a chronological order.
+    prompt: Optional. The prompt used for the schema generation.
+  """
+
+  history = _messages.MessageField('GoogleCloudDocumentaiV1SchemaGenerationHistory', 1)
+  prompt = _messages.StringField(2)
+
+
+class GoogleCloudDocumentaiV1GenerateSchemaVersionResponse(_messages.Message):
+  r"""Response message for GenerateSchemaVersion.
+
+  Fields:
+    schemaVersion: The schema version generated by the model.
+  """
+
+  schemaVersion = _messages.MessageField('GoogleCloudDocumentaiV1SchemaVersion', 1)
+
+
 class GoogleCloudDocumentaiV1HumanReviewStatus(_messages.Message):
   r"""The status of human review on a processed document.
 
@@ -3345,6 +4477,76 @@ class GoogleCloudDocumentaiV1ListProcessorsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   processors = _messages.MessageField('GoogleCloudDocumentaiV1Processor', 2, repeated=True)
+
+
+class GoogleCloudDocumentaiV1ListSchemaVersionsResponse(_messages.Message):
+  r"""Response message for ListSchemaVersions.
+
+  Fields:
+    nextPageToken: Points to the next SchemaVersion, otherwise empty.
+    schemaVersions: The list of SchemaVersions.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  schemaVersions = _messages.MessageField('GoogleCloudDocumentaiV1SchemaVersion', 2, repeated=True)
+
+
+class GoogleCloudDocumentaiV1ListSchemasResponse(_messages.Message):
+  r"""Response message for ListSchemas.
+
+  Fields:
+    nextPageToken: Points to the next Schema, otherwise empty.
+    schemas: The list of Schemas.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  schemas = _messages.MessageField('GoogleCloudDocumentaiV1NextSchema', 2, repeated=True)
+
+
+class GoogleCloudDocumentaiV1NextSchema(_messages.Message):
+  r"""NextSchema is a collection of SchemaVersions.
+
+  Messages:
+    LabelsValue: Optional. The GCP labels for the Schema.
+
+  Fields:
+    createTime: Output only. The time when the Schema was created.
+    displayName: Optional. The user-defined name of the Schema.
+    labels: Optional. The GCP labels for the Schema.
+    name: Identifier. The resource name of the Schema. Format:
+      `projects/{project}/locations/{location}/schemas/{schema}`
+    updateTime: Output only. The time when the Schema was last updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The GCP labels for the Schema.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
 
 
 class GoogleCloudDocumentaiV1NormalizedVertex(_messages.Message):
@@ -3467,6 +4669,10 @@ class GoogleCloudDocumentaiV1ProcessOptionsLayoutConfig(_messages.Message):
 
   Fields:
     chunkingConfig: Optional. Config for chunking in layout parser processor.
+    enableImageAnnotation: Optional. Whether to include image annotations in
+      layout parser response.
+    enableTableAnnotation: Optional. Whether to include table annotations in
+      layout parser response.
     returnBoundingBoxes: Optional. Whether to include bounding boxes in layout
       parser processor response.
     returnImages: Optional. Whether to include images in layout parser
@@ -3474,8 +4680,10 @@ class GoogleCloudDocumentaiV1ProcessOptionsLayoutConfig(_messages.Message):
   """
 
   chunkingConfig = _messages.MessageField('GoogleCloudDocumentaiV1ProcessOptionsLayoutConfigChunkingConfig', 1)
-  returnBoundingBoxes = _messages.BooleanField(2)
-  returnImages = _messages.BooleanField(3)
+  enableImageAnnotation = _messages.BooleanField(2)
+  enableTableAnnotation = _messages.BooleanField(3)
+  returnBoundingBoxes = _messages.BooleanField(4)
+  returnImages = _messages.BooleanField(5)
 
 
 class GoogleCloudDocumentaiV1ProcessOptionsLayoutConfigChunkingConfig(_messages.Message):
@@ -3580,6 +4788,10 @@ class GoogleCloudDocumentaiV1Processor(_messages.Message):
     StateValueValuesEnum: Output only. The state of the processor.
 
   Fields:
+    activeSchemaVersion: Optional. SchemaVersion used by the Processor. It is
+      the same as Processor's DatasetSchema.schema_version Format is `projects
+      /{project}/locations/{location}/schemas/{schema}/schemaVersions/{schema_
+      version}
     createTime: Output only. The time the processor was created.
     defaultProcessorVersion: The default processor version.
     displayName: The display name of the processor.
@@ -3629,17 +4841,18 @@ class GoogleCloudDocumentaiV1Processor(_messages.Message):
     FAILED = 6
     DELETING = 7
 
-  createTime = _messages.StringField(1)
-  defaultProcessorVersion = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  kmsKeyName = _messages.StringField(4)
-  name = _messages.StringField(5)
-  processEndpoint = _messages.StringField(6)
-  processorVersionAliases = _messages.MessageField('GoogleCloudDocumentaiV1ProcessorVersionAlias', 7, repeated=True)
-  satisfiesPzi = _messages.BooleanField(8)
-  satisfiesPzs = _messages.BooleanField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  type = _messages.StringField(11)
+  activeSchemaVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  defaultProcessorVersion = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  kmsKeyName = _messages.StringField(5)
+  name = _messages.StringField(6)
+  processEndpoint = _messages.StringField(7)
+  processorVersionAliases = _messages.MessageField('GoogleCloudDocumentaiV1ProcessorVersionAlias', 8, repeated=True)
+  satisfiesPzi = _messages.BooleanField(9)
+  satisfiesPzs = _messages.BooleanField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  type = _messages.StringField(12)
 
 
 class GoogleCloudDocumentaiV1ProcessorType(_messages.Message):
@@ -3921,6 +5134,16 @@ class GoogleCloudDocumentaiV1RawDocument(_messages.Message):
   mimeType = _messages.StringField(3)
 
 
+class GoogleCloudDocumentaiV1RawDocuments(_messages.Message):
+  r"""Specifies a set of raw documents.
+
+  Fields:
+    documents: Specifies raw document content and mime type.
+  """
+
+  documents = _messages.MessageField('GoogleCloudDocumentaiV1RawDocument', 1, repeated=True)
+
+
 class GoogleCloudDocumentaiV1ReviewDocumentOperationMetadata(_messages.Message):
   r"""The long-running operation metadata for the ReviewDocument method.
 
@@ -3994,6 +5217,79 @@ class GoogleCloudDocumentaiV1ReviewDocumentResponse(_messages.Message):
   gcsDestination = _messages.StringField(1)
   rejectionReason = _messages.StringField(2)
   state = _messages.EnumField('StateValueValuesEnum', 3)
+
+
+class GoogleCloudDocumentaiV1SchemaGenerationHistory(_messages.Message):
+  r"""The history of schema generation iterations.
+
+  Fields:
+    iterations: Required. Previous prompt-answers in a chronological order.
+  """
+
+  iterations = _messages.MessageField('GoogleCloudDocumentaiV1SchemaGenerationIteration', 1, repeated=True)
+
+
+class GoogleCloudDocumentaiV1SchemaGenerationIteration(_messages.Message):
+  r"""A single iteration of the schema generation.
+
+  Fields:
+    adjustedSchema: Optional. The previous schema version adjusted by the
+      model.
+    generatedSchema: Required. The schema version generated by the model.
+    prompt: Optional. The prompt used for the iteration.
+  """
+
+  adjustedSchema = _messages.MessageField('GoogleCloudDocumentaiV1SchemaVersion', 1)
+  generatedSchema = _messages.MessageField('GoogleCloudDocumentaiV1SchemaVersion', 2)
+  prompt = _messages.StringField(3)
+
+
+class GoogleCloudDocumentaiV1SchemaVersion(_messages.Message):
+  r"""SchemaVersion is a version of the Schema which is created in
+  SchemaGroup.
+
+  Messages:
+    LabelsValue: Optional. The GCP labels for the SchemaVersion.
+
+  Fields:
+    createTime: Output only. The time when the SchemaVersion was created.
+    displayName: Optional. The user-defined name of the SchemaVersion.
+    labels: Optional. The GCP labels for the SchemaVersion.
+    name: Identifier. The resource name of the SchemaVersion. Format: `project
+      s/{project}/locations/{location}/schemas/{schema}/schemaVersions/{schema
+      _version}`
+    schema: Required. The schema of the SchemaVersion.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The GCP labels for the SchemaVersion.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  schema = _messages.MessageField('GoogleCloudDocumentaiV1DocumentSchema', 5)
 
 
 class GoogleCloudDocumentaiV1SetDefaultProcessorVersionMetadata(_messages.Message):
@@ -4089,14 +5385,15 @@ class GoogleCloudDocumentaiV1TrainProcessorVersionRequestCustomDocumentExtractio
   Processor.
 
   Enums:
-    TrainingMethodValueValuesEnum: Training method to use for CDE training.
+    TrainingMethodValueValuesEnum: Optional. Training method to use for CDE
+      training.
 
   Fields:
-    trainingMethod: Training method to use for CDE training.
+    trainingMethod: Optional. Training method to use for CDE training.
   """
 
   class TrainingMethodValueValuesEnum(_messages.Enum):
-    r"""Training method to use for CDE training.
+    r"""Optional. Training method to use for CDE training.
 
     Values:
       TRAINING_METHOD_UNSPECIFIED: <no description>
@@ -4503,6 +5800,157 @@ class GoogleCloudDocumentaiV1beta3DocumentIdUnmanagedDocumentId(_messages.Messag
   docId = _messages.StringField(1)
 
 
+class GoogleCloudDocumentaiV1beta3DocumentSchema(_messages.Message):
+  r"""The schema defines the output of the processed document by a processor.
+
+  Fields:
+    description: Description of the schema.
+    displayName: Display name to show to users.
+    entityTypes: Entity types of the schema.
+    metadata: Metadata of the schema.
+  """
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  entityTypes = _messages.MessageField('GoogleCloudDocumentaiV1beta3DocumentSchemaEntityType', 3, repeated=True)
+  metadata = _messages.MessageField('GoogleCloudDocumentaiV1beta3DocumentSchemaMetadata', 4)
+
+
+class GoogleCloudDocumentaiV1beta3DocumentSchemaEntityType(_messages.Message):
+  r"""EntityType is the wrapper of a label of the corresponding model with
+  detailed attributes and limitations for entity-based processors. Multiple
+  types can also compose a dependency tree to represent nested types.
+
+  Fields:
+    baseTypes: The entity type that this type is derived from. For now, one
+      and only one should be set.
+    description: The description of the entity type. Could be used to provide
+      more information about the entity type for model calls.
+    displayName: User defined name for the type.
+    entityTypeMetadata: Metadata for the entity type.
+    enumValues: If specified, lists all the possible values for this entity.
+      This should not be more than a handful of values. If the number of
+      values is >10 or could change frequently use the
+      `EntityType.value_ontology` field and specify a list of all possible
+      values in a value ontology file.
+    name: Name of the type. It must be unique within the schema file and
+      cannot be a "Common Type". The following naming conventions are used: -
+      Use `snake_casing`. - Name matching is case-sensitive. - Maximum 64
+      characters. - Must start with a letter. - Allowed characters: ASCII
+      letters `[a-z0-9_-]`. (For backward compatibility internal
+      infrastructure and tooling can handle any ascii character.) - The `/` is
+      sometimes used to denote a property of a type. For example
+      `line_item/amount`. This convention is deprecated, but will still be
+      honored for backward compatibility.
+    properties: Description the nested structure, or composition of an entity.
+  """
+
+  baseTypes = _messages.StringField(1, repeated=True)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  entityTypeMetadata = _messages.MessageField('GoogleCloudDocumentaiV1beta3EntityTypeMetadata', 4)
+  enumValues = _messages.MessageField('GoogleCloudDocumentaiV1beta3DocumentSchemaEntityTypeEnumValues', 5)
+  name = _messages.StringField(6)
+  properties = _messages.MessageField('GoogleCloudDocumentaiV1beta3DocumentSchemaEntityTypeProperty', 7, repeated=True)
+
+
+class GoogleCloudDocumentaiV1beta3DocumentSchemaEntityTypeEnumValues(_messages.Message):
+  r"""Defines the a list of enum values.
+
+  Fields:
+    values: The individual values that this enum values type can include.
+  """
+
+  values = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudDocumentaiV1beta3DocumentSchemaEntityTypeProperty(_messages.Message):
+  r"""Defines properties that can be part of the entity type.
+
+  Enums:
+    MethodValueValuesEnum: Specifies how the entity's value is obtained.
+    OccurrenceTypeValueValuesEnum: Occurrence type limits the number of
+      instances an entity type appears in the document.
+
+  Fields:
+    description: The description of the property. Could be used to provide
+      more information about the property for model calls.
+    displayName: User defined name for the property.
+    method: Specifies how the entity's value is obtained.
+    name: The name of the property. Follows the same guidelines as the
+      EntityType name.
+    occurrenceType: Occurrence type limits the number of instances an entity
+      type appears in the document.
+    propertyMetadata: Any additional metadata about the property can be added
+      here.
+    valueType: A reference to the value type of the property. This type is
+      subject to the same conventions as the `Entity.base_types` field.
+  """
+
+  class MethodValueValuesEnum(_messages.Enum):
+    r"""Specifies how the entity's value is obtained.
+
+    Values:
+      METHOD_UNSPECIFIED: Unspecified method. It defaults to `EXTRACT`.
+      EXTRACT: The entity's value is directly extracted as-is from the
+        document text.
+      DERIVE: The entity's value is derived through inference and is not
+        necessarily an exact text extraction from the document.
+    """
+    METHOD_UNSPECIFIED = 0
+    EXTRACT = 1
+    DERIVE = 2
+
+  class OccurrenceTypeValueValuesEnum(_messages.Enum):
+    r"""Occurrence type limits the number of instances an entity type appears
+    in the document.
+
+    Values:
+      OCCURRENCE_TYPE_UNSPECIFIED: Unspecified occurrence type.
+      OPTIONAL_ONCE: There will be zero or one instance of this entity type.
+        The same entity instance may be mentioned multiple times.
+      OPTIONAL_MULTIPLE: The entity type will appear zero or multiple times.
+      REQUIRED_ONCE: The entity type will only appear exactly once. The same
+        entity instance may be mentioned multiple times.
+      REQUIRED_MULTIPLE: The entity type will appear once or more times.
+    """
+    OCCURRENCE_TYPE_UNSPECIFIED = 0
+    OPTIONAL_ONCE = 1
+    OPTIONAL_MULTIPLE = 2
+    REQUIRED_ONCE = 3
+    REQUIRED_MULTIPLE = 4
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  method = _messages.EnumField('MethodValueValuesEnum', 3)
+  name = _messages.StringField(4)
+  occurrenceType = _messages.EnumField('OccurrenceTypeValueValuesEnum', 5)
+  propertyMetadata = _messages.MessageField('GoogleCloudDocumentaiV1beta3PropertyMetadata', 6)
+  valueType = _messages.StringField(7)
+
+
+class GoogleCloudDocumentaiV1beta3DocumentSchemaMetadata(_messages.Message):
+  r"""Metadata for global schema behavior.
+
+  Fields:
+    documentAllowMultipleLabels: If true, on a given page, there can be
+      multiple `document` annotations covering it.
+    documentSplitter: If true, a `document` entity type can be applied to
+      subdocument (splitting). Otherwise, it can only be applied to the entire
+      document (classification).
+    prefixedNamingOnProperties: If set, all the nested entities must be
+      prefixed with the parents.
+    skipNamingValidation: If set, we will skip the naming format validation in
+      the schema. So the string values in `DocumentSchema.EntityType.name` and
+      `DocumentSchema.EntityType.Property.name` will not be checked.
+  """
+
+  documentAllowMultipleLabels = _messages.BooleanField(1)
+  documentSplitter = _messages.BooleanField(2)
+  prefixedNamingOnProperties = _messages.BooleanField(3)
+  skipNamingValidation = _messages.BooleanField(4)
+
+
 class GoogleCloudDocumentaiV1beta3EnableProcessorMetadata(_messages.Message):
   r"""The long-running operation metadata for the EnableProcessor method.
 
@@ -4518,6 +5966,16 @@ class GoogleCloudDocumentaiV1beta3EnableProcessorResponse(_messages.Message):
   proto for adding fields in future.
   """
 
+
+
+class GoogleCloudDocumentaiV1beta3EntityTypeMetadata(_messages.Message):
+  r"""Metadata about an entity type.
+
+  Fields:
+    inactive: Whether the entity type should be considered inactive.
+  """
+
+  inactive = _messages.BooleanField(1)
 
 
 class GoogleCloudDocumentaiV1beta3EvaluateProcessorVersionMetadata(_messages.Message):
@@ -4538,6 +5996,71 @@ class GoogleCloudDocumentaiV1beta3EvaluateProcessorVersionResponse(_messages.Mes
   """
 
   evaluation = _messages.StringField(1)
+
+
+class GoogleCloudDocumentaiV1beta3EvaluationMetrics(_messages.Message):
+  r"""Evaluation metrics, either in aggregate or about a specific entity.
+
+  Fields:
+    f1Score: The calculated f1 score.
+    falseNegativesCount: The amount of false negatives.
+    falsePositivesCount: The amount of false positives.
+    groundTruthDocumentCount: The amount of documents with a ground truth
+      occurrence.
+    groundTruthOccurrencesCount: The amount of occurrences in ground truth
+      documents.
+    precision: The calculated precision.
+    predictedDocumentCount: The amount of documents with a predicted
+      occurrence.
+    predictedOccurrencesCount: The amount of occurrences in predicted
+      documents.
+    recall: The calculated recall.
+    totalDocumentsCount: The amount of documents that had an occurrence of
+      this label.
+    truePositivesCount: The amount of true positives.
+  """
+
+  f1Score = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  falseNegativesCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  falsePositivesCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  groundTruthDocumentCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  groundTruthOccurrencesCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  precision = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
+  predictedDocumentCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  predictedOccurrencesCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  recall = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
+  totalDocumentsCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  truePositivesCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudDocumentaiV1beta3EvaluationReference(_messages.Message):
+  r"""Gives a short summary of an evaluation, and links to the evaluation
+  itself.
+
+  Fields:
+    aggregateMetrics: An aggregate of the statistics for the evaluation with
+      fuzzy matching on.
+    aggregateMetricsExact: An aggregate of the statistics for the evaluation
+      with fuzzy matching off.
+    evaluation: The resource name of the evaluation.
+    operation: The resource name of the Long Running Operation for the
+      evaluation.
+  """
+
+  aggregateMetrics = _messages.MessageField('GoogleCloudDocumentaiV1beta3EvaluationMetrics', 1)
+  aggregateMetricsExact = _messages.MessageField('GoogleCloudDocumentaiV1beta3EvaluationMetrics', 2)
+  evaluation = _messages.StringField(3)
+  operation = _messages.StringField(4)
+
+
+class GoogleCloudDocumentaiV1beta3FieldExtractionMetadata(_messages.Message):
+  r"""Metadata for how this field value is extracted.
+
+  Fields:
+    summaryOptions: Summary options config.
+  """
+
+  summaryOptions = _messages.MessageField('GoogleCloudDocumentaiV1beta3SummaryOptions', 1)
 
 
 class GoogleCloudDocumentaiV1beta3GcsPrefix(_messages.Message):
@@ -4666,6 +6189,269 @@ class GoogleCloudDocumentaiV1beta3ImportProcessorVersionResponse(_messages.Messa
   processorVersion = _messages.StringField(1)
 
 
+class GoogleCloudDocumentaiV1beta3Processor(_messages.Message):
+  r"""The first-class citizen for Document AI. Each processor defines how to
+  extract structural information from a document.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the processor.
+
+  Fields:
+    activeSchemaVersion: Optional. SchemaVersion used by the Processor. It is
+      the same as Processor's DatasetSchema.schema_version Format is `projects
+      /{project}/locations/{location}/schemas/{schema}/schemaVersions/{schema_
+      version}
+    createTime: Output only. The time the processor was created.
+    defaultProcessorVersion: The default processor version.
+    displayName: The display name of the processor.
+    kmsKeyName: The [KMS key](https://cloud.google.com/security-key-
+      management) used for encryption and decryption in CMEK scenarios.
+    name: Output only. Immutable. The resource name of the processor. Format:
+      `projects/{project}/locations/{location}/processors/{processor}`
+    processEndpoint: Output only. Immutable. The http endpoint that can be
+      called to invoke processing.
+    processorVersionAliases: Output only. The processor version aliases.
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
+    state: Output only. The state of the processor.
+    type: The processor type, such as: `OCR_PROCESSOR`, `INVOICE_PROCESSOR`.
+      To get a list of processor types, see FetchProcessorTypes.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the processor.
+
+    Values:
+      STATE_UNSPECIFIED: The processor is in an unspecified state.
+      ENABLED: The processor is enabled, i.e., has an enabled version which
+        can currently serve processing requests and all the feature
+        dependencies have been successfully initialized.
+      DISABLED: The processor is disabled.
+      ENABLING: The processor is being enabled, will become `ENABLED` if
+        successful.
+      DISABLING: The processor is being disabled, will become `DISABLED` if
+        successful.
+      CREATING: The processor is being created, will become either `ENABLED`
+        (for successful creation) or `FAILED` (for failed ones). Once a
+        processor is in this state, it can then be used for document
+        processing, but the feature dependencies of the processor might not be
+        fully created yet.
+      FAILED: The processor failed during creation or initialization of
+        feature dependencies. The user should delete the processor and
+        recreate one as all the functionalities of the processor are disabled.
+      DELETING: The processor is being deleted, will be removed if successful.
+    """
+    STATE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+    ENABLING = 3
+    DISABLING = 4
+    CREATING = 5
+    FAILED = 6
+    DELETING = 7
+
+  activeSchemaVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  defaultProcessorVersion = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  kmsKeyName = _messages.StringField(5)
+  name = _messages.StringField(6)
+  processEndpoint = _messages.StringField(7)
+  processorVersionAliases = _messages.MessageField('GoogleCloudDocumentaiV1beta3ProcessorVersionAlias', 8, repeated=True)
+  satisfiesPzi = _messages.BooleanField(9)
+  satisfiesPzs = _messages.BooleanField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  type = _messages.StringField(12)
+
+
+class GoogleCloudDocumentaiV1beta3ProcessorVersion(_messages.Message):
+  r"""A processor version is an implementation of a processor. Each processor
+  can have multiple versions, pretrained by Google internally or uptrained by
+  the customer. A processor can only have one default version at a time. Its
+  document-processing behavior is defined by that version.
+
+  Enums:
+    ModelTypeValueValuesEnum: Output only. The model type of this processor
+      version.
+    StateValueValuesEnum: Output only. The state of the processor version.
+
+  Fields:
+    createTime: Output only. The time the processor version was created.
+    deprecationInfo: Output only. If set, information about the eventual
+      deprecation of this version.
+    displayName: The display name of the processor version.
+    documentSchema: Output only. The schema of the processor version.
+      Describes the output.
+    genAiModelInfo: Output only. Information about Generative AI model-based
+      processor versions.
+    googleManaged: Output only. Denotes that this `ProcessorVersion` is
+      managed by Google.
+    kmsKeyName: Output only. The KMS key name used for encryption.
+    kmsKeyVersionName: Output only. The KMS key version with which data is
+      encrypted.
+    latestEvaluation: Output only. The most recently invoked evaluation for
+      the processor version.
+    modelType: Output only. The model type of this processor version.
+    name: Identifier. The resource name of the processor version. Format: `pro
+      jects/{project}/locations/{location}/processors/{processor}/processorVer
+      sions/{processor_version}`
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
+    state: Output only. The state of the processor version.
+  """
+
+  class ModelTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The model type of this processor version.
+
+    Values:
+      MODEL_TYPE_UNSPECIFIED: The processor version has unspecified model
+        type.
+      MODEL_TYPE_GENERATIVE: The processor version has generative model type.
+      MODEL_TYPE_CUSTOM: The processor version has custom model type.
+    """
+    MODEL_TYPE_UNSPECIFIED = 0
+    MODEL_TYPE_GENERATIVE = 1
+    MODEL_TYPE_CUSTOM = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the processor version.
+
+    Values:
+      STATE_UNSPECIFIED: The processor version is in an unspecified state.
+      DEPLOYED: The processor version is deployed and can be used for
+        processing.
+      DEPLOYING: The processor version is being deployed.
+      UNDEPLOYED: The processor version is not deployed and cannot be used for
+        processing.
+      UNDEPLOYING: The processor version is being undeployed.
+      CREATING: The processor version is being created.
+      DELETING: The processor version is being deleted.
+      FAILED: The processor version failed and is in an indeterminate state.
+      IMPORTING: The processor version is being imported.
+    """
+    STATE_UNSPECIFIED = 0
+    DEPLOYED = 1
+    DEPLOYING = 2
+    UNDEPLOYED = 3
+    UNDEPLOYING = 4
+    CREATING = 5
+    DELETING = 6
+    FAILED = 7
+    IMPORTING = 8
+
+  createTime = _messages.StringField(1)
+  deprecationInfo = _messages.MessageField('GoogleCloudDocumentaiV1beta3ProcessorVersionDeprecationInfo', 2)
+  displayName = _messages.StringField(3)
+  documentSchema = _messages.MessageField('GoogleCloudDocumentaiV1beta3DocumentSchema', 4)
+  genAiModelInfo = _messages.MessageField('GoogleCloudDocumentaiV1beta3ProcessorVersionGenAiModelInfo', 5)
+  googleManaged = _messages.BooleanField(6)
+  kmsKeyName = _messages.StringField(7)
+  kmsKeyVersionName = _messages.StringField(8)
+  latestEvaluation = _messages.MessageField('GoogleCloudDocumentaiV1beta3EvaluationReference', 9)
+  modelType = _messages.EnumField('ModelTypeValueValuesEnum', 10)
+  name = _messages.StringField(11)
+  satisfiesPzi = _messages.BooleanField(12)
+  satisfiesPzs = _messages.BooleanField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+
+
+class GoogleCloudDocumentaiV1beta3ProcessorVersionAlias(_messages.Message):
+  r"""Contains the alias and the aliased resource name of processor version.
+
+  Fields:
+    alias: The alias in the form of `processor_version` resource name.
+    processorVersion: The resource name of aliased processor version.
+  """
+
+  alias = _messages.StringField(1)
+  processorVersion = _messages.StringField(2)
+
+
+class GoogleCloudDocumentaiV1beta3ProcessorVersionDeprecationInfo(_messages.Message):
+  r"""Information about the upcoming deprecation of this processor version.
+
+  Fields:
+    deprecationTime: The time at which this processor version will be
+      deprecated.
+    replacementProcessorVersion: If set, the processor version that will be
+      used as a replacement.
+  """
+
+  deprecationTime = _messages.StringField(1)
+  replacementProcessorVersion = _messages.StringField(2)
+
+
+class GoogleCloudDocumentaiV1beta3ProcessorVersionGenAiModelInfo(_messages.Message):
+  r"""Information about Generative AI model-based processor versions.
+
+  Fields:
+    customGenAiModelInfo: Information for a custom Generative AI model created
+      by the user.
+    foundationGenAiModelInfo: Information for a pretrained Google-managed
+      foundation model.
+  """
+
+  customGenAiModelInfo = _messages.MessageField('GoogleCloudDocumentaiV1beta3ProcessorVersionGenAiModelInfoCustomGenAiModelInfo', 1)
+  foundationGenAiModelInfo = _messages.MessageField('GoogleCloudDocumentaiV1beta3ProcessorVersionGenAiModelInfoFoundationGenAiModelInfo', 2)
+
+
+class GoogleCloudDocumentaiV1beta3ProcessorVersionGenAiModelInfoCustomGenAiModelInfo(_messages.Message):
+  r"""Information for a custom Generative AI model created by the user. These
+  are created with `Create New Version` in either the `Call foundation model`
+  or `Fine tuning` tabs.
+
+  Enums:
+    CustomModelTypeValueValuesEnum: The type of custom model created by the
+      user.
+
+  Fields:
+    baseProcessorVersionId: The base processor version ID for the custom
+      model.
+    customModelType: The type of custom model created by the user.
+  """
+
+  class CustomModelTypeValueValuesEnum(_messages.Enum):
+    r"""The type of custom model created by the user.
+
+    Values:
+      CUSTOM_MODEL_TYPE_UNSPECIFIED: The model type is unspecified.
+      VERSIONED_FOUNDATION: The model is a versioned foundation model.
+      FINE_TUNED: The model is a finetuned foundation model.
+    """
+    CUSTOM_MODEL_TYPE_UNSPECIFIED = 0
+    VERSIONED_FOUNDATION = 1
+    FINE_TUNED = 2
+
+  baseProcessorVersionId = _messages.StringField(1)
+  customModelType = _messages.EnumField('CustomModelTypeValueValuesEnum', 2)
+
+
+class GoogleCloudDocumentaiV1beta3ProcessorVersionGenAiModelInfoFoundationGenAiModelInfo(_messages.Message):
+  r"""Information for a pretrained Google-managed foundation model.
+
+  Fields:
+    finetuningAllowed: Whether finetuning is allowed for this base processor
+      version.
+    minTrainLabeledDocuments: The minimum number of labeled documents in the
+      training dataset required for finetuning.
+  """
+
+  finetuningAllowed = _messages.BooleanField(1)
+  minTrainLabeledDocuments = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudDocumentaiV1beta3PropertyMetadata(_messages.Message):
+  r"""Metadata about a property.
+
+  Fields:
+    fieldExtractionMetadata: Field extraction metadata on the property.
+    inactive: Whether the property should be considered as "inactive".
+  """
+
+  fieldExtractionMetadata = _messages.MessageField('GoogleCloudDocumentaiV1beta3FieldExtractionMetadata', 1)
+  inactive = _messages.BooleanField(2)
+
+
 class GoogleCloudDocumentaiV1beta3ReviewDocumentOperationMetadata(_messages.Message):
   r"""The long-running operation metadata for the ReviewDocument method.
 
@@ -4789,6 +6575,48 @@ class GoogleCloudDocumentaiV1beta3SetDefaultProcessorVersionResponse(_messages.M
   r"""Response message for the SetDefaultProcessorVersion method."""
 
 
+class GoogleCloudDocumentaiV1beta3SummaryOptions(_messages.Message):
+  r"""Metadata for document summarization.
+
+  Enums:
+    FormatValueValuesEnum: The format the summary should be in.
+    LengthValueValuesEnum: How long the summary should be.
+
+  Fields:
+    format: The format the summary should be in.
+    length: How long the summary should be.
+  """
+
+  class FormatValueValuesEnum(_messages.Enum):
+    r"""The format the summary should be in.
+
+    Values:
+      FORMAT_UNSPECIFIED: Default.
+      PARAGRAPH: Format the output in paragraphs.
+      BULLETS: Format the output in bullets.
+    """
+    FORMAT_UNSPECIFIED = 0
+    PARAGRAPH = 1
+    BULLETS = 2
+
+  class LengthValueValuesEnum(_messages.Enum):
+    r"""How long the summary should be.
+
+    Values:
+      LENGTH_UNSPECIFIED: Default.
+      BRIEF: A brief summary of one or two sentences.
+      MODERATE: A paragraph-length summary.
+      COMPREHENSIVE: The longest option available.
+    """
+    LENGTH_UNSPECIFIED = 0
+    BRIEF = 1
+    MODERATE = 2
+    COMPREHENSIVE = 3
+
+  format = _messages.EnumField('FormatValueValuesEnum', 1)
+  length = _messages.EnumField('LengthValueValuesEnum', 2)
+
+
 class GoogleCloudDocumentaiV1beta3TrainProcessorVersionMetadata(_messages.Message):
   r"""The metadata that represents a processor version being created.
 
@@ -4855,6 +6683,17 @@ class GoogleCloudDocumentaiV1beta3UpdateDatasetOperationMetadata(_messages.Messa
 
   Fields:
     commonMetadata: The basic metadata of the long-running operation.
+  """
+
+  commonMetadata = _messages.MessageField('GoogleCloudDocumentaiV1beta3CommonOperationMetadata', 1)
+
+
+class GoogleCloudDocumentaiV1beta3UpdateProcessorVersionMetadata(_messages.Message):
+  r"""The long-running operation metadata for the UpdateProcessorVersion
+  method.
+
+  Fields:
+    commonMetadata: The basic metadata for the long-running operation.
   """
 
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiV1beta3CommonOperationMetadata', 1)
@@ -4960,10 +6799,15 @@ class GoogleLongrunningListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('GoogleLongrunningOperation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class GoogleLongrunningOperation(_messages.Message):

@@ -759,10 +759,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListPhraseSetsResponse(_messages.Message):
@@ -1348,15 +1353,9 @@ class RecognitionFeatures(_messages.Message):
     MultiChannelModeValueValuesEnum: Mode for recognizing multi-channel audio.
 
   Fields:
-    diarizationConfig: Configuration to enable speaker diarization and set
-      additional parameters to make diarization better suited for your
-      application. When this is enabled, we send all the words from the
-      beginning of the audio for the top alternative in every consecutive
-      STREAMING responses. This is done in order to improve our speaker tags
-      as our models learn to identify the speakers in the conversation over
-      time. For non-streaming requests, the diarization results will be
-      provided only in the top alternative of the FINAL
-      SpeechRecognitionResult.
+    diarizationConfig: Configuration to enable speaker diarization. To enable
+      diarization, set this field to an empty SpeakerDiarizationConfig
+      message.
     enableAutomaticPunctuation: If `true`, adds punctuation to recognition
       result hypotheses. This feature is only available in select languages.
       The default `false` value does not add punctuation to result hypotheses.
@@ -1623,15 +1622,10 @@ class SpeakerDiarizationConfig(_messages.Message):
   r"""Configuration to enable speaker diarization.
 
   Fields:
-    maxSpeakerCount: Required. Maximum number of speakers in the conversation.
-      Valid values are: 1-6. Must be >= `min_speaker_count`. This range gives
-      you more flexibility by allowing the system to automatically determine
-      the correct number of speakers.
-    minSpeakerCount: Required. Minimum number of speakers in the conversation.
-      This range gives you more flexibility by allowing the system to
-      automatically determine the correct number of speakers. To fix the
-      number of speakers detected in the audio, set `min_speaker_count` =
-      `max_speaker_count`.
+    maxSpeakerCount: Optional. The system automatically determines the number
+      of speakers. This value is not currently used.
+    minSpeakerCount: Optional. The system automatically determines the number
+      of speakers. This value is not currently used.
   """
 
   maxSpeakerCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1832,12 +1826,20 @@ class SpeechProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class SpeechProjectsLocationsPhraseSetsCreateRequest(_messages.Message):

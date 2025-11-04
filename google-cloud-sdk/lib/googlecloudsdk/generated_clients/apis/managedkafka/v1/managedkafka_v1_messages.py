@@ -123,6 +123,20 @@ class BrokerCapacityConfig(_messages.Message):
   diskSizeGb = _messages.IntegerField(1)
 
 
+class BrokerDetails(_messages.Message):
+  r"""Details of a broker in the Kafka cluster.
+
+  Fields:
+    brokerIndex: Output only. The index of the broker.
+    nodeId: Output only. The node id of the broker.
+    rack: Output only. The rack of the broker.
+  """
+
+  brokerIndex = _messages.IntegerField(1)
+  nodeId = _messages.IntegerField(2)
+  rack = _messages.StringField(3)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -210,6 +224,9 @@ class Cluster(_messages.Message):
     StateValueValuesEnum: Output only. The current state of the cluster.
 
   Messages:
+    BrokerConfigOverridesValue: Optional. Configurations for the broker that
+      are overridden from the cluster defaults. The key of the map is a Kafka
+      broker property name, for example: `auto.create.topics.enable`.
     BrokersPerZoneValue: Output only. Only populated when FULL view is
       requested. The number of brokers per zone.
     LabelsValue: Optional. Labels as key value pairs.
@@ -218,6 +235,11 @@ class Cluster(_messages.Message):
     brokerCapacityConfig: Optional. Capacity configuration at a per-broker
       level within the Kafka cluster. The config will be appled to each broker
       in the cluster.
+    brokerConfigOverrides: Optional. Configurations for the broker that are
+      overridden from the cluster defaults. The key of the map is a Kafka
+      broker property name, for example: `auto.create.topics.enable`.
+    brokerDetails: Output only. Only populated when FULL view is requested.
+      Details of each broker in the cluster.
     brokersPerZone: Output only. Only populated when FULL view is requested.
       The number of brokers per zone.
     capacityConfig: Required. Capacity configuration for the Kafka cluster.
@@ -252,6 +274,34 @@ class Cluster(_messages.Message):
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class BrokerConfigOverridesValue(_messages.Message):
+    r"""Optional. Configurations for the broker that are overridden from the
+    cluster defaults. The key of the map is a Kafka broker property name, for
+    example: `auto.create.topics.enable`.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        BrokerConfigOverridesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        BrokerConfigOverridesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a BrokerConfigOverridesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class BrokersPerZoneValue(_messages.Message):
@@ -304,20 +354,22 @@ class Cluster(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   brokerCapacityConfig = _messages.MessageField('BrokerCapacityConfig', 1)
-  brokersPerZone = _messages.MessageField('BrokersPerZoneValue', 2)
-  capacityConfig = _messages.MessageField('CapacityConfig', 3)
-  createTime = _messages.StringField(4)
-  gcpConfig = _messages.MessageField('GcpConfig', 5)
-  kafkaVersion = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  rebalanceConfig = _messages.MessageField('RebalanceConfig', 9)
-  satisfiesPzi = _messages.BooleanField(10)
-  satisfiesPzs = _messages.BooleanField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  tlsConfig = _messages.MessageField('TlsConfig', 13)
-  updateOptions = _messages.MessageField('UpdateOptions', 14)
-  updateTime = _messages.StringField(15)
+  brokerConfigOverrides = _messages.MessageField('BrokerConfigOverridesValue', 2)
+  brokerDetails = _messages.MessageField('BrokerDetails', 3, repeated=True)
+  brokersPerZone = _messages.MessageField('BrokersPerZoneValue', 4)
+  capacityConfig = _messages.MessageField('CapacityConfig', 5)
+  createTime = _messages.StringField(6)
+  gcpConfig = _messages.MessageField('GcpConfig', 7)
+  kafkaVersion = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  rebalanceConfig = _messages.MessageField('RebalanceConfig', 11)
+  satisfiesPzi = _messages.BooleanField(12)
+  satisfiesPzs = _messages.BooleanField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  tlsConfig = _messages.MessageField('TlsConfig', 15)
+  updateOptions = _messages.MessageField('UpdateOptions', 16)
+  updateTime = _messages.StringField(17)
 
 
 class ConnectAccessConfig(_messages.Message):
@@ -336,7 +388,8 @@ class ConnectCluster(_messages.Message):
   r"""An Apache Kafka Connect cluster deployed in a location.
 
   Enums:
-    StateValueValuesEnum: Output only. The current state of the cluster.
+    StateValueValuesEnum: Output only. The current state of the Kafka Connect
+      cluster.
 
   Messages:
     ConfigValue: Optional. Configurations for the worker that are overridden
@@ -362,23 +415,25 @@ class ConnectCluster(_messages.Message):
       cluster_id}
     satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: Output only. Reserved for future use.
-    state: Output only. The current state of the cluster.
+    state: Output only. The current state of the Kafka Connect cluster.
     updateTime: Output only. The time when the cluster was last updated.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The current state of the cluster.
+    r"""Output only. The current state of the Kafka Connect cluster.
 
     Values:
       STATE_UNSPECIFIED: A state was not specified.
       CREATING: The cluster is being created.
       ACTIVE: The cluster is active.
       DELETING: The cluster is being deleted.
+      DETACHED: The cluster is detached.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
+    DETACHED = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ConfigValue(_messages.Message):
@@ -941,10 +996,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListSchemaRegistriesResponse(_messages.Message):
@@ -1837,8 +1897,8 @@ class ManagedkafkaProjectsLocationsListRequest(_messages.Message):
   r"""A ManagedkafkaProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Unless explicitly documented otherwise,
-      don't use this unsupported field which is primarily intended for
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -1898,12 +1958,20 @@ class ManagedkafkaProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class ManagedkafkaProjectsLocationsSchemaRegistriesCompatibilityCheckCompatibilityRequest(_messages.Message):

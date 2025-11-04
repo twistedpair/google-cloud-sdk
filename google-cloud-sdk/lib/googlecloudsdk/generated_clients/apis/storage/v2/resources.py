@@ -63,6 +63,29 @@ class Collections(enum.Enum):
       ['project', 'location'],
       True
   )
+  PROJECTS_LOCATIONS_INTELLIGENCEFINDINGS = (
+      'projects.locations.intelligenceFindings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'intelligenceFindings/{intelligenceFindingsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_INTELLIGENCEFINDINGS_REVISIONS = (
+      'projects.locations.intelligenceFindings.revisions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'intelligenceFindings/{intelligenceFindingsId}/revisions/'
+              '{revisionsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_KEYRINGS = (
       'projects.locations.keyRings',
       'projects/{project}/locations/{location}/keyRings/{key_ring}',

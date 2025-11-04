@@ -46,6 +46,8 @@ class DocumentaiV1(base_api.BaseApiClient):
     self.projects_locations_processors_processorVersions_evaluations = self.ProjectsLocationsProcessorsProcessorVersionsEvaluationsService(self)
     self.projects_locations_processors_processorVersions = self.ProjectsLocationsProcessorsProcessorVersionsService(self)
     self.projects_locations_processors = self.ProjectsLocationsProcessorsService(self)
+    self.projects_locations_schemas_schemaVersions = self.ProjectsLocationsSchemasSchemaVersionsService(self)
+    self.projects_locations_schemas = self.ProjectsLocationsSchemasService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_operations = self.ProjectsOperationsService(self)
     self.projects = self.ProjectsService(self)
@@ -170,7 +172,7 @@ class DocumentaiV1(base_api.BaseApiClient):
         method_id='documentai.projects.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='DocumentaiProjectsLocationsOperationsListRequest',
@@ -846,6 +848,323 @@ class DocumentaiV1(base_api.BaseApiClient):
         request_field='googleCloudDocumentaiV1SetDefaultProcessorVersionRequest',
         request_type_name='DocumentaiProjectsLocationsProcessorsSetDefaultProcessorVersionRequest',
         response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSchemasSchemaVersionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_schemas_schemaVersions resource."""
+
+    _NAME = 'projects_locations_schemas_schemaVersions'
+
+    def __init__(self, client):
+      super(DocumentaiV1.ProjectsLocationsSchemasSchemaVersionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a schema version.
+
+      Args:
+        request: (DocumentaiProjectsLocationsSchemasSchemaVersionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDocumentaiV1SchemaVersion) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemas/{schemasId}/schemaVersions',
+        http_method='POST',
+        method_id='documentai.projects.locations.schemas.schemaVersions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/schemaVersions',
+        request_field='googleCloudDocumentaiV1SchemaVersion',
+        request_type_name='DocumentaiProjectsLocationsSchemasSchemaVersionsCreateRequest',
+        response_type_name='GoogleCloudDocumentaiV1SchemaVersion',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a schema version.
+
+      Args:
+        request: (DocumentaiProjectsLocationsSchemasSchemaVersionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemas/{schemasId}/schemaVersions/{schemaVersionsId}',
+        http_method='DELETE',
+        method_id='documentai.projects.locations.schemas.schemaVersions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DocumentaiProjectsLocationsSchemasSchemaVersionsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Generate(self, request, global_params=None):
+      r"""Generates a schema version.
+
+      Args:
+        request: (DocumentaiProjectsLocationsSchemasSchemaVersionsGenerateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDocumentaiV1GenerateSchemaVersionResponse) The response message.
+      """
+      config = self.GetMethodConfig('Generate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Generate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemas/{schemasId}/schemaVersions:generate',
+        http_method='POST',
+        method_id='documentai.projects.locations.schemas.schemaVersions.generate',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/schemaVersions:generate',
+        request_field='googleCloudDocumentaiV1GenerateSchemaVersionRequest',
+        request_type_name='DocumentaiProjectsLocationsSchemasSchemaVersionsGenerateRequest',
+        response_type_name='GoogleCloudDocumentaiV1GenerateSchemaVersionResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a schema version.
+
+      Args:
+        request: (DocumentaiProjectsLocationsSchemasSchemaVersionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDocumentaiV1SchemaVersion) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemas/{schemasId}/schemaVersions/{schemaVersionsId}',
+        http_method='GET',
+        method_id='documentai.projects.locations.schemas.schemaVersions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DocumentaiProjectsLocationsSchemasSchemaVersionsGetRequest',
+        response_type_name='GoogleCloudDocumentaiV1SchemaVersion',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists SchemaVersions.
+
+      Args:
+        request: (DocumentaiProjectsLocationsSchemasSchemaVersionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDocumentaiV1ListSchemaVersionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemas/{schemasId}/schemaVersions',
+        http_method='GET',
+        method_id='documentai.projects.locations.schemas.schemaVersions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/schemaVersions',
+        request_field='',
+        request_type_name='DocumentaiProjectsLocationsSchemasSchemaVersionsListRequest',
+        response_type_name='GoogleCloudDocumentaiV1ListSchemaVersionsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a schema version. Editable fields are: - `display_name` - `labels`.
+
+      Args:
+        request: (DocumentaiProjectsLocationsSchemasSchemaVersionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDocumentaiV1SchemaVersion) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemas/{schemasId}/schemaVersions/{schemaVersionsId}',
+        http_method='PATCH',
+        method_id='documentai.projects.locations.schemas.schemaVersions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudDocumentaiV1SchemaVersion',
+        request_type_name='DocumentaiProjectsLocationsSchemasSchemaVersionsPatchRequest',
+        response_type_name='GoogleCloudDocumentaiV1SchemaVersion',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSchemasService(base_api.BaseApiService):
+    """Service class for the projects_locations_schemas resource."""
+
+    _NAME = 'projects_locations_schemas'
+
+    def __init__(self, client):
+      super(DocumentaiV1.ProjectsLocationsSchemasService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a schema.
+
+      Args:
+        request: (DocumentaiProjectsLocationsSchemasCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDocumentaiV1NextSchema) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemas',
+        http_method='POST',
+        method_id='documentai.projects.locations.schemas.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/schemas',
+        request_field='googleCloudDocumentaiV1NextSchema',
+        request_type_name='DocumentaiProjectsLocationsSchemasCreateRequest',
+        response_type_name='GoogleCloudDocumentaiV1NextSchema',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a schema.
+
+      Args:
+        request: (DocumentaiProjectsLocationsSchemasDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemas/{schemasId}',
+        http_method='DELETE',
+        method_id='documentai.projects.locations.schemas.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['force'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DocumentaiProjectsLocationsSchemasDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a schema.
+
+      Args:
+        request: (DocumentaiProjectsLocationsSchemasGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDocumentaiV1NextSchema) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemas/{schemasId}',
+        http_method='GET',
+        method_id='documentai.projects.locations.schemas.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DocumentaiProjectsLocationsSchemasGetRequest',
+        response_type_name='GoogleCloudDocumentaiV1NextSchema',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Schemas.
+
+      Args:
+        request: (DocumentaiProjectsLocationsSchemasListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDocumentaiV1ListSchemasResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemas',
+        http_method='GET',
+        method_id='documentai.projects.locations.schemas.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/schemas',
+        request_field='',
+        request_type_name='DocumentaiProjectsLocationsSchemasListRequest',
+        response_type_name='GoogleCloudDocumentaiV1ListSchemasResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a schema. Editable fields are: - `display_name` - `labels`.
+
+      Args:
+        request: (DocumentaiProjectsLocationsSchemasPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDocumentaiV1NextSchema) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemas/{schemasId}',
+        http_method='PATCH',
+        method_id='documentai.projects.locations.schemas.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudDocumentaiV1NextSchema',
+        request_type_name='DocumentaiProjectsLocationsSchemasPatchRequest',
+        response_type_name='GoogleCloudDocumentaiV1NextSchema',
         supports_download=False,
     )
 

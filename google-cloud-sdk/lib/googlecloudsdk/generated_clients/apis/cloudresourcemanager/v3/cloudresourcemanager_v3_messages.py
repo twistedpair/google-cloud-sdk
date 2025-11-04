@@ -2088,9 +2088,7 @@ class ListTagValuesResponse(_messages.Message):
 
   Fields:
     nextPageToken: A pagination token returned from a previous call to
-      `ListTagValues` that indicates from where listing should continue. This
-      is currently not used, but the server may at any point start supplying a
-      valid token.
+      `ListTagValues` that indicates from where listing should continue.
     tagValues: A possibly paginated list of TagValues that are direct
       descendants of the specified parent TagKey.
   """

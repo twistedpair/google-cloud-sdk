@@ -70,14 +70,15 @@ class FetchBenchmarkingDataRequest(_messages.Message):
       valid configurations.
     pricingModel: Optional. The pricing model to use for the benchmarking
       data. Defaults to `spot`.
-    workloadSpec: Optional. The workload specification to use for the
-      benchmarking data. If not provided, use case will default to `chatbot`.
+    useCase: Optional. The use case to filter benchmarking data by. If not
+      provided, all benchmarking data for the given profile's
+      `model_server_info` will be returned.
   """
 
   instanceType = _messages.StringField(1)
   modelServerInfo = _messages.MessageField('ModelServerInfo', 2)
   pricingModel = _messages.StringField(3)
-  workloadSpec = _messages.MessageField('WorkloadSpec', 4)
+  useCase = _messages.StringField(4)
 
 
 class FetchBenchmarkingDataResponse(_messages.Message):

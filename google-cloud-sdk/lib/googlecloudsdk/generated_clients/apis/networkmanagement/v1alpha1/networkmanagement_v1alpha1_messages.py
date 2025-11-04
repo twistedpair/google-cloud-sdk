@@ -126,6 +126,9 @@ class AbortInfo(_messages.Message):
         read-pool instance).
       IP_VERSION_PROTOCOL_MISMATCH: Aborted because the used protocol is not
         supported for the used IP version.
+      GKE_POD_UNKNOWN_ENDPOINT_LOCATION: Aborted because selected GKE Pod
+        endpoint location is unknown. This is often the case for "Pending"
+        Pods, which don't have assigned IP addresses yet.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_NETWORK = 1
@@ -168,6 +171,7 @@ class AbortInfo(_messages.Message):
     NO_SERVERLESS_IP_RANGES = 38
     ALLOY_DB_INSTANCE_OUTBOUND_CONNECTION_UNSUPPORTED = 39
     IP_VERSION_PROTOCOL_MISMATCH = 40
+    GKE_POD_UNKNOWN_ENDPOINT_LOCATION = 41
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   ipAddress = _messages.StringField(2)
@@ -1013,6 +1017,7 @@ class DeliverInfo(_messages.Message):
       REDIS_INSTANCE: Target is a Redis Instance.
       REDIS_CLUSTER: Target is a Redis Cluster.
       ALLOY_DB_INSTANCE: Target is an AlloyDB Instance.
+      GKE_POD: Target is a GKE Pod.
     """
     TARGET_UNSPECIFIED = 0
     INSTANCE = 1
@@ -1033,6 +1038,7 @@ class DeliverInfo(_messages.Message):
     REDIS_INSTANCE = 16
     REDIS_CLUSTER = 17
     ALLOY_DB_INSTANCE = 18
+    GKE_POD = 19
 
   googleServiceType = _messages.EnumField('GoogleServiceTypeValueValuesEnum', 1)
   ipAddress = _messages.StringField(2)
@@ -1173,6 +1179,8 @@ class DropInfo(_messages.Message):
         instance that is not in a running state.
       GKE_CLUSTER_NOT_RUNNING: Packet sent from or to a GKE cluster that is
         not in running state.
+      GKE_POD_NOT_RUNNING: Packet sent from or to a GKE Pod that is not in
+        running state.
       CLOUD_SQL_INSTANCE_NOT_RUNNING: Packet sent from or to a Cloud SQL
         instance that is not in running state.
       REDIS_INSTANCE_NOT_RUNNING: Packet sent from or to a Redis Instance that
@@ -1363,6 +1371,19 @@ class DropInfo(_messages.Message):
         to the destination IP address.
       CLOUD_NAT_PROTOCOL_UNSUPPORTED: Packet is dropped by Cloud NAT due to
         using an unsupported protocol.
+      L2_INTERCONNECT_UNSUPPORTED_PROTOCOL: Packet is dropped due to using an
+        unsupported protocol (any other than UDP) for L2 Interconnect.
+      L2_INTERCONNECT_UNSUPPORTED_PORT: Packet is dropped due to using an
+        unsupported port (any other than 6081) for L2 Interconnect.
+      L2_INTERCONNECT_DESTINATION_IP_MISMATCH: Packet is dropped due to
+        destination IP not matching the appliance mapping IPs configured on
+        the L2 Interconnect attachment.
+      NCC_ROUTE_WITHIN_HYBRID_SUBNET_UNSUPPORTED: Packet could be dropped
+        because it matches a route associated with an NCC spoke in the hybrid
+        subnet context, but such a configuration is not supported.
+      HYBRID_SUBNET_REGION_MISMATCH: Packet is dropped because the region of
+        the hybrid subnet is different from the region of the next hop of the
+        route matched within this hybrid subnet.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -1393,77 +1414,83 @@ class DropInfo(_messages.Message):
     INGRESS_FIREWALL_TAGS_UNSUPPORTED_BY_DIRECT_VPC_EGRESS = 26
     INSTANCE_NOT_RUNNING = 27
     GKE_CLUSTER_NOT_RUNNING = 28
-    CLOUD_SQL_INSTANCE_NOT_RUNNING = 29
-    REDIS_INSTANCE_NOT_RUNNING = 30
-    REDIS_CLUSTER_NOT_RUNNING = 31
-    ALLOY_DB_INSTANCE_NOT_READY = 32
-    TRAFFIC_TYPE_BLOCKED = 33
-    GKE_MASTER_UNAUTHORIZED_ACCESS = 34
-    CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS = 35
-    ALLOY_DB_INSTANCE_UNAUTHORIZED_ACCESS = 36
-    DROPPED_INSIDE_GKE_SERVICE = 37
-    DROPPED_INSIDE_CLOUD_SQL_SERVICE = 38
-    DROPPED_INSIDE_ALLOY_DB_SERVICE = 39
-    GOOGLE_MANAGED_SERVICE_NO_PEERING = 40
-    GOOGLE_MANAGED_SERVICE_NO_PSC_ENDPOINT = 41
-    GKE_PSC_ENDPOINT_MISSING = 42
-    CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 43
-    GKE_CONTROL_PLANE_REGION_MISMATCH = 44
-    PUBLIC_GKE_CONTROL_PLANE_TO_PRIVATE_DESTINATION = 45
-    GKE_CONTROL_PLANE_NO_ROUTE = 46
-    CLOUD_SQL_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC = 47
-    ALLOY_DB_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC = 48
-    PUBLIC_CLOUD_SQL_INSTANCE_TO_PRIVATE_DESTINATION = 49
-    CLOUD_SQL_INSTANCE_NO_ROUTE = 50
-    ALLOY_DB_INSTANCE_NO_ROUTE = 51
-    CLOUD_SQL_CONNECTOR_REQUIRED = 52
-    ALLOY_DB_AUTH_PROXY_REQUIRED = 53
-    CLOUD_FUNCTION_NOT_ACTIVE = 54
-    VPC_CONNECTOR_NOT_SET = 55
-    VPC_CONNECTOR_NOT_RUNNING = 56
-    VPC_CONNECTOR_SERVERLESS_TRAFFIC_BLOCKED = 57
-    VPC_CONNECTOR_HEALTH_CHECK_TRAFFIC_BLOCKED = 58
-    FORWARDING_RULE_REGION_MISMATCH = 59
-    PSC_CONNECTION_NOT_ACCEPTED = 60
-    PSC_ENDPOINT_ACCESSED_FROM_PEERED_NETWORK = 61
-    PSC_NEG_PRODUCER_ENDPOINT_NO_GLOBAL_ACCESS = 62
-    PSC_NEG_PRODUCER_FORWARDING_RULE_MULTIPLE_PORTS = 63
-    CLOUD_SQL_PSC_NEG_UNSUPPORTED = 64
-    NO_NAT_SUBNETS_FOR_PSC_SERVICE_ATTACHMENT = 65
-    PSC_TRANSITIVITY_NOT_PROPAGATED = 66
-    HYBRID_NEG_NON_DYNAMIC_ROUTE_MATCHED = 67
-    HYBRID_NEG_NON_LOCAL_DYNAMIC_ROUTE_MATCHED = 68
-    CLOUD_RUN_REVISION_NOT_READY = 69
-    DROPPED_INSIDE_PSC_SERVICE_PRODUCER = 70
-    LOAD_BALANCER_HAS_NO_PROXY_SUBNET = 71
-    CLOUD_NAT_NO_ADDRESSES = 72
-    ROUTING_LOOP = 73
-    DROPPED_INSIDE_GOOGLE_MANAGED_SERVICE = 74
-    LOAD_BALANCER_BACKEND_INVALID_NETWORK = 75
-    BACKEND_SERVICE_NAMED_PORT_NOT_DEFINED = 76
-    DESTINATION_IS_PRIVATE_NAT_IP_RANGE = 77
-    DROPPED_INSIDE_REDIS_INSTANCE_SERVICE = 78
-    REDIS_INSTANCE_UNSUPPORTED_PORT = 79
-    REDIS_INSTANCE_CONNECTING_FROM_PUPI_ADDRESS = 80
-    REDIS_INSTANCE_NO_ROUTE_TO_DESTINATION_NETWORK = 81
-    REDIS_INSTANCE_NO_EXTERNAL_IP = 82
-    REDIS_INSTANCE_UNSUPPORTED_PROTOCOL = 83
-    DROPPED_INSIDE_REDIS_CLUSTER_SERVICE = 84
-    REDIS_CLUSTER_UNSUPPORTED_PORT = 85
-    REDIS_CLUSTER_NO_EXTERNAL_IP = 86
-    REDIS_CLUSTER_UNSUPPORTED_PROTOCOL = 87
-    NO_ADVERTISED_ROUTE_TO_GCP_DESTINATION = 88
-    NO_TRAFFIC_SELECTOR_TO_GCP_DESTINATION = 89
-    NO_KNOWN_ROUTE_FROM_PEERED_NETWORK_TO_DESTINATION = 90
-    PRIVATE_NAT_TO_PSC_ENDPOINT_UNSUPPORTED = 91
-    PSC_PORT_MAPPING_PORT_MISMATCH = 92
-    PSC_PORT_MAPPING_WITHOUT_PSC_CONNECTION_UNSUPPORTED = 93
-    UNSUPPORTED_ROUTE_MATCHED_FOR_NAT64_DESTINATION = 94
-    TRAFFIC_FROM_HYBRID_ENDPOINT_TO_INTERNET_DISALLOWED = 95
-    NO_MATCHING_NAT64_GATEWAY = 96
-    LOAD_BALANCER_BACKEND_IP_VERSION_MISMATCH = 97
-    NO_KNOWN_ROUTE_FROM_NCC_NETWORK_TO_DESTINATION = 98
-    CLOUD_NAT_PROTOCOL_UNSUPPORTED = 99
+    GKE_POD_NOT_RUNNING = 29
+    CLOUD_SQL_INSTANCE_NOT_RUNNING = 30
+    REDIS_INSTANCE_NOT_RUNNING = 31
+    REDIS_CLUSTER_NOT_RUNNING = 32
+    ALLOY_DB_INSTANCE_NOT_READY = 33
+    TRAFFIC_TYPE_BLOCKED = 34
+    GKE_MASTER_UNAUTHORIZED_ACCESS = 35
+    CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS = 36
+    ALLOY_DB_INSTANCE_UNAUTHORIZED_ACCESS = 37
+    DROPPED_INSIDE_GKE_SERVICE = 38
+    DROPPED_INSIDE_CLOUD_SQL_SERVICE = 39
+    DROPPED_INSIDE_ALLOY_DB_SERVICE = 40
+    GOOGLE_MANAGED_SERVICE_NO_PEERING = 41
+    GOOGLE_MANAGED_SERVICE_NO_PSC_ENDPOINT = 42
+    GKE_PSC_ENDPOINT_MISSING = 43
+    CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 44
+    GKE_CONTROL_PLANE_REGION_MISMATCH = 45
+    PUBLIC_GKE_CONTROL_PLANE_TO_PRIVATE_DESTINATION = 46
+    GKE_CONTROL_PLANE_NO_ROUTE = 47
+    CLOUD_SQL_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC = 48
+    ALLOY_DB_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC = 49
+    PUBLIC_CLOUD_SQL_INSTANCE_TO_PRIVATE_DESTINATION = 50
+    CLOUD_SQL_INSTANCE_NO_ROUTE = 51
+    ALLOY_DB_INSTANCE_NO_ROUTE = 52
+    CLOUD_SQL_CONNECTOR_REQUIRED = 53
+    ALLOY_DB_AUTH_PROXY_REQUIRED = 54
+    CLOUD_FUNCTION_NOT_ACTIVE = 55
+    VPC_CONNECTOR_NOT_SET = 56
+    VPC_CONNECTOR_NOT_RUNNING = 57
+    VPC_CONNECTOR_SERVERLESS_TRAFFIC_BLOCKED = 58
+    VPC_CONNECTOR_HEALTH_CHECK_TRAFFIC_BLOCKED = 59
+    FORWARDING_RULE_REGION_MISMATCH = 60
+    PSC_CONNECTION_NOT_ACCEPTED = 61
+    PSC_ENDPOINT_ACCESSED_FROM_PEERED_NETWORK = 62
+    PSC_NEG_PRODUCER_ENDPOINT_NO_GLOBAL_ACCESS = 63
+    PSC_NEG_PRODUCER_FORWARDING_RULE_MULTIPLE_PORTS = 64
+    CLOUD_SQL_PSC_NEG_UNSUPPORTED = 65
+    NO_NAT_SUBNETS_FOR_PSC_SERVICE_ATTACHMENT = 66
+    PSC_TRANSITIVITY_NOT_PROPAGATED = 67
+    HYBRID_NEG_NON_DYNAMIC_ROUTE_MATCHED = 68
+    HYBRID_NEG_NON_LOCAL_DYNAMIC_ROUTE_MATCHED = 69
+    CLOUD_RUN_REVISION_NOT_READY = 70
+    DROPPED_INSIDE_PSC_SERVICE_PRODUCER = 71
+    LOAD_BALANCER_HAS_NO_PROXY_SUBNET = 72
+    CLOUD_NAT_NO_ADDRESSES = 73
+    ROUTING_LOOP = 74
+    DROPPED_INSIDE_GOOGLE_MANAGED_SERVICE = 75
+    LOAD_BALANCER_BACKEND_INVALID_NETWORK = 76
+    BACKEND_SERVICE_NAMED_PORT_NOT_DEFINED = 77
+    DESTINATION_IS_PRIVATE_NAT_IP_RANGE = 78
+    DROPPED_INSIDE_REDIS_INSTANCE_SERVICE = 79
+    REDIS_INSTANCE_UNSUPPORTED_PORT = 80
+    REDIS_INSTANCE_CONNECTING_FROM_PUPI_ADDRESS = 81
+    REDIS_INSTANCE_NO_ROUTE_TO_DESTINATION_NETWORK = 82
+    REDIS_INSTANCE_NO_EXTERNAL_IP = 83
+    REDIS_INSTANCE_UNSUPPORTED_PROTOCOL = 84
+    DROPPED_INSIDE_REDIS_CLUSTER_SERVICE = 85
+    REDIS_CLUSTER_UNSUPPORTED_PORT = 86
+    REDIS_CLUSTER_NO_EXTERNAL_IP = 87
+    REDIS_CLUSTER_UNSUPPORTED_PROTOCOL = 88
+    NO_ADVERTISED_ROUTE_TO_GCP_DESTINATION = 89
+    NO_TRAFFIC_SELECTOR_TO_GCP_DESTINATION = 90
+    NO_KNOWN_ROUTE_FROM_PEERED_NETWORK_TO_DESTINATION = 91
+    PRIVATE_NAT_TO_PSC_ENDPOINT_UNSUPPORTED = 92
+    PSC_PORT_MAPPING_PORT_MISMATCH = 93
+    PSC_PORT_MAPPING_WITHOUT_PSC_CONNECTION_UNSUPPORTED = 94
+    UNSUPPORTED_ROUTE_MATCHED_FOR_NAT64_DESTINATION = 95
+    TRAFFIC_FROM_HYBRID_ENDPOINT_TO_INTERNET_DISALLOWED = 96
+    NO_MATCHING_NAT64_GATEWAY = 97
+    LOAD_BALANCER_BACKEND_IP_VERSION_MISMATCH = 98
+    NO_KNOWN_ROUTE_FROM_NCC_NETWORK_TO_DESTINATION = 99
+    CLOUD_NAT_PROTOCOL_UNSUPPORTED = 100
+    L2_INTERCONNECT_UNSUPPORTED_PROTOCOL = 101
+    L2_INTERCONNECT_UNSUPPORTED_PORT = 102
+    L2_INTERCONNECT_DESTINATION_IP_MISMATCH = 103
+    NCC_ROUTE_WITHIN_HYBRID_SUBNET_UNSUPPORTED = 104
+    HYBRID_SUBNET_REGION_MISMATCH = 105
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   destinationGeolocationCode = _messages.StringField(2)
@@ -1526,6 +1553,8 @@ class Endpoint(_messages.Message):
     gkeMasterCluster: A cluster URI for [Google Kubernetes Engine cluster
       control plane](https://cloud.google.com/kubernetes-
       engine/docs/concepts/cluster-architecture).
+    gkePod: A [GKE Pod](https://cloud.google.com/kubernetes-
+      engine/docs/concepts/pod) URI.
     instance: A Compute Engine instance URI.
     ipAddress: The IP address of the endpoint, which can be an external or
       internal IP.
@@ -1629,16 +1658,17 @@ class Endpoint(_messages.Message):
   forwardingRuleTarget = _messages.EnumField('ForwardingRuleTargetValueValuesEnum', 7)
   fqdn = _messages.StringField(8)
   gkeMasterCluster = _messages.StringField(9)
-  instance = _messages.StringField(10)
-  ipAddress = _messages.StringField(11)
-  loadBalancerId = _messages.StringField(12)
-  loadBalancerType = _messages.EnumField('LoadBalancerTypeValueValuesEnum', 13)
-  network = _messages.StringField(14)
-  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 15)
-  port = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  projectId = _messages.StringField(17)
-  redisCluster = _messages.StringField(18)
-  redisInstance = _messages.StringField(19)
+  gkePod = _messages.StringField(10)
+  instance = _messages.StringField(11)
+  ipAddress = _messages.StringField(12)
+  loadBalancerId = _messages.StringField(13)
+  loadBalancerType = _messages.EnumField('LoadBalancerTypeValueValuesEnum', 14)
+  network = _messages.StringField(15)
+  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 16)
+  port = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  projectId = _messages.StringField(18)
+  redisCluster = _messages.StringField(19)
+  redisInstance = _messages.StringField(20)
 
 
 class EndpointInfo(_messages.Message):
@@ -1940,12 +1970,32 @@ class GeoLocation(_messages.Message):
   r"""The geographical location of the MonitoringPoint.
 
   Fields:
-    country: Country.
     formattedAddress: Formatted address.
+    regionCode: Unicode CLDR region code.
   """
 
-  country = _messages.StringField(1)
-  formattedAddress = _messages.StringField(2)
+  formattedAddress = _messages.StringField(1)
+  regionCode = _messages.StringField(2)
+
+
+class GkePodInfo(_messages.Message):
+  r"""For display only. Metadata associated with a Google Kubernetes Engine
+  (GKE) Pod.
+
+  Fields:
+    ipAddress: IP address of a GKE Pod. If the Pod is dual-stack, this is the
+      IP address relevant to the trace.
+    networkUri: URI of the network containing the GKE Pod.
+    podUri: URI of a GKE Pod. For Pods in regional Clusters, the URI format
+      is: `projects/{project}/locations/{location}/clusters/{cluster}/k8s/name
+      spaces/{namespace}/pods/{pod}` For Pods in zonal Clusters, the URI
+      format is: `projects/{project}/zones/{zone}/clusters/{cluster}/k8s/names
+      paces/{namespace}/pods/{pod}`
+  """
+
+  ipAddress = _messages.StringField(1)
+  networkUri = _messages.StringField(2)
+  podUri = _messages.StringField(3)
 
 
 class GoogleServiceInfo(_messages.Message):
@@ -2026,6 +2076,82 @@ class Host(_messages.Message):
   os = _messages.StringField(8)
 
 
+class HttpBody(_messages.Message):
+  r"""Message that represents an arbitrary HTTP body. It should only be used
+  for payload formats that can't be represented as JSON, such as raw binary or
+  an HTML page. This message can be used both in streaming and non-streaming
+  API methods in the request as well as the response. It can be used as a top-
+  level request field, which is convenient if one wants to extract parameters
+  from either the URL or HTTP template into the request fields and also want
+  access to the raw HTTP body. Example: message GetResourceRequest { // A
+  unique request id. string request_id = 1; // The raw HTTP body is bound to
+  this field. google.api.HttpBody http_body = 2; } service ResourceService {
+  rpc GetResource(GetResourceRequest) returns (google.api.HttpBody); rpc
+  UpdateResource(google.api.HttpBody) returns (google.protobuf.Empty); }
+  Example with streaming methods: service CaldavService { rpc
+  GetCalendar(stream google.api.HttpBody) returns (stream
+  google.api.HttpBody); rpc UpdateCalendar(stream google.api.HttpBody) returns
+  (stream google.api.HttpBody); } Use of this type only changes how the
+  request and response bodies are handled, all other features will continue to
+  work unchanged.
+
+  Messages:
+    ExtensionsValueListEntry: A ExtensionsValueListEntry object.
+
+  Fields:
+    contentType: The HTTP Content-Type header value specifying the content
+      type of the body.
+    data: The HTTP request/response body as raw binary.
+    extensions: Application specific response metadata. Must be set in the
+      first response for streaming APIs.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExtensionsValueListEntry(_messages.Message):
+    r"""A ExtensionsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ExtensionsValueListEntry object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExtensionsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  contentType = _messages.StringField(1)
+  data = _messages.BytesField(2)
+  extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
+
+
+class HybridSubnetInfo(_messages.Message):
+  r"""For display only. Metadata associated with a hybrid subnet.
+
+  Fields:
+    displayName: Name of a hybrid subnet.
+    region: Name of a Google Cloud region where the hybrid subnet is
+      configured.
+    uri: URI of a hybrid subnet.
+  """
+
+  displayName = _messages.StringField(1)
+  region = _messages.StringField(2)
+  uri = _messages.StringField(3)
+
+
 class InstanceInfo(_messages.Message):
   r"""For display only. Metadata associated with a Compute Engine instance.
 
@@ -2076,21 +2202,95 @@ class InstanceInfo(_messages.Message):
 class InterconnectAttachmentInfo(_messages.Message):
   r"""For display only. Metadata associated with an Interconnect attachment.
 
+  Enums:
+    TypeValueValuesEnum: The type of interconnect attachment this is.
+
   Fields:
     cloudRouterUri: URI of the Cloud Router to be used for dynamic routing.
     displayName: Name of an Interconnect attachment.
     interconnectUri: URI of the Interconnect where the Interconnect attachment
       is configured.
+    l2AttachmentMatchedIpAddress: Appliance IP address that was matched for
+      L2_DEDICATED attachments.
     region: Name of a Google Cloud region where the Interconnect attachment is
       configured.
+    type: The type of interconnect attachment this is.
     uri: URI of an Interconnect attachment.
   """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of interconnect attachment this is.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified type.
+      DEDICATED: Attachment to a dedicated interconnect.
+      PARTNER: Attachment to a partner interconnect, created by the customer.
+      PARTNER_PROVIDER: Attachment to a partner interconnect, created by the
+        partner.
+      L2_DEDICATED: Attachment to a L2 interconnect, created by the customer.
+    """
+    TYPE_UNSPECIFIED = 0
+    DEDICATED = 1
+    PARTNER = 2
+    PARTNER_PROVIDER = 3
+    L2_DEDICATED = 4
 
   cloudRouterUri = _messages.StringField(1)
   displayName = _messages.StringField(2)
   interconnectUri = _messages.StringField(3)
-  region = _messages.StringField(4)
-  uri = _messages.StringField(5)
+  l2AttachmentMatchedIpAddress = _messages.StringField(4)
+  region = _messages.StringField(5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  uri = _messages.StringField(7)
+
+
+class IpMasqueradingSkippedInfo(_messages.Message):
+  r"""For display only. Contains information about why IP masquerading was
+  skipped for the packet.
+
+  Enums:
+    ReasonValueValuesEnum: Reason why IP masquerading was not applied.
+
+  Fields:
+    nonMasqueradeRange: The matched non-masquerade IP range. Only set if
+      reason is DESTINATION_IP_IN_CONFIGURED_NON_MASQUERADE_RANGE or
+      DESTINATION_IP_IN_DEFAULT_NON_MASQUERADE_RANGE.
+    reason: Reason why IP masquerading was not applied.
+  """
+
+  class ReasonValueValuesEnum(_messages.Enum):
+    r"""Reason why IP masquerading was not applied.
+
+    Values:
+      REASON_UNSPECIFIED: Unused default value.
+      DESTINATION_IP_IN_CONFIGURED_NON_MASQUERADE_RANGE: Masquerading not
+        applied because destination IP is in one of configured non-masquerade
+        ranges.
+      DESTINATION_IP_IN_DEFAULT_NON_MASQUERADE_RANGE: Masquerading not applied
+        because destination IP is in one of default non-masquerade ranges.
+      DESTINATION_ON_SAME_NODE: Masquerading not applied because destination
+        is on the same Node.
+      DEFAULT_SNAT_DISABLED: Masquerading not applied because ip-masq-agent
+        doesn't exist and default SNAT is disabled.
+      NO_MASQUERADING_FOR_IPV6: Masquerading not applied because the packet's
+        IP version is IPv6.
+      POD_USES_NODE_NETWORK_NAMESPACE: Masquerading not applied because the
+        source Pod uses the host Node's network namespace, including the
+        Node's IP address.
+      NO_MASQUERADING_FOR_RETURN_PACKET: Masquerading not applied because the
+        packet is a return packet.
+    """
+    REASON_UNSPECIFIED = 0
+    DESTINATION_IP_IN_CONFIGURED_NON_MASQUERADE_RANGE = 1
+    DESTINATION_IP_IN_DEFAULT_NON_MASQUERADE_RANGE = 2
+    DESTINATION_ON_SAME_NODE = 3
+    DEFAULT_SNAT_DISABLED = 4
+    NO_MASQUERADING_FOR_IPV6 = 5
+    POD_USES_NODE_NETWORK_NAMESPACE = 6
+    NO_MASQUERADING_FOR_RETURN_PACKET = 7
+
+  nonMasqueradeRange = _messages.StringField(1)
+  reason = _messages.EnumField('ReasonValueValuesEnum', 2)
 
 
 class ListAppliancesResponse(_messages.Message):
@@ -2182,10 +2382,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListSimulationsResponse(_messages.Message):
@@ -2514,6 +2719,7 @@ class MonitoringPoint(_messages.Message):
     errors: Output only. The codes of errors detected in the MonitoringPoint.
     geoLocation: Output only. The geographical location of the
       MonitoringPoint. ;
+    guid: Output only. The GUID of the MonitoringPoint.
     host: Output only. The host information of the MonitoringPoint.
     hostname: Output only. The hostname of the MonitoringPoint.
     name: Identifier. Name of the resource. Format: `projects/{project}/locati
@@ -2587,17 +2793,18 @@ class MonitoringPoint(_messages.Message):
   displayName = _messages.StringField(4)
   errors = _messages.EnumField('ErrorsValueListEntryValuesEnum', 5, repeated=True)
   geoLocation = _messages.MessageField('GeoLocation', 6)
-  host = _messages.MessageField('Host', 7)
-  hostname = _messages.StringField(8)
-  name = _messages.StringField(9)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 10, repeated=True)
-  originatingIp = _messages.StringField(11)
-  providerTags = _messages.MessageField('ProviderTag', 12, repeated=True)
-  type = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
-  upgradeAvailable = _messages.BooleanField(15)
-  upgradeType = _messages.EnumField('UpgradeTypeValueValuesEnum', 16)
-  version = _messages.StringField(17)
+  guid = _messages.StringField(7)
+  host = _messages.MessageField('Host', 8)
+  hostname = _messages.StringField(9)
+  name = _messages.StringField(10)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 11, repeated=True)
+  originatingIp = _messages.StringField(12)
+  providerTags = _messages.MessageField('ProviderTag', 13, repeated=True)
+  type = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
+  upgradeAvailable = _messages.BooleanField(16)
+  upgradeType = _messages.EnumField('UpgradeTypeValueValuesEnum', 17)
+  version = _messages.StringField(18)
 
 
 class NatInfo(_messages.Message):
@@ -2638,12 +2845,14 @@ class NatInfo(_messages.Message):
         internal address.
       CLOUD_NAT: Cloud NAT Gateway.
       PRIVATE_SERVICE_CONNECT: Private service connect NAT.
+      GKE_POD_IP_MASQUERADING: GKE Pod IP address masquerading.
     """
     TYPE_UNSPECIFIED = 0
     INTERNAL_TO_EXTERNAL = 1
     EXTERNAL_TO_INTERNAL = 2
     CLOUD_NAT = 3
     PRIVATE_SERVICE_CONNECT = 4
+    GKE_POD_IP_MASQUERADING = 5
 
   natGatewayName = _messages.StringField(1)
   networkUri = _messages.StringField(2)
@@ -3026,11 +3235,16 @@ class NetworkmanagementProjectsLocationsNetworkMonitoringProvidersDeleteRequest(
   object.
 
   Fields:
+    force: Optional. If set to true, any nested MonitoringPoints, NetworkPaths
+      and WebPaths resources from this NetworkMonitoringProvider will also be
+      deleted. Otherwise, the request will only work if there are no nested
+      resources.
     name: Required. Name of the resource. Format: projects/{project}/locations
       /{location}/networkMonitoringProviders/{network_monitoring_provider}
   """
 
-  name = _messages.StringField(1, required=True)
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class NetworkmanagementProjectsLocationsNetworkMonitoringProvidersGenerateProviderAccessTokenRequest(_messages.Message):
@@ -3080,6 +3294,74 @@ class NetworkmanagementProjectsLocationsNetworkMonitoringProvidersListRequest(_m
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPointsDownloadInstallScriptRequest(_messages.Message):
+  r"""A NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoring
+  PointsDownloadInstallScriptRequest object.
+
+  Enums:
+    MonitoringPointTypeValueValuesEnum: Required. The type of the monitoring
+      point.
+
+  Fields:
+    _password: Optional. Password for logging into the MonitoringPoint.
+    hostname: Required. The hostname of the MonitoringPoint, e.g. "test-vm"
+    monitoringPointType: Required. The type of the monitoring point.
+    ntpServerAddress: Optional. Network Time Protocol a user can configure. If
+      the user omits the field, the default is either NTP servers provided in
+      the DHCP lease or a set of well-known NTP servers pre-configured on the
+      monitoring point. This field can be an IP address or FQDN.
+    ntpServerSecondaryAddress: Optional. Second NTP server.
+    parent: Required. Parent value for DownloadInstallScriptRequest. Format: p
+      rojects/{project}/locations/{location}/networkMonitoringProviders/{netwo
+      rk_monitoring_provider}
+    staticIpAddress_dnsServerAddress: Required. DNS server.
+    staticIpAddress_dnsServerSecondaryAddress: Optional. Second DNS server.
+    staticIpAddress_domain: Optional. Domain name of the MonitoringPoint.
+    staticIpAddress_gatewayAddress: Required. Gateway IP address. Example:
+      "100.80.40.1".
+    staticIpAddress_ipAddress: Required. IP address of the MonitoringPoint.
+    staticIpAddress_netmask: Optional. Networkmask and CIDR range. Example:
+      "255.255.255.0/24"
+    timeZone_id: IANA Time Zone Database time zone. For example
+      "America/New_York".
+    timeZone_version: Optional. IANA Time Zone Database version number. For
+      example "2019a".
+    useDhcp: Optional. Dynamic Host Configuration Protocol, is a network
+      management protocol that automatically assigns IP addresses and other
+      network configuration parameters to devices connecting to a network.
+  """
+
+  class MonitoringPointTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of the monitoring point.
+
+    Values:
+      MONITORING_POINT_TYPE_UNSPECIFIED: This value should not be used.
+      CONTAINER: Monitoring Point that runs in a Docker container on GCP.
+      KVM: Monitoring Point that runs in a KVM hypervisor.
+      VMWARE: Monitoring Point that runs in a VMware hypervisor.
+    """
+    MONITORING_POINT_TYPE_UNSPECIFIED = 0
+    CONTAINER = 1
+    KVM = 2
+    VMWARE = 3
+
+  _password = _messages.StringField(1)
+  hostname = _messages.StringField(2)
+  monitoringPointType = _messages.EnumField('MonitoringPointTypeValueValuesEnum', 3)
+  ntpServerAddress = _messages.StringField(4)
+  ntpServerSecondaryAddress = _messages.StringField(5)
+  parent = _messages.StringField(6, required=True)
+  staticIpAddress_dnsServerAddress = _messages.StringField(7)
+  staticIpAddress_dnsServerSecondaryAddress = _messages.StringField(8)
+  staticIpAddress_domain = _messages.StringField(9)
+  staticIpAddress_gatewayAddress = _messages.StringField(10)
+  staticIpAddress_ipAddress = _messages.StringField(11)
+  staticIpAddress_netmask = _messages.StringField(12)
+  timeZone_id = _messages.StringField(13)
+  timeZone_version = _messages.StringField(14)
+  useDhcp = _messages.BooleanField(15)
 
 
 class NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPointsGetRequest(_messages.Message):
@@ -3231,12 +3513,20 @@ class NetworkmanagementProjectsLocationsOperationsListRequest(_messages.Message)
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class NetworkmanagementProjectsLocationsSimulationsCreateRequest(_messages.Message):
@@ -4411,9 +4701,13 @@ class Step(_messages.Message):
     forwardingRule: Display information of a Compute Engine forwarding rule.
     gkeMaster: Display information of a Google Kubernetes Engine cluster
       master.
+    gkePod: Display information of a Google Kubernetes Engine Pod.
     googleService: Display information of a Google service
+    hybridSubnet: Display information of a hybrid subnet.
     instance: Display information of a Compute Engine instance.
     interconnectAttachment: Display information of an interconnect attachment.
+    ipMasqueradingSkipped: Display information of the reason why GKE Pod IP
+      masquerading was skipped.
     loadBalancer: Display information of the load balancers. Deprecated in
       favor of the `load_balancer_backend_info` field, not used in new tests.
     loadBalancerBackendInfo: Display information of a specific load balancer
@@ -4460,6 +4754,9 @@ class Step(_messages.Message):
       START_FROM_CLOUD_SQL_INSTANCE: Initial state: packet originating from a
         Cloud SQL instance. A CloudSQLInstanceInfo is populated with starting
         instance information.
+      START_FROM_GKE_POD: Initial state: packet originating from a Google
+        Kubernetes Engine Pod. A GkePodInfo is populated with starting Pod
+        information.
       START_FROM_REDIS_INSTANCE: Initial state: packet originating from a
         Redis instance. A RedisInstanceInfo is populated with starting
         instance information.
@@ -4505,6 +4802,8 @@ class Step(_messages.Message):
       ARRIVE_AT_EXTERNAL_LOAD_BALANCER: Forwarding state: arriving at a
         Compute Engine external load balancer. Deprecated in favor of the
         `ANALYZE_LOAD_BALANCER_BACKEND` state, not used in new tests.
+      ARRIVE_AT_HYBRID_SUBNET: Forwarding state: arriving at a hybrid subnet.
+        Appropriate routing configuration will be determined here.
       ARRIVE_AT_VPN_GATEWAY: Forwarding state: arriving at a Cloud VPN
         gateway.
       ARRIVE_AT_VPN_TUNNEL: Forwarding state: arriving at a Cloud VPN tunnel.
@@ -4516,7 +4815,11 @@ class Step(_messages.Message):
       SERVERLESS_EXTERNAL_CONNECTION: Forwarding state: for packets
         originating from a serverless endpoint forwarded through public
         (external) connectivity.
-      NAT: Transition state: packet header translated.
+      NAT: Transition state: packet header translated. The `nat` field is
+        populated with the translation information.
+      SKIP_GKE_POD_IP_MASQUERADING: Transition state: GKE Pod IP masquerading
+        is skipped. The `ip_masquerading_skipped` field is populated with the
+        reason.
       PROXY_CONNECTION: Transition state: original connection is terminated
         and a new proxied connection is initiated.
       DELIVER: Final state: packet could be delivered.
@@ -4534,37 +4837,40 @@ class Step(_messages.Message):
     START_FROM_PRIVATE_NETWORK = 4
     START_FROM_GKE_MASTER = 5
     START_FROM_CLOUD_SQL_INSTANCE = 6
-    START_FROM_REDIS_INSTANCE = 7
-    START_FROM_REDIS_CLUSTER = 8
-    START_FROM_ALLOY_DB_INSTANCE = 9
-    START_FROM_CLOUD_FUNCTION = 10
-    START_FROM_APP_ENGINE_VERSION = 11
-    START_FROM_CLOUD_RUN_REVISION = 12
-    START_FROM_STORAGE_BUCKET = 13
-    START_FROM_PSC_PUBLISHED_SERVICE = 14
-    START_FROM_SERVERLESS_NEG = 15
-    APPLY_INGRESS_FIREWALL_RULE = 16
-    APPLY_EGRESS_FIREWALL_RULE = 17
-    APPLY_ROUTE = 18
-    APPLY_FORWARDING_RULE = 19
-    ANALYZE_LOAD_BALANCER_BACKEND = 20
-    SPOOFING_APPROVED = 21
-    ARRIVE_AT_INSTANCE = 22
-    ARRIVE_AT_INTERNAL_LOAD_BALANCER = 23
-    ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 24
-    ARRIVE_AT_VPN_GATEWAY = 25
-    ARRIVE_AT_VPN_TUNNEL = 26
-    ARRIVE_AT_INTERCONNECT_ATTACHMENT = 27
-    ARRIVE_AT_VPC_CONNECTOR = 28
-    DIRECT_VPC_EGRESS_CONNECTION = 29
-    SERVERLESS_EXTERNAL_CONNECTION = 30
-    NAT = 31
-    PROXY_CONNECTION = 32
-    DELIVER = 33
-    DROP = 34
-    FORWARD = 35
-    ABORT = 36
-    VIEWER_PERMISSION_MISSING = 37
+    START_FROM_GKE_POD = 7
+    START_FROM_REDIS_INSTANCE = 8
+    START_FROM_REDIS_CLUSTER = 9
+    START_FROM_ALLOY_DB_INSTANCE = 10
+    START_FROM_CLOUD_FUNCTION = 11
+    START_FROM_APP_ENGINE_VERSION = 12
+    START_FROM_CLOUD_RUN_REVISION = 13
+    START_FROM_STORAGE_BUCKET = 14
+    START_FROM_PSC_PUBLISHED_SERVICE = 15
+    START_FROM_SERVERLESS_NEG = 16
+    APPLY_INGRESS_FIREWALL_RULE = 17
+    APPLY_EGRESS_FIREWALL_RULE = 18
+    APPLY_ROUTE = 19
+    APPLY_FORWARDING_RULE = 20
+    ANALYZE_LOAD_BALANCER_BACKEND = 21
+    SPOOFING_APPROVED = 22
+    ARRIVE_AT_INSTANCE = 23
+    ARRIVE_AT_INTERNAL_LOAD_BALANCER = 24
+    ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 25
+    ARRIVE_AT_HYBRID_SUBNET = 26
+    ARRIVE_AT_VPN_GATEWAY = 27
+    ARRIVE_AT_VPN_TUNNEL = 28
+    ARRIVE_AT_INTERCONNECT_ATTACHMENT = 29
+    ARRIVE_AT_VPC_CONNECTOR = 30
+    DIRECT_VPC_EGRESS_CONNECTION = 31
+    SERVERLESS_EXTERNAL_CONNECTION = 32
+    NAT = 33
+    SKIP_GKE_POD_IP_MASQUERADING = 34
+    PROXY_CONNECTION = 35
+    DELIVER = 36
+    DROP = 37
+    FORWARD = 38
+    ABORT = 39
+    VIEWER_PERMISSION_MISSING = 40
 
   abort = _messages.MessageField('AbortInfo', 1)
   alloyDbInstance = _messages.MessageField('AlloyDbInstanceInfo', 2)
@@ -4582,25 +4888,28 @@ class Step(_messages.Message):
   forward = _messages.MessageField('ForwardInfo', 14)
   forwardingRule = _messages.MessageField('ForwardingRuleInfo', 15)
   gkeMaster = _messages.MessageField('GKEMasterInfo', 16)
-  googleService = _messages.MessageField('GoogleServiceInfo', 17)
-  instance = _messages.MessageField('InstanceInfo', 18)
-  interconnectAttachment = _messages.MessageField('InterconnectAttachmentInfo', 19)
-  loadBalancer = _messages.MessageField('LoadBalancerInfo', 20)
-  loadBalancerBackendInfo = _messages.MessageField('LoadBalancerBackendInfo', 21)
-  nat = _messages.MessageField('NatInfo', 22)
-  network = _messages.MessageField('NetworkInfo', 23)
-  projectId = _messages.StringField(24)
-  proxyConnection = _messages.MessageField('ProxyConnectionInfo', 25)
-  redisCluster = _messages.MessageField('RedisClusterInfo', 26)
-  redisInstance = _messages.MessageField('RedisInstanceInfo', 27)
-  route = _messages.MessageField('RouteInfo', 28)
-  serverlessExternalConnection = _messages.MessageField('ServerlessExternalConnectionInfo', 29)
-  serverlessNeg = _messages.MessageField('ServerlessNegInfo', 30)
-  state = _messages.EnumField('StateValueValuesEnum', 31)
-  storageBucket = _messages.MessageField('StorageBucketInfo', 32)
-  vpcConnector = _messages.MessageField('VpcConnectorInfo', 33)
-  vpnGateway = _messages.MessageField('VpnGatewayInfo', 34)
-  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 35)
+  gkePod = _messages.MessageField('GkePodInfo', 17)
+  googleService = _messages.MessageField('GoogleServiceInfo', 18)
+  hybridSubnet = _messages.MessageField('HybridSubnetInfo', 19)
+  instance = _messages.MessageField('InstanceInfo', 20)
+  interconnectAttachment = _messages.MessageField('InterconnectAttachmentInfo', 21)
+  ipMasqueradingSkipped = _messages.MessageField('IpMasqueradingSkippedInfo', 22)
+  loadBalancer = _messages.MessageField('LoadBalancerInfo', 23)
+  loadBalancerBackendInfo = _messages.MessageField('LoadBalancerBackendInfo', 24)
+  nat = _messages.MessageField('NatInfo', 25)
+  network = _messages.MessageField('NetworkInfo', 26)
+  projectId = _messages.StringField(27)
+  proxyConnection = _messages.MessageField('ProxyConnectionInfo', 28)
+  redisCluster = _messages.MessageField('RedisClusterInfo', 29)
+  redisInstance = _messages.MessageField('RedisInstanceInfo', 30)
+  route = _messages.MessageField('RouteInfo', 31)
+  serverlessExternalConnection = _messages.MessageField('ServerlessExternalConnectionInfo', 32)
+  serverlessNeg = _messages.MessageField('ServerlessNegInfo', 33)
+  state = _messages.EnumField('StateValueValuesEnum', 34)
+  storageBucket = _messages.MessageField('StorageBucketInfo', 35)
+  vpcConnector = _messages.MessageField('VpcConnectorInfo', 36)
+  vpnGateway = _messages.MessageField('VpnGatewayInfo', 37)
+  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 38)
 
 
 class StorageBucketInfo(_messages.Message):
@@ -4761,6 +5070,8 @@ class WebPath(_messages.Message):
   Fields:
     createTime: Output only. The time the WebPath was created.
     destination: Output only. Web monitoring target.
+    destinationGeoLocation: Output only. Geographical location of the
+      destination.
     displayName: Output only. Display name of the WebPath.
     interval: Output only. Monitoring interval.
     monitoringEnabled: Output only. Is monitoring enabled for the WebPath.
@@ -4812,19 +5123,20 @@ class WebPath(_messages.Message):
 
   createTime = _messages.StringField(1)
   destination = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  interval = _messages.StringField(4)
-  monitoringEnabled = _messages.BooleanField(5)
-  monitoringPolicyDisplayName = _messages.StringField(6)
-  monitoringPolicyId = _messages.StringField(7)
-  monitoringStatus = _messages.EnumField('MonitoringStatusValueValuesEnum', 8)
-  name = _messages.StringField(9)
-  providerTags = _messages.MessageField('ProviderTag', 10, repeated=True)
-  providerUiUri = _messages.StringField(11)
-  relatedNetworkPathId = _messages.StringField(12)
-  sourceMonitoringPointId = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
-  workflowType = _messages.EnumField('WorkflowTypeValueValuesEnum', 15)
+  destinationGeoLocation = _messages.MessageField('GeoLocation', 3)
+  displayName = _messages.StringField(4)
+  interval = _messages.StringField(5)
+  monitoringEnabled = _messages.BooleanField(6)
+  monitoringPolicyDisplayName = _messages.StringField(7)
+  monitoringPolicyId = _messages.StringField(8)
+  monitoringStatus = _messages.EnumField('MonitoringStatusValueValuesEnum', 9)
+  name = _messages.StringField(10)
+  providerTags = _messages.MessageField('ProviderTag', 11, repeated=True)
+  providerUiUri = _messages.StringField(12)
+  relatedNetworkPathId = _messages.StringField(13)
+  sourceMonitoringPointId = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
+  workflowType = _messages.EnumField('WorkflowTypeValueValuesEnum', 16)
 
 
 encoding.AddCustomJsonFieldMapping(
@@ -4835,5 +5147,21 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPointsDownloadInstallScriptRequest, 'staticIpAddress_dnsServerAddress', 'staticIpAddress.dnsServerAddress')
+encoding.AddCustomJsonFieldMapping(
+    NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPointsDownloadInstallScriptRequest, 'staticIpAddress_dnsServerSecondaryAddress', 'staticIpAddress.dnsServerSecondaryAddress')
+encoding.AddCustomJsonFieldMapping(
+    NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPointsDownloadInstallScriptRequest, 'staticIpAddress_domain', 'staticIpAddress.domain')
+encoding.AddCustomJsonFieldMapping(
+    NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPointsDownloadInstallScriptRequest, 'staticIpAddress_gatewayAddress', 'staticIpAddress.gatewayAddress')
+encoding.AddCustomJsonFieldMapping(
+    NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPointsDownloadInstallScriptRequest, 'staticIpAddress_ipAddress', 'staticIpAddress.ipAddress')
+encoding.AddCustomJsonFieldMapping(
+    NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPointsDownloadInstallScriptRequest, 'staticIpAddress_netmask', 'staticIpAddress.netmask')
+encoding.AddCustomJsonFieldMapping(
+    NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPointsDownloadInstallScriptRequest, 'timeZone_id', 'timeZone.id')
+encoding.AddCustomJsonFieldMapping(
+    NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPointsDownloadInstallScriptRequest, 'timeZone_version', 'timeZone.version')
 encoding.AddCustomJsonFieldMapping(
     NetworkmanagementProjectsLocationsSimulationsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')

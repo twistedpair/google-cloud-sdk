@@ -265,7 +265,7 @@ class VmmigrationV1alpha1(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Initiates the cancellation of a running clone job.
+      r"""Initiates the cancellation of a running ImageImportJob.
 
       Args:
         request: (VmmigrationProjectsLocationsImageImportsImageImportJobsCancelRequest) input message
@@ -573,7 +573,7 @@ class VmmigrationV1alpha1(base_api.BaseApiClient):
         method_id='vmmigration.projects.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1alpha1/{+name}/operations',
         request_field='',
         request_type_name='VmmigrationProjectsLocationsOperationsListRequest',

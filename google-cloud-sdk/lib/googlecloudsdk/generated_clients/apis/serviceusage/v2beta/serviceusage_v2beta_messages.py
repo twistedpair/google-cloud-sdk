@@ -278,23 +278,6 @@ class Api(_messages.Message):
   version = _messages.StringField(8)
 
 
-class ApiOperation(_messages.Message):
-  r"""API operation details.
-
-  Fields:
-    apiId: Parent API identifier.
-    name: Name of the API operation. Format:
-      `*/*/services/*/apis/*/apiVersions/*/apiOperations/*`.
-    operationId: API operation identifier.
-    versionId: Parent API version identifier.
-  """
-
-  apiId = _messages.StringField(1)
-  name = _messages.StringField(2)
-  operationId = _messages.StringField(3)
-  versionId = _messages.StringField(4)
-
-
 class Aspect(_messages.Message):
   r"""Aspect represents Generic aspect. It is used to configure an aspect
   without making direct changes to service.proto
@@ -779,18 +762,6 @@ class BillingDestination(_messages.Message):
   monitoredResource = _messages.StringField(2)
 
 
-class CategoryService(_messages.Message):
-  r"""A service that belongs to a category and its metadata.
-
-  Fields:
-    parent: The parent category to which this service belongs.
-    service: Output only. The service included by this category.
-  """
-
-  parent = _messages.StringField(1)
-  service = _messages.MessageField('Service', 2)
-
-
 class ClientLibrarySettings(_messages.Message):
   r"""Details about how and where to publish client libraries.
 
@@ -1068,8 +1039,8 @@ class Control(_messages.Message):
 
   Fields:
     environment: The service controller environment to use. If empty, no
-      control plane feature (like quota and billing) will be enabled. The
-      recommended value for most services is servicecontrol.googleapis.com
+      control plane features (like quota and billing) will be enabled. The
+      recommended value for most services is servicecontrol.googleapis.com.
     methodPolicies: Defines policies applying to the API methods of the
       service.
   """
@@ -2222,20 +2193,6 @@ class GoogleApiServiceusageV2betaAnalyzeConsumerPolicyResponse(_messages.Message
   analysis = _messages.MessageField('GoogleApiServiceusageV2betaAnalysis', 1, repeated=True)
 
 
-class GoogleApiServiceusageV2betaApi(_messages.Message):
-  r"""API details for APIs exposed by a Service.
-
-  Fields:
-    name: The name of the API.
-    operations: The operations this API exposes.
-    version: The version of the API.
-  """
-
-  name = _messages.StringField(1)
-  operations = _messages.MessageField('GoogleApiServiceusageV2betaOperation', 2, repeated=True)
-  version = _messages.StringField(3)
-
-
 class GoogleApiServiceusageV2betaConsumerPolicy(_messages.Message):
   r"""Consumer Policy is a set of rules that define what services or service
   groups can be used for a cloud resource hierarchy.
@@ -2335,22 +2292,6 @@ class GoogleApiServiceusageV2betaImpact(_messages.Message):
   detail = _messages.StringField(1)
   impactType = _messages.EnumField('ImpactTypeValueValuesEnum', 2)
   missingDependency = _messages.StringField(3)
-
-
-class GoogleApiServiceusageV2betaOperation(_messages.Message):
-  r"""A GoogleApiServiceusageV2betaOperation object.
-
-  Fields:
-    name: Name of the operation.
-    requestMessageType: The type to use when sending requests. For example,
-      `CreateBookRequest`.
-    responseMessageType: The type that will be sent with responses. For
-      example, `Book`.
-  """
-
-  name = _messages.StringField(1)
-  requestMessageType = _messages.StringField(2)
-  responseMessageType = _messages.StringField(3)
 
 
 class GoogleApiServiceusageV2betaUpdateConsumerPolicyMetadata(_messages.Message):
@@ -2787,32 +2728,6 @@ class LabelDescriptor(_messages.Message):
   valueType = _messages.EnumField('ValueTypeValueValuesEnum', 3)
 
 
-class ListApiOperationsResponse(_messages.Message):
-  r"""The response message of the `ListApiOperations` method.
-
-  Fields:
-    apiOperations: The operations of the parent API version.
-    nextPageToken: A token, which can be sent as `page_token` to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
-  """
-
-  apiOperations = _messages.MessageField('ApiOperation', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-
-
-class ListCategoryServicesResponse(_messages.Message):
-  r"""The response message of the `ListCategoryServices` method.
-
-  Fields:
-    nextPageToken: A token, which can be sent as `page_token` to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
-    services: The services the parent category includes.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  services = _messages.MessageField('CategoryService', 2, repeated=True)
-
-
 class ListExpandedMembersResponse(_messages.Message):
   r"""The response message of the `ListExpandedMembers` method.
 
@@ -2868,19 +2783,6 @@ class ListPublicServicesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   services = _messages.MessageField('Service', 2, repeated=True)
-
-
-class ListServiceApisResponse(_messages.Message):
-  r"""The response message of the `ListServiceApis` method.
-
-  Fields:
-    apis: The apis exposed by the parent service.
-    nextPageToken: A token, which can be sent as `page_token` to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
-  """
-
-  apis = _messages.MessageField('GoogleApiServiceusageV2betaApi', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
 
 
 class ListServiceGroupsResponse(_messages.Message):
@@ -4574,26 +4476,6 @@ class ServiceState(_messages.Message):
   state = _messages.MessageField('State', 3)
 
 
-class ServiceusageCategoriesCategoryServicesListRequest(_messages.Message):
-  r"""A ServiceusageCategoriesCategoryServicesListRequest object.
-
-  Fields:
-    pageSize: The maximum number of services to return. The service may return
-      fewer than this value. If unspecified, at most 50 services will be
-      returned. The maximum value is 1000; values above 1000 will be coerced
-      to 1000.
-    pageToken: A page token, received from a previous `ListCategoryServices`
-      call. Provide this to retrieve the subsequent page. When paginating, all
-      other parameters provided to `ListCategoryServices` must match the call
-      that provided the page token.
-    parent: Required. The category which contains the returned services.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
 class ServiceusageConsumerPoliciesAnalyzeRequest(_messages.Message):
   r"""A ServiceusageConsumerPoliciesAnalyzeRequest object.
 
@@ -4808,45 +4690,6 @@ class ServiceusageOperationsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   returnPartialSuccess = _messages.BooleanField(5)
-
-
-class ServiceusageServicesApisApiVersionsApiOperationsListRequest(_messages.Message):
-  r"""A ServiceusageServicesApisApiVersionsApiOperationsListRequest object.
-
-  Fields:
-    pageSize: The maximum number of operations to return. The service may
-      return fewer than this value. If unspecified, at most 50 operations will
-      be returned. The maximum value is 1000; values above 1000 will be
-      coerced to 1000.
-    pageToken: A page token, received from a previous `ListApiOperations`
-      call. Provide this to retrieve the subsequent page. When paginating, all
-      other parameters provided to `ListApiOperations` must match the call
-      that provided the page token.
-    parent: Required. The parent API version that contains the operations.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class ServiceusageServicesApisListRequest(_messages.Message):
-  r"""A ServiceusageServicesApisListRequest object.
-
-  Fields:
-    pageSize: The maximum number of apis to return. The service may return
-      fewer than this value. If unspecified, at most 50 apis will be returned.
-      The maximum value is 1000; values above 1000 will be coerced to 1000.
-    pageToken: A page token, received from a previous `ListServiceApis` call.
-      Provide this to retrieve the subsequent page. When paginating, all other
-      parameters provided to `ListServiceApis` must match the call that
-      provided the page token.
-    parent: Required. The parent service state from which the APIs are listed.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
 
 
 class ServiceusageServicesBatchGetRequest(_messages.Message):

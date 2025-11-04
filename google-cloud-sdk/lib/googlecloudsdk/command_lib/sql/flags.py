@@ -1184,9 +1184,9 @@ def AddReconcilePsaNetworking(parser):
       required=False,
       help=(
           "Reconciles the instance's PSA networking configuration. If the "
-          "instance is already on a PSA network, the DNS zone and records "
-          "associated with the PSA write endpoint are either added if missing "
-          "or updated if incorrect."
+          'instance is already on a PSA network, the DNS zone and records '
+          'associated with the PSA write endpoint are either added if missing '
+          'or updated if incorrect.'
       ),
   )
 
@@ -1843,7 +1843,7 @@ def AddBakImportNoRecoveryArgument(parser):
       action='store_true',
       help=(
           'Whether or not the SQL Server import '
-          'is execueted with NORECOVERY keyword.'
+          'is executed with NORECOVERY keyword.'
       ),
   )
 
@@ -2225,9 +2225,7 @@ def AddPasswordPolicyEnableFailedAttemptsCheck(
   parser.add_argument(
       '--password-policy-enable-failed-attempts-check',
       required=False,
-      help=(
-          'Enables the failed login attempts check if set to true.'
-      ),
+      help='Enables the failed login attempts check if set to true.',
       **kwargs
   )
 
@@ -2245,9 +2243,7 @@ def AddPasswordPolicyEnablePasswordVerification(
   parser.add_argument(
       '--password-policy-enable-password-verification',
       required=False,
-      help=(
-          'The current password must be specified when altering the password.'
-      ),
+      help='The current password must be specified when altering the password.',
       **kwargs
   )
 
@@ -2841,9 +2837,7 @@ def AddClearCustomSubjectAlternativeNames(parser, hidden=False):
   parser.add_argument(
       '--clear-custom-subject-alternative-names',
       required=False,
-      help=(
-          'This clears the customer specified DNS names.'
-      ),
+      help='This clears the customer specified DNS names.',
       hidden=hidden,
       **kwargs
   )
@@ -3744,3 +3738,28 @@ def AddSourceInstanceOverrideArgs(
       parser, 'instance', flag_overrides=kms_flag_overrides, hidden=for_pitr
   )
   # go/keep-sorted end
+
+
+def AddDataApiAccess(parser):
+  """Adds --data-api-access flag."""
+  parser.add_argument(
+      '--data-api-access',
+      choices={
+          'DATA_API_ACCESS_UNSPECIFIED': (
+              'Unspecified mode, effectively the same as'
+              ' `DISALLOW_DATA_API`.'
+          ),
+          'DISALLOW_DATA_API': (
+              'Disallow using ExecuteSql API to connect to the instance.'
+          ),
+          'ALLOW_DATA_API': (
+              'Allow using ExecuteSql API to connect to the instance. For'
+              ' Private IP instances, this will allow authorized users to'
+              ' access the instance from the public internet using ExecuteSql'
+              ' API.'
+          ),
+      },
+      required=False,
+      default=None,
+      help='Controls connectivity to the instance using ExecuteSql API.',
+  )

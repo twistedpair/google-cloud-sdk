@@ -427,7 +427,6 @@ def AddScaleToZeroArgs(parser, version):
     base.Argument(
         '--min-scaleup-period',
         type=arg_parsers.Duration(lower_bound='300s', upper_bound='28800s'),
-        hidden=True,
         help="""\
 Minimum duration (in seconds) that a deployment will be scaled up before traffic
 is evaluated for potential scale-down.
@@ -438,7 +437,6 @@ Defaults to 1 hour if min replica count is 0.
     base.Argument(
         '--idle-scaledown-period',
         type=arg_parsers.Duration(lower_bound='300s', upper_bound='28800s'),
-        hidden=True,
         help="""\
 Duration (in seconds) without traffic before a deployment is scaled down to
 zero replicas. Defaults to 1 hour if min replica count is 0.
@@ -448,7 +446,6 @@ zero replicas. Defaults to 1 hour if min replica count is 0.
     base.Argument(
         '--initial-replica-count',
         type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
-        hidden=True,
         help="""\
 Initial number of replicas for the deployment resources the model will be
 scaled up to. Cannot be smaller than min replica count or larger than max

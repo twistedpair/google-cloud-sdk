@@ -33,8 +33,10 @@ class AccessApprovalSettings(_messages.Message):
   r"""Settings on a Project/Folder/Organization related to Access Approval.
 
   Enums:
-    RequestScopeMaxWidthPreferenceValueValuesEnum: Optional. A setting to
-      indicate the maximum width of an Access Approval request.
+    RequestScopeMaxWidthPreferenceValueValuesEnum: Optional. A setting that
+      indicates the maximum scope of an Access Approval request: either
+      organization, folder, or project. Google administrators will be asked to
+      send requests no broader than the configured scope.
 
   Fields:
     activeKeyVersion: The asymmetric crypto key version to use for signing
@@ -47,10 +49,11 @@ class AccessApprovalSettings(_messages.Message):
       that indicates that an ancestor of this Project or Folder has set
       active_key_version (this field will always be unset for the organization
       since organizations do not have ancestors).
-    approvalPolicy: Optional. Policy for approval. This contains all policies.
-    effectiveApprovalPolicy: Output only. Policy for approval included
-      inherited settings to understand the exact policy applied to this
-      resource. This is a read-only field.
+    approvalPolicy: Optional. Policy configuration for Access Approval that
+      sets the operating mode. The available policies are Transparency,
+      Streamlined Support, and Approval Required.
+    effectiveApprovalPolicy: Output only. Effective policy applied for Access
+      Approval, inclusive of inheritance.
     enrolledAncestor: Output only. This field is read only (not settable via
       UpdateAccessApprovalSettings method). If the field is true, that
       indicates that at least one service is enrolled for Access Approval in
@@ -64,9 +67,7 @@ class AccessApprovalSettings(_messages.Message):
       enrollment can be done for individual services. If name refers to a
       folder or project, enrollment can only be done on an all or nothing
       basis. If a cloud_product is repeated in this list, the first entry will
-      be honored and all following entries will be discarded. A maximum of 10
-      enrolled services will be enforced, to be expanded as the set of
-      supported services is expanded.
+      be honored and all following entries will be discarded.
     invalidKeyVersion: Output only. This field is read only (not settable via
       UpdateAccessApprovalSettings method). If the field is true, that
       indicates that there is some configuration issue with the
@@ -83,27 +84,37 @@ class AccessApprovalSettings(_messages.Message):
       relating to approval requests should be sent. Notifications relating to
       a resource will be sent to all emails in the settings of ancestor
       resources of that resource. A maximum of 50 email addresses are allowed.
-    notificationPubsubTopic: Optional. A pubsub topic to which notifications
-      relating to approval requests should be sent.
-    preferNoBroadApprovalRequests: This preference is communicated to Google
-      personnel when sending an approval request but can be overridden if
-      necessary.
-    preferredRequestExpirationDays: This preference is shared with Google
-      personnel, but can be overridden if said personnel deems necessary. The
-      approver ultimately can set the expiration at approval time.
-    requestScopeMaxWidthPreference: Optional. A setting to indicate the
-      maximum width of an Access Approval request.
-    requireCustomerVisibleJustification: Optional. A setting to require
-      approval request justifications to be customer visible.
+    notificationPubsubTopic: Optional. A pubsub topic that notifications
+      relating to access approval are published to. Notifications include pre-
+      approved accesses.
+    preferNoBroadApprovalRequests: This field is used to set a preference for
+      granularity of an access approval request. If true, Google personnel
+      will be asked to send resource-level requests when possible. If false,
+      Google personnel will be asked to send requests at the project level.
+    preferredRequestExpirationDays: Set the default access approval request
+      expiration time. This value is able to be set directly by the customer
+      at the time of approval, overriding this suggested value. We recommend
+      setting this value to 30 days.
+    requestScopeMaxWidthPreference: Optional. A setting that indicates the
+      maximum scope of an Access Approval request: either organization,
+      folder, or project. Google administrators will be asked to send requests
+      no broader than the configured scope.
+    requireCustomerVisibleJustification: Optional. When enabled, Google will
+      only be able to send approval requests for access reasons with a
+      customer accessible case ID in the reason detail. Also known as "Require
+      customer initiated support case justification"
   """
 
   class RequestScopeMaxWidthPreferenceValueValuesEnum(_messages.Enum):
-    r"""Optional. A setting to indicate the maximum width of an Access
-    Approval request.
+    r"""Optional. A setting that indicates the maximum scope of an Access
+    Approval request: either organization, folder, or project. Google
+    administrators will be asked to send requests no broader than the
+    configured scope.
 
     Values:
-      REQUEST_SCOPE_MAX_WIDTH_PREFERENCE_UNSPECIFIED: Default value for proto,
-        shouldn't be used.
+      REQUEST_SCOPE_MAX_WIDTH_PREFERENCE_UNSPECIFIED: Default value, defaults
+        to ORGANIZATION if not set. This value is not able to be configured by
+        the user, do not use.
       ORGANIZATION: This is the widest scope possible. It means the customer
         has no scope restriction when it comes to Access Approval requests.
       FOLDER: Customer allows the scope of Access Approval requests as broad
@@ -133,22 +144,24 @@ class AccessApprovalSettings(_messages.Message):
 
 
 class AccessLocations(_messages.Message):
-  r"""Home office and physical location of the principal.
+  r"""Physical assigned office and physical location of the Google
+  administrator performing the access.
 
   Fields:
-    principalOfficeCountry: The "home office" location of the principal. A
-      two-letter country code (ISO 3166-1 alpha-2), such as "US", "DE" or "GB"
-      or a region code. In some limited situations Google systems may refer
-      refer to a region code instead of a country code. Possible Region Codes:
-      * ASI: Asia * EUR: Europe * OCE: Oceania * AFR: Africa * NAM: North
-      America * SAM: South America * ANT: Antarctica * ANY: Any location
-    principalPhysicalLocationCountry: Physical location of the principal at
-      the time of the access. A two-letter country code (ISO 3166-1 alpha-2),
-      such as "US", "DE" or "GB" or a region code. In some limited situations
-      Google systems may refer refer to a region code instead of a country
-      code. Possible Region Codes: * ASI: Asia * EUR: Europe * OCE: Oceania *
-      AFR: Africa * NAM: North America * SAM: South America * ANT: Antarctica
-      * ANY: Any location
+    principalOfficeCountry: The "home office" location of the Google
+      administrator. A two-letter country code (ISO 3166-1 alpha-2), such as
+      "US", "DE" or "GB" or a region code. In some limited situations Google
+      systems may refer refer to a region code instead of a country code.
+      Possible Region Codes: * ASI: Asia * EUR: Europe * OCE: Oceania * AFR:
+      Africa * NAM: North America * SAM: South America * ANT: Antarctica *
+      ANY: Any location
+    principalPhysicalLocationCountry: Physical location of the Google
+      administrator at the time of the access. A two-letter country code (ISO
+      3166-1 alpha-2), such as "US", "DE" or "GB" or a region code. In some
+      limited situations Google systems may refer refer to a region code
+      instead of a country code. Possible Region Codes: * ASI: Asia * EUR:
+      Europe * OCE: Oceania * AFR: Africa * NAM: North America * SAM: South
+      America * ANT: Antarctica * ANY: Any location
   """
 
   principalOfficeCountry = _messages.StringField(1)
@@ -159,19 +172,19 @@ class AccessReason(_messages.Message):
   r"""A AccessReason object.
 
   Enums:
-    TypeValueValuesEnum: Type of access justification.
+    TypeValueValuesEnum: Type of access reason.
 
   Fields:
     detail: More detail about certain reason types. See comments for each type
       above.
-    type: Type of access justification.
+    type: Type of access reason.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Type of access justification.
+    r"""Type of access reason.
 
     Values:
-      TYPE_UNSPECIFIED: Default value for proto, shouldn't be used.
+      TYPE_UNSPECIFIED: This value is not used.
       CUSTOMER_INITIATED_SUPPORT: Customer made a request or raised an issue
         that required the principal to access customer data. `detail` is of
         the form ("#####" is the issue ID): * "Feedback Report: #####" * "Case
@@ -612,7 +625,7 @@ class ApprovalRequest(_messages.Message):
     requestedExpiration: The original requested expiration for the approval.
       Calculated by adding the requested_duration to the request_time.
     requestedLocations: The locations for which approval is being requested.
-    requestedReason: The justification for which approval is being requested.
+    requestedReason: The access reason for which approval is being requested.
     requestedResourceName: The resource for which approval is being requested.
       The format of the resource name is defined at
       https://cloud.google.com/apis/design/resource_names. The resource name
@@ -671,7 +684,8 @@ class ApproveDecision(_messages.Message):
 
 
 class AugmentedInfo(_messages.Message):
-  r"""This field contains the augmented information of the request.
+  r"""This field contains the augmented information of the request. Requires
+  augmented administrative access to be enabled.
 
   Fields:
     command: For command-line tools, the full command-line exactly as entered
@@ -698,16 +712,20 @@ class CustomerApprovalApprovalPolicy(_messages.Message):
     r"""Optional. Policy for approval based on the justification given.
 
     Values:
-      JUSTIFICATION_BASED_APPROVAL_POLICY_UNSPECIFIED: Default value for
-        proto.
-      JUSTIFICATION_BASED_APPROVAL_ENABLED_ALL: Instant approval is enabled
-        for all accesses.
-      JUSTIFICATION_BASED_APPROVAL_ENABLED_EXTERNAL_JUSTIFICATIONS: Instant
-        approval is enabled for external justifications.
-      JUSTIFICATION_BASED_APPROVAL_NOT_ENABLED: Instant approval is not
-        enabled for any accesses.
-      JUSTIFICATION_BASED_APPROVAL_INHERITED: Instant approval is inherited
-        from the parent.
+      JUSTIFICATION_BASED_APPROVAL_POLICY_UNSPECIFIED: Default value, defaults
+        to JUSTIFICATION_BASED_APPROVAL_NOT_ENABLED if not set. This value is
+        not able to be configured by the user, do not use.
+      JUSTIFICATION_BASED_APPROVAL_ENABLED_ALL: Audit-only mode. All accesses
+        are pre-approved instantly.
+      JUSTIFICATION_BASED_APPROVAL_ENABLED_EXTERNAL_JUSTIFICATIONS: Customer
+        initiated support access reasons are pre-approved instantly. All other
+        accesses require customer approval.
+      JUSTIFICATION_BASED_APPROVAL_NOT_ENABLED: All access approval requests
+        require customer approval. This is the default value if the policy is
+        not set.
+      JUSTIFICATION_BASED_APPROVAL_INHERITED: Defer configuration to parent
+        settings. This is the default value if the policy is not set and the
+        parent has a value set.
     """
     JUSTIFICATION_BASED_APPROVAL_POLICY_UNSPECIFIED = 0
     JUSTIFICATION_BASED_APPROVAL_ENABLED_ALL = 1
@@ -753,23 +771,47 @@ class EnrolledService(_messages.Message):
 
   Fields:
     cloudProduct: The product for which Access Approval will be enrolled.
-      Allowed values are listed below (case-sensitive): * all * GA * App
-      Engine * Artifact Registry * BigQuery * Certificate Authority Service *
-      Cloud Bigtable * Cloud Key Management Service * Compute Engine * Cloud
-      Composer * Cloud Dataflow * Cloud Dataproc * Cloud DLP * Cloud EKM *
-      Cloud Firestore * Cloud HSM * Cloud Identity and Access Management *
-      Cloud Logging * Cloud NAT * Cloud Pub/Sub * Cloud Spanner * Cloud SQL *
-      Cloud Storage * Eventarc * Google Kubernetes Engine * Organization
-      Policy Serivice * Persistent Disk * Resource Manager * Secret Manager *
-      Speaker ID Note: These values are supported as input for legacy
-      purposes, but will not be returned from the API. * all * ga-only *
-      appengine.googleapis.com * artifactregistry.googleapis.com *
-      bigquery.googleapis.com * bigtable.googleapis.com *
-      container.googleapis.com * cloudkms.googleapis.com *
-      cloudresourcemanager.googleapis.com * cloudsql.googleapis.com *
-      compute.googleapis.com * dataflow.googleapis.com *
-      dataproc.googleapis.com * dlp.googleapis.com * iam.googleapis.com *
-      logging.googleapis.com * orgpolicy.googleapis.com *
+      Allowed values are listed below (case-sensitive): * all * GA * Access
+      Context Manager * Anthos Identity Service * AlloyDB for PostgreSQL *
+      Apigee * Application Integration * App Hub * Artifact Registry * Anthos
+      Service Mesh * Access Transparency * BigQuery * Certificate Authority
+      Service * Cloud Bigtable * CCAI Assist and Knowledge * Cloud Dataflow *
+      Cloud Dataproc * CEP Security Gateway * Compliance Evaluation Service *
+      Cloud Firestore * Cloud Healthcare API * Chronicle * Cloud AI Companion
+      Gateway - Titan * Google Cloud Armor * Cloud Asset Inventory * Cloud
+      Asset Search * Cloud Deploy * Cloud DNS * Cloud Latency * Cloud
+      Memorystore for Redis * CloudNet Control * Cloud Riptide * Cloud Tasks *
+      Cloud Trace * Cloud Data Transfer * Cloud Composer * Integration
+      Connectors * Contact Center AI Insights * Cloud Pub/Sub * Cloud Run *
+      Resource Manager * Cloud Spanner * Database Center * Cloud Dataform *
+      Cloud Data Fusion * Dataplex * Dialogflow Customer Experience Edition *
+      Cloud DLP * Document AI * Edge Container * Edge Network * Cloud EKM *
+      Eventarc * Firebase Data Connect * Firebase Rules * App Engine * Cloud
+      Build * Compute Engine * Cloud Functions (2nd Gen) * Cloud Filestore *
+      Cloud Interconnect * Cloud NetApp Volumes * Cloud Storage * Generative
+      AI App Builder * Google Kubernetes Engine * Backup for GKE API * GKE
+      Connect * GKE Hub * Hoverboard * Cloud HSM * Cloud Identity and Access
+      Management * Cloud Identity-Aware Proxy * Infrastructure Manager *
+      Identity Storage Service * Key Access Justifications * Cloud Key
+      Management Service * Cloud Logging * Looker (Google Cloud core) * Looker
+      Studio * Management Hub * Model Armor * Cloud Monitoring * Cloud NAT *
+      Connectivity Hub * External passthrough Network Load Balancer * OIDC One
+      * Organization Policy Service * Org Lifecycle * Persistent Disk *
+      Parameter Manager * Private Services Access * Regional Internal
+      Application Load Balancer * Storage Batch Operations * Cloud Security
+      Command Center * Secure Source Manager * Seeker * Service Provisioning *
+      Speaker ID * Secret Manager * Cloud SQL * Cloud Speech-to-Text * Traffic
+      Director * Cloud Text-to-Speech * USPS Andromeda * Vertex AI * Virtual
+      Private Cloud (VPC) * VPC Access * VPC Service Controls Troubleshooter *
+      VPC virtnet * Cloud Workstations * Web Risk Note: These values are
+      supported as input for legacy purposes, but will not be returned from
+      the API. * all * ga-only * appengine.googleapis.com *
+      artifactregistry.googleapis.com * bigquery.googleapis.com *
+      bigtable.googleapis.com * container.googleapis.com *
+      cloudkms.googleapis.com * cloudresourcemanager.googleapis.com *
+      cloudsql.googleapis.com * compute.googleapis.com *
+      dataflow.googleapis.com * dataproc.googleapis.com * dlp.googleapis.com *
+      iam.googleapis.com * logging.googleapis.com * orgpolicy.googleapis.com *
       pubsub.googleapis.com * spanner.googleapis.com *
       secretmanager.googleapis.com * speakerid.googleapis.com *
       storage.googleapis.com Calls to UpdateAccessApprovalSettings using 'all'
@@ -785,8 +827,9 @@ class EnrolledService(_messages.Message):
     r"""The enrollment level of the service.
 
     Values:
-      ENROLLMENT_LEVEL_UNSPECIFIED: Default value for proto, shouldn't be
-        used.
+      ENROLLMENT_LEVEL_UNSPECIFIED: Default value if not set, defaults to
+        "BLOCK_ALL". This value is not available to be set by the user, do not
+        use.
       BLOCK_ALL: Service is enrolled in Access Approval for all requests
     """
     ENROLLMENT_LEVEL_UNSPECIFIED = 0
@@ -914,8 +957,12 @@ class SignatureInfo(_messages.Message):
       ML_KEM_1024: ML-KEM-1024 (FIPS 203)
       KEM_XWING: X-Wing hybrid KEM combining ML-KEM-768 with X25519 following
         datatracker.ietf.org/doc/draft-connolly-cfrg-xwing-kem/.
+      PQ_SIGN_ML_DSA_44: The post-quantum Module-Lattice-Based Digital
+        Signature Algorithm, at security level 1. Randomized version.
       PQ_SIGN_ML_DSA_65: The post-quantum Module-Lattice-Based Digital
         Signature Algorithm, at security level 3. Randomized version.
+      PQ_SIGN_ML_DSA_87: The post-quantum Module-Lattice-Based Digital
+        Signature Algorithm, at security level 5. Randomized version.
       PQ_SIGN_SLH_DSA_SHA2_128S: The post-quantum stateless hash-based digital
         signature algorithm, at security level 1. Randomized version.
       PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256: The post-quantum stateless hash-
@@ -961,9 +1008,11 @@ class SignatureInfo(_messages.Message):
     ML_KEM_768 = 36
     ML_KEM_1024 = 37
     KEM_XWING = 38
-    PQ_SIGN_ML_DSA_65 = 39
-    PQ_SIGN_SLH_DSA_SHA2_128S = 40
-    PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 41
+    PQ_SIGN_ML_DSA_44 = 39
+    PQ_SIGN_ML_DSA_65 = 40
+    PQ_SIGN_ML_DSA_87 = 41
+    PQ_SIGN_SLH_DSA_SHA2_128S = 42
+    PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 43
 
   customerKmsKeyVersion = _messages.StringField(1)
   googleKeyAlgorithm = _messages.EnumField('GoogleKeyAlgorithmValueValuesEnum', 2)

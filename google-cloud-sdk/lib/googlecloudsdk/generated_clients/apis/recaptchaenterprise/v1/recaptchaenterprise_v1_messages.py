@@ -148,10 +148,7 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
   r"""The request message to annotate an Assessment.
 
   Enums:
-    AnnotationValueValuesEnum: Optional. The annotation that is assigned to
-      the Event. This field can be left empty to provide reasons that apply to
-      an event without concluding whether the event is legitimate or
-      fraudulent.
+    AnnotationValueValuesEnum:
     ReasonsValueListEntryValuesEnum:
 
   Fields:
@@ -159,24 +156,22 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
       assessment. This is an alternative to setting `account_id` in
       `CreateAssessment`, for example when a stable account identifier is not
       yet known in the initial request.
-    annotation: Optional. The annotation that is assigned to the Event. This
-      field can be left empty to provide reasons that apply to an event
-      without concluding whether the event is legitimate or fraudulent.
+    annotation: A AnnotationValueValuesEnum attribute.
     hashedAccountId: Optional. A stable hashed account identifier to apply to
       the assessment. This is an alternative to setting `hashed_account_id` in
       `CreateAssessment`, for example when a stable account identifier is not
       yet known in the initial request.
-    reasons: Optional. Reasons for the annotation that are assigned to the
-      event.
+    phoneAuthenticationEvent: Optional. If using an external multi-factor
+      authentication provider, provide phone authentication details for fraud
+      detection purposes.
+    reasons: A ReasonsValueListEntryValuesEnum attribute.
     transactionEvent: Optional. If the assessment is part of a payment
       transaction, provide details on payment lifecycle events that occur in
       the transaction.
   """
 
   class AnnotationValueValuesEnum(_messages.Enum):
-    r"""Optional. The annotation that is assigned to the Event. This field can
-    be left empty to provide reasons that apply to an event without concluding
-    whether the event is legitimate or fraudulent.
+    r"""AnnotationValueValuesEnum enum type.
 
     Values:
       ANNOTATION_UNSPECIFIED: Default unspecified type.
@@ -258,8 +253,9 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
   accountId = _messages.StringField(1)
   annotation = _messages.EnumField('AnnotationValueValuesEnum', 2)
   hashedAccountId = _messages.BytesField(3)
-  reasons = _messages.EnumField('ReasonsValueListEntryValuesEnum', 4, repeated=True)
-  transactionEvent = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TransactionEvent', 5)
+  phoneAuthenticationEvent = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1PhoneAuthenticationEvent', 4)
+  reasons = _messages.EnumField('ReasonsValueListEntryValuesEnum', 5, repeated=True)
+  transactionEvent = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TransactionEvent', 6)
 
 
 class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentResponse(_messages.Message):
@@ -339,10 +335,8 @@ class GoogleCloudRecaptchaenterpriseV1AssessmentEnvironment(_messages.Message):
     client: Optional. Identifies the client module initiating the
       CreateAssessment request. This can be the link to the client module's
       project. Examples include: - "github.com/GoogleCloudPlatform/recaptcha-
-      enterprise-google-tag-manager" -
-      "cloud.google.com/recaptcha/docs/implement-waf-akamai" -
-      "cloud.google.com/recaptcha/docs/implement-waf-cloudflare" -
-      "wordpress.org/plugins/recaptcha-something"
+      enterprise-google-tag-manager" - "wordpress.org/plugins/recaptcha-
+      something"
     version: Optional. The version of the client module. For example, "1.0.0".
   """
 
@@ -405,6 +399,20 @@ class GoogleCloudRecaptchaenterpriseV1ChallengeMetrics(_messages.Message):
   nocaptchaCount = _messages.IntegerField(2)
   pageloadCount = _messages.IntegerField(3)
   passedCount = _messages.IntegerField(4)
+
+
+class GoogleCloudRecaptchaenterpriseV1ChallengeRuleGroup(_messages.Message):
+  r"""A collection of challenge rules that applies to one or more actions.
+
+  Fields:
+    actions: Required. Action name provided at token generation. The action
+      name is not case-sensitive and can only contain alphanumeric characters,
+      slashes, and underscores. If "*" is provided, the rule group applies to
+      all actions. If multiple actions are provided, the rule group is applied
+      to all of them. This field is required.
+  """
+
+  actions = _messages.StringField(1, repeated=True)
 
 
 class GoogleCloudRecaptchaenterpriseV1EndpointVerificationInfo(_messages.Message):
@@ -470,9 +478,9 @@ class GoogleCloudRecaptchaenterpriseV1Event(_messages.Message):
       by providing user identifiers for guest actions like checkout.
     userIpAddress: Optional. The IP address in the request from the user's
       device related to this event.
-    wafTokenAssessment: Optional. Flag for running WAF token assessment. If
-      enabled, the token must be specified, and have been created by a WAF-
-      enabled key.
+    wafTokenAssessment: Optional. Flag for running Web Application Firewall
+      (WAF) token assessment. If enabled, the token must be specified, and
+      have been created by a WAF-enabled key.
   """
 
   class FraudPreventionValueValuesEnum(_messages.Enum):
@@ -551,6 +559,7 @@ class GoogleCloudRecaptchaenterpriseV1FirewallActionBlockAction(_messages.Messag
   """
 
 
+
 class GoogleCloudRecaptchaenterpriseV1FirewallActionIncludeRecaptchaScriptAction(_messages.Message):
   r"""An include reCAPTCHA script action involves injecting reCAPTCHA
   JavaScript code into the HTML returned by the site backend. This reCAPTCHA
@@ -560,10 +569,12 @@ class GoogleCloudRecaptchaenterpriseV1FirewallActionIncludeRecaptchaScriptAction
   """
 
 
+
 class GoogleCloudRecaptchaenterpriseV1FirewallActionRedirectAction(_messages.Message):
   r"""A redirect action returns a 307 (temporary redirect) response, pointing
   the user to a reCAPTCHA interstitial page to attach a token.
   """
+
 
 
 class GoogleCloudRecaptchaenterpriseV1FirewallActionSetHeaderAction(_messages.Message):
@@ -881,7 +892,7 @@ class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):
     name: Identifier. The resource name for the Key in the format
       `projects/{project}/keys/{key}`.
     testingOptions: Optional. Options for user acceptance testing.
-    wafSettings: Optional. Settings for WAF
+    wafSettings: Optional. Settings for Web Application Firewall (WAF).
     webSettings: Settings for keys that can be used by websites.
   """
 
@@ -1025,6 +1036,20 @@ class GoogleCloudRecaptchaenterpriseV1MigrateKeyRequest(_messages.Message):
   skipBillingCheck = _messages.BooleanField(1)
 
 
+class GoogleCloudRecaptchaenterpriseV1PhoneAuthenticationEvent(_messages.Message):
+  r"""Details on a phone authentication event
+
+  Fields:
+    eventTime: Optional. The time at which the multi-factor authentication
+      event (challenge or verification) occurred.
+    phoneNumber: Required. Phone number in E.164 format for which a multi-
+      factor authentication challenge was initiated, succeeded, or failed.
+  """
+
+  eventTime = _messages.StringField(1)
+  phoneNumber = _messages.StringField(2)
+
+
 class GoogleCloudRecaptchaenterpriseV1PhoneFraudAssessment(_messages.Message):
   r"""Assessment for Phone Fraud
 
@@ -1037,16 +1062,19 @@ class GoogleCloudRecaptchaenterpriseV1PhoneFraudAssessment(_messages.Message):
 
 
 class GoogleCloudRecaptchaenterpriseV1Policy(_messages.Message):
-  r"""Represents a complete configuration set containing multiple resource
-
-  rules.
+  r"""A complete configuration set containing multiple grouped rules defining
+  the behavior of reCAPTCHA for fraud detection and prevention.
 
   Fields:
+    challengeRuleGroups: Optional. Rules to configure the behavior of
+      reCAPTCHA for showing a challenge. Rule groups are evaluated in top down
+      sequence. Evaluation stops when the first matching rule group is found.
     name: Identifier. Resource name/identifier for this policy. Format:
       "projects/{project}/keys/{key}/policy" for a policy under a key.
   """
 
-  name = _messages.StringField(1)
+  challengeRuleGroups = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1ChallengeRuleGroup', 1, repeated=True)
+  name = _messages.StringField(2)
 
 
 class GoogleCloudRecaptchaenterpriseV1PrivatePasswordLeakVerification(_messages.Message):
@@ -1156,12 +1184,12 @@ class GoogleCloudRecaptchaenterpriseV1RiskAnalysis(_messages.Message):
 
   Enums:
     ChallengeValueValuesEnum: Output only. Challenge information for
-      POLICY_BASED_CHALLENGE and INVISIBLE keys
+      POLICY_BASED_CHALLENGE and INVISIBLE keys.
     ReasonsValueListEntryValuesEnum:
 
   Fields:
     challenge: Output only. Challenge information for POLICY_BASED_CHALLENGE
-      and INVISIBLE keys
+      and INVISIBLE keys.
     extendedVerdictReasons: Output only. Extended verdict reasons to be used
       for experimentation only. The set of possible reasons is subject to
       change.
@@ -1175,7 +1203,7 @@ class GoogleCloudRecaptchaenterpriseV1RiskAnalysis(_messages.Message):
 
   class ChallengeValueValuesEnum(_messages.Enum):
     r"""Output only. Challenge information for POLICY_BASED_CHALLENGE and
-    INVISIBLE keys
+    INVISIBLE keys.
 
     Values:
       CHALLENGE_UNSPECIFIED: Default unspecified type.
@@ -1458,6 +1486,12 @@ class GoogleCloudRecaptchaenterpriseV1TokenProperties(_messages.Message):
       MISSING: The user verification token was not present.
       BROWSER_ERROR: A retriable error (such as network failure) occurred on
         the browser. Could easily be simulated by an attacker.
+      UNEXPECTED_ACTION: The action provided at token generation was different
+        than the `expected_action` in the assessment request. The comparison
+        is case-insensitive. This reason can only be returned if all of the
+        following are true: - your `site_key` has the POLICY_BASED_CHALLENGE
+        integration type - you set an action score threshold higher than 0.0 -
+        you provided a non-empty `expected_action`
     """
     INVALID_REASON_UNSPECIFIED = 0
     UNKNOWN_INVALID_REASON = 1
@@ -1466,6 +1500,7 @@ class GoogleCloudRecaptchaenterpriseV1TokenProperties(_messages.Message):
     DUPE = 4
     MISSING = 5
     BROWSER_ERROR = 6
+    UNEXPECTED_ACTION = 7
 
   action = _messages.StringField(1)
   androidPackageName = _messages.StringField(2)
@@ -1770,17 +1805,21 @@ class GoogleCloudRecaptchaenterpriseV1WafSettings(_messages.Message):
   Firewall).
 
   Enums:
-    WafFeatureValueValuesEnum: Required. The WAF feature for which this key is
-      enabled.
-    WafServiceValueValuesEnum: Required. The WAF service that uses this key.
+    WafFeatureValueValuesEnum: Required. The Web Application Firewall (WAF)
+      feature for which this key is enabled.
+    WafServiceValueValuesEnum: Required. The Web Application Firewall (WAF)
+      service that uses this key.
 
   Fields:
-    wafFeature: Required. The WAF feature for which this key is enabled.
-    wafService: Required. The WAF service that uses this key.
+    wafFeature: Required. The Web Application Firewall (WAF) feature for which
+      this key is enabled.
+    wafService: Required. The Web Application Firewall (WAF) service that uses
+      this key.
   """
 
   class WafFeatureValueValuesEnum(_messages.Enum):
-    r"""Required. The WAF feature for which this key is enabled.
+    r"""Required. The Web Application Firewall (WAF) feature for which this
+    key is enabled.
 
     Values:
       WAF_FEATURE_UNSPECIFIED: Undefined feature.
@@ -1797,7 +1836,8 @@ class GoogleCloudRecaptchaenterpriseV1WafSettings(_messages.Message):
     EXPRESS = 4
 
   class WafServiceValueValuesEnum(_messages.Enum):
-    r"""Required. The WAF service that uses this key.
+    r"""Required. The Web Application Firewall (WAF) service that uses this
+    key.
 
     Values:
       WAF_SERVICE_UNSPECIFIED: Undefined WAF
@@ -1969,6 +2009,7 @@ class GoogleProtobufEmpty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
+
 
 
 class GoogleRpcStatus(_messages.Message):
@@ -2319,9 +2360,7 @@ class RecaptchaenterpriseProjectsKeysUpdatePolicyRequest(_messages.Message):
       updated. If the mask is not present, all fields are updated.
   """
 
-  googleCloudRecaptchaenterpriseV1Policy = _messages.MessageField(
-      'GoogleCloudRecaptchaenterpriseV1Policy', 1
-  )
+  googleCloudRecaptchaenterpriseV1Policy = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1Policy', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
 

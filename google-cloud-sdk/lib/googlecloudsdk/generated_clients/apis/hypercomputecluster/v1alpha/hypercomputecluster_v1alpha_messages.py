@@ -24,17 +24,30 @@ class Artifacts(_messages.Message):
   gcsPath = _messages.StringField(1)
 
 
+class AtmTag(_messages.Message):
+  r"""Unstable: Contact hypercompute-service-eng@ before using.
+
+  Fields:
+    key: Required. Unstable: Contact hypercompute-service-eng@ before using.
+    value: Required. Unstable: Contact hypercompute-service-eng@ before using.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
 class BootDisk(_messages.Message):
   r"""A [Persistent disk](https://cloud.google.com/compute/docs/disks) used as
   the boot disk for a Compute Engine VM instance.
 
   Fields:
-    effectiveImage: Output only. The specific image that will be used for new
-      VM instances.
+    effectiveImage: Output only. The image or image family that will be used
+      for new VM instances. If image is empty, this will be the default image
+      family for the VM's machine type. Otherwise, it will be equal to image.
     image: Optional. Immutable. Source image used to create this disk. Must be
       a supported disk family for the VM instance's machine type. If this is
-      empty, the system will select a supported image based on the machine
-      type.
+      empty, the system will select a supported image family based on the
+      machine type.
     sizeGb: Required. Immutable. Size of the disk in gigabytes. Must be at
       least 10GB.
     type: Required. Immutable. [Persistent disk
@@ -61,6 +74,13 @@ class BucketReference(_messages.Message):
 
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
+
+
+class CheckClusterHealth(_messages.Message):
+  r"""When set in OperationStep, indicates that cluster health check should be
+  performed.
+  """
+
 
 
 class Cluster(_messages.Message):
@@ -260,10 +280,12 @@ class Compute(_messages.Message):
   r"""Message describing Compute object
 
   Fields:
+    atmTags: Optional. ATM Tags to attach to compute VM instances
     resourceRequests: Required. Source of compute resource
   """
 
-  resourceRequests = _messages.MessageField('ResourceRequest', 1, repeated=True)
+  atmTags = _messages.MessageField('AtmTag', 1, repeated=True)
+  resourceRequests = _messages.MessageField('ResourceRequest', 2, repeated=True)
 
 
 class ComputeInstance(_messages.Message):
@@ -482,8 +504,206 @@ class ContainerNodePoolSlurmNodeSet(_messages.Message):
 
 
 
+class CreateFilestoreInstance(_messages.Message):
+  r"""When set in OperationStep, indicates that a new filestore instance
+  should be created.
+
+  Fields:
+    filestore: Output only. Name of the Filestore instance, in the format
+      `projects/{project}/locations/{location}/instances/{instance}`
+  """
+
+  filestore = _messages.StringField(1)
+
+
+class CreateGKECluster(_messages.Message):
+  r"""When set in OperationStep, indicates that a new GKE cluster should be
+  created.
+
+  Fields:
+    cluster: Output only. Name of the GKE cluster.
+  """
+
+  cluster = _messages.StringField(1)
+
+
+class CreateLoginNode(_messages.Message):
+  r"""When set in OperationStep, indicates that a login node should be
+  created.
+  """
+
+
+
+class CreateLustreInstance(_messages.Message):
+  r"""When set in OperationStep, indicates that a new lustre instance should
+  be created.
+
+  Fields:
+    lustre: Output only. Name of the Managed Lustre instance, in the format
+      `projects/{project}/locations/{location}/instances/{instance}`
+  """
+
+  lustre = _messages.StringField(1)
+
+
+class CreateNetwork(_messages.Message):
+  r"""When set in OperationStep, indicates that a new network should be
+  created.
+
+  Fields:
+    network: Output only. Name of the network to create, in the format
+      `projects/{project}/global/networks/{network}`.
+  """
+
+  network = _messages.StringField(1)
+
+
+class CreateNodeset(_messages.Message):
+  r"""When set in OperationStep, indicates that a nodeset should be created.
+
+  Fields:
+    nodesets: Output only. Name of the nodeset to create
+  """
+
+  nodesets = _messages.StringField(1, repeated=True)
+
+
+class CreateOrchestrator(_messages.Message):
+  r"""When set in OperationStep, indicates that an orchestrator should be
+  created.
+  """
+
+
+
+class CreatePartition(_messages.Message):
+  r"""When set in OperationStep, indicates that a partition should be created.
+
+  Fields:
+    partitions: Output only. Name of the partition to create
+  """
+
+  partitions = _messages.StringField(1, repeated=True)
+
+
+class CreatePrivateServiceAccess(_messages.Message):
+  r"""When set in OperationStep, indicates that a new private service access
+  should be created.
+  """
+
+
+
+class CreateStorageBucket(_messages.Message):
+  r"""When set in OperationStep, indicates that a new storage bucket should be
+  created.
+
+  Fields:
+    bucket: Output only. Name of the bucket.
+  """
+
+  bucket = _messages.StringField(1)
+
+
+class DeleteFilestoreInstance(_messages.Message):
+  r"""When set in OperationStep, indicates that a Filestore instance should be
+  deleted.
+
+  Fields:
+    filestore: Output only. Name of the Filestore instance, in the format
+      `projects/{project}/locations/{location}/instances/{instance}`
+  """
+
+  filestore = _messages.StringField(1)
+
+
+class DeleteGKECluster(_messages.Message):
+  r"""When set in OperationStep, indicates that a GKE cluster should be
+  deleted.
+
+  Fields:
+    cluster: Output only. Name of the GKE cluster.
+  """
+
+  cluster = _messages.StringField(1)
+
+
+class DeleteLoginNode(_messages.Message):
+  r"""When set in OperationStep, indicates that a login node should be
+  deleted.
+  """
+
+
+
+class DeleteLustreInstance(_messages.Message):
+  r"""When set in OperationStep, indicates that a Lustre instance should be
+  deleted.
+
+  Fields:
+    lustre: Output only. Name of the Managed Lustre instance, in the format
+      `projects/{project}/locations/{location}/instances/{instance}`
+  """
+
+  lustre = _messages.StringField(1)
+
+
+class DeleteNetwork(_messages.Message):
+  r"""When set in OperationStep, indicates network deletion step with the
+  resource name.
+
+  Fields:
+    network: Output only. Name of the network to delete, in the format
+      `projects/{project}/global/networks/{network}`.
+  """
+
+  network = _messages.StringField(1)
+
+
+class DeleteNodeset(_messages.Message):
+  r"""When set in OperationStep, indicates that a nodeset should be deleted.
+
+  Fields:
+    nodesets: Output only. Name of the nodeset to delete
+  """
+
+  nodesets = _messages.StringField(1, repeated=True)
+
+
+class DeleteOrchestrator(_messages.Message):
+  r"""When set in OperationStep, indicates that an orchestrator should be
+  deleted.
+  """
+
+
+
+class DeletePartition(_messages.Message):
+  r"""When set in OperationStep, indicates that a partition should be deleted.
+
+  Fields:
+    partitions: Output only. Name of the partition to delete
+  """
+
+  partitions = _messages.StringField(1, repeated=True)
+
+
+class DeletePrivateServiceAccess(_messages.Message):
+  r"""When set in OperationStep, indicates private service access deletion
+  step.
+  """
+
+
+
+class DeleteStorageBucket(_messages.Message):
+  r"""When set in OperationStep, indicates that Cloud Storage bucket should be
+  deleted.
+
+  Fields:
+    bucket: Output only. Name of the bucket.
+  """
+
+  bucket = _messages.StringField(1)
+
+
 class Disk(_messages.Message):
-  r"""Unstable: Contact hypercompute-service-eng@ before using.
+  r"""Deprecated: Do not use.
 
   Fields:
     boot: Optional. Immutable. Unstable: Contact hypercompute-service-eng@
@@ -580,7 +800,9 @@ class FileShareConfig(_messages.Message):
   r"""Message describing filestore configuration
 
   Fields:
-    capacityGb: Required. Size of the filestore in GB
+    capacityGb: Required. Size of the filestore in GB. Must be between 1024
+      and 102400, and must meet scalability requirements described at
+      https://cloud.google.com/filestore/docs/service-tiers.
     fileShare: Required. Filestore share location
   """
 
@@ -909,8 +1131,8 @@ class HypercomputeclusterProjectsLocationsListRequest(_messages.Message):
   r"""A HypercomputeclusterProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Unless explicitly documented otherwise,
-      don't use this unsupported field which is primarily intended for
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -953,12 +1175,17 @@ class HypercomputeclusterProjectsLocationsMachineLearningRunsDeleteRequest(_mess
   Fields:
     etag: Optional. Etag for the run. Etag gets updated with every
       update/create operation. If provided, it must match the server's etag.
+    force: Optional. If force=false and if a user tries to delete an ml run
+      resource that still has child resources (e.g., ProfilerTarget), the
+      request should fail with a FAILED_PRECONDITION error. If force=true, the
+      delete request should delete both parent and child resources that exist.
     name: Required. projects/{project}/locations/{location}/machineLearningRun
       s/{machineLearningRun}
   """
 
   etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
+  force = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
 
 
 class HypercomputeclusterProjectsLocationsMachineLearningRunsGetRequest(_messages.Message):
@@ -1060,6 +1287,139 @@ class HypercomputeclusterProjectsLocationsMachineLearningRunsProfileSessionsList
       page.
     parent: Required. Parent format: projects/{project}/locations/{location}/m
       achineLearningRuns/{machineLearningRun}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerSessionsCreateRequest(_messages.Message):
+  r"""A HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerSession
+  sCreateRequest object.
+
+  Fields:
+    parent: Required. projects/{project}/locations/{location}/machineLearningR
+      uns/{machineLearningRun}
+    profilerSession: A ProfilerSession resource to be passed as the request
+      body.
+    profilerSessionId: Optional. ID for the profiler session.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  profilerSession = _messages.MessageField('ProfilerSession', 2)
+  profilerSessionId = _messages.StringField(3)
+
+
+class HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerSessionsDeleteRequest(_messages.Message):
+  r"""A HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerSession
+  sDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the profiler session to delete. Format: projec
+      ts/{project}/locations/{location}/machineLearningRuns/{ml_run}/profilerT
+      argets/{profiler_target}/profilerSessions/{profiler_session}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerSessionsGetRequest(_messages.Message):
+  r"""A HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerSession
+  sGetRequest object.
+
+  Fields:
+    name: Required. projects/{project}/locations/{location}/machineLearningRun
+      s/{machine_learning_run}/profilerTargets/{profiler_target}/profileSessio
+      ns/{profiler_session}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerSessionsListRequest(_messages.Message):
+  r"""A HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerSession
+  sListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of profiler sessions to return. The
+      service may return fewer than this value. If unspecified, at most 10
+      profiler sessions will be returned. The maximum value is 1000; values
+      above 1000 will be coerced to 1000. Please refer to
+      https://google.aip.dev/158 for more details.
+    pageToken: Optional. A page token, received from a previous
+      `ListProfilerSessions` call. Provide this to retrieve the subsequent
+      page. Please refer to https://google.aip.dev/158 for more details.
+    parent: Required. projects/{project}/locations/{location}/machineLearningR
+      uns/{machineLearningRun}/profilerTargets/{profiler_target}/
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerTargetsCreateRequest(_messages.Message):
+  r"""A HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerTargets
+  CreateRequest object.
+
+  Fields:
+    parent: Required. projects/{project}/locations/{location}/machineLearningR
+      uns/{machineLearningRun}
+    profilerTarget: A ProfilerTarget resource to be passed as the request
+      body.
+    profilerTargetId: Optional. If not provided, the server will generate an
+      ID based on hostname and node_index. Example: "myhost-0"
+  """
+
+  parent = _messages.StringField(1, required=True)
+  profilerTarget = _messages.MessageField('ProfilerTarget', 2)
+  profilerTargetId = _messages.StringField(3)
+
+
+class HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerTargetsDeleteRequest(_messages.Message):
+  r"""A HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerTargets
+  DeleteRequest object.
+
+  Fields:
+    etag: Optional. Etag for the profiler target. Etag gets updated with every
+      update/create operation. If provided, it must match the server's etag.
+    name: Required. The name of the profiler target to delete. Format: project
+      s/{project}/locations/{location}/machineLearningRuns/{ml_run}/profilerTa
+      rgets/{profiler_target}
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerTargetsGetRequest(_messages.Message):
+  r"""A HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerTargets
+  GetRequest object.
+
+  Fields:
+    name: Required. projects/{project}/locations/{location}/machineLearningRun
+      s/{machineLearningRun}/profilerTargets/{profiler_target}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerTargetsListRequest(_messages.Message):
+  r"""A HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerTargets
+  ListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of profiler targets to return. The
+      service may return fewer than this value. If unspecified, at most 10
+      profiler targets will be returned. The maximum value is 1000; values
+      above 1000 will be coerced to 1000. Please refer to
+      https://google.aip.dev/158 for more details.
+    pageToken: Optional. A page token, received from a previous
+      `ListProfilerTargets` call. Provide this to retrieve the subsequent
+      page. Please refer to https://google.aip.dev/158 for more details.
+    parent: Required. projects/{project}/locations/{location}/machineLearningR
+      uns/{machineLearningRun}
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1194,6 +1554,32 @@ class ListProfileSessionsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   profileSessions = _messages.MessageField('ProfileSession', 2, repeated=True)
+
+
+class ListProfilerSessionsResponse(_messages.Message):
+  r"""Response message for list profiler sessions.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    profilerSessions: A list of profiler sessions.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  profilerSessions = _messages.MessageField('ProfilerSession', 2, repeated=True)
+
+
+class ListProfilerTargetsResponse(_messages.Message):
+  r"""Response message for list profiler targets.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    profilerTargets: A list of profiler targets.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  profilerTargets = _messages.MessageField('ProfilerTarget', 2, repeated=True)
 
 
 class Location(_messages.Message):
@@ -1607,7 +1993,13 @@ class NewDWSFlexInstancesConfig(_messages.Message):
     TerminationActionValueValuesEnum: Optional. Immutable. Deprecated: Do not
       use.
 
+  Messages:
+    AtmTagsValue: Optional. Immutable. Unstable: Contact hypercompute-service-
+      eng@ before using.
+
   Fields:
+    atmTags: Optional. Immutable. Unstable: Contact hypercompute-service-eng@
+      before using.
     bootDisk: Optional. Immutable. Deprecated: set disks in node config
       instead.
     machineType: Required. Immutable. Name of the Compute Engine [machine
@@ -1633,11 +2025,37 @@ class NewDWSFlexInstancesConfig(_messages.Message):
     STOP = 1
     DELETE = 2
 
-  bootDisk = _messages.MessageField('Disk', 1)
-  machineType = _messages.StringField(2)
-  maxDuration = _messages.StringField(3)
-  terminationAction = _messages.EnumField('TerminationActionValueValuesEnum', 4)
-  zone = _messages.StringField(5)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AtmTagsValue(_messages.Message):
+    r"""Optional. Immutable. Unstable: Contact hypercompute-service-eng@
+    before using.
+
+    Messages:
+      AdditionalProperty: An additional property for a AtmTagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type AtmTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AtmTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  atmTags = _messages.MessageField('AtmTagsValue', 1)
+  bootDisk = _messages.MessageField('Disk', 2)
+  machineType = _messages.StringField(3)
+  maxDuration = _messages.StringField(4)
+  terminationAction = _messages.EnumField('TerminationActionValueValuesEnum', 5)
+  zone = _messages.StringField(6)
 
 
 class NewFilestoreConfig(_messages.Message):
@@ -1714,7 +2132,13 @@ class NewFlexStartInstancesConfig(_messages.Message):
     TerminationActionValueValuesEnum: Optional. Immutable. Deprecated: Do not
       use.
 
+  Messages:
+    AtmTagsValue: Optional. Immutable. Unstable: Contact hypercompute-service-
+      eng@ before using.
+
   Fields:
+    atmTags: Optional. Immutable. Unstable: Contact hypercompute-service-eng@
+      before using.
     bootDisk: Optional. Immutable. Deprecated: set disks in node config
       instead.
     machineType: Required. Immutable. Name of the Compute Engine [machine
@@ -1740,11 +2164,37 @@ class NewFlexStartInstancesConfig(_messages.Message):
     STOP = 1
     DELETE = 2
 
-  bootDisk = _messages.MessageField('Disk', 1)
-  machineType = _messages.StringField(2)
-  maxDuration = _messages.StringField(3)
-  terminationAction = _messages.EnumField('TerminationActionValueValuesEnum', 4)
-  zone = _messages.StringField(5)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AtmTagsValue(_messages.Message):
+    r"""Optional. Immutable. Unstable: Contact hypercompute-service-eng@
+    before using.
+
+    Messages:
+      AdditionalProperty: An additional property for a AtmTagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type AtmTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AtmTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  atmTags = _messages.MessageField('AtmTagsValue', 1)
+  bootDisk = _messages.MessageField('Disk', 2)
+  machineType = _messages.StringField(3)
+  maxDuration = _messages.StringField(4)
+  terminationAction = _messages.EnumField('TerminationActionValueValuesEnum', 5)
+  zone = _messages.StringField(6)
 
 
 class NewLustreConfig(_messages.Message):
@@ -1763,12 +2213,17 @@ class NewLustreConfig(_messages.Message):
     lustre: Required. Immutable. Name of the Managed Lustre instance to
       create, in the format
       `projects/{project}/locations/{location}/instances/{instance}`
+    perUnitStorageThroughput: Optional. Immutable. Throughput of the instance
+      in MB/s/TiB. Valid values are 125, 250, 500, 1000. See [Performance
+      tiers and maximum storage capacities](https://cloud.google.com/managed-
+      lustre/docs/create-instance#performance-tiers) for more information.
   """
 
   capacityGb = _messages.IntegerField(1)
   description = _messages.StringField(2)
   filesystem = _messages.StringField(3)
   lustre = _messages.StringField(4)
+  perUnitStorageThroughput = _messages.IntegerField(5)
 
 
 class NewNetworkConfig(_messages.Message):
@@ -1790,7 +2245,13 @@ class NewOnDemandInstancesConfig(_messages.Message):
   r"""When set in a ComputeResourceConfig, indicates that on-demand (i.e.,
   using the standard provisioning model) VM instances should be created.
 
+  Messages:
+    AtmTagsValue: Optional. Immutable. Unstable: Contact hypercompute-service-
+      eng@ before using.
+
   Fields:
+    atmTags: Optional. Immutable. Unstable: Contact hypercompute-service-eng@
+      before using.
     bootDisk: Immutable. Deprecated: set disks in node config instead.
     machineType: Required. Immutable. Name of the Compute Engine [machine
       type](https://cloud.google.com/compute/docs/machine-resource) to use,
@@ -1800,9 +2261,35 @@ class NewOnDemandInstancesConfig(_messages.Message):
       and must match the zone of any other resources specified in the cluster.
   """
 
-  bootDisk = _messages.MessageField('Disk', 1)
-  machineType = _messages.StringField(2)
-  zone = _messages.StringField(3)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AtmTagsValue(_messages.Message):
+    r"""Optional. Immutable. Unstable: Contact hypercompute-service-eng@
+    before using.
+
+    Messages:
+      AdditionalProperty: An additional property for a AtmTagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type AtmTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AtmTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  atmTags = _messages.MessageField('AtmTagsValue', 1)
+  bootDisk = _messages.MessageField('Disk', 2)
+  machineType = _messages.StringField(3)
+  zone = _messages.StringField(4)
 
 
 class NewReservedInstancesConfig(_messages.Message):
@@ -1814,13 +2301,27 @@ class NewReservedInstancesConfig(_messages.Message):
   Enums:
     TypeValueValuesEnum: Optional. Immutable. Deprecated: Do not use.
 
+  Messages:
+    AtmTagsValue: Optional. Immutable. Unstable: Contact hypercompute-service-
+      eng@ before using.
+
   Fields:
+    atmTags: Optional. Immutable. Unstable: Contact hypercompute-service-eng@
+      before using.
     bootDisk: Optional. Immutable. Deprecated: set disks in node config
       instead.
     machineType: Optional. Immutable. Deprecated: Do not use.
-    reservation: Required. Immutable. Name of the reservation from which VM
+    reservation: Optional. Immutable. Name of the reservation from which VM
       instances should be created, in the format
       `projects/{project}/zones/{zone}/reservations/{reservation}`.
+    reservationBlock: Optional. Immutable. Name of the reservation block from
+      which VM instances should be created, in the format `projects/{project}/
+      zones/{zone}/reservations/{reservation}/reservationBlocks/{reservation_b
+      lock}`.
+    reservationSubBlock: Optional. Immutable. Name of the reservation sub
+      block from which VM instances should be created, in the format `projects
+      /{project}/zones/{zone}/reservations/{reservation}/reservationBlocks/{re
+      servation_block}/reservationSubBlocks/{reservation_sub_block}`.
     type: Optional. Immutable. Deprecated: Do not use.
     zone: Optional. Immutable. Deprecated: Do not use.
   """
@@ -1839,11 +2340,39 @@ class NewReservedInstancesConfig(_messages.Message):
     ANY_RESERVATION = 2
     SPECIFIC_RESERVATION = 3
 
-  bootDisk = _messages.MessageField('Disk', 1)
-  machineType = _messages.StringField(2)
-  reservation = _messages.StringField(3)
-  type = _messages.EnumField('TypeValueValuesEnum', 4)
-  zone = _messages.StringField(5)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AtmTagsValue(_messages.Message):
+    r"""Optional. Immutable. Unstable: Contact hypercompute-service-eng@
+    before using.
+
+    Messages:
+      AdditionalProperty: An additional property for a AtmTagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type AtmTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AtmTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  atmTags = _messages.MessageField('AtmTagsValue', 1)
+  bootDisk = _messages.MessageField('Disk', 2)
+  machineType = _messages.StringField(3)
+  reservation = _messages.StringField(4)
+  reservationBlock = _messages.StringField(5)
+  reservationSubBlock = _messages.StringField(6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
+  zone = _messages.StringField(8)
 
 
 class NewSpotInstancesConfig(_messages.Message):
@@ -1855,7 +2384,13 @@ class NewSpotInstancesConfig(_messages.Message):
     TerminationActionValueValuesEnum: Optional. Specifies the termination
       action of the instance
 
+  Messages:
+    AtmTagsValue: Optional. Immutable. Unstable: Contact hypercompute-service-
+      eng@ before using.
+
   Fields:
+    atmTags: Optional. Immutable. Unstable: Contact hypercompute-service-eng@
+      before using.
     bootDisk: Immutable. Deprecated: set disks in node config instead.
     machineType: Required. Immutable. Name of the Compute Engine [machine
       type](https://cloud.google.com/compute/docs/machine-resource) to use,
@@ -1879,10 +2414,36 @@ class NewSpotInstancesConfig(_messages.Message):
     STOP = 1
     DELETE = 2
 
-  bootDisk = _messages.MessageField('Disk', 1)
-  machineType = _messages.StringField(2)
-  terminationAction = _messages.EnumField('TerminationActionValueValuesEnum', 3)
-  zone = _messages.StringField(4)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AtmTagsValue(_messages.Message):
+    r"""Optional. Immutable. Unstable: Contact hypercompute-service-eng@
+    before using.
+
+    Messages:
+      AdditionalProperty: An additional property for a AtmTagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type AtmTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AtmTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  atmTags = _messages.MessageField('AtmTagsValue', 1)
+  bootDisk = _messages.MessageField('Disk', 2)
+  machineType = _messages.StringField(3)
+  terminationAction = _messages.EnumField('TerminationActionValueValuesEnum', 4)
+  zone = _messages.StringField(5)
 
 
 class Operation(_messages.Message):
@@ -2000,6 +2561,7 @@ class OperationMetadata(_messages.Message):
     apiVersion: Output only. API version used to start the operation.
     createTime: Output only. The time the operation was created.
     endTime: Output only. The time the operation finished running.
+    progress: Output only. Progress of the operation.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have been
       cancelled successfully have google.longrunning.Operation.error value
@@ -2012,9 +2574,124 @@ class OperationMetadata(_messages.Message):
   apiVersion = _messages.StringField(1)
   createTime = _messages.StringField(2)
   endTime = _messages.StringField(3)
-  requestedCancellation = _messages.BooleanField(4)
-  target = _messages.StringField(5)
-  verb = _messages.StringField(6)
+  progress = _messages.MessageField('OperationProgress', 4)
+  requestedCancellation = _messages.BooleanField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
+
+
+class OperationProgress(_messages.Message):
+  r"""Message describing the progress of a cluster mutation long-running
+  operation. operation.
+
+  Fields:
+    steps: Output only. Steps and status of the operation.
+  """
+
+  steps = _messages.MessageField('OperationStep', 1, repeated=True)
+
+
+class OperationStep(_messages.Message):
+  r"""Message describing the status of a single step in a cluster mutation
+  long-running operation.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the operation step.
+
+  Fields:
+    checkClusterHealth: Output only. If set, indicates that cluster health
+      check is part of the operation.
+    createFilestoreInstance: Output only. If set, indicates that new Filestore
+      instance creation is part of the operation.
+    createGkeCluster: Output only. If set, indicates that new GKE cluster
+      creation is part of the operation.
+    createLoginNode: Output only. If set, indicates that new login node
+      creation is part of the operation.
+    createLustreInstance: Output only. If set, indicates that new Lustre
+      instance creation is part of the operation.
+    createNetwork: Output only. If set, indicates that new network creation is
+      part of the operation.
+    createNodeset: Output only. If set, indicates that new nodeset creation is
+      part of the operation.
+    createOrchestrator: Output only. If set, indicates that orchestrator
+      creation is part of the operation.
+    createPartition: Output only. If set, indicates that new partition
+      creation is part of the operation.
+    createPrivateServiceAccess: Output only. If set, indicates that new
+      private service access creation is part of the operation.
+    createStorageBucket: Output only. If set, indicates that new Cloud Storage
+      bucket creation is part of the operation.
+    deleteFilestoreInstance: Output only. If set, indicates that Filestore
+      instance deletion is part of the operation.
+    deleteGkeCluster: Output only. If set, indicates that GKE cluster deletion
+      is part of the operation.
+    deleteLoginNode: Output only. If set, indicates that login node deletion
+      is part of the operation.
+    deleteLustreInstance: Output only. If set, indicates that Lustre instance
+      deletion is part of the operation.
+    deleteNetwork: Output only. If set, indicates that network deletion is
+      part of the operation.
+    deleteNodeset: Output only. If set, indicates that nodeset deletion is
+      part of the operation.
+    deleteOrchestrator: Output only. If set, indicates that orchestrator
+      deletion is part of the operation.
+    deletePartition: Output only. If set, indicates that partition deletion is
+      part of the operation.
+    deletePrivateServiceAccess: Output only. If set, indicates that private
+      service access deletion is part of the operation.
+    deleteStorageBucket: Output only. If set, indicates that Cloud Storage
+      bucket deletion is part of the operation.
+    state: Output only. State of the operation step.
+    updateLoginNode: Output only. If set, indicates that login node update is
+      part of the operation.
+    updateNodeset: Output only. If set, indicates that nodeset update is part
+      of the operation.
+    updateOrchestrator: Output only. If set, indicates that an orchestrator
+      update is part of the operation.
+    updatePartition: Output only. If set, indicates that partition update is
+      part of the operation.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the operation step.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state.
+      WAITING: Initial state before step execution starts.
+      IN_PROGRESS: Step execution is running in progress.
+      DONE: Step execution is completed.
+    """
+    STATE_UNSPECIFIED = 0
+    WAITING = 1
+    IN_PROGRESS = 2
+    DONE = 3
+
+  checkClusterHealth = _messages.MessageField('CheckClusterHealth', 1)
+  createFilestoreInstance = _messages.MessageField('CreateFilestoreInstance', 2)
+  createGkeCluster = _messages.MessageField('CreateGKECluster', 3)
+  createLoginNode = _messages.MessageField('CreateLoginNode', 4)
+  createLustreInstance = _messages.MessageField('CreateLustreInstance', 5)
+  createNetwork = _messages.MessageField('CreateNetwork', 6)
+  createNodeset = _messages.MessageField('CreateNodeset', 7)
+  createOrchestrator = _messages.MessageField('CreateOrchestrator', 8)
+  createPartition = _messages.MessageField('CreatePartition', 9)
+  createPrivateServiceAccess = _messages.MessageField('CreatePrivateServiceAccess', 10)
+  createStorageBucket = _messages.MessageField('CreateStorageBucket', 11)
+  deleteFilestoreInstance = _messages.MessageField('DeleteFilestoreInstance', 12)
+  deleteGkeCluster = _messages.MessageField('DeleteGKECluster', 13)
+  deleteLoginNode = _messages.MessageField('DeleteLoginNode', 14)
+  deleteLustreInstance = _messages.MessageField('DeleteLustreInstance', 15)
+  deleteNetwork = _messages.MessageField('DeleteNetwork', 16)
+  deleteNodeset = _messages.MessageField('DeleteNodeset', 17)
+  deleteOrchestrator = _messages.MessageField('DeleteOrchestrator', 18)
+  deletePartition = _messages.MessageField('DeletePartition', 19)
+  deletePrivateServiceAccess = _messages.MessageField('DeletePrivateServiceAccess', 20)
+  deleteStorageBucket = _messages.MessageField('DeleteStorageBucket', 21)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  updateLoginNode = _messages.MessageField('UpdateLoginNode', 23)
+  updateNodeset = _messages.MessageField('UpdateNodeset', 24)
+  updateOrchestrator = _messages.MessageField('UpdateOrchestrator', 25)
+  updatePartition = _messages.MessageField('UpdatePartition', 26)
 
 
 class Orchestrator(_messages.Message):
@@ -2050,6 +2727,58 @@ class ProfileSession(_messages.Message):
   dashboardUrl = _messages.StringField(2)
   gcsPath = _messages.StringField(3)
   name = _messages.StringField(4)
+
+
+class ProfilerSession(_messages.Message):
+  r"""Represents a single profiler session.
+
+  Fields:
+    createTime: Output only. The creation time of the session.
+    dashboardUri: Output only. The URI to dashboard to see session specific
+      data. Not specified if URI is not ready yet. Form https://? Could
+      contain user information like bucket name etc.
+    duration: Optional. Duration for the profiler session.
+    etag: Optional. Etag for optimistic concurrency control.
+    isTraceEnabled: Optional. Customer setting to enable trace level details
+      for the session.
+    name: Identifier. The name of the profiler session. Format: projects/{proj
+      ect}/locations/{location}/machineLearningRuns/{machine_learning_run}/pro
+      filerSessions/{profiler_session}
+    profilerTargets: Optional. List of profiler targets. Targets on which
+      profiler session to be started. If empty, control plan shall start
+      profiler session on all the targets associated with ML Run.
+    storageFolderUri: Output only. The cloud storage path of the session.
+      Example: `gs://my-bucket/my-run-directory/session-1`.
+  """
+
+  createTime = _messages.StringField(1)
+  dashboardUri = _messages.StringField(2)
+  duration = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  isTraceEnabled = _messages.BooleanField(5)
+  name = _messages.StringField(6)
+  profilerTargets = _messages.StringField(7, repeated=True)
+  storageFolderUri = _messages.StringField(8)
+
+
+class ProfilerTarget(_messages.Message):
+  r"""A Profiler Target.
+
+  Fields:
+    etag: Optional. Etag for the profiler target
+    hostname: Required. Host name of the node / target.
+    isMaster: Optional. Whether this node is the master node in the cluster.
+    name: Identifier. The resource name of the ProfilerTarget. Format: project
+      s/{project}/locations/{location}/machineLearningRuns/{machine_learning_r
+      un}/profilerTargets/{profiler_target}
+    nodeIndex: Required. Index of the node in the cluster.
+  """
+
+  etag = _messages.StringField(1)
+  hostname = _messages.StringField(2)
+  isMaster = _messages.BooleanField(3)
+  name = _messages.StringField(4)
+  nodeIndex = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class ReservationAffinity(_messages.Message):
@@ -2378,9 +3107,9 @@ class SlurmLoginNodes(_messages.Message):
       should be applied to each login node instance.
 
   Fields:
-    bootDisk: Optional. Boot disk for the login node
+    bootDisk: Optional. Boot disk for the login node.
     count: Required. Number of login node instances to create.
-    disks: Optional. Unstable: Contact hypercompute-service-eng@ before using.
+    disks: Optional. Deprecated: Use boot_disk instead.
     enableOsLogin: Optional. Whether [OS
       Login](https://cloud.google.com/compute/docs/oslogin) should be enabled
       on login node instances.
@@ -2455,8 +3184,7 @@ class SlurmNodeSet(_messages.Message):
       instead.
 
   Fields:
-    bootDisk: Optional. Unstable: Contact hypercompute-service-eng@ before
-      using.
+    bootDisk: Optional. Deprecated: Use compute_instance.boot_disk instead.
     canIpForward: Optional. Deprecated: Do not use.
     computeId: Optional. ID of the compute resource on which this nodeset will
       run. Must match a key in the cluster's
@@ -2544,7 +3272,8 @@ class SlurmOrchestrator(_messages.Message):
       one of the partitions.
     epilogBashScripts: Optional. Slurm [epilog
       scripts](https://slurm.schedmd.com/prolog_epilog.html), which will be
-      executed by compute nodes whenever a node finishes running a job.
+      executed by compute nodes whenever a node finishes running a job. Values
+      must not be empty.
     loginNodes: Required. Configuration for login nodes, which allow users to
       access the cluster over SSH.
     nodeSets: Required. Configuration of Slurm nodesets, which define groups
@@ -2555,7 +3284,8 @@ class SlurmOrchestrator(_messages.Message):
       At least one partition is required.
     prologBashScripts: Optional. Slurm [prolog
       scripts](https://slurm.schedmd.com/prolog_epilog.html), which will be
-      executed by compute nodes before a node begins running a new job.
+      executed by compute nodes before a node begins running a new job. Values
+      must not be empty.
     taskEpilogBashScripts: Optional. Unstable: Contact hypercompute-service-
       eng@ before using.
     taskPrologBashScripts: Optional. Unstable: Contact hypercompute-service-
@@ -2827,6 +3557,40 @@ class Tool(_messages.Message):
   """
 
   xprof = _messages.MessageField('Xprof', 1)
+
+
+class UpdateLoginNode(_messages.Message):
+  r"""When set in OperationStep, indicates that a login node should be
+  updated.
+  """
+
+
+
+class UpdateNodeset(_messages.Message):
+  r"""When set in OperationStep, indicates that a nodeset should be updated.
+
+  Fields:
+    nodesets: Output only. Name of the nodeset to update
+  """
+
+  nodesets = _messages.StringField(1, repeated=True)
+
+
+class UpdateOrchestrator(_messages.Message):
+  r"""When set in OperationStep, indicates that an orchestrator should be
+  updated.
+  """
+
+
+
+class UpdatePartition(_messages.Message):
+  r"""When set in OperationStep, indicates that a partition should be updated.
+
+  Fields:
+    partitions: Output only. Name of the partition to update
+  """
+
+  partitions = _messages.StringField(1, repeated=True)
 
 
 class WorkloadDetails(_messages.Message):

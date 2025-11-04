@@ -492,6 +492,28 @@ class DNSServer(_messages.Message):
   tld = _messages.StringField(2)
 
 
+class DescribeServiceAccountKeyRequest(_messages.Message):
+  r"""Request proto for DescribeServiceAccountKey API.
+
+  Fields:
+    keyId: Required. The key id to get.
+  """
+
+  keyId = _messages.StringField(1)
+
+
+class DescribeServiceAccountKeyResponse(_messages.Message):
+  r"""Response proto for DescribeServiceAccountKey API.
+
+  Fields:
+    key_id: Output only. The public key id.
+    valid_before: Output only. The expiry time of the key.
+  """
+
+  key_id = _messages.StringField(1)
+  valid_before = _messages.StringField(2)
+
+
 class Details(_messages.Message):
   r"""The created connection details.
 
@@ -523,6 +545,28 @@ class Details(_messages.Message):
   cloudVpns = _messages.MessageField('CloudVpn', 2, repeated=True)
   error = _messages.StringField(3)
   state = _messages.EnumField('StateValueValuesEnum', 4)
+
+
+class DisableServiceAccountKeyRequest(_messages.Message):
+  r"""Request proto for DisableServiceAccountKey API.
+
+  Fields:
+    keyId: Required. The key id to disable.
+  """
+
+  keyId = _messages.StringField(1)
+
+
+class DisableServiceAccountKeyResponse(_messages.Message):
+  r"""Response proto for DisableServiceAccountKey API.
+
+  Fields:
+    deleteTime: Output only. The timestamp when the key was disabled.
+    keyId: Output only. The disabled key id.
+  """
+
+  deleteTime = _messages.StringField(1)
+  keyId = _messages.StringField(2)
 
 
 class DisableZonalServiceRequest(_messages.Message):
@@ -627,8 +671,8 @@ class EdgecontainerOrganizationsLocationsListRequest(_messages.Message):
   r"""A EdgecontainerOrganizationsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Unless explicitly documented otherwise,
-      don't use this unsupported field which is primarily intended for
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -1017,8 +1061,8 @@ class EdgecontainerProjectsLocationsListRequest(_messages.Message):
   r"""A EdgecontainerProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Unless explicitly documented otherwise,
-      don't use this unsupported field which is primarily intended for
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -1157,6 +1201,37 @@ class EdgecontainerProjectsLocationsServiceAccountsDeleteRequest(_messages.Messa
   name = _messages.StringField(1, required=True)
 
 
+class EdgecontainerProjectsLocationsServiceAccountsDescribeKeyRequest(_messages.Message):
+  r"""A EdgecontainerProjectsLocationsServiceAccountsDescribeKeyRequest
+  object.
+
+  Fields:
+    describeServiceAccountKeyRequest: A DescribeServiceAccountKeyRequest
+      resource to be passed as the request body.
+    parent: Required. The canonical resource name of the project service
+      account. E.g. projects/{project}/locations/{location}/serviceAccounts/{s
+      ervice_account}
+  """
+
+  describeServiceAccountKeyRequest = _messages.MessageField('DescribeServiceAccountKeyRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class EdgecontainerProjectsLocationsServiceAccountsDisableKeyRequest(_messages.Message):
+  r"""A EdgecontainerProjectsLocationsServiceAccountsDisableKeyRequest object.
+
+  Fields:
+    disableServiceAccountKeyRequest: A DisableServiceAccountKeyRequest
+      resource to be passed as the request body.
+    parent: Required. The canonical resource name of the project service
+      account. E.g. projects/{project}/locations/{location}/serviceAccounts/{s
+      ervice_account}
+  """
+
+  disableServiceAccountKeyRequest = _messages.MessageField('DisableServiceAccountKeyRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class EdgecontainerProjectsLocationsServiceAccountsGenerateKeyRequest(_messages.Message):
   r"""A EdgecontainerProjectsLocationsServiceAccountsGenerateKeyRequest
   object.
@@ -1183,6 +1258,21 @@ class EdgecontainerProjectsLocationsServiceAccountsGetRequest(_messages.Message)
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class EdgecontainerProjectsLocationsServiceAccountsListKeysRequest(_messages.Message):
+  r"""A EdgecontainerProjectsLocationsServiceAccountsListKeysRequest object.
+
+  Fields:
+    listServiceAccountKeysRequest: A ListServiceAccountKeysRequest resource to
+      be passed as the request body.
+    parent: Required. The canonical resource name of the project service
+      account. E.g. projects/{project}/locations/{location}/serviceAccounts/{s
+      ervice_account}
+  """
+
+  listServiceAccountKeysRequest = _messages.MessageField('ListServiceAccountKeysRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class EdgecontainerProjectsLocationsServiceAccountsListRequest(_messages.Message):
@@ -1702,6 +1792,30 @@ class ListRolesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   roles = _messages.MessageField('Role', 2, repeated=True)
+
+
+class ListServiceAccountKeysRequest(_messages.Message):
+  r"""Request proto for ListServiceAccountKeys API.
+
+  Fields:
+    pageSize: Optional. The maximum number of resources to list.
+    pageToken: Optional. A page token received from previous list request.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+
+
+class ListServiceAccountKeysResponse(_messages.Message):
+  r"""Response proto for ListServiceAccountKeys API.
+
+  Fields:
+    nextPageToken: A token to retrieve next page of results.
+    serviceAccountKeys: The list of service account keys.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  serviceAccountKeys = _messages.MessageField('ServiceAccountKeyInfo', 2, repeated=True)
 
 
 class ListServiceAccountsResponse(_messages.Message):
@@ -2615,15 +2729,33 @@ class RobinCloudNativeStorage(_messages.Message):
 
 
 class Role(_messages.Message):
-  r"""Represents an IAM role.
+  r"""Represents a GDC IAM role corresponding to a K8s role in the zone.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the role in the zone.
 
   Fields:
     displayName: Optional. The display name of the role.
-    gcpRole: Required. The GCP IAM role.
+    gdcRole: Required. The GDC IAM role name.
+    state: Output only. The state of the role in the zone.
   """
 
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the role in the zone.
+
+    Values:
+      STATE_UNKNOWN: The default value. This value is used if the state check
+        failed.
+      READY: The role is present in the zone.
+      NOT_READY: The role is not present in the zone.
+    """
+    STATE_UNKNOWN = 0
+    READY = 1
+    NOT_READY = 2
+
   displayName = _messages.StringField(1)
-  gcpRole = _messages.StringField(2)
+  gdcRole = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class SdsOperator(_messages.Message):
@@ -2728,6 +2860,19 @@ class ServiceAccount(_messages.Message):
   name = _messages.StringField(3)
   updateTime = _messages.StringField(4)
   zone = _messages.StringField(5)
+
+
+class ServiceAccountKeyInfo(_messages.Message):
+  r"""ServiceAccountKeyInfo represents the information of a service account
+  key.
+
+  Fields:
+    key_id: Output only. The public key id.
+    valid_before: Output only. The expiry time of the key.
+  """
+
+  key_id = _messages.StringField(1)
+  valid_before = _messages.StringField(2)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -2865,7 +3010,7 @@ class SurvivabilityConfig(_messages.Message):
   Fields:
     offlineRebootTtl: Optional. Time period that allows the cluster nodes to
       be rebooted and become functional without network connectivity to
-      Google. The default 0 means not allowed. The maximum is 7 days.
+      Google. The default 0 means not allowed. The maximum is 30 days.
   """
 
   offlineRebootTtl = _messages.StringField(1)

@@ -27,6 +27,19 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class ControlledEgressConfig(_messages.Message):
+  r"""Controlled egress configuration.
+
+  Fields:
+    egressFqdns: Optional. List of fully qualified domain names to be added to
+      the allowlist for outbound traffic.
+    marketplaceEnabled: Optional. Whether marketplace is enabled.
+  """
+
+  egressFqdns = _messages.StringField(1, repeated=True)
+  marketplaceEnabled = _messages.BooleanField(2)
+
+
 class CustomDomain(_messages.Message):
   r"""Custom domain information.
 
@@ -298,6 +311,9 @@ class Instance(_messages.Message):
       `projects/{project}/global/networks/{network}`. Note that the consumer
       network may be in a different GCP project than the consumer project that
       is hosting the Looker Instance.
+    controlledEgressConfig: Optional. Controlled egress configuration.
+    controlledEgressEnabled: Optional. Whether controlled egress is enabled on
+      the Looker instance.
     createTime: Output only. The time when the Looker instance provisioning
       was first requested.
     customDomain: Custom domain configuration for the instance.
@@ -430,37 +446,39 @@ class Instance(_messages.Message):
   adminSettings = _messages.MessageField('AdminSettings', 1)
   classType = _messages.EnumField('ClassTypeValueValuesEnum', 2)
   consumerNetwork = _messages.StringField(3)
-  createTime = _messages.StringField(4)
-  customDomain = _messages.MessageField('CustomDomain', 5)
-  denyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 6)
-  egressPublicIp = _messages.StringField(7)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 8)
-  fipsEnabled = _messages.BooleanField(9)
-  geminiAiConfig = _messages.MessageField('GeminiAiConfig', 10)
-  geminiEnabled = _messages.BooleanField(11)
-  ingressPrivateIp = _messages.StringField(12)
-  ingressPublicIp = _messages.StringField(13)
-  lastDenyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 14)
-  linkedLspProjectNumber = _messages.IntegerField(15)
-  lookerUri = _messages.StringField(16)
-  lookerVersion = _messages.StringField(17)
-  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 18)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 19)
-  name = _messages.StringField(20)
-  oauthConfig = _messages.MessageField('OAuthConfig', 21)
-  periodicExportConfig = _messages.MessageField('PeriodicExportConfig', 22)
-  platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 23)
-  privateIpEnabled = _messages.BooleanField(24)
-  pscConfig = _messages.MessageField('PscConfig', 25)
-  pscEnabled = _messages.BooleanField(26)
-  publicIpEnabled = _messages.BooleanField(27)
-  reservedRange = _messages.StringField(28)
-  satisfiesPzi = _messages.BooleanField(29)
-  satisfiesPzs = _messages.BooleanField(30)
-  state = _messages.EnumField('StateValueValuesEnum', 31)
-  tier = _messages.EnumField('TierValueValuesEnum', 32)
-  updateTime = _messages.StringField(33)
-  userMetadata = _messages.MessageField('UserMetadata', 34)
+  controlledEgressConfig = _messages.MessageField('ControlledEgressConfig', 4)
+  controlledEgressEnabled = _messages.BooleanField(5)
+  createTime = _messages.StringField(6)
+  customDomain = _messages.MessageField('CustomDomain', 7)
+  denyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 8)
+  egressPublicIp = _messages.StringField(9)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 10)
+  fipsEnabled = _messages.BooleanField(11)
+  geminiAiConfig = _messages.MessageField('GeminiAiConfig', 12)
+  geminiEnabled = _messages.BooleanField(13)
+  ingressPrivateIp = _messages.StringField(14)
+  ingressPublicIp = _messages.StringField(15)
+  lastDenyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 16)
+  linkedLspProjectNumber = _messages.IntegerField(17)
+  lookerUri = _messages.StringField(18)
+  lookerVersion = _messages.StringField(19)
+  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 20)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 21)
+  name = _messages.StringField(22)
+  oauthConfig = _messages.MessageField('OAuthConfig', 23)
+  periodicExportConfig = _messages.MessageField('PeriodicExportConfig', 24)
+  platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 25)
+  privateIpEnabled = _messages.BooleanField(26)
+  pscConfig = _messages.MessageField('PscConfig', 27)
+  pscEnabled = _messages.BooleanField(28)
+  publicIpEnabled = _messages.BooleanField(29)
+  reservedRange = _messages.StringField(30)
+  satisfiesPzi = _messages.BooleanField(31)
+  satisfiesPzs = _messages.BooleanField(32)
+  state = _messages.EnumField('StateValueValuesEnum', 33)
+  tier = _messages.EnumField('TierValueValuesEnum', 34)
+  updateTime = _messages.StringField(35)
+  userMetadata = _messages.MessageField('UserMetadata', 36)
 
 
 class InstanceBackup(_messages.Message):
@@ -858,8 +876,8 @@ class LookerProjectsLocationsListRequest(_messages.Message):
   r"""A LookerProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Unless explicitly documented otherwise,
-      don't use this unsupported field which is primarily intended for
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is

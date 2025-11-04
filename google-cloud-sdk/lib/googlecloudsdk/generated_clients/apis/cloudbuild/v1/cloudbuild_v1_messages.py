@@ -973,9 +973,11 @@ class BuildSecurityPolicy(_messages.Message):
     Values:
       BCID_LEVEL_UNSPECIFIED: Unspecified BCID level.
       BCID_L2: BCID L2.
+      BCID_L3: BCID L3.
     """
     BCID_LEVEL_UNSPECIFIED = 0
     BCID_L2 = 1
+    BCID_L3 = 2
 
   class WorkflowTypeValueValuesEnum(_messages.Enum):
     r"""Output only. Immutable. Determines whether this instance handles
@@ -3994,18 +3996,19 @@ class LinuxPool(_messages.Message):
   TBI.
 
   Enums:
-    LinuxHostOsValueValuesEnum: Required. Linux host OS to use for the pool.
+    LinuxHostOsValueValuesEnum: Output only. Linux host OS to use for the
+      pool.
 
   Fields:
     diskConfig: Required. Disk configuration for the pool.
-    linuxHostOs: Required. Linux host OS to use for the pool.
+    linuxHostOs: Output only. Linux host OS to use for the pool.
     machineConfig: Required. Machine configuration for the pool.
     preferReusableVms: Optional. If true, the pool will prefer to use reusable
       VMs.
   """
 
   class LinuxHostOsValueValuesEnum(_messages.Enum):
-    r"""Required. Linux host OS to use for the pool.
+    r"""Output only. Linux host OS to use for the pool.
 
     Values:
       LINUX_HOST_OS_UNSPECIFIED: LINUX_HOST_OS_UNSPECIFIED

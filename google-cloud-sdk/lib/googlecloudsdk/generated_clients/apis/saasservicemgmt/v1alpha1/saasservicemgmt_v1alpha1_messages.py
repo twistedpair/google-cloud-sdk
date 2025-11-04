@@ -14,71 +14,6 @@ from apitools.base.py import extra_types
 package = 'saasservicemgmt'
 
 
-class Activity(_messages.Message):
-  r"""Activity performed on a specific resource, like pause/resume/cancel.
-
-  Enums:
-    ActivityTypeValueValuesEnum:
-    StateValueValuesEnum: Optional. Immutable. The state for the action. By
-      default, it's in progress. Once reaching completion state, it can be
-      either succeeded or failed.
-
-  Fields:
-    activityType: A ActivityTypeValueValuesEnum attribute.
-    endTime: Required. Immutable. The time when the action is finished.
-    errorCode: Optional. Once failed, indicate what kind of error code it is
-      for the UI.
-    errorMessage: Optional. Once failed, indicate what kind of error message
-      it is for the UI.
-    reason: Optional. Immutable. The reason for the activity.
-    requestedBy: Optional. Immutable. Indicate the individual who triggers the
-      action. Oftentimes such information can be PII.
-    requestedTime: Required. Immutable. The time when the action is requested.
-    state: Optional. Immutable. The state for the action. By default, it's in
-      progress. Once reaching completion state, it can be either succeeded or
-      failed.
-  """
-
-  class ActivityTypeValueValuesEnum(_messages.Enum):
-    r"""ActivityTypeValueValuesEnum enum type.
-
-    Values:
-      ACTIVITY_TYPE_UNSPECIFIED: <no description>
-      ACTIVITY_TYPE_PAUSE: <no description>
-      ACTIVITY_TYPE_RESUME: <no description>
-      ACTIVITY_TYPE_CANCEL: <no description>
-    """
-    ACTIVITY_TYPE_UNSPECIFIED = 0
-    ACTIVITY_TYPE_PAUSE = 1
-    ACTIVITY_TYPE_RESUME = 2
-    ACTIVITY_TYPE_CANCEL = 3
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Optional. Immutable. The state for the action. By default, it's in
-    progress. Once reaching completion state, it can be either succeeded or
-    failed.
-
-    Values:
-      ACTIVITY_STATE_UNSPECIFIED: <no description>
-      ACTIVITY_STATE_IN_PROGRESS: <no description>
-      ACTIVITY_STATE_SUCCEEDED: <no description>
-      ACTIVITY_STATE_FAILED: <no description>
-    """
-    ACTIVITY_STATE_UNSPECIFIED = 0
-    ACTIVITY_STATE_IN_PROGRESS = 1
-    ACTIVITY_STATE_SUCCEEDED = 2
-    ACTIVITY_STATE_FAILED = 3
-
-  activityType = _messages.EnumField('ActivityTypeValueValuesEnum', 1)
-  endTime = _messages.StringField(2)
-  errorCode = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  errorMessage = _messages.StringField(4)
-  reason = _messages.StringField(5)
-  requestedBy = _messages.StringField(6)
-  requestedTime = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-
-
 class Aggregate(_messages.Message):
   r"""Represents the aggregation of a set of population of like records by a
   certain group. For example, a collection of unit counts can be aggregated
@@ -693,10 +628,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListReleasesResponse(_messages.Message):
@@ -1178,9 +1118,6 @@ class Rollout(_messages.Message):
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the rollout.
-    TargetStateValueValuesEnum: Optional. Specifies the state that the users
-      want the rollout to be in. The state field will finally be reconciled by
-      the system to be the same as the target_state.
 
   Messages:
     AnnotationsValue: Optional. Annotations is an unstructured key-value map
@@ -1192,18 +1129,11 @@ class Rollout(_messages.Message):
       categorization. similar to Kubernetes resource labels.
 
   Fields:
-    activityLog: Optional. Output only. Activities performed on this rollout.
-    activityReason: Optional. When performing a specific activity like
-      pause/resume/cancel, users can choose to provide the activity reason
-      which can be populated into the given activity.
     annotations: Optional. Annotations is an unstructured key-value map stored
       with a resource that may be set by external tools to store and retrieve
       arbitrary metadata. They are not queryable and should be preserved when
       modifying objects. More info: https://kubernetes.io/docs/user-
       guide/annotations
-    cancel: Optional. Specifies whether the rollout should be canceled or not.
-      Once set to true, it can't be reverted back to false. Cancellation while
-      best-effort is a terminal state.
     control: Optional. Requested change to the execution of this rollout.
       Default RolloutControl.action is ROLLOUT_ACTION_RUN meaning the rollout
       will be executed to completion while progressing through all natural
@@ -1231,8 +1161,6 @@ class Rollout(_messages.Message):
       rollout is stemming from. The resource name (full URI of the resource)
       following the standard naming scheme:
       "projects/{project}/locations/{location}/rollouts/{rollout_id}"
-    pause: Optional. Specifies whether the rollout should pause and pause the
-      execution or not.
     release: Optional. Immutable. Name of the Release that gets rolled out to
       target Units. Required if no other type of release is specified.
     results: Output only. Information about progress of rollouts such as
@@ -1249,11 +1177,6 @@ class Rollout(_messages.Message):
       "Google.Cloud.Simple.OneLocationAtATime" A rollout with one of these
       simple strategies will rollout across all locations defined in the
       targeted UnitKind's Saas Locations.
-    rolloutStrategy: Optional. The strategy to use for executing this rollout.
-      By default, the strategy from Rollout Type will be used, If not provided
-      at creation time of the rollout. (immutable once created)
-    rolloutType: Optional. Immutable. Name of the RolloutType this rollout is
-      stemming from and adhering to.
     rootRollout: Optional. Output only. The root rollout that this rollout is
       stemming from. The resource name (full URI of the resource) following
       the standard naming scheme:
@@ -1266,9 +1189,6 @@ class Rollout(_messages.Message):
     stateTransitionTime: Optional. Output only. The time when the rollout
       transitioned into its current state.
     stats: Optional. Output only. Details about the progress of the rollout.
-    targetState: Optional. Specifies the state that the users want the rollout
-      to be in. The state field will finally be reconciled by the system to be
-      the same as the target_state.
     uid: Output only. The unique identifier of the resource. UID is unique in
       the time and space for this resource within the scope of the service. It
       is typically generated by the server on successful creation of a
@@ -1286,35 +1206,6 @@ class Rollout(_messages.Message):
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the rollout.
-
-    Values:
-      ROLLOUT_STATE_UNSPECIFIED: Unspecified state.
-      ROLLOUT_STATE_RUNNING: Rollout is in progress.
-      ROLLOUT_STATE_PAUSED: Rollout has been paused.
-      ROLLOUT_STATE_SUCCEEDED: Rollout completed successfully.
-      ROLLOUT_STATE_FAILED: Rollout has failed.
-      ROLLOUT_STATE_CANCELLED: Rollout has been cancelled.
-      ROLLOUT_STATE_WAITING: Rollout is waiting for some condition to be met
-        before starting.
-      ROLLOUT_STATE_CANCELLING: Rollout is being cancelled.
-      ROLLOUT_STATE_RESUMING: Rollout is being resumed.
-      ROLLOUT_STATE_PAUSING: Rollout is being paused.
-    """
-    ROLLOUT_STATE_UNSPECIFIED = 0
-    ROLLOUT_STATE_RUNNING = 1
-    ROLLOUT_STATE_PAUSED = 2
-    ROLLOUT_STATE_SUCCEEDED = 3
-    ROLLOUT_STATE_FAILED = 4
-    ROLLOUT_STATE_CANCELLED = 5
-    ROLLOUT_STATE_WAITING = 6
-    ROLLOUT_STATE_CANCELLING = 7
-    ROLLOUT_STATE_RESUMING = 8
-    ROLLOUT_STATE_PAUSING = 9
-
-  class TargetStateValueValuesEnum(_messages.Enum):
-    r"""Optional. Specifies the state that the users want the rollout to be
-    in. The state field will finally be reconciled by the system to be the
-    same as the target_state.
 
     Values:
       ROLLOUT_STATE_UNSPECIFIED: Unspecified state.
@@ -1393,35 +1284,28 @@ class Rollout(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  activityLog = _messages.MessageField('Activity', 1, repeated=True)
-  activityReason = _messages.StringField(2)
-  annotations = _messages.MessageField('AnnotationsValue', 3)
-  cancel = _messages.BooleanField(4)
-  control = _messages.MessageField('RolloutControl', 5)
-  createTime = _messages.StringField(6)
-  endTime = _messages.StringField(7)
-  etag = _messages.StringField(8)
-  flagRelease = _messages.StringField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  name = _messages.StringField(11)
-  parentRollout = _messages.StringField(12)
-  pause = _messages.BooleanField(13)
-  release = _messages.StringField(14)
-  results = _messages.MessageField('RolloutResults', 15)
-  rolloutKind = _messages.StringField(16)
-  rolloutOrchestrationStrategy = _messages.StringField(17)
-  rolloutStrategy = _messages.MessageField('RolloutStrategy', 18)
-  rolloutType = _messages.StringField(19)
-  rootRollout = _messages.StringField(20)
-  startTime = _messages.StringField(21)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
-  stateMessage = _messages.StringField(23)
-  stateTransitionTime = _messages.StringField(24)
-  stats = _messages.MessageField('RolloutStats', 25)
-  targetState = _messages.EnumField('TargetStateValueValuesEnum', 26)
-  uid = _messages.StringField(27)
-  unitFilter = _messages.StringField(28)
-  updateTime = _messages.StringField(29)
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  control = _messages.MessageField('RolloutControl', 2)
+  createTime = _messages.StringField(3)
+  endTime = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  flagRelease = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  parentRollout = _messages.StringField(9)
+  release = _messages.StringField(10)
+  results = _messages.MessageField('RolloutResults', 11)
+  rolloutKind = _messages.StringField(12)
+  rolloutOrchestrationStrategy = _messages.StringField(13)
+  rootRollout = _messages.StringField(14)
+  startTime = _messages.StringField(15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  stateMessage = _messages.StringField(17)
+  stateTransitionTime = _messages.StringField(18)
+  stats = _messages.MessageField('RolloutStats', 19)
+  uid = _messages.StringField(20)
+  unitFilter = _messages.StringField(21)
+  updateTime = _messages.StringField(22)
 
 
 class RolloutControl(_messages.Message):
@@ -1920,8 +1804,8 @@ class Saas(_messages.Message):
       server agree on the ordering of a resource being written.
     labels: Optional. The labels on the resource, which can be used for
       categorization. similar to Kubernetes resource labels.
-    locations: Optional. Immutable. List of locations that the service is
-      available in. Rollout refers to the list to generate a rollout plan.
+    locations: Optional. List of locations that the service is available in.
+      Rollout refers to the list to generate a rollout plan.
     name: Identifier. The resource name (full URI of the resource) following
       the standard naming scheme:
       "projects/{project}/locations/{location}/saas/{saas}"
@@ -2586,12 +2470,20 @@ class SaasservicemgmtProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class SaasservicemgmtProjectsLocationsReleasesCreateRequest(_messages.Message):

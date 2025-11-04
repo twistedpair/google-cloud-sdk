@@ -544,11 +544,15 @@ class Config(_messages.Message):
   Fields:
     defaultKmsKeyName: Optional. The default KMS key that is used if no
       encryption key is provided when a repository is created.
+    internalMetadata: Output only. All the metadata information that is used
+      internally to serve the resource. For example: timestamps, flags, status
+      fields, etc. The format of this field is a JSON string.
     name: Identifier. The config name.
   """
 
   defaultKmsKeyName = _messages.StringField(1)
-  name = _messages.StringField(2)
+  internalMetadata = _messages.StringField(2)
+  name = _messages.StringField(3)
 
 
 class DataEncryptionState(_messages.Message):
@@ -745,12 +749,20 @@ class DataformProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class DataformProjectsLocationsRepositoriesCommitRequest(_messages.Message):
@@ -2093,11 +2105,19 @@ class InvocationConfig(_messages.Message):
   both `included_targets` and `included_tags` are unset, all actions will be
   included.
 
+  Enums:
+    QueryPriorityValueValuesEnum: Optional. Specifies the priority for query
+      execution in BigQuery. More information can be found at
+      https://cloud.google.com/bigquery/docs/running-queries#queries.
+
   Fields:
     fullyRefreshIncrementalTablesEnabled: Optional. When set to true, any
       incremental tables will be fully refreshed.
     includedTags: Optional. The set of tags to include.
     includedTargets: Optional. The set of action identifiers to include.
+    queryPriority: Optional. Specifies the priority for query execution in
+      BigQuery. More information can be found at
+      https://cloud.google.com/bigquery/docs/running-queries#queries.
     serviceAccount: Optional. The service account to run workflow invocations
       under.
     transitiveDependenciesIncluded: Optional. When set to true, transitive
@@ -2106,12 +2126,31 @@ class InvocationConfig(_messages.Message):
       dependents of included actions will be executed.
   """
 
+  class QueryPriorityValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the priority for query execution in BigQuery. More
+    information can be found at
+    https://cloud.google.com/bigquery/docs/running-queries#queries.
+
+    Values:
+      QUERY_PRIORITY_UNSPECIFIED: Default value. This value is unused.
+      INTERACTIVE: Query will be executed in BigQuery with interactive
+        priority. More information can be found at
+        https://cloud.google.com/bigquery/docs/running-queries#queries.
+      BATCH: Query will be executed in BigQuery with batch priority. More
+        information can be found at
+        https://cloud.google.com/bigquery/docs/running-queries#batchqueries.
+    """
+    QUERY_PRIORITY_UNSPECIFIED = 0
+    INTERACTIVE = 1
+    BATCH = 2
+
   fullyRefreshIncrementalTablesEnabled = _messages.BooleanField(1)
   includedTags = _messages.StringField(2, repeated=True)
   includedTargets = _messages.MessageField('Target', 3, repeated=True)
-  serviceAccount = _messages.StringField(4)
-  transitiveDependenciesIncluded = _messages.BooleanField(5)
-  transitiveDependentsIncluded = _messages.BooleanField(6)
+  queryPriority = _messages.EnumField('QueryPriorityValueValuesEnum', 4)
+  serviceAccount = _messages.StringField(5)
+  transitiveDependenciesIncluded = _messages.BooleanField(6)
+  transitiveDependentsIncluded = _messages.BooleanField(7)
 
 
 class ListCompilationResultsResponse(_messages.Message):
@@ -2149,10 +2188,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListReleaseConfigsResponse(_messages.Message):

@@ -3042,6 +3042,32 @@ patch format and processing rules.
         supports_download=False,
     )
 
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeFirewallsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.firewalls.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/global/firewalls/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeFirewallsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
       r"""Updates the specified firewall rule with the data included in the.
 request.
@@ -12708,8 +12734,10 @@ This has billing implications.  Projects in the hierarchy with effective
 hierarchical security policies will be automatically enrolled into Cloud
 Armor Enterprise if not already enrolled.
 
-Use of this API to modify firewall policies is deprecated. Use
-firewallPolicies.addAssociation instead if possible.
+Use this API to modify Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to modify firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.addAssociation
+instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesAddAssociationRequest) input message
@@ -12737,6 +12765,10 @@ firewallPolicies.addAssociation instead if possible.
     def AddRule(self, request, global_params=None):
       r"""Inserts a rule into a security policy.
 
+Use this API to modify Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to modify firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.addRule instead.
+
       Args:
         request: (ComputeOrganizationSecurityPoliciesAddRuleRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -12763,8 +12795,10 @@ firewallPolicies.addAssociation instead if possible.
     def CopyRules(self, request, global_params=None):
       r"""Copies rules to the specified security policy.
 
-Use of this API to modify firewall policies is deprecated. Use
-firewallPolicies.copyRules instead.
+Use this API to modify Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to modify firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.cloneRules
+instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesCopyRulesRequest) input message
@@ -12792,8 +12826,9 @@ firewallPolicies.copyRules instead.
     def Delete(self, request, global_params=None):
       r"""Deletes the specified policy.
 
-Use of this API to remove firewall policies is deprecated. Use
-firewallPolicies.delete instead.
+Use this API to remove Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to remove firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.delete instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesDeleteRequest) input message
@@ -12821,8 +12856,9 @@ firewallPolicies.delete instead.
     def Get(self, request, global_params=None):
       r"""List all of the ordered rules present in a single specified policy.
 
-Use of this API to read firewall policies is deprecated. Use
-firewallPolicies.get instead.
+Use this API to read Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to read firewall policies. This usage is now
+disabled for most organizations. Use firewallPolicies.get instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesGetRequest) input message
@@ -12850,8 +12886,10 @@ firewallPolicies.get instead.
     def GetAssociation(self, request, global_params=None):
       r"""Gets an association with the specified name.
 
-Use of this API to read firewall policies is deprecated. Use
-firewallPolicies.getAssociation instead if possible.
+Use this API to read Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to read firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.getAssociation
+instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesGetAssociationRequest) input message
@@ -12879,8 +12917,9 @@ firewallPolicies.getAssociation instead if possible.
     def GetRule(self, request, global_params=None):
       r"""Gets a rule at the specified priority.
 
-Use of this API to read firewall policies is deprecated. Use
-firewallPolicies.getRule instead.
+Use this API to read Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to read firewall policies. This usage is now
+disabled for most organizations. Use firewallPolicies.getRule instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesGetRuleRequest) input message
@@ -12909,8 +12948,9 @@ firewallPolicies.getRule instead.
       r"""Creates a new policy in the specified organization using the data included.
 in the request.
 
-Use of this API to insert firewall policies is deprecated. Use
-firewallPolicies.insert instead.
+Use this API to add Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to add firewall policies. This usage is now
+disabled for most organizations. Use firewallPolicies.insert instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesInsertRequest) input message
@@ -12939,8 +12979,9 @@ firewallPolicies.insert instead.
       r"""List all the policies that have been configured for the specified.
 organization.
 
-Use of this API to read firewall policies is deprecated. Use
-firewallPolicies.list instead.
+Use this API to read Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to read firewall policies. This usage is now
+disabled for most organizations. Use firewallPolicies.list instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesListRequest) input message
@@ -12968,8 +13009,10 @@ firewallPolicies.list instead.
     def ListAssociations(self, request, global_params=None):
       r"""Lists associations of a specified target, i.e., organization or folder.
 
-Use of this API to read firewall policies is deprecated. Use
-firewallPolicies.listAssociations instead if possible.
+Use this API to read Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to read firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.listAssociations
+instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesListAssociationsRequest) input message
@@ -13024,8 +13067,9 @@ expressions.
     def Move(self, request, global_params=None):
       r"""Moves the specified security policy.
 
-Use of this API to modify firewall policies is deprecated. Use
-firewallPolicies.move instead.
+Use this API to modify Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to modify firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.move instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesMoveRequest) input message
@@ -13053,8 +13097,9 @@ firewallPolicies.move instead.
     def Patch(self, request, global_params=None):
       r"""Patches the specified policy with the data included in the request.
 
-Use of this API to modify firewall policies is deprecated. Use
-firewallPolicies.patch instead.
+Use this API to modify Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to modify firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.patch instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesPatchRequest) input message
@@ -13082,8 +13127,10 @@ firewallPolicies.patch instead.
     def PatchRule(self, request, global_params=None):
       r"""Patches a rule at the specified priority.
 
-Use of this API to modify firewall policies is deprecated. Use
-firewallPolicies.patchRule instead.
+Use this API to modify Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to modify firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.patchRule
+instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesPatchRuleRequest) input message
@@ -13111,8 +13158,10 @@ firewallPolicies.patchRule instead.
     def RemoveAssociation(self, request, global_params=None):
       r"""Removes an association for the specified security policy.
 
-Use of this API to modify firewall policies is deprecated. Use
-firewallPolicies.removeAssociation instead if possible.
+Use this API to modify Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to modify firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.removeAssociation
+instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesRemoveAssociationRequest) input message
@@ -13139,6 +13188,11 @@ firewallPolicies.removeAssociation instead if possible.
 
     def RemoveRule(self, request, global_params=None):
       r"""Deletes a rule at the specified priority.
+
+Use this API to modify Cloud Armor policies. Previously, alpha and beta
+versions of this API were used to modify firewall policies. This usage is
+now disabled for most organizations. Use firewallPolicies.removeRule
+instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesRemoveRuleRequest) input message

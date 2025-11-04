@@ -15,6 +15,7 @@
 """API wrapper for `gcloud network-security security-profiles custom-mirroring` commands."""
 
 from __future__ import absolute_import
+from __future__ import annotations
 from __future__ import division
 from __future__ import unicode_literals
 
@@ -87,3 +88,53 @@ class Client(sp_api.Client):
             securityProfileId=sp_id,
         )
     )
+
+  def UpdateCustomMirroringProfile(
+      self,
+      name,
+      description: str | None = None,
+      labels: dict[str, str] | None = None,
+      deployment_groups: list[str] | None = None,
+  ):
+    """Calls the Update Security Profile API to update a Custom Mirroring Profile.
+
+    Args:
+      name: The name of the Security Profile, e.g.
+        "organizations/123/locations/global/securityProfiles/my-profile".
+      description: The user-specified description of the Security Profile. None
+        = no change.
+      labels: The labels of the Security Profile. None = no change.
+      deployment_groups: The list of deployment groups associated with the
+        profile. None = no change.
+
+    Returns:
+      Updated Security Profile object.
+    """
+    updated_sp = self.messages.SecurityProfile(
+        customMirroringProfile=self.messages.CustomMirroringProfile()
+    )
+    update_mask = []
+    if description:
+      updated_sp.description = description
+      update_mask.append('description')
+    if labels:
+      updated_sp.labels = labels
+      update_mask.append('labels')
+    if deployment_groups:
+      # TODO(b/439516438) - remove hasattr check and move into main
+      # instantiation above once all API versions have the field.
+      if hasattr(
+          updated_sp.customMirroringProfile, 'mirroringDeploymentGroups'
+      ):
+        updated_sp.customMirroringProfile.mirroringDeploymentGroups = (
+            deployment_groups
+        )
+
+      update_mask.append('customMirroringProfile.mirroringDeploymentGroups')
+
+    api_request = self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesPatchRequest(
+        name=name,
+        securityProfile=updated_sp,
+        updateMask=','.join(update_mask),
+    )
+    return self._security_profile_client.Patch(api_request)

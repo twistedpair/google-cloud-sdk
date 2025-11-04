@@ -93,6 +93,7 @@ class DialogflowV2(base_api.BaseApiClient):
     self.projects_locations_conversations_suggestions = self.ProjectsLocationsConversationsSuggestionsService(self)
     self.projects_locations_conversations = self.ProjectsLocationsConversationsService(self)
     self.projects_locations_encryptionSpec = self.ProjectsLocationsEncryptionSpecService(self)
+    self.projects_locations_generators_evaluations = self.ProjectsLocationsGeneratorsEvaluationsService(self)
     self.projects_locations_generators = self.ProjectsLocationsGeneratorsService(self)
     self.projects_locations_knowledgeBases_documents = self.ProjectsLocationsKnowledgeBasesDocumentsService(self)
     self.projects_locations_knowledgeBases = self.ProjectsLocationsKnowledgeBasesService(self)
@@ -100,6 +101,7 @@ class DialogflowV2(base_api.BaseApiClient):
     self.projects_locations_sipTrunks = self.ProjectsLocationsSipTrunksService(self)
     self.projects_locations_statelessSuggestion = self.ProjectsLocationsStatelessSuggestionService(self)
     self.projects_locations_suggestions = self.ProjectsLocationsSuggestionsService(self)
+    self.projects_locations_tools = self.ProjectsLocationsToolsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_operations = self.ProjectsOperationsService(self)
     self.projects_suggestions = self.ProjectsSuggestionsService(self)
@@ -6774,6 +6776,124 @@ class DialogflowV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsGeneratorsEvaluationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_generators_evaluations resource."""
+
+    _NAME = 'projects_locations_generators_evaluations'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsGeneratorsEvaluationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates evaluation of a generator.
+
+      Args:
+        request: (DialogflowProjectsLocationsGeneratorsEvaluationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/generators/{generatorsId}/evaluations',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.generators.evaluations.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/evaluations',
+        request_field='googleCloudDialogflowV2GeneratorEvaluation',
+        request_type_name='DialogflowProjectsLocationsGeneratorsEvaluationsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an evaluation of generator.
+
+      Args:
+        request: (DialogflowProjectsLocationsGeneratorsEvaluationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/generators/{generatorsId}/evaluations/{evaluationsId}',
+        http_method='DELETE',
+        method_id='dialogflow.projects.locations.generators.evaluations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsGeneratorsEvaluationsDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an evaluation of generator.
+
+      Args:
+        request: (DialogflowProjectsLocationsGeneratorsEvaluationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2GeneratorEvaluation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/generators/{generatorsId}/evaluations/{evaluationsId}',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.generators.evaluations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsGeneratorsEvaluationsGetRequest',
+        response_type_name='GoogleCloudDialogflowV2GeneratorEvaluation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists evaluations of generator.
+
+      Args:
+        request: (DialogflowProjectsLocationsGeneratorsEvaluationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListGeneratorEvaluationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/generators/{generatorsId}/evaluations',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.generators.evaluations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/evaluations',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsGeneratorsEvaluationsListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListGeneratorEvaluationsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsGeneratorsService(base_api.BaseApiService):
     """Service class for the projects_locations_generators resource."""
 
@@ -7373,7 +7493,7 @@ class DialogflowV2(base_api.BaseApiClient):
         method_id='dialogflow.projects.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v2/{+name}/operations',
         request_field='',
         request_type_name='DialogflowProjectsLocationsOperationsListRequest',
@@ -7624,6 +7744,151 @@ class DialogflowV2(base_api.BaseApiClient):
         request_field='<request>',
         request_type_name='GoogleCloudDialogflowV2SearchKnowledgeRequest',
         response_type_name='GoogleCloudDialogflowV2SearchKnowledgeResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsToolsService(base_api.BaseApiService):
+    """Service class for the projects_locations_tools resource."""
+
+    _NAME = 'projects_locations_tools'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsToolsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a tool.
+
+      Args:
+        request: (DialogflowProjectsLocationsToolsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Tool) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/tools',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.tools.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['toolId'],
+        relative_path='v2/{+parent}/tools',
+        request_field='googleCloudDialogflowV2Tool',
+        request_type_name='DialogflowProjectsLocationsToolsCreateRequest',
+        response_type_name='GoogleCloudDialogflowV2Tool',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a tool.
+
+      Args:
+        request: (DialogflowProjectsLocationsToolsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/tools/{toolsId}',
+        http_method='DELETE',
+        method_id='dialogflow.projects.locations.tools.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsToolsDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a tool.
+
+      Args:
+        request: (DialogflowProjectsLocationsToolsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Tool) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/tools/{toolsId}',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.tools.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsToolsGetRequest',
+        response_type_name='GoogleCloudDialogflowV2Tool',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists tools.
+
+      Args:
+        request: (DialogflowProjectsLocationsToolsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListToolsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/tools',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.tools.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/tools',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsToolsListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListToolsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a tool.
+
+      Args:
+        request: (DialogflowProjectsLocationsToolsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Tool) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/tools/{toolsId}',
+        http_method='PATCH',
+        method_id='dialogflow.projects.locations.tools.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='googleCloudDialogflowV2Tool',
+        request_type_name='DialogflowProjectsLocationsToolsPatchRequest',
+        response_type_name='GoogleCloudDialogflowV2Tool',
         supports_download=False,
     )
 
@@ -7882,7 +8147,7 @@ class DialogflowV2(base_api.BaseApiClient):
         method_id='dialogflow.projects.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v2/{+name}/operations',
         request_field='',
         request_type_name='DialogflowProjectsOperationsListRequest',

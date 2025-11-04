@@ -1245,6 +1245,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'cloudsecuritycompliance': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.cloudsecuritycompliance.v1',
+                    client_classpath='cloudsecuritycompliance_v1_client.CloudsecuritycomplianceV1',
+                    base_url='https://cloudsecuritycompliance.googleapis.com/',
+                    messages_modulepath='cloudsecuritycompliance_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'cloudshell': {
         'v1':
             APIDef(

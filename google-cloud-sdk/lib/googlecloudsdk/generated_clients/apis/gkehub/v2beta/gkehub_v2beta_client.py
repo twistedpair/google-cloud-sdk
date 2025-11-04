@@ -402,7 +402,7 @@ class GkehubV2beta(base_api.BaseApiClient):
         method_id='gkehub.projects.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v2beta/{+name}/operations',
         request_field='',
         request_type_name='GkehubProjectsLocationsOperationsListRequest',

@@ -834,6 +834,43 @@ class AlloydbProjectsLocationsClustersUsersPatchRequest(_messages.Message):
   validateOnly = _messages.BooleanField(6)
 
 
+class AlloydbProjectsLocationsEndpointsGetRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsEndpointsGetRequest object.
+
+  Fields:
+    name: Required. The name of the resource. For the required format, see the
+      comment on the Endpoint.name field.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AlloydbProjectsLocationsEndpointsListRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsEndpointsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results. This field is currently not
+      supported, its value will be ignored if passed.
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A page token, received from a previous
+      `ListEndpoints` call. This should be provided to retrieve the subsequent
+      page. This field is currently not supported, its value will be ignored
+      if passed.
+    parent: Required. The name of the parent resource. For the required
+      format, see the comment on the Endpoint.name field. Additionally, you
+      can perform an aggregated list operation by specifying a value with the
+      following format: * projects/{project}/locations/-
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class AlloydbProjectsLocationsGetRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsGetRequest object.
 
@@ -848,8 +885,8 @@ class AlloydbProjectsLocationsListRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Unless explicitly documented otherwise,
-      don't use this unsupported field which is primarily intended for
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -909,12 +946,20 @@ class AlloydbProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class AlloydbProjectsLocationsSupportedDatabaseFlagsListRequest(_messages.Message):
@@ -1300,7 +1345,6 @@ class BackupDrBackupSource(_messages.Message):
 
 class BackupDrEnabledWindow(_messages.Message):
   r"""Information about a single window when BackupDR was enabled for this
-
   cluster.
 
   Fields:
@@ -1330,9 +1374,7 @@ class BackupDrEnabledWindow(_messages.Message):
 
   automatedBackupPreviouslyEnabled = _messages.BooleanField(1)
   backupPlanAssociation = _messages.StringField(2)
-  continuousBackupPreviousRecoveryWindowDays = _messages.IntegerField(
-      3, variant=_messages.Variant.INT32
-  )
+  continuousBackupPreviousRecoveryWindowDays = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   continuousBackupPreviouslyEnabled = _messages.BooleanField(4)
   continuousBackupPreviouslyEnabledTime = _messages.StringField(5)
   dataSource = _messages.StringField(6)
@@ -1357,9 +1399,7 @@ class BackupDrInfo(_messages.Message):
   """
 
   currentWindow = _messages.MessageField('BackupDrEnabledWindow', 1)
-  previousWindows = _messages.MessageField(
-      'BackupDrEnabledWindow', 2, repeated=True
-  )
+  previousWindows = _messages.MessageField('BackupDrEnabledWindow', 2, repeated=True)
 
 
 class BackupDrPitrSource(_messages.Message):
@@ -1457,10 +1497,9 @@ class CloudSQLBackupRunSource(_messages.Message):
 
 
 class Cluster(_messages.Message):
-  r"""A cluster is a collection of regional AlloyDB resources.
-
-  It can include a primary instance and one or more read pool instances. All
-  cluster resources share a storage layer, which scales as needed.
+  r"""A cluster is a collection of regional AlloyDB resources. It can include
+  a primary instance and one or more read pool instances. All cluster
+  resources share a storage layer, which scales as needed.
 
   Enums:
     ClusterTypeValueValuesEnum: Output only. The type of the cluster. This is
@@ -1517,6 +1556,7 @@ class Cluster(_messages.Message):
       optional field and it is populated at the Cluster creation time. If a
       database version is not supplied at cluster creation time, then a
       default database version will be used.
+    dataplexConfig: Optional. Configuration for Dataplex integration.
     deleteTime: Output only. Delete time stamp
     displayName: User-settable and human-readable display name for the
       Cluster.
@@ -1772,39 +1812,36 @@ class Cluster(_messages.Message):
   continuousBackupInfo = _messages.MessageField('ContinuousBackupInfo', 9)
   createTime = _messages.StringField(10)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 11)
-  deleteTime = _messages.StringField(12)
-  displayName = _messages.StringField(13)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 14)
-  encryptionInfo = _messages.MessageField('EncryptionInfo', 15)
-  etag = _messages.StringField(16)
-  geminiConfig = _messages.MessageField('GeminiClusterConfig', 17)
-  initialUser = _messages.MessageField('UserPassword', 18)
-  labels = _messages.MessageField('LabelsValue', 19)
-  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 20)
-  maintenanceUpdatePolicy = _messages.MessageField(
-      'MaintenanceUpdatePolicy', 21
-  )
-  maintenanceVersionSelectionPolicy = _messages.EnumField(
-      'MaintenanceVersionSelectionPolicyValueValuesEnum', 22
-  )
-  migrationSource = _messages.MessageField('MigrationSource', 23)
-  name = _messages.StringField(24)
-  network = _messages.StringField(25)
-  networkConfig = _messages.MessageField('NetworkConfig', 26)
-  primaryConfig = _messages.MessageField('PrimaryConfig', 27)
-  pscConfig = _messages.MessageField('PscConfig', 28)
-  reconciling = _messages.BooleanField(29)
-  satisfiesPzi = _messages.BooleanField(30)
-  satisfiesPzs = _messages.BooleanField(31)
-  secondaryConfig = _messages.MessageField('SecondaryConfig', 32)
-  serviceAccountEmail = _messages.StringField(33)
-  sslConfig = _messages.MessageField('SslConfig', 34)
-  state = _messages.EnumField('StateValueValuesEnum', 35)
-  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 36)
-  tags = _messages.MessageField('TagsValue', 37)
-  trialMetadata = _messages.MessageField('TrialMetadata', 38)
-  uid = _messages.StringField(39)
-  updateTime = _messages.StringField(40)
+  dataplexConfig = _messages.MessageField('DataplexConfig', 12)
+  deleteTime = _messages.StringField(13)
+  displayName = _messages.StringField(14)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 15)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 16)
+  etag = _messages.StringField(17)
+  geminiConfig = _messages.MessageField('GeminiClusterConfig', 18)
+  initialUser = _messages.MessageField('UserPassword', 19)
+  labels = _messages.MessageField('LabelsValue', 20)
+  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 21)
+  maintenanceUpdatePolicy = _messages.MessageField('MaintenanceUpdatePolicy', 22)
+  maintenanceVersionSelectionPolicy = _messages.EnumField('MaintenanceVersionSelectionPolicyValueValuesEnum', 23)
+  migrationSource = _messages.MessageField('MigrationSource', 24)
+  name = _messages.StringField(25)
+  network = _messages.StringField(26)
+  networkConfig = _messages.MessageField('NetworkConfig', 27)
+  primaryConfig = _messages.MessageField('PrimaryConfig', 28)
+  pscConfig = _messages.MessageField('PscConfig', 29)
+  reconciling = _messages.BooleanField(30)
+  satisfiesPzi = _messages.BooleanField(31)
+  satisfiesPzs = _messages.BooleanField(32)
+  secondaryConfig = _messages.MessageField('SecondaryConfig', 33)
+  serviceAccountEmail = _messages.StringField(34)
+  sslConfig = _messages.MessageField('SslConfig', 35)
+  state = _messages.EnumField('StateValueValuesEnum', 36)
+  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 37)
+  tags = _messages.MessageField('TagsValue', 38)
+  trialMetadata = _messages.MessageField('TrialMetadata', 39)
+  uid = _messages.StringField(40)
+  updateTime = _messages.StringField(41)
 
 
 class ClusterUpgradeDetails(_messages.Message):
@@ -2189,6 +2226,31 @@ class CsvImportOptions(_messages.Message):
   table = _messages.StringField(5)
 
 
+class DNSConfig(_messages.Message):
+  r"""The DNS config for the endpoint, containing the DNS record name, type
+  and targets.
+
+  Fields:
+    dns: The name of the DNS record, eg. .global.alloydb-psa.goog
+    dnsType: The type of the DNS record, eg. "A", "CNAME", etc.
+  """
+
+  dns = _messages.StringField(1)
+  dnsType = _messages.StringField(2)
+
+
+class DataplexConfig(_messages.Message):
+  r"""Configuration for Dataplex integration.
+
+  Fields:
+    enabled: Dataplex is enabled by default for resources such as clusters and
+      instances. This flag controls the integration of AlloyDB PG resources
+      (like databases, schemas, and tables) with Dataplex."
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class DenyMaintenancePeriod(_messages.Message):
   r"""DenyMaintenancePeriod definition. Excepting emergencies, maintenance
   will not be scheduled to start within this deny period. The start_date must
@@ -2216,6 +2278,7 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
+
 
 
 class EncryptionConfig(_messages.Message):
@@ -2262,6 +2325,130 @@ class EncryptionInfo(_messages.Message):
 
   encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 1)
   kmsKeyVersions = _messages.StringField(2, repeated=True)
+
+
+class Endpoint(_messages.Message):
+  r"""Endpoint resource.
+
+  Enums:
+    EndpointTypeValueValuesEnum: The type of the endpoint, either write or
+      read.
+    StateValueValuesEnum: Output only. The state of the endpoint.
+
+  Messages:
+    AnnotationsValue: Annotations to allow client tools to store small amount
+      of arbitrary data. This is distinct from labels.
+      https://google.aip.dev/128
+
+  Fields:
+    annotations: Annotations to allow client tools to store small amount of
+      arbitrary data. This is distinct from labels. https://google.aip.dev/128
+    createTime: Output only. Create time stamp
+    deleteTime: Output only. Delete time stamp
+    displayName: User-settable and human-readable display name for the
+      Endpoint.
+    dnsConfig: Output only. The DNS config for the endpoint. Each endpoint is
+      associated with a specific DNS name and the DNS type. The DNS targets
+      are the IP addresses of the target instances. The dns_type is the type
+      of the DNS record, eg. Type "A" or Type "CNAME". This field is not
+      configurable by the user, and it is updated when user specifies the
+      target instances.
+    endpointType: The type of the endpoint, either write or read.
+    etag: For Resource freshness validation (https://google.aip.dev/154)
+    name: Output only. Identifier. The name of the endpoint resource with the
+      format: * projects/{project}/locations/{region}/endpoints/{endpoint_id}
+      where the endpoint ID segment should satisfy the regex expression
+      `[a-z0-9-]+`. For more details see https://google.aip.dev/122. The
+      prefix of the endpoint resource name is the name of the parent resource:
+      * projects/{project}/locations/{region}
+    reconciling: Output only. Reconciling
+      (https://google.aip.dev/128#reconciliation). Set to true if the current
+      state of Endpoint does not match the user's intended state, and the
+      service is actively updating the Endpoint to reconcile them. This can
+      happen due to user-triggered updates or system actions like failover or
+      maintenance.
+    state: Output only. The state of the endpoint.
+    targetInstances: The names of the target instances for the endpoint,
+      should be of format projects/{project}/locations/{region}/clusters/{clus
+      ter}/instances/{instance}. For write endpoint, there is only one target
+      instance which has to be a primary instance. For read endpoint, there
+      can be multiple target instances which can be read or secondary
+      instances.
+    uid: Output only. The system-generated UID of the resource. The UID is
+      assigned when the resource is created, and it is retained until it is
+      deleted.
+    updateTime: Output only. Update time stamp
+  """
+
+  class EndpointTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the endpoint, either write or read.
+
+    Values:
+      ENDPOINT_TYPE_UNSPECIFIED: Unspecified endpoint type
+      WRITE_ENDPOINT: Write endpoint, which is associated with a primary
+        instance.
+      READ_ENDPOINT: Read endpoint, which is associated with read or secondary
+        instances.
+    """
+    ENDPOINT_TYPE_UNSPECIFIED = 0
+    WRITE_ENDPOINT = 1
+    READ_ENDPOINT = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the endpoint.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state
+      READY: The endpoint is active and ready to use.
+      CREATING: The endpoint is being created.
+      UPDATING: The endpoint is being updated.
+      DELETING: The endpoint is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    READY = 1
+    CREATING = 2
+    UPDATING = 3
+    DELETING = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Annotations to allow client tools to store small amount of arbitrary
+    data. This is distinct from labels. https://google.aip.dev/128
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  deleteTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  dnsConfig = _messages.MessageField('DNSConfig', 5)
+  endpointType = _messages.EnumField('EndpointTypeValueValuesEnum', 6)
+  etag = _messages.StringField(7)
+  name = _messages.StringField(8)
+  reconciling = _messages.BooleanField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  targetInstances = _messages.StringField(11, repeated=True)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class ExportClusterRequest(_messages.Message):
@@ -2798,10 +2985,8 @@ class Instance(_messages.Message):
         during an operation on the instance. Note: Instances in this state
         would tried to be auto-repaired. And Customers should be able to
         restart, update or delete these instances.
-      BOOTSTRAPPING: Index 7 is used in the producer apis for ROLLED_BACK
-        state. Keeping that index unused in case that state also needs to
-        exposed via consumer apis in future. The instance has been configured
-        to sync data from some other source.
+      BOOTSTRAPPING: The instance has been configured to sync data from some
+        other source.
       PROMOTING: The instance is being promoted.
     """
     STATE_UNSPECIFIED = 0
@@ -2938,6 +3123,59 @@ class Instance(_messages.Message):
   writableNode = _messages.MessageField('Node', 36)
 
 
+class InstanceDowntimeStatus(_messages.Message):
+  r"""Downtime status for an instance.
+
+  Enums:
+    InstanceTypeValueValuesEnum: Output only. Instance type.
+    StateValueValuesEnum: Output only. Donwtime state for the instance.
+
+  Fields:
+    instance: Full resource name of the instance.
+    instanceType: Output only. Instance type.
+    schedule: Output only. downtime schedule for the instance.
+    state: Output only. Donwtime state for the instance.
+  """
+
+  class InstanceTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Instance type.
+
+    Values:
+      INSTANCE_TYPE_UNSPECIFIED: The type of the instance is unknown.
+      PRIMARY: PRIMARY instances support read and write operations.
+      READ_POOL: READ POOL instances support read operations only. Each read
+        pool instance consists of one or more homogeneous nodes. * Read pool
+        of size 1 can only have zonal availability. * Read pools with node
+        count of 2 or more can have regional availability (nodes are present
+        in 2 or more zones in a region).
+      SECONDARY: SECONDARY instances support read operations only. SECONDARY
+        instance is a cross-region read replica
+    """
+    INSTANCE_TYPE_UNSPECIFIED = 0
+    PRIMARY = 1
+    READ_POOL = 2
+    SECONDARY = 3
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Donwtime state for the instance.
+
+    Values:
+      PHASE_STATE_UNSPECIFIED: The state of the phase is unknown.
+      PHASE_NOT_STARTED: The phase has not started yet.
+      PHASE_IN_PROGRESS: The phase is in progress.
+      PHASE_ENDED: The phase has completed successfully.
+    """
+    PHASE_STATE_UNSPECIFIED = 0
+    PHASE_NOT_STARTED = 1
+    PHASE_IN_PROGRESS = 2
+    PHASE_ENDED = 3
+
+  instance = _messages.StringField(1)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 2)
+  schedule = _messages.MessageField('PhaseSchedule', 3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+
+
 class InstanceNetworkConfig(_messages.Message):
   r"""Metadata related to instance-level network configuration.
 
@@ -3070,6 +3308,21 @@ class ListClustersResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListEndpointsResponse(_messages.Message):
+  r"""Message for response to listing Endpoints
+
+  Fields:
+    endpoints: The list of Endpoints
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  endpoints = _messages.MessageField('Endpoint', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListInstancesResponse(_messages.Message):
   r"""Message for response to listing Instances
 
@@ -3092,10 +3345,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListSupportedDatabaseFlagsResponse(_messages.Message):
@@ -3460,6 +3718,55 @@ class OperationMetadata(_messages.Message):
   target = _messages.StringField(6)
   upgradeClusterStatus = _messages.MessageField('UpgradeClusterStatus', 7)
   verb = _messages.StringField(8)
+
+
+class PhaseProgress(_messages.Message):
+  r"""Progress information for the stage execution.
+
+  Fields:
+    percentComplete: Output only. The percentage of the phase that has been
+      completed.
+  """
+
+  percentComplete = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class PhaseSchedule(_messages.Message):
+  r"""Message for expected and actual schedule of a phase execution.
+
+  Enums:
+    EstimateConfidenceValueValuesEnum: Output only. Confidence level for the
+      estimated start and end times.
+
+  Fields:
+    actualEndTime: Output only. When a phase actually ended.
+    actualStartTime: Output only. When a phase actually started.
+    estimateConfidence: Output only. Confidence level for the estimated start
+      and end times.
+    estimatedEndTime: Output only. When a phase is expected to end.
+    estimatedStartTime: Output only. When a phase is expected to start.
+  """
+
+  class EstimateConfidenceValueValuesEnum(_messages.Enum):
+    r"""Output only. Confidence level for the estimated start and end times.
+
+    Values:
+      CONFIDENCE_LEVEL_UNSPECIFIED: Confidence level is unknown or not
+        applicable.
+      LOW: Low confidence level.
+      MEDIUM: Medium confidence level.
+      HIGH: High confidence level.
+    """
+    CONFIDENCE_LEVEL_UNSPECIFIED = 0
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+
+  actualEndTime = _messages.StringField(1)
+  actualStartTime = _messages.StringField(2)
+  estimateConfidence = _messages.EnumField('EstimateConfidenceValueValuesEnum', 3)
+  estimatedEndTime = _messages.StringField(4)
+  estimatedStartTime = _messages.StringField(5)
 
 
 class Policy(_messages.Message):
@@ -3977,21 +4284,43 @@ class StageInfo(_messages.Message):
 class StageSchedule(_messages.Message):
   r"""Timing information for the stage execution.
 
+  Enums:
+    EstimateConfidenceValueValuesEnum: Output only. Confidence level for the
+      estimated start and end times.
+
   Fields:
     actualEndTime: Actual end time of the stage. Set only if the stage has
       completed.
     actualStartTime: Actual start time of the stage. Set only if the stage has
       started.
+    estimateConfidence: Output only. Confidence level for the estimated start
+      and end times.
     estimatedEndTime: When the stage is expected to end. Set only if the stage
       has not completed yet.
     estimatedStartTime: When the stage is expected to start. Set only if the
       stage has not started yet.
   """
 
+  class EstimateConfidenceValueValuesEnum(_messages.Enum):
+    r"""Output only. Confidence level for the estimated start and end times.
+
+    Values:
+      CONFIDENCE_LEVEL_UNSPECIFIED: Confidence level is unknown or not
+        applicable.
+      LOW: Low confidence level.
+      MEDIUM: Medium confidence level.
+      HIGH: High confidence level.
+    """
+    CONFIDENCE_LEVEL_UNSPECIFIED = 0
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+
   actualEndTime = _messages.StringField(1)
   actualStartTime = _messages.StringField(2)
-  estimatedEndTime = _messages.StringField(3)
-  estimatedStartTime = _messages.StringField(4)
+  estimateConfidence = _messages.EnumField('EstimateConfidenceValueValuesEnum', 3)
+  estimatedEndTime = _messages.StringField(4)
+  estimatedStartTime = _messages.StringField(5)
 
 
 class StageStatus(_messages.Message):
@@ -4367,6 +4696,8 @@ class StorageDatabasecenterPartnerapiV1mainConfigBasedSignalData(_messages.Messa
         exposed to public access.
       SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS: Represents if a resources requires
         all incoming connections to use SSL or not.
+      SIGNAL_TYPE_EXTENDED_SUPPORT: Represents if a resource version is in
+        extended support.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_OUTDATED_MINOR_VERSION = 1
@@ -4374,6 +4705,7 @@ class StorageDatabasecenterPartnerapiV1mainConfigBasedSignalData(_messages.Messa
     SIGNAL_TYPE_NO_ROOT_PASSWORD = 3
     SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS = 4
     SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS = 5
+    SIGNAL_TYPE_EXTENDED_SUPPORT = 6
 
   fullResourceName = _messages.StringField(1)
   lastRefreshTime = _messages.StringField(2)
@@ -4817,6 +5149,10 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
       SIGNAL_TYPE_REPLICATION_LAG: Replication delay.
       SIGNAL_TYPE_OUTDATED_VERSION: Outdated version.
       SIGNAL_TYPE_OUTDATED_CLIENT: Outdated client.
+      SIGNAL_TYPE_DATABOOST_DISABLED: Databoost is disabled.
+      SIGNAL_TYPE_RECOMMENDED_MAINTENANCE_POLICIES: Recommended maintenance
+        policy.
+      SIGNAL_TYPE_EXTENDED_SUPPORT: Resource version is in extended support.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -4920,6 +5256,9 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
     SIGNAL_TYPE_REPLICATION_LAG = 99
     SIGNAL_TYPE_OUTDATED_VERSION = 100
     SIGNAL_TYPE_OUTDATED_CLIENT = 101
+    SIGNAL_TYPE_DATABOOST_DISABLED = 102
+    SIGNAL_TYPE_RECOMMENDED_MAINTENANCE_POLICIES = 103
+    SIGNAL_TYPE_EXTENDED_SUPPORT = 104
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -5039,9 +5378,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Message):
-  r"""Common model for database resource instance metadata.
-
-  Next ID: 29
+  r"""Common model for database resource instance metadata. Next ID: 29
 
   Enums:
     CurrentStateValueValuesEnum: Current state of the instance.
@@ -5226,26 +5563,16 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
   instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 13)
   location = _messages.StringField(14)
   machineConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainMachineConfiguration', 15)
-  maintenanceInfo = _messages.MessageField(
-      'StorageDatabasecenterPartnerapiV1mainResourceMaintenanceInfo', 16
-  )
-  primaryResourceId = _messages.MessageField(
-      'StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 17
-  )
+  maintenanceInfo = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainResourceMaintenanceInfo', 16)
+  primaryResourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 17)
   primaryResourceLocation = _messages.StringField(18)
-  product = _messages.MessageField(
-      'StorageDatabasecenterProtoCommonProduct', 19
-  )
+  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 19)
   resourceContainer = _messages.StringField(20)
   resourceName = _messages.StringField(21)
   suspensionReason = _messages.EnumField('SuspensionReasonValueValuesEnum', 22)
-  tagsSet = _messages.MessageField(
-      'StorageDatabasecenterPartnerapiV1mainTags', 23
-  )
+  tagsSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainTags', 23)
   updationTime = _messages.StringField(24)
-  userLabelSet = _messages.MessageField(
-      'StorageDatabasecenterPartnerapiV1mainUserLabels', 25
-  )
+  userLabelSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainUserLabels', 25)
   zone = _messages.StringField(26)
 
 
@@ -5541,6 +5868,10 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
       SIGNAL_TYPE_REPLICATION_LAG: Replication delay.
       SIGNAL_TYPE_OUTDATED_VERSION: Outdated version.
       SIGNAL_TYPE_OUTDATED_CLIENT: Outdated client.
+      SIGNAL_TYPE_DATABOOST_DISABLED: Databoost is disabled.
+      SIGNAL_TYPE_RECOMMENDED_MAINTENANCE_POLICIES: Recommended maintenance
+        policy.
+      SIGNAL_TYPE_EXTENDED_SUPPORT: Resource version is in extended support.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -5644,6 +5975,9 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
     SIGNAL_TYPE_REPLICATION_LAG = 99
     SIGNAL_TYPE_OUTDATED_VERSION = 100
     SIGNAL_TYPE_OUTDATED_CLIENT = 101
+    SIGNAL_TYPE_DATABOOST_DISABLED = 102
+    SIGNAL_TYPE_RECOMMENDED_MAINTENANCE_POLICIES = 103
+    SIGNAL_TYPE_EXTENDED_SUPPORT = 104
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):
@@ -5728,6 +6062,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceSignalData(_messages.
         exposed to public access.
       SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS: Represents if a resources requires
         all incoming connections to use SSL or not.
+      SIGNAL_TYPE_EXTENDED_SUPPORT: Represents if a resource version is in
+        extended support.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_OUTDATED_MINOR_VERSION = 1
@@ -5735,6 +6071,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceSignalData(_messages.
     SIGNAL_TYPE_NO_ROOT_PASSWORD = 3
     SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS = 4
     SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS = 5
+    SIGNAL_TYPE_EXTENDED_SUPPORT = 6
 
   fullResourceName = _messages.StringField(1)
   lastRefreshTime = _messages.StringField(2)
@@ -5962,13 +6299,10 @@ class StorageDatabasecenterPartnerapiV1mainOperationError(_messages.Message):
   message = _messages.StringField(3)
 
 
-class StorageDatabasecenterPartnerapiV1mainResourceMaintenanceDenySchedule(
-    _messages.Message
-):
-  r"""Deny maintenance period for the database resource.
-
-  It specifies the time range during which the maintenance cannot start. This is
-  configured by the customer.
+class StorageDatabasecenterPartnerapiV1mainResourceMaintenanceDenySchedule(_messages.Message):
+  r"""Deny maintenance period for the database resource. It specifies the time
+  range during which the maintenance cannot start. This is configured by the
+  customer.
 
   Fields:
     endDate: Optional. Deny period end date.
@@ -5982,9 +6316,7 @@ class StorageDatabasecenterPartnerapiV1mainResourceMaintenanceDenySchedule(
   time = _messages.MessageField('GoogleTypeTimeOfDay', 3)
 
 
-class StorageDatabasecenterPartnerapiV1mainResourceMaintenanceInfo(
-    _messages.Message
-):
+class StorageDatabasecenterPartnerapiV1mainResourceMaintenanceInfo(_messages.Message):
   r"""MaintenanceInfo to capture the maintenance details of database resource.
 
   Fields:
@@ -6030,9 +6362,8 @@ class StorageDatabasecenterPartnerapiV1mainResourceMaintenanceSchedule(_messages
   """
 
   class DayValueValuesEnum(_messages.Enum):
-    r"""Optional.
-
-    Preferred day of the week for maintenance, e.g. MONDAY, TUESDAY, etc.
+    r"""Optional. Preferred day of the week for maintenance, e.g. MONDAY,
+    TUESDAY, etc.
 
     Values:
       DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
@@ -6044,7 +6375,6 @@ class StorageDatabasecenterPartnerapiV1mainResourceMaintenanceSchedule(_messages
       SATURDAY: Saturday
       SUNDAY: Sunday
     """
-
     DAY_OF_WEEK_UNSPECIFIED = 0
     MONDAY = 1
     TUESDAY = 2
@@ -6055,27 +6385,25 @@ class StorageDatabasecenterPartnerapiV1mainResourceMaintenanceSchedule(_messages
     SUNDAY = 7
 
   class PhaseValueValuesEnum(_messages.Enum):
-    r"""Optional. Phase of the maintenance window.
-
-    This is to capture order of maintenance. For example, for Cloud SQL
-    resources, this can be used to capture if the maintenance window is in
-    Week1, Week2, Week5, etc. Non production resources are usually part of early
-    phase. For more details, refer to Cloud SQL resources -
+    r"""Optional. Phase of the maintenance window. This is to capture order of
+    maintenance. For example, for Cloud SQL resources, this can be used to
+    capture if the maintenance window is in Week1, Week2, Week5, etc. Non
+    production resources are usually part of early phase. For more details,
+    refer to Cloud SQL resources -
     https://cloud.google.com/sql/docs/mysql/maintenance
 
     Values:
-      WINDOW_PHASE_UNSPECIFIED: Phase is unspecified.
-      WINDOW_PHASE_ANY: Any phase.
-      WINDOW_PHASE_WEEK1: Week 1.
-      WINDOW_PHASE_WEEK2: Week 2.
-      WINDOW_PHASE_WEEK5: Week 5.
+      PHASE_UNSPECIFIED: Phase is unspecified.
+      ANY: Any phase.
+      WEEK1: Week 1.
+      WEEK2: Week 2.
+      WEEK5: Week 5.
     """
-
-    WINDOW_PHASE_UNSPECIFIED = 0
-    WINDOW_PHASE_ANY = 1
-    WINDOW_PHASE_WEEK1 = 2
-    WINDOW_PHASE_WEEK2 = 3
-    WINDOW_PHASE_WEEK5 = 4
+    PHASE_UNSPECIFIED = 0
+    ANY = 1
+    WEEK1 = 2
+    WEEK2 = 3
+    WEEK5 = 4
 
   day = _messages.EnumField('DayValueValuesEnum', 1)
   phase = _messages.EnumField('PhaseValueValuesEnum', 2)
@@ -6294,6 +6622,7 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
       PRODUCT_TYPE_FIRESTORE: Firestore product area in GCP.
       PRODUCT_TYPE_COMPUTE_ENGINE: Compute Engine self managed databases
       PRODUCT_TYPE_ORACLE_ON_GCP: Oracle product area in GCP
+      PRODUCT_TYPE_BIGQUERY: BigQuery product area in GCP
       PRODUCT_TYPE_OTHER: Other refers to rest of other product type. This is
         to be when product type is known, but it is not present in this enum.
     """
@@ -6310,7 +6639,8 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
     PRODUCT_TYPE_FIRESTORE = 10
     PRODUCT_TYPE_COMPUTE_ENGINE = 11
     PRODUCT_TYPE_ORACLE_ON_GCP = 12
-    PRODUCT_TYPE_OTHER = 13
+    PRODUCT_TYPE_BIGQUERY = 13
+    PRODUCT_TYPE_OTHER = 14
 
   engine = _messages.EnumField('EngineValueValuesEnum', 1)
   minorVersion = _messages.StringField(2)
@@ -6625,6 +6955,12 @@ class UpgradeClusterStatus(_messages.Message):
 
   Fields:
     cancellable: Whether the operation is cancellable.
+    instanceDowntimeStatuses: Output only. Downtime status of all the
+      instances involved in the upgrade operation.
+    progress: Output only. Progress information for the overall upgrade
+      operation.
+    schedule: Output only. Schedule information for the overall upgrade
+      operation.
     sourceVersion: Source database major version.
     stages: Status of all upgrade stages.
     state: Cluster Major Version Upgrade state.
@@ -6694,10 +7030,13 @@ class UpgradeClusterStatus(_messages.Message):
     POSTGRES_18 = 6
 
   cancellable = _messages.BooleanField(1)
-  sourceVersion = _messages.EnumField('SourceVersionValueValuesEnum', 2)
-  stages = _messages.MessageField('StageStatus', 3, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  targetVersion = _messages.EnumField('TargetVersionValueValuesEnum', 5)
+  instanceDowntimeStatuses = _messages.MessageField('InstanceDowntimeStatus', 2, repeated=True)
+  progress = _messages.MessageField('PhaseProgress', 3)
+  schedule = _messages.MessageField('PhaseSchedule', 4)
+  sourceVersion = _messages.EnumField('SourceVersionValueValuesEnum', 5)
+  stages = _messages.MessageField('StageStatus', 6, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  targetVersion = _messages.EnumField('TargetVersionValueValuesEnum', 8)
 
 
 class User(_messages.Message):

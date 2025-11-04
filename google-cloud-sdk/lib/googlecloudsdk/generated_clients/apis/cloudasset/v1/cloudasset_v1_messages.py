@@ -7051,6 +7051,7 @@ class VersionedResource(_messages.Message):
       asset-types`
 
   Fields:
+    assetExceptions: The exceptions of a resource.
     resource: JSON representation of the resource as defined by the
       corresponding service providing this resource. Example: If the resource
       is an instance provided by Compute Engine, this field will contain the
@@ -7096,8 +7097,9 @@ class VersionedResource(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  resource = _messages.MessageField('ResourceValue', 1)
-  version = _messages.StringField(2)
+  assetExceptions = _messages.MessageField('AssetException', 1, repeated=True)
+  resource = _messages.MessageField('ResourceValue', 2)
+  version = _messages.StringField(3)
 
 
 class WindowsApplication(_messages.Message):

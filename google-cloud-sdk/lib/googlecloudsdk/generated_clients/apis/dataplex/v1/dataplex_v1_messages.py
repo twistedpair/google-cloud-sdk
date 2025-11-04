@@ -379,6 +379,63 @@ class DataplexProjectsLocationsAspectTypesTestIamPermissionsRequest(_messages.Me
   resource = _messages.StringField(2, required=True)
 
 
+class DataplexProjectsLocationsChangeRequestsGetIamPolicyRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsChangeRequestsGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy.Valid values are 0, 1, and 3. Requests
+      specifying an invalid value will be rejected.Requests for policies with
+      any conditional role bindings must specify version 3. Policies with no
+      conditional role bindings may specify any valid value or leave the field
+      unset.The policy in the response might use the policy version that you
+      specified, or it might use a lower policy version. For example, if you
+      specify version 3, but the policy has no conditional role bindings, the
+      response uses version 1.To learn which resources support conditions in
+      their IAM policies, see the IAM documentation
+      (https://cloud.google.com/iam/help/conditions/resource-policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsChangeRequestsSetIamPolicyRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsChangeRequestsSetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsChangeRequestsTestIamPermissionsRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsChangeRequestsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See Resource names
+      (https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class DataplexProjectsLocationsDataAttributeBindingsCreateRequest(_messages.Message):
   r"""A DataplexProjectsLocationsDataAttributeBindingsCreateRequest object.
 
@@ -3808,8 +3865,8 @@ class DataplexProjectsLocationsListRequest(_messages.Message):
   r"""A DataplexProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Unless explicitly documented otherwise,
-      don't use this unsupported field which is primarily intended for
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like "displayName=tokyo", and is
@@ -5854,6 +5911,8 @@ class GoogleCloudDataplexV1DataQualityResult(_messages.Message):
   r"""The output of a DataQualityScan.
 
   Fields:
+    anomalyDetectionGeneratedAssets: Output only. The generated assets for
+      anomaly detection.
     catalogPublishingStatus: Output only. The status of publishing the data
       scan as Dataplex Universal Catalog metadata.
     columns: Output only. A list of results at the column level.A column will
@@ -5872,15 +5931,38 @@ class GoogleCloudDataplexV1DataQualityResult(_messages.Message):
       between 0, 100 (up to two decimal points).
   """
 
-  catalogPublishingStatus = _messages.MessageField('GoogleCloudDataplexV1DataScanCatalogPublishingStatus', 1)
-  columns = _messages.MessageField('GoogleCloudDataplexV1DataQualityColumnResult', 2, repeated=True)
-  dimensions = _messages.MessageField('GoogleCloudDataplexV1DataQualityDimensionResult', 3, repeated=True)
-  passed = _messages.BooleanField(4)
-  postScanActionsResult = _messages.MessageField('GoogleCloudDataplexV1DataQualityResultPostScanActionsResult', 5)
-  rowCount = _messages.IntegerField(6)
-  rules = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleResult', 7, repeated=True)
-  scannedData = _messages.MessageField('GoogleCloudDataplexV1ScannedData', 8)
-  score = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
+  anomalyDetectionGeneratedAssets = _messages.MessageField('GoogleCloudDataplexV1DataQualityResultAnomalyDetectionGeneratedAssets', 1)
+  catalogPublishingStatus = _messages.MessageField('GoogleCloudDataplexV1DataScanCatalogPublishingStatus', 2)
+  columns = _messages.MessageField('GoogleCloudDataplexV1DataQualityColumnResult', 3, repeated=True)
+  dimensions = _messages.MessageField('GoogleCloudDataplexV1DataQualityDimensionResult', 4, repeated=True)
+  passed = _messages.BooleanField(5)
+  postScanActionsResult = _messages.MessageField('GoogleCloudDataplexV1DataQualityResultPostScanActionsResult', 6)
+  rowCount = _messages.IntegerField(7)
+  rules = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleResult', 8, repeated=True)
+  scannedData = _messages.MessageField('GoogleCloudDataplexV1ScannedData', 9)
+  score = _messages.FloatField(10, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudDataplexV1DataQualityResultAnomalyDetectionGeneratedAssets(_messages.Message):
+  r"""The assets generated by Anomaly Detection Data Scan.
+
+  Fields:
+    dataIntermediateTable: Output only. The intermediate table for data
+      anomaly detection. Format: PROJECT_ID.DATASET_ID.TABLE_ID
+    freshnessIntermediateTable: Output only. The intermediate table for
+      freshness anomaly detection. Format: PROJECT_ID.DATASET_ID.TABLE_ID
+    resultTable: Output only. The result table for anomaly detection. Format:
+      PROJECT_ID.DATASET_ID.TABLE_ID If the result table is set at
+      AnomalyDetectionAssets, the result table here would be the same as the
+      one set in the AnomalyDetectionAssets.result_table.
+    volumeIntermediateTable: Output only. The intermediate table for volume
+      anomaly detection. Format: PROJECT_ID.DATASET_ID.TABLE_ID
+  """
+
+  dataIntermediateTable = _messages.StringField(1)
+  freshnessIntermediateTable = _messages.StringField(2)
+  resultTable = _messages.StringField(3)
+  volumeIntermediateTable = _messages.StringField(4)
 
 
 class GoogleCloudDataplexV1DataQualityResultPostScanActionsResult(_messages.Message):
@@ -6607,12 +6689,10 @@ class GoogleCloudDataplexV1DataScanEvent(_messages.Message):
       TRIGGER_UNSPECIFIED: An unspecified trigger type.
       ON_DEMAND: Data scan triggers on demand.
       SCHEDULE: Data scan triggers as per schedule.
-      ONE_TIME: Data scan is run one time on creation.
     """
     TRIGGER_UNSPECIFIED = 0
     ON_DEMAND = 1
     SCHEDULE = 2
-    ONE_TIME = 3
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the data scan.
@@ -11747,6 +11827,8 @@ encoding.AddCustomJsonFieldMapping(
     DataplexOrganizationsLocationsEncryptionConfigsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     DataplexProjectsLocationsAspectTypesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    DataplexProjectsLocationsChangeRequestsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     DataplexProjectsLocationsDataAttributeBindingsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(

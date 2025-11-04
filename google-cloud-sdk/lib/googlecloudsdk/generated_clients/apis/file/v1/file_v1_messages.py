@@ -672,12 +672,20 @@ class FileProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class FileShareConfig(_messages.Message):
@@ -695,12 +703,17 @@ class FileShareConfig(_messages.Message):
     sourceBackup: The resource name of the backup, in the format
       `projects/{project_number}/locations/{location_id}/backups/{backup_id}`,
       that this file share has been restored from.
+    sourceBackupdrBackup: The resource name of the BackupDR backup, in the
+      format `projects/{project_id}/locations/{location_id}/backupVaults/{back
+      upvault_id}/dataSources/{datasource_id}/backups/{backup_id}`, TODO
+      (b/443690479) - Remove visibility restrictions once the feature is ready
   """
 
   capacityGb = _messages.IntegerField(1)
   name = _messages.StringField(2)
   nfsExportOptions = _messages.MessageField('NfsExportOptions', 3, repeated=True)
   sourceBackup = _messages.StringField(4)
+  sourceBackupdrBackup = _messages.StringField(5)
 
 
 class FixedIOPS(_messages.Message):
@@ -1320,8 +1333,8 @@ class Instance(_messages.Message):
       and-managing#retrieving_tag_value
 
   Fields:
-    capacityStepSizeGb: Output only. The increase/decrease capacity step size
-      in GB.
+    capacityStepSizeGb: Output only. The incremental increase or decrease in
+      capacity, designated in some number of GB.
     createTime: Output only. The time when the instance was created.
     customPerformanceSupported: Output only. Indicates whether this instance
       supports configuring its performance. If true, the user can configure
@@ -1340,8 +1353,8 @@ class Instance(_messages.Message):
       single file share is supported.
     kmsKeyName: KMS key name used for data encryption.
     labels: Resource labels to represent user provided metadata.
-    maxCapacityGb: Output only. The max capacity of the instance in GB.
-    minCapacityGb: Output only. The min capacity of the instance in GB.
+    maxCapacityGb: Output only. The maximum capacity of the instance in GB.
+    minCapacityGb: Output only. The minimum capacity of the instance in GB.
     name: Output only. The resource name of the instance, in the format
       `projects/{project}/locations/{location}/instances/{instance}`.
     networks: VPC networks to which the instance is connected. For this
@@ -1633,10 +1646,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListSnapshotsResponse(_messages.Message):
@@ -1905,9 +1923,11 @@ class NetworkConfig(_messages.Message):
     Values:
       ADDRESS_MODE_UNSPECIFIED: Internet protocol not set.
       MODE_IPV4: Use the IPv4 internet protocol.
+      MODE_IPV6: Use the IPv6 internet protocol.
     """
     ADDRESS_MODE_UNSPECIFIED = 0
     MODE_IPV4 = 1
+    MODE_IPV6 = 2
 
   connectMode = _messages.EnumField('ConnectModeValueValuesEnum', 1)
   ipAddresses = _messages.StringField(2, repeated=True)
@@ -2163,13 +2183,13 @@ class PerformanceLimits(_messages.Message):
   performance configuration.
 
   Fields:
-    maxIops: Output only. The max IOPS.
-    maxReadIops: Output only. The max read IOPS.
-    maxReadThroughputBps: Output only. The max read throughput in bytes per
-      second.
-    maxWriteIops: Output only. The max write IOPS.
-    maxWriteThroughputBps: Output only. The max write throughput in bytes per
-      second.
+    maxIops: Output only. The maximum IOPS.
+    maxReadIops: Output only. The maximum read IOPS.
+    maxReadThroughputBps: Output only. The maximum read throughput in bytes
+      per second.
+    maxWriteIops: Output only. The maximum write IOPS.
+    maxWriteThroughputBps: Output only. The maximum write throughput in bytes
+      per second.
   """
 
   maxIops = _messages.IntegerField(1)
@@ -2216,7 +2236,10 @@ class ReplicaConfig(_messages.Message):
   Fields:
     lastActiveSyncTime: Output only. The timestamp of the latest replication
       snapshot taken on the active instance and is already replicated safely.
-    peerInstance: Optional. The peer instance.
+    peerInstance: Optional. The name of the source instance for the replica,
+      in the format
+      `projects/{project}/locations/{location}/instances/{instance}`. This
+      field is required when creating a replica.
     state: Output only. The replica state.
     stateReasons: Output only. Additional information about the replication
       state, if available.
@@ -2273,19 +2296,22 @@ class ReplicaConfig(_messages.Message):
 
 
 class Replication(_messages.Message):
-  r"""Replication specifications.
+  r"""Optional. The configuration used to replicate an instance.
 
   Enums:
-    RoleValueValuesEnum: Optional. The replication role.
+    RoleValueValuesEnum: Optional. The replication role. When creating a new
+      replica, this field must be set to `STANDBY`.
 
   Fields:
     replicas: Optional. Replication configuration for the replica instance
       associated with this instance. Only a single replica is supported.
-    role: Optional. The replication role.
+    role: Optional. The replication role. When creating a new replica, this
+      field must be set to `STANDBY`.
   """
 
   class RoleValueValuesEnum(_messages.Enum):
-    r"""Optional. The replication role.
+    r"""Optional. The replication role. When creating a new replica, this
+    field must be set to `STANDBY`.
 
     Values:
       ROLE_UNSPECIFIED: Role not set.

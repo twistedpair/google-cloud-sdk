@@ -157,10 +157,14 @@ class AiModel(_messages.Message):
       DEPLOYMENT_PLATFORM_UNSPECIFIED: Unspecified deployment platform.
       VERTEX_AI: Vertex AI.
       GKE: Google Kubernetes Engine.
+      GCE: Google Compute Engine.
+      FINE_TUNED_MODEL: Fine tuned model.
     """
     DEPLOYMENT_PLATFORM_UNSPECIFIED = 0
     VERTEX_AI = 1
     GKE = 2
+    GCE = 3
+    FINE_TUNED_MODEL = 4
 
   deploymentPlatform = _messages.EnumField('DeploymentPlatformValueValuesEnum', 1)
   displayName = _messages.StringField(2)
@@ -920,6 +924,8 @@ class CloudDlpDataProfile(_messages.Message):
   Fields:
     dataProfile: Name of the data profile, for example,
       `projects/123/locations/europe/tableProfiles/8383929`.
+    infoTypes: Type of information detected by SDP. Info type includes name,
+      version and sensitivity of the detected information type.
     parentType: The resource hierarchy level at which the data profile was
       generated.
   """
@@ -937,7 +943,8 @@ class CloudDlpDataProfile(_messages.Message):
     PROJECT = 2
 
   dataProfile = _messages.StringField(1)
-  parentType = _messages.EnumField('ParentTypeValueValuesEnum', 2)
+  infoTypes = _messages.MessageField('InfoType', 2, repeated=True)
+  parentType = _messages.EnumField('ParentTypeValueValuesEnum', 3)
 
 
 class CloudDlpInspection(_messages.Message):
@@ -1549,9 +1556,15 @@ class DataRetentionDeletionEvent(_messages.Message):
       EVENT_TYPE_UNSPECIFIED: Unspecified event type.
       EVENT_TYPE_MAX_TTL_EXCEEDED: The maximum retention time has been
         exceeded.
+      EVENT_TYPE_MAX_TTL_FROM_CREATION: Max TTL from the asset's creation
+        time.
+      EVENT_TYPE_MAX_TTL_FROM_LAST_MODIFICATION: Max TTL from the asset's last
+        modification time.
     """
     EVENT_TYPE_UNSPECIFIED = 0
     EVENT_TYPE_MAX_TTL_EXCEEDED = 1
+    EVENT_TYPE_MAX_TTL_FROM_CREATION = 2
+    EVENT_TYPE_MAX_TTL_FROM_LAST_MODIFICATION = 3
 
   dataObjectCount = _messages.IntegerField(1)
   eventDetectionTime = _messages.StringField(2)
@@ -3646,10 +3659,14 @@ class GoogleCloudSecuritycenterV2AiModel(_messages.Message):
       DEPLOYMENT_PLATFORM_UNSPECIFIED: Unspecified deployment platform.
       VERTEX_AI: Vertex AI.
       GKE: Google Kubernetes Engine.
+      GCE: Google Compute Engine.
+      FINE_TUNED_MODEL: Fine tuned model.
     """
     DEPLOYMENT_PLATFORM_UNSPECIFIED = 0
     VERTEX_AI = 1
     GKE = 2
+    GCE = 3
+    FINE_TUNED_MODEL = 4
 
   deploymentPlatform = _messages.EnumField('DeploymentPlatformValueValuesEnum', 1)
   displayName = _messages.StringField(2)
@@ -4112,6 +4129,8 @@ class GoogleCloudSecuritycenterV2CloudDlpDataProfile(_messages.Message):
   Fields:
     dataProfile: Name of the data profile, for example,
       `projects/123/locations/europe/tableProfiles/8383929`.
+    infoTypes: Type of information detected by SDP. Info type includes name,
+      version and sensitivity of the detected information type.
     parentType: The resource hierarchy level at which the data profile was
       generated.
   """
@@ -4129,7 +4148,8 @@ class GoogleCloudSecuritycenterV2CloudDlpDataProfile(_messages.Message):
     PROJECT = 2
 
   dataProfile = _messages.StringField(1)
-  parentType = _messages.EnumField('ParentTypeValueValuesEnum', 2)
+  infoTypes = _messages.MessageField('GoogleCloudSecuritycenterV2InfoType', 2, repeated=True)
+  parentType = _messages.EnumField('ParentTypeValueValuesEnum', 3)
 
 
 class GoogleCloudSecuritycenterV2CloudDlpInspection(_messages.Message):
@@ -4729,9 +4749,15 @@ class GoogleCloudSecuritycenterV2DataRetentionDeletionEvent(_messages.Message):
       EVENT_TYPE_UNSPECIFIED: Unspecified event type.
       EVENT_TYPE_MAX_TTL_EXCEEDED: The maximum retention time has been
         exceeded.
+      EVENT_TYPE_MAX_TTL_FROM_CREATION: Max TTL from the asset's creation
+        time.
+      EVENT_TYPE_MAX_TTL_FROM_LAST_MODIFICATION: Max TTL from the asset's last
+        modification time.
     """
     EVENT_TYPE_UNSPECIFIED = 0
     EVENT_TYPE_MAX_TTL_EXCEEDED = 1
+    EVENT_TYPE_MAX_TTL_FROM_CREATION = 2
+    EVENT_TYPE_MAX_TTL_FROM_LAST_MODIFICATION = 3
 
   dataObjectCount = _messages.IntegerField(1)
   eventDetectionTime = _messages.StringField(2)
@@ -5639,6 +5665,26 @@ class GoogleCloudSecuritycenterV2Indicator(_messages.Message):
   uris = _messages.StringField(4, repeated=True)
 
 
+class GoogleCloudSecuritycenterV2InfoType(_messages.Message):
+  r"""Type of information detected by the API.
+
+  Fields:
+    name: Name of the information type. Either a name of your choosing when
+      creating a CustomInfoType, or one of the names listed at
+      https://cloud.google.com/sensitive-data-protection/docs/infotypes-
+      reference when specifying a built-in type. When sending Cloud DLP
+      results to Data Catalog, infoType names should conform to the pattern
+      `[A-Za-z0-9$_-]{1,64}`.
+    sensitivityScore: Optional custom sensitivity for this InfoType. This only
+      applies to data profiling.
+    version: Optional version name for this InfoType.
+  """
+
+  name = _messages.StringField(1)
+  sensitivityScore = _messages.MessageField('GoogleCloudSecuritycenterV2SensitivityScore', 2)
+  version = _messages.StringField(3)
+
+
 class GoogleCloudSecuritycenterV2IpRule(_messages.Message):
   r"""IP rule information.
 
@@ -5945,11 +5991,100 @@ class GoogleCloudSecuritycenterV2IssueResourceApplication(_messages.Message):
   r"""The AppHub application associated with the resource, if any.
 
   Fields:
+    attributes: Consumer provided attributes for the application
     name: The resource name of an Application. Format: `projects/{host-
       project-id}/locations/{location}/applications/{application-id}`
   """
 
-  name = _messages.StringField(1)
+  attributes = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceApplicationAttributes', 1)
+  name = _messages.StringField(2)
+
+
+class GoogleCloudSecuritycenterV2IssueResourceApplicationAttributes(_messages.Message):
+  r"""Consumer provided attributes for the application
+
+  Fields:
+    businessOwners: Business team that ensures user needs are met and value is
+      delivered
+    criticality: User-defined criticality information.
+    developerOwners: Developer team that owns development and coding.
+    environment: User-defined environment information.
+    operatorOwners: Operator team that ensures runtime and operations.
+  """
+
+  businessOwners = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceApplicationAttributesContactInfo', 1, repeated=True)
+  criticality = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceApplicationAttributesCriticality', 2)
+  developerOwners = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceApplicationAttributesContactInfo', 3, repeated=True)
+  environment = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceApplicationAttributesEnvironment', 4)
+  operatorOwners = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceApplicationAttributesContactInfo', 5, repeated=True)
+
+
+class GoogleCloudSecuritycenterV2IssueResourceApplicationAttributesContactInfo(_messages.Message):
+  r"""Contact information of stakeholders.
+
+  Fields:
+    email: Email address of the contacts.
+  """
+
+  email = _messages.StringField(1)
+
+
+class GoogleCloudSecuritycenterV2IssueResourceApplicationAttributesCriticality(_messages.Message):
+  r"""Criticality of the Application, Service, or Workload
+
+  Enums:
+    TypeValueValuesEnum: Criticality Type.
+
+  Fields:
+    type: Criticality Type.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Criticality Type.
+
+    Values:
+      CRITICALITY_TYPE_UNSPECIFIED: Unspecified type.
+      MISSION_CRITICAL: Mission critical service, application or workload.
+      HIGH: High impact.
+      MEDIUM: Medium impact.
+      LOW: Low impact.
+    """
+    CRITICALITY_TYPE_UNSPECIFIED = 0
+    MISSION_CRITICAL = 1
+    HIGH = 2
+    MEDIUM = 3
+    LOW = 4
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
+
+
+class GoogleCloudSecuritycenterV2IssueResourceApplicationAttributesEnvironment(_messages.Message):
+  r"""Environment of the Application, Service, or Workload
+
+  Enums:
+    TypeValueValuesEnum: Environment Type.
+
+  Fields:
+    type: Environment Type.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Environment Type.
+
+    Values:
+      ENVIRONMENT_TYPE_UNSPECIFIED: Unspecified type.
+      PRODUCTION: Production environment.
+      STAGING: Staging environment.
+      TEST: Test environment.
+      DEVELOPMENT: Development environment.
+    """
+    ENVIRONMENT_TYPE_UNSPECIFIED = 0
+    PRODUCTION = 1
+    STAGING = 2
+    TEST = 3
+    DEVELOPMENT = 4
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
 
 
 class GoogleCloudSecuritycenterV2IssueResourceAwsMetadata(_messages.Message):
@@ -6346,6 +6481,7 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
       COMPROMISE_SOFTWARE_DEPENDENCIES_AND_DEVELOPMENT_TOOLS: T1195.001
       EXPLOITATION_FOR_CLIENT_EXECUTION: T1203
       USER_EXECUTION: T1204
+      EXPLOITATION_FOR_CREDENTIAL_ACCESS: T1212
       LINUX_AND_MAC_FILE_AND_DIRECTORY_PERMISSIONS_MODIFICATION: T1222.002
       DOMAIN_POLICY_MODIFICATION: T1484
       DATA_DESTRUCTION: T1485
@@ -6485,71 +6621,72 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
     COMPROMISE_SOFTWARE_DEPENDENCIES_AND_DEVELOPMENT_TOOLS = 70
     EXPLOITATION_FOR_CLIENT_EXECUTION = 71
     USER_EXECUTION = 72
-    LINUX_AND_MAC_FILE_AND_DIRECTORY_PERMISSIONS_MODIFICATION = 73
-    DOMAIN_POLICY_MODIFICATION = 74
-    DATA_DESTRUCTION = 75
-    DATA_ENCRYPTED_FOR_IMPACT = 76
-    SERVICE_STOP = 77
-    INHIBIT_SYSTEM_RECOVERY = 78
-    FIRMWARE_CORRUPTION = 79
-    RESOURCE_HIJACKING = 80
-    NETWORK_DENIAL_OF_SERVICE = 81
-    CLOUD_SERVICE_DISCOVERY = 82
-    STEAL_APPLICATION_ACCESS_TOKEN = 83
-    ACCOUNT_ACCESS_REMOVAL = 84
-    TRANSFER_DATA_TO_CLOUD_ACCOUNT = 85
-    STEAL_WEB_SESSION_COOKIE = 86
-    CREATE_OR_MODIFY_SYSTEM_PROCESS = 87
-    EVENT_TRIGGERED_EXECUTION = 88
-    BOOT_OR_LOGON_AUTOSTART_EXECUTION = 89
-    KERNEL_MODULES_AND_EXTENSIONS = 90
-    SHORTCUT_MODIFICATION = 91
-    ABUSE_ELEVATION_CONTROL_MECHANISM = 92
-    ABUSE_ELEVATION_CONTROL_MECHANISM_SETUID_AND_SETGID = 93
-    ABUSE_ELEVATION_CONTROL_MECHANISM_SUDO_AND_SUDO_CACHING = 94
-    UNSECURED_CREDENTIALS = 95
-    CREDENTIALS_IN_FILES = 96
-    BASH_HISTORY = 97
-    PRIVATE_KEYS = 98
-    SUBVERT_TRUST_CONTROL = 99
-    INSTALL_ROOT_CERTIFICATE = 100
-    COMPROMISE_HOST_SOFTWARE_BINARY = 101
-    CREDENTIALS_FROM_PASSWORD_STORES = 102
-    MODIFY_AUTHENTICATION_PROCESS = 103
-    PLUGGABLE_AUTHENTICATION_MODULES = 104
-    MULTI_FACTOR_AUTHENTICATION = 105
-    IMPAIR_DEFENSES = 106
-    DISABLE_OR_MODIFY_TOOLS = 107
-    INDICATOR_BLOCKING = 108
-    DISABLE_OR_MODIFY_LINUX_AUDIT_SYSTEM = 109
-    HIDE_ARTIFACTS = 110
-    HIDDEN_FILES_AND_DIRECTORIES = 111
-    HIDDEN_USERS = 112
-    EXFILTRATION_OVER_WEB_SERVICE = 113
-    EXFILTRATION_TO_CLOUD_STORAGE = 114
-    DYNAMIC_RESOLUTION = 115
-    LATERAL_TOOL_TRANSFER = 116
-    HIJACK_EXECUTION_FLOW = 117
-    HIJACK_EXECUTION_FLOW_DYNAMIC_LINKER_HIJACKING = 118
-    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 119
-    CREATE_SNAPSHOT = 120
-    CLOUD_INFRASTRUCTURE_DISCOVERY = 121
-    DEVELOP_CAPABILITIES = 122
-    DEVELOP_CAPABILITIES_MALWARE = 123
-    OBTAIN_CAPABILITIES = 124
-    OBTAIN_CAPABILITIES_MALWARE = 125
-    OBTAIN_CAPABILITIES_VULNERABILITIES = 126
-    ACTIVE_SCANNING = 127
-    SCANNING_IP_BLOCKS = 128
-    STAGE_CAPABILITIES = 129
-    UPLOAD_MALWARE = 130
-    CONTAINER_ADMINISTRATION_COMMAND = 131
-    DEPLOY_CONTAINER = 132
-    ESCAPE_TO_HOST = 133
-    CONTAINER_AND_RESOURCE_DISCOVERY = 134
-    REFLECTIVE_CODE_LOADING = 135
-    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 136
-    FINANCIAL_THEFT = 137
+    EXPLOITATION_FOR_CREDENTIAL_ACCESS = 73
+    LINUX_AND_MAC_FILE_AND_DIRECTORY_PERMISSIONS_MODIFICATION = 74
+    DOMAIN_POLICY_MODIFICATION = 75
+    DATA_DESTRUCTION = 76
+    DATA_ENCRYPTED_FOR_IMPACT = 77
+    SERVICE_STOP = 78
+    INHIBIT_SYSTEM_RECOVERY = 79
+    FIRMWARE_CORRUPTION = 80
+    RESOURCE_HIJACKING = 81
+    NETWORK_DENIAL_OF_SERVICE = 82
+    CLOUD_SERVICE_DISCOVERY = 83
+    STEAL_APPLICATION_ACCESS_TOKEN = 84
+    ACCOUNT_ACCESS_REMOVAL = 85
+    TRANSFER_DATA_TO_CLOUD_ACCOUNT = 86
+    STEAL_WEB_SESSION_COOKIE = 87
+    CREATE_OR_MODIFY_SYSTEM_PROCESS = 88
+    EVENT_TRIGGERED_EXECUTION = 89
+    BOOT_OR_LOGON_AUTOSTART_EXECUTION = 90
+    KERNEL_MODULES_AND_EXTENSIONS = 91
+    SHORTCUT_MODIFICATION = 92
+    ABUSE_ELEVATION_CONTROL_MECHANISM = 93
+    ABUSE_ELEVATION_CONTROL_MECHANISM_SETUID_AND_SETGID = 94
+    ABUSE_ELEVATION_CONTROL_MECHANISM_SUDO_AND_SUDO_CACHING = 95
+    UNSECURED_CREDENTIALS = 96
+    CREDENTIALS_IN_FILES = 97
+    BASH_HISTORY = 98
+    PRIVATE_KEYS = 99
+    SUBVERT_TRUST_CONTROL = 100
+    INSTALL_ROOT_CERTIFICATE = 101
+    COMPROMISE_HOST_SOFTWARE_BINARY = 102
+    CREDENTIALS_FROM_PASSWORD_STORES = 103
+    MODIFY_AUTHENTICATION_PROCESS = 104
+    PLUGGABLE_AUTHENTICATION_MODULES = 105
+    MULTI_FACTOR_AUTHENTICATION = 106
+    IMPAIR_DEFENSES = 107
+    DISABLE_OR_MODIFY_TOOLS = 108
+    INDICATOR_BLOCKING = 109
+    DISABLE_OR_MODIFY_LINUX_AUDIT_SYSTEM = 110
+    HIDE_ARTIFACTS = 111
+    HIDDEN_FILES_AND_DIRECTORIES = 112
+    HIDDEN_USERS = 113
+    EXFILTRATION_OVER_WEB_SERVICE = 114
+    EXFILTRATION_TO_CLOUD_STORAGE = 115
+    DYNAMIC_RESOLUTION = 116
+    LATERAL_TOOL_TRANSFER = 117
+    HIJACK_EXECUTION_FLOW = 118
+    HIJACK_EXECUTION_FLOW_DYNAMIC_LINKER_HIJACKING = 119
+    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 120
+    CREATE_SNAPSHOT = 121
+    CLOUD_INFRASTRUCTURE_DISCOVERY = 122
+    DEVELOP_CAPABILITIES = 123
+    DEVELOP_CAPABILITIES_MALWARE = 124
+    OBTAIN_CAPABILITIES = 125
+    OBTAIN_CAPABILITIES_MALWARE = 126
+    OBTAIN_CAPABILITIES_VULNERABILITIES = 127
+    ACTIVE_SCANNING = 128
+    SCANNING_IP_BLOCKS = 129
+    STAGE_CAPABILITIES = 130
+    UPLOAD_MALWARE = 131
+    CONTAINER_ADMINISTRATION_COMMAND = 132
+    DEPLOY_CONTAINER = 133
+    ESCAPE_TO_HOST = 134
+    CONTAINER_AND_RESOURCE_DISCOVERY = 135
+    REFLECTIVE_CODE_LOADING = 136
+    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 137
+    FINANCIAL_THEFT = 138
 
   class PrimaryTacticValueValuesEnum(_messages.Enum):
     r"""The MITRE ATT&CK tactic most closely represented by this finding, if
@@ -6665,6 +6802,7 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
       COMPROMISE_SOFTWARE_DEPENDENCIES_AND_DEVELOPMENT_TOOLS: T1195.001
       EXPLOITATION_FOR_CLIENT_EXECUTION: T1203
       USER_EXECUTION: T1204
+      EXPLOITATION_FOR_CREDENTIAL_ACCESS: T1212
       LINUX_AND_MAC_FILE_AND_DIRECTORY_PERMISSIONS_MODIFICATION: T1222.002
       DOMAIN_POLICY_MODIFICATION: T1484
       DATA_DESTRUCTION: T1485
@@ -6804,71 +6942,72 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
     COMPROMISE_SOFTWARE_DEPENDENCIES_AND_DEVELOPMENT_TOOLS = 70
     EXPLOITATION_FOR_CLIENT_EXECUTION = 71
     USER_EXECUTION = 72
-    LINUX_AND_MAC_FILE_AND_DIRECTORY_PERMISSIONS_MODIFICATION = 73
-    DOMAIN_POLICY_MODIFICATION = 74
-    DATA_DESTRUCTION = 75
-    DATA_ENCRYPTED_FOR_IMPACT = 76
-    SERVICE_STOP = 77
-    INHIBIT_SYSTEM_RECOVERY = 78
-    FIRMWARE_CORRUPTION = 79
-    RESOURCE_HIJACKING = 80
-    NETWORK_DENIAL_OF_SERVICE = 81
-    CLOUD_SERVICE_DISCOVERY = 82
-    STEAL_APPLICATION_ACCESS_TOKEN = 83
-    ACCOUNT_ACCESS_REMOVAL = 84
-    TRANSFER_DATA_TO_CLOUD_ACCOUNT = 85
-    STEAL_WEB_SESSION_COOKIE = 86
-    CREATE_OR_MODIFY_SYSTEM_PROCESS = 87
-    EVENT_TRIGGERED_EXECUTION = 88
-    BOOT_OR_LOGON_AUTOSTART_EXECUTION = 89
-    KERNEL_MODULES_AND_EXTENSIONS = 90
-    SHORTCUT_MODIFICATION = 91
-    ABUSE_ELEVATION_CONTROL_MECHANISM = 92
-    ABUSE_ELEVATION_CONTROL_MECHANISM_SETUID_AND_SETGID = 93
-    ABUSE_ELEVATION_CONTROL_MECHANISM_SUDO_AND_SUDO_CACHING = 94
-    UNSECURED_CREDENTIALS = 95
-    CREDENTIALS_IN_FILES = 96
-    BASH_HISTORY = 97
-    PRIVATE_KEYS = 98
-    SUBVERT_TRUST_CONTROL = 99
-    INSTALL_ROOT_CERTIFICATE = 100
-    COMPROMISE_HOST_SOFTWARE_BINARY = 101
-    CREDENTIALS_FROM_PASSWORD_STORES = 102
-    MODIFY_AUTHENTICATION_PROCESS = 103
-    PLUGGABLE_AUTHENTICATION_MODULES = 104
-    MULTI_FACTOR_AUTHENTICATION = 105
-    IMPAIR_DEFENSES = 106
-    DISABLE_OR_MODIFY_TOOLS = 107
-    INDICATOR_BLOCKING = 108
-    DISABLE_OR_MODIFY_LINUX_AUDIT_SYSTEM = 109
-    HIDE_ARTIFACTS = 110
-    HIDDEN_FILES_AND_DIRECTORIES = 111
-    HIDDEN_USERS = 112
-    EXFILTRATION_OVER_WEB_SERVICE = 113
-    EXFILTRATION_TO_CLOUD_STORAGE = 114
-    DYNAMIC_RESOLUTION = 115
-    LATERAL_TOOL_TRANSFER = 116
-    HIJACK_EXECUTION_FLOW = 117
-    HIJACK_EXECUTION_FLOW_DYNAMIC_LINKER_HIJACKING = 118
-    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 119
-    CREATE_SNAPSHOT = 120
-    CLOUD_INFRASTRUCTURE_DISCOVERY = 121
-    DEVELOP_CAPABILITIES = 122
-    DEVELOP_CAPABILITIES_MALWARE = 123
-    OBTAIN_CAPABILITIES = 124
-    OBTAIN_CAPABILITIES_MALWARE = 125
-    OBTAIN_CAPABILITIES_VULNERABILITIES = 126
-    ACTIVE_SCANNING = 127
-    SCANNING_IP_BLOCKS = 128
-    STAGE_CAPABILITIES = 129
-    UPLOAD_MALWARE = 130
-    CONTAINER_ADMINISTRATION_COMMAND = 131
-    DEPLOY_CONTAINER = 132
-    ESCAPE_TO_HOST = 133
-    CONTAINER_AND_RESOURCE_DISCOVERY = 134
-    REFLECTIVE_CODE_LOADING = 135
-    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 136
-    FINANCIAL_THEFT = 137
+    EXPLOITATION_FOR_CREDENTIAL_ACCESS = 73
+    LINUX_AND_MAC_FILE_AND_DIRECTORY_PERMISSIONS_MODIFICATION = 74
+    DOMAIN_POLICY_MODIFICATION = 75
+    DATA_DESTRUCTION = 76
+    DATA_ENCRYPTED_FOR_IMPACT = 77
+    SERVICE_STOP = 78
+    INHIBIT_SYSTEM_RECOVERY = 79
+    FIRMWARE_CORRUPTION = 80
+    RESOURCE_HIJACKING = 81
+    NETWORK_DENIAL_OF_SERVICE = 82
+    CLOUD_SERVICE_DISCOVERY = 83
+    STEAL_APPLICATION_ACCESS_TOKEN = 84
+    ACCOUNT_ACCESS_REMOVAL = 85
+    TRANSFER_DATA_TO_CLOUD_ACCOUNT = 86
+    STEAL_WEB_SESSION_COOKIE = 87
+    CREATE_OR_MODIFY_SYSTEM_PROCESS = 88
+    EVENT_TRIGGERED_EXECUTION = 89
+    BOOT_OR_LOGON_AUTOSTART_EXECUTION = 90
+    KERNEL_MODULES_AND_EXTENSIONS = 91
+    SHORTCUT_MODIFICATION = 92
+    ABUSE_ELEVATION_CONTROL_MECHANISM = 93
+    ABUSE_ELEVATION_CONTROL_MECHANISM_SETUID_AND_SETGID = 94
+    ABUSE_ELEVATION_CONTROL_MECHANISM_SUDO_AND_SUDO_CACHING = 95
+    UNSECURED_CREDENTIALS = 96
+    CREDENTIALS_IN_FILES = 97
+    BASH_HISTORY = 98
+    PRIVATE_KEYS = 99
+    SUBVERT_TRUST_CONTROL = 100
+    INSTALL_ROOT_CERTIFICATE = 101
+    COMPROMISE_HOST_SOFTWARE_BINARY = 102
+    CREDENTIALS_FROM_PASSWORD_STORES = 103
+    MODIFY_AUTHENTICATION_PROCESS = 104
+    PLUGGABLE_AUTHENTICATION_MODULES = 105
+    MULTI_FACTOR_AUTHENTICATION = 106
+    IMPAIR_DEFENSES = 107
+    DISABLE_OR_MODIFY_TOOLS = 108
+    INDICATOR_BLOCKING = 109
+    DISABLE_OR_MODIFY_LINUX_AUDIT_SYSTEM = 110
+    HIDE_ARTIFACTS = 111
+    HIDDEN_FILES_AND_DIRECTORIES = 112
+    HIDDEN_USERS = 113
+    EXFILTRATION_OVER_WEB_SERVICE = 114
+    EXFILTRATION_TO_CLOUD_STORAGE = 115
+    DYNAMIC_RESOLUTION = 116
+    LATERAL_TOOL_TRANSFER = 117
+    HIJACK_EXECUTION_FLOW = 118
+    HIJACK_EXECUTION_FLOW_DYNAMIC_LINKER_HIJACKING = 119
+    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 120
+    CREATE_SNAPSHOT = 121
+    CLOUD_INFRASTRUCTURE_DISCOVERY = 122
+    DEVELOP_CAPABILITIES = 123
+    DEVELOP_CAPABILITIES_MALWARE = 124
+    OBTAIN_CAPABILITIES = 125
+    OBTAIN_CAPABILITIES_MALWARE = 126
+    OBTAIN_CAPABILITIES_VULNERABILITIES = 127
+    ACTIVE_SCANNING = 128
+    SCANNING_IP_BLOCKS = 129
+    STAGE_CAPABILITIES = 130
+    UPLOAD_MALWARE = 131
+    CONTAINER_ADMINISTRATION_COMMAND = 132
+    DEPLOY_CONTAINER = 133
+    ESCAPE_TO_HOST = 134
+    CONTAINER_AND_RESOURCE_DISCOVERY = 135
+    REFLECTIVE_CODE_LOADING = 136
+    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 137
+    FINANCIAL_THEFT = 138
 
   additionalTactics = _messages.EnumField('AdditionalTacticsValueListEntryValuesEnum', 1, repeated=True)
   additionalTechniques = _messages.EnumField('AdditionalTechniquesValueListEntryValuesEnum', 2, repeated=True)
@@ -7725,6 +7864,43 @@ class GoogleCloudSecuritycenterV2SensitiveDataProtectionMapping(_messages.Messag
   mediumSensitivityMapping = _messages.EnumField('MediumSensitivityMappingValueValuesEnum', 2)
 
 
+class GoogleCloudSecuritycenterV2SensitivityScore(_messages.Message):
+  r"""Score is calculated from of all elements in the data profile. A higher
+  level means the data is more sensitive.
+
+  Enums:
+    ScoreValueValuesEnum: The sensitivity score applied to the resource.
+
+  Fields:
+    score: The sensitivity score applied to the resource.
+  """
+
+  class ScoreValueValuesEnum(_messages.Enum):
+    r"""The sensitivity score applied to the resource.
+
+    Values:
+      SENSITIVITY_SCORE_LEVEL_UNSPECIFIED: Unused.
+      SENSITIVITY_LOW: No sensitive information detected. The resource isn't
+        publicly accessible.
+      SENSITIVITY_UNKNOWN: Unable to determine sensitivity.
+      SENSITIVITY_MODERATE: Medium risk. Contains personally identifiable
+        information (PII), potentially sensitive data, or fields with free-
+        text data that are at a higher risk of having intermittent sensitive
+        data. Consider limiting access.
+      SENSITIVITY_HIGH: High risk. Sensitive personally identifiable
+        information (SPII) can be present. Exfiltration of data can lead to
+        user data loss. Re-identification of users might be possible. Consider
+        limiting usage and or removing SPII.
+    """
+    SENSITIVITY_SCORE_LEVEL_UNSPECIFIED = 0
+    SENSITIVITY_LOW = 1
+    SENSITIVITY_UNKNOWN = 2
+    SENSITIVITY_MODERATE = 3
+    SENSITIVITY_HIGH = 4
+
+  score = _messages.EnumField('ScoreValueValuesEnum', 1)
+
+
 class GoogleCloudSecuritycenterV2ServiceAccountDelegationInfo(_messages.Message):
   r"""Identity delegation history of an authenticated service account.
 
@@ -8078,6 +8254,26 @@ class Indicator(_messages.Message):
   uris = _messages.StringField(4, repeated=True)
 
 
+class InfoType(_messages.Message):
+  r"""Type of information detected by the API.
+
+  Fields:
+    name: Name of the information type. Either a name of your choosing when
+      creating a CustomInfoType, or one of the names listed at
+      https://cloud.google.com/sensitive-data-protection/docs/infotypes-
+      reference when specifying a built-in type. When sending Cloud DLP
+      results to Data Catalog, infoType names should conform to the pattern
+      `[A-Za-z0-9$_-]{1,64}`.
+    sensitivityScore: Optional custom sensitivity for this InfoType. This only
+      applies to data profiling.
+    version: Optional version name for this InfoType.
+  """
+
+  name = _messages.StringField(1)
+  sensitivityScore = _messages.MessageField('SensitivityScore', 2)
+  version = _messages.StringField(3)
+
+
 class IpRule(_messages.Message):
   r"""IP rule information.
 
@@ -8354,10 +8550,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListResourceValueConfigsResponse(_messages.Message):
@@ -8580,6 +8781,7 @@ class MitreAttack(_messages.Message):
       COMPROMISE_SOFTWARE_DEPENDENCIES_AND_DEVELOPMENT_TOOLS: T1195.001
       EXPLOITATION_FOR_CLIENT_EXECUTION: T1203
       USER_EXECUTION: T1204
+      EXPLOITATION_FOR_CREDENTIAL_ACCESS: T1212
       LINUX_AND_MAC_FILE_AND_DIRECTORY_PERMISSIONS_MODIFICATION: T1222.002
       DOMAIN_POLICY_MODIFICATION: T1484
       DATA_DESTRUCTION: T1485
@@ -8719,71 +8921,72 @@ class MitreAttack(_messages.Message):
     COMPROMISE_SOFTWARE_DEPENDENCIES_AND_DEVELOPMENT_TOOLS = 70
     EXPLOITATION_FOR_CLIENT_EXECUTION = 71
     USER_EXECUTION = 72
-    LINUX_AND_MAC_FILE_AND_DIRECTORY_PERMISSIONS_MODIFICATION = 73
-    DOMAIN_POLICY_MODIFICATION = 74
-    DATA_DESTRUCTION = 75
-    DATA_ENCRYPTED_FOR_IMPACT = 76
-    SERVICE_STOP = 77
-    INHIBIT_SYSTEM_RECOVERY = 78
-    FIRMWARE_CORRUPTION = 79
-    RESOURCE_HIJACKING = 80
-    NETWORK_DENIAL_OF_SERVICE = 81
-    CLOUD_SERVICE_DISCOVERY = 82
-    STEAL_APPLICATION_ACCESS_TOKEN = 83
-    ACCOUNT_ACCESS_REMOVAL = 84
-    TRANSFER_DATA_TO_CLOUD_ACCOUNT = 85
-    STEAL_WEB_SESSION_COOKIE = 86
-    CREATE_OR_MODIFY_SYSTEM_PROCESS = 87
-    EVENT_TRIGGERED_EXECUTION = 88
-    BOOT_OR_LOGON_AUTOSTART_EXECUTION = 89
-    KERNEL_MODULES_AND_EXTENSIONS = 90
-    SHORTCUT_MODIFICATION = 91
-    ABUSE_ELEVATION_CONTROL_MECHANISM = 92
-    ABUSE_ELEVATION_CONTROL_MECHANISM_SETUID_AND_SETGID = 93
-    ABUSE_ELEVATION_CONTROL_MECHANISM_SUDO_AND_SUDO_CACHING = 94
-    UNSECURED_CREDENTIALS = 95
-    CREDENTIALS_IN_FILES = 96
-    BASH_HISTORY = 97
-    PRIVATE_KEYS = 98
-    SUBVERT_TRUST_CONTROL = 99
-    INSTALL_ROOT_CERTIFICATE = 100
-    COMPROMISE_HOST_SOFTWARE_BINARY = 101
-    CREDENTIALS_FROM_PASSWORD_STORES = 102
-    MODIFY_AUTHENTICATION_PROCESS = 103
-    PLUGGABLE_AUTHENTICATION_MODULES = 104
-    MULTI_FACTOR_AUTHENTICATION = 105
-    IMPAIR_DEFENSES = 106
-    DISABLE_OR_MODIFY_TOOLS = 107
-    INDICATOR_BLOCKING = 108
-    DISABLE_OR_MODIFY_LINUX_AUDIT_SYSTEM = 109
-    HIDE_ARTIFACTS = 110
-    HIDDEN_FILES_AND_DIRECTORIES = 111
-    HIDDEN_USERS = 112
-    EXFILTRATION_OVER_WEB_SERVICE = 113
-    EXFILTRATION_TO_CLOUD_STORAGE = 114
-    DYNAMIC_RESOLUTION = 115
-    LATERAL_TOOL_TRANSFER = 116
-    HIJACK_EXECUTION_FLOW = 117
-    HIJACK_EXECUTION_FLOW_DYNAMIC_LINKER_HIJACKING = 118
-    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 119
-    CREATE_SNAPSHOT = 120
-    CLOUD_INFRASTRUCTURE_DISCOVERY = 121
-    DEVELOP_CAPABILITIES = 122
-    DEVELOP_CAPABILITIES_MALWARE = 123
-    OBTAIN_CAPABILITIES = 124
-    OBTAIN_CAPABILITIES_MALWARE = 125
-    OBTAIN_CAPABILITIES_VULNERABILITIES = 126
-    ACTIVE_SCANNING = 127
-    SCANNING_IP_BLOCKS = 128
-    STAGE_CAPABILITIES = 129
-    UPLOAD_MALWARE = 130
-    CONTAINER_ADMINISTRATION_COMMAND = 131
-    DEPLOY_CONTAINER = 132
-    ESCAPE_TO_HOST = 133
-    CONTAINER_AND_RESOURCE_DISCOVERY = 134
-    REFLECTIVE_CODE_LOADING = 135
-    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 136
-    FINANCIAL_THEFT = 137
+    EXPLOITATION_FOR_CREDENTIAL_ACCESS = 73
+    LINUX_AND_MAC_FILE_AND_DIRECTORY_PERMISSIONS_MODIFICATION = 74
+    DOMAIN_POLICY_MODIFICATION = 75
+    DATA_DESTRUCTION = 76
+    DATA_ENCRYPTED_FOR_IMPACT = 77
+    SERVICE_STOP = 78
+    INHIBIT_SYSTEM_RECOVERY = 79
+    FIRMWARE_CORRUPTION = 80
+    RESOURCE_HIJACKING = 81
+    NETWORK_DENIAL_OF_SERVICE = 82
+    CLOUD_SERVICE_DISCOVERY = 83
+    STEAL_APPLICATION_ACCESS_TOKEN = 84
+    ACCOUNT_ACCESS_REMOVAL = 85
+    TRANSFER_DATA_TO_CLOUD_ACCOUNT = 86
+    STEAL_WEB_SESSION_COOKIE = 87
+    CREATE_OR_MODIFY_SYSTEM_PROCESS = 88
+    EVENT_TRIGGERED_EXECUTION = 89
+    BOOT_OR_LOGON_AUTOSTART_EXECUTION = 90
+    KERNEL_MODULES_AND_EXTENSIONS = 91
+    SHORTCUT_MODIFICATION = 92
+    ABUSE_ELEVATION_CONTROL_MECHANISM = 93
+    ABUSE_ELEVATION_CONTROL_MECHANISM_SETUID_AND_SETGID = 94
+    ABUSE_ELEVATION_CONTROL_MECHANISM_SUDO_AND_SUDO_CACHING = 95
+    UNSECURED_CREDENTIALS = 96
+    CREDENTIALS_IN_FILES = 97
+    BASH_HISTORY = 98
+    PRIVATE_KEYS = 99
+    SUBVERT_TRUST_CONTROL = 100
+    INSTALL_ROOT_CERTIFICATE = 101
+    COMPROMISE_HOST_SOFTWARE_BINARY = 102
+    CREDENTIALS_FROM_PASSWORD_STORES = 103
+    MODIFY_AUTHENTICATION_PROCESS = 104
+    PLUGGABLE_AUTHENTICATION_MODULES = 105
+    MULTI_FACTOR_AUTHENTICATION = 106
+    IMPAIR_DEFENSES = 107
+    DISABLE_OR_MODIFY_TOOLS = 108
+    INDICATOR_BLOCKING = 109
+    DISABLE_OR_MODIFY_LINUX_AUDIT_SYSTEM = 110
+    HIDE_ARTIFACTS = 111
+    HIDDEN_FILES_AND_DIRECTORIES = 112
+    HIDDEN_USERS = 113
+    EXFILTRATION_OVER_WEB_SERVICE = 114
+    EXFILTRATION_TO_CLOUD_STORAGE = 115
+    DYNAMIC_RESOLUTION = 116
+    LATERAL_TOOL_TRANSFER = 117
+    HIJACK_EXECUTION_FLOW = 118
+    HIJACK_EXECUTION_FLOW_DYNAMIC_LINKER_HIJACKING = 119
+    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 120
+    CREATE_SNAPSHOT = 121
+    CLOUD_INFRASTRUCTURE_DISCOVERY = 122
+    DEVELOP_CAPABILITIES = 123
+    DEVELOP_CAPABILITIES_MALWARE = 124
+    OBTAIN_CAPABILITIES = 125
+    OBTAIN_CAPABILITIES_MALWARE = 126
+    OBTAIN_CAPABILITIES_VULNERABILITIES = 127
+    ACTIVE_SCANNING = 128
+    SCANNING_IP_BLOCKS = 129
+    STAGE_CAPABILITIES = 130
+    UPLOAD_MALWARE = 131
+    CONTAINER_ADMINISTRATION_COMMAND = 132
+    DEPLOY_CONTAINER = 133
+    ESCAPE_TO_HOST = 134
+    CONTAINER_AND_RESOURCE_DISCOVERY = 135
+    REFLECTIVE_CODE_LOADING = 136
+    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 137
+    FINANCIAL_THEFT = 138
 
   class PrimaryTacticValueValuesEnum(_messages.Enum):
     r"""The MITRE ATT&CK tactic most closely represented by this finding, if
@@ -8899,6 +9102,7 @@ class MitreAttack(_messages.Message):
       COMPROMISE_SOFTWARE_DEPENDENCIES_AND_DEVELOPMENT_TOOLS: T1195.001
       EXPLOITATION_FOR_CLIENT_EXECUTION: T1203
       USER_EXECUTION: T1204
+      EXPLOITATION_FOR_CREDENTIAL_ACCESS: T1212
       LINUX_AND_MAC_FILE_AND_DIRECTORY_PERMISSIONS_MODIFICATION: T1222.002
       DOMAIN_POLICY_MODIFICATION: T1484
       DATA_DESTRUCTION: T1485
@@ -9038,71 +9242,72 @@ class MitreAttack(_messages.Message):
     COMPROMISE_SOFTWARE_DEPENDENCIES_AND_DEVELOPMENT_TOOLS = 70
     EXPLOITATION_FOR_CLIENT_EXECUTION = 71
     USER_EXECUTION = 72
-    LINUX_AND_MAC_FILE_AND_DIRECTORY_PERMISSIONS_MODIFICATION = 73
-    DOMAIN_POLICY_MODIFICATION = 74
-    DATA_DESTRUCTION = 75
-    DATA_ENCRYPTED_FOR_IMPACT = 76
-    SERVICE_STOP = 77
-    INHIBIT_SYSTEM_RECOVERY = 78
-    FIRMWARE_CORRUPTION = 79
-    RESOURCE_HIJACKING = 80
-    NETWORK_DENIAL_OF_SERVICE = 81
-    CLOUD_SERVICE_DISCOVERY = 82
-    STEAL_APPLICATION_ACCESS_TOKEN = 83
-    ACCOUNT_ACCESS_REMOVAL = 84
-    TRANSFER_DATA_TO_CLOUD_ACCOUNT = 85
-    STEAL_WEB_SESSION_COOKIE = 86
-    CREATE_OR_MODIFY_SYSTEM_PROCESS = 87
-    EVENT_TRIGGERED_EXECUTION = 88
-    BOOT_OR_LOGON_AUTOSTART_EXECUTION = 89
-    KERNEL_MODULES_AND_EXTENSIONS = 90
-    SHORTCUT_MODIFICATION = 91
-    ABUSE_ELEVATION_CONTROL_MECHANISM = 92
-    ABUSE_ELEVATION_CONTROL_MECHANISM_SETUID_AND_SETGID = 93
-    ABUSE_ELEVATION_CONTROL_MECHANISM_SUDO_AND_SUDO_CACHING = 94
-    UNSECURED_CREDENTIALS = 95
-    CREDENTIALS_IN_FILES = 96
-    BASH_HISTORY = 97
-    PRIVATE_KEYS = 98
-    SUBVERT_TRUST_CONTROL = 99
-    INSTALL_ROOT_CERTIFICATE = 100
-    COMPROMISE_HOST_SOFTWARE_BINARY = 101
-    CREDENTIALS_FROM_PASSWORD_STORES = 102
-    MODIFY_AUTHENTICATION_PROCESS = 103
-    PLUGGABLE_AUTHENTICATION_MODULES = 104
-    MULTI_FACTOR_AUTHENTICATION = 105
-    IMPAIR_DEFENSES = 106
-    DISABLE_OR_MODIFY_TOOLS = 107
-    INDICATOR_BLOCKING = 108
-    DISABLE_OR_MODIFY_LINUX_AUDIT_SYSTEM = 109
-    HIDE_ARTIFACTS = 110
-    HIDDEN_FILES_AND_DIRECTORIES = 111
-    HIDDEN_USERS = 112
-    EXFILTRATION_OVER_WEB_SERVICE = 113
-    EXFILTRATION_TO_CLOUD_STORAGE = 114
-    DYNAMIC_RESOLUTION = 115
-    LATERAL_TOOL_TRANSFER = 116
-    HIJACK_EXECUTION_FLOW = 117
-    HIJACK_EXECUTION_FLOW_DYNAMIC_LINKER_HIJACKING = 118
-    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 119
-    CREATE_SNAPSHOT = 120
-    CLOUD_INFRASTRUCTURE_DISCOVERY = 121
-    DEVELOP_CAPABILITIES = 122
-    DEVELOP_CAPABILITIES_MALWARE = 123
-    OBTAIN_CAPABILITIES = 124
-    OBTAIN_CAPABILITIES_MALWARE = 125
-    OBTAIN_CAPABILITIES_VULNERABILITIES = 126
-    ACTIVE_SCANNING = 127
-    SCANNING_IP_BLOCKS = 128
-    STAGE_CAPABILITIES = 129
-    UPLOAD_MALWARE = 130
-    CONTAINER_ADMINISTRATION_COMMAND = 131
-    DEPLOY_CONTAINER = 132
-    ESCAPE_TO_HOST = 133
-    CONTAINER_AND_RESOURCE_DISCOVERY = 134
-    REFLECTIVE_CODE_LOADING = 135
-    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 136
-    FINANCIAL_THEFT = 137
+    EXPLOITATION_FOR_CREDENTIAL_ACCESS = 73
+    LINUX_AND_MAC_FILE_AND_DIRECTORY_PERMISSIONS_MODIFICATION = 74
+    DOMAIN_POLICY_MODIFICATION = 75
+    DATA_DESTRUCTION = 76
+    DATA_ENCRYPTED_FOR_IMPACT = 77
+    SERVICE_STOP = 78
+    INHIBIT_SYSTEM_RECOVERY = 79
+    FIRMWARE_CORRUPTION = 80
+    RESOURCE_HIJACKING = 81
+    NETWORK_DENIAL_OF_SERVICE = 82
+    CLOUD_SERVICE_DISCOVERY = 83
+    STEAL_APPLICATION_ACCESS_TOKEN = 84
+    ACCOUNT_ACCESS_REMOVAL = 85
+    TRANSFER_DATA_TO_CLOUD_ACCOUNT = 86
+    STEAL_WEB_SESSION_COOKIE = 87
+    CREATE_OR_MODIFY_SYSTEM_PROCESS = 88
+    EVENT_TRIGGERED_EXECUTION = 89
+    BOOT_OR_LOGON_AUTOSTART_EXECUTION = 90
+    KERNEL_MODULES_AND_EXTENSIONS = 91
+    SHORTCUT_MODIFICATION = 92
+    ABUSE_ELEVATION_CONTROL_MECHANISM = 93
+    ABUSE_ELEVATION_CONTROL_MECHANISM_SETUID_AND_SETGID = 94
+    ABUSE_ELEVATION_CONTROL_MECHANISM_SUDO_AND_SUDO_CACHING = 95
+    UNSECURED_CREDENTIALS = 96
+    CREDENTIALS_IN_FILES = 97
+    BASH_HISTORY = 98
+    PRIVATE_KEYS = 99
+    SUBVERT_TRUST_CONTROL = 100
+    INSTALL_ROOT_CERTIFICATE = 101
+    COMPROMISE_HOST_SOFTWARE_BINARY = 102
+    CREDENTIALS_FROM_PASSWORD_STORES = 103
+    MODIFY_AUTHENTICATION_PROCESS = 104
+    PLUGGABLE_AUTHENTICATION_MODULES = 105
+    MULTI_FACTOR_AUTHENTICATION = 106
+    IMPAIR_DEFENSES = 107
+    DISABLE_OR_MODIFY_TOOLS = 108
+    INDICATOR_BLOCKING = 109
+    DISABLE_OR_MODIFY_LINUX_AUDIT_SYSTEM = 110
+    HIDE_ARTIFACTS = 111
+    HIDDEN_FILES_AND_DIRECTORIES = 112
+    HIDDEN_USERS = 113
+    EXFILTRATION_OVER_WEB_SERVICE = 114
+    EXFILTRATION_TO_CLOUD_STORAGE = 115
+    DYNAMIC_RESOLUTION = 116
+    LATERAL_TOOL_TRANSFER = 117
+    HIJACK_EXECUTION_FLOW = 118
+    HIJACK_EXECUTION_FLOW_DYNAMIC_LINKER_HIJACKING = 119
+    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 120
+    CREATE_SNAPSHOT = 121
+    CLOUD_INFRASTRUCTURE_DISCOVERY = 122
+    DEVELOP_CAPABILITIES = 123
+    DEVELOP_CAPABILITIES_MALWARE = 124
+    OBTAIN_CAPABILITIES = 125
+    OBTAIN_CAPABILITIES_MALWARE = 126
+    OBTAIN_CAPABILITIES_VULNERABILITIES = 127
+    ACTIVE_SCANNING = 128
+    SCANNING_IP_BLOCKS = 129
+    STAGE_CAPABILITIES = 130
+    UPLOAD_MALWARE = 131
+    CONTAINER_ADMINISTRATION_COMMAND = 132
+    DEPLOY_CONTAINER = 133
+    ESCAPE_TO_HOST = 134
+    CONTAINER_AND_RESOURCE_DISCOVERY = 135
+    REFLECTIVE_CODE_LOADING = 136
+    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 137
+    FINANCIAL_THEFT = 138
 
   additionalTactics = _messages.EnumField('AdditionalTacticsValueListEntryValuesEnum', 1, repeated=True)
   additionalTechniques = _messages.EnumField('AdditionalTechniquesValueListEntryValuesEnum', 2, repeated=True)
@@ -11567,12 +11772,20 @@ class SecuritycenterOrganizationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class SecuritycenterOrganizationsResourceValueConfigsBatchCreateRequest(_messages.Message):
@@ -13419,6 +13632,43 @@ class SecuritycenterProjectsSourcesLocationsFindingsUpdateSecurityMarksRequest(_
   googleCloudSecuritycenterV2SecurityMarks = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityMarks', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class SensitivityScore(_messages.Message):
+  r"""Score is calculated from of all elements in the data profile. A higher
+  level means the data is more sensitive.
+
+  Enums:
+    ScoreValueValuesEnum: The sensitivity score applied to the resource.
+
+  Fields:
+    score: The sensitivity score applied to the resource.
+  """
+
+  class ScoreValueValuesEnum(_messages.Enum):
+    r"""The sensitivity score applied to the resource.
+
+    Values:
+      SENSITIVITY_SCORE_LEVEL_UNSPECIFIED: Unused.
+      SENSITIVITY_LOW: No sensitive information detected. The resource isn't
+        publicly accessible.
+      SENSITIVITY_UNKNOWN: Unable to determine sensitivity.
+      SENSITIVITY_MODERATE: Medium risk. Contains personally identifiable
+        information (PII), potentially sensitive data, or fields with free-
+        text data that are at a higher risk of having intermittent sensitive
+        data. Consider limiting access.
+      SENSITIVITY_HIGH: High risk. Sensitive personally identifiable
+        information (SPII) can be present. Exfiltration of data can lead to
+        user data loss. Re-identification of users might be possible. Consider
+        limiting usage and or removing SPII.
+    """
+    SENSITIVITY_SCORE_LEVEL_UNSPECIFIED = 0
+    SENSITIVITY_LOW = 1
+    SENSITIVITY_UNKNOWN = 2
+    SENSITIVITY_MODERATE = 3
+    SENSITIVITY_HIGH = 4
+
+  score = _messages.EnumField('ScoreValueValuesEnum', 1)
 
 
 class ServiceAccountDelegationInfo(_messages.Message):

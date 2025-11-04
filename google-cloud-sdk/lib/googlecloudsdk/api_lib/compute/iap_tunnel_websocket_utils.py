@@ -24,6 +24,7 @@ import os
 import struct
 import sys
 
+from googlecloudsdk.api_lib.run import ssh as run_ssh
 from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -50,11 +51,36 @@ SUBPROTOCOL_TAG_RECONNECT_SUCCESS_ACK = 0x0002
 SUBPROTOCOL_TAG_DATA = 0x0004
 SUBPROTOCOL_TAG_ACK = 0x0007
 
+CloudRunArgs = collections.namedtuple(
+    'CloudRunArgs',
+    [
+        'project_number',
+        'workload_type',
+        'deployment_name',
+        'instance_id',
+        'container_id',
+    ],
+)
+
 # The proxy_info field should be either None or type httplib2.ProxyInfo
+# The cloud_run_args field should be either None or a CloudRunArgs object.
 IapTunnelTargetInfo = collections.namedtuple(
     'IapTunnelTarget',
-    ['project', 'zone', 'instance', 'interface', 'port', 'url_override',
-     'proxy_info', 'network', 'region', 'host', 'dest_group'])
+    [
+        'project',
+        'zone',
+        'instance',
+        'interface',
+        'port',
+        'url_override',
+        'proxy_info',
+        'network',
+        'region',
+        'host',
+        'dest_group',
+        'cloud_run_args',
+    ],
+)
 
 
 class CACertsFileUnavailable(exceptions.Error):
@@ -85,11 +111,38 @@ class UnsupportedProxyType(exceptions.Error):
   pass
 
 
+def _ValidateCloudRunArgs(tunnel_target):
+  """Validate the parameters for a Cloud Run connection."""
+  if not tunnel_target.port:
+    raise MissingTunnelParameter('Missing required tunnel argument: port')
+  if not tunnel_target.region:
+    raise MissingTunnelParameter('Missing required tunnel argument: region')
+  if not tunnel_target.project:
+    raise MissingTunnelParameter('Missing required tunnel argument: project')
+  if not tunnel_target.cloud_run_args.project_number:
+    raise MissingTunnelParameter(
+        'Missing required tunnel argument: project_number'
+    )
+  if (
+      not tunnel_target.cloud_run_args.workload_type
+      or tunnel_target.cloud_run_args.workload_type
+      not in [e.value for e in run_ssh.Ssh.WorkloadType]
+  ):
+    raise MissingTunnelParameter(
+        'Missing or invalid required tunnel argument: workload_type'
+    )
+  if not tunnel_target.cloud_run_args.deployment_name:
+    raise MissingTunnelParameter(
+        'Missing required tunnel argument: deployment_name'
+    )
+
+
 def ValidateParameters(tunnel_target):
   """Validate the parameters.
 
   Inspects the parameters to ensure that they are valid for either a VM
-  instance-based connection, or a host-based connection.
+  instance-based connection, a host-based connection, or to a Cloud Run
+  deployment.
 
   Args:
     tunnel_target: The argument container.
@@ -99,26 +152,37 @@ def ValidateParameters(tunnel_target):
     UnexpectedTunnelParameter: An unexpected argument was found.
     UnsupportedProxyType: A non-http proxy was specified.
   """
-  for field_name, field_value in tunnel_target._asdict().items():
-    if not field_value and field_name in ('project', 'port'):
-      raise MissingTunnelParameter('Missing required tunnel argument: ' +
-                                   field_name)
-
-  if (tunnel_target.region or tunnel_target.network or tunnel_target.host or
-      tunnel_target.dest_group):
-    for field_name, field_value in tunnel_target._asdict().items():
-      # TODO(b/196572980): Make dest_group required in beta/GA.
-      if not field_value and field_name in ('region', 'network', 'host'):
-        raise MissingTunnelParameter('Missing required tunnel argument: ' +
-                                     field_name)
-      if field_value and field_name in ('instance', 'interface', 'zone'):
-        raise UnexpectedTunnelParameter('Unexpected tunnel argument: ' +
-                                        field_name)
+  if tunnel_target.cloud_run_args:
+    _ValidateCloudRunArgs(tunnel_target)
   else:
     for field_name, field_value in tunnel_target._asdict().items():
-      if not field_value and field_name in ('zone', 'instance', 'interface'):
-        raise MissingTunnelParameter('Missing required tunnel argument: ' +
-                                     field_name)
+      if not field_value and field_name in ('project', 'port'):
+        raise MissingTunnelParameter(
+            'Missing required tunnel argument: ' + field_name
+        )
+
+    if (
+        tunnel_target.region
+        or tunnel_target.network
+        or tunnel_target.host
+        or tunnel_target.dest_group
+    ):
+      for field_name, field_value in tunnel_target._asdict().items():
+        # TODO(b/196572980): Make dest_group required in beta/GA.
+        if not field_value and field_name in ('region', 'network', 'host'):
+          raise MissingTunnelParameter(
+              'Missing required tunnel argument: ' + field_name
+          )
+        if field_value and field_name in ('instance', 'interface', 'zone'):
+          raise UnexpectedTunnelParameter(
+              'Unexpected tunnel argument: ' + field_name
+          )
+    else:
+      for field_name, field_value in tunnel_target._asdict().items():
+        if not field_value and field_name in ('zone', 'instance', 'interface'):
+          raise MissingTunnelParameter(
+              'Missing required tunnel argument: ' + field_name
+          )
 
   if tunnel_target.proxy_info:
     proxy_type = tunnel_target.proxy_info.proxy_type
@@ -163,7 +227,27 @@ def CreateWebSocketConnectUrl(tunnel_target, should_use_new_websocket):
       'port': tunnel_target.port,
       'newWebsocket': should_use_new_websocket
   }
-  if tunnel_target.host:
+  if tunnel_target.cloud_run_args:
+    url_query_pieces['project_number'] = (
+        tunnel_target.cloud_run_args.project_number
+    )
+    url_query_pieces['cr_workload_type'] = (
+        tunnel_target.cloud_run_args.workload_type
+    )
+    url_query_pieces['cr_deployment_name'] = (
+        tunnel_target.cloud_run_args.deployment_name
+    )
+    url_query_pieces['region'] = tunnel_target.region
+    if tunnel_target.cloud_run_args.instance_id:
+      url_query_pieces['cr_instance_id'] = (
+          tunnel_target.cloud_run_args.instance_id
+      )
+    if tunnel_target.cloud_run_args.container_id:
+      url_query_pieces['cr_container_id'] = (
+          tunnel_target.cloud_run_args.container_id
+      )
+
+  elif tunnel_target.host:
     url_query_pieces['region'] = tunnel_target.region
     url_query_pieces['network'] = tunnel_target.network
     url_query_pieces['host'] = tunnel_target.host
@@ -188,7 +272,7 @@ def CreateWebSocketReconnectUrl(tunnel_target, sid, ack_bytes,
       'newWebsocket': should_use_new_websocket
   }
 
-  if tunnel_target.host:
+  if tunnel_target.cloud_run_args or tunnel_target.host:
     url_query_pieces['region'] = tunnel_target.region
   else:
     url_query_pieces['zone'] = tunnel_target.zone

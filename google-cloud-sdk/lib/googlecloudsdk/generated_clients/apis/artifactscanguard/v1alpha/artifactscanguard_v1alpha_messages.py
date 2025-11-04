@@ -150,8 +150,8 @@ class ArtifactscanguardFoldersLocationsListRequest(_messages.Message):
   r"""A ArtifactscanguardFoldersLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Unless explicitly documented otherwise,
-      don't use this unsupported field which is primarily intended for
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -415,8 +415,8 @@ class ArtifactscanguardOrganizationsLocationsListRequest(_messages.Message):
   r"""A ArtifactscanguardOrganizationsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Unless explicitly documented otherwise,
-      don't use this unsupported field which is primarily intended for
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -642,8 +642,8 @@ class ArtifactscanguardProjectsLocationsListRequest(_messages.Message):
   r"""A ArtifactscanguardProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Unless explicitly documented otherwise,
-      don't use this unsupported field which is primarily intended for
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -722,7 +722,7 @@ class ArtifactscanguardProjectsLocationsOperationsListRequest(_messages.Message)
 class CVE(_messages.Message):
   r"""Nested message for CVE details specific to EvaluationResponse. The
   following fields are populated only if the verbose flag is set to true: -
-  cvss_score - affected_package.fix_package - osv_link - related_references
+  cvss_score - affected_package.fix_package - related_references
 
   Enums:
     SeverityValueValuesEnum: Output only. Severity of the CVE (e.g.,
@@ -1698,12 +1698,14 @@ class RunArtifactEvaluationRequest(_messages.Message):
       ocations/{location}/connectors/{connector_id}
     pipelineContext: Required. PipelineContext contains details about the
       source which triggered the evaluation.
+    verbose: Optional. Indicates if the evaluation should be verbose.
   """
 
   artifactEvaluationId = _messages.StringField(1)
   artifactMetadata = _messages.MessageField('ArtifactMetadata', 2)
   pipelineConnector = _messages.StringField(3)
   pipelineContext = _messages.MessageField('PipelineContext', 4)
+  verbose = _messages.BooleanField(5)
 
 
 class RunArtifactPoliciesEvaluationRequest(_messages.Message):
@@ -1783,6 +1785,8 @@ class RuntimeScope(_messages.Message):
       that are associated with the policy. Format: //container.googleapis.com/
       projects/{project_id}/locations/{location}/clusters/{cluster_id}/k8s/nam
       espaces/{namepace_pattern} where namespace_pattern is a regex.
+    overrideBinauthzPolicy: Optional. Whether to override the existing
+      BinAuthz policy for the projects in the runtime scope.
     projectIds: Required. The project ID that this policy is associated with.
       Format: projects/{project_id} The policy will be applied to all the
       clusters in the project.
@@ -1808,7 +1812,8 @@ class RuntimeScope(_messages.Message):
   enforcementAction = _messages.EnumField('EnforcementActionValueValuesEnum', 1)
   gkeClusterNamePatterns = _messages.StringField(2, repeated=True)
   gkeClusterNamespacePatterns = _messages.StringField(3, repeated=True)
-  projectIds = _messages.StringField(4, repeated=True)
+  overrideBinauthzPolicy = _messages.BooleanField(4)
+  projectIds = _messages.StringField(5, repeated=True)
 
 
 class ScanMetadata(_messages.Message):

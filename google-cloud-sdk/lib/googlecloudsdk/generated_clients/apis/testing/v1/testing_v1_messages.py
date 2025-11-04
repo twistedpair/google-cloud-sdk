@@ -2120,8 +2120,8 @@ class TestSetup(_messages.Message):
     account: The device will be logged in on this account for the duration of
       the test.
     additionalApks: APKs to install in addition to those being directly
-      tested. These will be installed after the app under test. Currently
-      capped at 100.
+      tested. These will be installed after the app under test. Limited to a
+      combined total of 100 initial setup and additional files.
     directoriesToPull: List of directories on the device to upload to GCS at
       the end of the test; they must be absolute paths under /sdcard, /storage
       or /data/local/tmp. Path names are restricted to characters a-z A-Z 0-9
@@ -2135,7 +2135,8 @@ class TestSetup(_messages.Message):
       applicable for instrumentation tests).
     filesToPush: List of files to push to the device before starting the test.
     initialSetupApks: Optional. Initial setup APKs to install before the app
-      under test is installed. Currently capped at 100.
+      under test is installed. Limited to a combined total of 100 initial
+      setup and additional files.
     networkProfile: The network traffic profile used for running the test.
       Available network profiles can be queried by using the
       NETWORK_CONFIGURATION environment type when calling

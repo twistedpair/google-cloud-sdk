@@ -83,7 +83,7 @@ class GeminicloudassistV1alpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single revision of an Investigation. Fails if the revision is the investigation's active revision.
+      r"""Deletes a single revision of an Investigation. Fails if the revision is the investigation's most recent revision.
 
       Args:
         request: (GeminicloudassistProjectsLocationsInvestigationsRevisionsDeleteRequest) input message
@@ -137,7 +137,7 @@ class GeminicloudassistV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Investigations in a given project and location.
+      r"""Lists Investigations in a given project.
 
       Args:
         request: (GeminicloudassistProjectsLocationsInvestigationsRevisionsListRequest) input message
@@ -228,7 +228,7 @@ class GeminicloudassistV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Investigation in a given project and location.
+      r"""Creates a new Investigation in a given project.
 
       Args:
         request: (GeminicloudassistProjectsLocationsInvestigationsCreateRequest) input message
@@ -553,7 +553,7 @@ class GeminicloudassistV1alpha(base_api.BaseApiClient):
         method_id='geminicloudassist.projects.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1alpha/{+name}/operations',
         request_field='',
         request_type_name='GeminicloudassistProjectsLocationsOperationsListRequest',

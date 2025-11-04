@@ -90,7 +90,7 @@ class CloudkmsV1(base_api.BaseApiClient):
     )
 
     def GetKajPolicyConfig(self, request, global_params=None):
-      r"""Gets the KeyAccessJustificationsPolicyConfig for a given organization/folder/projects.
+      r"""Gets the KeyAccessJustificationsPolicyConfig for a given organization, folder, or project.
 
       Args:
         request: (CloudkmsFoldersGetKajPolicyConfigRequest) input message
@@ -144,7 +144,7 @@ class CloudkmsV1(base_api.BaseApiClient):
     )
 
     def UpdateKajPolicyConfig(self, request, global_params=None):
-      r"""Updates the KeyAccessJustificationsPolicyConfig for a given organization/folder/projects.
+      r"""Updates the KeyAccessJustificationsPolicyConfig for a given organization, folder, or project.
 
       Args:
         request: (CloudkmsFoldersUpdateKajPolicyConfigRequest) input message
@@ -181,7 +181,7 @@ class CloudkmsV1(base_api.BaseApiClient):
           }
 
     def GetKajPolicyConfig(self, request, global_params=None):
-      r"""Gets the KeyAccessJustificationsPolicyConfig for a given organization/folder/projects.
+      r"""Gets the KeyAccessJustificationsPolicyConfig for a given organization, folder, or project.
 
       Args:
         request: (CloudkmsOrganizationsGetKajPolicyConfigRequest) input message
@@ -208,7 +208,7 @@ class CloudkmsV1(base_api.BaseApiClient):
     )
 
     def UpdateKajPolicyConfig(self, request, global_params=None):
-      r"""Updates the KeyAccessJustificationsPolicyConfig for a given organization/folder/projects.
+      r"""Updates the KeyAccessJustificationsPolicyConfig for a given organization, folder, or project.
 
       Args:
         request: (CloudkmsOrganizationsUpdateKajPolicyConfigRequest) input message
@@ -1874,7 +1874,7 @@ class CloudkmsV1(base_api.BaseApiClient):
           }
 
     def GetKajPolicyConfig(self, request, global_params=None):
-      r"""Gets the KeyAccessJustificationsPolicyConfig for a given organization/folder/projects.
+      r"""Gets the KeyAccessJustificationsPolicyConfig for a given organization, folder, or project.
 
       Args:
         request: (CloudkmsProjectsGetKajPolicyConfigRequest) input message
@@ -1982,7 +1982,7 @@ class CloudkmsV1(base_api.BaseApiClient):
     )
 
     def UpdateKajPolicyConfig(self, request, global_params=None):
-      r"""Updates the KeyAccessJustificationsPolicyConfig for a given organization/folder/projects.
+      r"""Updates the KeyAccessJustificationsPolicyConfig for a given organization, folder, or project.
 
       Args:
         request: (CloudkmsProjectsUpdateKajPolicyConfigRequest) input message

@@ -1937,8 +1937,12 @@ class CryptoKeyVersion(_messages.Message):
       ML_KEM_1024: ML-KEM-1024 (FIPS 203)
       KEM_XWING: X-Wing hybrid KEM combining ML-KEM-768 with X25519 following
         datatracker.ietf.org/doc/draft-connolly-cfrg-xwing-kem/.
+      PQ_SIGN_ML_DSA_44: The post-quantum Module-Lattice-Based Digital
+        Signature Algorithm, at security level 1. Randomized version.
       PQ_SIGN_ML_DSA_65: The post-quantum Module-Lattice-Based Digital
         Signature Algorithm, at security level 3. Randomized version.
+      PQ_SIGN_ML_DSA_87: The post-quantum Module-Lattice-Based Digital
+        Signature Algorithm, at security level 5. Randomized version.
       PQ_SIGN_SLH_DSA_SHA2_128S: The post-quantum stateless hash-based digital
         signature algorithm, at security level 1. Randomized version.
       PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256: The post-quantum stateless hash-
@@ -1984,9 +1988,11 @@ class CryptoKeyVersion(_messages.Message):
     ML_KEM_768 = 36
     ML_KEM_1024 = 37
     KEM_XWING = 38
-    PQ_SIGN_ML_DSA_65 = 39
-    PQ_SIGN_SLH_DSA_SHA2_128S = 40
-    PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 41
+    PQ_SIGN_ML_DSA_44 = 39
+    PQ_SIGN_ML_DSA_65 = 40
+    PQ_SIGN_ML_DSA_87 = 41
+    PQ_SIGN_SLH_DSA_SHA2_128S = 42
+    PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 43
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""Output only. The ProtectionLevel describing how crypto operations are
@@ -2167,8 +2173,12 @@ class CryptoKeyVersionTemplate(_messages.Message):
       ML_KEM_1024: ML-KEM-1024 (FIPS 203)
       KEM_XWING: X-Wing hybrid KEM combining ML-KEM-768 with X25519 following
         datatracker.ietf.org/doc/draft-connolly-cfrg-xwing-kem/.
+      PQ_SIGN_ML_DSA_44: The post-quantum Module-Lattice-Based Digital
+        Signature Algorithm, at security level 1. Randomized version.
       PQ_SIGN_ML_DSA_65: The post-quantum Module-Lattice-Based Digital
         Signature Algorithm, at security level 3. Randomized version.
+      PQ_SIGN_ML_DSA_87: The post-quantum Module-Lattice-Based Digital
+        Signature Algorithm, at security level 5. Randomized version.
       PQ_SIGN_SLH_DSA_SHA2_128S: The post-quantum stateless hash-based digital
         signature algorithm, at security level 1. Randomized version.
       PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256: The post-quantum stateless hash-
@@ -2214,9 +2224,11 @@ class CryptoKeyVersionTemplate(_messages.Message):
     ML_KEM_768 = 36
     ML_KEM_1024 = 37
     KEM_XWING = 38
-    PQ_SIGN_ML_DSA_65 = 39
-    PQ_SIGN_SLH_DSA_SHA2_128S = 40
-    PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 41
+    PQ_SIGN_ML_DSA_44 = 39
+    PQ_SIGN_ML_DSA_65 = 40
+    PQ_SIGN_ML_DSA_87 = 41
+    PQ_SIGN_SLH_DSA_SHA2_128S = 42
+    PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 43
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""ProtectionLevel to use when creating a CryptoKeyVersion based on this
@@ -2858,8 +2870,12 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
       ML_KEM_1024: ML-KEM-1024 (FIPS 203)
       KEM_XWING: X-Wing hybrid KEM combining ML-KEM-768 with X25519 following
         datatracker.ietf.org/doc/draft-connolly-cfrg-xwing-kem/.
+      PQ_SIGN_ML_DSA_44: The post-quantum Module-Lattice-Based Digital
+        Signature Algorithm, at security level 1. Randomized version.
       PQ_SIGN_ML_DSA_65: The post-quantum Module-Lattice-Based Digital
         Signature Algorithm, at security level 3. Randomized version.
+      PQ_SIGN_ML_DSA_87: The post-quantum Module-Lattice-Based Digital
+        Signature Algorithm, at security level 5. Randomized version.
       PQ_SIGN_SLH_DSA_SHA2_128S: The post-quantum stateless hash-based digital
         signature algorithm, at security level 1. Randomized version.
       PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256: The post-quantum stateless hash-
@@ -2905,9 +2921,11 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
     ML_KEM_768 = 36
     ML_KEM_1024 = 37
     KEM_XWING = 38
-    PQ_SIGN_ML_DSA_65 = 39
-    PQ_SIGN_SLH_DSA_SHA2_128S = 40
-    PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 41
+    PQ_SIGN_ML_DSA_44 = 39
+    PQ_SIGN_ML_DSA_65 = 40
+    PQ_SIGN_ML_DSA_87 = 41
+    PQ_SIGN_SLH_DSA_SHA2_128S = 42
+    PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 43
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   cryptoKeyVersion = _messages.StringField(2)
@@ -3928,8 +3946,12 @@ class PublicKey(_messages.Message):
       ML_KEM_1024: ML-KEM-1024 (FIPS 203)
       KEM_XWING: X-Wing hybrid KEM combining ML-KEM-768 with X25519 following
         datatracker.ietf.org/doc/draft-connolly-cfrg-xwing-kem/.
+      PQ_SIGN_ML_DSA_44: The post-quantum Module-Lattice-Based Digital
+        Signature Algorithm, at security level 1. Randomized version.
       PQ_SIGN_ML_DSA_65: The post-quantum Module-Lattice-Based Digital
         Signature Algorithm, at security level 3. Randomized version.
+      PQ_SIGN_ML_DSA_87: The post-quantum Module-Lattice-Based Digital
+        Signature Algorithm, at security level 5. Randomized version.
       PQ_SIGN_SLH_DSA_SHA2_128S: The post-quantum stateless hash-based digital
         signature algorithm, at security level 1. Randomized version.
       PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256: The post-quantum stateless hash-
@@ -3975,9 +3997,11 @@ class PublicKey(_messages.Message):
     ML_KEM_768 = 36
     ML_KEM_1024 = 37
     KEM_XWING = 38
-    PQ_SIGN_ML_DSA_65 = 39
-    PQ_SIGN_SLH_DSA_SHA2_128S = 40
-    PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 41
+    PQ_SIGN_ML_DSA_44 = 39
+    PQ_SIGN_ML_DSA_65 = 40
+    PQ_SIGN_ML_DSA_87 = 41
+    PQ_SIGN_SLH_DSA_SHA2_128S = 42
+    PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 43
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""The ProtectionLevel of the CryptoKeyVersion public key.

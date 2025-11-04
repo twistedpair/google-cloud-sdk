@@ -1236,6 +1236,12 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
       NETWORK_PROXY_UPLOAD_NETWORK_ACTIVITY_LOG_ERROR: The bot failed to
         upload the network activity log.
       NPROC_EXCEEDED: Failed to start a process because NPROC is too low.
+      BUILDGRAPH_START_ERROR: An error occurred during the start of tetragon
+        container.
+      BUILDGRAPH_GENERATION_ERROR: An error occurred during the generation of
+        the buildgraph.
+      BUILDGRAPH_UPLOAD_ERROR: An error occurred while uploading the generated
+        buildgraph. Next tag to use: 62.
     """
     OK = 0
     INVALID_ARGUMENT = 1
@@ -1296,6 +1302,9 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
     NETWORK_PROXY_GET_NETWORK_ACTIVITY_LOG_ERROR = 56
     NETWORK_PROXY_UPLOAD_NETWORK_ACTIVITY_LOG_ERROR = 57
     NPROC_EXCEEDED = 58
+    BUILDGRAPH_START_ERROR = 59
+    BUILDGRAPH_GENERATION_ERROR = 60
+    BUILDGRAPH_UPLOAD_ERROR = 61
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)
@@ -1608,13 +1617,13 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateKokoroInstanceRequest(
         to RESTRICTIONS_DISABLED.
       RESTRICTIONS_DISABLED: TCA restrictions are disabled for the instance.
       RESTRICTIONS_ENABLED_V1: V1 version of TCA restrictions are enabled for
-        the instance. These include: 1. ActionHermeticity to be BEST_EFFORT or
-        ENFORCED and ActionIsolation to be ENFORCED. 2. ImmutableMetaPolicy to
-        be true. 3. AdminOpsRestrictions to be RESTRICTED. 4. Using Shielded,
-        Confidential and Software Trusted VMs as RBE workers, which use custom
-        RBE TCA COS VM images and go through TPM attestation verification for
-        various boot parameters. 5. Inputs and outputs of the actions on these
-        VMs requires TPM attestation verification.
+        the instance. These include: 1. ActionIsolation to be ENFORCED. 2.
+        ImmutableMetaPolicy to be true. 3. AdminOpsRestrictions to be
+        RESTRICTED. 4. Using Shielded, Confidential and Software Trusted VMs
+        as RBE workers, which use custom RBE TCA COS VM images and go through
+        TPM attestation verification for various boot parameters. 5. Inputs
+        and outputs of the actions on these VMs requires TPM attestation
+        verification.
     """
     RESTRICTIONS_UNSPECIFIED = 0
     RESTRICTIONS_DISABLED = 1
@@ -1689,13 +1698,13 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateTbiInstanceRequest(_me
         to RESTRICTIONS_DISABLED.
       RESTRICTIONS_DISABLED: TCA restrictions are disabled for the instance.
       RESTRICTIONS_ENABLED_V1: V1 version of TCA restrictions are enabled for
-        the instance. These include: 1. ActionHermeticity to be BEST_EFFORT or
-        ENFORCED and ActionIsolation to be ENFORCED. 2. ImmutableMetaPolicy to
-        be true. 3. AdminOpsRestrictions to be RESTRICTED. 4. Using Shielded,
-        Confidential and Software Trusted VMs as RBE workers, which use custom
-        RBE TCA COS VM images and go through TPM attestation verification for
-        various boot parameters. 5. Inputs and outputs of the actions on these
-        VMs requires TPM attestation verification.
+        the instance. These include: 1. ActionIsolation to be ENFORCED. 2.
+        ImmutableMetaPolicy to be true. 3. AdminOpsRestrictions to be
+        RESTRICTED. 4. Using Shielded, Confidential and Software Trusted VMs
+        as RBE workers, which use custom RBE TCA COS VM images and go through
+        TPM attestation verification for various boot parameters. 5. Inputs
+        and outputs of the actions on these VMs requires TPM attestation
+        verification.
     """
     RESTRICTIONS_UNSPECIFIED = 0
     RESTRICTIONS_DISABLED = 1

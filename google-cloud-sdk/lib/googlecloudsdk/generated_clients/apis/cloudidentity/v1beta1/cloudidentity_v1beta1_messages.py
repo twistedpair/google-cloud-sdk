@@ -858,6 +858,10 @@ class CloudidentityDevicesDeviceUsersLookupRequest(_messages.Message):
     androidId: Android Id returned by [Settings.Secure#ANDROID_ID](https://dev
       eloper.android.com/reference/android/provider/Settings.Secure.html#ANDRO
       ID_ID).
+    iosDeviceId: Optional. The partner-specified device identifier assigned to
+      the iOS device that initiated the Lookup API call. This string must
+      match the value of the iosDeviceId key in the app config dictionary
+      provided to Google Workspace apps.
     pageSize: The maximum number of DeviceUsers to return. If unspecified, at
       most 20 DeviceUsers will be returned. The maximum value is 20; values
       above 20 will be coerced to 20.
@@ -867,6 +871,9 @@ class CloudidentityDevicesDeviceUsersLookupRequest(_messages.Message):
       that provided the page token.
     parent: Must be set to "devices/-/deviceUsers" to search across all
       DeviceUser belonging to the user.
+    partner: Optional. The partner ID of the calling iOS app. This string must
+      match the value of the partner key within the app configuration
+      dictionary provided to Google Workspace apps.
     rawResourceId: Raw Resource Id used by Google Endpoint Verification. If
       the user is enrolled into Google Endpoint Verification, this id will be
       saved as the 'device_resource_id' field in the following platform
@@ -880,11 +887,13 @@ class CloudidentityDevicesDeviceUsersLookupRequest(_messages.Message):
   """
 
   androidId = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
-  rawResourceId = _messages.StringField(5)
-  userId = _messages.StringField(6)
+  iosDeviceId = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  partner = _messages.StringField(6)
+  rawResourceId = _messages.StringField(7)
+  userId = _messages.StringField(8)
 
 
 class CloudidentityDevicesDeviceUsersWipeRequest(_messages.Message):
@@ -1807,6 +1816,17 @@ class CloudidentityOrgUnitsMembershipsMoveRequest(_messages.Message):
 
   moveOrgMembershipRequest = _messages.MessageField('MoveOrgMembershipRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class CloudidentityPoliciesDeleteRequest(_messages.Message):
+  r"""A CloudidentityPoliciesDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the policy to retrieve. Format:
+      "policies/{policy}".
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class CloudidentityPoliciesGetRequest(_messages.Message):

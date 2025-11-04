@@ -1597,6 +1597,8 @@ class TransferConfig(_messages.Message):
   account.
 
   Enums:
+    ManagedTableTypeValueValuesEnum: The classification of the destination
+      table.
     StateValueValuesEnum: Output only. State of the most recently updated
       transfer run.
 
@@ -1633,6 +1635,7 @@ class TransferConfig(_messages.Message):
       it is absent.
     error: Output only. Error code with detailed information about reason of
       the latest config failure.
+    managedTableType: The classification of the destination table.
     name: Identifier. The resource name of the transfer config. Transfer
       config names have the form either
       `projects/{project_id}/locations/{region}/transferConfigs/{config_id}`
@@ -1673,6 +1676,21 @@ class TransferConfig(_messages.Message):
     userId: Deprecated. Unique ID of the user on whose behalf transfer is
       done.
   """
+
+  class ManagedTableTypeValueValuesEnum(_messages.Enum):
+    r"""The classification of the destination table.
+
+    Values:
+      MANAGED_TABLE_TYPE_UNSPECIFIED: Type unspecified. This defaults to
+        `NATIVE` table.
+      NATIVE: The managed table is a native BigQuery table. This is the
+        default value.
+      BIGLAKE: The managed table is a BigQuery table for Apache Iceberg
+        (formerly BigLake managed tables), with a BigLake configuration.
+    """
+    MANAGED_TABLE_TYPE_UNSPECIFIED = 0
+    NATIVE = 1
+    BIGLAKE = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of the most recently updated transfer run.
@@ -1729,17 +1747,18 @@ class TransferConfig(_messages.Message):
   emailPreferences = _messages.MessageField('EmailPreferences', 7)
   encryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 8)
   error = _messages.MessageField('Status', 9)
-  name = _messages.StringField(10)
-  nextRunTime = _messages.StringField(11)
-  notificationPubsubTopic = _messages.StringField(12)
-  ownerInfo = _messages.MessageField('UserInfo', 13)
-  params = _messages.MessageField('ParamsValue', 14)
-  schedule = _messages.StringField(15)
-  scheduleOptions = _messages.MessageField('ScheduleOptions', 16)
-  scheduleOptionsV2 = _messages.MessageField('ScheduleOptionsV2', 17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  updateTime = _messages.StringField(19)
-  userId = _messages.IntegerField(20)
+  managedTableType = _messages.EnumField('ManagedTableTypeValueValuesEnum', 10)
+  name = _messages.StringField(11)
+  nextRunTime = _messages.StringField(12)
+  notificationPubsubTopic = _messages.StringField(13)
+  ownerInfo = _messages.MessageField('UserInfo', 14)
+  params = _messages.MessageField('ParamsValue', 15)
+  schedule = _messages.StringField(16)
+  scheduleOptions = _messages.MessageField('ScheduleOptions', 17)
+  scheduleOptionsV2 = _messages.MessageField('ScheduleOptionsV2', 18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  updateTime = _messages.StringField(20)
+  userId = _messages.IntegerField(21)
 
 
 class TransferMessage(_messages.Message):

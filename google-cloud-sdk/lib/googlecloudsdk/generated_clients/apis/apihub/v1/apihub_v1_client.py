@@ -99,7 +99,7 @@ class ApihubV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the API hub instance.
+      r"""Deletes the API hub instance. Deleting the API hub instance will also result in the removal of all associated runtime project attachments and the host project registration.
 
       Args:
         request: (ApihubProjectsLocationsApiHubInstancesDeleteRequest) input message
@@ -335,7 +335,7 @@ class ApihubV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Update an operation in an API version. The following fields in the ApiOperation resource can be updated: * details.description * details.documentation * details.http_operation.path * details.http_operation.method * details.deprecated * attributes The update_mask should be used to specify the fields being updated. An operation can be updated only if the operation was created via CreateApiOperation API. If the operation was created by parsing the spec, then it can be edited by updating the spec.
+      r"""Update an operation in an API version. The following fields in the ApiOperation resource can be updated: * details.description * details.documentation * details.http_operation.path * details.http_operation.method * details.deprecated * attributes * details.mcp_tool.title * details.mcp_tool.description * details.input_schema * details.output_schema * details.mcp_tool.annotations.title * details.mcp_tool.annotations.read_only_hint * details.mcp_tool.annotations.destructive_hint * details.mcp_tool.annotations.idempotent_hint * details.mcp_tool.annotations.open_world_hint * details.mcp_tool.annotations.additional_hints The update_mask should be used to specify the fields being updated. An operation can be updated only if the operation was created via CreateApiOperation API. If the operation was created by parsing the spec, then it can be edited by updating the spec.
 
       Args:
         request: (ApihubProjectsLocationsApisVersionsOperationsPatchRequest) input message
@@ -824,7 +824,7 @@ class ApihubV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Update an API resource in the API hub. The following fields in the API can be updated: * display_name * description * owner * documentation * target_user * team * business_unit * maturity_level * api_style * attributes The update_mask should be used to specify the fields being updated. Updating the owner field requires complete owner message and updates both owner and email fields.
+      r"""Update an API resource in the API hub. The following fields in the API can be updated: * display_name * description * owner * documentation * target_user * team * business_unit * maturity_level * api_style * attributes * fingerprint The update_mask should be used to specify the fields being updated. Updating the owner field requires complete owner message and updates both owner and email fields.
 
       Args:
         request: (ApihubProjectsLocationsApisPatchRequest) input message
@@ -1904,7 +1904,7 @@ class ApihubV1(base_api.BaseApiClient):
         method_id='apihub.projects.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1/{+name}/operations',
         request_field='',
         request_type_name='ApihubProjectsLocationsOperationsListRequest',
@@ -2108,6 +2108,33 @@ class ApihubV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApihubProjectsLocationsPluginsInstancesListRequest',
         response_type_name='GoogleCloudApihubV1ListPluginInstancesResponse',
+        supports_download=False,
+    )
+
+    def ManageSourceData(self, request, global_params=None):
+      r"""Manages data for a given plugin instance.
+
+      Args:
+        request: (ApihubProjectsLocationsPluginsInstancesManageSourceDataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApihubV1ManagePluginInstanceSourceDataResponse) The response message.
+      """
+      config = self.GetMethodConfig('ManageSourceData')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ManageSourceData.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/plugins/{pluginsId}/instances/{instancesId}:manageSourceData',
+        http_method='POST',
+        method_id='apihub.projects.locations.plugins.instances.manageSourceData',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:manageSourceData',
+        request_field='googleCloudApihubV1ManagePluginInstanceSourceDataRequest',
+        request_type_name='ApihubProjectsLocationsPluginsInstancesManageSourceDataRequest',
+        response_type_name='GoogleCloudApihubV1ManagePluginInstanceSourceDataResponse',
         supports_download=False,
     )
 

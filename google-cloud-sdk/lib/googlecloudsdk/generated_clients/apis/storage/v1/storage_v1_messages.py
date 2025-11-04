@@ -953,11 +953,14 @@ class Buckets(_messages.Message):
     nextPageToken: The continuation token, used to page through large result
       sets. Provide this value in a subsequent request to return the next page
       of results.
+    unreachable: The list of bucket resource names that could not be reached
+      during the listing operation.
   """
 
   items = _messages.MessageField('Bucket', 1, repeated=True)
   kind = _messages.StringField(2, default='storage#buckets')
   nextPageToken = _messages.StringField(3)
+  unreachable = _messages.StringField(4, repeated=True)
 
 
 class BulkRestoreObjectsRequest(_messages.Message):
@@ -2488,6 +2491,8 @@ class StorageBucketsListRequest(_messages.Message):
     prefix: Filter results to buckets whose names begin with this prefix.
     project: A valid API project identifier.
     projection: Set of properties to return. Defaults to noAcl.
+    returnPartialSuccess: If true, return a list of bucket resource names for
+      buckets that are in unreachable locations.
     softDeleted: If true, only soft-deleted bucket versions will be returned.
       The default is false. For more information, see [Soft
       Delete](https://cloud.google.com/storage/docs/soft-delete).
@@ -2509,8 +2514,9 @@ class StorageBucketsListRequest(_messages.Message):
   prefix = _messages.StringField(3)
   project = _messages.StringField(4, required=True)
   projection = _messages.EnumField('ProjectionValueValuesEnum', 5)
-  softDeleted = _messages.BooleanField(6)
-  userProject = _messages.StringField(7)
+  returnPartialSuccess = _messages.BooleanField(6)
+  softDeleted = _messages.BooleanField(7)
+  userProject = _messages.StringField(8)
 
 
 class StorageBucketsLockRetentionPolicyRequest(_messages.Message):

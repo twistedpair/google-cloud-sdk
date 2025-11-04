@@ -471,7 +471,7 @@ class CloudidentityV1(base_api.BaseApiClient):
     )
 
     def Lookup(self, request, global_params=None):
-      r"""Looks up resource names of the DeviceUsers associated with the caller's credentials, as well as the properties provided in the request. This method must be called with end-user credentials with the scope: https://www.googleapis.com/auth/cloud-identity.devices.lookup If multiple properties are provided, only DeviceUsers having all of these properties are considered as matches - i.e. the query behaves like an AND. Different platforms require different amounts of information from the caller to ensure that the DeviceUser is uniquely identified. - iOS: No properties need to be passed, the caller's credentials are sufficient to identify the corresponding DeviceUser. - Android: Specifying the 'android_id' field is required. - Desktop: Specifying the 'raw_resource_id' field is required.
+      r"""Looks up resource names of the DeviceUsers associated with the caller's credentials, as well as the properties provided in the request. This method must be called with end-user credentials with the scope: https://www.googleapis.com/auth/cloud-identity.devices.lookup If multiple properties are provided, only DeviceUsers having all of these properties are considered as matches - i.e. the query behaves like an AND. Different platforms require different amounts of information from the caller to ensure that the DeviceUser is uniquely identified. - iOS: Specifying the 'partner' and 'ios_device_id' fields is required. - Android: Specifying the 'android_id' field is required. - Desktop: Specifying the 'raw_resource_id' field is required.
 
       Args:
         request: (CloudidentityDevicesDeviceUsersLookupRequest) input message
@@ -489,7 +489,7 @@ class CloudidentityV1(base_api.BaseApiClient):
         method_id='cloudidentity.devices.deviceUsers.lookup',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['androidId', 'pageSize', 'pageToken', 'rawResourceId', 'userId'],
+        query_params=['androidId', 'iosDeviceId', 'pageSize', 'pageToken', 'partner', 'rawResourceId', 'userId'],
         relative_path='v1/{+parent}:lookup',
         request_field='',
         request_type_name='CloudidentityDevicesDeviceUsersLookupRequest',
@@ -1808,7 +1808,7 @@ class CloudidentityV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Get a Policy.
+      r"""Get a policy.
 
       Args:
         request: (CloudidentityPoliciesGetRequest) input message
@@ -1835,7 +1835,7 @@ class CloudidentityV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List Policies.
+      r"""List policies.
 
       Args:
         request: (CloudidentityPoliciesListRequest) input message

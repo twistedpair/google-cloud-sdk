@@ -2489,10 +2489,15 @@ class GoogleLongrunningListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('GoogleLongrunningOperation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class GoogleLongrunningOperation(_messages.Message):
@@ -3564,10 +3569,12 @@ class ResourceRequirements(_messages.Message):
 
   Messages:
     LimitsValue: Limits describes the maximum amount of compute resources
-      allowed. Only 'cpu' and 'memory' keys are supported. * For supported
-      'cpu' values, go to https://cloud.google.com/run/docs/configuring/cpu. *
-      For supported 'memory' values and syntax, go to
-      https://cloud.google.com/run/docs/configuring/memory-limits
+      allowed. Only 'cpu', 'memory' and 'nvidia.com/gpu' keys are supported. *
+      For supported 'cpu' values, go to
+      https://cloud.google.com/run/docs/configuring/cpu. * For supported
+      'memory' values and syntax, go to
+      https://cloud.google.com/run/docs/configuring/memory-limits. * The only
+      supported 'nvidia.com/gpu' value is '1'.
     RequestsValue: Requests describes the minimum amount of compute resources
       required. Only `cpu` and `memory` are supported. If Requests is omitted
       for a container, it defaults to Limits if that is explicitly specified,
@@ -3578,10 +3585,12 @@ class ResourceRequirements(_messages.Message):
 
   Fields:
     limits: Limits describes the maximum amount of compute resources allowed.
-      Only 'cpu' and 'memory' keys are supported. * For supported 'cpu'
-      values, go to https://cloud.google.com/run/docs/configuring/cpu. * For
-      supported 'memory' values and syntax, go to
-      https://cloud.google.com/run/docs/configuring/memory-limits
+      Only 'cpu', 'memory' and 'nvidia.com/gpu' keys are supported. * For
+      supported 'cpu' values, go to
+      https://cloud.google.com/run/docs/configuring/cpu. * For supported
+      'memory' values and syntax, go to
+      https://cloud.google.com/run/docs/configuring/memory-limits. * The only
+      supported 'nvidia.com/gpu' value is '1'.
     requests: Requests describes the minimum amount of compute resources
       required. Only `cpu` and `memory` are supported. If Requests is omitted
       for a container, it defaults to Limits if that is explicitly specified,
@@ -3594,10 +3603,11 @@ class ResourceRequirements(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LimitsValue(_messages.Message):
     r"""Limits describes the maximum amount of compute resources allowed. Only
-    'cpu' and 'memory' keys are supported. * For supported 'cpu' values, go to
-    https://cloud.google.com/run/docs/configuring/cpu. * For supported
-    'memory' values and syntax, go to
-    https://cloud.google.com/run/docs/configuring/memory-limits
+    'cpu', 'memory' and 'nvidia.com/gpu' keys are supported. * For supported
+    'cpu' values, go to https://cloud.google.com/run/docs/configuring/cpu. *
+    For supported 'memory' values and syntax, go to
+    https://cloud.google.com/run/docs/configuring/memory-limits. * The only
+    supported 'nvidia.com/gpu' value is '1'.
 
     Messages:
       AdditionalProperty: An additional property for a LimitsValue object.
@@ -4156,9 +4166,9 @@ class RunNamespacesJobsGetRequest(_messages.Message):
   r"""A RunNamespacesJobsGetRequest object.
 
   Fields:
-    name: Required. The name of the job to retrieve. Replace {namespace} with
-      the project ID or number. It takes the form namespaces/{namespace}. For
-      example: namespaces/PROJECT_ID
+    name: Required. The name of the job to retrieve. It takes the form
+      namespaces/{namespace}/jobs/{job_name} and the `endpoint` must be
+      regional. Replace {namespace} with the project ID or number.
   """
 
   name = _messages.StringField(1, required=True)
@@ -4855,12 +4865,20 @@ class RunProjectsLocationsOperationsListRequest(_messages.Message):
       0, the default page size is 100. .
     pageToken: Token identifying which result to start with, which is returned
       by a previous list call.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class RunProjectsLocationsOperationsWaitRequest(_messages.Message):

@@ -2706,12 +2706,20 @@ class DataprocProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to true, operations that are reachable are
+      returned as normal, and those that are unreachable are returned in the
+      ListOperationsResponse.unreachable field.This can only be true when
+      reading across collections e.g. when parent is set to
+      "projects/example/locations/-".This field is not by default supported
+      and will result in an UNIMPLEMENTED error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class DataprocProjectsLocationsSessionTemplatesCreateRequest(_messages.Message):
@@ -4552,12 +4560,20 @@ class DataprocProjectsRegionsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to true, operations that are reachable are
+      returned as normal, and those that are unreachable are returned in the
+      ListOperationsResponse.unreachable field.This can only be true when
+      reading across collections e.g. when parent is set to
+      "projects/example/locations/-".This field is not by default supported
+      and will result in an UNIMPLEMENTED error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class DataprocProjectsRegionsOperationsSetIamPolicyRequest(_messages.Message):
@@ -5494,7 +5510,7 @@ class GceClusterConfig(_messages.Message):
     ResourceManagerTagsValue: Optional. Resource manager tags
       (https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-
       managing) to add to all instances (see Use secure tags in Dataproc
-      (https://cloud.google.com/dataproc/docs/guides/attach-secure-tags)).
+      (https://cloud.google.com/dataproc/docs/guides/use-secure-tags)).
 
   Fields:
     autoZoneExcludeZoneUris: Optional. An optional list of Compute Engine
@@ -5540,7 +5556,7 @@ class GceClusterConfig(_messages.Message):
     resourceManagerTags: Optional. Resource manager tags
       (https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-
       managing) to add to all instances (see Use secure tags in Dataproc
-      (https://cloud.google.com/dataproc/docs/guides/attach-secure-tags)).
+      (https://cloud.google.com/dataproc/docs/guides/use-secure-tags)).
     serviceAccount: Optional. The Dataproc service account
       (https://cloud.google.com/dataproc/docs/concepts/configuring-
       clusters/service-accounts#service_accounts_in_dataproc) (also see VM
@@ -5632,7 +5648,7 @@ class GceClusterConfig(_messages.Message):
     r"""Optional. Resource manager tags (https://cloud.google.com/resource-
     manager/docs/tags/tags-creating-and-managing) to add to all instances (see
     Use secure tags in Dataproc
-    (https://cloud.google.com/dataproc/docs/guides/attach-secure-tags)).
+    (https://cloud.google.com/dataproc/docs/guides/use-secure-tags)).
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -7236,10 +7252,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets ListOperationsRequest.return_partial_success and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListSessionTemplatesResponse(_messages.Message):
@@ -8566,7 +8587,9 @@ class PySparkJob(_messages.Message):
   Fields:
     archiveUris: Optional. HCFS URIs of archives to be extracted into the
       working directory of each executor. Supported file types: .jar, .tar,
-      .tar.gz, .tgz, and .zip.
+      .tar.gz, .tgz, and .zip.Note: Spark applications must be deployed in
+      cluster mode (https://spark.apache.org/docs/latest/cluster-
+      overview.html) for correct environment propagation.
     args: Optional. The arguments to pass to the driver. Do not include
       arguments, such as --conf, that can be set as job properties, since a
       collision may occur that causes an incorrect job submission.
@@ -12432,9 +12455,9 @@ class UsageMetrics(_messages.Message):
   workload.
 
   Fields:
-    acceleratorType: Optional. Accelerator type being used, if any
-    milliAcceleratorSeconds: Optional. Accelerator usage in (milliAccelerator
-      x seconds) (see Dataproc Serverless pricing
+    acceleratorType: Optional. DEPRECATED Accelerator type being used, if any
+    milliAcceleratorSeconds: Optional. DEPRECATED Accelerator usage in
+      (milliAccelerator x seconds) (see Dataproc Serverless pricing
       (https://cloud.google.com/dataproc-serverless/pricing)).
     milliDcuSeconds: Optional. DCU (Dataproc Compute Units) usage in (milliDCU
       x seconds) (see Dataproc Serverless pricing
@@ -12840,6 +12863,8 @@ class YarnApplication(_messages.Message):
     StateValueValuesEnum: Required. The application state.
 
   Fields:
+    memoryMbSeconds: Optional. The cumulative memory usage of the application
+      for a job, measured in mb-seconds.
     name: Required. The application name.
     progress: Required. The numerical progress of the application, from 1 to
       100.
@@ -12848,6 +12873,8 @@ class YarnApplication(_messages.Message):
       HistoryServer, or TimelineServer that provides application-specific
       information. The URL uses the internal hostname, and requires a proxy
       server for resolution and, possibly, access.
+    vcoreSeconds: Optional. The cumulative CPU time consumed by the
+      application for a job, measured in vcore-seconds.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -12874,10 +12901,12 @@ class YarnApplication(_messages.Message):
     FAILED = 7
     KILLED = 8
 
-  name = _messages.StringField(1)
-  progress = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
-  trackingUrl = _messages.StringField(4)
+  memoryMbSeconds = _messages.IntegerField(1)
+  name = _messages.StringField(2)
+  progress = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  trackingUrl = _messages.StringField(5)
+  vcoreSeconds = _messages.IntegerField(6)
 
 
 class YarnDriverRunner(_messages.Message):

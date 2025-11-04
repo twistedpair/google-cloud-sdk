@@ -487,6 +487,7 @@ def AddNetworkArg(parser, api_version):
       'name': str,
       'reserved-ip-range': str,
       'connect-mode': str,
+      'address-mode': str,
       'psc-endpoint-project': str,
   }
 
@@ -522,7 +523,7 @@ def AddNetworkArg(parser, api_version):
 
   network_help_beta_v1 = """\
         Network configuration for a Cloud Filestore instance. Specifying
-        `reserved-ip-range` and `connect-mode` is optional.
+        `reserved-ip-range`, `address-mode` and `connect-mode` is optional.
         *name*::: The name of the Google Compute Engine
         [VPC network](/compute/docs/networks-and-firewalls#networks) to which
         the instance is connected.
@@ -543,6 +544,7 @@ def AddNetworkArg(parser, api_version):
         *connect-mode*::: Network connection mode used by instances.
         CONNECT_MODE must be one of: DIRECT_PEERING, PRIVATE_SERVICE_ACCESS or
         PRIVATE_SERVICE_CONNECT.
+        *address-mode*::: Internet protocol version for which the instance has IP address assigned.
         *psc-endpoint-project*::: Consumer service project in which the psc
         endpoint would be set up. This is optional, and only relevant in case
         the network is a shared VPC. If this is not specified, the psc endpoint

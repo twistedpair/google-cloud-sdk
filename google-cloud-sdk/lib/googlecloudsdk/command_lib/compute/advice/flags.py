@@ -30,9 +30,8 @@ def AddRegionFlag(parser):
   """Add the --region flag."""
   compute_flags.AddRegionFlag(
       parser=parser,
-      resource_type=None,
-      operation_type=None,
-  )
+      resource_type="resources",
+      operation_type="get advice on")
 
 
 def AddLocationPolicyFlag(parser):

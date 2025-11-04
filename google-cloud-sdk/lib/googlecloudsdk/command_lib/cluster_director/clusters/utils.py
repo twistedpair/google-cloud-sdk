@@ -421,6 +421,7 @@ class ClusterUtil:
   def MakeClusterPatch(self):
     """Returns the cluster patch message and update mask."""
     cluster = self.MakeClusterBasicPatch()
+    cluster.storageResources = self.MakeClusterStoragesPatch()
     cluster.computeResources = self.MakeClusterComputePatch()
     cluster.orchestrator = self.message_module.Orchestrator(
         slurm=self.MakeClusterSlurmOrchestratorPatch(cluster)
@@ -451,6 +452,317 @@ class ClusterUtil:
       )
       self.update_mask.add("labels")
     return cluster
+
+  def MakeClusterStoragesPatch(self):
+    """Makes a cluster patch message with storage fields."""
+    storage_resources = self.message_module.Cluster.StorageResourcesValue()
+    storages = self._ConvertMessageToDict(
+        self.existing_cluster.storageResources
+    )
+    is_storage_updated = False
+
+    if self.args.IsSpecified("remove_filestore_instances"):
+      filestores_to_remove = {
+          self._GetFilestoreName(f)
+          for f in self.args.remove_filestore_instances
+      }
+      storage_ids_to_remove = set()
+      found_filestores = set()
+
+      for storage_id, storage_resource in storages.items():
+        config = storage_resource.config
+        filestore_name = None
+        if config and config.newFilestore:
+          filestore_name = config.newFilestore.filestore
+        elif config and config.existingFilestore:
+          filestore_name = config.existingFilestore.filestore
+
+        if filestore_name in filestores_to_remove:
+          storage_ids_to_remove.add(storage_id)
+          found_filestores.add(filestore_name)
+
+      if found_filestores != filestores_to_remove:
+        not_found = filestores_to_remove - found_filestores
+        raise exceptions.ToolException(
+            f"Filestore(s) not found: {', '.join(not_found)}"
+        )
+
+      for storage_id in storage_ids_to_remove:
+        storages.pop(storage_id)
+      is_storage_updated = True
+
+    if self.args.IsSpecified("remove_storage_buckets"):
+      buckets_to_remove = set(self.args.remove_storage_buckets)
+      storage_ids_to_remove = set()
+      found_buckets = set()
+
+      for storage_id, storage_resource in storages.items():
+        config = storage_resource.config
+        bucket_name = None
+        if config:
+          if config.newBucket:
+            bucket_name = config.newBucket.bucket
+          elif config.existingBucket:
+            bucket_name = config.existingBucket.bucket
+
+        if bucket_name in buckets_to_remove:
+          storage_ids_to_remove.add(storage_id)
+          found_buckets.add(bucket_name)
+
+      if found_buckets != buckets_to_remove:
+        not_found = buckets_to_remove - found_buckets
+        raise exceptions.ToolException(
+            "Cloud Storage bucket(s) not found:"
+            f" {', '.join(sorted(list(not_found)))}"
+        )
+
+      for storage_id in storage_ids_to_remove:
+        storages.pop(storage_id)
+      is_storage_updated = True
+
+    if self.args.IsSpecified("remove_lustre_instances"):
+      lustres_to_remove = {
+          self._GetLustreName(f) for f in self.args.remove_lustre_instances
+      }
+      storage_ids_to_remove = set()
+      found_lustres = set()
+
+      for storage_id, storage_resource in storages.items():
+        config = storage_resource.config
+        lustre_name = None
+        if config and config.newLustre:
+          lustre_name = config.newLustre.lustre
+        elif config and config.existingLustre:
+          lustre_name = config.existingLustre.lustre
+
+        if lustre_name in lustres_to_remove:
+          storage_ids_to_remove.add(storage_id)
+          found_lustres.add(lustre_name)
+
+      if found_lustres != lustres_to_remove:
+        not_found = lustres_to_remove - found_lustres
+        raise exceptions.ToolException(
+            f"Lustre(s) not found: {', '.join(not_found)}"
+        )
+
+      for storage_id in storage_ids_to_remove:
+        storages.pop(storage_id)
+      is_storage_updated = True
+
+    storage_counter = 10
+    if storages:
+      storage_ids = [
+          int(k[len("storage") :])
+          for k in storages.keys()
+          if k.startswith("storage") and k[len("storage") :].isdigit()
+      ]
+      if storage_ids:
+        storage_counter = max(storage_ids) + 1
+
+    if self.args.IsSpecified("add_new_filestore_instances"):
+      for filestore in self.args.add_new_filestore_instances:
+        storage_id = self._GetNextStorageId(storage_counter)
+        storage_counter += 1
+        filestore_name = self._GetFilestoreName(filestore.get("name"))
+        for storage_resource in storages.values():
+          config = storage_resource.config
+          if config and (
+              (
+                  config.newFilestore
+                  and config.newFilestore.filestore == filestore_name
+              )
+              or (
+                  config.existingFilestore
+                  and config.existingFilestore.filestore == filestore_name
+              )
+          ):
+            raise exceptions.ToolException(
+                f"Filestore {filestore_name} already exists."
+            )
+
+        storages[storage_id] = self.message_module.StorageResource(
+            config=self.message_module.StorageResourceConfig(
+                newFilestore=self.message_module.NewFilestoreConfig(
+                    filestore=filestore_name,
+                    tier=filestore.get("tier"),
+                    fileShares=[
+                        self.message_module.FileShareConfig(
+                            capacityGb=filestore.get("capacityGb"),
+                            fileShare=filestore.get("fileshare"),
+                        )
+                    ],
+                    protocol=filestore.get("protocol"),
+                    description=filestore.get("description"),
+                )
+            )
+        )
+      is_storage_updated = True
+
+    if self.args.IsSpecified("add_filestore_instances"):
+      for filestore in self.args.add_filestore_instances:
+        storage_id = self._GetNextStorageId(storage_counter)
+        storage_counter += 1
+        filestore_name = self._GetFilestoreName(filestore)
+        for storage_resource in storages.values():
+          config = storage_resource.config
+          if config and (
+              (
+                  config.newFilestore
+                  and config.newFilestore.filestore == filestore_name
+              )
+              or (
+                  config.existingFilestore
+                  and config.existingFilestore.filestore == filestore_name
+              )
+          ):
+            raise exceptions.ToolException(
+                f"Filestore {filestore_name} already exists."
+            )
+
+        storages[storage_id] = self.message_module.StorageResource(
+            config=self.message_module.StorageResourceConfig(
+                existingFilestore=self.message_module.ExistingFilestoreConfig(
+                    filestore=filestore_name,
+                )
+            )
+        )
+      is_storage_updated = True
+
+    if self.args.IsSpecified("add_new_lustre_instances"):
+      for lustre in self.args.add_new_lustre_instances:
+        storage_id = self._GetNextStorageId(storage_counter)
+        storage_counter += 1
+        lustre_name = self._GetLustreName(lustre.get("name"))
+        for storage_resource in storages.values():
+          config = storage_resource.config
+          if config and (
+              (config.newLustre and config.newLustre.lustre == lustre_name)
+              or (
+                  config.existingLustre
+                  and config.existingLustre.lustre == lustre_name
+              )
+          ):
+            raise exceptions.ToolException(
+                f"Lustre {lustre_name} already exists."
+            )
+
+        storages[storage_id] = self.message_module.StorageResource(
+            config=self.message_module.StorageResourceConfig(
+                newLustre=self.message_module.NewLustreConfig(
+                    lustre=self._GetLustreName(lustre.get("name")),
+                    filesystem=lustre.get("filesystem"),
+                    capacityGb=lustre.get("capacityGb"),
+                    description=lustre.get("description"),
+                )
+            )
+        )
+      is_storage_updated = True
+
+    if self.args.IsSpecified("add_lustre_instances"):
+      for lustre in self.args.add_lustre_instances:
+        storage_id = self._GetNextStorageId(storage_counter)
+        storage_counter += 1
+        lustre_name = self._GetLustreName(lustre)
+        for storage_resource in storages.values():
+          config = storage_resource.config
+          if config and (
+              (config.newLustre and config.newLustre.lustre == lustre_name)
+              or (
+                  config.existingLustre
+                  and config.existingLustre.lustre == lustre_name
+              )
+          ):
+            raise exceptions.ToolException(
+                f"Lustre {lustre_name} already exists."
+            )
+
+        storages[storage_id] = self.message_module.StorageResource(
+            config=self.message_module.StorageResourceConfig(
+                existingLustre=self.message_module.ExistingLustreConfig(
+                    lustre=lustre_name,
+                )
+            )
+        )
+      is_storage_updated = True
+
+    if self.args.IsSpecified("add_storage_buckets"):
+      for bucket in self.args.add_storage_buckets:
+        storage_id = self._GetNextStorageId(storage_counter)
+        storage_counter += 1
+        # Check for duplicates
+        for storage_resource in storages.values():
+          config = storage_resource.config
+          bucket_name_in_config = None
+          if config:
+            if config.newBucket:
+              bucket_name_in_config = config.newBucket.bucket
+            elif config.existingBucket:
+              bucket_name_in_config = config.existingBucket.bucket
+
+          if bucket_name_in_config == bucket:
+            raise exceptions.ToolException(
+                f"Cloud Storage bucket {bucket} already exists."
+            )
+
+        storages[storage_id] = self.message_module.StorageResource(
+            config=self.message_module.StorageResourceConfig(
+                existingBucket=self.message_module.ExistingBucketConfig(
+                    bucket=bucket,
+                )
+            )
+        )
+      is_storage_updated = True
+
+    if self.args.IsSpecified("add_new_storage_buckets"):
+      for gcs_bucket in self.args.add_new_storage_buckets:
+        storage_id = self._GetNextStorageId(storage_counter)
+        storage_counter += 1
+        bucket_name = gcs_bucket.get("name")
+        for storage_resource in storages.values():
+          config = storage_resource.config
+          b_name = None
+          if config:
+            if config.newBucket:
+              b_name = config.newBucket.bucket
+            elif config.existingBucket:
+              b_name = config.existingBucket.bucket
+          if b_name == bucket_name:
+            raise exceptions.ToolException(
+                f"Cloud Storage bucket {bucket_name} already exists."
+            )
+        gcs = self.message_module.NewBucketConfig(
+            bucket=gcs_bucket.get("name"),
+        )
+        if "storageClass" in gcs_bucket:
+          gcs.storageClass = gcs_bucket.get("storageClass")
+        if not gcs.storageClass and "enableAutoclass" in gcs_bucket:
+          gcs.autoclass = self.message_module.GcsAutoclassConfig(
+              enabled=gcs_bucket.get("enableAutoclass")
+          )
+        if not gcs.storageClass and not gcs.autoclass:
+          gcs.storageClass = (
+              self.message_module.NewBucketConfig.StorageClassValueValuesEnum.STANDARD
+          )
+        if "enableHNS" in gcs_bucket:
+          gcs.hierarchicalNamespace = (
+              self.message_module.GcsHierarchicalNamespaceConfig(
+                  enabled=gcs_bucket.get("enableHNS"),
+              )
+          )
+        storages[storage_id] = self.message_module.StorageResource(
+            config=self.message_module.StorageResourceConfig(newBucket=gcs)
+        )
+      is_storage_updated = True
+
+    if is_storage_updated:
+      storage_resources.additionalProperties = [
+          self.message_module.Cluster.StorageResourcesValue.AdditionalProperty(
+              key=key, value=value
+          )
+          for key, value in storages.items()
+      ]
+      self.update_mask.add("storage_resources")
+    return storage_resources
 
   def MakeClusterComputePatch(self):
     """Makes a cluster compute patch message with compute fields."""
@@ -582,7 +894,13 @@ class ClusterUtil:
         is_node_sets_updated = True
     if self.args.IsSpecified("add_slurm_node_sets"):
       for node_set in self.args.add_slurm_node_sets:
-        storage_configs = self._GetStorageConfigs(self.existing_cluster)
+        storage_configs_source = self.existing_cluster
+        if (
+            cluster_patch.storageResources
+            and cluster_patch.storageResources.additionalProperties
+        ):
+          storage_configs_source = cluster_patch
+        storage_configs = self._GetStorageConfigs(storage_configs_source)
         compute_id = node_set.get("computeId")
         machine_type = self._GetComputeMachineTypeFromCluster(
             compute_id, cluster_patch, use_existing_cluster=True

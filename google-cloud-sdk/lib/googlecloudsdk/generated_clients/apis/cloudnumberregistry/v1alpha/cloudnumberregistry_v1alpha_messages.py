@@ -29,6 +29,26 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class CleanupIpamAdminScopeRequest(_messages.Message):
+  r"""Message for cleaning up a IpamAdminScope
+
+  Fields:
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  requestId = _messages.StringField(1)
+
+
 class CloudnumberregistryProjectsLocationsCustomRangesCreateRequest(_messages.Message):
   r"""A CloudnumberregistryProjectsLocationsCustomRangesCreateRequest object.
 
@@ -167,6 +187,17 @@ class CloudnumberregistryProjectsLocationsCustomRangesPatchRequest(_messages.Mes
   updateMask = _messages.StringField(4)
 
 
+class CloudnumberregistryProjectsLocationsCustomRangesShowUtilizationRequest(_messages.Message):
+  r"""A CloudnumberregistryProjectsLocationsCustomRangesShowUtilizationRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class CloudnumberregistryProjectsLocationsDiscoveredRangesFindFreeIpRangeRequest(_messages.Message):
   r"""A
   CloudnumberregistryProjectsLocationsDiscoveredRangesFindFreeIpRangeRequest
@@ -227,6 +258,18 @@ class CloudnumberregistryProjectsLocationsDiscoveredRangesListRequest(_messages.
   parent = _messages.StringField(5, required=True)
 
 
+class CloudnumberregistryProjectsLocationsDiscoveredRangesShowUtilizationRequest(_messages.Message):
+  r"""A
+  CloudnumberregistryProjectsLocationsDiscoveredRangesShowUtilizationRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class CloudnumberregistryProjectsLocationsGetRequest(_messages.Message):
   r"""A CloudnumberregistryProjectsLocationsGetRequest object.
 
@@ -235,6 +278,20 @@ class CloudnumberregistryProjectsLocationsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class CloudnumberregistryProjectsLocationsIpamAdminScopesCleanupRequest(_messages.Message):
+  r"""A CloudnumberregistryProjectsLocationsIpamAdminScopesCleanupRequest
+  object.
+
+  Fields:
+    cleanupIpamAdminScopeRequest: A CleanupIpamAdminScopeRequest resource to
+      be passed as the request body.
+    name: Required. Name of the resource
+  """
+
+  cleanupIpamAdminScopeRequest = _messages.MessageField('CleanupIpamAdminScopeRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class CloudnumberregistryProjectsLocationsIpamAdminScopesCreateRequest(_messages.Message):
@@ -288,6 +345,20 @@ class CloudnumberregistryProjectsLocationsIpamAdminScopesDeleteRequest(_messages
   force = _messages.BooleanField(1)
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
+
+
+class CloudnumberregistryProjectsLocationsIpamAdminScopesDisableRequest(_messages.Message):
+  r"""A CloudnumberregistryProjectsLocationsIpamAdminScopesDisableRequest
+  object.
+
+  Fields:
+    disableIpamAdminScopeRequest: A DisableIpamAdminScopeRequest resource to
+      be passed as the request body.
+    name: Required. Name of the resource
+  """
+
+  disableIpamAdminScopeRequest = _messages.MessageField('DisableIpamAdminScopeRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class CloudnumberregistryProjectsLocationsIpamAdminScopesGetRequest(_messages.Message):
@@ -417,12 +488,20 @@ class CloudnumberregistryProjectsLocationsOperationsListRequest(_messages.Messag
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class CloudnumberregistryProjectsLocationsRealmsCreateRequest(_messages.Message):
@@ -677,6 +756,26 @@ class CustomRange(_messages.Message):
   registryBook = _messages.StringField(9)
 
 
+class DisableIpamAdminScopeRequest(_messages.Message):
+  r"""Message for disabling a IpamAdminScope
+
+  Fields:
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  requestId = _messages.StringField(1)
+
+
 class DiscoveredRange(_messages.Message):
   r"""Message describing DiscoveredRange object
 
@@ -863,6 +962,8 @@ class IpamAdminScope(_messages.Message):
       DELETING_IN_PROGRESS: Deleting in progress.
       UPDATING: Updating.
       RECOVERING: Recovering.
+      DISABLED: Disabled.
+      DELETION_COMPLETED: Deleting completed.
     """
     DISCOVERY_PIPELINE_STATE_UNSPECIFIED = 0
     INTERNAL_FAILURE = 1
@@ -872,6 +973,8 @@ class IpamAdminScope(_messages.Message):
     DELETING_IN_PROGRESS = 5
     UPDATING = 6
     RECOVERING = 7
+    DISABLED = 8
+    DELETION_COMPLETED = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -971,10 +1074,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListRealmsResponse(_messages.Message):
@@ -1222,6 +1330,20 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class RangeUtilization(_messages.Message):
+  r"""Message for the utilization of an IP range
+
+  Fields:
+    totalConsumed: The total number of IP addresses consumed in the range.
+    totalProduced: The total number of IP addresses produced in the range.
+    usage: The usage of the range as a percentage.
+  """
+
+  totalConsumed = _messages.StringField(1)
+  totalProduced = _messages.StringField(2)
+  usage = _messages.FloatField(3)
+
+
 class Realm(_messages.Message):
   r"""Message describing Realm object
 
@@ -1331,6 +1453,7 @@ class RegistryBook(_messages.Message):
       Preview, Only project scope is supported. Each scope is in the format of
       projects/{project}. Each scope can only be claimed once.
     createTime: Output only. [Output only] Create time stamp
+    isDefault: Output only. Whether the RegistryBook is the default one.
     labels: Optional. Labels as key value pairs
     name: Required. Identifier. name of resource
     updateTime: Output only. [Output only] Update time stamp
@@ -1362,9 +1485,34 @@ class RegistryBook(_messages.Message):
 
   claimedScopes = _messages.StringField(1, repeated=True)
   createTime = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  isDefault = _messages.BooleanField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+
+
+class ShowCustomRangeUtilizationResponse(_messages.Message):
+  r"""Message for the response to getting the utilization of a CustomRange
+
+  Fields:
+    customRange: The CustomRange resource.
+    rangeUtilization: The utilization of the CustomRange.
+  """
+
+  customRange = _messages.MessageField('CustomRange', 1)
+  rangeUtilization = _messages.MessageField('RangeUtilization', 2)
+
+
+class ShowDiscoveredRangeUtilizationResponse(_messages.Message):
+  r"""Message for the response to getting the utilization of a DiscoveredRange
+
+  Fields:
+    discoveredRange: The DiscoveredRange resource.
+    rangeUtilization: The utilization of the DiscoveredRange.
+  """
+
+  discoveredRange = _messages.MessageField('DiscoveredRange', 1)
+  rangeUtilization = _messages.MessageField('RangeUtilization', 2)
 
 
 class StandardQueryParameters(_messages.Message):

@@ -40,6 +40,7 @@ class VmwareengineV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_announcements = self.ProjectsLocationsAnnouncementsService(self)
+    self.projects_locations_datastores = self.ProjectsLocationsDatastoresService(self)
     self.projects_locations_dnsBindPermission = self.ProjectsLocationsDnsBindPermissionService(self)
     self.projects_locations_networkPeerings_peeringRoutes = self.ProjectsLocationsNetworkPeeringsPeeringRoutesService(self)
     self.projects_locations_networkPeerings = self.ProjectsLocationsNetworkPeeringsService(self)
@@ -125,6 +126,151 @@ class VmwareengineV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='VmwareengineProjectsLocationsAnnouncementsListRequest',
         response_type_name='ListAnnouncementsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsDatastoresService(base_api.BaseApiService):
+    """Service class for the projects_locations_datastores resource."""
+
+    _NAME = 'projects_locations_datastores'
+
+    def __init__(self, client):
+      super(VmwareengineV1.ProjectsLocationsDatastoresService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new `Datastore` resource in a given project and location. Datastores are regional resources.
+
+      Args:
+        request: (VmwareengineProjectsLocationsDatastoresCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datastores',
+        http_method='POST',
+        method_id='vmwareengine.projects.locations.datastores.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['datastoreId', 'requestId'],
+        relative_path='v1/{+parent}/datastores',
+        request_field='datastore',
+        request_type_name='VmwareengineProjectsLocationsDatastoresCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a `Datastore` resource. You can only delete a Datastore after all resources that refer to it are deleted. For example, multiple clusters of the same private cloud or different private clouds can refer to the same datastore.
+
+      Args:
+        request: (VmwareengineProjectsLocationsDatastoresDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datastores/{datastoresId}',
+        http_method='DELETE',
+        method_id='vmwareengine.projects.locations.datastores.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag', 'requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsDatastoresDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a `Datastore` resource by its resource name. The resource contains details of the Datastore, such as its description, subnets, type, and more.
+
+      Args:
+        request: (VmwareengineProjectsLocationsDatastoresGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Datastore) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datastores/{datastoresId}',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.datastores.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsDatastoresGetRequest',
+        response_type_name='Datastore',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists `Datastore` resources in a given project and location.
+
+      Args:
+        request: (VmwareengineProjectsLocationsDatastoresListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDatastoresResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datastores',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.datastores.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'requestId'],
+        relative_path='v1/{+parent}/datastores',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsDatastoresListRequest',
+        response_type_name='ListDatastoresResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Modifies a Datastore resource. Only the following fields can be updated: `description`. Only fields specified in `updateMask` are applied.
+
+      Args:
+        request: (VmwareengineProjectsLocationsDatastoresPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datastores/{datastoresId}',
+        http_method='PATCH',
+        method_id='vmwareengine.projects.locations.datastores.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='datastore',
+        request_type_name='VmwareengineProjectsLocationsDatastoresPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -838,7 +984,7 @@ class VmwareengineV1(base_api.BaseApiClient):
         method_id='vmwareengine.projects.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1/{+name}/operations',
         request_field='',
         request_type_name='VmwareengineProjectsLocationsOperationsListRequest',
@@ -1055,6 +1201,33 @@ class VmwareengineV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def MountDatastore(self, request, global_params=None):
+      r"""Mounts a `Datastore` on a cluster resource Datastores are zonal resources.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsClustersMountDatastoreRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('MountDatastore')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MountDatastore.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters/{clustersId}:mountDatastore',
+        http_method='POST',
+        method_id='vmwareengine.projects.locations.privateClouds.clusters.mountDatastore',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:mountDatastore',
+        request_field='mountDatastoreRequest',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsClustersMountDatastoreRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Modifies a `Cluster` resource. Only fields specified in `updateMask` are applied. During operation processing, the resource is temporarily in the `ACTIVE` state before the operation fully completes. For that period of time, you can't update the resource. Use the operation status to determine when the processing fully completes.
 
@@ -1133,6 +1306,33 @@ class VmwareengineV1(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='VmwareengineProjectsLocationsPrivateCloudsClustersTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+    def UnmountDatastore(self, request, global_params=None):
+      r"""Mounts a `Datastore` on a cluster resource Datastores are zonal resources.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsClustersUnmountDatastoreRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UnmountDatastore')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UnmountDatastore.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters/{clustersId}:unmountDatastore',
+        http_method='POST',
+        method_id='vmwareengine.projects.locations.privateClouds.clusters.unmountDatastore',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:unmountDatastore',
+        request_field='unmountDatastoreRequest',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsClustersUnmountDatastoreRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2387,6 +2587,33 @@ class VmwareengineV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RefreshVmAuthToken(self, request, global_params=None):
+      r"""Refreshes JWT auth token in Secret Manager for an associated VM.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsRefreshVmAuthTokenRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RefreshVmAuthTokenResponse) The response message.
+      """
+      config = self.GetMethodConfig('RefreshVmAuthToken')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RefreshVmAuthToken.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}:refreshVmAuthToken',
+        http_method='POST',
+        method_id='vmwareengine.projects.locations.privateClouds.refreshVmAuthToken',
+        ordered_params=['privateCloud'],
+        path_params=['privateCloud'],
+        query_params=[],
+        relative_path='v1/{+privateCloud}:refreshVmAuthToken',
+        request_field='refreshVmAuthTokenRequest',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsRefreshVmAuthTokenRequest',
+        response_type_name='RefreshVmAuthTokenResponse',
+        supports_download=False,
+    )
+
     def ResetNsxCredentials(self, request, global_params=None):
       r"""Resets credentials of the NSX appliance.
 
@@ -2991,33 +3218,6 @@ class VmwareengineV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='VmwareengineProjectsLocationsGetDnsBindPermissionRequest',
         response_type_name='DnsBindPermission',
-        supports_download=False,
-    )
-
-    def GetProjectState(self, request, global_params=None):
-      r"""Gets state of a single `Project`.
-
-      Args:
-        request: (VmwareengineProjectsLocationsGetProjectStateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ProjectState) The response message.
-      """
-      config = self.GetMethodConfig('GetProjectState')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetProjectState.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/projectState',
-        http_method='GET',
-        method_id='vmwareengine.projects.locations.getProjectState',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}',
-        request_field='',
-        request_type_name='VmwareengineProjectsLocationsGetProjectStateRequest',
-        response_type_name='ProjectState',
         supports_download=False,
     )
 

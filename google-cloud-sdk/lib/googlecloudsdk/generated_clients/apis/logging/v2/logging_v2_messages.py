@@ -1665,10 +1665,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets ListOperationsRequest.return_partial_success and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListRecentQueriesResponse(_messages.Message):
@@ -2637,11 +2642,11 @@ class LogScope(_messages.Message):
     name: Output only. The resource name of the log scope.Log scopes are only
       available in the global location. For example:projects/my-
       project/locations/global/logScopes/my-log-scope
-    resourceNames: Required. Names of one or more parent resources:
-      projects/[PROJECT_ID]May alternatively be one or more views: projects/[P
-      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]A
-      log scope can include a maximum of 5 projects and a maximum of 100
-      resources in total.
+    resourceNames: Required. Names of one or more parent resources
+      (organizations and folders are not supported.): projects/[PROJECT_ID]May
+      alternatively be one or more views: projects/[PROJECT_ID]/locations/[LOC
+      ATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]A log scope can include a
+      maximum of 5 projects and a maximum of 100 resources in total.
     updateTime: Output only. The last update timestamp of the log scope.
   """
 
@@ -3377,12 +3382,20 @@ class LoggingBillingAccountsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to true, operations that are reachable are
+      returned as normal, and those that are unreachable are returned in the
+      ListOperationsResponse.unreachable field.This can only be true when
+      reading across collections e.g. when parent is set to
+      "projects/example/locations/-".This field is not by default supported
+      and will result in an UNIMPLEMENTED error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class LoggingBillingAccountsLocationsRecentQueriesListRequest(_messages.Message):
@@ -4434,9 +4447,11 @@ class LoggingFoldersLocationsLogScopesCreateRequest(_messages.Message):
       Identifiers are limited to 100 characters and can include only letters,
       digits, underscores, hyphens, and periods. First character has to be
       alphanumeric.
-    parent: Required. The parent project in which to create the log scope
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]" For
-      example:"projects/my-project/locations/global"
+    parent: Required. The parent resource in which to create the log scope:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" For example:"projects/my-
+      project/locations/global"
   """
 
   logScope = _messages.MessageField('LogScope', 1)
@@ -4449,9 +4464,10 @@ class LoggingFoldersLocationsLogScopesDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the log scope to delete:
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/logScopes/[LOG_SCOPE_ID]"
-      For example:"projects/my-project/locations/global/logScopes/my-log-
-      scope"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" For example:"projects/my-
+      project/locations/global/logScopes/my-log-scope"
   """
 
   name = _messages.StringField(1, required=True)
@@ -4462,9 +4478,10 @@ class LoggingFoldersLocationsLogScopesGetRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the log scope:
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/logScopes/[LOG_SCOPE_ID]"
-      For example:"projects/my-project/locations/global/logScopes/my-log-
-      scope"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" For example:"projects/my-
+      project/locations/global/logScopes/my-log-scope"
   """
 
   name = _messages.StringField(1, required=True)
@@ -4554,12 +4571,20 @@ class LoggingFoldersLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to true, operations that are reachable are
+      returned as normal, and those that are unreachable are returned in the
+      ListOperationsResponse.unreachable field.This can only be true when
+      reading across collections e.g. when parent is set to
+      "projects/example/locations/-".This field is not by default supported
+      and will result in an UNIMPLEMENTED error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class LoggingFoldersLocationsRecentQueriesListRequest(_messages.Message):
@@ -5452,12 +5477,20 @@ class LoggingLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to true, operations that are reachable are
+      returned as normal, and those that are unreachable are returned in the
+      ListOperationsResponse.unreachable field.This can only be true when
+      reading across collections e.g. when parent is set to
+      "projects/example/locations/-".This field is not by default supported
+      and will result in an UNIMPLEMENTED error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class LoggingLogsDeleteRequest(_messages.Message):
@@ -6094,9 +6127,11 @@ class LoggingOrganizationsLocationsLogScopesCreateRequest(_messages.Message):
       Identifiers are limited to 100 characters and can include only letters,
       digits, underscores, hyphens, and periods. First character has to be
       alphanumeric.
-    parent: Required. The parent project in which to create the log scope
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]" For
-      example:"projects/my-project/locations/global"
+    parent: Required. The parent resource in which to create the log scope:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" For example:"projects/my-
+      project/locations/global"
   """
 
   logScope = _messages.MessageField('LogScope', 1)
@@ -6109,9 +6144,10 @@ class LoggingOrganizationsLocationsLogScopesDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the log scope to delete:
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/logScopes/[LOG_SCOPE_ID]"
-      For example:"projects/my-project/locations/global/logScopes/my-log-
-      scope"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" For example:"projects/my-
+      project/locations/global/logScopes/my-log-scope"
   """
 
   name = _messages.StringField(1, required=True)
@@ -6122,9 +6158,10 @@ class LoggingOrganizationsLocationsLogScopesGetRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the log scope:
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/logScopes/[LOG_SCOPE_ID]"
-      For example:"projects/my-project/locations/global/logScopes/my-log-
-      scope"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" For example:"projects/my-
+      project/locations/global/logScopes/my-log-scope"
   """
 
   name = _messages.StringField(1, required=True)
@@ -6214,12 +6251,20 @@ class LoggingOrganizationsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to true, operations that are reachable are
+      returned as normal, and those that are unreachable are returned in the
+      ListOperationsResponse.unreachable field.This can only be true when
+      reading across collections e.g. when parent is set to
+      "projects/example/locations/-".This field is not by default supported
+      and will result in an UNIMPLEMENTED error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class LoggingOrganizationsLocationsRecentQueriesListRequest(_messages.Message):
@@ -7226,9 +7271,11 @@ class LoggingProjectsLocationsLogScopesCreateRequest(_messages.Message):
       Identifiers are limited to 100 characters and can include only letters,
       digits, underscores, hyphens, and periods. First character has to be
       alphanumeric.
-    parent: Required. The parent project in which to create the log scope
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]" For
-      example:"projects/my-project/locations/global"
+    parent: Required. The parent resource in which to create the log scope:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" For example:"projects/my-
+      project/locations/global"
   """
 
   logScope = _messages.MessageField('LogScope', 1)
@@ -7241,9 +7288,10 @@ class LoggingProjectsLocationsLogScopesDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the log scope to delete:
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/logScopes/[LOG_SCOPE_ID]"
-      For example:"projects/my-project/locations/global/logScopes/my-log-
-      scope"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" For example:"projects/my-
+      project/locations/global/logScopes/my-log-scope"
   """
 
   name = _messages.StringField(1, required=True)
@@ -7254,9 +7302,10 @@ class LoggingProjectsLocationsLogScopesGetRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the log scope:
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/logScopes/[LOG_SCOPE_ID]"
-      For example:"projects/my-project/locations/global/logScopes/my-log-
-      scope"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" For example:"projects/my-
+      project/locations/global/logScopes/my-log-scope"
   """
 
   name = _messages.StringField(1, required=True)
@@ -7346,12 +7395,20 @@ class LoggingProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to true, operations that are reachable are
+      returned as normal, and those that are unreachable are returned in the
+      ListOperationsResponse.unreachable field.This can only be true when
+      reading across collections e.g. when parent is set to
+      "projects/example/locations/-".This field is not by default supported
+      and will result in an UNIMPLEMENTED error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class LoggingProjectsLocationsRecentQueriesListRequest(_messages.Message):
@@ -9337,9 +9394,12 @@ class QueryResults(_messages.Message):
       result_reference and wait for results.
     reservation: Output only. The resource name of the BigQuery reservation
       that this query was billed to, (or when validating, would be billed to).
-      Only set when the billing model is USER_PROJECT_RESERVATION.When set,
-      the reservation name follows the standard resource name format: projects
-      /[PROJECT_ID]/locations/[LOCATION_ID]/reservations/[RESERVATION_ID]
+      Only set when the billing model is USER_PROJECT_RESERVATION. If the
+      billing model is USER_PROJECT_RESERVATION and this field is empty, then
+      a reservation was required but not found, and the restriction_conflicts
+      field will contain CUSTOMER_PROJECT_SLOT_RESERVATION.When set, the
+      reservation name follows the standard resource name format: projects/[PR
+      OJECT_ID]/locations/[LOCATION_ID]/reservations/[RESERVATION_ID]
     resourceNames: The resources that were used while serving the request,
       e.g. projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/v
       iews/[VIEW_ID] for any Views read or projects/[PROJECT_ID]/locations/[LO

@@ -91,6 +91,7 @@ MESH_DATAPLANE_FLAG = base.Argument(
 # TODO(b/436350694): Remove this constant once preset metadata is available.
 INGRESS_CONTAINER_PRESETS = frozenset([
     'ollama',
+    'static-website',
     'tagmanager',
 ])
 
@@ -2116,7 +2117,7 @@ def AddVpcNetworkTagsFlags(parser, resource_kind='service'):
       type=arg_parsers.ArgList(),
       action=arg_parsers.UpdateAction,
       help=(
-          'Applies the given Compute Engine tags (comma separated) to the '
+          'Applies the given network tags (comma separated) to the '
           'Cloud Run {kind}. '
           'To clear existing tags, use --clear-network-tags.'.format(
               kind=resource_kind
@@ -2143,7 +2144,7 @@ def AddClearVpcNetworkTagsFlags(parser, resource_kind='service'):
       '--clear-network-tags',
       action='store_true',
       help=(
-          'Clears all existing Compute Engine tags from the Cloud Run {kind}. '
+          'Clears all existing network tags from the Cloud Run {kind}. '
           .format(kind=resource_kind)
       ),
   )

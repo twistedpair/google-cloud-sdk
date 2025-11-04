@@ -3962,8 +3962,8 @@ class GoogleIamV3PolicyBinding(_messages.Message):
       This field must be one of the following: - Left empty (will be
       automatically set to the policy kind) - The input policy kind
     policyUid: Output only. The globally unique ID of the policy to be bound.
-    target: Required. Immutable. Target is the full resource name of the
-      resource to which the policy will be bound. Immutable once set.
+    target: Required. Immutable. The full resource name of the resource to
+      which the policy will be bound. Immutable once set.
     uid: Output only. The globally unique ID of the policy binding. Assigned
       when the policy binding is created.
     updateTime: Output only. The time when the policy binding was most
@@ -3980,10 +3980,13 @@ class GoogleIamV3PolicyBinding(_messages.Message):
       PRINCIPAL_ACCESS_BOUNDARY: Principal access boundary policy kind
       ACCESS: Access policy kind. Keep behind visibility label until Access
         Policy launch.
+      TRUST_BOUNDARY: Trust boundary policy kind. Keep behind visibility label
+        until Trust Boundary launch.
     """
     POLICY_KIND_UNSPECIFIED = 0
     PRINCIPAL_ACCESS_BOUNDARY = 1
     ACCESS = 2
+    TRUST_BOUNDARY = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -4027,29 +4030,29 @@ class GoogleIamV3PolicyBinding(_messages.Message):
 
 
 class GoogleIamV3PolicyBindingTarget(_messages.Message):
-  r"""Target is the full resource name of the resource to which the policy
-  will be bound. Immutable once set.
+  r"""The full resource name of the resource to which the policy will be
+  bound. Immutable once set.
 
   Fields:
-    principalSet: Immutable. Full Resource Name used for principal access
-      boundary policy bindings. The principal set must be directly parented by
-      the policy binding's parent or same as the parent if the target is a
-      project/folder/organization. Examples: * For binding's parented by an
-      organization: * Organization:
+    principalSet: Immutable. The full resource name that's used for principal
+      access boundary policy bindings. The principal set must be directly
+      parented by the policy binding's parent or same as the parent if the
+      target is a project, folder, or organization. Examples: * For bindings
+      parented by an organization: * Organization:
       `//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID` *
       Workforce Identity:
       `//iam.googleapis.com/locations/global/workforcePools/WORKFORCE_POOL_ID`
       * Workspace Identity:
       `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID` * For
-      binding's parented by a folder: * Folder:
-      `//cloudresourcemanager.googleapis.com/folders/FOLDER_ID` * For
-      binding's parented by a project: * Project: *
+      bindings parented by a folder: * Folder:
+      `//cloudresourcemanager.googleapis.com/folders/FOLDER_ID` * For bindings
+      parented by a project: * Project: *
       `//cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER` *
       `//cloudresourcemanager.googleapis.com/projects/PROJECT_ID` * Workload
       Identity Pool: `//iam.googleapis.com/projects/PROJECT_NUMBER/locations/L
       OCATION/workloadIdentityPools/WORKLOAD_POOL_ID`
-    resource: Immutable. Full Resource Name used for access policy bindings
-      Examples: * Organization:
+    resource: Immutable. The full resource name that's used for access policy
+      bindings Examples: * Organization:
       `//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID` *
       Folder: `//cloudresourcemanager.googleapis.com/folders/FOLDER_ID` *
       Project: *
@@ -4451,6 +4454,8 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressSource(_me
       origins within the perimeter. Example:
       `accessPolicies/MY_POLICY/accessLevels/MY_LEVEL`. If a single `*` is
       specified for `access_level`, then all EgressSources will be allowed.
+    pscEndpoint: Requests from this PSC will be allowed from access perimeter
+      data.
     resource: A Google Cloud resource from the service perimeter that you want
       to allow to access data outside the perimeter. This field supports only
       projects. The project format is `projects/{project_number}`. You can't
@@ -4458,7 +4463,8 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressSource(_me
   """
 
   accessLevel = _messages.StringField(1)
-  resource = _messages.StringField(2)
+  pscEndpoint = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigPrivateServiceConnectEndpoint', 2)
+  resource = _messages.StringField(3)
 
 
 class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressTo(_messages.Message):
@@ -4587,6 +4593,8 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigIngressSource(_m
       Cloud calls with request origins within the perimeter. Example:
       `accessPolicies/MY_POLICY/accessLevels/MY_LEVEL`. If a single `*` is
       specified for `access_level`, then all IngressSources will be allowed.
+    pscEndpoint: Requests from this PSC will be allowed to access perimeter
+      data.
     resource: A Google Cloud resource that is allowed to ingress the
       perimeter. Requests from these resources will be allowed to access
       perimeter data. Currently only projects and VPCs are allowed. Project
@@ -4598,7 +4606,8 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigIngressSource(_m
   """
 
   accessLevel = _messages.StringField(1)
-  resource = _messages.StringField(2)
+  pscEndpoint = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigPrivateServiceConnectEndpoint', 2)
+  resource = _messages.StringField(3)
 
 
 class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigIngressTo(_messages.Message):
@@ -4638,6 +4647,18 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigMethodSelector(_
 
   method = _messages.StringField(1)
   permission = _messages.StringField(2)
+
+
+class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigPrivateServiceConnectEndpoint(_messages.Message):
+  r"""Specifies the PSC an API call refers to.
+
+  Fields:
+    forwardingRule: The global forwarding rule identifier. Forwarding rule
+      format: `//compute.googleapis.com/projects/{PROJECT_ID}/global/forwardin
+      gRules/{FORWARDING_RULE_ID}`.
+  """
+
+  forwardingRule = _messages.StringField(1)
 
 
 class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigVpcAccessibleServices(_messages.Message):

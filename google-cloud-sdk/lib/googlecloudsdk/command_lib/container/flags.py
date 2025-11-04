@@ -8105,7 +8105,7 @@ def AddAcceleratorNetworkProfileFlag(parser, hidden=True):
       An Accelerator Network Profiles will be created if it does not exist.
       """,
       default=None,
-      choices=['auto'],
+      type=str,
       hidden=hidden)
 
 

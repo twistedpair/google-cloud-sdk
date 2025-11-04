@@ -68,8 +68,8 @@ class Action(_messages.Message):
   Fields:
     cleanImageTag: Inspect image and transform sensitive burnt-in text.
       Doesn't apply to elements nested in a sequence, which revert to `Keep`.
-      Supported [tags](http://dicom.nema.org/medical/dicom/2018e/output/chtml/
-      part06/chapter_6.html): PixelData
+      Supported [tags](https://dicom.nema.org/medical/dicom/2018e/output/chtml
+      /part06/chapter_6.html): PixelData
     cleanTextTag: Inspect text and transform sensitive text. Configurable via
       TextConfig. Supported Value Representations: AE, LO, LT, PN, SH, ST, UC,
       UT, DA, DT, AS
@@ -79,11 +79,11 @@ class Action(_messages.Message):
       Representations (VRs). Examples: ID: "00100010" Keyword: "PatientName"
       VR: "PN"
     recurseTag: Recursively apply DICOM de-id to tags nested in a sequence.
-      Supported [Value Representation] (http://dicom.nema.org/medical/dicom/20
-      18e/output/chtml/part05/sect_6.2.html#table_6.2-1): SQ
+      Supported [Value Representation] (https://dicom.nema.org/medical/dicom/2
+      018e/output/chtml/part05/sect_6.2.html#table_6.2-1): SQ
     regenUidTag: Replace UID with a new generated UID. Supported [Value
-      Representation] (http://dicom.nema.org/medical/dicom/2018e/output/chtml/
-      part05/sect_6.2.html#table_6.2-1): UI
+      Representation] (https://dicom.nema.org/medical/dicom/2018e/output/chtml
+      /part05/sect_6.2.html#table_6.2-1): UI
     removeTag: Replace with empty tag.
     resetTag: Reset tag to a placeholder value.
   """
@@ -813,12 +813,12 @@ class CheckDataAccessResponse(_messages.Message):
 
 class CleanDescriptorsOption(_messages.Message):
   r"""This option is based on the DICOM Standard's [Clean Descriptors Option](
-  http://dicom.nema.org/medical/dicom/2018e/output/chtml/part15/sect_E.3.5.htm
-  l), and the `CleanText` `Action` is applied to all the specified fields.
+  https://dicom.nema.org/medical/dicom/2018e/output/chtml/part15/sect_E.3.5.ht
+  ml), and the `CleanText` `Action` is applied to all the specified fields.
   When cleaning text, the process attempts to transform phrases matching any
   of the tags marked for removal (action codes D, Z, X, and U) in the [Basic P
-  rofile](http://dicom.nema.org/medical/dicom/2018e/output/chtml/part15/chapte
-  r_E.html). These contextual phrases are replaced with the token "[CTX]".
+  rofile](https://dicom.nema.org/medical/dicom/2018e/output/chtml/part15/chapt
+  er_E.html). These contextual phrases are replaced with the token "[CTX]".
   This option uses an additional infoType during inspection.
   """
 
@@ -835,9 +835,9 @@ class CleanTextField(_messages.Message):
 
 class CleanTextTag(_messages.Message):
   r"""Inspect text and transform sensitive text. Configurable using
-  TextConfig. Supported [Value Representations] (http://dicom.nema.org/medical
-  /dicom/2018e/output/chtml/part05/sect_6.2.html#table_6.2-1): AE, LO, LT, PN,
-  SH, ST, UC, UT, DA, DT, AS
+  TextConfig. Supported [Value Representations] (https://dicom.nema.org/medica
+  l/dicom/2018e/output/chtml/part05/sect_6.2.html#table_6.2-1): AE, LO, LT,
+  PN, SH, ST, UC, UT, DA, DT, AS
   """
 
 
@@ -1577,8 +1577,8 @@ class DicomConfig(_messages.Message):
       cannot be mapped directly to an individual out of context, given access
       to the original images, or to a database of the original images
       containing the UIDs, it would be possible to recover the individual's
-      identity." http://dicom.nema.org/medical/dicom/current/output/chtml/part
-      15/sect_E.3.9.html
+      identity." https://dicom.nema.org/medical/dicom/current/output/chtml/par
+      t15/sect_E.3.9.html
   """
 
   class FilterProfileValueValuesEnum(_messages.Enum):
@@ -1591,8 +1591,8 @@ class DicomConfig(_messages.Message):
         DICOM objects.
       ATTRIBUTE_CONFIDENTIALITY_BASIC_PROFILE: Remove tags based on DICOM
         Standard's Attribute Confidentiality Basic Profile (DICOM Standard
-        Edition 2018e) http://dicom.nema.org/medical/dicom/2018e/output/chtml/
-        part15/chapter_E.html.
+        Edition 2018e) https://dicom.nema.org/medical/dicom/2018e/output/chtml
+        /part15/chapter_E.html.
       KEEP_ALL_PROFILE: Keep all tags.
       DEIDENTIFY_TAG_CONTENTS: Inspect within tag contents and replace
         sensitive text. The process can be configured using the TextConfig.
@@ -1798,13 +1798,13 @@ class DicomTagConfig(_messages.Message):
         DICOM objects.
       ATTRIBUTE_CONFIDENTIALITY_BASIC_PROFILE: Remove tags based on DICOM
         Standard's [Attribute Confidentiality Basic Profile (DICOM Standard
-        Edition 2018e)](http://dicom.nema.org/medical/dicom/2018e/output/chtml
-        /part15/chapter_E.html).
+        Edition 2018e)](https://dicom.nema.org/medical/dicom/2018e/output/chtm
+        l/part15/chapter_E.html).
       KEEP_ALL_PROFILE: Keep all tags.
       DEIDENTIFY_TAG_CONTENTS: Inspect tag contents and replace sensitive
         text. The process can be configured using the TextConfig. Applies to
-        all tags with the following [Value Representations] (http://dicom.nema
-        .org/medical/dicom/2018e/output/chtml/part05/sect_6.2.html#table_6.2-
+        all tags with the following [Value Representations] (https://dicom.nem
+        a.org/medical/dicom/2018e/output/chtml/part05/sect_6.2.html#table_6.2-
         1): AE, LO, LT, PN, SH, ST, UC, UT, DA, DT, AS
     """
     PROFILE_TYPE_UNSPECIFIED = 0
@@ -2772,11 +2772,14 @@ class FhirStoreMetric(_messages.Message):
     resourceType: The FHIR resource type this metric applies to.
     structuredStorageSizeBytes: The total amount of structured storage used by
       FHIR resources of this resource type in the store.
+    versionedStorageSizeBytes: The total amount of versioned storage used by
+      versioned FHIR resources of this resource type in the store.
   """
 
   count = _messages.IntegerField(1)
   resourceType = _messages.StringField(2)
   structuredStorageSizeBytes = _messages.IntegerField(3)
+  versionedStorageSizeBytes = _messages.IntegerField(4)
 
 
 class FhirStoreMetrics(_messages.Message):
@@ -4455,7 +4458,8 @@ class HealthcareProjectsLocationsDatasetsDicomStoresSearchForInstancesRequest(_m
 
   Fields:
     dicomWebPath: Required. The path of the SearchForInstancesRequest DICOMweb
-      request. For example, `instances`, `series/{series_uid}/instances`, or
+      request. For example, `instances`,
+      `studies/{study_uid}/series/{series_uid}/instances`, or
       `studies/{study_uid}/instances`.
     parent: Required. The name of the DICOM store that is being accessed. For
       example, `projects/{project_id}/locations/{location_id}/datasets/{datase
@@ -4613,7 +4617,8 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSearchForInstancesReq
 
   Fields:
     dicomWebPath: Required. The path of the SearchForInstancesRequest DICOMweb
-      request. For example, `instances`, `series/{series_uid}/instances`, or
+      request. For example, `instances`,
+      `studies/{study_uid}/series/{series_uid}/instances`, or
       `studies/{study_uid}/instances`.
     parent: Required. The name of the DICOM store that is being accessed. For
       example, `projects/{project_id}/locations/{location_id}/datasets/{datase
@@ -4843,7 +4848,8 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesSearchForInstan
 
   Fields:
     dicomWebPath: Required. The path of the SearchForInstancesRequest DICOMweb
-      request. For example, `instances`, `series/{series_uid}/instances`, or
+      request. For example, `instances`,
+      `studies/{study_uid}/series/{series_uid}/instances`, or
       `studies/{study_uid}/instances`.
     parent: Required. The name of the DICOM store that is being accessed. For
       example, `projects/{project_id}/locations/{location_id}/datasets/{datase
@@ -5014,9 +5020,9 @@ class HealthcareProjectsLocationsDatasetsFhirStoresBulkExportGroupRequest(_messa
     name: Required. Name of the `Group` resource that is exported, in format `
       projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/fhir
       Stores/{fhir_store_id}/fhir/Group/{group_id}`.
-    organizeOutputBy: Optional. Required. The FHIR resource type used to
-      organize exported resources. Only supports "Patient". When organized by
-      Patient resource, output files are grouped as follows: * Patient file(s)
+    organizeOutputBy: Required. The FHIR resource type used to organize
+      exported resources. Only supports "Patient". When organized by Patient
+      resource, output files are grouped as follows: * Patient file(s)
       containing the Patient resources. Each Patient is sequentially followed
       by all resources the Patient references, and all resources that
       reference the Patient (equivalent to a GetPatientEverything request). *
@@ -5637,20 +5643,7 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirSearchRequest(_messages.M
   r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirSearchRequest object.
 
   Fields:
-    parent: Required. Name of the FHIR store to retrieve resources from.
-    searchResourcesRequest: A SearchResourcesRequest resource to be passed as
-      the request body.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  searchResourcesRequest = _messages.MessageField('SearchResourcesRequest', 2)
-
-
-class HealthcareProjectsLocationsDatasetsFhirStoresFhirSearchTypeRequest(_messages.Message):
-  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirSearchTypeRequest
-  object.
-
-  Fields:
+    httpBody: A HttpBody resource to be passed as the request body.
     parent: Required. Name of the FHIR store to retrieve resources from.
     resourceType: Optional. The FHIR resource type to search, such as Patient
       or Observation. For a complete list, see the FHIR Resource Index
@@ -5658,13 +5651,31 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirSearchTypeRequest(_messag
       [STU3](https://hl7.org/fhir/STU3/resourcelist.html),
       [R4](https://hl7.org/fhir/R4/resourcelist.html),
       [R5](https://hl7.org/fhir/R5/resourcelist.html)).
-    searchResourcesRequest: A SearchResourcesRequest resource to be passed as
-      the request body.
   """
 
-  parent = _messages.StringField(1, required=True)
-  resourceType = _messages.StringField(2, required=True)
-  searchResourcesRequest = _messages.MessageField('SearchResourcesRequest', 3)
+  httpBody = _messages.MessageField('HttpBody', 1)
+  parent = _messages.StringField(2, required=True)
+  resourceType = _messages.StringField(3)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirSearchTypeRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirSearchTypeRequest
+  object.
+
+  Fields:
+    httpBody: A HttpBody resource to be passed as the request body.
+    parent: Required. Name of the FHIR store to retrieve resources from.
+    resourceType: Optional. The FHIR resource type to search, such as Patient
+      or Observation. For a complete list, see the FHIR Resource Index
+      ([DSTU2](https://hl7.org/fhir/DSTU2/resourcelist.html),
+      [STU3](https://hl7.org/fhir/STU3/resourcelist.html),
+      [R4](https://hl7.org/fhir/R4/resourcelist.html),
+      [R5](https://hl7.org/fhir/R5/resourcelist.html)).
+  """
+
+  httpBody = _messages.MessageField('HttpBody', 1)
+  parent = _messages.StringField(2, required=True)
+  resourceType = _messages.StringField(3, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsFhirStoresFhirUpdateRequest(_messages.Message):
@@ -6449,12 +6460,20 @@ class HealthcareProjectsLocationsDatasetsOperationsListRequest(_messages.Message
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class HealthcareProjectsLocationsDatasetsPatchRequest(_messages.Message):
@@ -7333,10 +7352,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListUserDataMappingsResponse(_messages.Message):
@@ -7688,23 +7712,23 @@ class Options(_messages.Message):
   Enums:
     PrimaryIdsValueValuesEnum: Set `Action` for [`StudyInstanceUID`,
       `SeriesInstanceUID`, `SOPInstanceUID`, and `MediaStorageSOPInstanceUID`]
-      (http://dicom.nema.org/medical/dicom/2018e/output/chtml/part06/chapter_6
-      .html).
+      (https://dicom.nema.org/medical/dicom/2018e/output/chtml/part06/chapter_
+      6.html).
 
   Fields:
     cleanDescriptors: Set Clean Descriptors Option.
-    cleanImage: Apply `Action.clean_image` to [`PixelData`](http://dicom.nema.
-      org/medical/dicom/2018e/output/chtml/part06/chapter_6.html) as
+    cleanImage: Apply `Action.clean_image` to [`PixelData`](https://dicom.nema
+      .org/medical/dicom/2018e/output/chtml/part06/chapter_6.html) as
       configured.
     primaryIds: Set `Action` for [`StudyInstanceUID`, `SeriesInstanceUID`,
-      `SOPInstanceUID`, and `MediaStorageSOPInstanceUID`](http://dicom.nema.or
-      g/medical/dicom/2018e/output/chtml/part06/chapter_6.html).
+      `SOPInstanceUID`, and `MediaStorageSOPInstanceUID`](https://dicom.nema.o
+      rg/medical/dicom/2018e/output/chtml/part06/chapter_6.html).
   """
 
   class PrimaryIdsValueValuesEnum(_messages.Enum):
     r"""Set `Action` for [`StudyInstanceUID`, `SeriesInstanceUID`,
-    `SOPInstanceUID`, and `MediaStorageSOPInstanceUID`](http://dicom.nema.org/
-    medical/dicom/2018e/output/chtml/part06/chapter_6.html).
+    `SOPInstanceUID`, and `MediaStorageSOPInstanceUID`](https://dicom.nema.org
+    /medical/dicom/2018e/output/chtml/part06/chapter_6.html).
 
     Values:
       PRIMARY_IDS_OPTION_UNSPECIFIED: No value provided. Default to the
@@ -8030,8 +8054,8 @@ class QueryAccessibleDataResponse(_messages.Message):
 
 class RecurseTag(_messages.Message):
   r"""Recursively apply DICOM de-id to tags nested in a sequence. Supported
-  [Value Representation] (http://dicom.nema.org/medical/dicom/2018e/output/cht
-  ml/part05/sect_6.2.html#table_6.2-1): SQ
+  [Value Representation] (https://dicom.nema.org/medical/dicom/2018e/output/ch
+  tml/part05/sect_6.2.html#table_6.2-1): SQ
   """
 
 
@@ -8045,8 +8069,8 @@ class RedactConfig(_messages.Message):
 
 class RegenUidTag(_messages.Message):
   r"""Replace UID with a new generated UID. Supported [Value Representation] (
-  http://dicom.nema.org/medical/dicom/2018e/output/chtml/part05/sect_6.2.html#
-  table_6.2-1): UI
+  https://dicom.nema.org/medical/dicom/2018e/output/chtml/part05/sect_6.2.html
+  #table_6.2-1): UI
   """
 
 
@@ -8514,21 +8538,6 @@ class SearchParameter(_messages.Message):
   parameter = _messages.StringField(2)
 
 
-class SearchResourcesRequest(_messages.Message):
-  r"""Request to search the resources in the specified FHIR store.
-
-  Fields:
-    resourceType: Optional. The FHIR resource type to search, such as Patient
-      or Observation. For a complete list, see the FHIR Resource Index
-      ([DSTU2](https://hl7.org/fhir/DSTU2/resourcelist.html),
-      [STU3](https://hl7.org/fhir/STU3/resourcelist.html),
-      [R4](https://hl7.org/fhir/R4/resourcelist.html),
-      [R5](https://hl7.org/fhir/R5/resourcelist.html)).
-  """
-
-  resourceType = _messages.StringField(1)
-
-
 class Segment(_messages.Message):
   r"""A segment in a structured format.
 
@@ -8942,9 +8951,9 @@ class TagFilterList(_messages.Message):
 
   Fields:
     tags: Tags to be filtered. Tags must be DICOM Data Elements, File Meta
-      Elements, or Directory Structuring Elements, as defined at: http://dicom
-      .nema.org/medical/dicom/current/output/html/part06.html#table_6-1,. They
-      may be provided by "Keyword" or "Tag". For example, "PatientID",
+      Elements, or Directory Structuring Elements, as defined at: https://dico
+      m.nema.org/medical/dicom/current/output/html/part06.html#table_6-1,.
+      They may be provided by "Keyword" or "Tag". For example, "PatientID",
       "00100010".
   """
 
@@ -9189,9 +9198,10 @@ class ValidationConfig(_messages.Message):
       Healthcare API does not currently enforce all of the rules in a
       StructureDefinition. The following rules are supported: - min/max -
       minValue/maxValue - maxLength - type - fixed[x] - pattern[x] on simple
-      types - slicing, when using "value" as the discriminator type When a URL
-      cannot be resolved (for example, in a type assertion), the server does
-      not return an error.
+      types - slicing, when using "value" as the discriminator type - FHIRPath
+      constraints (only when `enable_fhirpath_profile_validation` is true)
+      When a URL cannot be resolved (for example, in a type assertion), the
+      server does not return an error.
   """
 
   disableFhirpathValidation = _messages.BooleanField(1)

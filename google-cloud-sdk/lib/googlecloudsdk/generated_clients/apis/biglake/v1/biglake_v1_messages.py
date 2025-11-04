@@ -246,8 +246,9 @@ class BiglakeIcebergV1RestcatalogV1ProjectsCatalogsNamespacesListRequest(_messag
     pageSize: Optional. For servers that support pagination, this signals an
       upper bound of the number of results that a client will receive. For
       servers that do not support pagination, clients may receive results
-      larger than the indicated `pageSize`.
-    pageToken: Optional. PageToken
+      larger than the indicated `pageSize`. Defaults to 100 if not set.
+    pageToken: Optional. Specify the page_token returned in the previous
+      response to retrieve the next page of results.
     parent: Optional. An optional namespace, underneath which to list
       namespaces. If not provided or empty, all top-level namespaces should be
       listed. If parent is a multipart namespace, the parts must be separated
@@ -795,6 +796,7 @@ class IcebergCatalog(_messages.Message):
     name: Identifier. The catalog name, `projects/my-project/catalogs/my-
       catalog`. This field is immutable. This field is ignored for
       CreateIcebergCatalog.
+    replicas: Output only. The replicas for the catalog metadata.
     storage_regions: Output only. The GCP region(s) where the physical
       metadata for the tables is stored, e.g. `us-central1`, `nam4` or `us`.
       This will contain one value for all locations, except for the catalogs
@@ -841,8 +843,9 @@ class IcebergCatalog(_messages.Message):
   credential_mode = _messages.EnumField('CredentialModeValueValuesEnum', 4)
   default_location = _messages.StringField(5)
   name = _messages.StringField(6)
-  storage_regions = _messages.StringField(7, repeated=True)
-  update_time = _messages.StringField(8)
+  replicas = _messages.MessageField('Replica', 7, repeated=True)
+  storage_regions = _messages.StringField(8, repeated=True)
+  update_time = _messages.StringField(9)
 
 
 class IcebergCatalogConfig(_messages.Message):
@@ -1024,6 +1027,8 @@ class ListIcebergNamespacesResponse(_messages.Message):
   Fields:
     namespaces: The list of namespaces.
     next_page_token: The next page token for pagination.
+    unreachable: Output only. A list of skipped locations that were
+      unreachable. If non-empty, the result set might be incomplete.
   """
 
   class NamespacesValueListEntry(_messages.Message):
@@ -1037,6 +1042,7 @@ class ListIcebergNamespacesResponse(_messages.Message):
 
   namespaces = _messages.MessageField('NamespacesValueListEntry', 1, repeated=True)
   next_page_token = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListIcebergTableIdentifiersResponse(_messages.Message):
@@ -1153,6 +1159,36 @@ class RegisterIcebergTableRequest(_messages.Message):
   metadata_location = _messages.StringField(1)
   name = _messages.StringField(2)
   overwrite = _messages.BooleanField(3)
+
+
+class Replica(_messages.Message):
+  r"""The replica of the Catalog.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the replica.
+
+  Fields:
+    region: Output only. The region of the replica. For example "us-east1"
+    state: Output only. The current state of the replica.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the replica.
+
+    Values:
+      STATE_UNKNOWN: The replica state is unknown.
+      STATE_PRIMARY: The replica is the writable primary.
+      STATE_PRIMARY_IN_PROGRESS: The replica has been recently assigned as the
+        primary, but not all namespaces are writeable yet.
+      STATE_SECONDARY: The replica is a read-only secondary replica.
+    """
+    STATE_UNKNOWN = 0
+    STATE_PRIMARY = 1
+    STATE_PRIMARY_IN_PROGRESS = 2
+    STATE_SECONDARY = 3
+
+  region = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
 class SetIamPolicyRequest(_messages.Message):

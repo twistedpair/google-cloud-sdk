@@ -37,8 +37,8 @@ properties:
       The value of this field determines how TLS is enforced. This can be set to
       one of the following values: DISABLE: Do not setup a TLS connection to the
       backends. SIMPLE: Originate a TLS connection to the backends. MUTUAL:
-      Secure connections to the backends using mutual TLS by presenting client
-      certificates for authentication.
+      Secure connections to the backends using mutual TLS by presenting
+      client certificates for authentication.
     type: string
     enum:
     - DISABLE

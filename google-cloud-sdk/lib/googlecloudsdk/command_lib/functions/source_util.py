@@ -15,15 +15,18 @@
 """Version-agnostic utilities for function source code."""
 
 from __future__ import absolute_import
+from __future__ import annotations
 from __future__ import division
 from __future__ import unicode_literals
 
+import abc
+import http
 import os
 import random
 import re
 import string
 import time
-from typing import Dict, Optional
+from typing import Dict
 
 from apitools.base.py import exceptions as http_exceptions
 from apitools.base.py import http_wrapper
@@ -39,23 +42,66 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core import transports
 from googlecloudsdk.core.util import archive
 from googlecloudsdk.core.util import files as file_utils
-import six
-from six.moves import http_client
-from six.moves import range
 
 # List of required files for each runtime per
 # https://cloud.google.com/functions/docs/writing#directory-structure
 # To keep things simple we don't check for file extensions, just required files.
 # Every language except dotnet and java have a required file with an invariant
 # name.
-_REQUIRED_SOURCE_FILES = {
-    'dotnet': [],
-    'go': ['go.mod'],
-    'java': [],
-    'nodejs': ['package.json'],
-    'php': ['index.php', 'composer.json'],
-    'python': ['main.py', 'requirements.txt'],
-    'ruby': ['app.rb', 'Gemfile'],
+
+
+class RequiredFilesStrategy(object, metaclass=abc.ABCMeta):
+  """Abstract base class for required files validation strategy."""
+
+  @abc.abstractmethod
+  def Validate(self, files_in_source_dir: list[str], runtime: str) -> None:
+    raise NotImplementedError()
+
+
+class AllFilesPresentStrategy(RequiredFilesStrategy):
+  """Strategy that requires all specified files to be present."""
+
+  def __init__(self, required_files: list[str]):
+    super(AllFilesPresentStrategy, self).__init__()
+    self._required_files = required_files
+
+  def Validate(self, files_in_source_dir: list[str], runtime: str) -> None:
+    for f in self._required_files:
+      if f not in files_in_source_dir:
+        raise exceptions.SourceArgumentError(
+            f'Provided source directory does not have file [{f}] which is '
+            f'required for [{runtime}]. Did you specify the right source?'
+        )
+
+
+class PythonRequiredFilesStrategy(RequiredFilesStrategy):
+  """Strategy for Python runtime required files validation."""
+
+  def Validate(self, files_in_source_dir: list[str], runtime: str) -> None:
+    if 'main.py' not in files_in_source_dir:
+      raise exceptions.SourceArgumentError(
+          'Provided source directory does not have file [main.py] which is '
+          f'required for [{runtime}]. Did you specify the right source?'
+      )
+    if (
+        'requirements.txt' not in files_in_source_dir
+        and 'pyproject.toml' not in files_in_source_dir
+    ):
+      raise exceptions.SourceArgumentError(
+          'Provided source directory does not have file [requirements.txt or '
+          f'pyproject.toml] which is required for [{runtime}]. Did you '
+          'specify the right source?'
+      )
+
+
+_REQUIRED_SOURCE_STRATEGIES = {
+    'dotnet': AllFilesPresentStrategy([]),
+    'go': AllFilesPresentStrategy(['go.mod']),
+    'java': AllFilesPresentStrategy([]),
+    'nodejs': AllFilesPresentStrategy(['package.json']),
+    'php': AllFilesPresentStrategy(['index.php', 'composer.json']),
+    'python': PythonRequiredFilesStrategy(),
+    'ruby': AllFilesPresentStrategy(['app.rb', 'Gemfile']),
 }
 
 
@@ -65,7 +111,9 @@ def _GcloudIgnoreCreationPredicate(directory: str) -> bool:
   )
 
 
-def _GetChooser(path: str, ignore_file: str) -> gcloudignore.FileChooser:
+def _GetChooser(
+    path: str, ignore_file: str | None = None
+) -> gcloudignore.FileChooser:
   default_ignore_file = gcloudignore.DEFAULT_IGNORE_FILE + '\nnode_modules\n'
 
   return gcloudignore.GetFileChooserForDir(
@@ -96,7 +144,7 @@ def _ValidateDirectoryExistsOrRaise(directory: str) -> None:
 
 
 def _ValidateUnpackedSourceSize(
-    path: str, ignore_file: Optional[str] = None
+    path: str, ignore_file: str | None = None
 ) -> None:
   """Validate size of unpacked source files."""
   chooser = _GetChooser(path, ignore_file)
@@ -114,7 +162,7 @@ def _ValidateUnpackedSourceSize(
   size_limit_b = size_limit_mb * 2**20
   if size_b > size_limit_b:
     raise exceptions.OversizedDeploymentError(
-        six.text_type(size_b) + 'B', six.text_type(size_limit_b) + 'B'
+        str(size_b) + 'B', str(size_limit_b) + 'B'
     )
 
 
@@ -123,19 +171,16 @@ def ValidateDirectoryHasRequiredRuntimeFiles(source: str, runtime: str) -> None:
   _ValidateDirectoryExistsOrRaise(source)
 
   versionless_runtime = re.sub(r'[0-9]', '', runtime)
-  files = os.listdir(source)
-  for f in _REQUIRED_SOURCE_FILES[versionless_runtime]:
-    if f not in files:
-      raise exceptions.SourceArgumentError(
-          f'Provided source directory does not have file [{f}] which is '
-          f'required for [{runtime}]. Did you specify the right source?'
-      )
+  files_in_source_dir = os.listdir(source)
+  strategy = _REQUIRED_SOURCE_STRATEGIES.get(versionless_runtime)
+  if strategy:
+    strategy.Validate(files_in_source_dir, runtime)
 
 
 def CreateSourcesZipFile(
     zip_dir: str,
     source_path: str,
-    ignore_file: Optional[str] = None,
+    ignore_file: str | None = None,
     enforce_size_limit=False,
 ) -> str:
   """Prepare zip file with source of the function to upload.
@@ -171,7 +216,7 @@ def CreateSourcesZipFile(
   except ValueError as e:
     raise exceptions.FunctionsError(
         'Error creating a ZIP archive with the source code '
-        'for directory {0}: {1}'.format(source_path, six.text_type(e))
+        'for directory {0}: {1}'.format(source_path, str(e))
     )
   return zip_file_name
 
@@ -213,13 +258,13 @@ def UploadToStageBucket(
 def _UploadFileToGeneratedUrlCheckResponse(
     response: http_wrapper.Response,
 ) -> http_wrapper.CheckResponse:
-  if response.status_code == http_client.FORBIDDEN:
+  if response.status_code == http.HTTPStatus.FORBIDDEN:
     raise http_exceptions.HttpForbiddenError.FromResponse(response)
   return http_wrapper.CheckResponse(response)
 
 
 def UploadToGeneratedUrl(
-    source_zip: str, url: str, extra_headers: Optional[Dict[str, str]] = None
+    source_zip: str, url: str, extra_headers: Dict[str, str] | None = None
 ) -> None:
   """Upload the given source ZIP file to provided generated URL.
 

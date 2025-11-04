@@ -1321,7 +1321,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
         method_id='gkemulticloud.projects.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1/{+name}/operations',
         request_field='',
         request_type_name='GkemulticloudProjectsLocationsOperationsListRequest',

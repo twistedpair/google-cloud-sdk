@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.compute import instance_utils
 from googlecloudsdk.api_lib.compute.instances.create import utils as create_utils
+from googlecloudsdk.calliope.exceptions import InvalidArgumentException
 from googlecloudsdk.command_lib.compute import resource_manager_tags_utils
 from googlecloudsdk.command_lib.compute import secure_tags_utils
 from googlecloudsdk.command_lib.compute.resource_policies import util as maintenance_util
@@ -45,6 +46,8 @@ class SupportedFeatures:
       support_source_snapshot_region,
       support_skip_guest_os_shutdown,
       support_preemption_notice_duration,
+      support_instance_flexibility_policy,
+      support_workload_identity_config,
   ):
     self.support_secure_tags = support_secure_tags
     self.support_display_device = support_display_device
@@ -59,6 +62,10 @@ class SupportedFeatures:
     self.support_source_snapshot_region = support_source_snapshot_region
     self.support_skip_guest_os_shutdown = support_skip_guest_os_shutdown
     self.support_preemption_notice_duration = support_preemption_notice_duration
+    self.support_instance_flexibility_policy = (
+        support_instance_flexibility_policy
+    )
+    self.support_workload_identity_config = support_workload_identity_config
 
 
 def _GetSourceInstanceTemplate(args, resources, instance_template_resource):
@@ -197,6 +204,95 @@ def _GetPerInstanceProperties(
   return encoding.DictToAdditionalPropertyMessage(
       per_instance_properties,
       messages.BulkInsertInstanceResource.PerInstancePropertiesValue,
+  )
+
+
+def _DictToAttachedDiskMessage(disk_dict, messages):
+  """Converts a Python dict to a Compute API AttachedDisk message."""
+  return encoding.DictToMessage(disk_dict, messages.AttachedDisk)
+
+
+def _CreateInstanceFlexibilityPolicy(args, messages):
+  """Creates an InstanceFlexibilityPolicy message from the given arguments."""
+  instance_selections = []
+  if args.IsSpecified('instance_selection_machine_types'):
+    _AddInstanceSelection(
+        messages,
+        instance_selections,
+        'default-selection',
+        args.instance_selection_machine_types,
+        None,
+    )
+  elif args.IsSpecified('instance_selection'):
+    for instance_selection in args.instance_selection:
+      name = instance_selection['name']
+      machine_types = instance_selection['machine-type']
+      rank = None
+      if 'rank' in instance_selection:
+        rank = instance_selection['rank']
+        rank = int(rank)
+      api_disks = []
+      if 'disk' in instance_selection:
+        for disk_dict in instance_selection['disk']:
+          try:
+            api_disks.append(_DictToAttachedDiskMessage(disk_dict, messages))
+          except InvalidArgumentException as e:
+            raise InvalidArgumentException(
+                'instance_selection',
+                f'Invalid disk format in instance selection "{name}": {e} -'
+                f' Received: {disk_dict}',
+            )
+      _AddInstanceSelection(
+          messages,
+          instance_selections,
+          name,
+          machine_types,
+          rank,
+          api_disks=api_disks if api_disks else None,
+      )
+  if not instance_selections:
+    return None
+  return messages.InstanceFlexibilityPolicy.InstanceSelectionsValue(
+      additionalProperties=instance_selections
+  )
+
+
+def _AddInstanceSelection(
+    messages,
+    instance_selections,
+    instance_selection_name,
+    machine_types,
+    rank,
+    api_disks=None,
+):
+  """Adds instance selection to instance selections list."""
+  for instance_selection in instance_selections:
+    if instance_selection.key == instance_selection_name:
+      if instance_selection.value is not None:
+        raise InvalidArgumentException(
+            'instance_selection',
+            'Attempt to add multiple instance selections with the same name.',
+        )
+      instance_selections.remove(
+          messages.InstanceFlexibilityPolicy.InstanceSelectionsValue.AdditionalProperty(
+              key=instance_selection_name,
+              value=None,
+          )
+      )
+  instance_selection_payload = (
+      messages.InstanceFlexibilityPolicyInstanceSelection(
+          machineTypes=machine_types
+      )
+  )
+  if rank is not None:
+    instance_selection_payload.rank = rank
+  if api_disks:
+    instance_selection_payload.disks = api_disks
+  instance_selections.append(
+      messages.InstanceFlexibilityPolicy.InstanceSelectionsValue.AdditionalProperty(
+          key=instance_selection_name,
+          value=instance_selection_payload,
+      )
   )
 
 
@@ -409,6 +505,11 @@ def CreateBulkInsertInstanceResource(
   reservation_affinity = instance_utils.GetReservationAffinity(
       args, compute_client, supported_features.support_specific_then_x_affinity
   )
+  workload_identity_config = instance_utils.CreateWorkloadIdentityConfigMessage(
+      args,
+      compute_client.messages,
+      supported_features.support_workload_identity_config,
+  )
 
   instance_properties = compute_client.messages.InstanceProperties(
       canIpForward=can_ip_forward,
@@ -428,6 +529,10 @@ def CreateBulkInsertInstanceResource(
       reservationAffinity=reservation_affinity,
       advancedMachineFeatures=advanced_machine_features,
   )
+
+  if (supported_features.support_workload_identity_config
+      and workload_identity_config):
+    instance_properties.workloadIdentityConfig = workload_identity_config
 
   if supported_features.support_secure_tags and args.secure_tags:
     instance_properties.secureTags = secure_tags_utils.GetSecureTags(
@@ -474,12 +579,26 @@ def CreateBulkInsertInstanceResource(
         instance_utils.GetNetworkPerformanceConfig(args, compute_client)
     )
 
-  return compute_client.messages.BulkInsertInstanceResource(
-      count=instance_count,
-      instanceProperties=instance_properties,
-      minCount=instance_min_count,
-      perInstanceProperties=per_instance_props,
-      sourceInstanceTemplate=source_instance_template,
-      namePattern=name_pattern,
-      locationPolicy=location_policy,
-  )
+  kwargs = {
+      'count': instance_count,
+      'instanceProperties': instance_properties,
+      'minCount': instance_min_count,
+      'perInstanceProperties': per_instance_props,
+      'sourceInstanceTemplate': source_instance_template,
+      'namePattern': name_pattern,
+      'locationPolicy': location_policy,
+  }
+
+  if supported_features.support_instance_flexibility_policy:
+    instance_selections_value = _CreateInstanceFlexibilityPolicy(
+        args, compute_client.messages
+    )
+    if instance_selections_value:
+      instance_flexibility_policy_obj = (
+          compute_client.messages.InstanceFlexibilityPolicy(
+              instanceSelections=instance_selections_value
+          )
+      )
+      kwargs['instanceFlexibilityPolicy'] = instance_flexibility_policy_obj
+
+  return compute_client.messages.BulkInsertInstanceResource(**kwargs)

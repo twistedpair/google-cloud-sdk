@@ -38,6 +38,7 @@ from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.command_lib.util import crc32c
 from googlecloudsdk.core import gapic_util
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 import six
 
 # TODO: b/441010615 - Remove this constant once the flush size is configurable
@@ -96,6 +97,10 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
     )
     self._buffer = collections.deque(maxlen=self._get_max_buffer_size())
     self._initial_request = None
+    self._should_finalize_writes = (
+        properties.VALUES.storage.bidi_streaming_finalize_writes.GetBool()
+    )
+    self._finalized_resource = None
 
   def _get_max_buffer_size(self):
     """Returns the maximum buffer size."""
@@ -149,6 +154,14 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
       ):
         self._start_offset = response.persisted_size
         break
+      elif response.resource:
+        self._finalized_resource = (
+            metadata_util.get_object_resource_from_grpc_object(
+                response.resource
+            )
+        )
+        break
+
     self._buffer.clear()
 
   def _update_initial_request(self, response):
@@ -262,6 +275,7 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
                 ),
                 flush=should_flush,
                 state_lookup=should_flush,
+                finish_write=(finish_write and self._should_finalize_writes),
             )
         )
         self._uploaded_so_far += length_of_data
@@ -374,6 +388,10 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
       self,
   ) -> resource_reference.ObjectResource:
     """Returns the object metadata after the upload."""
+    # For finalized objects, the object metadata is returned in the response of
+    # the last request(i.e. the request with finish_write set).
+    if self._finalized_resource:
+      return self._finalized_resource
     read_request = self._client.types.BidiReadObjectRequest(
         read_object_spec=self._client.types.BidiReadObjectSpec(
             bucket=self._initial_request.append_object_spec.bucket,

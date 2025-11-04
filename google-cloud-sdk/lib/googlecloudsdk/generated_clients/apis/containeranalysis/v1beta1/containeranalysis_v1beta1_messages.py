@@ -3640,6 +3640,7 @@ class Discovery(_messages.Message):
       SPDX_RELATIONSHIP: This represents an SPDX Relationship.
       VULNERABILITY_ASSESSMENT: This represents a Vulnerability Assessment.
       SBOM_REFERENCE: This represents an SBOM Reference.
+      SECRET: This represents a secret.
     """
     NOTE_KIND_UNSPECIFIED = 0
     VULNERABILITY = 1
@@ -3656,6 +3657,7 @@ class Discovery(_messages.Message):
     SPDX_RELATIONSHIP = 12
     VULNERABILITY_ASSESSMENT = 13
     SBOM_REFERENCE = 14
+    SECRET = 15
 
   analysisKind = _messages.EnumField('AnalysisKindValueValuesEnum', 1)
 
@@ -3983,6 +3985,17 @@ class FileHashes(_messages.Message):
   """
 
   fileHash = _messages.MessageField('Hash', 1, repeated=True)
+
+
+class FileLocation(_messages.Message):
+  r"""Indicates the location at which a package was found.
+
+  Fields:
+    filePath: For jars that are contained inside .war files, this filepath can
+      indicate the path to war file combined with the path to jar file.
+  """
+
+  filePath = _messages.StringField(1)
 
 
 class FileNote(_messages.Message):
@@ -4913,6 +4926,7 @@ class Note(_messages.Message):
     relatedUrl: URLs associated with this note.
     sbom: A note describing a software bill of materials.
     sbomReference: A note describing an SBOM reference.
+    secret: A note describing a secret.
     shortDescription: A one sentence description of this note.
     spdxFile: A note describing an SPDX File.
     spdxPackage: A note describing an SPDX Package.
@@ -4946,6 +4960,7 @@ class Note(_messages.Message):
       SPDX_RELATIONSHIP: This represents an SPDX Relationship.
       VULNERABILITY_ASSESSMENT: This represents a Vulnerability Assessment.
       SBOM_REFERENCE: This represents an SBOM Reference.
+      SECRET: This represents a secret.
     """
     NOTE_KIND_UNSPECIFIED = 0
     VULNERABILITY = 1
@@ -4962,6 +4977,7 @@ class Note(_messages.Message):
     SPDX_RELATIONSHIP = 12
     VULNERABILITY_ASSESSMENT = 13
     SBOM_REFERENCE = 14
+    SECRET = 15
 
   attestationAuthority = _messages.MessageField('Authority', 1)
   baseImage = _messages.MessageField('Basis', 2)
@@ -4979,13 +4995,14 @@ class Note(_messages.Message):
   relatedUrl = _messages.MessageField('RelatedUrl', 14, repeated=True)
   sbom = _messages.MessageField('DocumentNote', 15)
   sbomReference = _messages.MessageField('SBOMReferenceNote', 16)
-  shortDescription = _messages.StringField(17)
-  spdxFile = _messages.MessageField('FileNote', 18)
-  spdxPackage = _messages.MessageField('PackageInfoNote', 19)
-  spdxRelationship = _messages.MessageField('RelationshipNote', 20)
-  updateTime = _messages.StringField(21)
-  vulnerability = _messages.MessageField('Vulnerability', 22)
-  vulnerabilityAssessment = _messages.MessageField('VulnerabilityAssessmentNote', 23)
+  secret = _messages.MessageField('SecretNote', 17)
+  shortDescription = _messages.StringField(18)
+  spdxFile = _messages.MessageField('FileNote', 19)
+  spdxPackage = _messages.MessageField('PackageInfoNote', 20)
+  spdxRelationship = _messages.MessageField('RelationshipNote', 21)
+  updateTime = _messages.StringField(22)
+  vulnerability = _messages.MessageField('Vulnerability', 23)
+  vulnerabilityAssessment = _messages.MessageField('VulnerabilityAssessmentNote', 24)
 
 
 class Occurrence(_messages.Message):
@@ -5021,6 +5038,7 @@ class Occurrence(_messages.Message):
       applies.
     sbom: Describes a specific software bill of materials document.
     sbomReference: Describes a specific SBOM reference occurrences.
+    secret: Describes a secret.
     spdxFile: Describes a specific SPDX File.
     spdxPackage: Describes a specific SPDX Package.
     spdxRelationship: Describes a specific SPDX Relationship.
@@ -5051,6 +5069,7 @@ class Occurrence(_messages.Message):
       SPDX_RELATIONSHIP: This represents an SPDX Relationship.
       VULNERABILITY_ASSESSMENT: This represents a Vulnerability Assessment.
       SBOM_REFERENCE: This represents an SBOM Reference.
+      SECRET: This represents a secret.
     """
     NOTE_KIND_UNSPECIFIED = 0
     VULNERABILITY = 1
@@ -5067,6 +5086,7 @@ class Occurrence(_messages.Message):
     SPDX_RELATIONSHIP = 12
     VULNERABILITY_ASSESSMENT = 13
     SBOM_REFERENCE = 14
+    SECRET = 15
 
   attestation = _messages.MessageField('Details', 1)
   build = _messages.MessageField('GrafeasV1beta1BuildDetails', 2)
@@ -5084,11 +5104,12 @@ class Occurrence(_messages.Message):
   resource = _messages.MessageField('Resource', 14)
   sbom = _messages.MessageField('DocumentOccurrence', 15)
   sbomReference = _messages.MessageField('SBOMReferenceOccurrence', 16)
-  spdxFile = _messages.MessageField('FileOccurrence', 17)
-  spdxPackage = _messages.MessageField('PackageInfoOccurrence', 18)
-  spdxRelationship = _messages.MessageField('RelationshipOccurrence', 19)
-  updateTime = _messages.StringField(20)
-  vulnerability = _messages.MessageField('GrafeasV1beta1VulnerabilityDetails', 21)
+  secret = _messages.MessageField('SecretOccurrence', 17)
+  spdxFile = _messages.MessageField('FileOccurrence', 18)
+  spdxPackage = _messages.MessageField('PackageInfoOccurrence', 19)
+  spdxRelationship = _messages.MessageField('RelationshipOccurrence', 20)
+  updateTime = _messages.StringField(21)
+  vulnerability = _messages.MessageField('GrafeasV1beta1VulnerabilityDetails', 22)
 
 
 class Package(_messages.Message):
@@ -6120,6 +6141,131 @@ class SbomReferenceIntotoPredicate(_messages.Message):
   location = _messages.StringField(2)
   mimeType = _messages.StringField(3)
   referrerId = _messages.StringField(4)
+
+
+class SecretLocation(_messages.Message):
+  r"""The location of the secret.
+
+  Fields:
+    fileLocation: The secret is found from a file.
+  """
+
+  fileLocation = _messages.MessageField('FileLocation', 1)
+
+
+class SecretNote(_messages.Message):
+  r"""The note representing a secret."""
+
+
+class SecretOccurrence(_messages.Message):
+  r"""The occurrence provides details of a secret.
+
+  Enums:
+    KindValueValuesEnum: Required. Type of secret.
+
+  Fields:
+    kind: Required. Type of secret.
+    locations: Optional. Locations where the secret is detected.
+    statuses: Optional. Status of the secret.
+  """
+
+  class KindValueValuesEnum(_messages.Enum):
+    r"""Required. Type of secret.
+
+    Values:
+      SECRET_KIND_UNSPECIFIED: Unspecified
+      SECRET_KIND_UNKNOWN: The secret kind is unknown.
+      SECRET_KIND_GCP_SERVICE_ACCOUNT_KEY: A Google Cloud service account key
+        per: https://cloud.google.com/iam/docs/creating-managing-service-
+        account-keys
+      SECRET_KIND_GCP_API_KEY: A Google Cloud API key per:
+        https://cloud.google.com/docs/authentication/api-keys
+      SECRET_KIND_GCP_OAUTH2_CLIENT_CREDENTIALS: A Google Cloud OAuth2 client
+        credentials per:
+        https://developers.google.com/identity/protocols/oauth2
+      SECRET_KIND_GCP_OAUTH2_ACCESS_TOKEN: A Google Cloud OAuth2 access token
+        per: https://cloud.google.com/docs/authentication/token-types#access
+      SECRET_KIND_ANTHROPIC_ADMIN_API_KEY: An Anthropic Admin API key.
+      SECRET_KIND_ANTHROPIC_API_KEY: An Anthropic API key.
+      SECRET_KIND_AZURE_ACCESS_TOKEN: An Azure access token.
+      SECRET_KIND_AZURE_IDENTITY_TOKEN: An Azure Identity Platform ID token.
+      SECRET_KIND_DOCKER_HUB_PERSONAL_ACCESS_TOKEN: A Docker Hub personal
+        access token.
+      SECRET_KIND_GITHUB_APP_REFRESH_TOKEN: A GitHub App refresh token.
+      SECRET_KIND_GITHUB_APP_SERVER_TO_SERVER_TOKEN: A GitHub App server-to-
+        server token.
+      SECRET_KIND_GITHUB_APP_USER_TO_SERVER_TOKEN: A GitHub App user-to-server
+        token.
+      SECRET_KIND_GITHUB_CLASSIC_PERSONAL_ACCESS_TOKEN: A GitHub personal
+        access token (classic).
+      SECRET_KIND_GITHUB_FINE_GRAINED_PERSONAL_ACCESS_TOKEN: A GitHub fine-
+        grained personal access token.
+      SECRET_KIND_GITHUB_OAUTH_TOKEN: A GitHub OAuth token.
+      SECRET_KIND_HUGGINGFACE_API_KEY: A Hugging Face API key.
+      SECRET_KIND_OPENAI_API_KEY: An OpenAI API key.
+      SECRET_KIND_PERPLEXITY_API_KEY: A Perplexity API key.
+      SECRET_KIND_STRIPE_SECRET_KEY: A Stripe secret key.
+      SECRET_KIND_STRIPE_RESTRICTED_KEY: A Stripe restricted key.
+      SECRET_KIND_STRIPE_WEBHOOK_SECRET: A Stripe webhook secret.
+    """
+    SECRET_KIND_UNSPECIFIED = 0
+    SECRET_KIND_UNKNOWN = 1
+    SECRET_KIND_GCP_SERVICE_ACCOUNT_KEY = 2
+    SECRET_KIND_GCP_API_KEY = 3
+    SECRET_KIND_GCP_OAUTH2_CLIENT_CREDENTIALS = 4
+    SECRET_KIND_GCP_OAUTH2_ACCESS_TOKEN = 5
+    SECRET_KIND_ANTHROPIC_ADMIN_API_KEY = 6
+    SECRET_KIND_ANTHROPIC_API_KEY = 7
+    SECRET_KIND_AZURE_ACCESS_TOKEN = 8
+    SECRET_KIND_AZURE_IDENTITY_TOKEN = 9
+    SECRET_KIND_DOCKER_HUB_PERSONAL_ACCESS_TOKEN = 10
+    SECRET_KIND_GITHUB_APP_REFRESH_TOKEN = 11
+    SECRET_KIND_GITHUB_APP_SERVER_TO_SERVER_TOKEN = 12
+    SECRET_KIND_GITHUB_APP_USER_TO_SERVER_TOKEN = 13
+    SECRET_KIND_GITHUB_CLASSIC_PERSONAL_ACCESS_TOKEN = 14
+    SECRET_KIND_GITHUB_FINE_GRAINED_PERSONAL_ACCESS_TOKEN = 15
+    SECRET_KIND_GITHUB_OAUTH_TOKEN = 16
+    SECRET_KIND_HUGGINGFACE_API_KEY = 17
+    SECRET_KIND_OPENAI_API_KEY = 18
+    SECRET_KIND_PERPLEXITY_API_KEY = 19
+    SECRET_KIND_STRIPE_SECRET_KEY = 20
+    SECRET_KIND_STRIPE_RESTRICTED_KEY = 21
+    SECRET_KIND_STRIPE_WEBHOOK_SECRET = 22
+
+  kind = _messages.EnumField('KindValueValuesEnum', 1)
+  locations = _messages.MessageField('SecretLocation', 2, repeated=True)
+  statuses = _messages.MessageField('SecretStatus', 3, repeated=True)
+
+
+class SecretStatus(_messages.Message):
+  r"""The status of the secret with a timestamp.
+
+  Enums:
+    StatusValueValuesEnum: Optional. The status of the secret.
+
+  Fields:
+    message: Optional. Optional message about the status code.
+    status: Optional. The status of the secret.
+    updateTime: Optional. The time the secret status was last updated.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""Optional. The status of the secret.
+
+    Values:
+      STATUS_UNSPECIFIED: Unspecified
+      UNKNOWN: The status of the secret is unknown.
+      VALID: The secret is valid.
+      INVALID: The secret is invalid.
+    """
+    STATUS_UNSPECIFIED = 0
+    UNKNOWN = 1
+    VALID = 2
+    INVALID = 3
+
+  message = _messages.StringField(1)
+  status = _messages.EnumField('StatusValueValuesEnum', 2)
+  updateTime = _messages.StringField(3)
 
 
 class SetIamPolicyRequest(_messages.Message):

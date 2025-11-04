@@ -1138,6 +1138,60 @@ class EdgecontainerV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def DescribeKey(self, request, global_params=None):
+      r"""DescribeServiceAccountKey lists all the keys for the given service account resource.
+
+      Args:
+        request: (EdgecontainerProjectsLocationsServiceAccountsDescribeKeyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DescribeServiceAccountKeyResponse) The response message.
+      """
+      config = self.GetMethodConfig('DescribeKey')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DescribeKey.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/serviceAccounts/{serviceAccountsId}:describeKey',
+        http_method='POST',
+        method_id='edgecontainer.projects.locations.serviceAccounts.describeKey',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}:describeKey',
+        request_field='describeServiceAccountKeyRequest',
+        request_type_name='EdgecontainerProjectsLocationsServiceAccountsDescribeKeyRequest',
+        response_type_name='DescribeServiceAccountKeyResponse',
+        supports_download=False,
+    )
+
+    def DisableKey(self, request, global_params=None):
+      r"""DisableServiceAccountKey disables the given service account key.
+
+      Args:
+        request: (EdgecontainerProjectsLocationsServiceAccountsDisableKeyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DisableServiceAccountKeyResponse) The response message.
+      """
+      config = self.GetMethodConfig('DisableKey')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DisableKey.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/serviceAccounts/{serviceAccountsId}:disableKey',
+        http_method='POST',
+        method_id='edgecontainer.projects.locations.serviceAccounts.disableKey',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}:disableKey',
+        request_field='disableServiceAccountKeyRequest',
+        request_type_name='EdgecontainerProjectsLocationsServiceAccountsDisableKeyRequest',
+        response_type_name='DisableServiceAccountKeyResponse',
+        supports_download=False,
+    )
+
     def GenerateKey(self, request, global_params=None):
       r"""GenerateServiceAccountKey generates a keypair for the given service account resource.
 
@@ -1216,6 +1270,33 @@ class EdgecontainerV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='EdgecontainerProjectsLocationsServiceAccountsListRequest',
         response_type_name='ListServiceAccountsResponse',
+        supports_download=False,
+    )
+
+    def ListKeys(self, request, global_params=None):
+      r"""ListServiceAccountKeys lists all the keys for the given service account resource.
+
+      Args:
+        request: (EdgecontainerProjectsLocationsServiceAccountsListKeysRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListServiceAccountKeysResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListKeys')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListKeys.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/serviceAccounts/{serviceAccountsId}:listKeys',
+        http_method='POST',
+        method_id='edgecontainer.projects.locations.serviceAccounts.listKeys',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}:listKeys',
+        request_field='listServiceAccountKeysRequest',
+        request_type_name='EdgecontainerProjectsLocationsServiceAccountsListKeysRequest',
+        response_type_name='ListServiceAccountKeysResponse',
         supports_download=False,
     )
 

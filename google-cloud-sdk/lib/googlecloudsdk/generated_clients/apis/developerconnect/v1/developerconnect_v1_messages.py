@@ -1230,8 +1230,8 @@ class DeveloperconnectProjectsLocationsListRequest(_messages.Message):
   r"""A DeveloperconnectProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Unless explicitly documented otherwise,
-      don't use this unsupported field which is primarily intended for
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -1473,10 +1473,12 @@ class GitHubConfig(_messages.Message):
       GIT_HUB_APP_UNSPECIFIED: GitHub App not specified.
       DEVELOPER_CONNECT: The Developer Connect GitHub Application.
       FIREBASE: The Firebase GitHub Application.
+      GEMINI_CODE_ASSIST: The Gemini Code Assist Application.
     """
     GIT_HUB_APP_UNSPECIFIED = 0
     DEVELOPER_CONNECT = 1
     FIREBASE = 2
+    GEMINI_CODE_ASSIST = 3
 
   appInstallationId = _messages.IntegerField(1)
   authorizerCredential = _messages.MessageField('OAuthCredential', 2)
@@ -1810,7 +1812,7 @@ class InsightsConfig(_messages.Message):
       projects/{project}/locations/{location}/applications/{application}
     artifactConfigs: Optional. The artifact configurations of the artifacts
       that are deployed.
-    createTime: Output only. [Output only] Create timestamp
+    createTime: Output only. Create timestamp.
     errors: Output only. Any errors that occurred while setting up the
       InsightsConfig. Each error will be in the format: `field_name:
       error_message`, e.g. GetAppHubApplication: Permission denied while
@@ -1828,7 +1830,7 @@ class InsightsConfig(_messages.Message):
     runtimeConfigs: Output only. The runtime configurations where the
       application is deployed.
     state: Optional. Output only. The state of the InsightsConfig.
-    updateTime: Output only. [Output only] Update timestamp
+    updateTime: Output only. Update timestamp.
   """
 
   class StateValueValuesEnum(_messages.Enum):

@@ -233,6 +233,26 @@ def CreateServiceAccountMessages(messages, scopes, service_account):
   return res
 
 
+def CreateWorkloadIdentityConfigMessage(
+    args, messages, support_workload_identity_config
+):
+  """Create workloadIdentityConfig message for VM."""
+  if not support_workload_identity_config:
+    return None
+  if not args.IsKnownAndSpecified(
+      'identity'
+  ) and not args.IsKnownAndSpecified('identity_certificate'):
+    return None
+  return messages.WorkloadIdentityConfig(
+      identity=args.identity
+      if args.IsKnownAndSpecified('identity')
+      else None,
+      identityCertificateEnabled=args.identity_certificate
+      if args.IsKnownAndSpecified('identity_certificate')
+      else None,
+  )
+
+
 def CreateOnHostMaintenanceMessage(messages, maintenance_policy):
   """Create on-host-maintenance message for VM."""
   if maintenance_policy:

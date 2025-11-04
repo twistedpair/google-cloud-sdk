@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import json
 import re
 
 from googlecloudsdk.api_lib.compute import constants
@@ -364,6 +365,83 @@ def AddBulkCreateNetworkingArgs(
   )
 
 
+def AddInstanceFlexibilityPolicyArgs(parser):
+  """Adds instance flexibility policy arguments to the parser."""
+  mutex_group = parser.add_mutually_exclusive_group()
+  mutex_group.add_argument(
+      '--instance-selection-machine-types',
+      type=arg_parsers.ArgList(),
+      metavar='MACHINE_TYPE',
+      help="""\\
+      Specifies a list of machine types to consider for instance creation.
+      The bulk create operation will attempt to create instances from this list
+      based on capacity availability.
+      This flag is only valid when a region is specified.
+      """,
+  )
+  mutex_group.add_argument(
+      '--instance-selection',
+      metavar='name=NAME[,rank=RANK][,machine-type=MACHINE_TYPE]...[,disk=DISK_JSON]...',
+      type=ArgMultiValueDict(),
+      action=arg_parsers.FlattenAction(),
+      help="""\\
+      Specifies a list of machine types to consider for instance creation.
+      The bulk create operation will attempt to create instances from this list
+      based on capacity availability.
+      This flag is only valid when a region is specified.
+
+      Keys for each instance selection:
+
+      name: (Required) A unique name for this instance selection group.
+      machine-type: (Required) Repeatable. Specifies a machine type to include in this group (e.g., machine-type=n1-standard-1).
+      rank: (Optional) An integer representing the priority. Lower ranks are preferred. Defaults to 0.
+      disk: (Optional) Repeatable. A JSON string defining a disk to attach or override, conforming to the Compute Engine AttachedDisk API structure. Example: disk='{"deviceName": "boot-disk", "boot": true, "initializeParams": {"sourceImage": "IMAGE_URL"}}'
+      """,
+  )
+
+
+def ValidateInstanceFlexibilityArgs(args):
+  """Validates args supplied to --instance-selection-machine-types."""
+  flexibility_policy_args = [
+      'instance_selection_machine_types',
+      'instance_selection',
+  ]
+  specified_args = []
+  for arg in flexibility_policy_args:
+    if args.IsKnownAndSpecified(arg):
+      specified_args.append(arg)
+
+  if not specified_args:
+    return
+
+  if not args.IsSpecified('region'):
+    raise exceptions.RequiredArgumentException(
+        '--region',
+        'Flag --region is required for any of the instance flexibility policy'
+        ' flags.',
+    )
+  if args.IsSpecified('instance_selection'):
+    for instance_selection in args.instance_selection:
+      if 'name' not in instance_selection:
+        raise exceptions.InvalidArgumentException(
+            'instance_selection', 'Missing instance selection name.'
+        )
+      if (
+          'machine-type' not in instance_selection
+          or not instance_selection['machine-type']
+      ):
+        raise exceptions.InvalidArgumentException(
+            'instance_selection', 'Missing machine type in instance selection.'
+        )
+      if 'rank' in instance_selection:
+        rank = instance_selection['rank']
+        if not rank.isdigit():
+          raise exceptions.InvalidArgumentException(
+              'instance_selection',
+              'Invalid value for rank in instance selection.',
+          )
+
+
 def AddCommonBulkInsertArgs(
     parser,
     release_track,
@@ -381,6 +459,8 @@ def AddCommonBulkInsertArgs(
     support_source_snapshot_region=False,
     support_skip_guest_os_shutdown=False,
     support_preemption_notice_duration=False,
+    support_instance_flexibility_policy=False,
+    support_workload_identity_config=False,
 ):
   """Register parser args common to all tracks."""
   metadata_utils.AddMetadataArgs(parser)
@@ -511,6 +591,10 @@ def AddCommonBulkInsertArgs(
   instances_flags.AddTurboModeArgs(parser)
   if support_skip_guest_os_shutdown:
     instances_flags.AddSkipGuestOsShutdownArgs(parser)
+  if support_instance_flexibility_policy:
+    AddInstanceFlexibilityPolicyArgs(parser)
+  if support_workload_identity_config:
+    instances_flags.AddWorkloadIdentityConfigArgs(parser)
 
 
 def ValidateBulkCreateArgs(args):
@@ -609,6 +693,7 @@ def ValidateBulkInsertArgs(
     args,
     support_max_count_per_zone,
     support_custom_hostnames,
+    support_instance_flexibility_policy,
 ):
   """Validates all bulk and instance args."""
   ValidateBulkCreateArgs(args)
@@ -630,3 +715,58 @@ def ValidateBulkInsertArgs(
   instances_flags.ValidateInstanceScheduling(
       args, support_max_run_duration=True
   )
+  if support_instance_flexibility_policy:
+    ValidateInstanceFlexibilityArgs(args)
+
+
+class ArgMultiValueDict(object):
+  """Custom parser for --instance-selection flag.
+
+  Parses a comma-separated string of key=value pairs. Special handling
+  for the 'disk' key, where the value is expected to be a single-quoted
+  JSON string.
+  """
+
+  def __call__(self, argument_value):
+    if not argument_value:
+      return {}
+
+    entries = self._SplitArgString(argument_value)
+    result = {}
+
+    for key, value in entries:
+      if key == 'disk':
+        try:
+          disk_dict = json.loads(value)
+          if key in result:
+            result[key].append(disk_dict)
+          else:
+            result[key] = [disk_dict]
+        except json.JSONDecodeError as e:
+          raise exceptions.InvalidArgumentException(
+              '--instance-selection',
+              f'Invalid JSON for disk key: {e} - Received: {value}',
+          )
+      elif key == 'machine-type':
+        if key in result:
+          result[key].append(value)
+        else:
+          result[key] = [value]
+      else:
+        result[key] = value
+    return result
+
+  def _SplitArgString(self, argument_value):
+    """Splits the argument string by commas, respecting single-quoted JSON for disk values."""
+    # Regex to find key=value pairs. For 'disk', it captures the content within
+    # single quotes.
+    # This regex assumes disk values are single-quoted and don't contain escaped
+    # single quotes.
+    pattern = r"([\w-]+)=(?:'([^']*)'|([^,]*))"
+    matches = re.findall(pattern, argument_value)
+
+    entries = []
+    for key, single_quoted_val, unquoted_val in matches:
+      value = single_quoted_val if single_quoted_val else unquoted_val
+      entries.append((key, value))
+    return entries

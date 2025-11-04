@@ -106,72 +106,6 @@ class AttestationRule(_messages.Message):
   googleCloudResource = _messages.StringField(1)
 
 
-class AttributeTranslatorCEL(_messages.Message):
-  r"""Specifies a list of output attribute names and the corresponding input
-  attribute to use for that output attribute. Each defined output attribute is
-  populated with the value of the specified input attribute.
-
-  Messages:
-    AttributesValue: Each entry specifies the desired output attribute and a
-      CEL field selector expression for the corresponding input to read. This
-      field supports a subset of the CEL functionality to select fields from
-      the input (no boolean expressions, functions or arithmetics). Output
-      attributes must match `(google.sub|a-z_*)`. The output attribute
-      google.sub is interpreted to be the "identity" of the requesting user.
-      For example, to copy the inbound attribute "sub" into the output
-      `google.sub` add an entry `google.sub` -> `inclaim.sub` or `google.sub`
-      -> `inclaim[\"sub\"]`. See https://github.com/google/cel-spec for more
-      details. If the input does not exist the output attribute will be null.
-
-  Fields:
-    attributes: Each entry specifies the desired output attribute and a CEL
-      field selector expression for the corresponding input to read. This
-      field supports a subset of the CEL functionality to select fields from
-      the input (no boolean expressions, functions or arithmetics). Output
-      attributes must match `(google.sub|a-z_*)`. The output attribute
-      google.sub is interpreted to be the "identity" of the requesting user.
-      For example, to copy the inbound attribute "sub" into the output
-      `google.sub` add an entry `google.sub` -> `inclaim.sub` or `google.sub`
-      -> `inclaim[\"sub\"]`. See https://github.com/google/cel-spec for more
-      details. If the input does not exist the output attribute will be null.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AttributesValue(_messages.Message):
-    r"""Each entry specifies the desired output attribute and a CEL field
-    selector expression for the corresponding input to read. This field
-    supports a subset of the CEL functionality to select fields from the input
-    (no boolean expressions, functions or arithmetics). Output attributes must
-    match `(google.sub|a-z_*)`. The output attribute google.sub is interpreted
-    to be the "identity" of the requesting user. For example, to copy the
-    inbound attribute "sub" into the output `google.sub` add an entry
-    `google.sub` -> `inclaim.sub` or `google.sub` -> `inclaim[\"sub\"]`. See
-    https://github.com/google/cel-spec for more details. If the input does not
-    exist the output attribute will be null.
-
-    Messages:
-      AdditionalProperty: An additional property for a AttributesValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type AttributesValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AttributesValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  attributes = _messages.MessageField('AttributesValue', 1)
-
-
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -402,25 +336,6 @@ class CreateRoleRequest(_messages.Message):
 
   role = _messages.MessageField('Role', 1)
   roleId = _messages.StringField(2)
-
-
-class CreateServiceAccountIdentityBindingRequest(_messages.Message):
-  r"""The service account identity binding create request.
-
-  Fields:
-    acceptanceFilter: A CEL expression that is evaluated to determine whether
-      a credential should be accepted. To accept any credential, specify
-      "true". See: https://github.com/google/cel-spec . The input claims are
-      available using "inclaim[\"attribute_name\"]". The output attributes
-      calculated by the translator are available using
-      "outclaim[\"attribute_name\"]"
-    cel: A set of output attributes and corresponding input attribute names.
-    oidc: An OIDC reference with Discovery.
-  """
-
-  acceptanceFilter = _messages.StringField(1)
-  cel = _messages.MessageField('AttributeTranslatorCEL', 2)
-  oidc = _messages.MessageField('IDPReferenceOIDC', 3)
 
 
 class CreateServiceAccountKeyRequest(_messages.Message):
@@ -902,40 +817,6 @@ class GoogleIamAdminV1WorkforcePoolProviderSaml(_messages.Message):
   idpMetadataXml = _messages.StringField(1)
 
 
-class IDPReferenceOIDC(_messages.Message):
-  r"""Represents a reference to an OIDC provider.
-
-  Fields:
-    audience: Optional. The acceptable audience. Default is the unique_id of
-      the Service Account.
-    maxTokenLifetimeSeconds: This optional field allows enforcing a maximum
-      lifetime for tokens. Using a lifetime that is as short as possible
-      improves security since it prevents use of exfiltrated tokens after a
-      certain amount of time. All tokens must specify both exp and iat or they
-      will be rejected. If "nbf" is present we will reject tokens that are not
-      yet valid. Expiration and lifetime will be enforced in the following
-      way: - "exp" > "current time" is always required (expired tokens are
-      rejected) - "iat" < "current time" + 300 seconds is required (tokens
-      from the future . are rejected although a small amount of clock skew is
-      tolerated). - If max_token_lifetime_seconds is set: "exp" - "iat" <
-      max_token_lifetime_seconds will be checked - The default is otherwise to
-      accept a max_token_lifetime_seconds of 3600 (1 hour)
-    oidcJwks: Optional. OIDC verification keys in JWKS format (RFC 7517). It
-      contains a list of OIDC verification keys that can be used to verify
-      OIDC JWTs. When OIDC verification key is provided, it will be directly
-      used to verify the OIDC JWT asserted by the IDP.
-    url: The OpenID Connect URL. To use this Identity Binding, JWT 'iss' field
-      should match this field. When URL is set, public keys will be fetched
-      from the provided URL for credentials verification unless `oidc_jwks`
-      field is set.
-  """
-
-  audience = _messages.StringField(1)
-  maxTokenLifetimeSeconds = _messages.IntegerField(2)
-  oidcJwks = _messages.BytesField(3)
-  url = _messages.StringField(4)
-
-
 class IamLocationsWorkforcePoolsCreateRequest(_messages.Message):
   r"""A IamLocationsWorkforcePoolsCreateRequest object.
 
@@ -1317,14 +1198,15 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsCreateRequest(_messages.Mess
   r"""A IamLocationsWorkforcePoolsProvidersScimTenantsCreateRequest object.
 
   Fields:
-    parent: Required. The parent to create scim tenant. Format: 'locations/{lo
-      cation}/workforcePools/{workforce_pool}/providers/{provider}'
+    parent: Required. Agentspace only. The parent to create SCIM tenant.
+      Format: 'locations/{location}/workforcePools/{workforce_pool}/providers/
+      {provider}'
     workforcePoolProviderScimTenant: A WorkforcePoolProviderScimTenant
       resource to be passed as the request body.
-    workforcePoolProviderScimTenantId: Required. The ID to use for the scim
-      tenant, which becomes the final component of the resource name. This
-      value should be 4-32 characters, and may contain the characters
-      [a-z0-9-].
+    workforcePoolProviderScimTenantId: Required. Agentspace only. The ID to
+      use for the SCIM tenant, which becomes the final component of the
+      resource name. This value should be 4-32 characters, containing the
+      characters [a-z0-9-].
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1336,12 +1218,11 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsDeleteRequest(_messages.Mess
   r"""A IamLocationsWorkforcePoolsProvidersScimTenantsDeleteRequest object.
 
   Fields:
-    hardDelete: Optional. If set, hard delete the scim tenant. This will
-      delete the scim tenant resources i.e. the scim tenant and service
-      account associated with it. This action cannot be undone.
-    name: Required. The name of the scim tenant to delete. Format: `locations/
-      {location}/workforcePools/{workforce_pool}/providers/{provider}/scimTena
-      nts/{scim_tenant}`
+    hardDelete: Optional. Deletes the SCIM tenant immediately. This operation
+      cannot be undone.
+    name: Required. Agentspace only. The name of the scim tenant to delete.
+      Format: `locations/{location}/workforcePools/{workforce_pool}/providers/
+      {provider}/scimTenants/{scim_tenant}`
   """
 
   hardDelete = _messages.BooleanField(1)
@@ -1352,9 +1233,9 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsGetRequest(_messages.Message
   r"""A IamLocationsWorkforcePoolsProvidersScimTenantsGetRequest object.
 
   Fields:
-    name: Required. The name of the scim tenant to retrieve. Format: `location
-      s/{location}/workforcePools/{workforce_pool}/providers/{provider}/scimTe
-      nants/{scim_tenant}`
+    name: Required. Agentspace only. The name of the SCIM tenant to retrieve.
+      Format: `locations/{location}/workforcePools/{workforce_pool}/providers/
+      {provider}/scimTenants/{scim_tenant}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1364,13 +1245,16 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsListRequest(_messages.Messag
   r"""A IamLocationsWorkforcePoolsProvidersScimTenantsListRequest object.
 
   Fields:
-    pageSize: Optional. The maximum number of scim tenants to return. If
-      unspecified, at most 1 scim tenant will be returned.
-    pageToken: Optional. A page token, received from a previous
-      `ListScimTenants` call. Provide this to retrieve the subsequent page.
-    parent: Required. The parent to list scim tenants. Format: 'locations/{loc
-      ation}/workforcePools/{workforce_pool}/providers/{provider}'
-    showDeleted: Optional. Whether to return soft-deleted scim tenants.
+    pageSize: Optional. Agentspace only. The maximum number of SCIM tenants to
+      return. If unspecified, at most 1 scim tenant will be returned.
+    pageToken: Optional. Agentspace only. A page token, received from a
+      previous `ListScimTenants` call. Provide this to retrieve the subsequent
+      page.
+    parent: Required. Agentspace only. The parent to list SCIM tenants.
+      Format: 'locations/{location}/workforcePools/{workforce_pool}/providers/
+      {provider}'
+    showDeleted: Optional. Agentspace only. Whether to return soft-deleted
+      SCIM tenants.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1383,10 +1267,10 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsPatchRequest(_messages.Messa
   r"""A IamLocationsWorkforcePoolsProvidersScimTenantsPatchRequest object.
 
   Fields:
-    name: Identifier. The resource name of the SCIM Tenant. Format:
-      `locations/{location}/workforcePools/{workforce_pool}/providers/
+    name: Identifier. Agentspace only. The resource name of the SCIM Tenant.
+      Format: `locations/{location}/workforcePools/{workforce_pool}/providers/
       {workforce_pool_provider}/scimTenants/{scim_tenant}`
-    updateMask: Optional. The list of fields to update.
+    updateMask: Optional. Agentspace only. The list of fields to update.
     workforcePoolProviderScimTenant: A WorkforcePoolProviderScimTenant
       resource to be passed as the request body.
   """
@@ -1401,14 +1285,14 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsTokensCreateRequest(_message
   object.
 
   Fields:
-    parent: Required. The parent tenant to create scim token. Format: 'locatio
-      ns/{location}/workforcePools/{workforce_pool}/providers/{provider}/scimT
-      enants/{scim_tenant}'
+    parent: Required. Agentspace only. The parent tenant to create SCIM token.
+      Format: 'locations/{location}/workforcePools/{workforce_pool}/providers/
+      {provider}/scimTenants/{scim_tenant}'
     workforcePoolProviderScimToken: A WorkforcePoolProviderScimToken resource
       to be passed as the request body.
-    workforcePoolProviderScimTokenId: Required. The ID to use for the scim
-      token, which becomes the final component of the resource name. This
-      value should be 4-32 characters and follow this pattern:
+    workforcePoolProviderScimTokenId: Required. Agentspace only. The ID to use
+      for the SCIM token, which becomes the final component of the resource
+      name. This value should be 4-32 characters and follow the pattern:
       "([a-z]([a-z0-9\\-]{2,30}[a-z0-9]))"
   """
 
@@ -1422,9 +1306,9 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsTokensDeleteRequest(_message
   object.
 
   Fields:
-    name: Required. The name of the scim token to delete. Format: `locations/{
-      location}/workforcePools/{workforce_pool}/providers/{provider}/scimTenan
-      ts/{scim_tenant}/tokens/{token}`
+    name: Required. Agentspace only. The name of the SCIM token to delete.
+      Format: `locations/{location}/workforcePools/{workforce_pool}/providers/
+      {provider}/scimTenants/{scim_tenant}/tokens/{token}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1434,9 +1318,9 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsTokensGetRequest(_messages.M
   r"""A IamLocationsWorkforcePoolsProvidersScimTenantsTokensGetRequest object.
 
   Fields:
-    name: Required. The name of the scim token to retrieve. Format: `locations
-      /{location}/workforcePools/{workforce_pool}/providers/{provider}/scimTen
-      ants/{scim_tenant}/tokens/{token}`
+    name: Required. Agentspace only. The name of the SCIM token to retrieve.
+      Format: `locations/{location}/workforcePools/{workforce_pool}/providers/
+      {provider}/scimTenants/{scim_tenant}/tokens/{token}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1447,15 +1331,16 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsTokensListRequest(_messages.
   object.
 
   Fields:
-    pageSize: Optional. The maximum number of scim tokens to return. If
-      unspecified, at most 2 scim tokens will be returned.
-    pageToken: Optional. A page token, received from a previous
-      `ListWorkforcePoolProviderScimTokens` call. Provide this to retrieve the
-      subsequent page.
-    parent: Required. The parent to list scim tokens. Format: 'locations/{loca
-      tion}/workforcePools/{workforce_pool}/providers/{provider}/scimTenants/{
-      scim_tenant}'
-    showDeleted: Optional. Whether to return soft-deleted scim tokens.
+    pageSize: Optional. Agentspace only. The maximum number of scim tokens to
+      return. If unspecified, at most 2 SCIM tokens will be returned.
+    pageToken: Optional. Agentspace only. A page token, received from a
+      previous `ListWorkforcePoolProviderScimTokens` call. Provide this to
+      retrieve the subsequent page.
+    parent: Required. Agentspace only. The parent to list SCIM tokens. Format:
+      'locations/{location}/workforcePools/{workforce_pool}/providers/{provide
+      r}/scimTenants/{scim_tenant}'
+    showDeleted: Optional. Agentspace only. Whether to return soft-deleted
+      scim tokens.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1469,10 +1354,10 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsTokensPatchRequest(_messages
   object.
 
   Fields:
-    name: Identifier. The resource name of the SCIM Token. Format:
-      `locations/{location}/workforcePools/{workforce_pool}/providers/
+    name: Identifier. Agentspace only. The resource name of the SCIM Token.
+      Format: `locations/{location}/workforcePools/{workforce_pool}/providers/
       {workforce_pool_provider}/scimTenants/{scim_tenant}/tokens/{token}`
-    updateMask: Optional. The list of fields to update.
+    updateMask: Optional. Agentspace only. The list of fields to update.
     workforcePoolProviderScimToken: A WorkforcePoolProviderScimToken resource
       to be passed as the request body.
   """
@@ -1487,9 +1372,9 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsTokensUndeleteRequest(_messa
   object.
 
   Fields:
-    name: Required. The name of the scim token to undelete. Format: `locations
-      /{location}/workforcePools/{workforce_pool}/providers/{provider}/scimTen
-      ants/{scim_tenant}/tokens/{token}`
+    name: Required. Agentspace only. The name of the SCIM token to undelete.
+      Format: `locations/{location}/workforcePools/{workforce_pool}/providers/
+      {provider}/scimTenants/{scim_tenant}/tokens/{token}`
     undeleteWorkforcePoolProviderScimTokenRequest: A
       UndeleteWorkforcePoolProviderScimTokenRequest resource to be passed as
       the request body.
@@ -1503,9 +1388,9 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsUndeleteRequest(_messages.Me
   r"""A IamLocationsWorkforcePoolsProvidersScimTenantsUndeleteRequest object.
 
   Fields:
-    name: Required. The name of the scim tenant to undelete. Format: `location
-      s/{location}/workforcePools/{workforce_pool}/providers/{provider}/scimTe
-      nants/{scim_tenant}`
+    name: Required. Agentspace only. The name of the SCIM tenant to undelete.
+      Format: `locations/{location}/workforcePools/{workforce_pool}/providers/
+      {provider}/scimTenants/{scim_tenant}`
     undeleteWorkforcePoolProviderScimTenantRequest: A
       UndeleteWorkforcePoolProviderScimTenantRequest resource to be passed as
       the request body.
@@ -2383,7 +2268,7 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesPatchR
   tchRequest object.
 
   Fields:
-    name: Identifier. The resource name of the managed identity.
+    name: Output only. The resource name of the managed identity.
     updateMask: Required. The list of fields to update.
     workloadIdentityPoolManagedIdentity: A WorkloadIdentityPoolManagedIdentity
       resource to be passed as the request body.
@@ -2957,7 +2842,7 @@ class IamProjectsLocationsWorkloadIdentityPoolsProvidersPatchRequest(_messages.M
   r"""A IamProjectsLocationsWorkloadIdentityPoolsProvidersPatchRequest object.
 
   Fields:
-    name: Identifier. The resource name of the provider.
+    name: Output only. The resource name of the provider.
     updateMask: Required. The list of fields to update.
     workloadIdentityPoolProvider: A WorkloadIdentityPoolProvider resource to
       be passed as the request body.
@@ -3398,94 +3283,6 @@ class IamProjectsServiceAccountsGetRequest(_messages.Message):
     name: Required. The resource name of the service account. Use one of the
       following formats: *
       `projects/{PROJECT_ID}/serviceAccounts/{EMAIL_ADDRESS}` *
-      `projects/{PROJECT_ID}/serviceAccounts/{UNIQUE_ID}` As an alternative,
-      you can use the `-` wildcard character instead of the project ID: *
-      `projects/-/serviceAccounts/{EMAIL_ADDRESS}` *
-      `projects/-/serviceAccounts/{UNIQUE_ID}` When possible, avoid using the
-      `-` wildcard character, because it can cause response messages to
-      contain misleading error codes. For example, if you try to access the
-      service account `projects/-/serviceAccounts/fake@example.com`, which
-      does not exist, the response contains an HTTP `403 Forbidden` error
-      instead of a `404 Not Found` error.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class IamProjectsServiceAccountsIdentityBindingsCreateRequest(_messages.Message):
-  r"""A IamProjectsServiceAccountsIdentityBindingsCreateRequest object.
-
-  Fields:
-    createServiceAccountIdentityBindingRequest: A
-      CreateServiceAccountIdentityBindingRequest resource to be passed as the
-      request body.
-    name: The resource name of the service account. Use one of the following
-      formats: * `projects/{PROJECT_ID}/serviceAccounts/{EMAIL_ADDRESS}` *
-      `projects/{PROJECT_ID}/serviceAccounts/{UNIQUE_ID}` As an alternative,
-      you can use the `-` wildcard character instead of the project ID: *
-      `projects/-/serviceAccounts/{EMAIL_ADDRESS}` *
-      `projects/-/serviceAccounts/{UNIQUE_ID}` When possible, avoid using the
-      `-` wildcard character, because it can cause response messages to
-      contain misleading error codes. For example, if you try to access the
-      service account `projects/-/serviceAccounts/fake@example.com`, which
-      does not exist, the response contains an HTTP `403 Forbidden` error
-      instead of a `404 Not Found` error.
-  """
-
-  createServiceAccountIdentityBindingRequest = _messages.MessageField('CreateServiceAccountIdentityBindingRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class IamProjectsServiceAccountsIdentityBindingsDeleteRequest(_messages.Message):
-  r"""A IamProjectsServiceAccountsIdentityBindingsDeleteRequest object.
-
-  Fields:
-    name: The resource name of the service account identity binding. Use one
-      of the following formats: * `projects/{PROJECT_ID}/serviceAccounts/{EMAI
-      L_ADDRESS}/identityBindings/{BINDING}` * `projects/{PROJECT_ID}/serviceA
-      ccounts/{UNIQUE_ID}/identityBindings/{BINDING}` As an alternative, you
-      can use the `-` wildcard character instead of the project ID: *
-      `projects/-/serviceAccounts/{EMAIL_ADDRESS}/identityBindings/{BINDING}`
-      * `projects/-/serviceAccounts/{UNIQUE_ID}/identityBindings/{BINDING}`
-      When possible, avoid using the `-` wildcard character, because it can
-      cause response messages to contain misleading error codes. For example,
-      if you try to access the service account identity binding
-      `projects/-/serviceAccounts/fake@example.com/identityBindings/fake-
-      binding`, which does not exist, the response contains an HTTP `403
-      Forbidden` error instead of a `404 Not Found` error.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class IamProjectsServiceAccountsIdentityBindingsGetRequest(_messages.Message):
-  r"""A IamProjectsServiceAccountsIdentityBindingsGetRequest object.
-
-  Fields:
-    name: The resource name of the service account identity binding. Use one
-      of the following formats: * `projects/{PROJECT_ID}/serviceAccounts/{EMAI
-      L_ADDRESS}/identityBindings/{BINDING}` * `projects/{PROJECT_ID}/serviceA
-      ccounts/{UNIQUE_ID}/identityBindings/{BINDING}` As an alternative, you
-      can use the `-` wildcard character instead of the project ID: *
-      `projects/-/serviceAccounts/{EMAIL_ADDRESS}/identityBindings/{BINDING}`
-      * `projects/-/serviceAccounts/{UNIQUE_ID}/identityBindings/{BINDING}`
-      When possible, avoid using the `-` wildcard character, because it can
-      cause response messages to contain misleading error codes. For example,
-      if you try to access the service account identity binding
-      `projects/-/serviceAccounts/fake@example.com/identityBindings/fake-
-      binding`, which does not exist, the response contains an HTTP `403
-      Forbidden` error instead of a `404 Not Found` error.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class IamProjectsServiceAccountsIdentityBindingsListRequest(_messages.Message):
-  r"""A IamProjectsServiceAccountsIdentityBindingsListRequest object.
-
-  Fields:
-    name: The resource name of the service account. Use one of the following
-      formats: * `projects/{PROJECT_ID}/serviceAccounts/{EMAIL_ADDRESS}` *
       `projects/{PROJECT_ID}/serviceAccounts/{UNIQUE_ID}` As an alternative,
       you can use the `-` wildcard character instead of the project ID: *
       `projects/-/serviceAccounts/{EMAIL_ADDRESS}` *
@@ -4173,6 +3970,7 @@ class KeyData(_messages.Message):
     KeySpecValueValuesEnum: Required. The specifications for the key.
 
   Fields:
+    createTime: Output only. The timestamp when this key was created.
     format: Output only. The format of the key.
     key: Output only. The key data. The format of the key is represented by
       the format field.
@@ -4213,11 +4011,12 @@ class KeyData(_messages.Message):
     RSA_3072 = 2
     RSA_4096 = 3
 
-  format = _messages.EnumField('FormatValueValuesEnum', 1)
-  key = _messages.StringField(2)
-  keySpec = _messages.EnumField('KeySpecValueValuesEnum', 3)
-  notAfterTime = _messages.StringField(4)
-  notBeforeTime = _messages.StringField(5)
+  createTime = _messages.StringField(1)
+  format = _messages.EnumField('FormatValueValuesEnum', 2)
+  key = _messages.StringField(3)
+  keySpec = _messages.EnumField('KeySpecValueValuesEnum', 4)
+  notAfterTime = _messages.StringField(5)
+  notBeforeTime = _messages.StringField(6)
 
 
 class LintPolicyRequest(_messages.Message):
@@ -4375,17 +4174,6 @@ class ListRolesResponse(_messages.Message):
   roles = _messages.MessageField('Role', 2, repeated=True)
 
 
-class ListServiceAccountIdentityBindingsResponse(_messages.Message):
-  r"""The service account identity bindings list response.
-
-  Fields:
-    identityBinding: The identity bindings trusted to assert the service
-      account.
-  """
-
-  identityBinding = _messages.MessageField('ServiceAccountIdentityBinding', 1, repeated=True)
-
-
 class ListServiceAccountKeysResponse(_messages.Message):
   r"""The service account keys list response.
 
@@ -4438,13 +4226,15 @@ class ListWorkforcePoolProviderKeysResponse(_messages.Message):
 
 
 class ListWorkforcePoolProviderScimTenantsResponse(_messages.Message):
-  r"""Response message for ListWorkforcePoolProviderScimTenants.
+  r"""Agentspace only. Response message for
+  ListWorkforcePoolProviderScimTenants.
 
   Fields:
-    nextPageToken: Optional. A token, which can be sent as `page_token` to
-      retrieve the next page. If this field is omitted, there are no
-      subsequent pages.
-    workforcePoolProviderScimTenants: Output only. A list of scim tenants.
+    nextPageToken: Optional. Agentspace only. A token, which can be sent as
+      `page_token` to retrieve the next page. If this field is omitted, there
+      are no subsequent pages.
+    workforcePoolProviderScimTenants: Output only. Agentspace only. A list of
+      SCIM tenants.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -4452,13 +4242,15 @@ class ListWorkforcePoolProviderScimTenantsResponse(_messages.Message):
 
 
 class ListWorkforcePoolProviderScimTokensResponse(_messages.Message):
-  r"""Response message for ListWorkforcePoolProviderScimTokens.
+  r"""Agentspace only. Response message for
+  ListWorkforcePoolProviderScimTokens.
 
   Fields:
-    nextPageToken: Optional. A token, which can be sent as `page_token` to
-      retrieve the next page. If this field is omitted, there are no
-      subsequent pages.
-    workforcePoolProviderScimTokens: Output only. A list of scim tokens.
+    nextPageToken: Optional. Agentspace only. A token, which can be sent as
+      `page_token` to retrieve the next page. If this field is omitted, there
+      are no subsequent pages.
+    workforcePoolProviderScimTokens: Output only. Agentspace only. A list of
+      SCIM tokens.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -4609,6 +4401,9 @@ class OauthClient(_messages.Message):
       permanently purged and cannot be recovered.
     name: Immutable. Identifier. The resource name of the OauthClient. Format:
       `projects/{project}/locations/{location}/oauthClients/{oauth_client}`.
+    pkceEnforced: Optional. Indicates whether to enforce PKCE (RFC 7636) for
+      the OauthClient. If not set, the default value is false. Public clients
+      must set this field to true.
     state: Output only. The state of the OauthClient.
   """
 
@@ -4662,7 +4457,8 @@ class OauthClient(_messages.Message):
   displayName = _messages.StringField(8)
   expireTime = _messages.StringField(9)
   name = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
+  pkceEnforced = _messages.BooleanField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
 
 
 class OauthClientCredential(_messages.Message):
@@ -5335,36 +5131,6 @@ class ServiceAccount(_messages.Message):
   uniqueId = _messages.StringField(9)
 
 
-class ServiceAccountIdentityBinding(_messages.Message):
-  r"""Represents a service account identity provider reference. A service
-  account has at most one identity binding for the EAP. This is an alternative
-  to service account keys and enables the service account to be configured to
-  trust an external IDP through the provided identity binding.
-
-  Fields:
-    acceptanceFilter: A CEL expression that is evaluated to determine whether
-      a credential should be accepted. To accept any credential, specify
-      "true". See: https://github.com/google/cel-spec . This field supports a
-      subset of the CEL functionality to select fields and evaluate boolean
-      expressions based on the input (no functions or arithmetics). The values
-      for input claims are available using `inclaim.attribute_name` or
-      `inclaim[\"attribute_name\"]`. The values for output attributes
-      calculated by the translator are available using
-      `outclaim.attribute_name` or `outclaim[\"attribute_name\"]`.
-    cel: A set of output attributes and corresponding input attribute
-      expressions.
-    name: The resource name of the service account identity binding in the
-      following format `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/identi
-      tyBindings/{BINDING}`.
-    oidc: OIDC with discovery.
-  """
-
-  acceptanceFilter = _messages.StringField(1)
-  cel = _messages.MessageField('AttributeTranslatorCEL', 2)
-  name = _messages.StringField(3)
-  oidc = _messages.MessageField('IDPReferenceOIDC', 4)
-
-
 class ServiceAccountKey(_messages.Message):
   r"""Represents a service account key. A service account has two sets of key-
   pairs: user-managed, and system-managed. User-managed key-pairs can be
@@ -5873,11 +5639,17 @@ class UndeleteWorkforcePoolProviderRequest(_messages.Message):
 
 
 class UndeleteWorkforcePoolProviderScimTenantRequest(_messages.Message):
-  r"""Request message for UndeleteWorkforcePoolProviderScimTenant."""
+  r"""Agentspace only. Request message for
+  UndeleteWorkforcePoolProviderScimTenant.
+  """
+
 
 
 class UndeleteWorkforcePoolProviderScimTokenRequest(_messages.Message):
-  r"""Request message for UndeleteWorkforcePoolProviderScimToken."""
+  r"""Agentspace only. Request message for
+  UndeleteWorkforcePoolProviderScimToken.
+  """
+
 
 
 class UndeleteWorkforcePoolRequest(_messages.Message):
@@ -5933,13 +5705,13 @@ class WorkforcePool(_messages.Message):
       workforce pool users. This is an optional field. If specified web sign-
       in can be restricted to given set of services or programmatic sign-in
       can be disabled for pool users.
-    description: Optional. A user-specified description of the pool. Cannot
-      exceed 256 characters.
+    description: Optional. A description of the pool. Cannot exceed 256
+      characters.
     disabled: Optional. Disables the workforce pool. You cannot use a disabled
       pool to exchange tokens, or use existing tokens to access resources. If
       the pool is re-enabled, existing tokens grant access again.
-    displayName: Optional. A user-specified display name of the pool in Google
-      Cloud Console. Cannot exceed 32 characters.
+    displayName: Optional. A display name for the pool. Cannot exceed 32
+      characters.
     expireTime: Output only. Time after which the workforce pool will be
       permanently purged and cannot be recovered.
     name: Identifier. The resource name of the pool. Format:
@@ -6001,10 +5773,10 @@ class WorkforcePoolInstalledApp(_messages.Message):
       app was created.
     deleteTime: Output only. The timestamp that the workforce pool installed
       app was soft deleted.
-    description: Optional. A user-specified description of the workforce pool
-      installed app. Cannot exceed 256 characters.
-    displayName: Optional. A user-specified display name of the workforce pool
-      installed app Cannot exceed 32 characters.
+    description: Optional. A description of the workforce pool installed app.
+      Cannot exceed 256 characters.
+    displayName: Optional. A display name of the workforce pool installed app
+      Cannot exceed 32 characters.
     expireTime: Output only. Time after which the workforce pool installed app
       will be permanently purged and cannot be recovered.
     name: Identifier. The resource name of the workforce pool installed app.
@@ -6045,8 +5817,8 @@ class WorkforcePoolProvider(_messages.Message):
   r"""A configuration for an external identity provider.
 
   Enums:
-    ScimUsageValueValuesEnum: Optional. Specifies whether the workforce
-      identity pool provider uses SCIM-managed groups instead of the
+    ScimUsageValueValuesEnum: Optional. Agentspace only. Specifies whether the
+      workforce identity pool provider uses SCIM-managed groups instead of the
       `google.groups` attribute mapping for authorization checks. The
       `scim_usage` and `extended_attributes_oauth2_client` fields are mutually
       exclusive. A request that enables both fields on the same workforce
@@ -6095,10 +5867,10 @@ class WorkforcePoolProvider(_messages.Message):
       expression to access a JSON representation of the authentication
       credential issued by the provider. The maximum length of an attribute
       mapping expression is 2048 characters. When evaluated, the total size of
-      all mapped attributes must not exceed 4KB. For OIDC providers, you must
-      supply a custom mapping that includes the `google.subject` attribute.
-      For example, the following maps the `sub` claim of the incoming
-      credential to the `subject` attribute on a Google token: ```
+      all mapped attributes must not exceed 16 KB. For OIDC providers, you
+      must supply a custom mapping that includes the `google.subject`
+      attribute. For example, the following maps the `sub` claim of the
+      incoming credential to the `subject` attribute on a Google token: ```
       {"google.subject": "assertion.sub"} ```
 
   Fields:
@@ -6158,10 +5930,10 @@ class WorkforcePoolProvider(_messages.Message):
       expression to access a JSON representation of the authentication
       credential issued by the provider. The maximum length of an attribute
       mapping expression is 2048 characters. When evaluated, the total size of
-      all mapped attributes must not exceed 4KB. For OIDC providers, you must
-      supply a custom mapping that includes the `google.subject` attribute.
-      For example, the following maps the `sub` claim of the incoming
-      credential to the `subject` attribute on a Google token: ```
+      all mapped attributes must not exceed 16 KB. For OIDC providers, you
+      must supply a custom mapping that includes the `google.subject`
+      attribute. For example, the following maps the `sub` claim of the
+      incoming credential to the `subject` attribute on a Google token: ```
       {"google.subject": "assertion.sub"} ```
     attributeSyncInterval: Optional. An interval that determines how often
       user attributes are synced from the IdP. Must be between 30 minutes
@@ -6170,8 +5942,8 @@ class WorkforcePoolProvider(_messages.Message):
       session length policy is configured and `attribute_sync_interval` is not
       configured, attributes are synced after a default interval of 12 hours
       (43200 seconds).
-    description: Optional. A user-specified description of the provider. Cannot
-       exceed 256 characters.
+    description: Optional. A description of the provider. Cannot exceed 256
+      characters.
     detailedAuditLogging: Optional. If true, populates additional debug
       information in Cloud Audit Logs for this provider. Logged attribute
       mappings and values can be found in `sts.googleapis.com` data access
@@ -6179,8 +5951,8 @@ class WorkforcePoolProvider(_messages.Message):
     disabled: Optional. Disables the workforce pool provider. You cannot use a
       disabled provider to exchange tokens. However, existing tokens still
       grant access.
-    displayName: Optional. A user-specified display name for the provider.
-      Cannot exceed 32 characters.
+    displayName: Optional. A display name for the provider. Cannot exceed 32
+      characters.
     expireTime: Output only. Time after which the workforce identity pool
       provider will be permanently purged and cannot be recovered.
     extendedAttributesOauth2Client: Optional. The configuration for OAuth 2.0
@@ -6202,27 +5974,27 @@ class WorkforcePoolProvider(_messages.Message):
       ocation}/workforcePools/{workforce_pool_id}/providers/{provider_id}`
     oidc: An OpenId Connect 1.0 identity provider configuration.
     saml: A SAML identity provider configuration.
-    scimUsage: Optional. Specifies whether the workforce identity pool
-      provider uses SCIM-managed groups instead of the `google.groups`
-      attribute mapping for authorization checks. The `scim_usage` and
-      `extended_attributes_oauth2_client` fields are mutually exclusive. A
-      request that enables both fields on the same workforce identity pool
-      provider will produce an error.
+    scimUsage: Optional. Agentspace only. Specifies whether the workforce
+      identity pool provider uses SCIM-managed groups instead of the
+      `google.groups` attribute mapping for authorization checks. The
+      `scim_usage` and `extended_attributes_oauth2_client` fields are mutually
+      exclusive. A request that enables both fields on the same workforce
+      identity pool provider will produce an error.
     state: Output only. The state of the provider.
   """
 
   class ScimUsageValueValuesEnum(_messages.Enum):
-    r"""Optional. Specifies whether the workforce identity pool provider uses
-    SCIM-managed groups instead of the `google.groups` attribute mapping for
-    authorization checks. The `scim_usage` and
+    r"""Optional. Agentspace only. Specifies whether the workforce identity
+    pool provider uses SCIM-managed groups instead of the `google.groups`
+    attribute mapping for authorization checks. The `scim_usage` and
     `extended_attributes_oauth2_client` fields are mutually exclusive. A
     request that enables both fields on the same workforce identity pool
     provider will produce an error.
 
     Values:
-      SCIM_USAGE_UNSPECIFIED: Do not use SCIM data.
-      ENABLED_FOR_GROUPS: SCIM sync is enabled and SCIM-managed groups are
-        used for authorization checks.
+      SCIM_USAGE_UNSPECIFIED: Agentspace only. Do not use SCIM data.
+      ENABLED_FOR_GROUPS: Agentspace only. SCIM sync is enabled and SCIM-
+        managed groups are used for authorization checks.
     """
     SCIM_USAGE_UNSPECIFIED = 0
     ENABLED_FOR_GROUPS = 1
@@ -6284,7 +6056,7 @@ class WorkforcePoolProvider(_messages.Message):
     expression to access a JSON representation of the authentication
     credential issued by the provider. The maximum length of an attribute
     mapping expression is 2048 characters. When evaluated, the total size of
-    all mapped attributes must not exceed 4KB. For OIDC providers, you must
+    all mapped attributes must not exceed 16 KB. For OIDC providers, you must
     supply a custom mapping that includes the `google.subject` attribute. For
     example, the following maps the `sub` claim of the incoming credential to
     the `subject` attribute on a Google token: ``` {"google.subject":
@@ -6336,6 +6108,8 @@ class WorkforcePoolProviderKey(_messages.Message):
   encrypted tokens.
 
   Enums:
+    SigningAlgorithmValueValuesEnum: Optional. The signature algorithm to use
+      for signing. Required for request signing.
     StateValueValuesEnum: Output only. The state of the key.
     UseValueValuesEnum: Required. The purpose of the key.
 
@@ -6347,9 +6121,23 @@ class WorkforcePoolProviderKey(_messages.Message):
     name: Identifier. The resource name of the key. Format: `locations/{locati
       on}/workforcePools/{workforce_pool_id}/providers/{provider_id}/keys/{key
       _id}`
+    signingAlgorithm: Optional. The signature algorithm to use for signing.
+      Required for request signing.
     state: Output only. The state of the key.
     use: Required. The purpose of the key.
   """
+
+  class SigningAlgorithmValueValuesEnum(_messages.Enum):
+    r"""Optional. The signature algorithm to use for signing. Required for
+    request signing.
+
+    Values:
+      SIGNATURE_ALGORITHM_UNSPECIFIED: The signature algorithm is not
+        specified.
+      RSA_SHA256: RSA-SHA256 signature algorithm.
+    """
+    SIGNATURE_ALGORITHM_UNSPECIFIED = 0
+    RSA_SHA256 = 1
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of the key.
@@ -6369,59 +6157,66 @@ class WorkforcePoolProviderKey(_messages.Message):
     r"""Required. The purpose of the key.
 
     Values:
-      KEY_USE_UNSPECIFIED: KeyUse unspecified.
+      KEY_USE_UNSPECIFIED: KeyUse unspecified. Do not use. The purpose of the
+        key must be specified.
       ENCRYPTION: The key is used for encryption.
+      SIGNING: The key is used for signing.
     """
     KEY_USE_UNSPECIFIED = 0
     ENCRYPTION = 1
+    SIGNING = 2
 
   expireTime = _messages.StringField(1)
   keyData = _messages.MessageField('KeyData', 2)
   name = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  use = _messages.EnumField('UseValueValuesEnum', 5)
+  signingAlgorithm = _messages.EnumField('SigningAlgorithmValueValuesEnum', 4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  use = _messages.EnumField('UseValueValuesEnum', 6)
 
 
 class WorkforcePoolProviderScimTenant(_messages.Message):
-  r"""Represents a scim tenant. Used for provisioning and managing identity
-  data (such as Users and Groups) in cross-domain environments.
+  r"""Agentspace only. Represents a SCIM tenant. Used for provisioning and
+  managing identity data (such as Users and Groups) in cross-domain
+  environments.
 
   Enums:
-    StateValueValuesEnum: Output only. The state of the tenant.
+    StateValueValuesEnum: Output only. Agentspace only. The state of the
+      tenant.
 
   Messages:
-    ClaimMappingValue: Optional. Maps BYOID claims to SCIM claims.
+    ClaimMappingValue: Optional. Agentspace only. Maps BYOID claims to SCIM
+      claims.
 
   Fields:
-    baseUri: Output only. Represents the base URI as defined in [RFC 7644,
-      Section 1.3](https://datatracker.ietf.org/doc/html/rfc7644#section-1.3).
-      Clients must use this as the root address for managing resources under
-      the tenant. Format:
-      https://iamscim.googleapis.com/{version}/{tenant_id}/
-    claimMapping: Optional. Maps BYOID claims to SCIM claims.
-    description: Optional. The user-specified description of the scim tenant.
-      Cannot exceed 256 characters.
-    displayName: Optional. The user-specified display name of the scim tenant.
-      Cannot exceed 32 characters.
-    name: Identifier. The resource name of the SCIM Tenant. Format:
-      `locations/{location}/workforcePools/{workforce_pool}/providers/
+    baseUri: Output only. Agentspace only. Represents the base URI as defined
+      in [RFC 7644, Section
+      1.3](https://datatracker.ietf.org/doc/html/rfc7644#section-1.3). Clients
+      must use this as the root address for managing resources under the
+      tenant. Format: https://iamscim.googleapis.com/{version}/{tenant_id}/
+    claimMapping: Optional. Agentspace only. Maps BYOID claims to SCIM claims.
+    description: Optional. Agentspace only. The description of the SCIM
+      tenant. Cannot exceed 256 characters.
+    displayName: Optional. Agentspace only. The display name of the SCIM
+      tenant. Cannot exceed 32 characters.
+    name: Identifier. Agentspace only. The resource name of the SCIM Tenant.
+      Format: `locations/{location}/workforcePools/{workforce_pool}/providers/
       {workforce_pool_provider}/scimTenants/{scim_tenant}`
-    purgeTime: Output only. The timestamp when the scim tenant is going to be
-      purged.
+    purgeTime: Output only. Agentspace only. The timestamp that represents the
+      time when the SCIM tenant is purged.
     serviceAgent: Output only. Service Agent created by SCIM Tenant API. SCIM
       tokens created under this tenant will be attached to this service agent.
-    state: Output only. The state of the tenant.
+    state: Output only. Agentspace only. The state of the tenant.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The state of the tenant.
+    r"""Output only. Agentspace only. The state of the tenant.
 
     Values:
-      STATE_UNSPECIFIED: State unspecified.
-      ACTIVE: The tenant is active and may be used to provision users and
-        groups.
-      DELETED: The tenant is soft-deleted. Soft-deleted tenants are
-        permanently deleted after approximately 30 days.
+      STATE_UNSPECIFIED: Agentspace only. State unspecified.
+      ACTIVE: Agentspace only. The tenant is active and may be used to
+        provision users and groups.
+      DELETED: Agentspace only. The tenant is soft-deleted. Soft-deleted
+        tenants are permanently deleted after approximately 30 days.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -6429,7 +6224,7 @@ class WorkforcePoolProviderScimTenant(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ClaimMappingValue(_messages.Message):
-    r"""Optional. Maps BYOID claims to SCIM claims.
+    r"""Optional. Agentspace only. Maps BYOID claims to SCIM claims.
 
     Messages:
       AdditionalProperty: An additional property for a ClaimMappingValue
@@ -6463,32 +6258,34 @@ class WorkforcePoolProviderScimTenant(_messages.Message):
 
 
 class WorkforcePoolProviderScimToken(_messages.Message):
-  r"""Represents a token for the WorkforcePoolProviderScimTenant. Used for
-  authenticating SCIM Provisioning requests.
+  r"""Agentspace only. Represents a token for the
+  WorkforcePoolProviderScimTenant. Used for authenticating SCIM provisioning
+  requests.
 
   Enums:
-    StateValueValuesEnum: Output only. The state of the token.
+    StateValueValuesEnum: Output only. Agentspace only. The state of the
+      token.
 
   Fields:
-    displayName: Optional. The user-specified display name of the scim token.
-      Cannot exceed 32 characters.
-    name: Identifier. The resource name of the SCIM Token. Format:
-      `locations/{location}/workforcePools/{workforce_pool}/providers/
+    displayName: Optional. Agentspace only. The display name of the SCIM
+      token. Cannot exceed 32 characters.
+    name: Identifier. Agentspace only. The resource name of the SCIM Token.
+      Format: `locations/{location}/workforcePools/{workforce_pool}/providers/
       {workforce_pool_provider}/scimTenants/{scim_tenant}/tokens/{token}`
-    securityToken: Output only. The token string. Provide this to the IdP for
-      authentication. Will be set only during creation.
-    state: Output only. The state of the token.
+    securityToken: Output only. Agentspace only. The token string. Provide
+      this to the IdP for authentication. Will be set only during creation.
+    state: Output only. Agentspace only. The state of the token.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The state of the token.
+    r"""Output only. Agentspace only. The state of the token.
 
     Values:
-      STATE_UNSPECIFIED: State unspecified.
-      ACTIVE: The tenant is active and may be used to provision users and
-        groups.
-      DELETED: The tenant is soft-deleted. Soft-deleted tenants are
-        permanently deleted after approximately 30 days.
+      STATE_UNSPECIFIED: Agentspace only. State unspecified.
+      ACTIVE: Agentspace only. The token is active and may be used to
+        provision users and groups.
+      DELETED: Agentspace only. The token is soft-deleted. Soft-deleted tokens
+        are permanently deleted after approximately 30 days.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -6613,7 +6410,7 @@ class WorkloadIdentityPoolManagedIdentity(_messages.Message):
       credentials will still be accepted until they expire.
     expireTime: Output only. Time after which the managed identity will be
       permanently purged and cannot be recovered.
-    name: Identifier. The resource name of the managed identity.
+    name: Output only. The resource name of the managed identity.
     state: Output only. The state of the managed identity.
   """
 
@@ -6805,7 +6602,7 @@ class WorkloadIdentityPoolProvider(_messages.Message):
       characters.
     expireTime: Output only. Time after which the workload identity pool
       provider will be permanently purged and cannot be recovered.
-    name: Identifier. The resource name of the provider.
+    name: Output only. The resource name of the provider.
     oidc: An OpenId Connect 1.0 identity provider.
     saml: An SAML 2.0 identity provider.
     state: Output only. The state of the provider.

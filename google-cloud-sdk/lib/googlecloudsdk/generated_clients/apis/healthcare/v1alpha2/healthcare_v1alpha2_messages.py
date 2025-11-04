@@ -850,8 +850,8 @@ class DicomConfig(_messages.Message):
         DICOM.
       ATTRIBUTE_CONFIDENTIALITY_BASIC_PROFILE: Remove tags based on DICOM
         Standard's [Attribute Confidentiality Basic Profile (DICOM Standard
-        Edition 2018e)] (http://dicom.nema.org/medical/dicom/2018e/output/chtm
-        l/part15/chapter_E.html).
+        Edition 2018e)] (https://dicom.nema.org/medical/dicom/2018e/output/cht
+        ml/part15/chapter_E.html).
       KEEP_ALL_PROFILE: Keep all tags.
       DEIDENTIFY_TAG_CONTENTS: Inspects within tag contents (including tags
         nested in a sequence) and replaces sensitive text. The process can be
@@ -1587,11 +1587,14 @@ class FhirStoreMetric(_messages.Message):
     resourceType: The FHIR resource type this metric applies to.
     structuredStorageSizeBytes: The total amount of structured storage used by
       FHIR resources of this resource type in the store.
+    versionedStorageSizeBytes: The total amount of structured storage used by
+      versioned FHIR resources of this resource type in the store.
   """
 
   count = _messages.IntegerField(1)
   resourceType = _messages.StringField(2)
   structuredStorageSizeBytes = _messages.IntegerField(3)
+  versionedStorageSizeBytes = _messages.IntegerField(4)
 
 
 class FhirStoreMetrics(_messages.Message):
@@ -3549,12 +3552,20 @@ class HealthcareProjectsLocationsDatasetsOperationsListRequest(_messages.Message
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class HealthcareProjectsLocationsDatasetsPatchRequest(_messages.Message):
@@ -4244,10 +4255,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListUserDataMappingsResponse(_messages.Message):
@@ -5121,8 +5137,8 @@ class TagFilterList(_messages.Message):
   Fields:
     tags: Tags to filter. Tags must be DICOM Data Elements, File Meta
       Elements, or Directory Structuring Elements, as defined in the [Registry
-      of DICOM Data Elements] (http://dicom.nema.org/medical/dicom/current/out
-      put/html/part06.html#table_6-1). They can be provided by "Keyword" or
+      of DICOM Data Elements] (https://dicom.nema.org/medical/dicom/current/ou
+      tput/html/part06.html#table_6-1). They can be provided by "Keyword" or
       "Tag". For example, "PatientID", "00100010".
   """
 

@@ -72,6 +72,7 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_serviceBindings = self.ProjectsLocationsServiceBindingsService(self)
     self.projects_locations_serviceLbPolicies = self.ProjectsLocationsServiceLbPoliciesService(self)
+    self.projects_locations_swpSecurityExtensions = self.ProjectsLocationsSwpSecurityExtensionsService(self)
     self.projects_locations_tcpRoutes = self.ProjectsLocationsTcpRoutesService(self)
     self.projects_locations_tlsRoutes = self.ProjectsLocationsTlsRoutesService(self)
     self.projects_locations_wasmActions = self.ProjectsLocationsWasmActionsService(self)
@@ -4567,7 +4568,7 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
         method_id='networkservices.projects.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1alpha1/{+name}/operations',
         request_field='',
         request_type_name='NetworkservicesProjectsLocationsOperationsListRequest',
@@ -4861,6 +4862,151 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='serviceLbPolicy',
         request_type_name='NetworkservicesProjectsLocationsServiceLbPoliciesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSwpSecurityExtensionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_swpSecurityExtensions resource."""
+
+    _NAME = 'projects_locations_swpSecurityExtensions'
+
+    def __init__(self, client):
+      super(NetworkservicesV1alpha1.ProjectsLocationsSwpSecurityExtensionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new `SwpSecurityExtension` resource in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsSwpSecurityExtensionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/swpSecurityExtensions',
+        http_method='POST',
+        method_id='networkservices.projects.locations.swpSecurityExtensions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'swpSecurityExtensionId'],
+        relative_path='v1alpha1/{+parent}/swpSecurityExtensions',
+        request_field='swpSecurityExtension',
+        request_type_name='NetworkservicesProjectsLocationsSwpSecurityExtensionsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified `SwpSecurityExtension` resource.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsSwpSecurityExtensionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/swpSecurityExtensions/{swpSecurityExtensionsId}',
+        http_method='DELETE',
+        method_id='networkservices.projects.locations.swpSecurityExtensions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsSwpSecurityExtensionsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of the specified `SwpSecurityExtension` resource.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsSwpSecurityExtensionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SwpSecurityExtension) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/swpSecurityExtensions/{swpSecurityExtensionsId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.swpSecurityExtensions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsSwpSecurityExtensionsGetRequest',
+        response_type_name='SwpSecurityExtension',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists `SwpSecurityExtension` resources in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsSwpSecurityExtensionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSwpSecurityExtensionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/swpSecurityExtensions',
+        http_method='GET',
+        method_id='networkservices.projects.locations.swpSecurityExtensions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/swpSecurityExtensions',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsSwpSecurityExtensionsListRequest',
+        response_type_name='ListSwpSecurityExtensionsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of the specified `SwpSecurityExtension` resource.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsSwpSecurityExtensionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/swpSecurityExtensions/{swpSecurityExtensionsId}',
+        http_method='PATCH',
+        method_id='networkservices.projects.locations.swpSecurityExtensions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='swpSecurityExtension',
+        request_type_name='NetworkservicesProjectsLocationsSwpSecurityExtensionsPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )

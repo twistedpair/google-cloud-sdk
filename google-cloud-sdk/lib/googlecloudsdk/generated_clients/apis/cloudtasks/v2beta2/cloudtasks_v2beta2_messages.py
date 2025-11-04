@@ -2522,10 +2522,10 @@ class UriOverride(_messages.Message):
       task URL. Setting the path value to an empty string clears the URI path
       segment.
     port: Port override. When specified, replaces the port part of the task
-      URI. For instance, for a URI http://www.google.com/foo and port=123, the
-      overridden URI becomes http://www.google.com:123/foo. Note that the port
-      value must be a positive integer. Setting the port to 0 (Zero) clears
-      the URI port.
+      URI. For instance, for a URI "https://www.example.com/example" and
+      port=123, the overridden URI becomes
+      "https://www.example.com:123/example". Note that the port value must be
+      a positive integer. Setting the port to 0 (Zero) clears the URI port.
     queryOverride: URI Query. When specified, replaces the query part of the
       task URI. Setting the query value to an empty string clears the URI
       query segment.
@@ -2542,10 +2542,10 @@ class UriOverride(_messages.Message):
 
     Values:
       SCHEME_UNSPECIFIED: Scheme unspecified. Defaults to HTTPS.
-      HTTP: Convert the scheme to HTTP, e.g., https://www.google.ca will
-        change to http://www.google.ca.
-      HTTPS: Convert the scheme to HTTPS, e.g., http://www.google.ca will
-        change to https://www.google.ca.
+      HTTP: Convert the scheme to HTTP, e.g., "https://www.example.com" will
+        change to "http://www.example.com".
+      HTTPS: Convert the scheme to HTTPS, e.g., "http://www.example.com" will
+        change to "https://www.example.com".
     """
     SCHEME_UNSPECIFIED = 0
     HTTP = 1

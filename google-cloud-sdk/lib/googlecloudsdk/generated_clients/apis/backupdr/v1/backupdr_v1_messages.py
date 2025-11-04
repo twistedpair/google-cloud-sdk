@@ -197,6 +197,8 @@ class AlloyDBClusterDataSourceProperties(_messages.Message):
   AlloyDB cluster resource that are stored in the DataSource. .
 
   Fields:
+    clusterUid: Output only. The cluster UID of the AlloyDB cluster backed up
+      by the datasource.
     name: Output only. Name of the AlloyDB cluster backed up by the
       datasource.
     pitrWindows: Output only. Point in time recovery windows. This is not
@@ -204,8 +206,22 @@ class AlloyDBClusterDataSourceProperties(_messages.Message):
       be ascending by start time.
   """
 
+  clusterUid = _messages.StringField(1)
+  name = _messages.StringField(2)
+  pitrWindows = _messages.MessageField('AlloyDbPitrWindow', 3, repeated=True)
+
+
+class AlloyDBClusterDataSourceReferenceProperties(_messages.Message):
+  r"""AlloyDBClusterDataSourceReferenceProperties represents the properties of
+  an AlloyDB cluster that are stored in the DataSourceReference.
+
+  Fields:
+    name: Output only. Name of the AlloyDB cluster backed up by the
+      datasource. Format:
+      projects/{project}/locations/{location}/clusters/{cluster}
+  """
+
   name = _messages.StringField(1)
-  pitrWindows = _messages.MessageField('AlloyDbPitrWindow', 2, repeated=True)
 
 
 class AlloyDbClusterBackupProperties(_messages.Message):
@@ -472,6 +488,8 @@ class Backup(_messages.Message):
       each other.
     expireTime: Optional. When this backup is automatically expired.
     gcpBackupPlanInfo: Output only. Configuration for a Google Cloud resource.
+    gcpResource: Output only. Unique identifier of the GCP resource that is
+      being backed up.
     kmsKeyVersions: Optional. Output only. The list of KMS key versions used
       to encrypt the backup.
     labels: Optional. Resource labels to represent user provided metadata. No
@@ -562,15 +580,16 @@ class Backup(_messages.Message):
   etag = _messages.StringField(12)
   expireTime = _messages.StringField(13)
   gcpBackupPlanInfo = _messages.MessageField('GCPBackupPlanInfo', 14)
-  kmsKeyVersions = _messages.StringField(15, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 16)
-  name = _messages.StringField(17)
-  resourceSizeBytes = _messages.IntegerField(18)
-  satisfiesPzi = _messages.BooleanField(19)
-  satisfiesPzs = _messages.BooleanField(20)
-  serviceLocks = _messages.MessageField('BackupLock', 21, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
-  updateTime = _messages.StringField(23)
+  gcpResource = _messages.MessageField('BackupGcpResource', 15)
+  kmsKeyVersions = _messages.StringField(16, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 17)
+  name = _messages.StringField(18)
+  resourceSizeBytes = _messages.IntegerField(19)
+  satisfiesPzi = _messages.BooleanField(20)
+  satisfiesPzs = _messages.BooleanField(21)
+  serviceLocks = _messages.MessageField('BackupLock', 22, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 23)
+  updateTime = _messages.StringField(24)
 
 
 class BackupApplianceBackupConfig(_messages.Message):
@@ -812,6 +831,21 @@ class BackupDrTemplateConfig(_messages.Message):
 
   firstPartyManagementUri = _messages.StringField(1)
   thirdPartyManagementUri = _messages.StringField(2)
+
+
+class BackupGcpResource(_messages.Message):
+  r"""Minimum details to identify a Google Cloud resource for a backup.
+
+  Fields:
+    gcpResourcename: Name of the Google Cloud resource.
+    location: Location of the resource: //"global"/"unspecified".
+    type: Type of the resource. Use the Unified Resource Type, eg.
+      compute.googleapis.com/Instance.
+  """
+
+  gcpResourcename = _messages.StringField(1)
+  location = _messages.StringField(2)
+  type = _messages.StringField(3)
 
 
 class BackupLocation(_messages.Message):
@@ -2438,8 +2472,8 @@ class BackupdrProjectsLocationsListRequest(_messages.Message):
   r"""A BackupdrProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Unless explicitly documented otherwise,
-      don't use this unsupported field which is primarily intended for
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -2664,12 +2698,20 @@ class BackupdrProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class BackupdrProjectsLocationsResourceBackupConfigsListRequest(_messages.Message):
@@ -2834,6 +2876,9 @@ class CloudSqlInstanceBackupProperties(_messages.Message):
   Fields:
     databaseInstalledVersion: Output only. The installed database version of
       the Cloud SQL instance when the backup was taken.
+    dbAlignedAtomicWrites: Output only. The db_aligned_atomic_writes flag for
+      this backup. Note: This is not intended to be exposed to the customers
+      as the native CSQL Backups doesn't expose it to customers yet.
     finalBackup: Output only. Whether the backup is a final backup.
     instanceCreateTime: Output only. The instance creation timestamp.
     instanceDeleteTime: Output only. The instance delete timestamp.
@@ -2844,11 +2889,12 @@ class CloudSqlInstanceBackupProperties(_messages.Message):
   """
 
   databaseInstalledVersion = _messages.StringField(1)
-  finalBackup = _messages.BooleanField(2)
-  instanceCreateTime = _messages.StringField(3)
-  instanceDeleteTime = _messages.StringField(4)
-  instanceTier = _messages.StringField(5)
-  sourceInstance = _messages.StringField(6)
+  dbAlignedAtomicWrites = _messages.BooleanField(2)
+  finalBackup = _messages.BooleanField(3)
+  instanceCreateTime = _messages.StringField(4)
+  instanceDeleteTime = _messages.StringField(5)
+  instanceTier = _messages.StringField(6)
+  sourceInstance = _messages.StringField(7)
 
 
 class CloudSqlInstanceDataSourceProperties(_messages.Message):
@@ -3475,6 +3521,8 @@ class DataSourceGcpResourceInfo(_messages.Message):
   r"""The GCP resource that the DataSource is associated with.
 
   Fields:
+    alloyDbClusterProperties: Output only. The properties of the AlloyDB
+      cluster.
     cloudSqlInstanceProperties: Output only. The properties of the Cloud SQL
       instance.
     filestoreInstanceProperties: Output only. The properties of the Filestore
@@ -3487,11 +3535,12 @@ class DataSourceGcpResourceInfo(_messages.Message):
       compute.googleapis.com/Instance
   """
 
-  cloudSqlInstanceProperties = _messages.MessageField('CloudSqlInstanceDataSourceReferenceProperties', 1)
-  filestoreInstanceProperties = _messages.MessageField('FilestoreInstanceDataSourceReferenceProperties', 2)
-  gcpResourcename = _messages.StringField(3)
-  location = _messages.StringField(4)
-  type = _messages.StringField(5)
+  alloyDbClusterProperties = _messages.MessageField('AlloyDBClusterDataSourceReferenceProperties', 1)
+  cloudSqlInstanceProperties = _messages.MessageField('CloudSqlInstanceDataSourceReferenceProperties', 2)
+  filestoreInstanceProperties = _messages.MessageField('FilestoreInstanceDataSourceReferenceProperties', 3)
+  gcpResourcename = _messages.StringField(4)
+  location = _messages.StringField(5)
+  type = _messages.StringField(6)
 
 
 class DataSourceReference(_messages.Message):
@@ -3517,6 +3566,8 @@ class DataSourceReference(_messages.Message):
     name: Identifier. The resource name of the DataSourceReference. Format: pr
       ojects/{project}/locations/{location}/dataSourceReferences/{data_source_
       reference}
+    totalStoredBytes: Output only. Total size of the storage used by all
+      backup resources for the referenced datasource.
   """
 
   class DataSourceBackupConfigStateValueValuesEnum(_messages.Enum):
@@ -3541,6 +3592,7 @@ class DataSourceReference(_messages.Message):
   dataSourceBackupCount = _messages.IntegerField(5)
   dataSourceGcpResourceInfo = _messages.MessageField('DataSourceGcpResourceInfo', 6)
   name = _messages.StringField(7)
+  totalStoredBytes = _messages.IntegerField(8)
 
 
 class DiskBackupProperties(_messages.Message):
@@ -4497,10 +4549,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListResourceBackupConfigsResponse(_messages.Message):
@@ -5373,6 +5430,14 @@ class RestoreBackupRequest(_messages.Message):
   r"""Request message for restoring from a Backup.
 
   Fields:
+    clearOverridesFieldMask: Optional. A field mask used to clear server-side
+      default values for fields within the `instance_properties` oneof. When a
+      field in this mask is cleared, the server will not apply its default
+      logic (like inheriting a value from the source) for that field. The most
+      common current use case is clearing default encryption keys. Examples of
+      field mask paths: - Compute Instance Disks:
+      `compute_instance_restore_properties.disks.*.disk_encryption_key` -
+      Single Disk: `disk_restore_properties.disk_encryption_key`
     computeInstanceRestoreProperties: Compute Engine instance properties to be
       overridden during restore.
     computeInstanceTargetEnvironment: Compute Engine target environment to be
@@ -5394,12 +5459,13 @@ class RestoreBackupRequest(_messages.Message):
       not supported (00000000-0000-0000-0000-000000000000).
   """
 
-  computeInstanceRestoreProperties = _messages.MessageField('ComputeInstanceRestoreProperties', 1)
-  computeInstanceTargetEnvironment = _messages.MessageField('ComputeInstanceTargetEnvironment', 2)
-  diskRestoreProperties = _messages.MessageField('DiskRestoreProperties', 3)
-  diskTargetEnvironment = _messages.MessageField('DiskTargetEnvironment', 4)
-  regionDiskTargetEnvironment = _messages.MessageField('RegionDiskTargetEnvironment', 5)
-  requestId = _messages.StringField(6)
+  clearOverridesFieldMask = _messages.StringField(1)
+  computeInstanceRestoreProperties = _messages.MessageField('ComputeInstanceRestoreProperties', 2)
+  computeInstanceTargetEnvironment = _messages.MessageField('ComputeInstanceTargetEnvironment', 3)
+  diskRestoreProperties = _messages.MessageField('DiskRestoreProperties', 4)
+  diskTargetEnvironment = _messages.MessageField('DiskTargetEnvironment', 5)
+  regionDiskTargetEnvironment = _messages.MessageField('RegionDiskTargetEnvironment', 6)
+  requestId = _messages.StringField(7)
 
 
 class RestoreBackupResponse(_messages.Message):
@@ -5997,11 +6063,15 @@ class Trial(_messages.Message):
 class TriggerBackupRequest(_messages.Message):
   r"""Request message for triggering a backup.
 
+  Messages:
+    LabelsValue: Optional. Labels to be applied on the backup.
+
   Fields:
     customRetentionDays: Optional. The duration for which backup data will be
       kept, while taking an on-demand backup with custom retention. It is
       defined in "days". It is mutually exclusive with rule_id. This field is
       required if rule_id is not provided.
+    labels: Optional. Labels to be applied on the backup.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -6018,9 +6088,34 @@ class TriggerBackupRequest(_messages.Message):
       triggered.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels to be applied on the backup.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   customRetentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  requestId = _messages.StringField(2)
-  ruleId = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 2)
+  requestId = _messages.StringField(3)
+  ruleId = _messages.StringField(4)
 
 
 class WeekDayOfMonth(_messages.Message):

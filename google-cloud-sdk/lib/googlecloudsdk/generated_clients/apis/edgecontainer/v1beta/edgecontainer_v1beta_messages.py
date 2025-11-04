@@ -1087,12 +1087,16 @@ class Local(_messages.Message):
   result in data loss.
 
   Enums:
+    ControlPlaneNodeSystemPartitionSizeValueValuesEnum: Optional. System
+      partition size for control plane nodes in GiB.
     SharedDeploymentPolicyValueValuesEnum: Policy configuration about how user
       applications are deployed.
 
   Fields:
     controlPlaneNodeStorageSchema: Optional. Name for the storage schema of
       control plane nodes.
+    controlPlaneNodeSystemPartitionSize: Optional. System partition size for
+      control plane nodes in GiB.
     machineFilter: Only machines matching this filter will be allowed to host
       control plane nodes. The filtering language accepts strings like
       "name=", and is documented here: [AIP-160](https://google.aip.dev/160).
@@ -1102,6 +1106,23 @@ class Local(_messages.Message):
     sharedDeploymentPolicy: Policy configuration about how user applications
       are deployed.
   """
+
+  class ControlPlaneNodeSystemPartitionSizeValueValuesEnum(_messages.Enum):
+    r"""Optional. System partition size for control plane nodes in GiB.
+
+    Values:
+      SYSTEM_PARTITION_GIB_SIZE_UNSPECIFIED: System partition size is not
+        specified by the user. This will cause the system partition size to be
+        set to the size specified in the system storage schema applicable to
+        that node, which is 100GiB.
+      SYSTEM_PARTITION_GIB_SIZE100: 100GiB system partition size, also the
+        default size.
+      SYSTEM_PARTITION_GIB_SIZE300: 300GiB system partition size. Can be used
+        to override the 100GiB default.
+    """
+    SYSTEM_PARTITION_GIB_SIZE_UNSPECIFIED = 0
+    SYSTEM_PARTITION_GIB_SIZE100 = 1
+    SYSTEM_PARTITION_GIB_SIZE300 = 2
 
   class SharedDeploymentPolicyValueValuesEnum(_messages.Enum):
     r"""Policy configuration about how user applications are deployed.
@@ -1118,10 +1139,11 @@ class Local(_messages.Message):
     DISALLOWED = 2
 
   controlPlaneNodeStorageSchema = _messages.StringField(1)
-  machineFilter = _messages.StringField(2)
-  nodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  nodeLocation = _messages.StringField(4)
-  sharedDeploymentPolicy = _messages.EnumField('SharedDeploymentPolicyValueValuesEnum', 5)
+  controlPlaneNodeSystemPartitionSize = _messages.EnumField('ControlPlaneNodeSystemPartitionSizeValueValuesEnum', 2)
+  machineFilter = _messages.StringField(3)
+  nodeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  nodeLocation = _messages.StringField(5)
+  sharedDeploymentPolicy = _messages.EnumField('SharedDeploymentPolicyValueValuesEnum', 6)
 
 
 class LocalDiskEncryption(_messages.Message):
@@ -1530,13 +1552,36 @@ class MaintenanceWindow(_messages.Message):
 class NodeConfig(_messages.Message):
   r"""Configuration for each node in the NodePool
 
+  Enums:
+    NodeSystemPartitionSizeValueValuesEnum: Optional. System partition size
+      for worker nodes in GiB.
+
   Messages:
     LabelsValue: Optional. The Kubernetes node labels
 
   Fields:
     labels: Optional. The Kubernetes node labels
     nodeStorageSchema: Optional. Name for the storage schema of worker nodes.
+    nodeSystemPartitionSize: Optional. System partition size for worker nodes
+      in GiB.
   """
+
+  class NodeSystemPartitionSizeValueValuesEnum(_messages.Enum):
+    r"""Optional. System partition size for worker nodes in GiB.
+
+    Values:
+      SYSTEM_PARTITION_GIB_SIZE_UNSPECIFIED: System partition size is not
+        specified by the user. This will cause the system partition size to be
+        set to the size specified in the system storage schema applicable to
+        that node, which is 100GiB.
+      SYSTEM_PARTITION_GIB_SIZE100: 100GiB system partition size, also the
+        default size.
+      SYSTEM_PARTITION_GIB_SIZE300: 300GiB system partition size. Can be used
+        to override the 100GiB default.
+    """
+    SYSTEM_PARTITION_GIB_SIZE_UNSPECIFIED = 0
+    SYSTEM_PARTITION_GIB_SIZE100 = 1
+    SYSTEM_PARTITION_GIB_SIZE300 = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1564,6 +1609,7 @@ class NodeConfig(_messages.Message):
 
   labels = _messages.MessageField('LabelsValue', 1)
   nodeStorageSchema = _messages.StringField(2)
+  nodeSystemPartitionSize = _messages.EnumField('NodeSystemPartitionSizeValueValuesEnum', 3)
 
 
 class NodePool(_messages.Message):
@@ -1848,6 +1894,7 @@ class ServerConfig(_messages.Message):
   Fields:
     channels: Output only. Mapping from release channel to channel config.
     defaultVersion: Output only. Default version, e.g.: "1.4.0".
+    versionRollouts: Output only. Rollout information for the server config.
     versions: Output only. Supported versions, e.g.: ["1.4.0", "1.5.0"].
   """
 
@@ -1877,7 +1924,8 @@ class ServerConfig(_messages.Message):
 
   channels = _messages.MessageField('ChannelsValue', 1)
   defaultVersion = _messages.StringField(2)
-  versions = _messages.MessageField('Version', 3, repeated=True)
+  versionRollouts = _messages.MessageField('VersionRollout', 3, repeated=True)
+  versions = _messages.MessageField('Version', 4, repeated=True)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -2001,7 +2049,7 @@ class SurvivabilityConfig(_messages.Message):
   Fields:
     offlineRebootTtl: Optional. Time period that allows the cluster nodes to
       be rebooted and become functional without network connectivity to
-      Google. The default 0 means not allowed. The maximum is 7 days.
+      Google. The default 0 means not allowed. The maximum is 30 days.
   """
 
   offlineRebootTtl = _messages.StringField(1)
@@ -2118,6 +2166,19 @@ class Version(_messages.Message):
   """
 
   name = _messages.StringField(1)
+
+
+class VersionRollout(_messages.Message):
+  r"""VersionRollout contains the Version rollout information.
+
+  Fields:
+    availableZones: Output only. List of zones in which the version has been
+      rolled out, e.g.: ["us-central1", "us-west1"].
+    version: Output only. Semantic version, e.g.: "1.4.0".
+  """
+
+  availableZones = _messages.StringField(1, repeated=True)
+  version = _messages.StringField(2)
 
 
 class VpcProject(_messages.Message):

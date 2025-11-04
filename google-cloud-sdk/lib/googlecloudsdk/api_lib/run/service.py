@@ -27,7 +27,7 @@ from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.api_lib.run import traffic
 from googlecloudsdk.command_lib.run import threat_detection_util as crtd_util
 
-DEFAULT_BASE_IMAGE = 'gcr.io/buildpacks/google-22/run'
+DEFAULT_BASE_IMAGE = 'us-docker.pkg.dev/serverless-runtimes/google-22/run/universal'
 ENDPOINT_VISIBILITY = 'networking.knative.dev/visibility'
 CLUSTER_LOCAL = 'cluster-local'
 

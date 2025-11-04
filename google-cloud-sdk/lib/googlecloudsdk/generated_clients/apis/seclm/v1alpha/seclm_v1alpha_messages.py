@@ -228,10 +228,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListWorkbenchesResponse(_messages.Message):
@@ -687,12 +692,20 @@ class SeclmProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class SeclmProjectsLocationsWorkbenchesCreateRequest(_messages.Message):
@@ -1015,7 +1028,7 @@ class WorkbenchQueryRequest(_messages.Message):
       model. For single-turn queries, this is a single instance. For multi-
       turn queries, this is a repeated field that contains conversation
       history + latest request.
-    query: Required. The query from user.
+    query: Required. The query from user. Deprecated: Use contents instead.
     safetySettings: Optional. Per request settings for blocking unsafe
       content. Enforced on GenerateContentResponse.candidates.
   """
@@ -1032,7 +1045,8 @@ class WorkbenchQueryResponse(_messages.Message):
     candidates: Output only. Candidate responses from the model.
     citationMetadata: Output only. Citation metadata. Contains citation
       information of `content`.
-    response: Output only. Response to the user's query.
+    response: Output only. Response to the user's query. Deprecated: Use
+      candidates field instead.
   """
 
   candidates = _messages.MessageField('Candidate', 1, repeated=True)

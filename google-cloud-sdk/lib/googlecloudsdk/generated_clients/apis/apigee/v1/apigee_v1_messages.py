@@ -4880,12 +4880,20 @@ class ApigeeOrganizationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class ApigeeOrganizationsOptimizedHostStatsGetRequest(_messages.Message):
@@ -6235,7 +6243,11 @@ class GoogleCloudApigeeV1AdjustDeveloperBalanceRequest(_messages.Message):
       the balance of the developer will decrease. * A negative value of
       `adjustment` means that that the API provider wants to adjust the
       balance for an over-charged developer i.e. the balance of the developer
-      will increase.
+      will increase. NOTE: An adjustment cannot increase the balance of the
+      developer beyond the balance as of the most recent credit. For example,
+      if a developer's balance is updated to be $100, and they spend $10, a
+      negative adjustment can only increase the balance of the developer to
+      $100.
   """
 
   adjustment = _messages.MessageField('GoogleTypeMoney', 1)
@@ -6702,10 +6714,14 @@ class GoogleCloudApigeeV1ApiProduct(_messages.Message):
         as a local counter for quota evaluation by all the operations,
         independent of proxy association. This behavior mimics the same as
         QUOTA_COUNTER_SCOPE_UNSPECIFIED.
+      PRODUCT: When quota is not explicitly defined for each
+        operation(REST/GraphQL), the limits set at product level will be used
+        as a global counter for quota evaluation by all the operations.
     """
     QUOTA_COUNTER_SCOPE_UNSPECIFIED = 0
     PROXY = 1
     OPERATION = 2
+    PRODUCT = 3
 
   apiResources = _messages.StringField(1, repeated=True)
   approvalType = _messages.StringField(2)
@@ -13155,12 +13171,10 @@ class GoogleCloudApigeeV1SecurityFeedbackFeedbackContext(_messages.Message):
       ATTRIBUTE_ENVIRONMENTS: Values will be a list of environments.
       ATTRIBUTE_IP_ADDRESS_RANGES: Values will be a list of IP addresses. This
         could be either IPv4 or IPv6.
-      ATTRIBUTE_API_KEYS: Values will be a list of API keys.
     """
     ATTRIBUTE_UNSPECIFIED = 0
     ATTRIBUTE_ENVIRONMENTS = 1
     ATTRIBUTE_IP_ADDRESS_RANGES = 2
-    ATTRIBUTE_API_KEYS = 3
 
   attribute = _messages.EnumField('AttributeValueValuesEnum', 1)
   values = _messages.StringField(2, repeated=True)
@@ -14657,10 +14671,15 @@ class GoogleLongrunningListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('GoogleLongrunningOperation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class GoogleLongrunningOperation(_messages.Message):

@@ -41,6 +41,8 @@ class HypercomputeclusterV1alpha(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.projects_locations_clusters = self.ProjectsLocationsClustersService(self)
     self.projects_locations_machineLearningRuns_profileSessions = self.ProjectsLocationsMachineLearningRunsProfileSessionsService(self)
+    self.projects_locations_machineLearningRuns_profilerSessions = self.ProjectsLocationsMachineLearningRunsProfilerSessionsService(self)
+    self.projects_locations_machineLearningRuns_profilerTargets = self.ProjectsLocationsMachineLearningRunsProfilerTargetsService(self)
     self.projects_locations_machineLearningRuns = self.ProjectsLocationsMachineLearningRunsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -255,6 +257,242 @@ class HypercomputeclusterV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsMachineLearningRunsProfilerSessionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_machineLearningRuns_profilerSessions resource."""
+
+    _NAME = 'projects_locations_machineLearningRuns_profilerSessions'
+
+    def __init__(self, client):
+      super(HypercomputeclusterV1alpha.ProjectsLocationsMachineLearningRunsProfilerSessionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a Profiler Session.
+
+      Args:
+        request: (HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerSessionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/machineLearningRuns/{machineLearningRunsId}/profilerSessions',
+        http_method='POST',
+        method_id='hypercomputecluster.projects.locations.machineLearningRuns.profilerSessions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['profilerSessionId'],
+        relative_path='v1alpha/{+parent}/profilerSessions',
+        request_field='profilerSession',
+        request_type_name='HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerSessionsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a Profiler Session.
+
+      Args:
+        request: (HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerSessionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/machineLearningRuns/{machineLearningRunsId}/profilerSessions/{profilerSessionsId}',
+        http_method='DELETE',
+        method_id='hypercomputecluster.projects.locations.machineLearningRuns.profilerSessions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerSessionsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get Profiler Session.
+
+      Args:
+        request: (HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerSessionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ProfilerSession) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/machineLearningRuns/{machineLearningRunsId}/profilerSessions/{profilerSessionsId}',
+        http_method='GET',
+        method_id='hypercomputecluster.projects.locations.machineLearningRuns.profilerSessions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerSessionsGetRequest',
+        response_type_name='ProfilerSession',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Profiler Sessions for a Machine Learning Run.
+
+      Args:
+        request: (HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerSessionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListProfilerSessionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/machineLearningRuns/{machineLearningRunsId}/profilerSessions',
+        http_method='GET',
+        method_id='hypercomputecluster.projects.locations.machineLearningRuns.profilerSessions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/profilerSessions',
+        request_field='',
+        request_type_name='HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerSessionsListRequest',
+        response_type_name='ListProfilerSessionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsMachineLearningRunsProfilerTargetsService(base_api.BaseApiService):
+    """Service class for the projects_locations_machineLearningRuns_profilerTargets resource."""
+
+    _NAME = 'projects_locations_machineLearningRuns_profilerTargets'
+
+    def __init__(self, client):
+      super(HypercomputeclusterV1alpha.ProjectsLocationsMachineLearningRunsProfilerTargetsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a Profiler Target.
+
+      Args:
+        request: (HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerTargetsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/machineLearningRuns/{machineLearningRunsId}/profilerTargets',
+        http_method='POST',
+        method_id='hypercomputecluster.projects.locations.machineLearningRuns.profilerTargets.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['profilerTargetId'],
+        relative_path='v1alpha/{+parent}/profilerTargets',
+        request_field='profilerTarget',
+        request_type_name='HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerTargetsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a Profiler Target.
+
+      Args:
+        request: (HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerTargetsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/machineLearningRuns/{machineLearningRunsId}/profilerTargets/{profilerTargetsId}',
+        http_method='DELETE',
+        method_id='hypercomputecluster.projects.locations.machineLearningRuns.profilerTargets.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerTargetsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a Profiler Target.
+
+      Args:
+        request: (HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerTargetsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ProfilerTarget) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/machineLearningRuns/{machineLearningRunsId}/profilerTargets/{profilerTargetsId}',
+        http_method='GET',
+        method_id='hypercomputecluster.projects.locations.machineLearningRuns.profilerTargets.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerTargetsGetRequest',
+        response_type_name='ProfilerTarget',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List Profiler Targets for a Machine Learning Run.
+
+      Args:
+        request: (HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerTargetsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListProfilerTargetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/machineLearningRuns/{machineLearningRunsId}/profilerTargets',
+        http_method='GET',
+        method_id='hypercomputecluster.projects.locations.machineLearningRuns.profilerTargets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/profilerTargets',
+        request_field='',
+        request_type_name='HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerTargetsListRequest',
+        response_type_name='ListProfilerTargetsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsMachineLearningRunsService(base_api.BaseApiService):
     """Service class for the projects_locations_machineLearningRuns resource."""
 
@@ -311,7 +549,7 @@ class HypercomputeclusterV1alpha(base_api.BaseApiClient):
         method_id='hypercomputecluster.projects.locations.machineLearningRuns.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['etag'],
+        query_params=['etag', 'force'],
         relative_path='v1alpha/{+name}',
         request_field='',
         request_type_name='HypercomputeclusterProjectsLocationsMachineLearningRunsDeleteRequest',

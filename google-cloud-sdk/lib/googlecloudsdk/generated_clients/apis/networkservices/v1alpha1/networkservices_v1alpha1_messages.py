@@ -831,7 +831,8 @@ class Connection(_messages.Message):
     connectionType: Required. The VPC connection type.
     nccHub: Optional. The resource name of the
       [NCC](https://cloud.google.com/network-connectivity-center) hub. Use the
-      following format: `projects/{project}/locations/global/hubs/{hub}`.
+      following format: `projects/{project}/locations/global/hubs/{hub}`. Only
+      required if `connection_type` is NCC.
   """
 
   class ConnectionTypeValueValuesEnum(_messages.Enum):
@@ -1261,8 +1262,7 @@ class EndpointPolicy(_messages.Message):
     labels: Optional. Set of label tags associated with the EndpointPolicy
       resource.
     name: Identifier. Name of the EndpointPolicy resource. It matches pattern
-      `projects/{project}/locations/global/endpointPolicies/{endpoint_policy}`
-      .
+      `projects/{project}/locations/*/endpointPolicies/{endpoint_policy}`.
     securityPolicy: Optional. A URL referring to a SecurityPolicy resource.
       SecurityPolicy is used to enforce rate limiting policy on the inbound
       traffic at the identified backends. If this field is not set, rate
@@ -1490,6 +1490,16 @@ class ExtensionChainExtension(_messages.Message):
       maximum length of 63 characters. Additionally, the first character must
       be a letter and the last a letter or a number. This field is required
       except for AuthzExtension.
+    observabilityMode: Optional. When set to `TRUE`, enables
+      `observability_mode` on the `ext_proc` filter. This makes `ext_proc`
+      calls asynchronous. Envoy doesn't check for the response from `ext_proc`
+      calls. For more information about the filter, see: https://www.envoyprox
+      y.io/docs/envoy/v1.32.3/api-
+      v3/extensions/filters/http/ext_proc/v3/ext_proc.proto#extensions-
+      filters-http-ext-proc-v3-externalprocessor This field is helpful when
+      you want to try out the extension in async log-only mode. Supported by
+      regional `LbTrafficExtension` and `LbRouteExtension` resources. Only
+      `STREAMED` (default) body processing mode is supported.
     requestBodySendMode: Optional. Configures the send mode for request body
       processing. The field can only be set if `supported_events` includes
       `REQUEST_BODY`. If `supported_events` includes `REQUEST_BODY`, but
@@ -1674,11 +1684,12 @@ class ExtensionChainExtension(_messages.Message):
   forwardHeaders = _messages.StringField(4, repeated=True)
   metadata = _messages.MessageField('MetadataValue', 5)
   name = _messages.StringField(6)
-  requestBodySendMode = _messages.EnumField('RequestBodySendModeValueValuesEnum', 7)
-  responseBodySendMode = _messages.EnumField('ResponseBodySendModeValueValuesEnum', 8)
-  service = _messages.StringField(9)
-  supportedEvents = _messages.EnumField('SupportedEventsValueListEntryValuesEnum', 10, repeated=True)
-  timeout = _messages.StringField(11)
+  observabilityMode = _messages.BooleanField(7)
+  requestBodySendMode = _messages.EnumField('RequestBodySendModeValueValuesEnum', 8)
+  responseBodySendMode = _messages.EnumField('ResponseBodySendModeValueValuesEnum', 9)
+  service = _messages.StringField(10)
+  supportedEvents = _messages.EnumField('SupportedEventsValueListEntryValuesEnum', 11, repeated=True)
+  timeout = _messages.StringField(12)
 
 
 class ExtensionChainMatchCondition(_messages.Message):
@@ -1962,7 +1973,7 @@ class GrpcRoute(_messages.Message):
     gateways: Optional. Gateways defines a list of gateways this GrpcRoute is
       attached to, as one of the routing rules to route the requests served by
       the gateway. Each gateway reference should match the pattern:
-      `projects/*/locations/global/gateways/`
+      `projects/*/locations/*/gateways/`
     hostnames: Required. Service hostnames with an optional port for which
       this route describes traffic. Format: [:] Hostname is the fully
       qualified domain name of a network host. This matches the RFC 1123
@@ -1989,9 +2000,9 @@ class GrpcRoute(_messages.Message):
     meshes: Optional. Meshes defines a list of meshes this GrpcRoute is
       attached to, as one of the routing rules to route the requests served by
       the mesh. Each mesh reference should match the pattern:
-      `projects/*/locations/global/meshes/`
+      `projects/*/locations/*/meshes/`
     name: Identifier. Name of the GrpcRoute resource. It matches pattern
-      `projects/*/locations/global/grpcRoutes/`
+      `projects/*/locations/*/grpcRoutes/`
     rules: Required. A list of detailed rules defining how to route traffic.
       Within a single GrpcRoute, the GrpcRoute.RouteAction associated with the
       first matching GrpcRoute.RouteRule will be executed. At least one rule
@@ -2505,7 +2516,7 @@ class HttpRoute(_messages.Message):
     gateways: Optional. Gateways defines a list of gateways this HttpRoute is
       attached to, as one of the routing rules to route the requests served by
       the gateway. Each gateway reference should match the pattern:
-      `projects/*/locations/global/gateways/`
+      `projects/*/locations/*/gateways/`
     hostnames: Required. Hostnames define a set of hosts that should match
       against the HTTP host header to select a HttpRoute to process the
       request. Hostname is the fully qualified domain name of a network host,
@@ -2530,10 +2541,10 @@ class HttpRoute(_messages.Message):
     meshes: Optional. Meshes defines a list of meshes this HttpRoute is
       attached to, as one of the routing rules to route the requests served by
       the mesh. Each mesh reference should match the pattern:
-      `projects/*/locations/global/meshes/` The attached Mesh should be of a
-      type SIDECAR
+      `projects/*/locations/*/meshes/` The attached Mesh should be of a type
+      SIDECAR
     name: Identifier. Name of the HttpRoute resource. It matches pattern
-      `projects/*/locations/global/httpRoutes/http_route_name>`.
+      `projects/*/locations/*/httpRoutes/http_route_name>`.
     rules: Required. Rules that define how traffic is routed and handled.
       Rules will be matched sequentially based on the RouteMatch specified for
       the rule.
@@ -4353,10 +4364,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListServiceBindingsResponse(_messages.Message):
@@ -4394,6 +4410,21 @@ class ListServiceLbPoliciesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   serviceLbPolicies = _messages.MessageField('ServiceLbPolicy', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListSwpSecurityExtensionsResponse(_messages.Message):
+  r"""Message for response to listing `SwpSecurityExtension` resources.
+
+  Fields:
+    nextPageToken: A token identifying a page of results that the server
+      returns.
+    swpSecurityExtensions: The list of `SwpSecurityExtension` resources.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  swpSecurityExtensions = _messages.MessageField('SwpSecurityExtension', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -4712,7 +4743,7 @@ class Mesh(_messages.Message):
       applicable only for sidecar proxy deployments.
     labels: Optional. Set of label tags associated with the Mesh resource.
     name: Identifier. Name of the Mesh resource. It matches pattern
-      `projects/*/locations/global/meshes/`.
+      `projects/*/locations/*/meshes/`.
     selfLink: Output only. Server-defined URL of this resource
     updateTime: Output only. The timestamp when the resource was updated.
   """
@@ -5046,6 +5077,9 @@ class MulticastDomainActivation(_messages.Message):
       domain activation was created.
     description: Optional. An optional text description of the multicast
       domain activation.
+    disablePlacementPolicy: Optional. Option to allow disabling placement
+      policy for multicast infrastructure. Only applicable if the activation
+      is for a domain associating with a multicast domain group.
     labels: Optional. Labels as key-value pairs
     multicastConsumerAssociations: Output only. The resource names of
       associated multicast consumer associations. Use the following format:
@@ -5095,14 +5129,15 @@ class MulticastDomainActivation(_messages.Message):
   adminNetwork = _messages.StringField(1)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  multicastConsumerAssociations = _messages.StringField(5, repeated=True)
-  multicastDomain = _messages.StringField(6)
-  name = _messages.StringField(7)
-  state = _messages.MessageField('MulticastResourceState', 8)
-  trafficSpec = _messages.MessageField('TrafficSpec', 9)
-  uniqueId = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  disablePlacementPolicy = _messages.BooleanField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  multicastConsumerAssociations = _messages.StringField(6, repeated=True)
+  multicastDomain = _messages.StringField(7)
+  name = _messages.StringField(8)
+  state = _messages.MessageField('MulticastResourceState', 9)
+  trafficSpec = _messages.MessageField('TrafficSpec', 10)
+  uniqueId = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class MulticastDomainGroup(_messages.Message):
@@ -6381,7 +6416,7 @@ class NetworkservicesProjectsLocationsEndpointPoliciesCreateRequest(_messages.Me
     endpointPolicyId: Required. Short name of the EndpointPolicy resource to
       be created. E.g. "CustomECS".
     parent: Required. The parent resource of the EndpointPolicy. Must be in
-      the format `projects/*/locations/global`.
+      the format `projects/*/locations/*`.
   """
 
   endpointPolicy = _messages.MessageField('EndpointPolicy', 1)
@@ -6394,7 +6429,7 @@ class NetworkservicesProjectsLocationsEndpointPoliciesDeleteRequest(_messages.Me
 
   Fields:
     name: Required. A name of the EndpointPolicy to delete. Must be in the
-      format `projects/*/locations/global/endpointPolicies/*`.
+      format `projects/*/locations/*/endpointPolicies/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -6405,7 +6440,7 @@ class NetworkservicesProjectsLocationsEndpointPoliciesGetRequest(_messages.Messa
 
   Fields:
     name: Required. A name of the EndpointPolicy to get. Must be in the format
-      `projects/*/locations/global/endpointPolicies/*`.
+      `projects/*/locations/*/endpointPolicies/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -6420,7 +6455,7 @@ class NetworkservicesProjectsLocationsEndpointPoliciesListRequest(_messages.Mess
       Indicates that this is a continuation of a prior `ListEndpointPolicies`
       call, and that the system should return the next page of data.
     parent: Required. The project and location from which the EndpointPolicies
-      should be listed, specified in the format `projects/*/locations/global`.
+      should be listed, specified in the format `projects/*/locations/*`.
     returnPartialSuccess: Optional. If true, allow partial responses for
       multi-regional Aggregated List requests. Otherwise if one of the
       locations is down or unreachable, the Aggregated List request will fail.
@@ -6439,8 +6474,7 @@ class NetworkservicesProjectsLocationsEndpointPoliciesPatchRequest(_messages.Mes
     endpointPolicy: A EndpointPolicy resource to be passed as the request
       body.
     name: Identifier. Name of the EndpointPolicy resource. It matches pattern
-      `projects/{project}/locations/global/endpointPolicies/{endpoint_policy}`
-      .
+      `projects/{project}/locations/*/endpointPolicies/{endpoint_policy}`.
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the EndpointPolicy resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
@@ -6606,7 +6640,7 @@ class NetworkservicesProjectsLocationsGrpcRoutesCreateRequest(_messages.Message)
     grpcRoute: A GrpcRoute resource to be passed as the request body.
     grpcRouteId: Required. Short name of the GrpcRoute resource to be created.
     parent: Required. The parent resource of the GrpcRoute. Must be in the
-      format `projects/*/locations/global`.
+      format `projects/*/locations/*`.
   """
 
   grpcRoute = _messages.MessageField('GrpcRoute', 1)
@@ -6619,7 +6653,7 @@ class NetworkservicesProjectsLocationsGrpcRoutesDeleteRequest(_messages.Message)
 
   Fields:
     name: Required. A name of the GrpcRoute to delete. Must be in the format
-      `projects/*/locations/global/grpcRoutes/*`.
+      `projects/*/locations/*/grpcRoutes/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -6630,7 +6664,7 @@ class NetworkservicesProjectsLocationsGrpcRoutesGetRequest(_messages.Message):
 
   Fields:
     name: Required. A name of the GrpcRoute to get. Must be in the format
-      `projects/*/locations/global/grpcRoutes/*`.
+      `projects/*/locations/*/grpcRoutes/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -6645,7 +6679,7 @@ class NetworkservicesProjectsLocationsGrpcRoutesListRequest(_messages.Message):
       Indicates that this is a continuation of a prior `ListGrpcRoutes` call,
       and that the system should return the next page of data.
     parent: Required. The project and location from which the GrpcRoutes
-      should be listed, specified in the format `projects/*/locations/global`.
+      should be listed, specified in the format `projects/*/locations/*`.
     returnPartialSuccess: Optional. If true, allow partial responses for
       multi-regional Aggregated List requests. Otherwise if one of the
       locations is down or unreachable, the Aggregated List request will fail.
@@ -6663,7 +6697,7 @@ class NetworkservicesProjectsLocationsGrpcRoutesPatchRequest(_messages.Message):
   Fields:
     grpcRoute: A GrpcRoute resource to be passed as the request body.
     name: Identifier. Name of the GrpcRoute resource. It matches pattern
-      `projects/*/locations/global/grpcRoutes/`
+      `projects/*/locations/*/grpcRoutes/`
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the GrpcRoute resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
@@ -6757,7 +6791,7 @@ class NetworkservicesProjectsLocationsHttpRoutesCreateRequest(_messages.Message)
     httpRoute: A HttpRoute resource to be passed as the request body.
     httpRouteId: Required. Short name of the HttpRoute resource to be created.
     parent: Required. The parent resource of the HttpRoute. Must be in the
-      format `projects/*/locations/global`.
+      format `projects/*/locations/*`.
   """
 
   httpRoute = _messages.MessageField('HttpRoute', 1)
@@ -6770,7 +6804,7 @@ class NetworkservicesProjectsLocationsHttpRoutesDeleteRequest(_messages.Message)
 
   Fields:
     name: Required. A name of the HttpRoute to delete. Must be in the format
-      `projects/*/locations/global/httpRoutes/*`.
+      `projects/*/locations/*/httpRoutes/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -6781,7 +6815,7 @@ class NetworkservicesProjectsLocationsHttpRoutesGetRequest(_messages.Message):
 
   Fields:
     name: Required. A name of the HttpRoute to get. Must be in the format
-      `projects/*/locations/global/httpRoutes/*`.
+      `projects/*/locations/*/httpRoutes/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -6796,7 +6830,7 @@ class NetworkservicesProjectsLocationsHttpRoutesListRequest(_messages.Message):
       Indicates that this is a continuation of a prior `ListHttpRoutes` call,
       and that the system should return the next page of data.
     parent: Required. The project and location from which the HttpRoutes
-      should be listed, specified in the format `projects/*/locations/global`.
+      should be listed, specified in the format `projects/*/locations/*`.
     returnPartialSuccess: Optional. If true, allow partial responses for
       multi-regional Aggregated List requests. Otherwise if one of the
       locations is down or unreachable, the Aggregated List request will fail.
@@ -6814,7 +6848,7 @@ class NetworkservicesProjectsLocationsHttpRoutesPatchRequest(_messages.Message):
   Fields:
     httpRoute: A HttpRoute resource to be passed as the request body.
     name: Identifier. Name of the HttpRoute resource. It matches pattern
-      `projects/*/locations/global/httpRoutes/http_route_name>`.
+      `projects/*/locations/*/httpRoutes/http_route_name>`.
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the HttpRoute resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
@@ -7462,7 +7496,7 @@ class NetworkservicesProjectsLocationsMeshesCreateRequest(_messages.Message):
     mesh: A Mesh resource to be passed as the request body.
     meshId: Required. Short name of the Mesh resource to be created.
     parent: Required. The parent resource of the Mesh. Must be in the format
-      `projects/*/locations/global`.
+      `projects/*/locations/*`.
   """
 
   mesh = _messages.MessageField('Mesh', 1)
@@ -7475,7 +7509,7 @@ class NetworkservicesProjectsLocationsMeshesDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. A name of the Mesh to delete. Must be in the format
-      `projects/*/locations/global/meshes/*`.
+      `projects/*/locations/*/meshes/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -7486,7 +7520,7 @@ class NetworkservicesProjectsLocationsMeshesGetRequest(_messages.Message):
 
   Fields:
     name: Required. A name of the Mesh to get. Must be in the format
-      `projects/*/locations/global/meshes/*`.
+      `projects/*/locations/*/meshes/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -7501,7 +7535,7 @@ class NetworkservicesProjectsLocationsMeshesListRequest(_messages.Message):
       that this is a continuation of a prior `ListMeshes` call, and that the
       system should return the next page of data.
     parent: Required. The project and location from which the Meshes should be
-      listed, specified in the format `projects/*/locations/global`.
+      listed, specified in the format `projects/*/locations/*`.
     returnPartialSuccess: Optional. If true, allow partial responses for
       multi-regional Aggregated List requests. Otherwise if one of the
       locations is down or unreachable, the Aggregated List request will fail.
@@ -7519,7 +7553,7 @@ class NetworkservicesProjectsLocationsMeshesPatchRequest(_messages.Message):
   Fields:
     mesh: A Mesh resource to be passed as the request body.
     name: Identifier. Name of the Mesh resource. It matches pattern
-      `projects/*/locations/global/meshes/`.
+      `projects/*/locations/*/meshes/`.
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the Mesh resource by the update. The fields specified in
       the update_mask are relative to the resource, not the full request. A
@@ -9160,12 +9194,20 @@ class NetworkservicesProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class NetworkservicesProjectsLocationsServiceBindingsCreateRequest(_messages.Message):
@@ -9324,12 +9366,136 @@ class NetworkservicesProjectsLocationsServiceLbPoliciesPatchRequest(_messages.Me
   updateMask = _messages.StringField(3)
 
 
+class NetworkservicesProjectsLocationsSwpSecurityExtensionsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsSwpSecurityExtensionsCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The parent resource of the `SwpSecurityExtension`
+      resource. Must be in the format
+      `projects/{project}/locations/{location}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      can ignore the request if it has already been completed. The server
+      guarantees that for 60 minutes since the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    swpSecurityExtension: A SwpSecurityExtension resource to be passed as the
+      request body.
+    swpSecurityExtensionId: Required. User-provided ID of the
+      `SwpSecurityExtension` resource to be created.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  swpSecurityExtension = _messages.MessageField('SwpSecurityExtension', 3)
+  swpSecurityExtensionId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsSwpSecurityExtensionsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsSwpSecurityExtensionsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the `SwpSecurityExtension` resource to delete.
+      Must be in the format `projects/{project}/locations/{location}/swpSecuri
+      tyExtensions/{swp_security_extension}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      can ignore the request if it has already been completed. The server
+      guarantees that for 60 minutes after the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsSwpSecurityExtensionsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsSwpSecurityExtensionsGetRequest
+  object.
+
+  Fields:
+    name: Required. A name of the `SwpSecurityExtension` resource to get. Must
+      be in the format `projects/{project}/locations/{location}/SwpSecurityExt
+      ensions/{swp_security_extension}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsSwpSecurityExtensionsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsSwpSecurityExtensionsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint about how to order the results.
+    pageSize: Optional. Requested page size. The server might return fewer
+      items than requested. If unspecified, the server picks an appropriate
+      default.
+    pageToken: Optional. A token identifying a page of results that the server
+      returns.
+    parent: Required. The project and location from which the
+      `SwpSecurityExtension` resources are listed. These values are specified
+      in the following format: `projects/{project}/locations/{location}`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsSwpSecurityExtensionsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsSwpSecurityExtensionsPatchRequest
+  object.
+
+  Fields:
+    name: Required. Identifier. Name of the `SwpSecurityExtension` resource in
+      the following format: `projects/{project}/locations/{location}/swpSecuri
+      tyExtensions/{swp_security_extension}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      can ignore the request if it has already been completed. The server
+      guarantees that for 60 minutes since the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    swpSecurityExtension: A SwpSecurityExtension resource to be passed as the
+      request body.
+    updateMask: Optional. Used to specify the fields to be overwritten in the
+      `SwpSecurityExtension` resource by the update. The fields specified in
+      the `update_mask` are relative to the resource, not the full request. A
+      field is overwritten if it is in the mask. If the user does not specify
+      a mask, then all fields are overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  swpSecurityExtension = _messages.MessageField('SwpSecurityExtension', 3)
+  updateMask = _messages.StringField(4)
+
+
 class NetworkservicesProjectsLocationsTcpRoutesCreateRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsTcpRoutesCreateRequest object.
 
   Fields:
     parent: Required. The parent resource of the TcpRoute. Must be in the
-      format `projects/*/locations/global`.
+      format `projects/*/locations/*`.
     tcpRoute: A TcpRoute resource to be passed as the request body.
     tcpRouteId: Required. Short name of the TcpRoute resource to be created.
   """
@@ -9344,7 +9510,7 @@ class NetworkservicesProjectsLocationsTcpRoutesDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. A name of the TcpRoute to delete. Must be in the format
-      `projects/*/locations/global/tcpRoutes/*`.
+      `projects/*/locations/*/tcpRoutes/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -9355,7 +9521,7 @@ class NetworkservicesProjectsLocationsTcpRoutesGetRequest(_messages.Message):
 
   Fields:
     name: Required. A name of the TcpRoute to get. Must be in the format
-      `projects/*/locations/global/tcpRoutes/*`.
+      `projects/*/locations/*/tcpRoutes/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -9370,7 +9536,7 @@ class NetworkservicesProjectsLocationsTcpRoutesListRequest(_messages.Message):
       Indicates that this is a continuation of a prior `ListTcpRoutes` call,
       and that the system should return the next page of data.
     parent: Required. The project and location from which the TcpRoutes should
-      be listed, specified in the format `projects/*/locations/global`.
+      be listed, specified in the format `projects/*/locations/*`.
     returnPartialSuccess: Optional. If true, allow partial responses for
       multi-regional Aggregated List requests. Otherwise if one of the
       locations is down or unreachable, the Aggregated List request will fail.
@@ -9387,7 +9553,7 @@ class NetworkservicesProjectsLocationsTcpRoutesPatchRequest(_messages.Message):
 
   Fields:
     name: Identifier. Name of the TcpRoute resource. It matches pattern
-      `projects/*/locations/global/tcpRoutes/tcp_route_name>`.
+      `projects/*/locations/*/tcpRoutes/tcp_route_name>`.
     tcpRoute: A TcpRoute resource to be passed as the request body.
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the TcpRoute resource by the update. The fields specified
@@ -9406,7 +9572,7 @@ class NetworkservicesProjectsLocationsTlsRoutesCreateRequest(_messages.Message):
 
   Fields:
     parent: Required. The parent resource of the TlsRoute. Must be in the
-      format `projects/*/locations/global`.
+      format `projects/*/locations/*`.
     tlsRoute: A TlsRoute resource to be passed as the request body.
     tlsRouteId: Required. Short name of the TlsRoute resource to be created.
   """
@@ -9421,7 +9587,7 @@ class NetworkservicesProjectsLocationsTlsRoutesDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. A name of the TlsRoute to delete. Must be in the format
-      `projects/*/locations/global/tlsRoutes/*`.
+      `projects/*/locations/*/tlsRoutes/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -9432,7 +9598,7 @@ class NetworkservicesProjectsLocationsTlsRoutesGetRequest(_messages.Message):
 
   Fields:
     name: Required. A name of the TlsRoute to get. Must be in the format
-      `projects/*/locations/global/tlsRoutes/*`.
+      `projects/*/locations/*/tlsRoutes/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -9447,7 +9613,7 @@ class NetworkservicesProjectsLocationsTlsRoutesListRequest(_messages.Message):
       Indicates that this is a continuation of a prior `ListTlsRoutes` call,
       and that the system should return the next page of data.
     parent: Required. The project and location from which the TlsRoutes should
-      be listed, specified in the format `projects/*/locations/global`.
+      be listed, specified in the format `projects/*/locations/*`.
     returnPartialSuccess: Optional. If true, allow partial responses for
       multi-regional Aggregated List requests. Otherwise if one of the
       locations is down or unreachable, the Aggregated List request will fail.
@@ -9464,7 +9630,7 @@ class NetworkservicesProjectsLocationsTlsRoutesPatchRequest(_messages.Message):
 
   Fields:
     name: Identifier. Name of the TlsRoute resource. It matches pattern
-      `projects/*/locations/global/tlsRoutes/tls_route_name>`.
+      `projects/*/locations/*/tlsRoutes/tls_route_name>`.
     tlsRoute: A TlsRoute resource to be passed as the request body.
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the TlsRoute resource by the update. The fields specified
@@ -10759,6 +10925,76 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class SwpSecurityExtension(_messages.Message):
+  r"""`SwpSecurityExtension` is a resource that allows traffic forwarding to a
+  callout backend to enhance security.
+
+  Messages:
+    LabelsValue: Optional. Set of labels associated with the
+      `SwpSecurityExtension` resource. The format must comply with [the
+      requirements for labels](/compute/docs/labeling-resources#requirements)
+      for Google Cloud resources.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A human-readable description of the resource.
+    extensionChains: Required. A set of ordered extension chains that contain
+      the match conditions and extensions to execute. Match conditions for
+      each extension chain are evaluated in sequence for a given request. The
+      first extension chain that has a condition that matches the request is
+      executed. Any subsequent extension chains do not execute. Limited to 5
+      extension chains per resource.
+    gateways: Required. References to the [SecureWebGateway
+      resource](https://cloud.google.com/secure-web-proxy/docs/overview) to
+      which this service extension is attached. There can be at most one
+      `SwpSecurityExtension` resource referencing a given `Gateway` resource
+      of type SecureWebGateway.
+    labels: Optional. Set of labels associated with the `SwpSecurityExtension`
+      resource. The format must comply with [the requirements for
+      labels](/compute/docs/labeling-resources#requirements) for Google Cloud
+      resources.
+    name: Required. Identifier. Name of the `SwpSecurityExtension` resource in
+      the following format: `projects/{project}/locations/{location}/swpSecuri
+      tyExtensions/{swp_security_extension}`.
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of labels associated with the `SwpSecurityExtension`
+    resource. The format must comply with [the requirements for
+    labels](/compute/docs/labeling-resources#requirements) for Google Cloud
+    resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  extensionChains = _messages.MessageField('ExtensionChain', 3, repeated=True)
+  gateways = _messages.StringField(4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
+
+
 class TcpRoute(_messages.Message):
   r"""TcpRoute is the resource defining how TCP traffic should be routed by a
   Mesh/Gateway resource.
@@ -10774,15 +11010,15 @@ class TcpRoute(_messages.Message):
     gateways: Optional. Gateways defines a list of gateways this TcpRoute is
       attached to, as one of the routing rules to route the requests served by
       the gateway. Each gateway reference should match the pattern:
-      `projects/*/locations/global/gateways/`
+      `projects/*/locations/*/gateways/`
     labels: Optional. Set of label tags associated with the TcpRoute resource.
     meshes: Optional. Meshes defines a list of meshes this TcpRoute is
       attached to, as one of the routing rules to route the requests served by
       the mesh. Each mesh reference should match the pattern:
-      `projects/*/locations/global/meshes/` The attached Mesh should be of a
-      type SIDECAR
+      `projects/*/locations/*/meshes/` The attached Mesh should be of a type
+      SIDECAR
     name: Identifier. Name of the TcpRoute resource. It matches pattern
-      `projects/*/locations/global/tcpRoutes/tcp_route_name>`.
+      `projects/*/locations/*/tcpRoutes/tcp_route_name>`.
     rules: Required. Rules that define how traffic is routed and handled. At
       least one RouteRule must be supplied. If there are multiple rules then
       the action taken will be the first rule to match.
@@ -10986,15 +11222,15 @@ class TlsRoute(_messages.Message):
     gateways: Optional. Gateways defines a list of gateways this TlsRoute is
       attached to, as one of the routing rules to route the requests served by
       the gateway. Each gateway reference should match the pattern:
-      `projects/*/locations/global/gateways/`
+      `projects/*/locations/*/gateways/`
     labels: Optional. Set of label tags associated with the TlsRoute resource.
     meshes: Optional. Meshes defines a list of meshes this TlsRoute is
       attached to, as one of the routing rules to route the requests served by
       the mesh. Each mesh reference should match the pattern:
-      `projects/*/locations/global/meshes/` The attached Mesh should be of a
-      type SIDECAR
+      `projects/*/locations/*/meshes/` The attached Mesh should be of a type
+      SIDECAR
     name: Identifier. Name of the TlsRoute resource. It matches pattern
-      `projects/*/locations/global/tlsRoutes/tls_route_name>`.
+      `projects/*/locations/*/tlsRoutes/tls_route_name>`.
     rules: Required. Rules that define how traffic is routed and handled. At
       least one RouteRule must be supplied. If there are multiple rules then
       the action taken will be the first rule to match.

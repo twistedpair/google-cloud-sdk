@@ -2813,7 +2813,8 @@ class Environment(_messages.Message):
       by the user. These options are passed through the service and are used
       to recreate the SDK pipeline options on the worker in a language
       agnostic and platform independent way.
-    UserAgentValue: A description of the process that generated the request.
+    UserAgentValue: Optional. A description of the process that generated the
+      request.
     VersionValue: A structure describing which components and their versions
       of the service are required in order to run the job.
 
@@ -2867,7 +2868,8 @@ class Environment(_messages.Message):
       present.
     useStreamingEngineResourceBasedBilling: Output only. Whether the job uses
       the Streaming Engine resource-based billing model.
-    userAgent: A description of the process that generated the request.
+    userAgent: Optional. A description of the process that generated the
+      request.
     version: A structure describing which components and their versions of the
       service are required in order to run the job.
     workerPools: The worker pools. At least one "harness" worker pool must be
@@ -2988,7 +2990,7 @@ class Environment(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class UserAgentValue(_messages.Message):
-    r"""A description of the process that generated the request.
+    r"""Optional. A description of the process that generated the request.
 
     Messages:
       AdditionalProperty: An additional property for a UserAgentValue object.

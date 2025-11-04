@@ -29,9 +29,9 @@ properties:
   spillover:
     description: |-
       This field indicates whether zonal affinity is enabled or not. The
-      possible values are: - ZONAL_AFFINITY_DISABLED: Default Value. Zonal
-      Affinity is disabled. The load balancer distributes new connections to all
-      healthy backend endpoints across all zones. -
+      possible values are:        - ZONAL_AFFINITY_DISABLED: Default Value.
+      Zonal Affinity    is disabled. The load balancer distributes new
+      connections to all    healthy backend endpoints across all zones.    -
     type: string
     enum:
     - ZONAL_AFFINITY_DISABLED

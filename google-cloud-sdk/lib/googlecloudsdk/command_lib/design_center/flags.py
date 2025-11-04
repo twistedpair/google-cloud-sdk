@@ -325,3 +325,31 @@ def AddRegisterWithApphubFlags(parser):
   base.ASYNC_FLAG.AddToParser(parser)
 
 
+def AddInferConnectionsFlags(parser):
+  """Adds all flags for the infer connections command.
+
+  Args:
+    parser: An argparse.ArgumentParser-like object. It is mocked out in tests.
+  """
+  base.ASYNC_FLAG.AddToParser(parser)
+  GetSpaceResourceArg('space', 'The space ID.').AddToParser(parser)
+  parser.add_argument(
+      '--catalog-template-revision-uris',
+      type=arg_parsers.ArgList(),
+      metavar='CATALOG_TEMPLATE_REVISION_URI',
+      help=(
+          'A comma-separated list of catalog template revision URIs to infer'
+          ' connections for. If not provided, the system infers connections'
+          ' for the latest revisions of all catalog templates in all the'
+          ' catalogs present in the space.'
+          ' Format:'
+          ' `projects/{projectId}/locations/{locationId}/spaces/{spaceId}/'
+          'catalogs/{catalogId}/templates/{templateId}/revisions/{revisionId}`'
+      ),
+  )
+  parser.add_argument(
+      '--use-gemini',
+      action='store_true',
+      default=False,
+      help='Use Gemini to infer connections.',
+  )

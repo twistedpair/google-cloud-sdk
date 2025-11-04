@@ -25,6 +25,7 @@ The core responsibilities include:
   3.  Orchestrating the creation of these resources in Google Cloud.
 """
 
+import hashlib
 import json
 import os
 import re
@@ -58,13 +59,45 @@ from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import files
 
 
+# Maximum length for a GCS bucket name.
+_MAX_BUCKET_NAME_LENGTH = 63
+
+
 def _generate_gcs_bucket_name(compose_project_name: str, region: str) -> str:
-  """Generates a unique bucket name for the compose project."""
+  """Generates a unique bucket name for the compose project.
+
+  The bucket name is derived from the project number, a sanitized version of
+  the compose project name, and the region. To ensure the bucket name
+  adheres to GCS naming conventions (e.g., max length), a hash is used
+  if the initial candidate name is too long.
+
+  Args:
+    compose_project_name: The name of the Docker Compose project.
+    region: The Google Cloud region.
+
+  Returns:
+    A valid GCS bucket name.
+  """
   project_number = _get_project_number()
+  # Sanitize the project name to be suitable for a bucket name.
   sanitized_project_name = compose_project_name.lower()
   sanitized_project_name = re.sub(r'[^a-z0-9-]+', '-', sanitized_project_name)
   sanitized_project_name = re.sub(r'-+', '-', sanitized_project_name)
-  return f'{project_number}-{sanitized_project_name}-{region}-compose'
+
+  # Construct a candidate bucket name.
+  bucket_name_candidate = (
+      f'{project_number}-{sanitized_project_name}-{region}-compose'
+  )
+
+  # GCS bucket names have a maximum length. If the candidate is too long,
+  # generate a shorter version using a hash of the sanitized project name.
+  if len(bucket_name_candidate) > _MAX_BUCKET_NAME_LENGTH:
+    project_hash = hashlib.sha1(
+        sanitized_project_name.encode()
+    ).hexdigest()[:8]
+    return f'{project_number}-{project_hash}-{region}-compose'
+  else:
+    return bucket_name_candidate
 
 
 class SecretConfig:
@@ -138,6 +171,10 @@ class Config:
 
   def handle(self, bucket_name: str, region: str) -> None:
     """Handles the creation of resources for the config."""
+    if not self.name:
+      raise exceptions.Error(
+          f'Config declared without a name, but name is required: {self.file}'
+      )
     log.debug('Handling config: %s', self.name)
     gcs_handler = GcsHandler(bucket_name, region)
     gcs_handler.ensure_bucket()
@@ -480,6 +517,11 @@ class ResourcesConfig:
     Returns:
       The ResourcesConfig instance after handling the resources.
     """
+    if not self.project:
+      raise exceptions.Error(
+          'Project name is missing in Compose file, but is required when'
+          ' using volumes or configs.'
+      )
     if self.source_builds:
       builder.handle(
           self.source_builds,
@@ -693,10 +735,6 @@ def deploy_application(
     release_track: The release track of the command.
   """
   project = properties.VALUES.core.project.Get(required=True)
-  log.status.Print(
-      f'Deploying application from \'{yaml_file_path}\' project \'{project}\''
-      f' in region \'{region}\'.'
-  )
 
   run_messages = apis.GetMessagesModule(
       global_methods.SERVERLESS_API_NAME,
@@ -731,6 +769,11 @@ def deploy_application(
 
   if not new_service or not new_service.name:
     raise exceptions.Error('Service name is missing in the YAML file.')
+
+  log.status.Print(
+      f'Deploying service \'{new_service.name}\' in project \'{project}\''
+      f' in region \'{region}\'.'
+  )
 
   service_ref = resources.REGISTRY.Parse(
       new_service.metadata.name,

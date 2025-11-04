@@ -363,6 +363,12 @@ class FilestoreClient(object):
       network_config.network = network.get('name')
       if 'reserved-ip-range' in network:
         network_config.reservedIpRange = network['reserved-ip-range']
+      if 'address-mode' in network:
+        network_config.modes = [
+            self.messages.NetworkConfig.ModesValueListEntryValuesEnum.lookup_by_name(
+                network['address-mode']
+            )
+        ]
       connect_mode = network.get('connect-mode', 'DIRECT_PEERING')
       self._adapter.ParseConnectMode(network_config, connect_mode)
       # 'instance.PscConfig' is a member of 'instance' structure only in

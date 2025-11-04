@@ -4584,8 +4584,8 @@ class OracledatabaseProjectsLocationsDatabasesListRequest(_messages.Message):
       (full resource name) filter in this format: `dbSystem="projects/{project
       }/locations/{location}/dbSystems/{dbSystemId}"`
     pageSize: Optional. The maximum number of items to return. If unspecified,
-      a maximum of 50 System Versions will be returned. The maximum value is
-      1000; values above 1000 will be reset to 1000.
+      a maximum of 50 Databases will be returned. The maximum value is 1000;
+      values above 1000 will be reset to 1000.
     pageToken: Optional. A token identifying the requested page of results to
       return. All fields except the filter should remain the same as in the
       request that provided this page token.
@@ -4605,8 +4605,8 @@ class OracledatabaseProjectsLocationsDbSystemInitialStorageSizesListRequest(_mes
 
   Fields:
     pageSize: Optional. The maximum number of items to return. If unspecified,
-      a maximum of 50 System Versions will be returned. The maximum value is
-      1000; values above 1000 will be reset to 1000.
+      a maximum of 50 DbSystemInitialStorageSizes will be returned. The
+      maximum value is 1000; values above 1000 will be reset to 1000.
     pageToken: Optional. A token identifying the requested page of results to
       return. All fields except the filter should remain the same as in the
       request that provided this page token.
@@ -4733,8 +4733,8 @@ class OracledatabaseProjectsLocationsDbVersionsListRequest(_messages.Message):
       {storage_management}`. If no filter is provided, all DbVersions will be
       returned.
     pageSize: Optional. The maximum number of items to return. If unspecified,
-      a maximum of 50 System Versions will be returned. The maximum value is
-      1000; values above 1000 will be reset to 1000.
+      a maximum of 50 DbVersions will be returned. The maximum value is 1000;
+      values above 1000 will be reset to 1000.
     pageToken: Optional. A token identifying the requested page of results to
       return. All fields except the filter should remain the same as in the
       request that provided this page token.
@@ -5071,8 +5071,8 @@ class OracledatabaseProjectsLocationsListRequest(_messages.Message):
   r"""A OracledatabaseProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Unless explicitly documented otherwise,
-      don't use this unsupported field which is primarily intended for
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is

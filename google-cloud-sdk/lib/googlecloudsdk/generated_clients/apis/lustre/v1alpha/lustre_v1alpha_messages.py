@@ -25,7 +25,7 @@ class AccessRule(_messages.Message):
   Fields:
     accessMode: Optional. The access mode for the access rule nodemap. Default
       is READ_WRITE.
-    ipAddressRanges: Optional. The IP address ranges to which to apply this
+    ipAddressRanges: Required. The IP address ranges to which to apply this
       access rule. Accepts non-overlapping CIDR ranges (e.g.,
       `192.168.1.0/24`) and IP addresses (e.g., `192.168.1.0`).
     mountableSubdirectories: Optional. The list of non-root directories that
@@ -35,12 +35,12 @@ class AccessRule(_messages.Message):
     name: Required. The name of the access rule policy group. Must be 16
       characters or less and include only alphanumeric characters or '_'.
     squashGid: Optional. Squash GID for the access rule. If the squash mode
-      for this rule is ROOT_SQUASH, root users matching the ip_ranges are
-      squashed to this GID. Defaults to 0 (no root squash).
+      for this rule is ROOT_SQUASH, root users matching the ip_address_ranges
+      are squashed to this GID. Defaults to 0 (no root squash).
     squashMode: Required. Squash mode for the access rule.
     squashUid: Optional. Squash UID for the access rule. If the squash mode
-      for this rule is ROOT_SQUASH, root users matching the ip_ranges are
-      squashed to this UID. Defaults to 0 (no root squash).
+      for this rule is ROOT_SQUASH, root users matching the ip_address_ranges
+      are squashed to this UID. Defaults to 0 (no root squash).
   """
 
   class AccessModeValueValuesEnum(_messages.Enum):
@@ -147,6 +147,51 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class Date(_messages.Message):
+  r"""Represents a whole or partial calendar date, such as a birthday. The
+  time of day and time zone are either specified elsewhere or are
+  insignificant. The date is relative to the Gregorian Calendar. This can
+  represent one of the following: * A full date, with non-zero year, month,
+  and day values. * A month and day, with a zero year (for example, an
+  anniversary). * A year on its own, with a zero month and a zero day. * A
+  year and month, with a zero day (for example, a credit card expiration
+  date). Related types: * google.type.TimeOfDay * google.type.DateTime *
+  google.protobuf.Timestamp
+
+  Fields:
+    day: Day of a month. Must be from 1 to 31 and valid for the year and
+      month, or 0 to specify a year by itself or a year and month where the
+      day isn't significant.
+    month: Month of a year. Must be from 1 to 12, or 0 to specify a year
+      without a month and day.
+    year: Year of the date. Must be from 1 to 9999, or 0 to specify a date
+      without a year.
+  """
+
+  day = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  month = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class DenyPeriod(_messages.Message):
+  r"""Deny period for the instance. A deny period can be in either of the
+  following two formats: * Non-recurring : A full date, with non-zero year,
+  month and day values. * Recurring : A month and day value, with a zero year.
+  Time zone is UTC.
+
+  Fields:
+    endDate: Required. End date of the deny period in UTC time zone.
+    startDate: Required. Start date of the deny period in UTC time zone.
+    time: Required. Time in UTC when the deny period starts on start_date and
+      ends on end_date. This can be: * Full time OR * All zeros for 00:00:00
+      UTC
+  """
+
+  endDate = _messages.MessageField('Date', 1)
+  startDate = _messages.MessageField('Date', 2)
+  time = _messages.MessageField('TimeOfDay', 3)
+
+
 class ExportDataRequest(_messages.Message):
   r"""Export data from Managed Lustre to a Cloud Storage bucket.
 
@@ -235,7 +280,15 @@ class Instance(_messages.Message):
     gkeSupportEnabled: Optional. Indicates whether you want to enable support
       for GKE clients. By default, GKE clients are not supported. Deprecated.
       No longer required for GKE instance creation.
+    kmsKey: Optional. Immutable. The Cloud KMS key name to use for data
+      encryption. If not set, the instance will use Google-managed encryption
+      keys. If set, the instance will use customer-managed encryption keys.
+      The key must be in the same region as the instance. The key format is: p
+      rojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{k
+      ey}
     labels: Optional. Labels as key value pairs.
+    maintenancePolicy: Optional. The maintenance policy for the instance to
+      determine when to allow or deny updates.
     mountPoint: Output only. Mount point of the instance in the format
       `IP_ADDRESS@tcp:/FILESYSTEM`.
     name: Identifier. The name of the instance.
@@ -246,9 +299,18 @@ class Instance(_messages.Message):
       MB/s/TiB. Valid values are 125, 250, 500, 1000. See [Performance tiers
       and maximum storage capacities](https://cloud.google.com/managed-
       lustre/docs/create-instance#performance-tiers) for more information.
+    placementPolicy: Optional. The placement policy name for the instance in
+      the format of projects/{project}/locations/{location}/resourcePolicies/{
+      resource_policy}
     satisfiesPzi: Output only. Reserved for future use
     satisfiesPzs: Output only. Reserved for future use
     state: Output only. The state of the instance.
+    stateReason: Output only. The reason why the instance is in a certain
+      state (e.g. SUSPENDED).
+    uid: Output only. Unique ID of the resource. This is unrelated to the
+      access rules which allow specifying the root squash uid.
+    upcomingMaintenanceSchedule: Output only. Date and time of upcoming
+      maintenance for the instance, if a maintenance policy is set.
     updateTime: Output only. Timestamp when the instance was last updated.
   """
 
@@ -304,15 +366,21 @@ class Instance(_messages.Message):
   description = _messages.StringField(4)
   filesystem = _messages.StringField(5)
   gkeSupportEnabled = _messages.BooleanField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  mountPoint = _messages.StringField(8)
-  name = _messages.StringField(9)
-  network = _messages.StringField(10)
-  perUnitStorageThroughput = _messages.IntegerField(11)
-  satisfiesPzi = _messages.BooleanField(12)
-  satisfiesPzs = _messages.BooleanField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  updateTime = _messages.StringField(15)
+  kmsKey = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 9)
+  mountPoint = _messages.StringField(10)
+  name = _messages.StringField(11)
+  network = _messages.StringField(12)
+  perUnitStorageThroughput = _messages.IntegerField(13)
+  placementPolicy = _messages.StringField(14)
+  satisfiesPzi = _messages.BooleanField(15)
+  satisfiesPzs = _messages.BooleanField(16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  stateReason = _messages.StringField(18)
+  uid = _messages.StringField(19)
+  upcomingMaintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 20)
+  updateTime = _messages.StringField(21)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -350,10 +418,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -610,8 +683,8 @@ class LustreProjectsLocationsListRequest(_messages.Message):
   r"""A LustreProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Unless explicitly documented otherwise,
-      don't use this unsupported field which is primarily intended for
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -671,12 +744,47 @@ class LustreProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
+
+
+class MaintenancePolicy(_messages.Message):
+  r"""The maintenance policy for the instance to determine when to allow or
+  deny updates.
+
+  Fields:
+    denyPeriods: Optional. The deny periods for the instance. Currently
+      limited to 4.
+    maintenanceWindows: Required. The maintenance window for the instance.
+  """
+
+  denyPeriods = _messages.MessageField('DenyPeriod', 1, repeated=True)
+  maintenanceWindows = _messages.MessageField('WeeklyWindow', 2, repeated=True)
+
+
+class MaintenanceSchedule(_messages.Message):
+  r"""Date and time of upcoming maintenance for the instance, if a maintenance
+  policy is set.
+
+  Fields:
+    endTime: Output only. The scheduled end time for the maintenance.
+    startTime: Output only. The scheduled start time for the maintenance.
+  """
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
 
 
 class Operation(_messages.Message):
@@ -814,6 +922,39 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class ReconciliationOperationMetadata(_messages.Message):
+  r"""Operation metadata returned by the CLH during resource state
+  reconciliation.
+
+  Enums:
+    ExclusiveActionValueValuesEnum: Excluisive action returned by the CLH.
+
+  Fields:
+    deleteResource: DEPRECATED. Use exclusive_action instead.
+    exclusiveAction: Excluisive action returned by the CLH.
+  """
+
+  class ExclusiveActionValueValuesEnum(_messages.Enum):
+    r"""Excluisive action returned by the CLH.
+
+    Values:
+      UNKNOWN_REPAIR_ACTION: Unknown repair action.
+      DELETE: The resource has to be deleted. When using this bit, the CLH
+        should fail the operation. DEPRECATED. Instead use DELETE_RESOURCE
+        OperationSignal in SideChannel.
+      RETRY: This resource could not be repaired but the repair should be
+        tried again at a later time. This can happen if there is a dependency
+        that needs to be resolved first- e.g. if a parent resource must be
+        repaired before a child resource.
+    """
+    UNKNOWN_REPAIR_ACTION = 0
+    DELETE = 1
+    RETRY = 2
+
+  deleteResource = _messages.BooleanField(1)
+  exclusiveAction = _messages.EnumField('ExclusiveActionValueValuesEnum', 2)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -926,6 +1067,70 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class TimeOfDay(_messages.Message):
+  r"""Represents a time of day. The date and time zone are either not
+  significant or are specified elsewhere. An API may choose to allow leap
+  seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.
+
+  Fields:
+    hours: Hours of a day in 24 hour format. Must be greater than or equal to
+      0 and typically must be less than or equal to 23. An API may choose to
+      allow the value "24:00:00" for scenarios like business closing time.
+    minutes: Minutes of an hour. Must be greater than or equal to 0 and less
+      than or equal to 59.
+    nanos: Fractions of seconds, in nanoseconds. Must be greater than or equal
+      to 0 and less than or equal to 999,999,999.
+    seconds: Seconds of a minute. Must be greater than or equal to 0 and
+      typically must be less than or equal to 59. An API may allow the value
+      60 if it allows leap-seconds.
+  """
+
+  hours = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minutes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  nanos = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  seconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class WeeklyWindow(_messages.Message):
+  r"""Time window in which maintenance updates may occur. Duration of the
+  window is currently fixed at 1 hour. Time zone is UTC.
+
+  Enums:
+    DayOfWeekValueValuesEnum: Required. Day of the week for the maintenance
+      window.
+
+  Fields:
+    dayOfWeek: Required. Day of the week for the maintenance window.
+    startTime: Required. Start time of the maintenance window in UTC time
+      zone.
+  """
+
+  class DayOfWeekValueValuesEnum(_messages.Enum):
+    r"""Required. Day of the week for the maintenance window.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
+    """
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  dayOfWeek = _messages.EnumField('DayOfWeekValueValuesEnum', 1)
+  startTime = _messages.MessageField('TimeOfDay', 2)
 
 
 encoding.AddCustomJsonFieldMapping(

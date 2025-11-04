@@ -172,7 +172,10 @@ def _poll_and_handle_build_result(
             container=container
         ),
         None,
-        message=f'Error waiting for build to complete: {e}',
+        message=(
+            'Error waiting for build to complete: {e}. Logs are available at'
+            ' [{build_log_url}].'.format(e=e, build_log_url=build_log_url)
+        ),
     )
     return False
 

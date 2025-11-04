@@ -105,6 +105,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SCHEMAS = (
+      'projects.locations.schemas',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/schemas/'
+              '{schemasId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SCHEMAS_SCHEMAVERSIONS = (
+      'projects.locations.schemas.schemaVersions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/schemas/'
+              '{schemasId}/schemaVersions/{schemaVersionsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_OPERATIONS = (
       'projects.operations',
       '{+name}',

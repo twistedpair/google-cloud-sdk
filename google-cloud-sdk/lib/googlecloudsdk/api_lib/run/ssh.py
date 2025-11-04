@@ -75,7 +75,7 @@ class Ssh:
   class WorkloadType(enum.Enum):
     """The type of the deployment."""
 
-    WORKER_POOL = "worker-pool"
+    WORKER_POOL = "worker_pool"
     JOB = "job"
     SERVICE = "service"
 

@@ -14,24 +14,6 @@ from apitools.base.py import extra_types
 package = 'geminicloudassist'
 
 
-class AbsentObservation(_messages.Message):
-  r"""An identifier of an observation that is needed. Typically a parameter
-  but extensible to other cases.
-
-  Fields:
-    generalMissingObservation: Optional. A missing observation that the user
-      could supply that is not a runbook parameter.
-    param: Optional. A runbook parameter.
-    pendingObservation: Optional. An observation that is not yet created that
-      an observer should create by running. This might prompt the system to
-      execute a runbook.
-  """
-
-  generalMissingObservation = _messages.MessageField('GeneralAbsentObservation', 1)
-  param = _messages.StringField(2)
-  pendingObservation = _messages.StringField(3)
-
-
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -186,23 +168,6 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
-class ClarificationNeeded(_messages.Message):
-  r"""A clarification needed by the system.
-
-  Fields:
-    generalMissingObservation: Optional. A missing observation that is not a
-      runbook parameter.
-    parentObserverNames: Optional. The display names of the observers that
-      asked for this clarification. The UI will group by these names.
-    runbookParameter: Optional. The result of a clarification is an
-      observation. A runbook parameter that the user needs to provide.
-  """
-
-  generalMissingObservation = _messages.MessageField('GeneralAbsentObservation', 1)
-  parentObserverNames = _messages.StringField(2, repeated=True)
-  runbookParameter = _messages.MessageField('RunbookParameter', 3)
-
-
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -267,7 +232,7 @@ class GeminicloudassistProjectsLocationsInvestigationsCreateRequest(_messages.Me
       become the final component of the investigation's resource name. This
       value should be 4-63 characters, and valid characters are /a-z-/. If not
       provided, the server will generate a unique ID for the investigation.
-    parent: Required. Value for parent.
+    parent: Required. Value for parent. Location must be set to "global".
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -350,13 +315,16 @@ class GeminicloudassistProjectsLocationsInvestigationsListRequest(_messages.Mess
   r"""A GeminicloudassistProjectsLocationsInvestigationsListRequest object.
 
   Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
+    filter: Optional. A string limiting the results that are returned.
+    orderBy: Optional. A string indicating how the returned results should be
+      ordered.
+    pageSize: Optional. Requested number of items to return. Server may return
+      fewer items than requested. If unspecified, server will pick an
+      appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Parent value for ListInvestigationsRequest
+    parent: Required. The parent to return Investigations for. Within the
+      parent, the location must be set to "global".
   """
 
   filter = _messages.StringField(1)
@@ -371,7 +339,8 @@ class GeminicloudassistProjectsLocationsInvestigationsPatchRequest(_messages.Mes
 
   Fields:
     investigation: A Investigation resource to be passed as the request body.
-    name: Identifier. name of resource
+    name: Identifier. Name of the investigation, of the form: projects/{projec
+      t_number}/locations/{location_id}/investigations/{investigation_id}
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -466,11 +435,13 @@ class GeminicloudassistProjectsLocationsInvestigationsRevisionsListRequest(_mess
   object.
 
   Fields:
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
+    pageSize: Optional. Requested number of items to return. Server may return
+      fewer items than requested. If unspecified, server will pick an
+      appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Parent value for ListInvestigationRevisionsRequest
+    parent: Required. The parent to return Investigation revisions for. Within
+      the parent, the location must be set to "global".
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -485,7 +456,9 @@ class GeminicloudassistProjectsLocationsInvestigationsRevisionsPatchRequest(_mes
   Fields:
     investigationRevision: A InvestigationRevision resource to be passed as
       the request body.
-    name: Identifier. name of resource
+    name: Identifier. The name of the revision resource, of the form: projects
+      /{project_number}/locations/{location_id}/investigations/{investigation_
+      id}/revisions/{revision_id}
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -516,9 +489,7 @@ class GeminicloudassistProjectsLocationsInvestigationsRevisionsRunRequest(_messa
   object.
 
   Fields:
-    name: Required. Run the investigation revision. The revision to run,
-      format: projects/{project}/locations/global/investigations/{investigatio
-      n}/revisions/{revision}
+    name: Required. Name of the investigation revision to run.
     runInvestigationRevisionRequest: A RunInvestigationRevisionRequest
       resource to be passed as the request body.
   """
@@ -566,8 +537,9 @@ class GeminicloudassistProjectsLocationsListRequest(_messages.Message):
   r"""A GeminicloudassistProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -626,29 +598,20 @@ class GeminicloudassistProjectsLocationsOperationsListRequest(_messages.Message)
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
-
-
-class GeneralAbsentObservation(_messages.Message):
-  r"""An absent observation that is not a runbook parameter.
-
-  Fields:
-    id: Optional. The ID of the missing observation.
-    title: Optional. The title to display in the UI
-    validationRegex: Optional. The regex that the answer must match. Must
-      conform to JavaScript's regular expression string pattern syntax. See
-      https://developer.mozilla.org/en-
-      US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/RegExp#syntax
-  """
-
-  id = _messages.StringField(1)
-  title = _messages.StringField(2)
-  validationRegex = _messages.StringField(3)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class Interval(_messages.Message):
@@ -670,63 +633,50 @@ class Interval(_messages.Message):
 
 
 class Investigation(_messages.Message):
-  r"""Message describing Investigation object Next Id: 24
+  r"""Holds the contents of a Gemini Cloud Assist Troubleshooting
+  investigation.
 
   Enums:
-    ExecutionStateValueValuesEnum: Output only. [Output only] The execution
-      state of this investigation.
+    ExecutionStateValueValuesEnum: Output only. The execution state of the
+      investigation.
 
   Messages:
-    ClarificationsNeededValue: Optional. Questions that the system needs to
-      ask the user. The results will be passed back by the UI as new
-      Observations. The ID for those observations will be the key of the entry
-      in the clarifications_needed map.
-    LabelsValue: Optional. Labels as key value pairs
-    ObservationsValue: Optional. A map from observation ID to the observation.
-      This is a map so that we can cleanly overwrite old observations with the
-      version from the latest revision. See Observation for guidance on
-      choosing IDs.
-    ObserverStatusesValue: Optional. Plural version of above. Code will
-      transition to this over time.
+    LabelsValue: Optional. User-defined labels for the investigation.
+    ObservationsValue: Optional. Observations about the project state that
+      comprise the contents of the investigation.
+    ObserverStatusesValue: Optional. Statuses of observers which have been
+      invoked in order to run the investigation.
 
   Fields:
-    annotations: Optional. Annotations on the investigation. Unlike labels,
-      these may carry semantic meaning in running the investigation, and will
-      not be read by other systems such as billing.
-    clarificationsNeeded: Optional. Questions that the system needs to ask the
-      user. The results will be passed back by the UI as new Observations. The
-      ID for those observations will be the key of the entry in the
-      clarifications_needed map.
-    createTime: Output only. [Output only] Create time stamp
-    dataVersion: Optional. The data model version of this Investigation.
-      Should be either 1 or 2. Treat 0 as 1. If 1, use V1 Investigation data
-      model. If 2, use the Investigation Observation data model.
-    error: Output only. [Output only] If the investigation execution state is
-      FAILED, this field will contain the error message.
-    executionState: Output only. [Output only] The execution state of this
+    annotations: Optional. Additional annotations on the investigation.
+    createTime: Output only. The time when the investigation was created.
+    error: Output only. The error if the investigation run failed. This field
+      will only be set if `execution_state` is
+      `INVESTIGATION_EXECUTION_STATE_FAILED`.
+    executionState: Output only. The execution state of the investigation.
+    labels: Optional. User-defined labels for the investigation.
+    name: Identifier. Name of the investigation, of the form: projects/{projec
+      t_number}/locations/{location_id}/investigations/{investigation_id}
+    observations: Optional. Observations about the project state that comprise
+      the contents of the investigation.
+    observerStatuses: Optional. Statuses of observers which have been invoked
+      in order to run the investigation.
+    operation: Output only. The resource name of the Run operation most
+      recently performed on the investigation, of the form: projects/{project_
+      number}/locations/{location_id}/operations/{operation_id}
+    revision: Output only. Resource name of the investigation's current
+      revision, of the form: projects/{project_number}/locations/{location_id}
+      /investigations/{investigation_id}/revisions/{revision_id}
+    revisionIndex: Output only. Index of the current revision of the
       investigation.
-    labels: Optional. Labels as key value pairs
-    name: Identifier. name of resource
-    observations: Optional. A map from observation ID to the observation. This
-      is a map so that we can cleanly overwrite old observations with the
-      version from the latest revision. See Observation for guidance on
-      choosing IDs.
-    observerStatuses: Optional. Plural version of above. Code will transition
-      to this over time.
-    operation: Output only. The Run operation most recently performed on the
-      investigation.
-    revision: Output only. [Output only] Current revision of the investigation
-    revisionIndex: Output only. [Output only] Index of the current revision of
-      the investigation. 1-based.
     revisionPredecessor: Optional. The name of the revision that was this
-      revision's predecessor. The UI, for example, will set this to the
-      existing revision when when a new revision is created due to an edit.
-    title: Required. Human-readable display title for the investigation.
-    updateTime: Output only. [Output only] Update time stamp
+      revision's predecessor.
+    title: Optional. Human-readable display title for the investigation.
+    updateTime: Output only. The time when the investigation was last updated.
   """
 
   class ExecutionStateValueValuesEnum(_messages.Enum):
-    r"""Output only. [Output only] The execution state of this investigation.
+    r"""Output only. The execution state of the investigation.
 
     Values:
       INVESTIGATION_EXECUTION_STATE_UNSPECIFIED: Default value. This value is
@@ -734,7 +684,7 @@ class Investigation(_messages.Message):
       INVESTIGATION_EXECUTION_STATE_RUNNING: The investigation is being
         executed.
       INVESTIGATION_EXECUTION_STATE_MODIFIED: The investigation has not yet
-        been executed since the symptom was last updated.
+        been executed since it was last updated.
       INVESTIGATION_EXECUTION_STATE_FAILED: The investigation execution has
         completed, but the execution has failed.
       INVESTIGATION_EXECUTION_STATE_COMPLETED: All execution tasks have
@@ -747,37 +697,8 @@ class Investigation(_messages.Message):
     INVESTIGATION_EXECUTION_STATE_COMPLETED = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
-  class ClarificationsNeededValue(_messages.Message):
-    r"""Optional. Questions that the system needs to ask the user. The results
-    will be passed back by the UI as new Observations. The ID for those
-    observations will be the key of the entry in the clarifications_needed
-    map.
-
-    Messages:
-      AdditionalProperty: An additional property for a
-        ClarificationsNeededValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type
-        ClarificationsNeededValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ClarificationsNeededValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A ClarificationNeeded attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('ClarificationNeeded', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
+    r"""Optional. User-defined labels for the investigation.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -801,9 +722,8 @@ class Investigation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ObservationsValue(_messages.Message):
-    r"""Optional. A map from observation ID to the observation. This is a map
-    so that we can cleanly overwrite old observations with the version from
-    the latest revision. See Observation for guidance on choosing IDs.
+    r"""Optional. Observations about the project state that comprise the
+    contents of the investigation.
 
     Messages:
       AdditionalProperty: An additional property for a ObservationsValue
@@ -828,8 +748,8 @@ class Investigation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ObserverStatusesValue(_messages.Message):
-    r"""Optional. Plural version of above. Code will transition to this over
-    time.
+    r"""Optional. Statuses of observers which have been invoked in order to
+    run the investigation.
 
     Messages:
       AdditionalProperty: An additional property for a ObserverStatusesValue
@@ -854,104 +774,40 @@ class Investigation(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('InvestigationAnnotations', 1)
-  clarificationsNeeded = _messages.MessageField('ClarificationsNeededValue', 2)
-  createTime = _messages.StringField(3)
-  dataVersion = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  error = _messages.MessageField('Status', 5)
-  executionState = _messages.EnumField('ExecutionStateValueValuesEnum', 6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  observations = _messages.MessageField('ObservationsValue', 9)
-  observerStatuses = _messages.MessageField('ObserverStatusesValue', 10)
-  operation = _messages.StringField(11)
-  revision = _messages.StringField(12)
-  revisionIndex = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  revisionPredecessor = _messages.StringField(14)
-  title = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
+  createTime = _messages.StringField(2)
+  error = _messages.MessageField('Status', 3)
+  executionState = _messages.EnumField('ExecutionStateValueValuesEnum', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  observations = _messages.MessageField('ObservationsValue', 7)
+  observerStatuses = _messages.MessageField('ObserverStatusesValue', 8)
+  operation = _messages.StringField(9)
+  revision = _messages.StringField(10)
+  revisionIndex = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  revisionPredecessor = _messages.StringField(12)
+  title = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class InvestigationAnnotations(_messages.Message):
-  r"""Additional user-defined annotations on an Investigation. There are some
-  pre-defined ones, and a map for new applications to add their own.
+  r"""Additional annotations on an Investigation.
 
   Messages:
-    ComponentVersionsValue: Output only. Map of component key to version.
-      Filled in by the run process. The key is unique to a "component",
-      broadly defined. A component might be the TAF framework, Titan, a GCA
-      tool, etc. The version is a string that is unique to a particular
-      release of the component, e.g., a build label.
-    ExtrasMapValue: Optional. Additional annotations required by applications.
-      These will not be redacted and should NOT contain any CCC/PII.
-    FeatureFlagsValue: Output only. Map of feature flag names to their
-      (string-serialized) values. Filled in by, and at the very start of, the
-      run process. Treat as immutable for the subsequent life of an
-      investigation run.
+    ExtrasMapValue: Optional. Additional client-specified annotations.
 
   Fields:
-    componentVersions: Output only. Map of component key to version. Filled in
-      by the run process. The key is unique to a "component", broadly defined.
-      A component might be the TAF framework, Titan, a GCA tool, etc. The
-      version is a string that is unique to a particular release of the
-      component, e.g., a build label.
-    extrasMap: Optional. Additional annotations required by applications.
-      These will not be redacted and should NOT contain any CCC/PII.
-    featureFlags: Output only. Map of feature flag names to their (string-
-      serialized) values. Filled in by, and at the very start of, the run
-      process. Treat as immutable for the subsequent life of an investigation
-      run.
-    followUp: Output only. Follow-up is required to continue the
-      investigation. Generally set to true by the troubleshooter and false
-      when the questions have been answered.
-    newlyCreated: Optional. This investigation is been newly created and
-      hasn't been saved by the user yet. Set to true when an Investigation is
-      created by an application (like Chat) and false when the user requests
-      action via the UI.
-    pagePath: Optional. Page path field set by the UI.
-    revisionLastRunInterval: Output only. Start/end time when the revision was
-      last run.
-    supportCase: Optional. The support case ID associated with the
-      investigation.
-    uiHidden: Optional. Whether the UI should hide this investigation from its
-      list.
-    uiReadOnly: Optional. Whether the UI should disable editing of this
+    extrasMap: Optional. Additional client-specified annotations.
+    pagePath: Optional. The path of a web page from which this investigation
+      was created.
+    revisionLastRunInterval: Output only. The interval during which the
+      investigation was last executed.
+    supportCase: Optional. A support case ID associated with the
       investigation.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
-  class ComponentVersionsValue(_messages.Message):
-    r"""Output only. Map of component key to version. Filled in by the run
-    process. The key is unique to a "component", broadly defined. A component
-    might be the TAF framework, Titan, a GCA tool, etc. The version is a
-    string that is unique to a particular release of the component, e.g., a
-    build label.
-
-    Messages:
-      AdditionalProperty: An additional property for a ComponentVersionsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type
-        ComponentVersionsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ComponentVersionsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
   class ExtrasMapValue(_messages.Message):
-    r"""Optional. Additional annotations required by applications. These will
-    not be redacted and should NOT contain any CCC/PII.
+    r"""Optional. Additional client-specified annotations.
 
     Messages:
       AdditionalProperty: An additional property for a ExtrasMapValue object.
@@ -973,63 +829,34 @@ class InvestigationAnnotations(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class FeatureFlagsValue(_messages.Message):
-    r"""Output only. Map of feature flag names to their (string-serialized)
-    values. Filled in by, and at the very start of, the run process. Treat as
-    immutable for the subsequent life of an investigation run.
-
-    Messages:
-      AdditionalProperty: An additional property for a FeatureFlagsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type FeatureFlagsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a FeatureFlagsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  componentVersions = _messages.MessageField('ComponentVersionsValue', 1)
-  extrasMap = _messages.MessageField('ExtrasMapValue', 2)
-  featureFlags = _messages.MessageField('FeatureFlagsValue', 3)
-  followUp = _messages.BooleanField(4)
-  newlyCreated = _messages.BooleanField(5)
-  pagePath = _messages.StringField(6)
-  revisionLastRunInterval = _messages.MessageField('Interval', 7)
-  supportCase = _messages.StringField(8)
-  uiHidden = _messages.BooleanField(9)
-  uiReadOnly = _messages.BooleanField(10)
+  extrasMap = _messages.MessageField('ExtrasMapValue', 1)
+  pagePath = _messages.StringField(2)
+  revisionLastRunInterval = _messages.MessageField('Interval', 3)
+  supportCase = _messages.StringField(4)
 
 
 class InvestigationRevision(_messages.Message):
-  r"""Message describing a revision of an Investigation
+  r"""A revision holds a snapshot of the investigation at a past point in
+  time. The most recent revision holds the investigation's current state,
+  while previous revisions are immutable.
 
   Messages:
-    LabelsValue: Optional. Labels as key value pairs
+    LabelsValue: Optional. User-defined labels for the revision.
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
+    createTime: Output only. The time when the revision was created.
     index: Output only. Revision index number, in order of creation.
-    labels: Optional. Labels as key value pairs
-    name: Identifier. name of resource
-    snapshot: Optional. [Output only] Snapshot of the investigation contents
-      at this revision
+    labels: Optional. User-defined labels for the revision.
+    name: Identifier. The name of the revision resource, of the form: projects
+      /{project_number}/locations/{location_id}/investigations/{investigation_
+      id}/revisions/{revision_id}
+    snapshot: Optional. Snapshot of the investigation contents at this
+      revision.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
+    r"""Optional. User-defined labels for the revision.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1062,18 +889,18 @@ class InvestigationRunParameters(_messages.Message):
   r"""Represents user parameters for running an investigation.
 
   Messages:
-    AccessTokensValue: Optional. If populated, map of project to access token
-      for TSE-triggered investigations.
+    AccessTokensValue: Optional. If populated, map of project to IAM token
+      granting access to that project.
 
   Fields:
-    accessTokens: Optional. If populated, map of project to access token for
-      TSE-triggered investigations.
+    accessTokens: Optional. If populated, map of project to IAM token granting
+      access to that project.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AccessTokensValue(_messages.Message):
-    r"""Optional. If populated, map of project to access token for TSE-
-    triggered investigations.
+    r"""Optional. If populated, map of project to IAM token granting access to
+    that project.
 
     Messages:
       AdditionalProperty: An additional property for a AccessTokensValue
@@ -1103,8 +930,8 @@ class ListInvestigationRevisionsResponse(_messages.Message):
   r"""Message for response to listing revisions of a given Investigation
 
   Fields:
-    nextPageToken: A token identifying a page of results the server should
-      return.
+    nextPageToken: A token to use in subsequent requests in order to return
+      the next set of results.
     revisions: The list of Investigation revisions
     unreachable: Unordered list. Locations that could not be reached.
   """
@@ -1118,9 +945,9 @@ class ListInvestigationsResponse(_messages.Message):
   r"""Message for response to listing Investigations
 
   Fields:
-    investigations: The list of Investigation
-    nextPageToken: A token identifying a page of results the server should
-      return.
+    investigations: The list of Investigations
+    nextPageToken: A token to use in subsequent requests in order to return
+      the next set of results.
     unreachable: Unordered list. Locations that could not be reached.
   """
 
@@ -1149,10 +976,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -1236,146 +1068,90 @@ class Location(_messages.Message):
 
 
 class Observation(_messages.Message):
-  r"""An observation is the basic unit of interchange between user and system,
-  or between different components of the system. It is the element that has a
-  relevance. They should therefore be relatively small; if you expect users to
-  react to "part" of an observation, it should be broken up into smaller
-  observations. A particular runbook run, a particular user parameter input, a
-  particular interesting log entry might all be separate observations. This
-  means there might be dozens or hundreds in an investigation. Next Id: 26
+  r"""An observation represents a single fact about the state of the system
+  under investigation, along with a ranking of its relevance.
 
   Enums:
-    ObservationCompletionStateValueValuesEnum: Optional. An
-      ObservationCompletionState represents whether the emitted observation is
-      fully formed and should be shown the to the user. This is intended to
-      allow hiding observations that are in an intermediate state.
-    ObservationTypeValueValuesEnum: Required. The type of the observation
-      (e.g. log, metric, etc.)
-    ObserverTypeValueValuesEnum: Required. The origin of the data, e.g. user,
-      system code, LLM etc.
+    ObservationCompletionStateValueValuesEnum: Optional. Represents whether
+      the observation is fully formed and able to be used to draw conclusions.
+    ObservationTypeValueValuesEnum: Required. The type of the observation.
+    ObserverTypeValueValuesEnum: Required. The type of observer that produced
+      this observation.
     RelevanceOverrideValueValuesEnum: Optional. The user's relevance
       judgement.
 
   Messages:
-    DataValue: Optional. A structured representation of the observation, as
-      chosen by the observer. Optional. If present, an observer SHOULD also
-      supply a text description of the observation to facilitate processing by
-      an LLM and rendering in the UI.
-    DataUrlsValue: Optional. A map from human-readable names to URLs for
-      supportive evidence. The map key will be rendered as URL anchor text.
-      Fill this in whenever an observation depends on a thing outside the
-      system. For example, logging/metrics/etc query that can regenerate the
-      observation.
-    KnowledgeUrlsValue: Optional. A map from human-readable names to URLs for
-      documentation.
+    DataValue: Optional. A structured representation of the observation. This
+      is not required or guaranteed to conform to any particular schema.
+    DataUrlsValue: Optional. URLs pointing to evidence in support of this
+      observation. Maps from a human-readable description to a URL.
+    KnowledgeUrlsValue: Optional. URLs pointing to reference knowledge related
+      to this observation. Maps from a human-readable description to a URL.
 
   Fields:
-    baseObservations: Optional. The ids of other observations that this
-      observation is based on. For example, a conclusion observation will
-      record the observations that were used to generate it. An extracted
-      param will record what it was extracted from. The graph of premises and
-      conclusions will be acyclic within a revision.
-    data: Optional. A structured representation of the observation, as chosen
-      by the observer. Optional. If present, an observer SHOULD also supply a
-      text description of the observation to facilitate processing by an LLM
-      and rendering in the UI.
-    dataUrls: Optional. A map from human-readable names to URLs for supportive
-      evidence. The map key will be rendered as URL anchor text. Fill this in
-      whenever an observation depends on a thing outside the system. For
-      example, logging/metrics/etc query that can regenerate the observation.
-    id: Required. Uniquely identifies this observation. Should depend on the
-      'core content' of the observation, but not e.g. on the relevance. Should
-      not depend on anything that can vary unpredictably from revision to
-      revision to run. This is also the map key in the parent Investigation.
-      They should be hierarchical with '.' as the separator starting with the
-      name of the observer. So for instance, diagnostics.runbook.ABC, or
-      signals.logs, or user.input.2 It should be usable as a URL component.
-      (Case-insensitive [a-z0-9-._]+) These will not be rendered for users,
-      but will be visible in the data model. They will be used by Google
-      engineers to localize bugs so should be semi-readable.
-    knowledgeUrls: Optional. A map from human-readable names to URLs for
-      documentation.
-    observationCompletionState: Optional. An ObservationCompletionState
-      represents whether the emitted observation is fully formed and should be
-      shown the to the user. This is intended to allow hiding observations
-      that are in an intermediate state.
-    observationType: Required. The type of the observation (e.g. log, metric,
-      etc.)
-    observedNormalOperation: Optional. Whether this observation gives us
-      information about an issue / root cause (false) or indicates normal
-      operation (true). This is conceptually different from the relevance and
-      used differently. An irrelevant observation should be hidden from the
-      LLM and also the user. A relevant observation of a problem should be
-      shown as an observation and should motivate a hypothesis. A relevant
-      finding of normalcy may / may not be shown in the UI, but should be used
-      by the LLM to filter out hypotheses that are refuted by the finding.
-    observerErrors: Output only. An error within the Investigation system that
-      blocked an observer from making a particular observation. The error
-      string here will be shown to users. Repeated because an observer might
-      lack multiple permissions. Deprecated: Use
-      ObserverStatus.observer_errors instead.
-    observerType: Required. The origin of the data, e.g. user, system code,
-      LLM etc.
-    recommendation: Optional. Natural language [markdown] text which describes
-      a recommended action to remediate / fix the root cause. This is free
-      form and not machine- processed at this time. A recommendation can be: -
-      High-level remediation descriptions - Specific and tactical remediation
-      steps with executable commands - Specific and tactical troubleshooting
-      steps for where to investigate next with executable commands
+    baseObservations: Optional. The IDs of other observations that this
+      observation is based on. For example, a hypothesis observation will
+      record the observations that support that hypothesis.
+    createTime: Output only. The time when the observation was created.
+    data: Optional. A structured representation of the observation. This is
+      not required or guaranteed to conform to any particular schema.
+    dataUrls: Optional. URLs pointing to evidence in support of this
+      observation. Maps from a human-readable description to a URL.
+    id: Output only. Uniquely identifies this observation. This is always
+      equal to the map key of this observation in the parent investigation.
+    knowledgeUrls: Optional. URLs pointing to reference knowledge related to
+      this observation. Maps from a human-readable description to a URL.
+    observationCompletionState: Optional. Represents whether the observation
+      is fully formed and able to be used to draw conclusions.
+    observationType: Required. The type of the observation.
+    observedNormalOperation: Optional. If false or unspecified, this
+      observation gives information about an issue or root cause. If true,
+      this observation indicates that a system was observed to be operating
+      normally. Such negative results can be useful diagnostic findings, and
+      this field has no correlation with the relevance score.
+    observerType: Required. The type of observer that produced this
+      observation.
+    recommendation: Optional. Natural language or markdown text which
+      describes a recommended action to remediate the root cause or further
+      investigate the issue.
     relevanceOverride: Optional. The user's relevance judgement.
     relevantResources: Optional. The Google Cloud resources relevant to the
-      observation. These should be fully qualified resource URIs, e.g.,
+      observation. These should be fully qualified resource URIs, e.g.:
       "//compute.googleapis.com/projects/my-project/zones/us-
       central1-a/instances/my-instance"
-    systemRelevanceScore: Optional. How relevant this observation is to the
-      investigation, as inferred by the system. Optional. Should be in the
-      range [-1, 1]. For OBSERVATION_TYPE_HYPOTHESIS, represents confidence in
-      the explanation. Only root-cause hypotheses are ranked against each
-      other. For other ObservationTypes, this represents a relevance score,
-      and they are ranked against each other. A value of 0 is neutral.
-    text: Optional. Natural-language [markdown] text associated with the
-      observation. This is the core content, not a metadata description.
-    timeIntervals: Optional. When this observation occurred. Observations
-      should have at least one time range so that the observations can be
-      shown on a timeline and so we can find related events. For a repeated
-      but not continuous event, it is appropriate to have more than one range.
-      The UI may combine these.
-    timeRanges: Optional. When this observation occurred. Observations should
-      have at least one time range so that the observations can be shown on a
-      timeline and so we can find related events. For a repeated but not
-      continuous event, it is appropriate to have more than one range. The UI
-      may combine these. DEPRECATED: Use time_intervals instead.
-    title: Optional. The label shown in the UI. This need not be unique within
-      an investigation. However, it should be specific and less than 80
-      characters so that the user can easily scan across many observations.
-      "Nettools pod configured with ALL capabilities dropped" is much better
-      than "Interesting pod configuration".
+    systemRelevanceScore: Optional. How relevant the observer perceives this
+      observation to be. This is used to rank observations in generating
+      hypotheses. The system outputs observations in the range [-1, 1], where
+      -1 means completely irrelevant, 0 means neutral, and 1 means complete
+      confidence in its relevance.
+    text: Optional. Natural-language or markdown text explaining the
+      observation.
+    timeIntervals: Optional. When this observation occurred.
+    title: Optional. Human-readable display title for the observation.
   """
 
   class ObservationCompletionStateValueValuesEnum(_messages.Enum):
-    r"""Optional. An ObservationCompletionState represents whether the emitted
-    observation is fully formed and should be shown the to the user. This is
-    intended to allow hiding observations that are in an intermediate state.
+    r"""Optional. Represents whether the observation is fully formed and able
+    to be used to draw conclusions.
 
     Values:
-      OBSERVATION_COMPLETION_STATE_UNSPECIFIED: Do not use.
-      OBSERVATION_COMPLETION_STATE_COMPLETE: This observation is fully formed
-        and should be shown the to the user.
+      OBSERVATION_COMPLETION_STATE_UNSPECIFIED: Default value. Will be treated
+        as COMPLETE.
+      OBSERVATION_COMPLETION_STATE_COMPLETE: This observation is fully formed.
       OBSERVATION_COMPLETION_STATE_INCOMPLETE: This observation is missing
         some information, or needs further processing by a different observer.
-        This type of Observation should not be persisted into future
-        investigation revisions.
+        This type of observation may be discarded in future investigation
+        runs.
     """
     OBSERVATION_COMPLETION_STATE_UNSPECIFIED = 0
     OBSERVATION_COMPLETION_STATE_COMPLETE = 1
     OBSERVATION_COMPLETION_STATE_INCOMPLETE = 2
 
   class ObservationTypeValueValuesEnum(_messages.Enum):
-    r"""Required. The type of the observation (e.g. log, metric, etc.)
+    r"""Required. The type of the observation.
 
     Values:
-      OBSERVATION_TYPE_UNSPECIFIED: Do not use. Specify the type of the
-        observation. Add a new enum if you need it.
+      OBSERVATION_TYPE_UNSPECIFIED: Default value.
       OBSERVATION_TYPE_CLOUD_LOG: The text of this observation is a log entry.
       OBSERVATION_TYPE_CLOUD_METRIC: The content of this observation is a
         metric or group of metrics.
@@ -1425,23 +1201,22 @@ class Observation(_messages.Message):
     OBSERVATION_TYPE_KNOWLEDGE = 16
 
   class ObserverTypeValueValuesEnum(_messages.Enum):
-    r"""Required. The origin of the data, e.g. user, system code, LLM etc.
+    r"""Required. The type of observer that produced this observation.
 
     Values:
-      OBSERVER_TYPE_UNSPECIFIED: Do not use. Specify where the observation
-        came from. Add a new enum if you need it.
-      OBSERVER_TYPE_DIAGNOSTICS: We separate these for internal attribution
-        reasons. Diagnostics have an explicit notion of root causes, e.g. via
-        runbooks.
+      OBSERVER_TYPE_UNSPECIFIED: Default value. Unused.
+      OBSERVER_TYPE_DIAGNOSTICS: Diagnostics have an explicit notion of root
+        causes, e.g. via runbooks.
       OBSERVER_TYPE_SIGNALS: Signals is for processing that doesn't have
         explicit root causes.
       OBSERVER_TYPE_DETERMINISTIC_CODE: This is for code that depends only on
         premises. In particular, error catalog lookups.
-      OBSERVER_TYPE_AI: This is for AI inferences made along the way that
-        depend only on observations listed as premises.
+      OBSERVER_TYPE_AI: This is for AI inferences that depend only on
+        observations listed as premises.
       OBSERVER_TYPE_USER: User-input observation, including answers to
-        clarifications.
-      OBSERVER_TYPE_ALERT: An observation from an external-to-GCA alert.
+        clarifications. All user-specified observations will be coerced to
+        this type.
+      OBSERVER_TYPE_ALERT: An observation from an alert.
     """
     OBSERVER_TYPE_UNSPECIFIED = 0
     OBSERVER_TYPE_DIAGNOSTICS = 1
@@ -1466,10 +1241,8 @@ class Observation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DataUrlsValue(_messages.Message):
-    r"""Optional. A map from human-readable names to URLs for supportive
-    evidence. The map key will be rendered as URL anchor text. Fill this in
-    whenever an observation depends on a thing outside the system. For
-    example, logging/metrics/etc query that can regenerate the observation.
+    r"""Optional. URLs pointing to evidence in support of this observation.
+    Maps from a human-readable description to a URL.
 
     Messages:
       AdditionalProperty: An additional property for a DataUrlsValue object.
@@ -1493,10 +1266,8 @@ class Observation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DataValue(_messages.Message):
-    r"""Optional. A structured representation of the observation, as chosen by
-    the observer. Optional. If present, an observer SHOULD also supply a text
-    description of the observation to facilitate processing by an LLM and
-    rendering in the UI.
+    r"""Optional. A structured representation of the observation. This is not
+    required or guaranteed to conform to any particular schema.
 
     Messages:
       AdditionalProperty: An additional property for a DataValue object.
@@ -1520,7 +1291,8 @@ class Observation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class KnowledgeUrlsValue(_messages.Message):
-    r"""Optional. A map from human-readable names to URLs for documentation.
+    r"""Optional. URLs pointing to reference knowledge related to this
+    observation. Maps from a human-readable description to a URL.
 
     Messages:
       AdditionalProperty: An additional property for a KnowledgeUrlsValue
@@ -1544,14 +1316,14 @@ class Observation(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   baseObservations = _messages.StringField(1, repeated=True)
-  data = _messages.MessageField('DataValue', 2)
-  dataUrls = _messages.MessageField('DataUrlsValue', 3)
-  id = _messages.StringField(4)
-  knowledgeUrls = _messages.MessageField('KnowledgeUrlsValue', 5)
-  observationCompletionState = _messages.EnumField('ObservationCompletionStateValueValuesEnum', 6)
-  observationType = _messages.EnumField('ObservationTypeValueValuesEnum', 7)
-  observedNormalOperation = _messages.BooleanField(8)
-  observerErrors = _messages.MessageField('Status', 9, repeated=True)
+  createTime = _messages.StringField(2)
+  data = _messages.MessageField('DataValue', 3)
+  dataUrls = _messages.MessageField('DataUrlsValue', 4)
+  id = _messages.StringField(5)
+  knowledgeUrls = _messages.MessageField('KnowledgeUrlsValue', 6)
+  observationCompletionState = _messages.EnumField('ObservationCompletionStateValueValuesEnum', 7)
+  observationType = _messages.EnumField('ObservationTypeValueValuesEnum', 8)
+  observedNormalOperation = _messages.BooleanField(9)
   observerType = _messages.EnumField('ObserverTypeValueValuesEnum', 10)
   recommendation = _messages.StringField(11)
   relevanceOverride = _messages.EnumField('RelevanceOverrideValueValuesEnum', 12)
@@ -1559,49 +1331,31 @@ class Observation(_messages.Message):
   systemRelevanceScore = _messages.FloatField(14, variant=_messages.Variant.FLOAT)
   text = _messages.StringField(15)
   timeIntervals = _messages.MessageField('Interval', 16, repeated=True)
-  timeRanges = _messages.MessageField('TimeRange', 17, repeated=True)
-  title = _messages.StringField(18)
+  title = _messages.StringField(17)
 
 
 class ObserverStatus(_messages.Message):
   r"""An ObserverStatus represents the status of an observer at a particular
-  point during execution of an investigation. NOTE: By default, nothing in
-  this message is redacted. Components should NOT put PII / CCC here except
-  where redacted. Next Id: 13
+  point during execution of an investigation.
 
   Enums:
     ObserverExecutionStateValueValuesEnum: Optional. The current execution
       state of the observer.
 
   Fields:
-    absentObservations: Optional. The IDs of any predicate observations that
-      would be needed to run this observer, but are missing. Runbook
-      parameters are the motivating example. An observer must not emit an ID
-      corresponding to an existing observation.
-    observer: Required. The ID of the observer that this status is for.
-      Observer IDs should be human-readable and hierarchical, e.g.
-      "signals.logs.firewall_rules" or "diagnostics.error_catalog".
-    observerDisplayName: Required. The name to show the user when describing
-      this observer. Note that the UI might replace this with an
-      internationalized counterpart, so it should not be generated
-      dynamically. Required so that the user can see which observer (e.g.
-      runbook) the system is talking about.
-    observerErrors: Optional. An error within the Investigation system that
-      blocked an observer from making a particular observation. The error
-      string here will be shown to users. Repeated because an observer might
-      lack multiple permissions.
+    observer: Output only. Uniquely identifies this observer. This is always
+      equal to the map key of this observer in the parent investigation.
+    observerDisplayName: Required. Human-readable display name for the
+      observer.
+    observerErrors: Optional. An error that blocked an observer from making a
+      particular observation.
     observerExecutionState: Optional. The current execution state of the
       observer.
-    startTime: Optional. The time when the observer started. Optional because
-      the observer is responsible for setting it. When the observer is
-      finished, the difference between this and update_time is the observer
-      run time.
-    updateComment: Optional. A status update from the observer. May be logged
-      for debugging purposes. These may be shown to users. A good update would
-      be "parameters matched, queued for execution" or "checked log file 2/5".
-    updateTime: Optional. The time when the status was updated. Optional
-      because the observer is responsible for setting it. Becomes end_time
-      when the observer is complete.
+    startTime: Optional. The time when the observer started its observation.
+    updateComment: Optional. A status update from the observer.
+    updateTime: Optional. The time when the observer last updated the
+      investigation. If the `observer_execution_state` is COMPLETE or FAILED,
+      this is the time when the observer finished its observation.
   """
 
   class ObserverExecutionStateValueValuesEnum(_messages.Enum):
@@ -1634,14 +1388,13 @@ class ObserverStatus(_messages.Message):
     OBSERVER_EXECUTION_INVESTIGATION_BLOCKED = 6
     OBSERVER_EXECUTION_INVESTIGATION_DEGRADED = 7
 
-  absentObservations = _messages.MessageField('AbsentObservation', 1, repeated=True)
-  observer = _messages.StringField(2)
-  observerDisplayName = _messages.StringField(3)
-  observerErrors = _messages.MessageField('Status', 4, repeated=True)
-  observerExecutionState = _messages.EnumField('ObserverExecutionStateValueValuesEnum', 5)
-  startTime = _messages.StringField(6)
-  updateComment = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  observer = _messages.StringField(1)
+  observerDisplayName = _messages.StringField(2)
+  observerErrors = _messages.MessageField('Status', 3, repeated=True)
+  observerExecutionState = _messages.EnumField('ObserverExecutionStateValueValuesEnum', 4)
+  startTime = _messages.StringField(5)
+  updateComment = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class Operation(_messages.Message):
@@ -1861,37 +1614,10 @@ class RunInvestigationRevisionRequest(_messages.Message):
   r"""Request for running an investigation at a particular revision.
 
   Fields:
-    runParameters: Optional. Parameters to pass through to Titan.
-    updateMask: Optional. The fields of the revision to update. Note that only
-      user-writeable fields can be updated.
-    updatedRevision: Optional. Revision to update before running.
+    runParameters: Optional. Parameters to pass through.
   """
 
   runParameters = _messages.MessageField('InvestigationRunParameters', 1)
-  updateMask = _messages.StringField(2)
-  updatedRevision = _messages.MessageField('InvestigationRevision', 3)
-
-
-class RunbookParameter(_messages.Message):
-  r"""Parameter metadata for runbooks updated by the Diagnostic task.
-
-  Fields:
-    associatedAssetTypes: Optional. If present, a list of resource types that
-      this parameter might be. For example, "compute.googleapis.com/Instance".
-    description: Optional. The description of the parameter.
-    displayName: Optional. The name of the parameter to be displayed to the
-      user.
-    exampleValues: Optional. Examples of the parameter value.
-    id: Optional. The name of the parameter.
-    value: Optional. The value of the parameter if available.
-  """
-
-  associatedAssetTypes = _messages.StringField(1, repeated=True)
-  description = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  exampleValues = _messages.StringField(4, repeated=True)
-  id = _messages.StringField(5)
-  value = _messages.StringField(6)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -2047,21 +1773,6 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
-
-
-class TimeRange(_messages.Message):
-  r"""Represents a time range at which an observation applies DEPRECATED: Use
-  google.type.Interval instead.
-
-  Fields:
-    endTime: If end is unspecified, that implies that it continues to the
-      present. Use end==start for a single moment.
-    startTime: When this observation began applying. Use 'now' if the observer
-      is just looking at the current state of Google Cloud.
-  """
-
-  endTime = _messages.StringField(1)
-  startTime = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

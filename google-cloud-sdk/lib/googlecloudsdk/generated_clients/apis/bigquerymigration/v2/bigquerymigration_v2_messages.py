@@ -979,6 +979,7 @@ class GoogleCloudBigqueryMigrationV2GcsReportLogMessage(_messages.Message):
   Enums:
     RetentionStatusValueValuesEnum: Whether the impacted lines of code are
       DROPPED or RETAINED at this stage.
+    SourceTypeValueValuesEnum: The type of the source file.
 
   Fields:
     action: Category of the error/warning. Example: SyntaxError
@@ -997,6 +998,7 @@ class GoogleCloudBigqueryMigrationV2GcsReportLogMessage(_messages.Message):
       example: 6
     sourceScriptLine: Specifies the row from the source text where the error
       occurred (0 based, -1 for messages without line location). Example: 2
+    sourceType: The type of the source file.
   """
 
   class RetentionStatusValueValuesEnum(_messages.Enum):
@@ -1012,6 +1014,22 @@ class GoogleCloudBigqueryMigrationV2GcsReportLogMessage(_messages.Message):
     RETAINED = 1
     DROPPED = 2
 
+  class SourceTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the source file.
+
+    Values:
+      SOURCE_TYPE_UNSPECIFIED: Undefined source type.
+      SQL: The source is a SQL file.
+      LITERAL: The source is a literal.
+      METADATA: The source is a metadata file.
+      CONFIGURATION: The source is a configuration file.
+    """
+    SOURCE_TYPE_UNSPECIFIED = 0
+    SQL = 1
+    LITERAL = 2
+    METADATA = 3
+    CONFIGURATION = 4
+
   action = _messages.StringField(1)
   category = _messages.StringField(2)
   effect = _messages.StringField(3)
@@ -1024,6 +1042,7 @@ class GoogleCloudBigqueryMigrationV2GcsReportLogMessage(_messages.Message):
   severity = _messages.StringField(10)
   sourceScriptColumn = _messages.IntegerField(11, variant=_messages.Variant.INT32)
   sourceScriptLine = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 13)
 
 
 class GoogleCloudBigqueryMigrationV2GreenplumDialect(_messages.Message):
@@ -2011,6 +2030,7 @@ class GoogleCloudBigqueryMigrationV2TranslateQueryRequest(_messages.Message):
       SQLITE: SQLite dialect.
       DB2: DB2 dialect.
       GREENPLUM: Greenplum dialect.
+      IMPALA: Impala dialect.
     """
     SQL_TRANSLATION_SOURCE_DIALECT_UNSPECIFIED = 0
     TERADATA = 1
@@ -2030,6 +2050,7 @@ class GoogleCloudBigqueryMigrationV2TranslateQueryRequest(_messages.Message):
     SQLITE = 15
     DB2 = 16
     GREENPLUM = 17
+    IMPALA = 18
 
   query = _messages.StringField(1)
   sourceDialect = _messages.EnumField('SourceDialectValueValuesEnum', 2)

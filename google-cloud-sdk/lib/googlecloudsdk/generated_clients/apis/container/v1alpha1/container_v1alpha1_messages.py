@@ -22,8 +22,7 @@ class AcceleratorConfig(_messages.Message):
     acceleratorCount: The number of the accelerator cards exposed to an
       instance.
     acceleratorType: The accelerator type resource name. List of supported
-      accelerators [here](https://{$universe.dns_names.final_documentation_dom
-      ain}/compute/docs/gpus)
+      accelerators [here](https://cloud.google.com/compute/docs/gpus)
     gpuDriverInstallationConfig: The configuration for auto installation of
       GPU driver.
     gpuPartitionSize: Size of partitions to create on the GPU. Valid values
@@ -165,8 +164,7 @@ class AddonsConfig(_messages.Message):
       addon is deprecated, and will be disabled in 1.15. It is recommended to
       use the Cloud Console to manage and monitor your Kubernetes clusters,
       workloads and applications. For more information, see:
-      https://{$universe.dns_names.final_documentation_domain}/kubernetes-
-      engine/docs/concepts/dashboards
+      https://cloud.google.com/kubernetes-engine/docs/concepts/dashboards
     lustreCsiDriverConfig: Configuration for the Lustre CSI driver.
     networkPolicyConfig: Configuration for NetworkPolicy. This only tracks
       whether the addon is enabled or not on the Master, it does not track
@@ -565,8 +563,8 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
       boot disk attached to each node in the node pool. This should be of the
       form projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[RING_NAME]
       /cryptoKeys/[KEY_NAME]. For more information about protecting resources
-      with Cloud KMS Keys please see: https://{$universe.dns_names.final_docum
-      entation_domain}/compute/docs/disks/customer-managed-encryption
+      with Cloud KMS Keys please see:
+      https://cloud.google.com/compute/docs/disks/customer-managed-encryption
     diskSizeGb: Size of the disk attached to each node, specified in GB. The
       smallest allowed disk size is 10GB. TODO(b/395671893) - Add BootDisk
       boot_disk field and deprecate this field. If unspecified, the default
@@ -575,8 +573,8 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
       ssd' or 'pd-balanced') If unspecified, the default disk type is 'pd-
       standard'
     imageType: The image type to use for NAP created node. Please see
-      https://{$universe.dns_names.final_documentation_domain}/kubernetes-
-      engine/docs/concepts/node-images for available image types.
+      https://cloud.google.com/kubernetes-engine/docs/concepts/node-images for
+      available image types.
     insecureKubeletReadonlyPortEnabled: DEPRECATED. Use
       NodePoolAutoConfig.NodeKubeletConfig instead.
     management: NodeManagement configuration for this NodePool.
@@ -584,23 +582,22 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
       created node pools. The instance may be scheduled on the specified or
       newer CPU platform. Applicable values are the friendly names of CPU
       platforms, such as minCpuPlatform: Intel Haswell or minCpuPlatform:
-      Intel Sandy Bridge. For more information, read [how to specify min CPU p
-      latform](https://{$universe.dns_names.final_documentation_domain}/comput
-      e/docs/instances/specify-min-cpu-platform). This field is deprecated,
-      min_cpu_platform should be specified using `cloud.google.com/requested-
-      min-cpu-platform` label selector on the pod. To unset the min cpu
-      platform field pass "automatic" as field value.
+      Intel Sandy Bridge. For more information, read [how to specify min CPU
+      platform](https://cloud.google.com/compute/docs/instances/specify-min-
+      cpu-platform). This field is deprecated, min_cpu_platform should be
+      specified using `cloud.google.com/requested-min-cpu-platform` label
+      selector on the pod. To unset the min cpu platform field pass
+      "automatic" as field value.
     oauthScopes: The set of Google API scopes to be made available on all of
       the node VMs under the "default" service account. The following scopes
       are recommended, but not required, and by default are not included: *
       `https://www.googleapis.com/auth/compute` is required for mounting
       persistent storage on your nodes. *
       `https://www.googleapis.com/auth/devstorage.read_only` is required for
-      communicating with **gcr.io** (the [Google Container Registry](https://{
-      $universe.dns_names.final_documentation_domain}/container-registry/)).
-      If unspecified, no scopes are added, unless Cloud Logging or Cloud
-      Monitoring are enabled, in which case their required scopes will be
-      added.
+      communicating with **gcr.io** (the [Artifact
+      Registry](https://cloud.google.com/artifact-registry/)). If unspecified,
+      no scopes are added, unless Cloud Logging or Cloud Monitoring are
+      enabled, in which case their required scopes will be added.
     serviceAccount: The Google Cloud Platform Service Account to be used by
       the node VMs. Specify the email address of the Service Account;
       otherwise, if no Service Account is specified, the "default" service
@@ -828,13 +825,13 @@ class CancelOperationRequest(_messages.Message):
     operationId: Deprecated. The server-assigned `name` of the operation. This
       field has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the operation resides. This field has been deprecated and
-      replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the operation resides. This field has been deprecated and replaced by
+      the name field.
   """
 
   name = _messages.StringField(1)
@@ -864,8 +861,7 @@ class CertificateConfig(_messages.Message):
 
   Fields:
     gcpSecretManagerSecretUri: The URI configures a secret from [Secret
-      Manager](https://{$universe.dns_names.final_documentation_domain}/secret
-      -manager) in the format
+      Manager](https://cloud.google.com/secret-manager) in the format
       "projects/$PROJECT_ID/secrets/$SECRET_NAME/versions/$VERSION" for global
       secret or "projects/$PROJECT_ID/locations/$REGION/secrets/$SECRET_NAME/v
       ersions/$VERSION" for regional secret. Version can be fixed (e.g. "2")
@@ -1035,16 +1031,19 @@ class Cluster(_messages.Message):
       feature.
     createTime: Output only. The time the cluster was created, in
       [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
+    currentEmulatedVersion: Output only. The current emulated version of the
+      master endpoint. The version is in minor version format, e.g. 1.30. No
+      value or empty string means the cluster has no emulated version.
     currentMasterVersion: The current software version of the master endpoint.
     currentNodeCount: Output only. The number of nodes currently in the
       cluster. Deprecated. Call Kubernetes API directly to retrieve node
       information.
-    currentNodeVersion: Output only. Deprecated, use [NodePool.version](https:
-      //{$universe.dns_names.final_documentation_domain}/kubernetes-engine/doc
-      s/reference/rest/v1alpha1/projects.locations.clusters.nodePool) instead.
-      The current version of the node software components. If they are
-      currently at multiple versions because they're in the process of being
-      upgraded, this reflects the minimum version of all nodes.
+    currentNodeVersion: Output only. Deprecated, use
+      [NodePool.version](https://cloud.google.com/kubernetes-engine/docs/refer
+      ence/rest/v1alpha1/projects.locations.clusters.nodePool) instead. The
+      current version of the node software components. If they are currently
+      at multiple versions because they're in the process of being upgraded,
+      this reflects the minimum version of all nodes.
     databaseEncryption: Configuration of etcd encryption.
     databaseEncryptionKeyId: Resource name of a CloudKMS key to be used for
       the encryption of secrets in etcd. Ex. projects/kms-
@@ -1109,22 +1108,22 @@ class Cluster(_messages.Message):
       kubernetes objects changes and snapshots to specified targets.
     labelFingerprint: The fingerprint of the set of labels for this cluster.
     legacyAbac: Configuration for the legacy ABAC authorization mode.
-    location: Output only. The name of the Google Compute Engine [zone](https:
-      //{$universe.dns_names.final_documentation_domain}/compute/docs/regions-
-      zones/regions-zones#available) or [region](https://{$universe.dns_names.
-      final_documentation_domain}/compute/docs/regions-zones/regions-
+    location: Output only. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/regions-zones/regions-
+      zones#available) or
+      [region](https://cloud.google.com/compute/docs/regions-zones/regions-
       zones#available) in which the cluster resides.
-    locations: The list of Google Compute Engine [zones](https://{$universe.dn
-      s_names.final_documentation_domain}/compute/docs/zones#available) in
-      which the cluster's nodes should be located. This field provides a
-      default value if [NodePool.Locations](https://{$universe.dns_names.final
-      _documentation_domain}/kubernetes-engine/docs/reference/rest/v1/projects
-      .locations.clusters.nodePools#NodePool.FIELDS.locations) are not
-      specified during node pool creation. Warning: changing cluster locations
-      will update the [NodePool.Locations](https://{$universe.dns_names.final_
-      documentation_domain}/kubernetes-engine/docs/reference/rest/v1/projects.
-      locations.clusters.nodePools#NodePool.FIELDS.locations) of all node
-      pools and will result in nodes being added and/or removed.
+    locations: The list of Google Compute Engine
+      [zones](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster's nodes should be located. This field provides a default
+      value if [NodePool.Locations](https://cloud.google.com/kubernetes-engine
+      /docs/reference/rest/v1/projects.locations.clusters.nodePools#NodePool.F
+      IELDS.locations) are not specified during node pool creation. Warning:
+      changing cluster locations will update the
+      [NodePool.Locations](https://cloud.google.com/kubernetes-engine/docs/ref
+      erence/rest/v1/projects.locations.clusters.nodePools#NodePool.FIELDS.loc
+      ations) of all node pools and will result in nodes being added and/or
+      removed.
     loggingConfig: Logging configuration for the cluster.
     loggingService: The logging service the cluster should use to write logs.
       Currently available options: * `logging.googleapis.com/kubernetes` - The
@@ -1169,8 +1168,8 @@ class Cluster(_messages.Message):
       characters with the following restrictions: * Lowercase letters,
       numbers, and hyphens only. * Must start with a letter. * Must end with a
       number or a letter.
-    network: The name of the Google Compute Engine [network](https://{$univers
-      e.dns_names.final_documentation_domain}/compute/docs/networks-and-
+    network: The name of the Google Compute Engine
+      [network](https://cloud.google.com/compute/docs/networks-and-
       firewalls#networks) to which the cluster is connected. If left
       unspecified, the `default` network will be used.
     networkConfig: Configuration for cluster networking.
@@ -1248,10 +1247,10 @@ class Cluster(_messages.Message):
     statusMessage: Output only. Additional information about the current
       status of this cluster, if available. Deprecated, use the field
       conditions instead.
-    subnetwork: The name of the Google Compute Engine [subnetwork](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/subnetworks)
-      to which the cluster is connected. On output this shows the subnetwork
-      ID instead of the name.
+    subnetwork: The name of the Google Compute Engine
+      [subnetwork](https://cloud.google.com/compute/docs/subnetworks) to which
+      the cluster is connected. On output this shows the subnetwork ID instead
+      of the name.
     tags: Optional. Input only. Immutable. Tag keys/values directly bound to
       this resource. For example: "123/environment": "production",
       "123/costCenter": "marketing"
@@ -1275,10 +1274,9 @@ class Cluster(_messages.Message):
       in IAM policies.
     workloadMonitoringEnabledEap: Whether to send workload metrics from the
       cluster to Google Cloud Monitoring. Temporary flag for EAP.
-    zone: Output only. The name of the Google Compute Engine [zone](https://{$
-      universe.dns_names.final_documentation_domain}/compute/docs/zones#availa
-      ble) in which the cluster resides. This field is deprecated, use
-      location instead.
+    zone: Output only. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field is deprecated, use location instead.
   """
 
   class NodeSchedulingStrategyValueValuesEnum(_messages.Enum):
@@ -1393,95 +1391,96 @@ class Cluster(_messages.Message):
   controlPlaneEndpointsConfig = _messages.MessageField('ControlPlaneEndpointsConfig', 16)
   costManagementConfig = _messages.MessageField('CostManagementConfig', 17)
   createTime = _messages.StringField(18)
-  currentMasterVersion = _messages.StringField(19)
-  currentNodeCount = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  currentNodeVersion = _messages.StringField(21)
-  databaseEncryption = _messages.MessageField('DatabaseEncryption', 22)
-  databaseEncryptionKeyId = _messages.StringField(23)
-  defaultMaxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 24)
-  description = _messages.StringField(25)
-  enableGvnic = _messages.BooleanField(26)
-  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 27)
-  enableKubernetesAlpha = _messages.BooleanField(28)
-  enableTpu = _messages.BooleanField(29)
-  endpoint = _messages.StringField(30)
-  enterpriseConfig = _messages.MessageField('EnterpriseConfig', 31)
-  etag = _messages.StringField(32)
-  expireTime = _messages.StringField(33)
-  fleet = _messages.MessageField('Fleet', 34)
-  gkeAutoUpgradeConfig = _messages.MessageField('GkeAutoUpgradeConfig', 35)
-  gkeOidcConfig = _messages.MessageField('GkeOidcConfig', 36)
-  id = _messages.StringField(37)
-  identityServiceConfig = _messages.MessageField('IdentityServiceConfig', 38)
-  initialClusterVersion = _messages.StringField(39)
-  initialNodeCount = _messages.IntegerField(40, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(41, repeated=True)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 42)
-  kubernetesObjectsExportConfig = _messages.MessageField('KubernetesObjectsExportConfig', 43)
-  labelFingerprint = _messages.StringField(44)
-  legacyAbac = _messages.MessageField('LegacyAbac', 45)
-  location = _messages.StringField(46)
-  locations = _messages.StringField(47, repeated=True)
-  loggingConfig = _messages.MessageField('LoggingConfig', 48)
-  loggingService = _messages.StringField(49)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 50)
-  managedConfig = _messages.MessageField('ManagedConfig', 51)
-  managedOpentelemetryConfig = _messages.MessageField('ManagedOpenTelemetryConfig', 52)
-  master = _messages.MessageField('Master', 53)
-  masterAuth = _messages.MessageField('MasterAuth', 54)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 55)
-  masterIpv4CidrBlock = _messages.StringField(56)
-  meshCertificates = _messages.MessageField('MeshCertificates', 57)
-  monitoringConfig = _messages.MessageField('MonitoringConfig', 58)
-  monitoringService = _messages.StringField(59)
-  name = _messages.StringField(60)
-  network = _messages.StringField(61)
-  networkConfig = _messages.MessageField('NetworkConfig', 62)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 63)
-  nodeConfig = _messages.MessageField('NodeConfig', 64)
-  nodeIpv4CidrSize = _messages.IntegerField(65, variant=_messages.Variant.INT32)
-  nodePoolAutoConfig = _messages.MessageField('NodePoolAutoConfig', 66)
-  nodePoolDefaults = _messages.MessageField('NodePoolDefaults', 67)
-  nodePools = _messages.MessageField('NodePool', 68, repeated=True)
-  nodeSchedulingStrategy = _messages.EnumField('NodeSchedulingStrategyValueValuesEnum', 69)
-  notificationConfig = _messages.MessageField('NotificationConfig', 70)
-  parentProductConfig = _messages.MessageField('ParentProductConfig', 71)
-  podAutoscaling = _messages.MessageField('PodAutoscaling', 72)
-  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 73)
-  privateCluster = _messages.BooleanField(74)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 75)
-  protectConfig = _messages.MessageField('ProtectConfig', 76)
-  rbacBindingConfig = _messages.MessageField('RBACBindingConfig', 77)
-  releaseChannel = _messages.MessageField('ReleaseChannel', 78)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 79)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 80)
-  resourceVersion = _messages.StringField(81)
-  rollbackSafeUpgrade = _messages.MessageField('RollbackSafeUpgrade', 82)
-  runtimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 83)
-  satisfiesPzi = _messages.BooleanField(84)
-  satisfiesPzs = _messages.BooleanField(85)
-  scheduleUpgradeConfig = _messages.MessageField('ScheduleUpgradeConfig', 86)
-  secretManagerConfig = _messages.MessageField('SecretManagerConfig', 87)
-  secretSyncConfig = _messages.MessageField('SecretSyncConfig', 88)
-  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 89)
-  securityProfile = _messages.MessageField('SecurityProfile', 90)
-  selfLink = _messages.StringField(91)
-  servicesIpv4Cidr = _messages.StringField(92)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 93)
-  status = _messages.EnumField('StatusValueValuesEnum', 94)
-  statusMessage = _messages.StringField(95)
-  subnetwork = _messages.StringField(96)
-  tags = _messages.MessageField('TagsValue', 97)
-  tpuConfig = _messages.MessageField('TpuConfig', 98)
-  tpuIpv4CidrBlock = _messages.StringField(99)
-  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 100)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 101)
-  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 102)
-  workloadCertificates = _messages.MessageField('WorkloadCertificates', 103)
-  workloadConfig = _messages.MessageField('WorkloadConfig', 104)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 105)
-  workloadMonitoringEnabledEap = _messages.BooleanField(106)
-  zone = _messages.StringField(107)
+  currentEmulatedVersion = _messages.StringField(19)
+  currentMasterVersion = _messages.StringField(20)
+  currentNodeCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  currentNodeVersion = _messages.StringField(22)
+  databaseEncryption = _messages.MessageField('DatabaseEncryption', 23)
+  databaseEncryptionKeyId = _messages.StringField(24)
+  defaultMaxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 25)
+  description = _messages.StringField(26)
+  enableGvnic = _messages.BooleanField(27)
+  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 28)
+  enableKubernetesAlpha = _messages.BooleanField(29)
+  enableTpu = _messages.BooleanField(30)
+  endpoint = _messages.StringField(31)
+  enterpriseConfig = _messages.MessageField('EnterpriseConfig', 32)
+  etag = _messages.StringField(33)
+  expireTime = _messages.StringField(34)
+  fleet = _messages.MessageField('Fleet', 35)
+  gkeAutoUpgradeConfig = _messages.MessageField('GkeAutoUpgradeConfig', 36)
+  gkeOidcConfig = _messages.MessageField('GkeOidcConfig', 37)
+  id = _messages.StringField(38)
+  identityServiceConfig = _messages.MessageField('IdentityServiceConfig', 39)
+  initialClusterVersion = _messages.StringField(40)
+  initialNodeCount = _messages.IntegerField(41, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(42, repeated=True)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 43)
+  kubernetesObjectsExportConfig = _messages.MessageField('KubernetesObjectsExportConfig', 44)
+  labelFingerprint = _messages.StringField(45)
+  legacyAbac = _messages.MessageField('LegacyAbac', 46)
+  location = _messages.StringField(47)
+  locations = _messages.StringField(48, repeated=True)
+  loggingConfig = _messages.MessageField('LoggingConfig', 49)
+  loggingService = _messages.StringField(50)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 51)
+  managedConfig = _messages.MessageField('ManagedConfig', 52)
+  managedOpentelemetryConfig = _messages.MessageField('ManagedOpenTelemetryConfig', 53)
+  master = _messages.MessageField('Master', 54)
+  masterAuth = _messages.MessageField('MasterAuth', 55)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 56)
+  masterIpv4CidrBlock = _messages.StringField(57)
+  meshCertificates = _messages.MessageField('MeshCertificates', 58)
+  monitoringConfig = _messages.MessageField('MonitoringConfig', 59)
+  monitoringService = _messages.StringField(60)
+  name = _messages.StringField(61)
+  network = _messages.StringField(62)
+  networkConfig = _messages.MessageField('NetworkConfig', 63)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 64)
+  nodeConfig = _messages.MessageField('NodeConfig', 65)
+  nodeIpv4CidrSize = _messages.IntegerField(66, variant=_messages.Variant.INT32)
+  nodePoolAutoConfig = _messages.MessageField('NodePoolAutoConfig', 67)
+  nodePoolDefaults = _messages.MessageField('NodePoolDefaults', 68)
+  nodePools = _messages.MessageField('NodePool', 69, repeated=True)
+  nodeSchedulingStrategy = _messages.EnumField('NodeSchedulingStrategyValueValuesEnum', 70)
+  notificationConfig = _messages.MessageField('NotificationConfig', 71)
+  parentProductConfig = _messages.MessageField('ParentProductConfig', 72)
+  podAutoscaling = _messages.MessageField('PodAutoscaling', 73)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 74)
+  privateCluster = _messages.BooleanField(75)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 76)
+  protectConfig = _messages.MessageField('ProtectConfig', 77)
+  rbacBindingConfig = _messages.MessageField('RBACBindingConfig', 78)
+  releaseChannel = _messages.MessageField('ReleaseChannel', 79)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 80)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 81)
+  resourceVersion = _messages.StringField(82)
+  rollbackSafeUpgrade = _messages.MessageField('RollbackSafeUpgrade', 83)
+  runtimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 84)
+  satisfiesPzi = _messages.BooleanField(85)
+  satisfiesPzs = _messages.BooleanField(86)
+  scheduleUpgradeConfig = _messages.MessageField('ScheduleUpgradeConfig', 87)
+  secretManagerConfig = _messages.MessageField('SecretManagerConfig', 88)
+  secretSyncConfig = _messages.MessageField('SecretSyncConfig', 89)
+  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 90)
+  securityProfile = _messages.MessageField('SecurityProfile', 91)
+  selfLink = _messages.StringField(92)
+  servicesIpv4Cidr = _messages.StringField(93)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 94)
+  status = _messages.EnumField('StatusValueValuesEnum', 95)
+  statusMessage = _messages.StringField(96)
+  subnetwork = _messages.StringField(97)
+  tags = _messages.MessageField('TagsValue', 98)
+  tpuConfig = _messages.MessageField('TpuConfig', 99)
+  tpuIpv4CidrBlock = _messages.StringField(100)
+  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 101)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 102)
+  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 103)
+  workloadCertificates = _messages.MessageField('WorkloadCertificates', 104)
+  workloadConfig = _messages.MessageField('WorkloadConfig', 105)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 106)
+  workloadMonitoringEnabledEap = _messages.BooleanField(107)
+  zone = _messages.StringField(108)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -1493,9 +1492,9 @@ class ClusterAutoscaling(_messages.Message):
     AutoscalingProfileValueValuesEnum: Defines autoscaling behaviour.
 
   Fields:
-    autoprovisioningLocations: The list of Google Compute Engine [zones](https
-      ://{$universe.dns_names.final_documentation_domain}/compute/docs/zones#a
-      vailable) in which the NodePool's nodes can be created by NAP.
+    autoprovisioningLocations: The list of Google Compute Engine
+      [zones](https://cloud.google.com/compute/docs/zones#available) in which
+      the NodePool's nodes can be created by NAP.
     autoprovisioningNodePoolDefaults: AutoprovisioningNodePoolDefaults
       contains defaults for a node pool created by NAP.
     autoscalingProfile: Defines autoscaling behaviour.
@@ -1690,12 +1689,12 @@ class ClusterUpdate(_messages.Message):
       of kubernetes objects changes and snapshots to specified targets.
     desiredL4ilbSubsettingConfig: The desired L4 Internal Load Balancer
       Subsetting configuration.
-    desiredLocations: The desired list of Google Compute Engine [zones](https:
-      //{$universe.dns_names.final_documentation_domain}/compute/docs/zones#av
-      ailable) in which the cluster's nodes should be located. This list must
-      always include the cluster's primary zone. Warning: changing cluster
-      locations will update the locations of all node pools and will result in
-      nodes being added and/or removed.
+    desiredLocations: The desired list of Google Compute Engine
+      [zones](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster's nodes should be located. This list must always include the
+      cluster's primary zone. Warning: changing cluster locations will update
+      the locations of all node pools and will result in nodes being added
+      and/or removed.
     desiredLoggingConfig: The desired logging configuration.
     desiredLoggingService: The logging service the cluster should use to write
       logs. Currently available options: * `logging.googleapis.com/kubernetes`
@@ -1705,6 +1704,7 @@ class ClusterUpdate(_messages.Message):
       cluster. If left as an empty string,`logging.googleapis.com/kubernetes`
       will be used for GKE 1.14+ or `logging.googleapis.com` for earlier
       versions.
+    desiredLustreConfig: The desired lustre config for the cluster.
     desiredManagedConfig: The desired managed config for the cluster.
     desiredManagedOpentelemetryConfig: The desired managed open telemetry
       configuration.
@@ -1961,63 +1961,64 @@ class ClusterUpdate(_messages.Message):
   desiredLocations = _messages.StringField(48, repeated=True)
   desiredLoggingConfig = _messages.MessageField('LoggingConfig', 49)
   desiredLoggingService = _messages.StringField(50)
-  desiredManagedConfig = _messages.MessageField('ManagedConfig', 51)
-  desiredManagedOpentelemetryConfig = _messages.MessageField('ManagedOpenTelemetryConfig', 52)
-  desiredMaster = _messages.MessageField('Master', 53)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 54)
-  desiredMasterVersion = _messages.StringField(55)
-  desiredMeshCertificates = _messages.MessageField('MeshCertificates', 56)
-  desiredMonitoringConfig = _messages.MessageField('MonitoringConfig', 57)
-  desiredMonitoringService = _messages.StringField(58)
-  desiredNetworkPerformanceConfig = _messages.MessageField('ClusterNetworkPerformanceConfig', 59)
-  desiredNetworkTierConfig = _messages.MessageField('NetworkTierConfig', 60)
-  desiredNodeKubeletConfig = _messages.MessageField('NodeKubeletConfig', 61)
-  desiredNodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 62)
-  desiredNodePoolAutoConfigKubeletConfig = _messages.MessageField('NodeKubeletConfig', 63)
-  desiredNodePoolAutoConfigLinuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 64)
-  desiredNodePoolAutoConfigNetworkTags = _messages.MessageField('NetworkTags', 65)
-  desiredNodePoolAutoConfigResourceManagerTags = _messages.MessageField('ResourceManagerTags', 66)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 67)
-  desiredNodePoolId = _messages.StringField(68)
-  desiredNodePoolLoggingConfig = _messages.MessageField('NodePoolLoggingConfig', 69)
-  desiredNodeVersion = _messages.StringField(70)
-  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 71)
-  desiredParentProductConfig = _messages.MessageField('ParentProductConfig', 72)
-  desiredPodAutoscaling = _messages.MessageField('PodAutoscaling', 73)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 74)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 75)
-  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 76)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 77)
-  desiredPrivilegedAdmissionConfig = _messages.MessageField('PrivilegedAdmissionConfig', 78)
-  desiredProtectConfig = _messages.MessageField('ProtectConfig', 79)
-  desiredRbacBindingConfig = _messages.MessageField('RBACBindingConfig', 80)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 81)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 82)
-  desiredRollbackSafeUpgrade = _messages.MessageField('RollbackSafeUpgrade', 83)
-  desiredRuntimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 84)
-  desiredScheduleUpgradeConfig = _messages.MessageField('ScheduleUpgradeConfig', 85)
-  desiredSecretManagerConfig = _messages.MessageField('SecretManagerConfig', 86)
-  desiredSecretSyncConfig = _messages.MessageField('SecretSyncConfig', 87)
-  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 88)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 89)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 90)
-  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 91)
-  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 92)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 93)
-  desiredUserManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 94)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 95)
-  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 96)
-  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 97)
-  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 98)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 99)
-  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 100)
-  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 101)
-  etag = _messages.StringField(102)
-  gkeAutoUpgradeConfig = _messages.MessageField('GkeAutoUpgradeConfig', 103)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 104)
-  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 105)
-  securityProfile = _messages.MessageField('SecurityProfile', 106)
-  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 107)
+  desiredLustreConfig = _messages.MessageField('LustreConfig', 51)
+  desiredManagedConfig = _messages.MessageField('ManagedConfig', 52)
+  desiredManagedOpentelemetryConfig = _messages.MessageField('ManagedOpenTelemetryConfig', 53)
+  desiredMaster = _messages.MessageField('Master', 54)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 55)
+  desiredMasterVersion = _messages.StringField(56)
+  desiredMeshCertificates = _messages.MessageField('MeshCertificates', 57)
+  desiredMonitoringConfig = _messages.MessageField('MonitoringConfig', 58)
+  desiredMonitoringService = _messages.StringField(59)
+  desiredNetworkPerformanceConfig = _messages.MessageField('ClusterNetworkPerformanceConfig', 60)
+  desiredNetworkTierConfig = _messages.MessageField('NetworkTierConfig', 61)
+  desiredNodeKubeletConfig = _messages.MessageField('NodeKubeletConfig', 62)
+  desiredNodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 63)
+  desiredNodePoolAutoConfigKubeletConfig = _messages.MessageField('NodeKubeletConfig', 64)
+  desiredNodePoolAutoConfigLinuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 65)
+  desiredNodePoolAutoConfigNetworkTags = _messages.MessageField('NetworkTags', 66)
+  desiredNodePoolAutoConfigResourceManagerTags = _messages.MessageField('ResourceManagerTags', 67)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 68)
+  desiredNodePoolId = _messages.StringField(69)
+  desiredNodePoolLoggingConfig = _messages.MessageField('NodePoolLoggingConfig', 70)
+  desiredNodeVersion = _messages.StringField(71)
+  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 72)
+  desiredParentProductConfig = _messages.MessageField('ParentProductConfig', 73)
+  desiredPodAutoscaling = _messages.MessageField('PodAutoscaling', 74)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 75)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 76)
+  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 77)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 78)
+  desiredPrivilegedAdmissionConfig = _messages.MessageField('PrivilegedAdmissionConfig', 79)
+  desiredProtectConfig = _messages.MessageField('ProtectConfig', 80)
+  desiredRbacBindingConfig = _messages.MessageField('RBACBindingConfig', 81)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 82)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 83)
+  desiredRollbackSafeUpgrade = _messages.MessageField('RollbackSafeUpgrade', 84)
+  desiredRuntimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 85)
+  desiredScheduleUpgradeConfig = _messages.MessageField('ScheduleUpgradeConfig', 86)
+  desiredSecretManagerConfig = _messages.MessageField('SecretManagerConfig', 87)
+  desiredSecretSyncConfig = _messages.MessageField('SecretSyncConfig', 88)
+  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 89)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 90)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 91)
+  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 92)
+  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 93)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 94)
+  desiredUserManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 95)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 96)
+  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 97)
+  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 98)
+  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 99)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 100)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 101)
+  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 102)
+  etag = _messages.StringField(103)
+  gkeAutoUpgradeConfig = _messages.MessageField('GkeAutoUpgradeConfig', 104)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 105)
+  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 106)
+  securityProfile = _messages.MessageField('SecurityProfile', 107)
+  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 108)
 
 
 class ClusterUpgradeInfo(_messages.Message):
@@ -2098,6 +2099,25 @@ class ClusterUpgradeInfo(_messages.Message):
   upgradeDetails = _messages.MessageField('UpgradeDetails', 8, repeated=True)
 
 
+class CompatibilityStatus(_messages.Message):
+  r"""CompatibilityStatus is the status regarding the control plane's
+  compatibility.
+
+  Fields:
+    downgradableVersion: Output only. The GKE version that the cluster can be
+      safely downgraded to if the cluster is emulating the previous minor
+      version. It is usually the cluster's previous version before a minor
+      version upgrade.
+    emulatedVersionTime: Output only. Last time the control plane became
+      available after a minor version binary upgrade with emulated version
+      set. It indicates the last time the cluster entered the rollback safe
+      mode.
+  """
+
+  downgradableVersion = _messages.StringField(1)
+  emulatedVersionTime = _messages.StringField(2)
+
+
 class CompleteControlPlaneUpgradeRequest(_messages.Message):
   r"""CompleteControlPlaneUpgradeRequest sets the name of target cluster to
   complete upgrade.
@@ -2127,13 +2147,13 @@ class CompleteIPRotationRequest(_messages.Message):
       complete IP rotation. Specified in the format
       `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -2342,13 +2362,13 @@ class ContainerProjectsLocationsClustersDeleteRequest(_messages.Message):
     name: The name (project, location, cluster) of the cluster to delete.
       Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -2392,13 +2412,13 @@ class ContainerProjectsLocationsClustersGetRequest(_messages.Message):
     name: The name (project, location, cluster) of the cluster to retrieve.
       Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -2415,13 +2435,13 @@ class ContainerProjectsLocationsClustersListRequest(_messages.Message):
       listed. Specified in the format `projects/*/locations/*`. Location "-"
       matches all zones and all regions.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      parent field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides, or "-" for all zones. This field has been
       deprecated and replaced by the parent field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides, or "-" for all zones. This field has
-      been deprecated and replaced by the parent field.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -2457,13 +2477,13 @@ class ContainerProjectsLocationsClustersNodePoolsDeleteRequest(_messages.Message
     nodePoolId: Deprecated. The name of the node pool to delete. This field
       has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -2502,13 +2522,13 @@ class ContainerProjectsLocationsClustersNodePoolsGetRequest(_messages.Message):
     nodePoolId: Deprecated. The name of the node pool. This field has been
       deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -2528,13 +2548,13 @@ class ContainerProjectsLocationsClustersNodePoolsListRequest(_messages.Message):
       will be listed. Specified in the format
       `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the parent field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the parent field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      parent field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      parent field.
   """
 
   clusterId = _messages.StringField(1)
@@ -2564,13 +2584,13 @@ class ContainerProjectsLocationsGetServerConfigRequest(_messages.Message):
     name: The name (project and location) of the server config to get,
       specified in the format `projects/*/locations/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) to return operations for. This field has been deprecated and
-      replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) to return
+      operations for. This field has been deprecated and replaced by the name
+      field.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2598,13 +2618,13 @@ class ContainerProjectsLocationsOperationsGetRequest(_messages.Message):
     operationId: Deprecated. The server-assigned `name` of the operation. This
       field has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2621,13 +2641,13 @@ class ContainerProjectsLocationsOperationsListRequest(_messages.Message):
       listed. Specified in the format `projects/*/locations/*`. Location "-"
       matches all zones and all regions.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the parent field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) to return operations for, or `-` for all zones. This field has been
-      deprecated and replaced by the parent field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      parent field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) to return
+      operations for, or `-` for all zones. This field has been deprecated and
+      replaced by the parent field.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -2659,13 +2679,13 @@ class ContainerProjectsZonesClustersDeleteRequest(_messages.Message):
     name: The name (project, location, cluster) of the cluster to delete.
       Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   clusterId = _messages.StringField(1, required=True)
@@ -2697,13 +2717,13 @@ class ContainerProjectsZonesClustersGetRequest(_messages.Message):
     name: The name (project, location, cluster) of the cluster to retrieve.
       Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   clusterId = _messages.StringField(1, required=True)
@@ -2720,13 +2740,13 @@ class ContainerProjectsZonesClustersListRequest(_messages.Message):
       listed. Specified in the format `projects/*/locations/*`. Location "-"
       matches all zones and all regions.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      parent field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides, or "-" for all zones. This field has been
       deprecated and replaced by the parent field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides, or "-" for all zones. This field has
-      been deprecated and replaced by the parent field.
   """
 
   parent = _messages.StringField(1)
@@ -2746,13 +2766,13 @@ class ContainerProjectsZonesClustersNodePoolsDeleteRequest(_messages.Message):
     nodePoolId: Deprecated. The name of the node pool to delete. This field
       has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   clusterId = _messages.StringField(1, required=True)
@@ -2790,13 +2810,13 @@ class ContainerProjectsZonesClustersNodePoolsGetRequest(_messages.Message):
     nodePoolId: Deprecated. The name of the node pool. This field has been
       deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   clusterId = _messages.StringField(1, required=True)
@@ -2816,13 +2836,13 @@ class ContainerProjectsZonesClustersNodePoolsListRequest(_messages.Message):
       will be listed. Specified in the format
       `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the parent field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the parent field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      parent field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      parent field.
   """
 
   clusterId = _messages.StringField(1, required=True)
@@ -2838,13 +2858,13 @@ class ContainerProjectsZonesGetServerconfigRequest(_messages.Message):
     name: The name (project and location) of the server config to get,
       specified in the format `projects/*/locations/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) to return operations for. This field has been deprecated and
-      replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) to return
+      operations for. This field has been deprecated and replaced by the name
+      field.
   """
 
   name = _messages.StringField(1)
@@ -2861,13 +2881,13 @@ class ContainerProjectsZonesOperationsGetRequest(_messages.Message):
     operationId: Deprecated. The server-assigned `name` of the operation. This
       field has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   name = _messages.StringField(1)
@@ -2884,13 +2904,13 @@ class ContainerProjectsZonesOperationsListRequest(_messages.Message):
       listed. Specified in the format `projects/*/locations/*`. Location "-"
       matches all zones and all regions.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the parent field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) to return operations for, or `-` for all zones. This field has been
-      deprecated and replaced by the parent field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      parent field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) to return
+      operations for, or `-` for all zones. This field has been deprecated and
+      replaced by the parent field.
   """
 
   parent = _messages.StringField(1)
@@ -2971,19 +2991,18 @@ class CreateClusterRequest(_messages.Message):
   r"""CreateClusterRequest creates a cluster.
 
   Fields:
-    cluster: A [cluster resource](https://{$universe.dns_names.final_documenta
-      tion_domain}/container-
+    cluster: A [cluster resource](https://cloud.google.com/container-
       engine/reference/rest/v1alpha1/projects.locations.clusters)
     parent: The parent (project and location) where the cluster will be
       created. Specified in the format `projects/*/locations/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the parent field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the parent field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      parent field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      parent field.
   """
 
   cluster = _messages.MessageField('Cluster', 1)
@@ -3003,13 +3022,13 @@ class CreateNodePoolRequest(_messages.Message):
       will be created. Specified in the format
       `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the parent field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the parent field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      parent field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      parent field.
   """
 
   clusterId = _messages.StringField(1)
@@ -3474,19 +3493,18 @@ class EphemeralStorageConfig(_messages.Message):
   Fields:
     localSsdCount: Number of local SSDs to use to back ephemeral storage. Uses
       NVMe interfaces. The limit for this value is dependent upon the maximum
-      number of disk available on a machine per zone. See: https://{$universe.
-      dns_names.final_documentation_domain}/compute/docs/disks/local-ssd for
-      more information. A zero (or unset) value has different meanings
-      depending on machine type being used: 1. For pre-Gen3 machines, which
-      support flexible numbers of local ssds, zero (or unset) means to disable
-      using local SSDs as ephemeral storage. 2. For Gen3 machines which
-      dictate a specific number of local ssds, zero (or unset) means to use
-      the default number of local ssds that goes with that machine type. For
-      example, for a c3-standard-8-lssd machine, 2 local ssds would be
-      provisioned. For c3-standard-8 (which doesn't support local ssds), 0
-      will be provisioned. See https://{$universe.dns_names.final_documentatio
-      n_domain}/compute/docs/disks/local-ssd#choose_number_local_ssds for more
-      info.
+      number of disk available on a machine per zone. See:
+      https://cloud.google.com/compute/docs/disks/local-ssd for more
+      information. A zero (or unset) value has different meanings depending on
+      machine type being used: 1. For pre-Gen3 machines, which support
+      flexible numbers of local ssds, zero (or unset) means to disable using
+      local SSDs as ephemeral storage. 2. For Gen3 machines which dictate a
+      specific number of local ssds, zero (or unset) means to use the default
+      number of local ssds that goes with that machine type. For example, for
+      a c3-standard-8-lssd machine, 2 local ssds would be provisioned. For
+      c3-standard-8 (which doesn't support local ssds), 0 will be provisioned.
+      See https://cloud.google.com/compute/docs/disks/local-
+      ssd#choose_number_local_ssds for more info.
   """
 
   localSsdCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3504,15 +3522,14 @@ class EphemeralStorageLocalSsdConfig(_messages.Message):
       support flexible numbers of local ssds, zero (or unset) means to disable
       using local SSDs as ephemeral storage. The limit for this value is
       dependent upon the maximum number of disk available on a machine per
-      zone. See: https://{$universe.dns_names.final_documentation_domain}/comp
-      ute/docs/disks/local-ssd for more information. 2. For Gen3 machines
-      which dictate a specific number of local ssds, zero (or unset) means to
-      use the default number of local ssds that goes with that machine type.
-      For example, for a c3-standard-8-lssd machine, 2 local ssds would be
-      provisioned. For c3-standard-8 (which doesn't support local ssds), 0
-      will be provisioned. See https://{$universe.dns_names.final_documentatio
-      n_domain}/compute/docs/disks/local-ssd#choose_number_local_ssds for more
-      info.
+      zone. See: https://cloud.google.com/compute/docs/disks/local-ssd for
+      more information. 2. For Gen3 machines which dictate a specific number
+      of local ssds, zero (or unset) means to use the default number of local
+      ssds that goes with that machine type. For example, for a
+      c3-standard-8-lssd machine, 2 local ssds would be provisioned. For
+      c3-standard-8 (which doesn't support local ssds), 0 will be provisioned.
+      See https://cloud.google.com/compute/docs/disks/local-
+      ssd#choose_number_local_ssds for more info.
   """
 
   dataCacheCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3747,10 +3764,8 @@ class Fleet(_messages.Message):
 
 
 class GCPSecretManagerCertificateConfig(_messages.Message):
-  r"""GCPSecretManagerCertificateConfig configures a secret from [Google
-  Secret
-  Manager](https://{$universe.dns_names.final_documentation_domain}/secret-
-  manager).
+  r"""GCPSecretManagerCertificateConfig configures a secret from [Secret
+  Manager](https://cloud.google.com/secret-manager).
 
   Fields:
     secretUri: Secret URI, in the form
@@ -4053,9 +4068,13 @@ class HostConfig(_messages.Message):
     dialTimeout: Specifies the maximum duration allowed for a connection
       attempt to complete. A shorter timeout helps reduce delays when falling
       back to the original registry if the mirror is unreachable. Maximum
-      allowed value is 3m. If not set, containerd sets default 30s.
+      allowed value is 180s. If not set, containerd sets default 30s. The
+      value should be a decimal number of seconds with an `s` suffix.
     header: Header configures the registry host headers.
-    host: Host configures the registry host/mirror.
+    host: Host configures the registry host/mirror. It supports fully
+      qualified domain names (FQDN) and IP addresses: Specifying port is
+      supported. Wildcards are NOT supported. Examples: - my.customdomain.com
+      - 10.0.1.2:5000
     overridePath: OverridePath is used to indicate the host's API root
       endpoint is defined in the URL path rather than by the API
       specification. This may be used with non-compliant OCI registries which
@@ -4671,18 +4690,23 @@ class LinuxNodeConfig(_messages.Message):
       net.core.rmem_max net.core.rmem_default net.core.wmem_default
       net.core.wmem_max net.core.optmem_max net.core.somaxconn
       net.ipv4.tcp_rmem net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
-      net.ipv4.tcp_max_orphans net.netfilter.nf_conntrack_max
+      net.ipv4.tcp_mtu_probing net.ipv4.tcp_max_orphans
+      net.ipv4.tcp_max_tw_buckets net.ipv4.tcp_syn_retries net.ipv4.tcp_ecn
+      net.ipv4.tcp_congestion_control net.netfilter.nf_conntrack_max
       net.netfilter.nf_conntrack_buckets
       net.netfilter.nf_conntrack_tcp_timeout_close_wait
       net.netfilter.nf_conntrack_tcp_timeout_time_wait
       net.netfilter.nf_conntrack_tcp_timeout_established
       net.netfilter.nf_conntrack_acct kernel.shmmni kernel.shmmax
-      kernel.shmall fs.aio-max-nr fs.file-max fs.inotify.max_user_instances
-      fs.inotify.max_user_watches fs.nr_open vm.dirty_background_ratio
-      vm.dirty_expire_centisecs vm.dirty_ratio vm.dirty_writeback_centisecs
-      vm.max_map_count vm.overcommit_memory vm.overcommit_ratio
-      vm.vfs_cache_pressure vm.swappiness vm.watermark_scale_factor
-      vm.min_free_kbytes
+      kernel.shmall kernel.perf_event_paranoid kernel.sched_rt_runtime_us
+      kernel.softlockup_panic kernel.yama.ptrace_scope kernel.kptr_restrict
+      kernel.dmesg_restrict kernel.sysrq fs.aio-max-nr fs.file-max
+      fs.inotify.max_user_instances fs.inotify.max_user_watches fs.nr_open
+      vm.dirty_background_ratio vm.dirty_background_bytes
+      vm.dirty_expire_centisecs vm.dirty_ratio vm.dirty_bytes
+      vm.dirty_writeback_centisecs vm.max_map_count vm.overcommit_memory
+      vm.overcommit_ratio vm.vfs_cache_pressure vm.swappiness
+      vm.watermark_scale_factor vm.min_free_kbytes
 
   Fields:
     additionalEtcHosts: Optional. Additional entries to be added to
@@ -4710,18 +4734,23 @@ class LinuxNodeConfig(_messages.Message):
       net.core.rmem_max net.core.rmem_default net.core.wmem_default
       net.core.wmem_max net.core.optmem_max net.core.somaxconn
       net.ipv4.tcp_rmem net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
-      net.ipv4.tcp_max_orphans net.netfilter.nf_conntrack_max
+      net.ipv4.tcp_mtu_probing net.ipv4.tcp_max_orphans
+      net.ipv4.tcp_max_tw_buckets net.ipv4.tcp_syn_retries net.ipv4.tcp_ecn
+      net.ipv4.tcp_congestion_control net.netfilter.nf_conntrack_max
       net.netfilter.nf_conntrack_buckets
       net.netfilter.nf_conntrack_tcp_timeout_close_wait
       net.netfilter.nf_conntrack_tcp_timeout_time_wait
       net.netfilter.nf_conntrack_tcp_timeout_established
       net.netfilter.nf_conntrack_acct kernel.shmmni kernel.shmmax
-      kernel.shmall fs.aio-max-nr fs.file-max fs.inotify.max_user_instances
-      fs.inotify.max_user_watches fs.nr_open vm.dirty_background_ratio
-      vm.dirty_expire_centisecs vm.dirty_ratio vm.dirty_writeback_centisecs
-      vm.max_map_count vm.overcommit_memory vm.overcommit_ratio
-      vm.vfs_cache_pressure vm.swappiness vm.watermark_scale_factor
-      vm.min_free_kbytes
+      kernel.shmall kernel.perf_event_paranoid kernel.sched_rt_runtime_us
+      kernel.softlockup_panic kernel.yama.ptrace_scope kernel.kptr_restrict
+      kernel.dmesg_restrict kernel.sysrq fs.aio-max-nr fs.file-max
+      fs.inotify.max_user_instances fs.inotify.max_user_watches fs.nr_open
+      vm.dirty_background_ratio vm.dirty_background_bytes
+      vm.dirty_expire_centisecs vm.dirty_ratio vm.dirty_bytes
+      vm.dirty_writeback_centisecs vm.max_map_count vm.overcommit_memory
+      vm.overcommit_ratio vm.vfs_cache_pressure vm.swappiness
+      vm.watermark_scale_factor vm.min_free_kbytes
     timeZone: Optional. Configures the timezone of the node.
     transparentHugepageDefrag: Optional. Defines the transparent hugepage
       defrag configuration on the node. VM hugepage allocation can be managed
@@ -4817,18 +4846,23 @@ class LinuxNodeConfig(_messages.Message):
     net.core.busy_poll net.core.busy_read net.core.netdev_max_backlog
     net.core.rmem_max net.core.rmem_default net.core.wmem_default
     net.core.wmem_max net.core.optmem_max net.core.somaxconn net.ipv4.tcp_rmem
-    net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse net.ipv4.tcp_max_orphans
+    net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse net.ipv4.tcp_mtu_probing
+    net.ipv4.tcp_max_orphans net.ipv4.tcp_max_tw_buckets
+    net.ipv4.tcp_syn_retries net.ipv4.tcp_ecn net.ipv4.tcp_congestion_control
     net.netfilter.nf_conntrack_max net.netfilter.nf_conntrack_buckets
     net.netfilter.nf_conntrack_tcp_timeout_close_wait
     net.netfilter.nf_conntrack_tcp_timeout_time_wait
     net.netfilter.nf_conntrack_tcp_timeout_established
     net.netfilter.nf_conntrack_acct kernel.shmmni kernel.shmmax kernel.shmall
-    fs.aio-max-nr fs.file-max fs.inotify.max_user_instances
-    fs.inotify.max_user_watches fs.nr_open vm.dirty_background_ratio
-    vm.dirty_expire_centisecs vm.dirty_ratio vm.dirty_writeback_centisecs
-    vm.max_map_count vm.overcommit_memory vm.overcommit_ratio
-    vm.vfs_cache_pressure vm.swappiness vm.watermark_scale_factor
-    vm.min_free_kbytes
+    kernel.perf_event_paranoid kernel.sched_rt_runtime_us
+    kernel.softlockup_panic kernel.yama.ptrace_scope kernel.kptr_restrict
+    kernel.dmesg_restrict kernel.sysrq fs.aio-max-nr fs.file-max
+    fs.inotify.max_user_instances fs.inotify.max_user_watches fs.nr_open
+    vm.dirty_background_ratio vm.dirty_background_bytes
+    vm.dirty_expire_centisecs vm.dirty_ratio vm.dirty_bytes
+    vm.dirty_writeback_centisecs vm.max_map_count vm.overcommit_memory
+    vm.overcommit_ratio vm.vfs_cache_pressure vm.swappiness
+    vm.watermark_scale_factor vm.min_free_kbytes
 
     Messages:
       AdditionalProperty: An additional property for a SysctlsValue object.
@@ -4945,17 +4979,17 @@ class LocalNvmeSsdBlockConfig(_messages.Message):
   Fields:
     localSsdCount: Number of local NVMe SSDs to use. The limit for this value
       is dependent upon the maximum number of disk available on a machine per
-      zone. See: https://{$universe.dns_names.final_documentation_domain}/comp
-      ute/docs/disks/local-ssd for more information. A zero (or unset) value
-      has different meanings depending on machine type being used: 1. For pre-
-      Gen3 machines, which support flexible numbers of local ssds, zero (or
-      unset) means to disable using local SSDs as ephemeral storage. 2. For
-      Gen3 machines which dictate a specific number of local ssds, zero (or
-      unset) means to use the default number of local ssds that goes with that
-      machine type. For example, for a c3-standard-8-lssd machine, 2 local
-      ssds would be provisioned. For c3-standard-8 (which doesn't support
-      local ssds), 0 will be provisioned. See https://{$universe.dns_names.fin
-      al_documentation_domain}/compute/docs/disks/local-
+      zone. See: https://cloud.google.com/compute/docs/disks/local-ssd for
+      more information. A zero (or unset) value has different meanings
+      depending on machine type being used: 1. For pre-Gen3 machines, which
+      support flexible numbers of local ssds, zero (or unset) means to disable
+      using local SSDs as ephemeral storage. 2. For Gen3 machines which
+      dictate a specific number of local ssds, zero (or unset) means to use
+      the default number of local ssds that goes with that machine type. For
+      example, for a c3-standard-8-lssd machine, 2 local ssds would be
+      provisioned. For c3-standard-8 (which doesn't support local ssds), 0
+      will be provisioned. See
+      https://cloud.google.com/compute/docs/disks/local-
       ssd#choose_number_local_ssds for more info.
   """
 
@@ -5108,6 +5142,17 @@ class LoggingVariantConfig(_messages.Message):
   variant = _messages.EnumField('VariantValueValuesEnum', 1)
 
 
+class LustreConfig(_messages.Message):
+  r"""Configuration for Lustre settings on the node pool.
+
+  Fields:
+    multiRail: Optional. If true, the Lustre CSI driver will be configured to
+      use multiple NICs on nodes in this pool.
+  """
+
+  multiRail = _messages.MessageField('MultiRail', 1)
+
+
 class LustreCsiDriverConfig(_messages.Message):
   r"""Configuration for the Lustre CSI driver.
 
@@ -5117,7 +5162,9 @@ class LustreCsiDriverConfig(_messages.Message):
       port conflict with the gke-metadata-server. This field is required ONLY
       under the following conditions: 1. The GKE node version is older than
       1.33.2-gke.4655000. 2. You're connecting to a Lustre instance that has
-      the 'gke-support-enabled' flag.
+      the 'gke-support-enabled' flag. Deprecated: This flag is no longer
+      required as of GKE node version 1.33.2-gke.4655000, unless you are
+      connecting to a Lustre instance that has the `gke-support-enabled` flag.
     enabled: Whether the Lustre CSI driver is enabled for this cluster.
   """
 
@@ -5319,12 +5366,16 @@ class Master(_messages.Message):
   r"""Master is the configuration for components on master.
 
   Fields:
+    compatibilityStatus: Output only. The compatibility status of the control
+      plane. It should be empty if the cluster does not have emulated version.
+      For details, see go/user-initiated-rollbackable-upgrade-design.
     signalsConfig: Configuration used to enable sending selected master logs
       and metrics to customer project. This feature is has been replaced by
       the system component options in Cluster.logging_config.component_config.
   """
 
-  signalsConfig = _messages.MessageField('MasterSignalsConfig', 1)
+  compatibilityStatus = _messages.MessageField('CompatibilityStatus', 1)
+  signalsConfig = _messages.MessageField('MasterSignalsConfig', 2)
 
 
 class MasterAuth(_messages.Message):
@@ -5349,16 +5400,16 @@ class MasterAuth(_messages.Message):
       creation, username must be non-empty. Warning: basic authentication is
       deprecated, and will be removed in GKE control plane versions 1.19 and
       newer. For a list of recommended authentication methods, see:
-      https://{$universe.dns_names.final_documentation_domain}/kubernetes-
-      engine/docs/how-to/api-server-authentication
+      https://cloud.google.com/kubernetes-engine/docs/how-to/api-server-
+      authentication
     username: The username to use for HTTP basic authentication to the master
       endpoint. For clusters v1.6.0 and later, basic authentication can be
       disabled by leaving username unspecified (or setting it to the empty
       string). Warning: basic authentication is deprecated, and will be
       removed in GKE control plane versions 1.19 and newer. For a list of
       recommended authentication methods, see:
-      https://{$universe.dns_names.final_documentation_domain}/kubernetes-
-      engine/docs/how-to/api-server-authentication
+      https://cloud.google.com/kubernetes-engine/docs/how-to/api-server-
+      authentication
   """
 
   clientCertificate = _messages.StringField(1)
@@ -5553,6 +5604,16 @@ class MonitoringConfig(_messages.Message):
   rayMonitoringConfig = _messages.MessageField('RayMonitoringConfig', 4)
 
 
+class MultiRail(_messages.Message):
+  r"""MultiRail contains configuration for the Multi-Rail Lustre feature.
+
+  Fields:
+    enabled: If true, the Multi-Rail Lustre feature is enabled.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class NetworkConfig(_messages.Message):
   r"""Parameters for cluster networking.
 
@@ -5609,10 +5670,10 @@ class NetworkConfig(_messages.Message):
       API on this cluster.
     inTransitEncryptionConfig: Specify the details of in-transit encryption.
       Now named inter-node transparent encryption.
-    network: Output only. The relative name of the Google Compute Engine [netw
-      ork](https://{$universe.dns_names.final_documentation_domain}/compute/do
-      cs/networks-and-firewalls#networks) to which the cluster is connected.
-      Example: projects/my-project/global/networks/my-network
+    network: Output only. The relative name of the Google Compute Engine
+      [network](https://cloud.google.com/compute/docs/networks-and-
+      firewalls#networks) to which the cluster is connected. Example:
+      projects/my-project/global/networks/my-network
     networkPerformanceConfig: Network bandwidth tier configuration.
     nodeNetworkPolicy: NodeNetworkPolicy specifies the config for the node
       firewall feature. This feature is only supported with
@@ -5622,10 +5683,10 @@ class NetworkConfig(_messages.Message):
       (all access will be via IPv4)
     serviceExternalIpsConfig: ServiceExternalIPsConfig specifies if services
       with externalIPs field are blocked or not.
-    subnetwork: Output only. The relative name of the Google Compute Engine [s
-      ubnetwork](https://{$universe.dns_names.final_documentation_domain}/comp
-      ute/docs/vpc) to which the cluster is connected. Example: projects/my-
-      project/regions/us-central1/subnetworks/my-subnet
+    subnetwork: Output only. The relative name of the Google Compute Engine
+      [subnetwork](https://cloud.google.com/compute/docs/vpc) to which the
+      cluster is connected. Example: projects/my-project/regions/us-
+      central1/subnetworks/my-subnet
   """
 
   class DatapathProviderValueValuesEnum(_messages.Enum):
@@ -5788,8 +5849,8 @@ class NetworkPolicyConfig(_messages.Message):
 
 class NetworkTags(_messages.Message):
   r"""Collection of Compute Engine network tags that can be applied to a
-  node's underlying VM instance. (See `tags` field in [`NodeConfig`](https://{
-  $universe.dns_names.final_documentation_domain}/kubernetes-
+  node's underlying VM instance. (See `tags` field in
+  [`NodeConfig`](https://cloud.google.com/kubernetes-
   engine/docs/reference/rest/v1/NodeConfig)).
 
   Fields:
@@ -5835,8 +5896,8 @@ class NetworkTierConfig(_messages.Message):
 
 class NodeAffinity(_messages.Message):
   r"""Specifies the NodeAffinity key, values, and affinity operator according
-  to [shared sole tenant node group affinities](https://{$universe.dns_names.f
-  inal_documentation_domain}/compute/docs/nodes/sole-tenant-
+  to [shared sole tenant node group
+  affinities](https://cloud.google.com/compute/docs/nodes/sole-tenant-
   nodes#node_affinity_and_anti-affinity).
 
   Enums:
@@ -5907,16 +5968,16 @@ class NodeConfig(_messages.Message):
 
   Fields:
     accelerators: A list of hardware accelerators to be attached to each node.
-      See https://{$universe.dns_names.final_documentation_domain}/compute/doc
-      s/gpus for more information about support for GPUs.
+      See https://cloud.google.com/compute/docs/gpus for more information
+      about support for GPUs.
     advancedMachineFeatures: Advanced features for the Compute Engine VM.
     bootDisk: The boot disk configuration for the node pool.
     bootDiskKmsKey:  The Customer Managed Encryption Key used to encrypt the
       boot disk attached to each node in the node pool. This should be of the
       form projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[RING_NAME]
       /cryptoKeys/[KEY_NAME]. For more information about protecting resources
-      with Cloud KMS Keys please see: https://{$universe.dns_names.final_docum
-      entation_domain}/compute/docs/disks/customer-managed-encryption
+      with Cloud KMS Keys please see:
+      https://cloud.google.com/compute/docs/disks/customer-managed-encryption
     confidentialNodes: Confidential nodes config. All the nodes in the node
       pool will be Confidential VM once enabled.
     consolidationDelay: Consolidation delay defines duration after which the
@@ -5950,8 +6011,8 @@ class NodeConfig(_messages.Message):
       maintenance policy for the Google Compute Engine hosts.
     imageType: The image type to use for this node. Note that for a given
       image type, the latest version of it will be used. Please see
-      https://{$universe.dns_names.final_documentation_domain}/kubernetes-
-      engine/docs/concepts/node-images for available image types.
+      https://cloud.google.com/kubernetes-engine/docs/concepts/node-images for
+      available image types.
     kubeletConfig: Node kubelet configs.
     labels: The map of Kubernetes labels (key/value pairs) to be applied to
       each node. These will added in addition to any default label(s) that
@@ -5965,18 +6026,20 @@ class NodeConfig(_messages.Message):
     localNvmeSsdBlockConfig: Parameters for using raw-block Local NVMe SSDs.
     localSsdCount: The number of local SSD disks to be attached to the node.
       The limit for this value is dependent upon the maximum number of disks
-      available on a machine per zone. See: https://{$universe.dns_names.final
-      _documentation_domain}/compute/docs/disks/local-ssd for more
+      available on a machine per zone. See:
+      https://cloud.google.com/compute/docs/disks/local-ssd for more
       information.
     localSsdEncryptionMode: Specifies which method should be used for
       encrypting the Local SSDs attached to the node.
     localSsdVolumeConfigs: Parameters for using Local SSD with extra options
       as hostpath or local volumes
     loggingConfig: Logging configuration.
-    machineType: The name of a Google Compute Engine [machine type](https://{$
-      universe.dns_names.final_documentation_domain}/compute/docs/machine-
-      types) (e.g. `n1-standard-1`). If unspecified, the default machine type
-      is `n1-standard-1`.
+    lustreConfig: Optional. Configuration for Lustre settings on the node
+      pool.
+    machineType: The name of a Google Compute Engine [machine
+      type](https://cloud.google.com/compute/docs/machine-types) (e.g.
+      `n1-standard-1`). If unspecified, the default machine type is
+      `n1-standard-1`.
     maxRunDuration: The maximum duration for the nodes to exist. If
       unspecified, the nodes can exist indefinitely.
     metadata: The metadata key/value pairs assigned to instances in the
@@ -5998,12 +6061,13 @@ class NodeConfig(_messages.Message):
       instance may be scheduled on the specified or newer CPU platform.
       Applicable values are the friendly names of CPU platforms, such as
       `minCpuPlatform: "Intel Haswell"` or `minCpuPlatform: "Intel Sandy
-      Bridge"`. For more platform](https://{$universe.dns_names.final_document
-      ation_domain}/compute/docs/instances/specify-min-cpu-platform).
+      Bridge"`. For more
+      platform](https://cloud.google.com/compute/docs/instances/specify-min-
+      cpu-platform).
     nodeGroup: Setting this field will assign instances of this pool to run on
       the specified node group. This is useful for running workloads on [sole
-      tenant nodes](https://{$universe.dns_names.final_documentation_domain}/c
-      ompute/docs/nodes/sole-tenant-nodes).
+      tenant nodes](https://cloud.google.com/compute/docs/nodes/sole-tenant-
+      nodes).
     nodeImageConfig: The node image configuration to use for this node pool.
       Note that this is only applicable for node pools using
       image_type=CUSTOM.
@@ -6013,18 +6077,16 @@ class NodeConfig(_messages.Message):
       `https://www.googleapis.com/auth/compute` is required for mounting
       persistent storage on your nodes. *
       `https://www.googleapis.com/auth/devstorage.read_only` is required for
-      communicating with **gcr.io** (the [Google Container Registry](https://{
-      $universe.dns_names.final_documentation_domain}/container-registry/)).
-      If unspecified, no scopes are added, unless Cloud Logging or Cloud
-      Monitoring are enabled, in which case their required scopes will be
-      added.
+      communicating with **gcr.io** (the [Artifact
+      Registry](https://cloud.google.com/artifact-registry/)). If unspecified,
+      no scopes are added, unless Cloud Logging or Cloud Monitoring are
+      enabled, in which case their required scopes will be added.
     preemptible: Whether the nodes are created as preemptible VM instances.
-      See: https://{$universe.dns_names.final_documentation_domain}/compute/do
-      cs/instances/preemptible for more information about preemptible VM
-      instances.
+      See: https://cloud.google.com/compute/docs/instances/preemptible for
+      more information about preemptible VM instances.
     reservationAffinity: The optional reservation affinity. Setting this field
-      will apply the specified [Zonal Compute Reservation](https://{$universe.
-      dns_names.final_documentation_domain}/compute/docs/instances/reserving-
+      will apply the specified [Zonal Compute
+      Reservation](https://cloud.google.com/compute/docs/instances/reserving-
       zonal-resources) to this node pool.
     resourceLabels: The resource labels for the node pool to use to annotate
       any related Google Compute Engine resources.
@@ -6219,32 +6281,33 @@ class NodeConfig(_messages.Message):
   localSsdEncryptionMode = _messages.EnumField('LocalSsdEncryptionModeValueValuesEnum', 26)
   localSsdVolumeConfigs = _messages.MessageField('LocalSsdVolumeConfig', 27, repeated=True)
   loggingConfig = _messages.MessageField('NodePoolLoggingConfig', 28)
-  machineType = _messages.StringField(29)
-  maxRunDuration = _messages.StringField(30)
-  metadata = _messages.MessageField('MetadataValue', 31)
-  minCpuPlatform = _messages.StringField(32)
-  nodeGroup = _messages.StringField(33)
-  nodeImageConfig = _messages.MessageField('CustomImageConfig', 34)
-  oauthScopes = _messages.StringField(35, repeated=True)
-  preemptible = _messages.BooleanField(36)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 37)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 38)
-  resourceManagerTags = _messages.MessageField('ResourceManagerTags', 39)
-  runnerPoolConfig = _messages.MessageField('RunnerPoolConfig', 40)
-  runnerPoolControl = _messages.MessageField('RunnerPoolControl', 41)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 42)
-  secondaryBootDiskUpdateStrategy = _messages.MessageField('SecondaryBootDiskUpdateStrategy', 43)
-  secondaryBootDisks = _messages.MessageField('SecondaryBootDisk', 44, repeated=True)
-  serviceAccount = _messages.StringField(45)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 46)
-  soleTenantConfig = _messages.MessageField('SoleTenantConfig', 47)
-  spot = _messages.BooleanField(48)
-  stableFleetConfig = _messages.MessageField('StableFleetConfig', 49)
-  storagePools = _messages.StringField(50, repeated=True)
-  tags = _messages.StringField(51, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 52, repeated=True)
-  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 53)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 54)
+  lustreConfig = _messages.MessageField('LustreConfig', 29)
+  machineType = _messages.StringField(30)
+  maxRunDuration = _messages.StringField(31)
+  metadata = _messages.MessageField('MetadataValue', 32)
+  minCpuPlatform = _messages.StringField(33)
+  nodeGroup = _messages.StringField(34)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 35)
+  oauthScopes = _messages.StringField(36, repeated=True)
+  preemptible = _messages.BooleanField(37)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 38)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 39)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTags', 40)
+  runnerPoolConfig = _messages.MessageField('RunnerPoolConfig', 41)
+  runnerPoolControl = _messages.MessageField('RunnerPoolControl', 42)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 43)
+  secondaryBootDiskUpdateStrategy = _messages.MessageField('SecondaryBootDiskUpdateStrategy', 44)
+  secondaryBootDisks = _messages.MessageField('SecondaryBootDisk', 45, repeated=True)
+  serviceAccount = _messages.StringField(46)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 47)
+  soleTenantConfig = _messages.MessageField('SoleTenantConfig', 48)
+  spot = _messages.BooleanField(49)
+  stableFleetConfig = _messages.MessageField('StableFleetConfig', 50)
+  storagePools = _messages.StringField(51, repeated=True)
+  tags = _messages.StringField(52, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 53, repeated=True)
+  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 54)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 55)
 
 
 class NodeConfigDefaults(_messages.Message):
@@ -6411,8 +6474,7 @@ class NodeKubeletConfig(_messages.Message):
       50% of the boot disk size. The swap file is placed on boot disk by
       default. Swap_size is subtracted from the boot disk size when
       calculating reserved ephemeral storage
-      https://{$universe.dns_names.final_documentation_domain}/kubernetes-
-      engine/docs/concepts/plan-node-
+      https://cloud.google.com/kubernetes-engine/docs/concepts/plan-node-
       sizes#local_ephemeral_storage_reservation. System pods cannot use swap.
       Swap is not supported on all TPU machines and some GPU (A4X, A4, A3)
       machines. Swap is not supported on CgroupV1. Swap is disabled if the
@@ -6631,16 +6693,16 @@ class NodePool(_messages.Message):
       that your Compute Engine resource quota is sufficient for this number of
       instances. You must also have available firewall and routes quota.
     instanceGroupUrls: Output only. The resource URLs of the [managed instance
-      groups](https://{$universe.dns_names.final_documentation_domain}/compute
-      /docs/instance-groups/creating-groups-of-managed-instances) associated
-      with this node pool. During the node pool blue-green upgrade operation,
-      the URLs contain both blue and green resources.
-    locations: The list of Google Compute Engine [zones](https://{$universe.dn
-      s_names.final_documentation_domain}/compute/docs/zones#available) in
-      which the NodePool's nodes should be located. If this value is
-      unspecified during node pool creation, the [Cluster.Locations](https://{
-      $universe.dns_names.final_documentation_domain}/kubernetes-engine/docs/r
-      eference/rest/v1/projects.locations.clusters#Cluster.FIELDS.locations)
+      groups](https://cloud.google.com/compute/docs/instance-groups/creating-
+      groups-of-managed-instances) associated with this node pool. During the
+      node pool blue-green upgrade operation, the URLs contain both blue and
+      green resources.
+    locations: The list of Google Compute Engine
+      [zones](https://cloud.google.com/compute/docs/zones#available) in which
+      the NodePool's nodes should be located. If this value is unspecified
+      during node pool creation, the
+      [Cluster.Locations](https://cloud.google.com/kubernetes-engine/docs/refe
+      rence/rest/v1/projects.locations.clusters#Cluster.FIELDS.locations)
       value will be used, instead. Warning: changing node pool locations will
       result in nodes being added and/or removed.
     management: NodeManagement configuration for this NodePool.
@@ -6665,8 +6727,8 @@ class NodePool(_messages.Message):
     upgradeSettings: Upgrade settings control disruption and speed of the
       upgrade.
     version: The version of Kubernetes running on this NodePool's nodes. If
-      unspecified, it defaults as described [here](https://{$universe.dns_name
-      s.final_documentation_domain}/kubernetes-
+      unspecified, it defaults as described
+      [here](https://cloud.google.com/kubernetes-
       engine/versioning#specifying_node_version).
   """
 
@@ -6958,10 +7020,10 @@ class Operation(_messages.Message):
     endTime: Output only. The time the operation completed, in
       [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
     error: The error result of the operation in case of failure.
-    location: Output only. The name of the Google Compute Engine [zone](https:
-      //{$universe.dns_names.final_documentation_domain}/compute/docs/regions-
-      zones/regions-zones#available) or [region](https://{$universe.dns_names.
-      final_documentation_domain}/compute/docs/regions-zones/regions-
+    location: Output only. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/regions-zones/regions-
+      zones#available) or
+      [region](https://cloud.google.com/compute/docs/regions-zones/regions-
       zones#available) in which the cluster resides.
     name: Output only. The server-assigned ID for the operation.
     nodepoolConditions: Which conditions caused the current node pool state.
@@ -6985,10 +7047,10 @@ class Operation(_messages.Message):
       central1-c/clusters/my-cluster/nodePools/my-np` -
       `https://container.googleapis.com/v1alpha1/projects/123/zones/us-
       central1-c/clusters/my-cluster/nodePools/my-np/node/my-node`
-    zone: Output only. The name of the Google Compute Engine [zone](https://{$
-      universe.dns_names.final_documentation_domain}/compute/docs/zones#availa
-      ble) in which the operation is taking place. This field is deprecated,
-      use location instead.
+    zone: Output only. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the operation is taking place. This field is deprecated, use location
+      instead.
   """
 
   class OperationTypeValueValuesEnum(_messages.Enum):
@@ -7006,25 +7068,24 @@ class Operation(_messages.Message):
         the deletion will be automatically retried until completed.
       UPGRADE_MASTER: The cluster version is being updated. Note that this
         includes "upgrades" to the same version, which are simply a
-        recreation. This also includes [auto-upgrades](https://{$universe.dns_
-        names.final_documentation_domain}/kubernetes-
+        recreation. This also includes [auto-
+        upgrades](https://cloud.google.com/kubernetes-
         engine/docs/concepts/cluster-upgrades#upgrading_automatically). For
-        more details, see [documentation on cluster upgrades](https://{$univer
-        se.dns_names.final_documentation_domain}/kubernetes-
+        more details, see [documentation on cluster
+        upgrades](https://cloud.google.com/kubernetes-
         engine/docs/concepts/cluster-upgrades#cluster_upgrades).
       UPGRADE_NODES: A node pool is being updated. Despite calling this an
         "upgrade", this includes most forms of updates to node pools. This
-        also includes [auto-upgrades](https://{$universe.dns_names.final_docum
-        entation_domain}/kubernetes-engine/docs/how-to/node-auto-upgrades).
-        This operation sets the progress field and may be canceled. The
-        upgrade strategy depends on [node pool configuration](https://{$univer
-        se.dns_names.final_documentation_domain}/kubernetes-
+        also includes [auto-upgrades](https://cloud.google.com/kubernetes-
+        engine/docs/how-to/node-auto-upgrades). This operation sets the
+        progress field and may be canceled. The upgrade strategy depends on
+        [node pool configuration](https://cloud.google.com/kubernetes-
         engine/docs/concepts/node-pool-upgrade-strategies). The nodes are
         generally still usable during this operation.
       REPAIR_CLUSTER: A problem has been detected with the control plane and
         is being repaired. This operation type is initiated by GKE. For more
-        details, see [documentation on repairs](https://{$universe.dns_names.f
-        inal_documentation_domain}/kubernetes-
+        details, see [documentation on
+        repairs](https://cloud.google.com/kubernetes-
         engine/docs/concepts/maintenance-windows-and-exclusions#repairs).
       UPDATE_CLUSTER: The cluster is being updated. This is a broad category
         of operations and includes operations that only change metadata as
@@ -7033,28 +7094,28 @@ class Operation(_messages.Message):
         clusters. Some features require recreating the nodes as well. Those
         will be recreated as separate operations and the update may not be
         completely functional until the node pools recreations finish. Node
-        recreations will generally follow [maintenance policies](https://{$uni
-        verse.dns_names.final_documentation_domain}/kubernetes-
+        recreations will generally follow [maintenance
+        policies](https://cloud.google.com/kubernetes-
         engine/docs/concepts/maintenance-windows-and-exclusions). Some GKE-
         initiated operations use this type. This includes certain types of
         auto-upgrades and incident mitigations.
       CREATE_NODE_POOL: A node pool is being created. The node pool should be
         assumed to be unusable until this operation finishes. In the event of
-        an error, the node pool may be partially created. If enabled, [node au
-        toprovisioning](https://{$universe.dns_names.final_documentation_domai
-        n}/kubernetes-engine/docs/how-to/node-auto-provisioning) may have
-        automatically initiated such operations.
+        an error, the node pool may be partially created. If enabled, [node
+        autoprovisioning](https://cloud.google.com/kubernetes-engine/docs/how-
+        to/node-auto-provisioning) may have automatically initiated such
+        operations.
       DELETE_NODE_POOL: The node pool is being deleted. The node pool should
         be assumed to be unusable as soon as this operation starts.
       SET_NODE_POOL_MANAGEMENT: The node pool's manamagent field is being
         updated. These operations only update metadata and may be concurrent
         with most other operations.
       AUTO_REPAIR_NODES: A problem has been detected with nodes and [they are
-        being repaired](https://{$universe.dns_names.final_documentation_domai
-        n}/kubernetes-engine/docs/how-to/node-auto-repair). This operation
-        type is initiated by GKE, typically automatically. This operation may
-        be concurrent with other operations and there may be multiple repairs
-        occurring on the same node pool.
+        being repaired](https://cloud.google.com/kubernetes-engine/docs/how-
+        to/node-auto-repair). This operation type is initiated by GKE,
+        typically automatically. This operation may be concurrent with other
+        operations and there may be multiple repairs occurring on the same
+        node pool.
       AUTO_UPGRADE_NODES: Unused. Automatic node upgrade uses UPGRADE_NODES.
       SET_LABELS: Unused. Updating labels uses UPDATE_CLUSTER.
       SET_MASTER_AUTH: Unused. Updating master auth uses UPDATE_CLUSTER.
@@ -7070,9 +7131,8 @@ class Operation(_messages.Message):
         is initiated by GKE. These operations are often performed preemptively
         to ensure that the control plane has sufficient resources and is not
         typically an indication of issues. For more details, see
-        [documentation on resizes](https://{$universe.dns_names.final_document
-        ation_domain}/kubernetes-engine/docs/concepts/maintenance-windows-and-
-        exclusions#repairs).
+        [documentation on resizes](https://cloud.google.com/kubernetes-
+        engine/docs/concepts/maintenance-windows-and-exclusions#repairs).
       FLEET_FEATURE_UPGRADE: Fleet features of GKE Enterprise are being
         upgraded. The cluster should be assumed to be blocked for other
         upgrades until the operation finishes.
@@ -7272,8 +7332,7 @@ class PlacementPolicy(_messages.Message):
       and region as the node pool. If not found, InvalidArgument error is
       returned.
     tpuTopology: TPU placement topology for pod slice node pool.
-      https://{$universe.dns_names.final_documentation_domain}/tpu/docs/types-
-      topologies#tpu_topologies
+      https://cloud.google.com/tpu/docs/types-topologies#tpu_topologies
     type: The type of placement.
   """
 
@@ -7711,9 +7770,11 @@ class RegistryHostConfig(_messages.Message):
   Fields:
     hosts: HostConfig configures a list of host-specific configurations for
       the server. Each server can have at most 10 host configurations.
-    server: Defines the host name of the registry server, e.g., "docker.io",
-      "my.private.registry". This will be used to create a directory under
-      /etc/containerd/hosts.d/.
+    server: Defines the host name of the registry server, which will be used
+      to create configuration file as /etc/containerd/hosts.d//hosts.toml. It
+      supports fully qualified domain names (FQDN) and IP addresses:
+      Specifying port is supported. Wildcards are NOT supported. Examples: -
+      my.customdomain.com - 10.0.1.2:5000
   """
 
   hosts = _messages.MessageField('HostConfig', 1, repeated=True)
@@ -7812,10 +7873,9 @@ class ReleaseChannelConfig(_messages.Message):
 
 
 class ReservationAffinity(_messages.Message):
-  r"""[ReservationAffinity](https://{$universe.dns_names.final_documentation_d
-  omain}/compute/docs/instances/reserving-zonal-resources) is the
-  configuration of desired reservation which instances could take capacity
-  from.
+  r"""[ReservationAffinity](https://cloud.google.com/compute/docs/instances/re
+  serving-zonal-resources) is the configuration of desired reservation which
+  instances could take capacity from.
 
   Enums:
     ConsumeReservationTypeValueValuesEnum: Corresponds to the type of
@@ -7865,8 +7925,8 @@ class ResolvedConfEntry(_messages.Message):
 
 class ResourceLabels(_messages.Message):
   r"""Collection of [Resource Manager
-  labels](https://{$universe.dns_names.final_documentation_domain}/resource-
-  manager/docs/creating-managing-labels).
+  labels](https://cloud.google.com/resource-manager/docs/creating-managing-
+  labels).
 
   Messages:
     LabelsValue: Map of node label keys and node label values.
@@ -7921,9 +7981,9 @@ class ResourceManagerTags(_messages.Message):
   r"""A map of resource manager tag keys and values to be attached to the
   nodes for managing Compute Engine firewalls using Network Firewall Policies.
   Tags must be according to specifications in
-  https://{$universe.dns_names.final_documentation_domain}/vpc/docs/tags-
-  firewalls-overview#specifications. A maximum of 5 tag key-value pairs can be
-  specified. Existing tags will be replaced with new values.
+  https://cloud.google.com/vpc/docs/tags-firewalls-overview#specifications. A
+  maximum of 5 tag key-value pairs can be specified. Existing tags will be
+  replaced with new values.
 
   Messages:
     TagsValue: Tags must be in one of the following formats ([KEY]=[VALUE]) 1.
@@ -8000,15 +8060,15 @@ class RollbackNodePoolUpgradeRequest(_messages.Message):
     nodePoolId: Deprecated. The name of the node pool to rollback. This field
       has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
     respectPdb: Option for rollback to ignore the PodDisruptionBudget. Default
       value is false.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -8394,13 +8454,13 @@ class SetAddonsConfigRequest(_messages.Message):
     name: The name (project, location, cluster) of the cluster to set addons.
       Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   addonsConfig = _messages.MessageField('AddonsConfig', 1)
@@ -8430,14 +8490,14 @@ class SetLabelsRequest(_messages.Message):
     name: The name (project, location, cluster name) of the cluster to set
       labels. Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
     resourceLabels: The labels to set for that cluster.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -8485,13 +8545,13 @@ class SetLegacyAbacRequest(_messages.Message):
       legacy abac. Specified in the format
       `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -8507,22 +8567,22 @@ class SetLocationsRequest(_messages.Message):
   Fields:
     clusterId: Deprecated. The name of the cluster to upgrade. This field has
       been deprecated and replaced by the name field.
-    locations: The desired list of Google Compute Engine [zones](https://{$uni
-      verse.dns_names.final_documentation_domain}/compute/docs/zones#available
-      ) in which the cluster's nodes should be located. Changing the locations
-      a cluster is in will result in nodes being either created or removed
-      from the cluster, depending on whether locations are being added or
-      removed. This list must always include the cluster's primary zone.
+    locations: The desired list of Google Compute Engine
+      [zones](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster's nodes should be located. Changing the locations a cluster
+      is in will result in nodes being either created or removed from the
+      cluster, depending on whether locations are being added or removed. This
+      list must always include the cluster's primary zone.
     name: The name (project, location, cluster) of the cluster to set
       locations. Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -8549,13 +8609,13 @@ class SetLoggingServiceRequest(_messages.Message):
     name: The name (project, location, cluster) of the cluster to set logging.
       Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -8576,10 +8636,10 @@ class SetMaintenancePolicyRequest(_messages.Message):
       maintenance policy. Specified in the format
       `projects/*/locations/*/clusters/*`.
     projectId: The Google Developers Console [project ID or project
-      number](https://{$universe.dns_names.final_documentation_domain}/resourc
-      e-manager/docs/creating-managing-projects).
-    zone: The name of the Google Compute Engine [zone](https://{$universe.dns_
-      names.final_documentation_domain}/compute/docs/zones#available) in which
+      number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects).
+    zone: The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
       the cluster resides.
   """
 
@@ -8604,14 +8664,14 @@ class SetMasterAuthRequest(_messages.Message):
     name: The name (project, location, cluster) of the cluster to set auth.
       Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
     update: A description of the update.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   class ActionValueValuesEnum(_messages.Enum):
@@ -8656,13 +8716,13 @@ class SetMonitoringServiceRequest(_messages.Message):
     name: The name (project, location, cluster) of the cluster to set
       monitoring. Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -8683,13 +8743,13 @@ class SetNetworkPolicyRequest(_messages.Message):
       `projects/*/locations/*/clusters/*`.
     networkPolicy: Configuration options for the NetworkPolicy feature.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -8713,13 +8773,13 @@ class SetNodePoolAutoscalingRequest(_messages.Message):
     nodePoolId: Deprecated. The name of the node pool to upgrade. This field
       has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   autoscaling = _messages.MessageField('NodePoolAutoscaling', 1)
@@ -8744,13 +8804,13 @@ class SetNodePoolManagementRequest(_messages.Message):
     nodePoolId: Deprecated. The name of the node pool to update. This field
       has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -8774,12 +8834,12 @@ class SetNodePoolSizeRequest(_messages.Message):
     nodePoolId: Deprecated. The name of the node pool to update. This field
       has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects).
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects).
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -8967,14 +9027,14 @@ class StartIPRotationRequest(_messages.Message):
       IP rotation. Specified in the format
       `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
     rotateCredentials: Whether to rotate credentials during IP rotation.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -9310,16 +9370,16 @@ class UpdateClusterRequest(_messages.Message):
     name: The name (project, location, cluster) of the cluster to update.
       Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
     update: A description of the update.
     updatedCluster: The updated cluster object. This field must be empty if
       'update' is set.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -9357,12 +9417,12 @@ class UpdateMasterRequest(_messages.Message):
     name: The name (project, location, cluster) of the cluster to update.
       Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects).
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects).
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -9377,8 +9437,8 @@ class UpdateNodePoolRequest(_messages.Message):
 
   Fields:
     accelerators: A list of hardware accelerators to be attached to each node.
-      See https://{$universe.dns_names.final_documentation_domain}/compute/doc
-      s/gpus for more information about support for GPUs.
+      See https://cloud.google.com/compute/docs/gpus for more information
+      about support for GPUs.
     bootDisk: The desired boot disk config for nodes in the node pool.
       Initiates an upgrade operation that migrates the nodes in the node pool
       to the specified boot disk config.
@@ -9411,27 +9471,26 @@ class UpdateNodePoolRequest(_messages.Message):
     imageProject: The project containing the desired image to use for this
       node pool. This is used to create clusters using a custom image.
     imageType: The desired image type for the node pool. Please see
-      https://{$universe.dns_names.final_documentation_domain}/kubernetes-
-      engine/docs/concepts/node-images for available image types.
+      https://cloud.google.com/kubernetes-engine/docs/concepts/node-images for
+      available image types.
     kubeletConfig: Node kubelet configs.
     labels: The desired node labels to be applied to all nodes in the node
       pool. If this field is not present, the labels will not be changed.
       Otherwise, the existing node labels will be *replaced* with the provided
       labels.
     linuxNodeConfig: Parameters that can be configured on Linux nodes.
-    locations: The desired list of Google Compute Engine [zones](https://{$uni
-      verse.dns_names.final_documentation_domain}/compute/docs/zones#available
-      ) in which the node pool's nodes should be located. Changing the
-      locations for a node pool will result in nodes being either created or
-      removed from the node pool, depending on whether locations are being
-      added or removed. Warning: It is recommended to update node pool
-      locations in a standalone API call. Do not combine a location update
-      with changes to other fields (such as `tags`, `labels`, `taints`, etc.)
-      in the same request. Otherwise, the API performs a structural
-      modification where changes to other fields will only apply to newly
-      created nodes and will not be applied to existing nodes in the node
-      pool. To ensure all nodes are updated consistently, use a separate API
-      call for location changes.
+    locations: The desired list of Google Compute Engine
+      [zones](https://cloud.google.com/compute/docs/zones#available) in which
+      the node pool's nodes should be located. Changing the locations for a
+      node pool will result in nodes being either created or removed from the
+      node pool, depending on whether locations are being added or removed.
+      Warning: It is recommended to update node pool locations in a standalone
+      API call. Do not combine a location update with changes to other fields
+      (such as `tags`, `labels`, `taints`, etc.) in the same request.
+      Otherwise, the API performs a structural modification where changes to
+      other fields will only apply to newly created nodes and will not be
+      applied to existing nodes in the node pool. To ensure all nodes are
+      updated consistently, use a separate API call for location changes.
     loggingConfig: Logging configuration.
     machineType: Optional. The desired machine type for nodes in the node
       pool. Initiates an upgrade operation that migrates the nodes in the node
@@ -9453,9 +9512,9 @@ class UpdateNodePoolRequest(_messages.Message):
       picks an explicit Kubernetes version - "-": picks the Kubernetes master
       version
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://{$universe.dns_names.final_documentation_domain}
-      /resource-manager/docs/creating-managing-projects). This field has been
-      deprecated and replaced by the name field.
+      project number](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects). This field has been deprecated and replaced by the
+      name field.
     queuedProvisioning: Specifies the configuration of queued provisioning.
     resourceLabels: The resource labels for the node pool to use to annotate
       any related Google Compute Engine resources.
@@ -9481,10 +9540,10 @@ class UpdateNodePoolRequest(_messages.Message):
     windowsNodeConfig: Parameters that can be configured on Windows nodes.
     workloadMetadataConfig: The desired workload metadata config for the node
       pool.
-    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
-      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
-      le) in which the cluster resides. This field has been deprecated and
-      replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine
+      [zone](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster resides. This field has been deprecated and replaced by the
+      name field.
   """
 
   accelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
@@ -9745,6 +9804,9 @@ class UserManagedKeysConfig(_messages.Message):
       CA in this cluster.
     controlPlaneDiskEncryptionKey: The Cloud KMS cryptoKey to use for
       Confidential Hyperdisk on the control plane nodes.
+    controlPlaneDiskEncryptionKeyVersions: Output only. All of the versions of
+      the Cloud KMS cryptoKey that are used by Confidential Hyperdisks on the
+      control plane nodes.
     etcdApiCa: Resource path of the Certificate Authority Service caPool to
       use for the etcd API CA in this cluster.
     etcdPeerCa: Resource path of the Certificate Authority Service caPool to
@@ -9764,11 +9826,12 @@ class UserManagedKeysConfig(_messages.Message):
   aggregationCa = _messages.StringField(1)
   clusterCa = _messages.StringField(2)
   controlPlaneDiskEncryptionKey = _messages.StringField(3)
-  etcdApiCa = _messages.StringField(4)
-  etcdPeerCa = _messages.StringField(5)
-  gkeopsEtcdBackupEncryptionKey = _messages.StringField(6)
-  serviceAccountSigningKeys = _messages.StringField(7, repeated=True)
-  serviceAccountVerificationKeys = _messages.StringField(8, repeated=True)
+  controlPlaneDiskEncryptionKeyVersions = _messages.StringField(4, repeated=True)
+  etcdApiCa = _messages.StringField(5)
+  etcdPeerCa = _messages.StringField(6)
+  gkeopsEtcdBackupEncryptionKey = _messages.StringField(7)
+  serviceAccountSigningKeys = _messages.StringField(8, repeated=True)
+  serviceAccountVerificationKeys = _messages.StringField(9, repeated=True)
 
 
 class VerticalPodAutoscaling(_messages.Message):

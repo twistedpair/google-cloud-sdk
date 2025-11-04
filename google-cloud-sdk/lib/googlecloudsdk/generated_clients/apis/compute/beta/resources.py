@@ -165,6 +165,14 @@ class Collections(enum.Enum):
       ['project', 'publicDelegatedPrefix'],
       True
   )
+  GLOBALVMEXTENSIONPOLICIES = (
+      'globalVmExtensionPolicies',
+      'projects/{project}/global/vmExtensionPolicies/'
+      '{globalVmExtensionPolicy}',
+      {},
+      ['project', 'globalVmExtensionPolicy'],
+      True
+  )
   HEALTHCHECKS = (
       'healthChecks',
       'projects/{project}/global/healthChecks/{healthCheck}',
@@ -730,6 +738,20 @@ class Collections(enum.Enum):
       ['project', 'region', 'resourcePolicy'],
       True
   )
+  ROLLOUTPLANS = (
+      'rolloutPlans',
+      'projects/{project}/global/rolloutPlans/{rolloutPlan}',
+      {},
+      ['project', 'rolloutPlan'],
+      True
+  )
+  ROLLOUTS = (
+      'rollouts',
+      'projects/{project}/global/rollouts/{rollout}',
+      {},
+      ['project', 'rollout'],
+      True
+  )
   ROUTERS = (
       'routers',
       'projects/{project}/regions/{region}/routers/{router}',
@@ -913,7 +935,11 @@ class Collections(enum.Enum):
       'zoneVmExtensionPolicies',
       'projects/{project}/zones/{zone}/vmExtensionPolicies/'
       '{vmExtensionPolicy}',
-      {},
+      {
+          '':
+              'projects/{project}/zones/{zone}/vmExtensionPolicies/'
+              '{vmExtensionPolicy}',
+      },
       ['project', 'zone', 'vmExtensionPolicy'],
       True
   )

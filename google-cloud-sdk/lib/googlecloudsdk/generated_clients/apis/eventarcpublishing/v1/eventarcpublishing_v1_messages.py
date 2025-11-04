@@ -311,9 +311,7 @@ class GoogleCloudEventarcPublishingV1PublishRequest(_messages.Message):
   destinationEnrollment = _messages.StringField(2)
   jsonMessage = _messages.StringField(3)
   messageUid = _messages.StringField(4)
-  protoMessage = _messages.MessageField(
-      'GoogleCloudEventarcPublishingV1CloudEvent', 5
-  )
+  protoMessage = _messages.MessageField('GoogleCloudEventarcPublishingV1CloudEvent', 5)
 
 
 class GoogleCloudEventarcPublishingV1PublishResponse(_messages.Message):

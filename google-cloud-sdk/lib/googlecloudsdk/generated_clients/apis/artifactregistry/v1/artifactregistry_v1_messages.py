@@ -115,8 +115,8 @@ class ArtifactregistryProjectsLocationsListRequest(_messages.Message):
   r"""A ArtifactregistryProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Unless explicitly documented otherwise,
-      don't use this unsupported field which is primarily intended for
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
       internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
@@ -1636,8 +1636,8 @@ class DockerImage(_messages.Message):
 
   Fields:
     artifactType: ArtifactType type of this image, e.g.
-      application/vnd.example+type". If the `subject` is set and no
-      `artifactType `is given, the `mediaType` will be considered as the
+      "application/vnd.example+type". If the `subject` is set and no
+      `artifactType` is given, the `mediaType` will be considered as the
       `artifactType`. This field is returned as the `metadata.artifactType`
       field in the Version resource.
     buildTime: The time this image was built. This field is returned as the
@@ -2253,9 +2253,9 @@ class ImageManifest(_messages.Message):
       the Docker client and are not validated by Artifact Registry. Example
       values include "linux", "windows", "darwin", "aix", etc.
     osFeatures: Optional. The required OS features for the image, for example
-      on Windows `win32k`
+      on Windows `win32k`.
     osVersion: Optional. The OS version of the image, for example on Windows
-      `10.0.14393.1066
+      `10.0.14393.1066`.
     variant: Optional. The variant of the CPU in the image, for example `v7`
       to specify ARMv7 when architecture is `arm`.
   """

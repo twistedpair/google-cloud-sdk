@@ -398,6 +398,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SWPSECURITYEXTENSIONS = (
+      'projects.locations.swpSecurityExtensions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'swpSecurityExtensions/{swpSecurityExtensionsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_TCPROUTES = (
       'projects.locations.tcpRoutes',
       '{+name}',

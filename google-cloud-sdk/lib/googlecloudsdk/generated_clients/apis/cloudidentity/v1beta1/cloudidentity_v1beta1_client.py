@@ -446,7 +446,7 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
     )
 
     def Lookup(self, request, global_params=None):
-      r"""Looks up resource names of the DeviceUsers associated with the caller's credentials, as well as the properties provided in the request. This method must be called with end-user credentials with the scope: https://www.googleapis.com/auth/cloud-identity.devices.lookup If multiple properties are provided, only DeviceUsers having all of these properties are considered as matches - i.e. the query behaves like an AND. Different platforms require different amounts of information from the caller to ensure that the DeviceUser is uniquely identified. - iOS: No properties need to be passed, the caller's credentials are sufficient to identify the corresponding DeviceUser. - Android: Specifying the 'android_id' field is required. - Desktop: Specifying the 'raw_resource_id' field is required.
+      r"""Looks up resource names of the DeviceUsers associated with the caller's credentials, as well as the properties provided in the request. This method must be called with end-user credentials with the scope: https://www.googleapis.com/auth/cloud-identity.devices.lookup If multiple properties are provided, only DeviceUsers having all of these properties are considered as matches - i.e. the query behaves like an AND. Different platforms require different amounts of information from the caller to ensure that the DeviceUser is uniquely identified. - iOS: Specifying the 'partner' and 'ios_device_id' fields is required. - Android: Specifying the 'android_id' field is required. - Desktop: Specifying the 'raw_resource_id' field is required.
 
       Args:
         request: (CloudidentityDevicesDeviceUsersLookupRequest) input message
@@ -464,7 +464,7 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
         method_id='cloudidentity.devices.deviceUsers.lookup',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['androidId', 'pageSize', 'pageToken', 'rawResourceId', 'userId'],
+        query_params=['androidId', 'iosDeviceId', 'pageSize', 'pageToken', 'partner', 'rawResourceId', 'userId'],
         relative_path='v1beta1/{+parent}:lookup',
         request_field='',
         request_type_name='CloudidentityDevicesDeviceUsersLookupRequest',
@@ -1856,8 +1856,61 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Create a policy.
+
+      Args:
+        request: (Policy) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='cloudidentity.policies.create',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v1beta1/policies',
+        request_field='<request>',
+        request_type_name='Policy',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a policy.
+
+      Args:
+        request: (CloudidentityPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/policies/{policiesId}',
+        http_method='DELETE',
+        method_id='cloudidentity.policies.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='CloudidentityPoliciesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
-      r"""Get a Policy.
+      r"""Get a policy.
 
       Args:
         request: (CloudidentityPoliciesGetRequest) input message
@@ -1884,7 +1937,7 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List Policies.
+      r"""List policies.
 
       Args:
         request: (CloudidentityPoliciesListRequest) input message
@@ -1906,5 +1959,32 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='CloudidentityPoliciesListRequest',
         response_type_name='ListPoliciesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update a policy.
+
+      Args:
+        request: (Policy) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/policies/{policiesId}',
+        http_method='PATCH',
+        method_id='cloudidentity.policies.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='<request>',
+        request_type_name='Policy',
+        response_type_name='Operation',
         supports_download=False,
     )

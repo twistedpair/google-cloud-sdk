@@ -5,6 +5,109 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 546.0.0 (2025-11-04)
+
+### Google Cloud CLI
+
+* Updated MacOS Python Virtualenv for the `gcloud` CLI to 3.13.7.
+* Updated Linux bundled Python for the `gcloud` CLI to 3.13.7.
+
+### AI
+
+* Added `--min-scaleup-period`, `--idle-scaledown-period`, and
+`--initial-replica-count` flags to `gcloud beta ai endpoints create` to support
+scale-to-zero functionality for Vertex Online Inference.
+
+### Cloud Bigtable
+
+*    Promoted `gcloud bigtable schema-bundles create|describe|list|update|delete` commands to GA.
+*    Promoted `gcloud bigtable schema-bundles get-iam-policy` to GA.
+*    Promoted `gcloud bigtable schema-bundles set-iam-policy` to GA.
+*    Promoted `gcloud bigtable schema-bundles add-iam-policy-binding` to GA.
+*    Promoted `gcloud bigtable schema-bundles remove-iam-policy-binding` to GA.
+
+### Cloud Filestore
+
+* Added `address-mode` option to `--network` flag of `gcloud filestore instances create` command.
+
+### Cloud Firestore
+
+* Promoted `gcloud firestore databases clone` command to beta and GA.
+
+### Cloud Functions
+
+*  Added support for pyproject.toml when deploying Python functions.
+
+### Cloud Pub/Sub
+
+*   Added `--tags` flag to `gcloud pubsub topics create` for creating Cloud Pub/Sub Topics with Cloud Resource Manager Tags attached at create-time.
+*   Added `--tags` flag to `gcloud pubsub subscriptions create` for creating Cloud Pub/Sub Subscriptions with Cloud Resource Manager Tags attached at create-time.
+*   Added `--tags` flag to `gcloud pubsub snapshots create` for creating Cloud Pub/Sub Snapshots with Cloud Resource Manager Tags attached at create-time.
+
+### Cloud Run
+
+* Promoted `gcloud run compose up` command to beta.
+
+### Cloud SQL
+
+*   Updated 'cloud-sql-proxy' packaged component to use 2.18.3 of the Cloud SQL
+    Proxy.
+*   Modified `gcloud beta sql connect` command to use Cloud SQL Proxy V2 API.
+* Added support for `--auto-iam-authn`, `--private-ip`, `--psc`,
+    `--auto-ip`,`--run-connection-test` and `--debug-logs` flags.
+*   Added `--data-api-access` flag to `gcloud sql instances create` and `patch`
+ in alpha and beta.
+
+### Compute Engine
+
+* Added `--identity` flag to `gcloud beta compute backend-services create`.
+* Promoted `gcloud compute zone-vm-extension-policies` to beta.
+* Added `--identity` and `--identity-certificate` flags to
+`gcloud compute instances create` and
+`gcloud compute instance-templates create` in alpha.
+
+### Compute Firewall Policies
+
+* Added `SOURCE` column to default output of `gcloud beta compute network-firewall-policies list` command.
+
+### Identity and Access Management
+
+* Added `gcloud iam access-policies create|delete|describe|list|update|search-policy-bindings` commands to allow management of access policy resources.
+* Added `--target-resource` flag to `gcloud beta iam policy-bindings create`.
+
+### Model Armor
+
+*   Added the following flags to `gcloud beta model-armor floorsettings update` command to support Vertex AI integrations:
+    *   `--add-integrated-services`
+    *   `--remove-integrated-services`
+    *   `--clear-integrated-services`
+    *   `--vertex-ai-enforcement-type`
+    *   `--enable-vertex-ai-cloud-logging`
+    *   `--enable-multi-language-detection`
+
+### Network Security
+
+*   Added `--mirroring-deployment-group-project` flag for explicit project
+specification in
+`gcloud network-security mirroring-endpoint-groups create` command when
+providing `--mirroring-deployment-group`. In addition, the command will now
+correctly fall back to `--project` and the `core/project` property from the
+global configuration before inferring from the endpoint group's project.
+*   Added `--intercept-deployment-group-project` flag for explicit project
+specification in
+`gcloud network-security intercept-endpoint-groups create` command when
+providing `--intercept-deployment-group`. In addition, the command will now
+correctly fall back to `--project` and the `core/project` property from the
+global configuration before inferring from the endpoint group's project.
+
+### Service Extensions
+
+* Promoted `request_body_send_mode` and `response_body_send_mode` to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 545.0.0 (2025-10-28)
 
 ### Google Cloud CLI

@@ -1031,12 +1031,20 @@ class GkehubProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class GoogleRpcStatus(_messages.Message):
@@ -1195,10 +1203,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListReferencesRequest(_messages.Message):
@@ -1973,8 +1986,11 @@ class ResourceOptions(_messages.Message):
       connect_resources. Defaults to the latest GKE Connect version. The
       version must be a currently supported version, obsolete versions will be
       rejected.
-    k8sVersion: Optional. Major version of the Kubernetes cluster. This is
-      only used to determine which version to use for the
+    k8sGitVersion: Optional. Git version of the Kubernetes cluster. This is
+      only used to gate the Connect Agent migration to svc.id.goog on GDC-SO
+      1.33.100 patch and above.
+    k8sVersion: Optional. Major and minor version of the Kubernetes cluster.
+      This is only used to determine which version to use for the
       CustomResourceDefinition resources, `apiextensions/v1beta1`
       or`apiextensions/v1`.
     v1beta1Crd: Optional. Use `apiextensions/v1beta1` instead of
@@ -1983,8 +1999,9 @@ class ResourceOptions(_messages.Message):
   """
 
   connectVersion = _messages.StringField(1)
-  k8sVersion = _messages.StringField(2)
-  v1beta1Crd = _messages.BooleanField(3)
+  k8sGitVersion = _messages.StringField(2)
+  k8sVersion = _messages.StringField(3)
+  v1beta1Crd = _messages.BooleanField(4)
 
 
 class Rule(_messages.Message):

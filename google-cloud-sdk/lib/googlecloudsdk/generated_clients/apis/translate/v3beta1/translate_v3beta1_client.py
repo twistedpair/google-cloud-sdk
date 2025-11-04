@@ -272,7 +272,7 @@ class TranslateV3beta1(base_api.BaseApiClient):
         method_id='translate.projects.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v3beta1/{+name}/operations',
         request_field='',
         request_type_name='TranslateProjectsLocationsOperationsListRequest',

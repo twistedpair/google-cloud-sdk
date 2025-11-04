@@ -564,7 +564,7 @@ class MemorystoreV1beta(base_api.BaseApiClient):
         method_id='memorystore.projects.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta/{+name}/operations',
         request_field='',
         request_type_name='MemorystoreProjectsLocationsOperationsListRequest',

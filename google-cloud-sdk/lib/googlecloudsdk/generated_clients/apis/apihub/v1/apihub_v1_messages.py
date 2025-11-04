@@ -1552,12 +1552,20 @@ class ApihubProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class ApihubProjectsLocationsPluginsCreateRequest(_messages.Message):
@@ -1783,6 +1791,22 @@ class ApihubProjectsLocationsPluginsInstancesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class ApihubProjectsLocationsPluginsInstancesManageSourceDataRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsPluginsInstancesManageSourceDataRequest object.
+
+  Fields:
+    googleCloudApihubV1ManagePluginInstanceSourceDataRequest: A
+      GoogleCloudApihubV1ManagePluginInstanceSourceDataRequest resource to be
+      passed as the request body.
+    name: Required. The name of the plugin instance for which data needs to be
+      managed. Format: `projects/{project}/locations/{location}/plugins/{plugi
+      n}/instances/{instance}`
+  """
+
+  googleCloudApihubV1ManagePluginInstanceSourceDataRequest = _messages.MessageField('GoogleCloudApihubV1ManagePluginInstanceSourceDataRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class ApihubProjectsLocationsPluginsInstancesPatchRequest(_messages.Message):
@@ -2087,7 +2111,9 @@ class GoogleCloudApihubV1Api(_messages.Message):
     description: Optional. The description of the API resource.
     displayName: Required. The display name of the API resource.
     documentation: Optional. The documentation for the API resource.
-    fingerprint: Optional. Fingerprint of the API resource.
+    fingerprint: Optional. Fingerprint of the API resource. This must be
+      unique for each API resource. It can neither be unset nor be updated to
+      an existing fingerprint of another API resource.
     maturityLevel: Optional. The maturity level of the API. This maps to the
       following system defined attribute:
       `projects/{project}/locations/{location}/attributes/system-maturity-
@@ -4290,6 +4316,59 @@ class GoogleCloudApihubV1LookupRuntimeProjectAttachmentResponse(_messages.Messag
   runtimeProjectAttachment = _messages.MessageField('GoogleCloudApihubV1RuntimeProjectAttachment', 1)
 
 
+class GoogleCloudApihubV1ManagePluginInstanceSourceDataRequest(_messages.Message):
+  r"""The ManagePluginInstanceSourceData method's request.
+
+  Enums:
+    ActionValueValuesEnum: Required. Action to be performed.
+    DataTypeValueValuesEnum: Required. Type of data to be managed.
+
+  Fields:
+    action: Required. Action to be performed.
+    data: Required. Data to be managed.
+    dataType: Required. Type of data to be managed.
+    relativePath: Required. Relative path of data being managed for a given
+      plugin instance.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""Required. Action to be performed.
+
+    Values:
+      ACTION_UNSPECIFIED: Default unspecified action.
+      UPLOAD: Upload or upsert data.
+      DELETE: Delete data.
+    """
+    ACTION_UNSPECIFIED = 0
+    UPLOAD = 1
+    DELETE = 2
+
+  class DataTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Type of data to be managed.
+
+    Values:
+      DATA_TYPE_UNSPECIFIED: Default unspecified type.
+      PROXY_DEPLOYMENT_MANIFEST: Proxy deployment manifest.
+      ENVIRONMENT_MANIFEST: Environment manifest.
+      PROXY_BUNDLE: Proxy bundle.
+      SHARED_FLOW_BUNDLE: Shared flow bundle.
+    """
+    DATA_TYPE_UNSPECIFIED = 0
+    PROXY_DEPLOYMENT_MANIFEST = 1
+    ENVIRONMENT_MANIFEST = 2
+    PROXY_BUNDLE = 3
+    SHARED_FLOW_BUNDLE = 4
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  data = _messages.BytesField(2)
+  dataType = _messages.EnumField('DataTypeValueValuesEnum', 3)
+  relativePath = _messages.StringField(4)
+
+
+class GoogleCloudApihubV1ManagePluginInstanceSourceDataResponse(_messages.Message):
+  r"""The ManagePluginInstanceSourceData method's response."""
+
+
 class GoogleCloudApihubV1MatchResult(_messages.Message):
   r"""MatchResult represents the result of matching a discovered API operation
   with a catalog API operation.
@@ -4505,8 +4584,10 @@ class GoogleCloudApihubV1Plugin(_messages.Message):
       framework as the state will be managed at plugin instance level.
 
   Fields:
-    actionsConfig: Required. The configuration of actions supported by the
-      plugin.
+    actionsConfig: Optional. The configuration of actions supported by the
+      plugin. **REQUIRED**: This field must be provided when creating or
+      updating a Plugin. The server will reject requests if this field is
+      missing.
     configTemplate: Optional. The configuration template for the plugin.
     createTime: Output only. Timestamp indicating when the plugin was created.
     description: Optional. The plugin description. Max length is 2000
@@ -5655,10 +5736,15 @@ class GoogleLongrunningListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('GoogleLongrunningOperation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class GoogleLongrunningOperation(_messages.Message):

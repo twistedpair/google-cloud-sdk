@@ -25,6 +25,7 @@ from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
@@ -142,7 +143,20 @@ def AddInterceptDeploymentGroupResource(release_track, parser):
       DEPLOYMENT_GROUP_RESOURCE_COLLECTION,
       "intercept deployment group",
       api_version=api_version,
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      projectsId=concepts.ResourceParameterAttributeConfig(
+          name="project",
+          help_text="Project of the {resource}.",
+          parameter_name="projectsId",
+          fallthroughs=[
+              deps.ArgFallthrough("--project"),
+              deps.PropertyFallthrough(properties.VALUES.core.project),
+              deps.FullySpecifiedAnchorFallthrough(
+                  [deps.ArgFallthrough(ENDPOINT_GROUP_RESOURCE_NAME)],
+                  collection_info,
+                  "projectsId",
+              ),
+          ],
+      ),
       locationsId=concepts.ResourceParameterAttributeConfig(
           "location",
           "Location of the {resource}.",
@@ -169,6 +183,7 @@ def AddInterceptDeploymentGroupResource(release_track, parser):
       concept_spec=resource_spec,
       required=True,
       group_help="Intercept Deployment Group.",
+      flag_name_overrides={"project": "--intercept-deployment-group-project"},
       prefixes=True,
   )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)

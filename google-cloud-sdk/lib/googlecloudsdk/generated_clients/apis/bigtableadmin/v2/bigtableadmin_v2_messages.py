@@ -2182,8 +2182,9 @@ class ColumnFamily(_messages.Message):
       including its full encoding. If omitted, the family only serves raw
       untyped bytes. For now, only the `Aggregate` type is supported.
       `Aggregate` can only be set at family creation and is immutable
-      afterwards. If `value_type` is `Aggregate`, written data must be
-      compatible with: * `value_type.input_type` for `AddInput` mutations
+      afterwards. This field is mutually exclusive with `sql_type`. If
+      `value_type` is `Aggregate`, written data must be compatible with: *
+      `value_type.input_type` for `AddInput` mutations
   """
 
   gcRule = _messages.MessageField('GcRule', 1)
@@ -2309,16 +2310,22 @@ class CreateBackupMetadata(_messages.Message):
 
   Fields:
     endTime: If set, the time at which this operation finished or was
-      cancelled.
+      cancelled. DEPRECATED: Use finish_time instead.
+    finishTime: The time at which the operation failed or was completed
+      successfully.
     name: The name of the backup being created.
+    requestTime: The time at which the original request was received.
     sourceTable: The name of the table the backup is created from.
-    startTime: The time at which this operation started.
+    startTime: The time at which this operation started. DEPRECATED: Use
+      request_time instead.
   """
 
   endTime = _messages.StringField(1)
-  name = _messages.StringField(2)
-  sourceTable = _messages.StringField(3)
-  startTime = _messages.StringField(4)
+  finishTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  requestTime = _messages.StringField(4)
+  sourceTable = _messages.StringField(5)
+  startTime = _messages.StringField(6)
 
 
 class CreateClusterMetadata(_messages.Message):
@@ -2475,16 +2482,20 @@ class CreateLogicalViewMetadata(_messages.Message):
   r"""The metadata for the Operation returned by CreateLogicalView.
 
   Fields:
-    endTime: If set, the time at which this operation finished or was
-      canceled.
+    endTime: DEPRECATED: Use finish_time instead.
+    finishTime: The time at which the operation failed or was completed
+      successfully.
     originalRequest: The request that prompted the initiation of this
       CreateLogicalView operation.
-    startTime: The time at which this operation started.
+    requestTime: The time at which the original request was received.
+    startTime: DEPRECATED: Use request_time instead.
   """
 
   endTime = _messages.StringField(1)
-  originalRequest = _messages.MessageField('CreateLogicalViewRequest', 2)
-  startTime = _messages.StringField(3)
+  finishTime = _messages.StringField(2)
+  originalRequest = _messages.MessageField('CreateLogicalViewRequest', 3)
+  requestTime = _messages.StringField(4)
+  startTime = _messages.StringField(5)
 
 
 class CreateLogicalViewRequest(_messages.Message):
@@ -2508,15 +2519,21 @@ class CreateMaterializedViewMetadata(_messages.Message):
 
   Fields:
     endTime: If set, the time at which this operation finished or was
-      canceled.
+      canceled. DEPRECATED: Use finish_time instead.
+    finishTime: The time at which the operation failed or was completed
+      successfully.
     originalRequest: The request that prompted the initiation of this
       CreateMaterializedView operation.
-    startTime: The time at which this operation started.
+    requestTime: The time at which the original request was received.
+    startTime: The time at which this operation started. DEPRECATED: Use
+      request_time instead.
   """
 
   endTime = _messages.StringField(1)
-  originalRequest = _messages.MessageField('CreateMaterializedViewRequest', 2)
-  startTime = _messages.StringField(3)
+  finishTime = _messages.StringField(2)
+  originalRequest = _messages.MessageField('CreateMaterializedViewRequest', 3)
+  requestTime = _messages.StringField(4)
+  startTime = _messages.StringField(5)
 
 
 class CreateMaterializedViewRequest(_messages.Message):
@@ -2540,17 +2557,17 @@ class CreateSchemaBundleMetadata(_messages.Message):
   r"""The metadata for the Operation returned by CreateSchemaBundle.
 
   Fields:
-    endTime: If set, the time at which this operation finished or was
-      canceled.
+    finishTime: The time at which the operation failed or was completed
+      successfully.
     name: The unique name identifying this schema bundle. Values are of the
       form `projects/{project}/instances/{instance}/tables/{table}/schemaBundl
       es/{schema_bundle}`
-    startTime: The time at which this operation started.
+    requestTime: The time at which the original request was received.
   """
 
-  endTime = _messages.StringField(1)
+  finishTime = _messages.StringField(1)
   name = _messages.StringField(2)
-  startTime = _messages.StringField(3)
+  requestTime = _messages.StringField(3)
 
 
 class CreateTableRequest(_messages.Message):
@@ -3016,7 +3033,7 @@ class GoogleBigtableAdminV2TypeBytesEncodingRaw(_messages.Message):
   Fields:
     escapeNulls: If set, allows NULL values to be encoded as the empty string
       "". The actual empty string, or any value which only contains the null
-      byte 0x00, has one more null byte appended.
+      byte `0x00`, has one more null byte appended.
   """
 
   escapeNulls = _messages.BooleanField(1)
@@ -3159,7 +3176,7 @@ class GoogleBigtableAdminV2TypeStringEncodingUtf8Bytes(_messages.Message):
       The actual empty string, or any value where every character equals
       `null_escape_char`, has one more `null_escape_char` appended. If
       `null_escape_char` is set and does not equal the ASCII null character
-      0x00, then the encoding will not support sorted mode. .
+      `0x00`, then the encoding will not support sorted mode. .
   """
 
   nullEscapeChar = _messages.StringField(1)
@@ -3204,9 +3221,9 @@ class GoogleBigtableAdminV2TypeStructEncodingDelimitedBytes(_messages.Message):
   single `delimiter`. Sorted mode: - Fields are encoded in sorted mode. -
   Encoded field values must not contain any bytes <= `delimiter[0]` - Element-
   wise order is preserved: `A < B` if `A[0] < B[0]`, or if `A[0] == B[0] &&
-  A[1] < B[1]`, etc. Strict prefixes sort first. Distinct mode: - Fields are
-  encoded in distinct mode. - Encoded field values must not contain
-  `delimiter[0]`.
+  A[1] < B[1]`, etc. Strict prefixes sort first. - This encoding does not
+  support `DESC` field ordering. Distinct mode: - Fields are encoded in
+  distinct mode. - Encoded field values must not contain `delimiter[0]`.
 
   Fields:
     delimiter: Byte sequence used to delimit concatenated fields. The
@@ -3217,32 +3234,40 @@ class GoogleBigtableAdminV2TypeStructEncodingDelimitedBytes(_messages.Message):
 
 
 class GoogleBigtableAdminV2TypeStructEncodingOrderedCodeBytes(_messages.Message):
-  r"""Fields are encoded independently and concatenated with the fixed byte
-  pair {0x00, 0x01} in between. Any null (0x00) byte in an encoded field is
-  replaced by the fixed byte pair {0x00, 0xFF}. Fields that encode to the
-  empty string "" have special handling: - If *every* field encodes to "", or
-  if the STRUCT has no fields defined, then the STRUCT is encoded as the fixed
-  byte pair {0x00, 0x00}. - Otherwise, the STRUCT only encodes until the last
-  non-empty field, omitting any trailing empty fields. Any empty fields that
-  aren't omitted are replaced with the fixed byte pair {0x00, 0x00}. Examples:
-  - STRUCT() -> "\00\00" - STRUCT("") -> "\00\00" - STRUCT("", "") -> "\00\00"
-  - STRUCT("", "B") -> "\00\00" + "\00\01" + "B" - STRUCT("A", "") -> "A" -
-  STRUCT("", "B", "") -> "\00\00" + "\00\01" + "B" - STRUCT("A", "", "C") ->
-  "A" + "\00\01" + "\00\00" + "\00\01" + "C" Since null bytes are always
-  escaped, this encoding can cause size blowup for encodings like
+  r"""Fields are encoded independently, then escaped and delimited by appling
+  the following rules in order: - While the last remaining field is `ASC` or
+  `UNSPECIFIED`, and encodes to the empty string "", remove it. - In each
+  remaining field, replace all null bytes `0x00` with the fixed byte pair
+  `{0x00, 0xFF}`. - If any remaining field encodes to the empty string "",
+  replace it with the fixed byte pair `{0x00, 0x00}`. - Append the fixed byte
+  pair `{0x00, 0x01}` to each remaining field, except for the last remaining
+  field if it is `ASC`. - Bitwise negate all `DESC` fields. - Concatenate the
+  results, or emit the fixed byte pair `{0x00, 0x00}` if there are no
+  remaining fields to concatenate. Examples: ``` - STRUCT() -> "\00\00" -
+  STRUCT("") -> "\00\00" - STRUCT("", "") -> "\00\00" - STRUCT("", "B") ->
+  "\00\00" + "\00\01" + "B" - STRUCT("A", "") -> "A" - STRUCT("", "B", "") ->
+  "\00\00" + "\00\01" + "B" - STRUCT("A", "", "C") -> "A" + "\00\01" +
+  "\00\00" + "\00\01" + "C" ``` Examples for struct with `DESC` fields: ``` -
+  STRUCT("" DESC) -> "\xFF\xFF" + "\xFF\xFE" - STRUCT("" DESC, "") ->
+  "\xFF\xFF" + "\xFF\xFE" - STRUCT("" DESC, "", "") -> "\xFF\xFF" + "\xFF\xFE"
+  - STRUCT("" DESC, "A") -> "\xFF\xFF" + "\xFF\xFE" + "A" - STRUCT("A", ""
+  DESC, "") -> "A" + "\00\01" + "\xFF\xFF" + "\xFF\xFE" - STRUCT("", "A" DESC)
+  -> "\x00\x00" + "\x00\x01" + "\xBE" + "\xFF\xFE" ``` Since null bytes are
+  always escaped, this encoding can cause size blowup for encodings like
   `Int64.BigEndianBytes` that are likely to produce many such bytes. Sorted
   mode: - Fields are encoded in sorted mode. - All values supported by the
-  field encodings are allowed - Element-wise order is preserved: `A < B` if
-  `A[0] < B[0]`, or if `A[0] == B[0] && A[1] < B[1]`, etc. Strict prefixes
-  sort first. Distinct mode: - Fields are encoded in distinct mode. - All
-  values supported by the field encodings are allowed.
+  field encodings are allowed. - Fields with unset or `UNSPECIFIED` order are
+  treated as `ASC`. - Element-wise order is preserved: `A < B` if `A[0] <
+  B[0]`, or if `A[0] == B[0] && A[1] < B[1]`, etc. Strict prefixes sort first.
+  Distinct mode: - Fields are encoded in distinct mode. - All values supported
+  by the field encodings are allowed.
   """
 
 
 
 class GoogleBigtableAdminV2TypeStructEncodingSingleton(_messages.Message):
   r"""Uses the encoding of `fields[0].type` as-is. Only valid if `fields.size
-  == 1`.
+  == 1`. This encoding does not support `DESC` field ordering.
   """
 
 
@@ -4860,7 +4885,7 @@ class Type(_messages.Message):
   This is useful anywhere sort order is important, for example when encoding
   keys. - Distinct: In this mode, Bigtable guarantees that if `X != Y` then
   `Encode(X) != Encode(Y)`. However, the converse is not guaranteed. For
-  example, both "{'foo': '1', 'bar': '2'}" and "{'bar': '2', 'foo': '1'}" are
+  example, both `{'foo': '1', 'bar': '2'}` and `{'bar': '2', 'foo': '1'}` are
   valid encodings of the same JSON value. The API clearly documents which mode
   is used wherever an encoding can be configured. Each encoding also documents
   which values are supported in which modes. For example, when encoding INT64
@@ -4906,14 +4931,20 @@ class UndeleteTableMetadata(_messages.Message):
 
   Fields:
     endTime: If set, the time at which this operation finished or was
-      cancelled.
+      cancelled. DEPRECATED: Use finish_time instead.
+    finishTime: The time at which the operation failed or was completed
+      successfully.
     name: The name of the table being restored.
-    startTime: The time at which this operation started.
+    requestTime: The time at which the original request was received.
+    startTime: The time at which this operation started. DEPRECATED: Use
+      request_time instead.
   """
 
   endTime = _messages.StringField(1)
-  name = _messages.StringField(2)
-  startTime = _messages.StringField(3)
+  finishTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  requestTime = _messages.StringField(4)
+  startTime = _messages.StringField(5)
 
 
 class UndeleteTableRequest(_messages.Message):
@@ -5013,16 +5044,20 @@ class UpdateLogicalViewMetadata(_messages.Message):
   r"""The metadata for the Operation returned by UpdateLogicalView.
 
   Fields:
-    endTime: If set, the time at which this operation finished or was
-      canceled.
+    endTime: DEPRECATED: Use finish_time instead.
+    finishTime: The time at which the operation failed or was completed
+      successfully.
     originalRequest: The request that prompted the initiation of this
       UpdateLogicalView operation.
-    startTime: The time at which this operation was started.
+    requestTime: The time at which the original request was received.
+    startTime: DEPRECATED: Use request_time instead.
   """
 
   endTime = _messages.StringField(1)
-  originalRequest = _messages.MessageField('UpdateLogicalViewRequest', 2)
-  startTime = _messages.StringField(3)
+  finishTime = _messages.StringField(2)
+  originalRequest = _messages.MessageField('UpdateLogicalViewRequest', 3)
+  requestTime = _messages.StringField(4)
+  startTime = _messages.StringField(5)
 
 
 class UpdateLogicalViewRequest(_messages.Message):
@@ -5073,17 +5108,17 @@ class UpdateSchemaBundleMetadata(_messages.Message):
   r"""The metadata for the Operation returned by UpdateSchemaBundle.
 
   Fields:
-    endTime: If set, the time at which this operation finished or was
-      canceled.
+    finishTime: The time at which the operation failed or was completed
+      successfully.
     name: The unique name identifying this schema bundle. Values are of the
       form `projects/{project}/instances/{instance}/tables/{table}/schemaBundl
       es/{schema_bundle}`
-    startTime: The time at which this operation started.
+    requestTime: The time at which the original request was received.
   """
 
-  endTime = _messages.StringField(1)
+  finishTime = _messages.StringField(1)
   name = _messages.StringField(2)
-  startTime = _messages.StringField(3)
+  requestTime = _messages.StringField(3)
 
 
 class UpdateTableMetadata(_messages.Message):
@@ -5091,14 +5126,20 @@ class UpdateTableMetadata(_messages.Message):
 
   Fields:
     endTime: If set, the time at which this operation finished or was
-      canceled.
+      canceled. DEPRECATED: Use finish_time instead.
+    finishTime: The time at which the operation failed or was completed
+      successfully.
     name: The name of the table being updated.
-    startTime: The time at which this operation started.
+    requestTime: The time at which the original request was received.
+    startTime: The time at which this operation started. DEPRECATED: Use
+      request_time instead.
   """
 
   endTime = _messages.StringField(1)
-  name = _messages.StringField(2)
-  startTime = _messages.StringField(3)
+  finishTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  requestTime = _messages.StringField(4)
+  startTime = _messages.StringField(5)
 
 
 encoding.AddCustomJsonFieldMapping(

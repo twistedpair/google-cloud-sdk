@@ -15,29 +15,41 @@
 """Helpers for the operations API client."""
 
 from apitools.base.py import exceptions
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.privateca import base
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 
-def ListOperations(location):
-  """Gets a list of supported Private CA locations for the current project."""
+def ListOperations(location, list_filter, limit, page_size):
+  """Lists operations in a given project.
 
+  Args:
+    location: The location to list operations in, or '-' for all locations.
+    list_filter: A filter to apply to the list request.
+    limit: The number of operations to retrieve.
+    page_size: The number of operations to retrieve per page.
+
+  Returns:
+    A generator of matching operations.
+  """
   client = base.GetClientInstance(api_version='v1')
   messages = base.GetMessagesModule(api_version='v1')
 
   project = properties.VALUES.core.project.GetOrFail()
+  parent_resource = 'projects/{}/locations/{}'.format(project, location)
 
-  try:
-    response = client.projects_locations_operations.List(
-        messages.PrivatecaProjectsLocationsOperationsListRequest(
-            name='projects/{}/locations/{}'.format(project, location)))
-    # Lists across the specified location.
-    return response.operations
-  except exceptions.HttpError as e:
-    log.debug('ListOperations failed: %r.', e)
-    raise api_exceptions.HttpException(e)
+  request = messages.PrivatecaProjectsLocationsOperationsListRequest(
+      name=parent_resource, filter=list_filter)
+
+  return list_pager.YieldFromList(
+      client.projects_locations_operations,
+      request,
+      field='operations',
+      limit=limit,
+      batch_size_attribute='pageSize',
+      batch_size=page_size)
 
 
 def GetOperation(operation_ref):

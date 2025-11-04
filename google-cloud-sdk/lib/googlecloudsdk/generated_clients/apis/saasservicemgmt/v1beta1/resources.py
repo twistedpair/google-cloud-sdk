@@ -41,6 +41,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_FLAGATTRIBUTES = (
+      'projects.locations.flagAttributes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/flagAttributes/'
+              '{flagAttributesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_FLAGRELEASES = (
       'projects.locations.flagReleases',
       '{+name}',
@@ -80,6 +91,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/releases/'
               '{releasesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_REPLICATIONSINTERNAL = (
+      'projects.locations.replicationsInternal',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'replicationsInternal/{replicationsInternalId}',
       },
       ['name'],
       True

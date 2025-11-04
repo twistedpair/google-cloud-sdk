@@ -645,6 +645,8 @@ class GceSetup(_messages.Message):
     enableIpForwarding: Optional. Flag to enable ip forwarding or not, default
       false/off. https://cloud.google.com/vpc/docs/using-routes#canipforward
     gpuDriverConfig: Optional. Configuration for GPU drivers.
+    instanceId: Output only. The unique ID of the Compute Engine instance
+      resource.
     machineType: Optional. The machine type of the VM instance.
       https://cloud.google.com/compute/docs/machine-resource
     metadata: Optional. Custom metadata to apply to this instance.
@@ -701,15 +703,16 @@ class GceSetup(_messages.Message):
   disablePublicIp = _messages.BooleanField(6)
   enableIpForwarding = _messages.BooleanField(7)
   gpuDriverConfig = _messages.MessageField('GPUDriverConfig', 8)
-  machineType = _messages.StringField(9)
-  metadata = _messages.MessageField('MetadataValue', 10)
-  minCpuPlatform = _messages.StringField(11)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 12, repeated=True)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 13)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 14, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 15)
-  tags = _messages.StringField(16, repeated=True)
-  vmImage = _messages.MessageField('VmImage', 17)
+  instanceId = _messages.StringField(9)
+  machineType = _messages.StringField(10)
+  metadata = _messages.MessageField('MetadataValue', 11)
+  minCpuPlatform = _messages.StringField(12)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 13, repeated=True)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 14)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 15, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 16)
+  tags = _messages.StringField(17, repeated=True)
+  vmImage = _messages.MessageField('VmImage', 18)
 
 
 class GenerateAccessTokenRequest(_messages.Message):
@@ -973,10 +976,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -1518,12 +1526,20 @@ class NotebooksProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class Operation(_messages.Message):

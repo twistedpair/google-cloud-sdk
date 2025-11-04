@@ -24,12 +24,81 @@ DOCS_URL = 'https://cloud.google.com/vertex-ai/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  AGENTS = (
+      'agents',
+      'agents/{agentsId}',
+      {},
+      ['agentsId'],
+      True
+  )
+  AGENTS_OPERATIONS = (
+      'agents.operations',
+      '{+name}',
+      {
+          '':
+              'agents/{agentsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  APPS = (
+      'apps',
+      'apps/{appsId}',
+      {},
+      ['appsId'],
+      True
+  )
+  APPS_OPERATIONS = (
+      'apps.operations',
+      '{+name}',
+      {
+          '':
+              'apps/{appsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   BATCHPREDICTIONJOBS = (
       'batchPredictionJobs',
       '{+name}',
       {
           '':
               'batchPredictionJobs/{batchPredictionJobsId}',
+      },
+      ['name'],
+      True
+  )
+  CUSTOMJOBS = (
+      'customJobs',
+      'customJobs/{customJobsId}',
+      {},
+      ['customJobsId'],
+      True
+  )
+  CUSTOMJOBS_OPERATIONS = (
+      'customJobs.operations',
+      '{+name}',
+      {
+          '':
+              'customJobs/{customJobsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  DATALABELINGJOBS = (
+      'dataLabelingJobs',
+      'dataLabelingJobs/{dataLabelingJobsId}',
+      {},
+      ['dataLabelingJobsId'],
+      True
+  )
+  DATALABELINGJOBS_OPERATIONS = (
+      'dataLabelingJobs.operations',
+      '{+name}',
+      {
+          '':
+              'dataLabelingJobs/{dataLabelingJobsId}/operations/'
+              '{operationsId}',
       },
       ['name'],
       True
@@ -44,12 +113,721 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  DATASETS_ANNOTATIONSPECS = (
+      'datasets.annotationSpecs',
+      'datasets/{datasetsId}/annotationSpecs/{annotationSpecsId}',
+      {},
+      ['datasetsId', 'annotationSpecsId'],
+      True
+  )
+  DATASETS_ANNOTATIONSPECS_OPERATIONS = (
+      'datasets.annotationSpecs.operations',
+      '{+name}',
+      {
+          '':
+              'datasets/{datasetsId}/annotationSpecs/{annotationSpecsId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  DATASETS_DATAITEMS = (
+      'datasets.dataItems',
+      'datasets/{datasetsId}/dataItems/{dataItemsId}',
+      {},
+      ['datasetsId', 'dataItemsId'],
+      True
+  )
+  DATASETS_DATAITEMS_ANNOTATIONS = (
+      'datasets.dataItems.annotations',
+      'datasets/{datasetsId}/dataItems/{dataItemsId}/annotations/'
+      '{annotationsId}',
+      {},
+      ['datasetsId', 'dataItemsId', 'annotationsId'],
+      True
+  )
+  DATASETS_DATAITEMS_ANNOTATIONS_OPERATIONS = (
+      'datasets.dataItems.annotations.operations',
+      '{+name}',
+      {
+          '':
+              'datasets/{datasetsId}/dataItems/{dataItemsId}/annotations/'
+              '{annotationsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  DATASETS_DATAITEMS_OPERATIONS = (
+      'datasets.dataItems.operations',
+      '{+name}',
+      {
+          '':
+              'datasets/{datasetsId}/dataItems/{dataItemsId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
   DATASETS_DATASETVERSIONS = (
       'datasets.datasetVersions',
       '{+name}',
       {
           '':
               'datasets/{datasetsId}/datasetVersions/{datasetVersionsId}',
+      },
+      ['name'],
+      True
+  )
+  DATASETS_OPERATIONS = (
+      'datasets.operations',
+      '{+name}',
+      {
+          '':
+              'datasets/{datasetsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  DATASETS_SAVEDQUERIES = (
+      'datasets.savedQueries',
+      'datasets/{datasetsId}/savedQueries/{savedQueriesId}',
+      {},
+      ['datasetsId', 'savedQueriesId'],
+      True
+  )
+  DATASETS_SAVEDQUERIES_OPERATIONS = (
+      'datasets.savedQueries.operations',
+      '{+name}',
+      {
+          '':
+              'datasets/{datasetsId}/savedQueries/{savedQueriesId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  DEPLOYMENTRESOURCEPOOLS = (
+      'deploymentResourcePools',
+      'deploymentResourcePools/{deploymentResourcePoolsId}',
+      {},
+      ['deploymentResourcePoolsId'],
+      True
+  )
+  DEPLOYMENTRESOURCEPOOLS_OPERATIONS = (
+      'deploymentResourcePools.operations',
+      '{+name}',
+      {
+          '':
+              'deploymentResourcePools/{deploymentResourcePoolsId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  EDGEDEVICES = (
+      'edgeDevices',
+      'edgeDevices/{edgeDevicesId}',
+      {},
+      ['edgeDevicesId'],
+      True
+  )
+  EDGEDEVICES_OPERATIONS = (
+      'edgeDevices.operations',
+      '{+name}',
+      {
+          '':
+              'edgeDevices/{edgeDevicesId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  ENDPOINTS = (
+      'endpoints',
+      'endpoints/{endpointsId}',
+      {},
+      ['endpointsId'],
+      True
+  )
+  ENDPOINTS_OPERATIONS = (
+      'endpoints.operations',
+      '{+name}',
+      {
+          '':
+              'endpoints/{endpointsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  EVALUATIONITEMS = (
+      'evaluationItems',
+      'evaluationItems/{evaluationItemsId}',
+      {},
+      ['evaluationItemsId'],
+      True
+  )
+  EVALUATIONITEMS_OPERATIONS = (
+      'evaluationItems.operations',
+      '{+name}',
+      {
+          '':
+              'evaluationItems/{evaluationItemsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  EVALUATIONRUNS = (
+      'evaluationRuns',
+      'evaluationRuns/{evaluationRunsId}',
+      {},
+      ['evaluationRunsId'],
+      True
+  )
+  EVALUATIONRUNS_OPERATIONS = (
+      'evaluationRuns.operations',
+      '{+name}',
+      {
+          '':
+              'evaluationRuns/{evaluationRunsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  EVALUATIONSETS = (
+      'evaluationSets',
+      'evaluationSets/{evaluationSetsId}',
+      {},
+      ['evaluationSetsId'],
+      True
+  )
+  EVALUATIONSETS_OPERATIONS = (
+      'evaluationSets.operations',
+      '{+name}',
+      {
+          '':
+              'evaluationSets/{evaluationSetsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  EVALUATIONTASKS = (
+      'evaluationTasks',
+      'evaluationTasks/{evaluationTasksId}',
+      {},
+      ['evaluationTasksId'],
+      True
+  )
+  EVALUATIONTASKS_OPERATIONS = (
+      'evaluationTasks.operations',
+      '{+name}',
+      {
+          '':
+              'evaluationTasks/{evaluationTasksId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  EXAMPLESTORES = (
+      'exampleStores',
+      'exampleStores/{exampleStoresId}',
+      {},
+      ['exampleStoresId'],
+      True
+  )
+  EXAMPLESTORES_OPERATIONS = (
+      'exampleStores.operations',
+      '{+name}',
+      {
+          '':
+              'exampleStores/{exampleStoresId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  EXTENSIONCONTROLLERS = (
+      'extensionControllers',
+      'extensionControllers/{extensionControllersId}',
+      {},
+      ['extensionControllersId'],
+      True
+  )
+  EXTENSIONCONTROLLERS_OPERATIONS = (
+      'extensionControllers.operations',
+      '{+name}',
+      {
+          '':
+              'extensionControllers/{extensionControllersId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  EXTENSIONS = (
+      'extensions',
+      'extensions/{extensionsId}',
+      {},
+      ['extensionsId'],
+      True
+  )
+  EXTENSIONS_OPERATIONS = (
+      'extensions.operations',
+      '{+name}',
+      {
+          '':
+              'extensions/{extensionsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  FEATUREGROUPS = (
+      'featureGroups',
+      'featureGroups/{featureGroupsId}',
+      {},
+      ['featureGroupsId'],
+      True
+  )
+  FEATUREGROUPS_FEATUREMONITORS = (
+      'featureGroups.featureMonitors',
+      'featureGroups/{featureGroupsId}/featureMonitors/{featureMonitorsId}',
+      {},
+      ['featureGroupsId', 'featureMonitorsId'],
+      True
+  )
+  FEATUREGROUPS_FEATUREMONITORS_OPERATIONS = (
+      'featureGroups.featureMonitors.operations',
+      '{+name}',
+      {
+          '':
+              'featureGroups/{featureGroupsId}/featureMonitors/'
+              '{featureMonitorsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  FEATUREGROUPS_FEATURES = (
+      'featureGroups.features',
+      'featureGroups/{featureGroupsId}/features/{featuresId}',
+      {},
+      ['featureGroupsId', 'featuresId'],
+      True
+  )
+  FEATUREGROUPS_FEATURES_OPERATIONS = (
+      'featureGroups.features.operations',
+      '{+name}',
+      {
+          '':
+              'featureGroups/{featureGroupsId}/features/{featuresId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  FEATUREGROUPS_OPERATIONS = (
+      'featureGroups.operations',
+      '{+name}',
+      {
+          '':
+              'featureGroups/{featureGroupsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  FEATUREONLINESTORES = (
+      'featureOnlineStores',
+      'featureOnlineStores/{featureOnlineStoresId}',
+      {},
+      ['featureOnlineStoresId'],
+      True
+  )
+  FEATUREONLINESTORES_FEATUREVIEWS = (
+      'featureOnlineStores.featureViews',
+      'featureOnlineStores/{featureOnlineStoresId}/featureViews/'
+      '{featureViewsId}',
+      {},
+      ['featureOnlineStoresId', 'featureViewsId'],
+      True
+  )
+  FEATUREONLINESTORES_FEATUREVIEWS_OPERATIONS = (
+      'featureOnlineStores.featureViews.operations',
+      '{+name}',
+      {
+          '':
+              'featureOnlineStores/{featureOnlineStoresId}/featureViews/'
+              '{featureViewsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  FEATUREONLINESTORES_OPERATIONS = (
+      'featureOnlineStores.operations',
+      '{+name}',
+      {
+          '':
+              'featureOnlineStores/{featureOnlineStoresId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  FEATURESTORES = (
+      'featurestores',
+      'featurestores/{featurestoresId}',
+      {},
+      ['featurestoresId'],
+      True
+  )
+  FEATURESTORES_ENTITYTYPES = (
+      'featurestores.entityTypes',
+      'featurestores/{featurestoresId}/entityTypes/{entityTypesId}',
+      {},
+      ['featurestoresId', 'entityTypesId'],
+      True
+  )
+  FEATURESTORES_ENTITYTYPES_FEATURES = (
+      'featurestores.entityTypes.features',
+      'featurestores/{featurestoresId}/entityTypes/{entityTypesId}/features/'
+      '{featuresId}',
+      {},
+      ['featurestoresId', 'entityTypesId', 'featuresId'],
+      True
+  )
+  FEATURESTORES_ENTITYTYPES_FEATURES_OPERATIONS = (
+      'featurestores.entityTypes.features.operations',
+      '{+name}',
+      {
+          '':
+              'featurestores/{featurestoresId}/entityTypes/{entityTypesId}/'
+              'features/{featuresId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  FEATURESTORES_ENTITYTYPES_OPERATIONS = (
+      'featurestores.entityTypes.operations',
+      '{+name}',
+      {
+          '':
+              'featurestores/{featurestoresId}/entityTypes/{entityTypesId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  FEATURESTORES_OPERATIONS = (
+      'featurestores.operations',
+      '{+name}',
+      {
+          '':
+              'featurestores/{featurestoresId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  HYPERPARAMETERTUNINGJOBS = (
+      'hyperparameterTuningJobs',
+      'hyperparameterTuningJobs/{hyperparameterTuningJobsId}',
+      {},
+      ['hyperparameterTuningJobsId'],
+      True
+  )
+  HYPERPARAMETERTUNINGJOBS_OPERATIONS = (
+      'hyperparameterTuningJobs.operations',
+      '{+name}',
+      {
+          '':
+              'hyperparameterTuningJobs/{hyperparameterTuningJobsId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  INDEXENDPOINTS = (
+      'indexEndpoints',
+      'indexEndpoints/{indexEndpointsId}',
+      {},
+      ['indexEndpointsId'],
+      True
+  )
+  INDEXENDPOINTS_OPERATIONS = (
+      'indexEndpoints.operations',
+      '{+name}',
+      {
+          '':
+              'indexEndpoints/{indexEndpointsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  INDEXES = (
+      'indexes',
+      'indexes/{indexesId}',
+      {},
+      ['indexesId'],
+      True
+  )
+  INDEXES_OPERATIONS = (
+      'indexes.operations',
+      '{+name}',
+      {
+          '':
+              'indexes/{indexesId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  METADATASTORES = (
+      'metadataStores',
+      'metadataStores/{metadataStoresId}',
+      {},
+      ['metadataStoresId'],
+      True
+  )
+  METADATASTORES_ARTIFACTS = (
+      'metadataStores.artifacts',
+      'metadataStores/{metadataStoresId}/artifacts/{artifactsId}',
+      {},
+      ['metadataStoresId', 'artifactsId'],
+      True
+  )
+  METADATASTORES_ARTIFACTS_OPERATIONS = (
+      'metadataStores.artifacts.operations',
+      '{+name}',
+      {
+          '':
+              'metadataStores/{metadataStoresId}/artifacts/{artifactsId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  METADATASTORES_CONTEXTS = (
+      'metadataStores.contexts',
+      'metadataStores/{metadataStoresId}/contexts/{contextsId}',
+      {},
+      ['metadataStoresId', 'contextsId'],
+      True
+  )
+  METADATASTORES_CONTEXTS_OPERATIONS = (
+      'metadataStores.contexts.operations',
+      '{+name}',
+      {
+          '':
+              'metadataStores/{metadataStoresId}/contexts/{contextsId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  METADATASTORES_EXECUTIONS = (
+      'metadataStores.executions',
+      'metadataStores/{metadataStoresId}/executions/{executionsId}',
+      {},
+      ['metadataStoresId', 'executionsId'],
+      True
+  )
+  METADATASTORES_EXECUTIONS_OPERATIONS = (
+      'metadataStores.executions.operations',
+      '{+name}',
+      {
+          '':
+              'metadataStores/{metadataStoresId}/executions/{executionsId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  METADATASTORES_OPERATIONS = (
+      'metadataStores.operations',
+      '{+name}',
+      {
+          '':
+              'metadataStores/{metadataStoresId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  MIGRATABLERESOURCES = (
+      'migratableResources',
+      'migratableResources/{migratableResourcesId}',
+      {},
+      ['migratableResourcesId'],
+      True
+  )
+  MIGRATABLERESOURCES_OPERATIONS = (
+      'migratableResources.operations',
+      '{+name}',
+      {
+          '':
+              'migratableResources/{migratableResourcesId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  MODELDEPLOYMENTMONITORINGJOBS = (
+      'modelDeploymentMonitoringJobs',
+      'modelDeploymentMonitoringJobs/{modelDeploymentMonitoringJobsId}',
+      {},
+      ['modelDeploymentMonitoringJobsId'],
+      True
+  )
+  MODELDEPLOYMENTMONITORINGJOBS_OPERATIONS = (
+      'modelDeploymentMonitoringJobs.operations',
+      '{+name}',
+      {
+          '':
+              'modelDeploymentMonitoringJobs/'
+              '{modelDeploymentMonitoringJobsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  MODELMONITORS = (
+      'modelMonitors',
+      'modelMonitors/{modelMonitorsId}',
+      {},
+      ['modelMonitorsId'],
+      True
+  )
+  MODELMONITORS_OPERATIONS = (
+      'modelMonitors.operations',
+      '{+name}',
+      {
+          '':
+              'modelMonitors/{modelMonitorsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  MODELS = (
+      'models',
+      'models/{modelsId}',
+      {},
+      ['modelsId'],
+      True
+  )
+  MODELS_EVALUATIONS = (
+      'models.evaluations',
+      'models/{modelsId}/evaluations/{evaluationsId}',
+      {},
+      ['modelsId', 'evaluationsId'],
+      True
+  )
+  MODELS_EVALUATIONS_OPERATIONS = (
+      'models.evaluations.operations',
+      '{+name}',
+      {
+          '':
+              'models/{modelsId}/evaluations/{evaluationsId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  MODELS_OPERATIONS = (
+      'models.operations',
+      '{+name}',
+      {
+          '':
+              'models/{modelsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  NOTEBOOKEXECUTIONJOBS = (
+      'notebookExecutionJobs',
+      'notebookExecutionJobs/{notebookExecutionJobsId}',
+      {},
+      ['notebookExecutionJobsId'],
+      True
+  )
+  NOTEBOOKEXECUTIONJOBS_OPERATIONS = (
+      'notebookExecutionJobs.operations',
+      '{+name}',
+      {
+          '':
+              'notebookExecutionJobs/{notebookExecutionJobsId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  NOTEBOOKRUNTIMETEMPLATES = (
+      'notebookRuntimeTemplates',
+      'notebookRuntimeTemplates/{notebookRuntimeTemplatesId}',
+      {},
+      ['notebookRuntimeTemplatesId'],
+      True
+  )
+  NOTEBOOKRUNTIMETEMPLATES_OPERATIONS = (
+      'notebookRuntimeTemplates.operations',
+      '{+name}',
+      {
+          '':
+              'notebookRuntimeTemplates/{notebookRuntimeTemplatesId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  NOTEBOOKRUNTIMES = (
+      'notebookRuntimes',
+      'notebookRuntimes/{notebookRuntimesId}',
+      {},
+      ['notebookRuntimesId'],
+      True
+  )
+  NOTEBOOKRUNTIMES_OPERATIONS = (
+      'notebookRuntimes.operations',
+      '{+name}',
+      {
+          '':
+              'notebookRuntimes/{notebookRuntimesId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  OPERATIONS = (
+      'operations',
+      '{+name}',
+      {
+          '':
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PERSISTENTRESOURCES = (
+      'persistentResources',
+      'persistentResources/{persistentResourcesId}',
+      {},
+      ['persistentResourcesId'],
+      True
+  )
+  PERSISTENTRESOURCES_OPERATIONS = (
+      'persistentResources.operations',
+      '{+name}',
+      {
+          '':
+              'persistentResources/{persistentResourcesId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PIPELINEJOBS = (
+      'pipelineJobs',
+      'pipelineJobs/{pipelineJobsId}',
+      {},
+      ['pipelineJobsId'],
+      True
+  )
+  PIPELINEJOBS_OPERATIONS = (
+      'pipelineJobs.operations',
+      '{+name}',
+      {
+          '':
+              'pipelineJobs/{pipelineJobsId}/operations/{operationsId}',
       },
       ['name'],
       True
@@ -1599,6 +2377,51 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  RAGCORPORA = (
+      'ragCorpora',
+      'ragCorpora/{ragCorporaId}',
+      {},
+      ['ragCorporaId'],
+      True
+  )
+  RAGCORPORA_OPERATIONS = (
+      'ragCorpora.operations',
+      '{+name}',
+      {
+          '':
+              'ragCorpora/{ragCorporaId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  RAGCORPORA_RAGFILES = (
+      'ragCorpora.ragFiles',
+      'ragCorpora/{ragCorporaId}/ragFiles/{ragFilesId}',
+      {},
+      ['ragCorporaId', 'ragFilesId'],
+      True
+  )
+  RAGCORPORA_RAGFILES_OPERATIONS = (
+      'ragCorpora.ragFiles.operations',
+      '{+name}',
+      {
+          '':
+              'ragCorpora/{ragCorporaId}/ragFiles/{ragFilesId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  RAGENGINECONFIG_OPERATIONS = (
+      'ragEngineConfig.operations',
+      '{+name}',
+      {
+          '':
+              'ragEngineConfig/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   REASONINGENGINES = (
       'reasoningEngines',
       '{+name}',
@@ -1609,12 +2432,41 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  REASONINGENGINES_EXAMPLES = (
+      'reasoningEngines.examples',
+      'reasoningEngines/{reasoningEnginesId}/examples/{examplesId}',
+      {},
+      ['reasoningEnginesId', 'examplesId'],
+      True
+  )
+  REASONINGENGINES_EXAMPLES_OPERATIONS = (
+      'reasoningEngines.examples.operations',
+      '{+name}',
+      {
+          '':
+              'reasoningEngines/{reasoningEnginesId}/examples/{examplesId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   REASONINGENGINES_MEMORIES = (
       'reasoningEngines.memories',
       '{+name}',
       {
           '':
               'reasoningEngines/{reasoningEnginesId}/memories/{memoriesId}',
+      },
+      ['name'],
+      True
+  )
+  REASONINGENGINES_MEMORIES_OPERATIONS = (
+      'reasoningEngines.memories.operations',
+      '{+name}',
+      {
+          '':
+              'reasoningEngines/{reasoningEnginesId}/memories/{memoriesId}/'
+              'operations/{operationsId}',
       },
       ['name'],
       True
@@ -1630,12 +2482,231 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  REASONINGENGINES_OPERATIONS = (
+      'reasoningEngines.operations',
+      '{+name}',
+      {
+          '':
+              'reasoningEngines/{reasoningEnginesId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  REASONINGENGINES_SANDBOXENVIRONMENTS = (
+      'reasoningEngines.sandboxEnvironments',
+      'reasoningEngines/{reasoningEnginesId}/sandboxEnvironments/'
+      '{sandboxEnvironmentsId}',
+      {},
+      ['reasoningEnginesId', 'sandboxEnvironmentsId'],
+      True
+  )
+  REASONINGENGINES_SANDBOXENVIRONMENTS_OPERATIONS = (
+      'reasoningEngines.sandboxEnvironments.operations',
+      '{+name}',
+      {
+          '':
+              'reasoningEngines/{reasoningEnginesId}/sandboxEnvironments/'
+              '{sandboxEnvironmentsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   REASONINGENGINES_SESSIONS = (
       'reasoningEngines.sessions',
       '{+name}',
       {
           '':
               'reasoningEngines/{reasoningEnginesId}/sessions/{sessionsId}',
+      },
+      ['name'],
+      True
+  )
+  REASONINGENGINES_SESSIONS_OPERATIONS = (
+      'reasoningEngines.sessions.operations',
+      '{+name}',
+      {
+          '':
+              'reasoningEngines/{reasoningEnginesId}/sessions/{sessionsId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  SCHEDULES = (
+      'schedules',
+      'schedules/{schedulesId}',
+      {},
+      ['schedulesId'],
+      True
+  )
+  SCHEDULES_OPERATIONS = (
+      'schedules.operations',
+      '{+name}',
+      {
+          '':
+              'schedules/{schedulesId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  SOLVERS = (
+      'solvers',
+      'solvers/{solversId}',
+      {},
+      ['solversId'],
+      True
+  )
+  SOLVERS_OPERATIONS = (
+      'solvers.operations',
+      '{+name}',
+      {
+          '':
+              'solvers/{solversId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  SPECIALISTPOOLS = (
+      'specialistPools',
+      'specialistPools/{specialistPoolsId}',
+      {},
+      ['specialistPoolsId'],
+      True
+  )
+  SPECIALISTPOOLS_OPERATIONS = (
+      'specialistPools.operations',
+      '{+name}',
+      {
+          '':
+              'specialistPools/{specialistPoolsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  STUDIES = (
+      'studies',
+      'studies/{studiesId}',
+      {},
+      ['studiesId'],
+      True
+  )
+  STUDIES_OPERATIONS = (
+      'studies.operations',
+      '{+name}',
+      {
+          '':
+              'studies/{studiesId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  STUDIES_TRIALS = (
+      'studies.trials',
+      'studies/{studiesId}/trials/{trialsId}',
+      {},
+      ['studiesId', 'trialsId'],
+      True
+  )
+  STUDIES_TRIALS_OPERATIONS = (
+      'studies.trials.operations',
+      '{+name}',
+      {
+          '':
+              'studies/{studiesId}/trials/{trialsId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  TENSORBOARDS = (
+      'tensorboards',
+      'tensorboards/{tensorboardsId}',
+      {},
+      ['tensorboardsId'],
+      True
+  )
+  TENSORBOARDS_EXPERIMENTS = (
+      'tensorboards.experiments',
+      'tensorboards/{tensorboardsId}/experiments/{experimentsId}',
+      {},
+      ['tensorboardsId', 'experimentsId'],
+      True
+  )
+  TENSORBOARDS_EXPERIMENTS_OPERATIONS = (
+      'tensorboards.experiments.operations',
+      '{+name}',
+      {
+          '':
+              'tensorboards/{tensorboardsId}/experiments/{experimentsId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  TENSORBOARDS_EXPERIMENTS_RUNS = (
+      'tensorboards.experiments.runs',
+      'tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/'
+      '{runsId}',
+      {},
+      ['tensorboardsId', 'experimentsId', 'runsId'],
+      True
+  )
+  TENSORBOARDS_EXPERIMENTS_RUNS_OPERATIONS = (
+      'tensorboards.experiments.runs.operations',
+      '{+name}',
+      {
+          '':
+              'tensorboards/{tensorboardsId}/experiments/{experimentsId}/'
+              'runs/{runsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  TENSORBOARDS_EXPERIMENTS_RUNS_TIMESERIES = (
+      'tensorboards.experiments.runs.timeSeries',
+      'tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/'
+      '{runsId}/timeSeries/{timeSeriesId}',
+      {},
+      ['tensorboardsId', 'experimentsId', 'runsId', 'timeSeriesId'],
+      True
+  )
+  TENSORBOARDS_EXPERIMENTS_RUNS_TIMESERIES_OPERATIONS = (
+      'tensorboards.experiments.runs.timeSeries.operations',
+      '{+name}',
+      {
+          '':
+              'tensorboards/{tensorboardsId}/experiments/{experimentsId}/'
+              'runs/{runsId}/timeSeries/{timeSeriesId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  TENSORBOARDS_OPERATIONS = (
+      'tensorboards.operations',
+      '{+name}',
+      {
+          '':
+              'tensorboards/{tensorboardsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  TRAININGPIPELINES = (
+      'trainingPipelines',
+      'trainingPipelines/{trainingPipelinesId}',
+      {},
+      ['trainingPipelinesId'],
+      True
+  )
+  TRAININGPIPELINES_OPERATIONS = (
+      'trainingPipelines.operations',
+      '{+name}',
+      {
+          '':
+              'trainingPipelines/{trainingPipelinesId}/operations/'
+              '{operationsId}',
       },
       ['name'],
       True

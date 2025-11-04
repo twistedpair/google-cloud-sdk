@@ -180,6 +180,12 @@ def GenerateDataDiscoverySpec(args: parser_extensions.Namespace):
   return datadiscoveryspec
 
 
+def GenerateDataDocumentationSpec():
+  """Generate DataDocumentationSpec From Arguments."""
+  module = dataplex_api.GetMessageModule()
+  return module.GoogleCloudDataplexV1DataDocumentationSpec()
+
+
 def GenerateSchedule(args):
   """Generate DataQualitySpec From Arguments."""
   module = dataplex_api.GetMessageModule()
@@ -316,6 +322,8 @@ def GenerateDatascanForCreateRequest(args: parser_extensions.Namespace):
       )
   elif args.scan_type == 'DISCOVERY':
     request.dataDiscoverySpec = GenerateDataDiscoverySpec(args)
+  elif args.scan_type == 'DOCUMENTATION':
+    request.dataDocumentationSpec = GenerateDataDocumentationSpec()
   return request
 
 
@@ -347,6 +355,8 @@ def GenerateDatascanForUpdateRequest(args: parser_extensions.Namespace):
       request.dataQualitySpec = module.GoogleCloudDataplexV1DataQualitySpec()
   elif args.scan_type == 'DISCOVERY':
     request.dataDiscoverySpec = GenerateDataDiscoverySpec(args)
+  elif args.scan_type == 'DOCUMENTATION':
+    request.dataDocumentationSpec = GenerateDataDocumentationSpec()
   return request
 
 
