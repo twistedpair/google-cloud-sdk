@@ -5,6 +5,193 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 547.0.0 (2025-11-11)
+
+### Breaking Changes
+
+*   **(Cloud Storage)** Updated `gcloud storage sign-url` to prefer virtual hosted-style URL over path-style URL. This behavior can be overridden by using `--path-style-url` flag.
+
+
+### Google Cloud CLI
+
+* Fixed issue where Google Compute Engine metadata server requests would fail
+  when refreshing authentication credentials if a proxy was configured and the
+  `no_proxy` environment variable wasn't set.
+* Updated Windows bundled Python for the `gcloud` CLI to 3.13.8.
+
+### Cloud Alerting
+
+*   Promoted `gcloud monitoring alerts describe` to beta.
+
+### Cloud Backup DR
+
+* Added `gcloud backup-dr backups fetch-for-resource-type` command to GA track.
+* Added `gcloud backup-dr data-source-references list` command to GA track.
+
+### Cloud Dataflow
+
+* Added support for Java 25 for `--flex-template-base-image` option in
+  `gcloud dataglow flex_template build`.
+
+### Cloud Interconnect
+
+* Promoted `compute interconnects attachments l2-forwarding` command2 to beta and GA.
+* Added `--resource-manager-tags` flag to `gcloud compute interconnects create`
+  to add Resource Manager Tags to resources at creation.
+* Added `--resource-manager-tags` flag to
+  `gcloud compute interconnects attachments dedicated create`,
+  `gcloud compute interconnects attachments partner create`,
+  `gcloud compute interconnects attachments provider create`,
+  and `gcloud compute interconnects attachments l2-forwarding` commands
+  to add Resource Manager Tags to resources at creation.
+
+### Cloud NetApp
+
+*   Added `gcloud netapp host-groups` command group to GA, including `create`, `delete`, `describe`, `list`, and `update` commands to manage NetApp Host Groups.
+*   Added `--type` flag to `gcloud netapp storage-pools create` to specify the storage pool type (e.g., `UNIFIED`) upon creation.
+*   Added `--block-devices` flag to `gcloud netapp volumes create` and `gcloud netapp volumes update` to manage block device configurations for volumes.
+
+### Cloud On Demand Scanning
+
+* Add support for scanning Minimus (MinimOS) containers.
+
+### Cloud SQL
+
+*   Updated 'cloud-sql-proxy' packaged component to use 2.19.0 of the Cloud SQL
+    Proxy.
+*   Added `--storage-type` flag to `gcloud sql instances patch`.
+
+### Cloud Services
+
+* Promoted `gcloud beta services enable` command to beta to enable services for a given project, folder, or organization.
+
+    **Note**: The organization policy constraint
+    `constraints/serviceuser.services` may not work correctly if you enable a
+    service at the folder or organization level using Service Usage with
+    Hierarchical Service Activation. To recreate the same behavior in a
+    compatible way, it is recommended to replace
+    `constraints/serviceuser.services` with the Restrict Resource Service Usage
+    organization policy.
+
+    **Note**: Previously, enabling some services also triggered service account
+    creation. This logic is now separate. If you encounter a service account not
+    found error, please report this to service-usage-feedback@google.com. You
+    can use `gcloud services enable` or `gcloud beta services identity create`
+    to create the necessary service account.
+
+    **Note**: The command will now return an error if the user attempts to
+    enable a service that is already enabled.
+
+* Promoted `gcloud beta services disable` command to beta to disable services
+for a given project, folder, or organization.
+
+    **Note**: When disabling a service with Hierarchical Service Activation,
+    existing consumer-controlled resources can block the process. Please delete
+    these resources and try again. If resources cannot be deleted, report the
+    issue to the respective service team. Alternatively, use the Restrict
+    Resource Service Usage organization policy constraint to restrict service
+    access.
+
+    **Note**: The command will now return an error if the user attempts to
+    disable a service that is not enabled.
+
+* Promoted `gcloud beta services list` command to beta to list Google Cloud
+services and APIs that are enabled or available for a given project, folder,
+or organization.
+
+    **Note**: Some services previously hidden may now appear in the enabled
+    list with Hierarchical Service Activation. This does not necessarily mean
+    they were newly enabled. They can be disabled using `gcloud beta services
+    disable` if desired.* Promoted `gcloud services groups list-members` command to beta to list the direct members of a specified service dependency group.
+
+* Promoted `gcloud services groups list-members` command to beta to list the direct members of a specified service dependency group.
+* Promoted `gcloud services groups list-expanded-members` command to beta to list all transitive members, including nested dependencies, within a service dependency group.
+* Promoted `gcloud services policies get` command to beta to retrieve the consumer policy for the given project, folder, or organization.
+* Promoted `gcloud services policies get-effective` command to beta to retrieve
+the effective consumer policy for the given project, folder, or organization,
+including policies inherited from ancestors.
+* Promoted `gcloud services policies test-enabled` command to beta to test if a service value is enabled for the given project, folder, or organization, including policies inherited from ancestors.
+* Promoted `gcloud services policies update` command to beta to update the consumer policy for the given project, folder, or organization using a provided file.
+
+    **Note**: Please refer to <https://docs.cloud.google.com/service-usage/docs/hierarchical-service-activation/overview> for more details on hierarchical service activation.
+
+* Promoted `gcloud services mcp enable command` to beta to enable the Model
+Context Protocol (MCP) endpoint for the specified service(s) on the given
+project, folder, or organization.
+* Promoted `gcloud services mcp disable` command to beta to disable the Model
+Context Protocol (MCP) endpoint for the specified service(s) on the given
+project, folder, or organization.
+* Promoted `gcloud services mcp list` command to beta to enumerate the MCP
+endpoints offered, showing them as either enabled or available for the
+given project, folder, or organization.
+* Promoted `gcloud services mcp content-security add` command to beta to add a
+Content Security Provider (e.g., Model Armor) to the given project.
+* Promoted `gcloud services mcp content-security get` command to beta to
+retrieve the current Content Security Provider(s) configured
+for the given project.
+* Promoted `gcloud services mcp content-security remove` command to beta to
+remove a Content Security Provider for the given project.
+
+### Cloud Spanner Emulator
+
+* Add `gcloud emulators spanner notices` command to print third party notices.
+
+### Cloud Storage
+
+*   Added `Retain-Until` and `Retention-Mode` options to `--put-metadata` flag in `gcloud storage batch-operations jobs create` to set object retention.
+* Fixed `gcloud storage sign-url`: The `--region` flag is no longer required for operations on existing buckets, but is still needed when generating a URL to create a bucket.
+
+### Cloud Workstations
+
+* Added support for startup script uri in `beta workstations config create` and `beta workstations config update` command.
+
+### Compute Engine
+
+* Added `--ipv6-access-type` flag to
+  `gcloud beta compute public-advertised-prefixes create`.
+* Added `--ipv6-access-type` flag to
+  `gcloud compute public-advertised-prefixes create`.
+* Added `grpc-with-tls` command group to `gcloud compute health-checks` to allow users to create a new health check type.
+* Added `--internal-ipv6-prefix` flag to
+  `gcloud beta compute networks subnets create` and
+  `gcloud beta compute networks subnets update`.
+* Added `--internal-ipv6-prefix` flag to
+  `gcloud compute networks subnets create` and
+  `gcloud compute networks subnets update`.
+* Support `--mode=internal-ipv6-subnetwork-creation` in
+  `gcloud beta compute public-delegated-prefixes create` and
+  `gcloud beta compute public-delegated-prefixes delegated-sub-prefixes create`
+  commands.
+* Support `--mode=internal-ipv6-subnetwork-creation` in
+  `gcloud compute public-delegated-prefixes create` and
+  `gcloud compute public-delegated-prefixes delegated-sub-prefixes create`
+  commands.
+
+### Kubernetes Engine
+
+* Added `--enable-pod-snapshots` and `--disable-pod-snapshots` flag to `gcloud
+  beta container clusters create|update` commands to enable or disable GKE Pod
+  Snapshot feature.
+
+### Looker
+
+* Added `--egress-enabled`, `--marketplace-enabled`, and `--egress-fqdns` flags
+to `gcloud looker instances update` to manage Controlled Egress settings.
+
+### Model Armor
+
+*   Added the following flags to `gcloud beta model-armor floorsettings update` command to support MCP integrations:
+    *   `--google-mcp-server-enforcement-type`
+    *   `--enable-google-mcp-server-cloud-logging`
+
+### Service Extensions
+
+* Promoted `gcloud service-extensions lb-edge-extensions` command group to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 546.0.0 (2025-11-04)
 
 ### Google Cloud CLI

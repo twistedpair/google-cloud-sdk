@@ -132,7 +132,7 @@ class AlloydbV1beta(base_api.BaseApiClient):
         method_id='alloydb.projects.locations.backups.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['view'],
         relative_path='v1beta/{+name}',
         request_field='',
         request_type_name='AlloydbProjectsLocationsBackupsGetRequest',
@@ -159,7 +159,7 @@ class AlloydbV1beta(base_api.BaseApiClient):
         method_id='alloydb.projects.locations.backups.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'view'],
         relative_path='v1beta/{+parent}/backups',
         request_field='',
         request_type_name='AlloydbProjectsLocationsBackupsListRequest',
@@ -989,6 +989,33 @@ class AlloydbV1beta(base_api.BaseApiClient):
       super(AlloydbV1beta.ProjectsLocationsEndpointsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new Endpoint in a given project and location.
+
+      Args:
+        request: (AlloydbProjectsLocationsEndpointsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/endpoints',
+        http_method='POST',
+        method_id='alloydb.projects.locations.endpoints.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['endpointId', 'requestId', 'validateOnly'],
+        relative_path='v1beta/{+parent}/endpoints',
+        request_field='endpoint',
+        request_type_name='AlloydbProjectsLocationsEndpointsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       r"""Gets details of a single Endpoint.

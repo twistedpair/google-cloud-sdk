@@ -124,7 +124,7 @@ class Application(_messages.Message):
     previewReference: Output only. Preview reference for the application.
     projectParameters: Output only. List of project parameters for the
       application.
-    scope: Optional. Scope of the application.
+    scope: Required. Scope of the application.
     serializedApplicationTemplate: Output only. [Output only] Serialized
       application template.
     serviceAccount: Optional. Your own service account that you use to deploy
@@ -525,15 +525,17 @@ class CatalogTemplate(_messages.Message):
 
     Values:
       TEMPLATE_CATEGORY_UNSPECIFIED: Unspecified category.
-      COMPONENT_TEMPLATE: ADC component.
-      APPLICATION_TEMPLATE: ADC application.
+      COMPONENT_TEMPLATE: ADC component template.
+      APPLICATION_TEMPLATE: ADC application template.
       COMPOSITE_SOLUTION_TEMPLATE: Imported as a single, complex unit without
         disassembling into components.
+      INSTANCE_TEMPLATE: ADC application instance.
     """
     TEMPLATE_CATEGORY_UNSPECIFIED = 0
     COMPONENT_TEMPLATE = 1
     APPLICATION_TEMPLATE = 2
     COMPOSITE_SOLUTION_TEMPLATE = 3
+    INSTANCE_TEMPLATE = 4
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Optional. The Application Design Center assembly template type.
@@ -549,6 +551,9 @@ class CatalogTemplate(_messages.Message):
       JSS_SOLUTION: A Jumpstart Solution template.
       SERVICE_DATA_SOURCE: A service data source template.
       HELM_APPLICATION: A helm chart based template.
+      STANDARD_APPLICATION_TEMPLATE: A standard application template.
+      COMPOSITE_APPLICATION_TEMPLATE: A composite application template.
+      HELM_CHART: A helm chart based template.
     """
     TEMPLATE_TYPE_UNSPECIFIED = 0
     SERVICE = 1
@@ -558,6 +563,9 @@ class CatalogTemplate(_messages.Message):
     JSS_SOLUTION = 5
     SERVICE_DATA_SOURCE = 6
     HELM_APPLICATION = 7
+    STANDARD_APPLICATION_TEMPLATE = 8
+    COMPOSITE_APPLICATION_TEMPLATE = 9
+    HELM_CHART = 10
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
@@ -629,15 +637,17 @@ class CatalogTemplateRevision(_messages.Message):
 
     Values:
       TEMPLATE_CATEGORY_UNSPECIFIED: Unspecified category.
-      COMPONENT_TEMPLATE: ADC component.
-      APPLICATION_TEMPLATE: ADC application.
+      COMPONENT_TEMPLATE: ADC component template.
+      APPLICATION_TEMPLATE: ADC application template.
       COMPOSITE_SOLUTION_TEMPLATE: Imported as a single, complex unit without
         disassembling into components.
+      INSTANCE_TEMPLATE: ADC application instance.
     """
     TEMPLATE_CATEGORY_UNSPECIFIED = 0
     COMPONENT_TEMPLATE = 1
     APPLICATION_TEMPLATE = 2
     COMPOSITE_SOLUTION_TEMPLATE = 3
+    INSTANCE_TEMPLATE = 4
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Optional. The Application Design Center assembly template type.
@@ -653,6 +663,9 @@ class CatalogTemplateRevision(_messages.Message):
       JSS_SOLUTION: A Jumpstart Solution template.
       SERVICE_DATA_SOURCE: A service data source template.
       HELM_APPLICATION: A helm chart based template.
+      STANDARD_APPLICATION_TEMPLATE: A standard application template.
+      COMPOSITE_APPLICATION_TEMPLATE: A composite application template.
+      HELM_CHART: A helm chart based template.
     """
     TEMPLATE_TYPE_UNSPECIFIED = 0
     SERVICE = 1
@@ -662,6 +675,9 @@ class CatalogTemplateRevision(_messages.Message):
     JSS_SOLUTION = 5
     SERVICE_DATA_SOURCE = 6
     HELM_APPLICATION = 7
+    STANDARD_APPLICATION_TEMPLATE = 8
+    COMPOSITE_APPLICATION_TEMPLATE = 9
+    HELM_CHART = 10
 
   applicationTemplateRevision = _messages.MessageField('SerializedApplicationTemplate', 1)
   applicationTemplateRevisionSource = _messages.StringField(2)
@@ -3933,15 +3949,17 @@ class SharedTemplate(_messages.Message):
 
     Values:
       TEMPLATE_CATEGORY_UNSPECIFIED: Unspecified category.
-      COMPONENT_TEMPLATE: ADC component.
-      APPLICATION_TEMPLATE: ADC application.
+      COMPONENT_TEMPLATE: ADC component template.
+      APPLICATION_TEMPLATE: ADC application template.
       COMPOSITE_SOLUTION_TEMPLATE: Imported as a single, complex unit without
         disassembling into components.
+      INSTANCE_TEMPLATE: ADC application instance.
     """
     TEMPLATE_CATEGORY_UNSPECIFIED = 0
     COMPONENT_TEMPLATE = 1
     APPLICATION_TEMPLATE = 2
     COMPOSITE_SOLUTION_TEMPLATE = 3
+    INSTANCE_TEMPLATE = 4
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Optional. The Application Design Center assembly template type.
@@ -3957,6 +3975,9 @@ class SharedTemplate(_messages.Message):
       JSS_SOLUTION: A Jumpstart Solution template.
       SERVICE_DATA_SOURCE: A service data source template.
       HELM_APPLICATION: A helm chart based template.
+      STANDARD_APPLICATION_TEMPLATE: A standard application template.
+      COMPOSITE_APPLICATION_TEMPLATE: A composite application template.
+      HELM_CHART: A helm chart based template.
     """
     TEMPLATE_TYPE_UNSPECIFIED = 0
     SERVICE = 1
@@ -3966,6 +3987,9 @@ class SharedTemplate(_messages.Message):
     JSS_SOLUTION = 5
     SERVICE_DATA_SOURCE = 6
     HELM_APPLICATION = 7
+    STANDARD_APPLICATION_TEMPLATE = 8
+    COMPOSITE_APPLICATION_TEMPLATE = 9
+    HELM_CHART = 10
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
@@ -4018,15 +4042,17 @@ class SharedTemplateRevision(_messages.Message):
 
     Values:
       TEMPLATE_CATEGORY_UNSPECIFIED: Unspecified category.
-      COMPONENT_TEMPLATE: ADC component.
-      APPLICATION_TEMPLATE: ADC application.
+      COMPONENT_TEMPLATE: ADC component template.
+      APPLICATION_TEMPLATE: ADC application template.
       COMPOSITE_SOLUTION_TEMPLATE: Imported as a single, complex unit without
         disassembling into components.
+      INSTANCE_TEMPLATE: ADC application instance.
     """
     TEMPLATE_CATEGORY_UNSPECIFIED = 0
     COMPONENT_TEMPLATE = 1
     APPLICATION_TEMPLATE = 2
     COMPOSITE_SOLUTION_TEMPLATE = 3
+    INSTANCE_TEMPLATE = 4
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Optional. The Application Design Center assembly template type.
@@ -4042,6 +4068,9 @@ class SharedTemplateRevision(_messages.Message):
       JSS_SOLUTION: A Jumpstart Solution template.
       SERVICE_DATA_SOURCE: A service data source template.
       HELM_APPLICATION: A helm chart based template.
+      STANDARD_APPLICATION_TEMPLATE: A standard application template.
+      COMPOSITE_APPLICATION_TEMPLATE: A composite application template.
+      HELM_CHART: A helm chart based template.
     """
     TEMPLATE_TYPE_UNSPECIFIED = 0
     SERVICE = 1
@@ -4051,6 +4080,9 @@ class SharedTemplateRevision(_messages.Message):
     JSS_SOLUTION = 5
     SERVICE_DATA_SOURCE = 6
     HELM_APPLICATION = 7
+    STANDARD_APPLICATION_TEMPLATE = 8
+    COMPOSITE_APPLICATION_TEMPLATE = 9
+    HELM_CHART = 10
 
   applicationTemplateRevision = _messages.MessageField('SerializedApplicationTemplate', 1)
   applicationTemplateRevisionSource = _messages.StringField(2)

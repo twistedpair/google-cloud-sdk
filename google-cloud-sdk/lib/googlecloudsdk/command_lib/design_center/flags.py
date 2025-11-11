@@ -22,6 +22,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.core import yaml
 
 
 def GetProjectResourceSpec():
@@ -71,7 +72,6 @@ def GetLocationResourceArg(
     required=True,
 ):
   """Constructs and returns the Location Resource Argument."""
-
   help_text = help_text or 'Location.'
 
   return concept_parsers.ConceptParser.ForResource(
@@ -84,7 +84,6 @@ def GetLocationResourceArg(
 
 def SpaceResourceAttributeConfig(arg_name, help_text):
   """Helper function for constructing ResourceAttributeConfig."""
-
   return concepts.ResourceParameterAttributeConfig(
       name=arg_name,
       help_text=help_text,
@@ -93,7 +92,6 @@ def SpaceResourceAttributeConfig(arg_name, help_text):
 
 def GetSpaceResourceSpec(arg_name='space', help_text=None):
   """Constructs and returns the Resource specification for Space."""
-
   return concepts.ResourceSpec(
       'designcenter.projects.locations.spaces',
       resource_name='space',
@@ -107,7 +105,6 @@ def GetSpaceResourceArg(
     arg_name='space', help_text=None, positional=True, required=True
 ):
   """Constructs and returns the Space ID Resource Argument."""
-
   help_text = help_text or 'The Space ID.'
 
   return concept_parsers.ConceptParser.ForResource(
@@ -353,3 +350,85 @@ def AddInferConnectionsFlags(parser):
       default=False,
       help='Use Gemini to infer connections.',
   )
+def GetApplicationTemplateResourceSpec(arg_name='application_template_id'):
+  """Constructs and returns the Resource specification for Application Template."""
+  return concepts.ResourceSpec(
+      'designcenter.projects.locations.spaces.applicationTemplates',
+      resource_name='application_template',
+      applicationTemplatesId=concepts.ResourceParameterAttributeConfig(
+          name=arg_name, help_text='The ID of the application template.'
+      ),
+      spacesId=SpaceResourceAttributeConfig('space', 'The ID of the space.'),
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
+
+
+def AddApplicationTemplateResourceArg(parser, verb):
+  """Adds the Application Template resource argument to the given parser."""
+  concept_parsers.ConceptParser.ForResource(
+      'APPLICATION_TEMPLATE',
+      GetApplicationTemplateResourceSpec(),
+      'The application template {} IaC.'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def GetApplicationResourceSpec(arg_name='application'):
+  """Constructs and returns the Resource specification for Application."""
+  return concepts.ResourceSpec(
+      'designcenter.projects.locations.spaces.applications',
+      resource_name='application',
+      applicationsId=concepts.ResourceParameterAttributeConfig(
+          name=arg_name, help_text='The ID of the application.'
+      ),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      spacesId=SpaceResourceAttributeConfig('space', 'The ID of the space.'),
+  )
+
+
+def AddApplicationResourceArg(parser, verb):
+  """Adds the Application resource argument to the given parser."""
+  concept_parsers.ConceptParser.ForResource(
+      'APPLICATION',
+      GetApplicationResourceSpec(),
+      'The application {} IaC.'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def AddImportIacFlags(parser):
+  """Adds flags for import-iac commands to the given parser."""
+  source_group = parser.add_mutually_exclusive_group(required=True)
+  source_group.add_argument(
+      '--gcs-uri',
+      help=('The Cloud Storage URI of the Terraform code '
+            '(e.g., gs://my-bucket/iac).'),
+  )
+  source_group.add_argument(
+      '--iac-module-from-file',
+      type=arg_parsers.FileContents(),
+      help=('Path to a local YAML or JSON file containing the IaC module '
+            'definition.'),
+  )
+  parser.add_argument(
+      '--allow-partial-import',
+      action='store_true',
+      default=False,
+      help=('If set, partially import valid IaC changes and ignore invalid '
+            'ones.'),
+  )
+  parser.add_argument(
+      '--validate-iac',
+      action='store_true',
+      default=False,
+      help='Validate the IaC without performing the import.',
+  )
+
+
+def ParseIacModuleFile(file_contents):
+  """Parses YAML or JSON file contents into a Python dict."""
+  try:
+    return yaml.load(file_contents)
+  except Exception as e:
+    raise arg_parsers.ArgumentTypeError(
+        'Failed to parse IaC module file: {}'.format(e))

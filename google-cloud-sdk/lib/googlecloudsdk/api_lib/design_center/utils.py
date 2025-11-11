@@ -177,3 +177,21 @@ def WaitForOperationWithEmbeddedResult(
       message=message,
       max_wait_ms=max_wait_sec * 1000,
   )
+
+
+def ParseIaCModuleData(client, iac_module_data):
+    """Parses dict data into an IaCModule message."""
+    if not isinstance(iac_module_data, dict) or 'files' not in iac_module_data:
+      raise ValueError('Invalid IaC module format. Expected a dictionary with a "files" key.')
+
+    iac_files = []
+    for file_data in iac_module_data['files']:
+      if not isinstance(file_data, dict) or 'name' not in file_data:
+        raise ValueError('Each file in IaC module must have a "name".')
+      iac_file = client.messages.IaCFile(
+          name=file_data['name'],
+          content=file_data.get('content') or ''
+      )
+      iac_files.append(iac_file)
+
+    return client.messages.IaCModule(files=iac_files)

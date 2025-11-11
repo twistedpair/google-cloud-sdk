@@ -12652,6 +12652,34 @@ project.
         supports_download=False,
     )
 
+    def CancelRequestRemovePeering(self, request, global_params=None):
+      r"""Cancel requests to remove a peering from the specified network. Applicable.
+only for PeeringConnection with update_strategy=CONSENSUS.  Cancels a
+request to remove a peering from the specified network.
+
+      Args:
+        request: (ComputeNetworksCancelRequestRemovePeeringRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CancelRequestRemovePeering')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CancelRequestRemovePeering.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.networks.cancelRequestRemovePeering',
+        ordered_params=['project', 'network'],
+        path_params=['network', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/networks/{network}/cancelRequestRemovePeering',
+        request_field='networksCancelRequestRemovePeeringRequest',
+        request_type_name='ComputeNetworksCancelRequestRemovePeeringRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes the specified network.
 

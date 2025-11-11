@@ -59,11 +59,45 @@ def ListOccurrences(response, args):
   if not args.show_package_vulnerability:
     return response
 
-  # TODO(b/246801021) Assume all versions are mavenArtifacts until versions API
-  # is aware of the package type.
-  project, maven_resource = _GenerateMavenResourceFromResponse(response)
+  resource = resources.REGISTRY.ParseRelativeName(
+      response["name"],
+      "artifactregistry.projects.locations.repositories.packages.versions",
+  )
 
-  metadata = ca_util.GetMavenArtifactOccurrences(project, maven_resource)
+  repo_resource = resources.REGISTRY.Parse(
+      resource.repositoriesId,
+      params={
+          "projectsId": resource.projectsId,
+          "locationsId": (
+              resource.locationsId
+          ),
+      },
+      collection="artifactregistry.projects.locations.repositories",
+  )
+
+  messages = requests.GetMessages()
+  repository = requests.GetRepository(repo_resource.RelativeName())
+
+  if not repository or not repository.format:
+    log.warning(
+        "Could not determine repository format, so cannot show vulnerability"
+        " scan."
+    )
+    return response
+
+  if repository.format == messages.Repository.FormatValueValuesEnum.MAVEN:
+    project, resource = _GenerateMavenResourceFromResponse(resource)
+  elif repository.format == messages.Repository.FormatValueValuesEnum.NPM:
+    project, resource = _GenerateNPMPackageResourceFromResponse(resource)
+  elif repository.format == messages.Repository.FormatValueValuesEnum.PYTHON:
+    project, resource = _GeneratePythonPackageResourceFromResponse(resource)
+  else:
+    log.warning(
+        "Unsupported repository format. Skipping showing vulnerability scan."
+    )
+    return response
+
+  metadata = ca_util.GetArtifactOccurrences(project, resource)
 
   if metadata.ArtifactsDescribeView():
     response.update(metadata.ArtifactsDescribeView())
@@ -100,30 +134,83 @@ def ConvertFingerprint(response, unused_args):
   return resource
 
 
-def _GenerateMavenResourceFromResponse(response):
-  """Convert Versions Describe Response to maven artifact resource name."""
-  r = resources.REGISTRY.ParseRelativeName(
-      response["name"],
-      "artifactregistry.projects.locations.repositories.packages.versions",
-  )
+def _GenerateMavenResourceFromResponse(resource):
+  """Generates the maven artifact resource  from the version resource name.
 
-  # mavenArtifacts is only present in the v1 API, not the default v1beta2 API
+  Args:
+    resource: The version resource name.
+
+  Returns:
+    The project ID and the maven artifact package resource name.
+  """
+
   registry = resources.REGISTRY.Clone()
   registry.RegisterApiByName("artifactregistry", "v1")
 
-  maven_artifacts_id = r.packagesId + ":" + r.versionsId
+  maven_artifacts_id = resource.packagesId + ":" + resource.versionsId
 
   maven_resource = resources.Resource.RelativeName(
       registry.Create(
           "artifactregistry.projects.locations.repositories.mavenArtifacts",
-          projectsId=r.projectsId,
-          locationsId=r.locationsId,
-          repositoriesId=r.repositoriesId,
+          projectsId=resource.projectsId,
+          locationsId=resource.locationsId,
+          repositoriesId=resource.repositoriesId,
           mavenArtifactsId=maven_artifacts_id,
       )
   )
+  return resource.projectsId, maven_resource
 
-  return r.projectsId, maven_resource
+
+def _GenerateNPMPackageResourceFromResponse(resource):
+  """Generates the npm package resource from the version resource name.
+
+  Args:
+    resource: The version resource name.
+
+  Returns:
+    The project ID and the npm package resource name.
+  """
+  registry = resources.REGISTRY.Clone()
+  registry.RegisterApiByName("artifactregistry", "v1")
+
+  npm_package_id = resource.packagesId + ":" + resource.versionsId
+
+  npm_resource = resources.Resource.RelativeName(
+      registry.Create(
+          "artifactregistry.projects.locations.repositories.npmPackages",
+          projectsId=resource.projectsId,
+          locationsId=resource.locationsId,
+          repositoriesId=resource.repositoriesId,
+          npmPackagesId=npm_package_id,
+      )
+  )
+  return resource.projectsId, npm_resource
+
+
+def _GeneratePythonPackageResourceFromResponse(resource):
+  """Generates the python package resource  from the version resource name.
+
+  Args:
+    resource: The version resource name.
+
+  Returns:
+    The project ID and the python package resource name.
+  """
+  registry = resources.REGISTRY.Clone()
+  registry.RegisterApiByName("artifactregistry", "v1")
+
+  python_package_id = resource.packagesId + ":" + resource.versionsId
+
+  python_resource = resources.Resource.RelativeName(
+      registry.Create(
+          "artifactregistry.projects.locations.repositories.pythonPackages",
+          projectsId=resource.projectsId,
+          locationsId=resource.locationsId,
+          repositoriesId=resource.repositoriesId,
+          pythonPackagesId=python_package_id,
+      )
+  )
+  return resource.projectsId, python_resource
 
 
 def ListVersions(args):

@@ -1046,9 +1046,10 @@ class CustomMirroringProfile(_messages.Message):
       MirroringDeploymentGroups. This field is used for Packet Broker
       mirroring endpoint groups to specify the deployment groups that the
       packet should be mirrored to by the broker.
-    mirroringEndpointGroup: Required. The target MirroringEndpointGroup. When
-      a mirroring rule with this security profile attached matches a packet, a
-      replica will be mirrored to the location-local target in this group.
+    mirroringEndpointGroup: Required. Immutable. The target
+      MirroringEndpointGroup. When a mirroring rule with this security profile
+      attached matches a packet, a replica will be mirrored to the location-
+      local target in this group.
     mirroringEndpointGroupType: Output only.
   """
 
@@ -1313,6 +1314,11 @@ class FirewallEndpoint(_messages.Message):
       party firewall endpoints.
     jumboFramesEnabled: Optional. Immutable. Indicates whether Jumbo Frames
       are enabled. Default value is false.
+    kmsKey: Optional. Immutable. The resource name of the KMS key used for
+      CMEK encryption. If no key is specified, Google-managed encryption keys
+      are used. The key must be in the same region as the endpoint. Format: pr
+      ojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{ke
+      y}
     labels: Optional. Labels as key value pairs
     name: Immutable. Identifier. Name of resource.
     reconciling: Output only. Whether reconciling is in progress, recommended
@@ -1387,16 +1393,17 @@ class FirewallEndpoint(_messages.Message):
   endpointSettings = _messages.MessageField('FirewallEndpointEndpointSettings', 6)
   firstPartyEndpointSettings = _messages.MessageField('FirstPartyEndpointSettings', 7)
   jumboFramesEnabled = _messages.BooleanField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  reconciling = _messages.BooleanField(11)
-  satisfiesPzi = _messages.BooleanField(12)
-  satisfiesPzs = _messages.BooleanField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  thirdPartyEndpointSettings = _messages.MessageField('ThirdPartyEndpointSettings', 15)
-  type = _messages.EnumField('TypeValueValuesEnum', 16)
-  updateTime = _messages.StringField(17)
-  wildfireSettings = _messages.MessageField('FirewallEndpointWildfireSettings', 18)
+  kmsKey = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  name = _messages.StringField(11)
+  reconciling = _messages.BooleanField(12)
+  satisfiesPzi = _messages.BooleanField(13)
+  satisfiesPzs = _messages.BooleanField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  thirdPartyEndpointSettings = _messages.MessageField('ThirdPartyEndpointSettings', 16)
+  type = _messages.EnumField('TypeValueValuesEnum', 17)
+  updateTime = _messages.StringField(18)
+  wildfireSettings = _messages.MessageField('FirewallEndpointWildfireSettings', 19)
 
 
 class FirewallEndpointAssociation(_messages.Message):

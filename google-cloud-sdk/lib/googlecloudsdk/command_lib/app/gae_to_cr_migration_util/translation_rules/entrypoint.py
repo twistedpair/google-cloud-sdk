@@ -25,7 +25,7 @@ _DEFAULT_PYTHON_ENTRYPOINT = 'gunicorn -b :$PORT main:app'
 _DEFAULT_RUBY_ENTRYPOINT = 'bundle exec ruby app.rb -o 0.0.0.0'
 _DEFAULT_ENTRYPOINT_INFO_FORMAT = (
     '[Info] Default entrypoint for %s is : "%s", retry'
-    ' `gcloud app migrate appengine-to-cloudrun` with the'
+    ' `gcloud app migrate-to-run` with the'
     ' --entrypoint="%s" flag.\n'
 )
 

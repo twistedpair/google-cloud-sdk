@@ -1635,10 +1635,10 @@ class DockerImage(_messages.Message):
   (i.e. metadata.imageSizeBytes): * imageSizeBytes * mediaType * buildTime
 
   Fields:
-    artifactType: ArtifactType type of this image, e.g.
-      "application/vnd.example+type". If the `subject` is set and no
-      `artifactType` is given, the `mediaType` will be considered as the
-      `artifactType`. This field is returned as the `metadata.artifactType`
+    artifactType: ArtifactType of this image, e.g.
+      "application/vnd.example+type". If the `subject_digest` is set and no
+      `artifact_type` is given, the `media_type` will be considered as the
+      `artifact_type`. This field is returned as the `metadata.artifactType`
       field in the Version resource.
     buildTime: The time this image was built. This field is returned as the
       'metadata.buildTime' field in the Version resource. The build time is

@@ -240,7 +240,9 @@ def Create(
     autoscaling_max_processing_units: The maximum number of processing units to
       use.
     autoscaling_high_priority_cpu_target: The high priority CPU target to use.
-    autoscaling_total_cpu_target: The total CPU target to use.
+      Zero is a valid value.
+    autoscaling_total_cpu_target: The total CPU target to use. Zero is a valid
+      value.
     autoscaling_storage_target: The storage target to use.
     asymmetric_autoscaling_options: A list of ordered dict of key-value pairs
       representing the asymmetric autoscaling options.
@@ -279,8 +281,8 @@ def Create(
       or autoscaling_max_nodes
       or autoscaling_min_processing_units
       or autoscaling_max_processing_units
-      or autoscaling_high_priority_cpu_target
-      or autoscaling_total_cpu_target
+      or autoscaling_high_priority_cpu_target is not None
+      or autoscaling_total_cpu_target is not None
       or autoscaling_storage_target
       or disable_downscaling is not None
   ):
@@ -448,7 +450,8 @@ def Patch(
   if (
       (autoscaling_min_nodes and autoscaling_max_nodes)
       or (autoscaling_min_processing_units and autoscaling_max_processing_units)
-  ) and ((autoscaling_high_priority_cpu_target or autoscaling_total_cpu_target)
+  ) and ((autoscaling_high_priority_cpu_target is not None or
+          autoscaling_total_cpu_target is not None)
          and autoscaling_storage_target):
     fields.append(_FIELD_MASK_AUTOSCALING_CONFIG)
   else:
@@ -460,11 +463,11 @@ def Patch(
       fields.append('autoscalingConfig.autoscalingLimits.minProcessingUnits')
     if autoscaling_max_processing_units:
       fields.append('autoscalingConfig.autoscalingLimits.maxProcessingUnits')
-    if autoscaling_high_priority_cpu_target:
+    if autoscaling_high_priority_cpu_target is not None:
       fields.append(
           'autoscalingConfig.autoscalingTargets.highPriorityCpuUtilizationPercent'
       )
-    if autoscaling_total_cpu_target:
+    if autoscaling_total_cpu_target is not None:
       fields.append(
           'autoscalingConfig.autoscalingTargets.totalCpuUtilizationPercent'
       )
@@ -487,8 +490,8 @@ def Patch(
       or autoscaling_max_nodes
       or autoscaling_min_processing_units
       or autoscaling_max_processing_units
-      or autoscaling_high_priority_cpu_target
-      or autoscaling_total_cpu_target
+      or autoscaling_high_priority_cpu_target is not None
+      or autoscaling_total_cpu_target is not None
       or autoscaling_storage_target
       or disable_downscaling is not None
   ):

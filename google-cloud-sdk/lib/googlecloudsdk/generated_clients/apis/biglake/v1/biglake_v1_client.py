@@ -50,7 +50,6 @@ class BiglakeV1(base_api.BaseApiClient):
     self.iceberg_v1_restcatalog = self.IcebergV1RestcatalogService(self)
     self.iceberg_v1 = self.IcebergV1Service(self)
     self.iceberg = self.IcebergService(self)
-    self.projects_catalogs_namespaces_tables = self.ProjectsCatalogsNamespacesTablesService(self)
     self.projects_catalogs_namespaces = self.ProjectsCatalogsNamespacesService(self)
     self.projects_catalogs = self.ProjectsCatalogsService(self)
     self.projects = self.ProjectsService(self)
@@ -703,70 +702,6 @@ class BiglakeV1(base_api.BaseApiClient):
       super(BiglakeV1.IcebergService, self).__init__(client)
       self._upload_configs = {
           }
-
-  class ProjectsCatalogsNamespacesTablesService(base_api.BaseApiService):
-    """Service class for the projects_catalogs_namespaces_tables resource."""
-
-    _NAME = 'projects_catalogs_namespaces_tables'
-
-    def __init__(self, client):
-      super(BiglakeV1.ProjectsCatalogsNamespacesTablesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the IAM policy for the specified Catalog.
-
-      Args:
-        request: (BiglakeProjectsCatalogsNamespacesTablesGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/catalogs/{catalogsId}/namespaces/{namespacesId}/tables/{tablesId}:getIamPolicy',
-        http_method='GET',
-        method_id='biglake.projects.catalogs.namespaces.tables.getIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=['options_requestedPolicyVersion'],
-        relative_path='v1/{+resource}:getIamPolicy',
-        request_field='',
-        request_type_name='BiglakeProjectsCatalogsNamespacesTablesGetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the IAM policy for the specified catalog.
-
-      Args:
-        request: (BiglakeProjectsCatalogsNamespacesTablesSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/catalogs/{catalogsId}/namespaces/{namespacesId}/tables/{tablesId}:setIamPolicy',
-        http_method='POST',
-        method_id='biglake.projects.catalogs.namespaces.tables.setIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1/{+resource}:setIamPolicy',
-        request_field='setIamPolicyRequest',
-        request_type_name='BiglakeProjectsCatalogsNamespacesTablesSetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
 
   class ProjectsCatalogsNamespacesService(base_api.BaseApiService):
     """Service class for the projects_catalogs_namespaces resource."""

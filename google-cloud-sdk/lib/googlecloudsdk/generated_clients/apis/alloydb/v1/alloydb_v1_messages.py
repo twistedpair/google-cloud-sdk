@@ -86,15 +86,38 @@ class AlloydbProjectsLocationsBackupsDeleteRequest(_messages.Message):
 class AlloydbProjectsLocationsBackupsGetRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsBackupsGetRequest object.
 
+  Enums:
+    ViewValueValuesEnum: Optional. The view of the backup to return.
+
   Fields:
     name: Required. Name of the resource
+    view: Optional. The view of the backup to return.
   """
 
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. The view of the backup to return.
+
+    Values:
+      BACKUP_VIEW_UNSPECIFIED: Value unspecified, equivalent to BASIC.
+      BACKUP_VIEW_BASIC: Responses include all fields that aren't explicitly
+        gated behind another view.
+      BACKUP_VIEW_CLUSTER_DELETED: Response include all the field from BASIC
+        plus the field cluster_deleted, which specifies if the cluster
+        corresponding to this backup is deleted.
+    """
+    BACKUP_VIEW_UNSPECIFIED = 0
+    BACKUP_VIEW_BASIC = 1
+    BACKUP_VIEW_CLUSTER_DELETED = 2
+
   name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
 
 
 class AlloydbProjectsLocationsBackupsListRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsBackupsListRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Optional. The view of the backup to return.
 
   Fields:
     filter: Filtering results
@@ -103,13 +126,30 @@ class AlloydbProjectsLocationsBackupsListRequest(_messages.Message):
       requested. If unspecified, server will pick an appropriate default.
     pageToken: A token identifying a page of results the server should return.
     parent: Required. Parent value for ListBackupsRequest
+    view: Optional. The view of the backup to return.
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. The view of the backup to return.
+
+    Values:
+      BACKUP_VIEW_UNSPECIFIED: Value unspecified, equivalent to BASIC.
+      BACKUP_VIEW_BASIC: Responses include all fields that aren't explicitly
+        gated behind another view.
+      BACKUP_VIEW_CLUSTER_DELETED: Response include all the field from BASIC
+        plus the field cluster_deleted, which specifies if the cluster
+        corresponding to this backup is deleted.
+    """
+    BACKUP_VIEW_UNSPECIFIED = 0
+    BACKUP_VIEW_BASIC = 1
+    BACKUP_VIEW_CLUSTER_DELETED = 2
 
   filter = _messages.StringField(1)
   orderBy = _messages.StringField(2)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 6)
 
 
 class AlloydbProjectsLocationsBackupsPatchRequest(_messages.Message):
@@ -1450,6 +1490,9 @@ class Cluster(_messages.Message):
       version. This is an optional field and it is populated at the Cluster
       creation time. If a database version is not supplied at cluster creation
       time, then a default database version will be used.
+    MaintenanceVersionSelectionPolicyValueValuesEnum: Input only. Policy to
+      use to automatically select the maintenance version to which to update
+      the cluster's instances.
     StateValueValuesEnum: Output only. The current serving state of the
       cluster.
     SubscriptionTypeValueValuesEnum: Optional. Subscription type of the
@@ -1511,6 +1554,9 @@ class Cluster(_messages.Message):
       set.
     maintenanceUpdatePolicy: Optional. The maintenance update policy
       determines when to allow or deny updates.
+    maintenanceVersionSelectionPolicy: Input only. Policy to use to
+      automatically select the maintenance version to which to update the
+      cluster's instances.
     migrationSource: Output only. Cluster created via DMS migration.
     name: Output only. The name of the cluster resource with the format: *
       projects/{project}/locations/{region}/clusters/{cluster_id} where the
@@ -1587,6 +1633,22 @@ class Cluster(_messages.Message):
     POSTGRES_15 = 3
     POSTGRES_16 = 4
     POSTGRES_17 = 5
+
+  class MaintenanceVersionSelectionPolicyValueValuesEnum(_messages.Enum):
+    r"""Input only. Policy to use to automatically select the maintenance
+    version to which to update the cluster's instances.
+
+    Values:
+      MAINTENANCE_VERSION_SELECTION_POLICY_UNSPECIFIED: The maintenance
+        version selection policy is not specified.
+      MAINTENANCE_VERSION_SELECTION_POLICY_LATEST: Use the latest available
+        maintenance version.
+      MAINTENANCE_VERSION_SELECTION_POLICY_DEFAULT: Use the current default
+        maintenance version.
+    """
+    MAINTENANCE_VERSION_SELECTION_POLICY_UNSPECIFIED = 0
+    MAINTENANCE_VERSION_SELECTION_POLICY_LATEST = 1
+    MAINTENANCE_VERSION_SELECTION_POLICY_DEFAULT = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current serving state of the cluster.
@@ -1730,22 +1792,23 @@ class Cluster(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 19)
   maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 20)
   maintenanceUpdatePolicy = _messages.MessageField('MaintenanceUpdatePolicy', 21)
-  migrationSource = _messages.MessageField('MigrationSource', 22)
-  name = _messages.StringField(23)
-  network = _messages.StringField(24)
-  networkConfig = _messages.MessageField('NetworkConfig', 25)
-  primaryConfig = _messages.MessageField('PrimaryConfig', 26)
-  pscConfig = _messages.MessageField('PscConfig', 27)
-  reconciling = _messages.BooleanField(28)
-  satisfiesPzs = _messages.BooleanField(29)
-  secondaryConfig = _messages.MessageField('SecondaryConfig', 30)
-  sslConfig = _messages.MessageField('SslConfig', 31)
-  state = _messages.EnumField('StateValueValuesEnum', 32)
-  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 33)
-  tags = _messages.MessageField('TagsValue', 34)
-  trialMetadata = _messages.MessageField('TrialMetadata', 35)
-  uid = _messages.StringField(36)
-  updateTime = _messages.StringField(37)
+  maintenanceVersionSelectionPolicy = _messages.EnumField('MaintenanceVersionSelectionPolicyValueValuesEnum', 22)
+  migrationSource = _messages.MessageField('MigrationSource', 23)
+  name = _messages.StringField(24)
+  network = _messages.StringField(25)
+  networkConfig = _messages.MessageField('NetworkConfig', 26)
+  primaryConfig = _messages.MessageField('PrimaryConfig', 27)
+  pscConfig = _messages.MessageField('PscConfig', 28)
+  reconciling = _messages.BooleanField(29)
+  satisfiesPzs = _messages.BooleanField(30)
+  secondaryConfig = _messages.MessageField('SecondaryConfig', 31)
+  sslConfig = _messages.MessageField('SslConfig', 32)
+  state = _messages.EnumField('StateValueValuesEnum', 33)
+  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 34)
+  tags = _messages.MessageField('TagsValue', 35)
+  trialMetadata = _messages.MessageField('TrialMetadata', 36)
+  uid = _messages.StringField(37)
+  updateTime = _messages.StringField(38)
 
 
 class ClusterUpgradeDetails(_messages.Message):
@@ -2501,6 +2564,9 @@ class Instance(_messages.Message):
     labels: Labels as key value pairs
     machineConfig: Configurations for the machines that host the underlying
       database engine.
+    maintenanceVersionName: Output only. Maintenance version of the instance,
+      for example: POSTGRES_15.2025_07_15.04_00. Output only. Update this
+      field via the parent cluster's maintenance_version field(s).
     name: Output only. The name of the instance resource with the format: * pr
       ojects/{project}/locations/{region}/clusters/{cluster_id}/instances/{ins
       tance_id} where the cluster and instance ID segments should satisfy the
@@ -2723,21 +2789,22 @@ class Instance(_messages.Message):
   ipAddress = _messages.StringField(13)
   labels = _messages.MessageField('LabelsValue', 14)
   machineConfig = _messages.MessageField('MachineConfig', 15)
-  name = _messages.StringField(16)
-  networkConfig = _messages.MessageField('InstanceNetworkConfig', 17)
-  nodes = _messages.MessageField('Node', 18, repeated=True)
-  observabilityConfig = _messages.MessageField('ObservabilityInstanceConfig', 19)
-  outboundPublicIpAddresses = _messages.StringField(20, repeated=True)
-  pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 21)
-  publicIpAddress = _messages.StringField(22)
-  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 23)
-  readPoolConfig = _messages.MessageField('ReadPoolConfig', 24)
-  reconciling = _messages.BooleanField(25)
-  satisfiesPzs = _messages.BooleanField(26)
-  state = _messages.EnumField('StateValueValuesEnum', 27)
-  uid = _messages.StringField(28)
-  updateTime = _messages.StringField(29)
-  writableNode = _messages.MessageField('Node', 30)
+  maintenanceVersionName = _messages.StringField(16)
+  name = _messages.StringField(17)
+  networkConfig = _messages.MessageField('InstanceNetworkConfig', 18)
+  nodes = _messages.MessageField('Node', 19, repeated=True)
+  observabilityConfig = _messages.MessageField('ObservabilityInstanceConfig', 20)
+  outboundPublicIpAddresses = _messages.StringField(21, repeated=True)
+  pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 22)
+  publicIpAddress = _messages.StringField(23)
+  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 24)
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 25)
+  reconciling = _messages.BooleanField(26)
+  satisfiesPzs = _messages.BooleanField(27)
+  state = _messages.EnumField('StateValueValuesEnum', 28)
+  uid = _messages.StringField(29)
+  updateTime = _messages.StringField(30)
+  writableNode = _messages.MessageField('Node', 31)
 
 
 class InstanceNetworkConfig(_messages.Message):
@@ -4768,7 +4835,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Message):
-  r"""Common model for database resource instance metadata. Next ID: 29
+  r"""Common model for database resource instance metadata. Next ID: 30
 
   Enums:
     CurrentStateValueValuesEnum: Current state of the instance.
@@ -4802,6 +4869,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
     gcbdrConfiguration: GCBDR configuration for the resource.
     id: Required. Unique identifier for a Database resource
     instanceType: The type of the instance. Specified at creation time.
+    isDeletionProtectionEnabled: Optional. Whether deletion protection is
+      enabled for this resource.
     location: The resource location. REQUIRED
     machineConfiguration: Machine configuration for this resource.
     maintenanceInfo: Optional. Maintenance info for the resource.
@@ -4951,19 +5020,20 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
   gcbdrConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainGCBDRConfiguration', 11)
   id = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 12)
   instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 13)
-  location = _messages.StringField(14)
-  machineConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainMachineConfiguration', 15)
-  maintenanceInfo = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainResourceMaintenanceInfo', 16)
-  primaryResourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 17)
-  primaryResourceLocation = _messages.StringField(18)
-  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 19)
-  resourceContainer = _messages.StringField(20)
-  resourceName = _messages.StringField(21)
-  suspensionReason = _messages.EnumField('SuspensionReasonValueValuesEnum', 22)
-  tagsSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainTags', 23)
-  updationTime = _messages.StringField(24)
-  userLabelSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainUserLabels', 25)
-  zone = _messages.StringField(26)
+  isDeletionProtectionEnabled = _messages.BooleanField(14)
+  location = _messages.StringField(15)
+  machineConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainMachineConfiguration', 16)
+  maintenanceInfo = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainResourceMaintenanceInfo', 17)
+  primaryResourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 18)
+  primaryResourceLocation = _messages.StringField(19)
+  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 20)
+  resourceContainer = _messages.StringField(21)
+  resourceName = _messages.StringField(22)
+  suspensionReason = _messages.EnumField('SuspensionReasonValueValuesEnum', 23)
+  tagsSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainTags', 24)
+  updationTime = _messages.StringField(25)
+  userLabelSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainUserLabels', 26)
+  zone = _messages.StringField(27)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData(_messages.Message):

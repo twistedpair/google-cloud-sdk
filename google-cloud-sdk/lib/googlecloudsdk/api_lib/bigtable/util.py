@@ -98,6 +98,12 @@ def AwaitMaterializedView(operation_ref, message):
   )
 
 
+def AwaitMemoryLayer(operation_ref, message):
+  """Waits for memory layer long running operation to complete."""
+  client = GetAdminClient()
+  return _Await(client.projects_instances_clusters, operation_ref, message)
+
+
 def GetAppProfileRef(instance, app_profile):
   """Get a resource reference to an app profile."""
   return resources.REGISTRY.Parse(

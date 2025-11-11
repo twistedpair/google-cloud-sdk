@@ -595,6 +595,17 @@ class ApphubProjectsLocationsDiscoveredWorkloadsLookupRequest(_messages.Message)
   uri = _messages.StringField(2)
 
 
+class ApphubProjectsLocationsGetBoundaryRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsGetBoundaryRequest object.
+
+  Fields:
+    name: Required. The name of the boundary to retrieve. Format:
+      projects/{project}/locations/{location}/boundary
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ApphubProjectsLocationsGetRequest(_messages.Message):
   r"""A ApphubProjectsLocationsGetRequest object.
 
@@ -785,6 +796,37 @@ class ApphubProjectsLocationsServiceProjectAttachmentsListRequest(_messages.Mess
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class ApphubProjectsLocationsUpdateBoundaryRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsUpdateBoundaryRequest object.
+
+  Fields:
+    boundary: A Boundary resource to be passed as the request body.
+    name: Identifier. The resource name of the boundary. Format:
+      "projects/{project}/locations/{location}/boundary"
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the Boundary resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields will be overwritten.
+  """
+
+  boundary = _messages.MessageField('Boundary', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class Application(_messages.Message):
@@ -1009,6 +1051,45 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class Boundary(_messages.Message):
+  r"""Application management boundary.
+
+  Enums:
+    TypeValueValuesEnum: Output only. Boundary type.
+
+  Fields:
+    createTime: Output only. Create time.
+    crmNode: Optional. The resource name of the CRM node being attached to the
+      boundary. Format: `projects/{project-id}`
+    name: Identifier. The resource name of the boundary. Format:
+      "projects/{project}/locations/{location}/boundary"
+    type: Output only. Boundary type.
+    updateTime: Output only. Update time.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Boundary type.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified type.
+      AUTOMATIC: The Boundary automatically includes all descendants of the
+        CRM node.
+      MANUAL: The list of projects within the Boundary is managed by the user.
+      MANAGED_AUTOMATIC: The Boundary automatically includes all descendants
+        of the CRM node, which is set via App Management folder capability.
+    """
+    TYPE_UNSPECIFIED = 0
+    AUTOMATIC = 1
+    MANUAL = 2
+    MANAGED_AUTOMATIC = 3
+
+  createTime = _messages.StringField(1)
+  crmNode = _messages.StringField(2)
+  name = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+  updateTime = _messages.StringField(5)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -1201,6 +1282,49 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class ExtendedMetadata(_messages.Message):
+  r"""Additional metadata for a Service or Workload.
+
+  Messages:
+    MetadataStructValue: Output only. The metadata contents.
+
+  Fields:
+    extendedMetadataSchema: Output only. The resource name for the Extended
+      Metadata Schema that describes the contents of `metadata_struct`. Use
+      `GetExtendedMetadataSchema` API to get the schema. Format:
+      projects//locations//extendedMetadataSchemas/
+    metadataStruct: Output only. The metadata contents.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataStructValue(_messages.Message):
+    r"""Output only. The metadata contents.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataStructValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataStructValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  extendedMetadataSchema = _messages.StringField(1)
+  metadataStruct = _messages.MessageField('MetadataStructValue', 2)
+
+
 class FindUnregisteredServicesResponse(_messages.Message):
   r"""Response for FindUnregisteredServices.
 
@@ -1229,6 +1353,32 @@ class FindUnregisteredWorkloadsResponse(_messages.Message):
   discoveredWorkloads = _messages.MessageField('DiscoveredWorkload', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
+
+
+class FunctionalType(_messages.Message):
+  r"""The functional type of a service or workload.
+
+  Enums:
+    TypeValueValuesEnum: Output only. The functional type of a service or
+      workload.
+
+  Fields:
+    type: Output only. The functional type of a service or workload.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The functional type of a service or workload.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified type.
+      AGENT: Agent type.
+      MCP_SERVER: MCP Server type.
+    """
+    TYPE_UNSPECIFIED = 0
+    AGENT = 1
+    MCP_SERVER = 2
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
 
 
 class ListApplicationsResponse(_messages.Message):
@@ -1676,6 +1826,31 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class RegistrationType(_messages.Message):
+  r"""The registration type of a service.
+
+  Enums:
+    TypeValueValuesEnum: Output only. The registration type of a service.
+
+  Fields:
+    type: Output only. The registration type of a service.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The registration type of a service.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified registration type. Defaults to EXCLUSIVE.
+      EXCLUSIVE: The service can only be registered to one application.
+      SHARED: The service can be registered to multiple applications.
+    """
+    TYPE_UNSPECIFIED = 0
+    EXCLUSIVE = 1
+    SHARED = 2
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
+
+
 class Scope(_messages.Message):
   r"""Scope of an application.
 
@@ -1811,18 +1986,68 @@ class ServiceProjectAttachment(_messages.Message):
 class ServiceProperties(_messages.Message):
   r"""Properties of an underlying cloud resource that can comprise a Service.
 
+  Messages:
+    ExtendedMetadataValue: Output only. Additional metadata specific to the
+      resource type. The key is a string that identifies the type of metadata
+      and the value is the metadata contents specific to that type. Key
+      format: `apphub.googleapis.com/{metadataType}` The list of supported
+      metadata types and their schemas can be obtained via
+      `ListExtendedMetadataSchemas` API.
+
   Fields:
+    extendedMetadata: Output only. Additional metadata specific to the
+      resource type. The key is a string that identifies the type of metadata
+      and the value is the metadata contents specific to that type. Key
+      format: `apphub.googleapis.com/{metadataType}` The list of supported
+      metadata types and their schemas can be obtained via
+      `ListExtendedMetadataSchemas` API.
+    functionalType: Output only. The type of the service.
     gcpProject: Output only. The service project identifier that the
       underlying cloud resource resides in.
     location: Output only. The location that the underlying resource resides
       in, for example, us-west1.
+    registrationType: Output only. The registration type of the service.
     zone: Output only. The location that the underlying resource resides in if
       it is zonal, for example, us-west1-a).
   """
 
-  gcpProject = _messages.StringField(1)
-  location = _messages.StringField(2)
-  zone = _messages.StringField(3)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExtendedMetadataValue(_messages.Message):
+    r"""Output only. Additional metadata specific to the resource type. The
+    key is a string that identifies the type of metadata and the value is the
+    metadata contents specific to that type. Key format:
+    `apphub.googleapis.com/{metadataType}` The list of supported metadata
+    types and their schemas can be obtained via `ListExtendedMetadataSchemas`
+    API.
+
+    Messages:
+      AdditionalProperty: An additional property for a ExtendedMetadataValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ExtendedMetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExtendedMetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ExtendedMetadata attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ExtendedMetadata', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  extendedMetadata = _messages.MessageField('ExtendedMetadataValue', 1)
+  functionalType = _messages.MessageField('FunctionalType', 2)
+  gcpProject = _messages.StringField(3)
+  location = _messages.StringField(4)
+  registrationType = _messages.MessageField('RegistrationType', 5)
+  zone = _messages.StringField(6)
 
 
 class ServiceReference(_messages.Message):
@@ -2061,7 +2286,22 @@ class WorkloadProperties(_messages.Message):
   r"""Properties of an underlying compute resource represented by the
   Workload.
 
+  Messages:
+    ExtendedMetadataValue: Output only. Additional metadata specific to the
+      resource type. The key is a string that identifies the type of metadata
+      and the value is the metadata contents specific to that type. Key
+      format: `apphub.googleapis.com/{metadataType}` The list of supported
+      metadata types and their schemas can be obtained via
+      `ListExtendedMetadataSchemas` API.
+
   Fields:
+    extendedMetadata: Output only. Additional metadata specific to the
+      resource type. The key is a string that identifies the type of metadata
+      and the value is the metadata contents specific to that type. Key
+      format: `apphub.googleapis.com/{metadataType}` The list of supported
+      metadata types and their schemas can be obtained via
+      `ListExtendedMetadataSchemas` API.
+    functionalType: Output only. The type of the workload.
     gcpProject: Output only. The service project identifier that the
       underlying cloud resource resides in. Empty for non-cloud resources.
     location: Output only. The location that the underlying compute resource
@@ -2070,9 +2310,42 @@ class WorkloadProperties(_messages.Message):
       resides in if it is zonal (for example, us-west1-a).
   """
 
-  gcpProject = _messages.StringField(1)
-  location = _messages.StringField(2)
-  zone = _messages.StringField(3)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExtendedMetadataValue(_messages.Message):
+    r"""Output only. Additional metadata specific to the resource type. The
+    key is a string that identifies the type of metadata and the value is the
+    metadata contents specific to that type. Key format:
+    `apphub.googleapis.com/{metadataType}` The list of supported metadata
+    types and their schemas can be obtained via `ListExtendedMetadataSchemas`
+    API.
+
+    Messages:
+      AdditionalProperty: An additional property for a ExtendedMetadataValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ExtendedMetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExtendedMetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ExtendedMetadata attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ExtendedMetadata', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  extendedMetadata = _messages.MessageField('ExtendedMetadataValue', 1)
+  functionalType = _messages.MessageField('FunctionalType', 2)
+  gcpProject = _messages.StringField(3)
+  location = _messages.StringField(4)
+  zone = _messages.StringField(5)
 
 
 class WorkloadReference(_messages.Message):

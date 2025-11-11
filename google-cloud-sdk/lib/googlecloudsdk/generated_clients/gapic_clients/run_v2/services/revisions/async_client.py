@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import logging as std_logging
 from collections import OrderedDict
-import functools
 import re
 from typing import Dict, Callable, Mapping, MutableMapping, MutableSequence, Optional, Sequence, Tuple, Type, Union
 
@@ -26,6 +26,7 @@ from google.api_core import gapic_v1
 from google.api_core import retry_async as retries
 from google.auth import credentials as ga_credentials   # type: ignore
 from google.oauth2 import service_account              # type: ignore
+import cloudsdk.google.protobuf
 
 
 try:
@@ -48,6 +49,13 @@ from .transports.base import RevisionsTransport, DEFAULT_CLIENT_INFO
 from .transports.grpc_asyncio import RevisionsGrpcAsyncIOTransport
 from .client import RevisionsClient
 
+try:
+    from google.api_core import client_logging  # type: ignore
+    CLIENT_LOGGING_SUPPORTED = True  # pragma: NO COVER
+except ImportError:  # pragma: NO COVER
+    CLIENT_LOGGING_SUPPORTED = False
+
+_LOGGER = std_logging.getLogger(__name__)
 
 class RevisionsAsyncClient:
     """Cloud Run Revision Control Plane API."""
@@ -181,7 +189,7 @@ class RevisionsAsyncClient:
         """
         return self._client._universe_domain
 
-    get_transport_class = functools.partial(type(RevisionsClient).get_transport_class, type(RevisionsClient))
+    get_transport_class = RevisionsClient.get_transport_class
 
     def __init__(self, *,
             credentials: Optional[ga_credentials.Credentials] = None,
@@ -249,13 +257,27 @@ class RevisionsAsyncClient:
 
         )
 
+        if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(std_logging.DEBUG):  # pragma: NO COVER
+            _LOGGER.debug(
+                "Created client `google.cloud.run_v2.RevisionsAsyncClient`.",
+                extra = {
+                    "serviceName": "google.cloud.run.v2.Revisions",
+                    "universeDomain": getattr(self._client._transport._credentials, "universe_domain", ""),
+                    "credentialsType": f"{type(self._client._transport._credentials).__module__}.{type(self._client._transport._credentials).__qualname__}",
+                    "credentialsInfo": getattr(self.transport._credentials, "get_cred_info", lambda: None)(),
+                } if hasattr(self._client._transport, "_credentials") else {
+                    "serviceName": "google.cloud.run.v2.Revisions",
+                    "credentialsType": None,
+                }
+            )
+
     async def get_revision(self,
             request: Optional[Union[revision.GetRevisionRequest, dict]] = None,
             *,
             name: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> revision.Revision:
         r"""Gets information about a Revision.
 
@@ -301,8 +323,10 @@ class RevisionsAsyncClient:
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.run_v2.types.Revision:
@@ -316,7 +340,8 @@ class RevisionsAsyncClient:
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([name])
+        flattened_params = [name]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
@@ -335,13 +360,17 @@ class RevisionsAsyncClient:
         # and friendly error handling.
         rpc = self._client._transport._wrapped_methods[self._client._transport.get_revision]
 
-        # Certain fields should be provided within the metadata header;
-        # add these here.
-        metadata = tuple(metadata) + (
-            gapic_v1.routing_header.to_grpc_metadata((
-                ("name", request.name),
-            )),
-        )
+        header_params = {}
+
+        routing_param_regex = re.compile('^projects/[^/]+/locations/(?P<location>[^/]+)(?:/.*)?$')
+        regex_match = routing_param_regex.match(request.name)
+        if regex_match and regex_match.group("location"):
+            header_params["location"] = regex_match.group("location")
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
 
         # Validate the universe domain.
         self._client._validate_universe_domain()
@@ -363,7 +392,7 @@ class RevisionsAsyncClient:
             parent: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> pagers.ListRevisionsAsyncPager:
         r"""Lists Revisions from a given Service, or from a given
         location.  Results are sorted by creation time,
@@ -414,8 +443,10 @@ class RevisionsAsyncClient:
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.run_v2.services.revisions.pagers.ListRevisionsAsyncPager:
@@ -429,7 +460,8 @@ class RevisionsAsyncClient:
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([parent])
+        flattened_params = [parent]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
@@ -448,13 +480,17 @@ class RevisionsAsyncClient:
         # and friendly error handling.
         rpc = self._client._transport._wrapped_methods[self._client._transport.list_revisions]
 
-        # Certain fields should be provided within the metadata header;
-        # add these here.
-        metadata = tuple(metadata) + (
-            gapic_v1.routing_header.to_grpc_metadata((
-                ("parent", request.parent),
-            )),
-        )
+        header_params = {}
+
+        routing_param_regex = re.compile('^projects/[^/]+/locations/(?P<location>[^/]+)(?:/.*)?$')
+        regex_match = routing_param_regex.match(request.parent)
+        if regex_match and regex_match.group("location"):
+            header_params["location"] = regex_match.group("location")
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
 
         # Validate the universe domain.
         self._client._validate_universe_domain()
@@ -473,6 +509,8 @@ class RevisionsAsyncClient:
             method=rpc,
             request=request,
             response=response,
+            retry=retry,
+            timeout=timeout,
             metadata=metadata,
         )
 
@@ -485,7 +523,7 @@ class RevisionsAsyncClient:
             name: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> operation_async.AsyncOperation:
         r"""Deletes a Revision.
 
@@ -538,8 +576,10 @@ class RevisionsAsyncClient:
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             google.api_core.operation_async.AsyncOperation:
@@ -553,7 +593,8 @@ class RevisionsAsyncClient:
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([name])
+        flattened_params = [name]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
@@ -572,13 +613,17 @@ class RevisionsAsyncClient:
         # and friendly error handling.
         rpc = self._client._transport._wrapped_methods[self._client._transport.delete_revision]
 
-        # Certain fields should be provided within the metadata header;
-        # add these here.
-        metadata = tuple(metadata) + (
-            gapic_v1.routing_header.to_grpc_metadata((
-                ("name", request.name),
-            )),
-        )
+        header_params = {}
+
+        routing_param_regex = re.compile('^projects/[^/]+/locations/(?P<location>[^/]+)(?:/.*)?$')
+        regex_match = routing_param_regex.match(request.name)
+        if regex_match and regex_match.group("location"):
+            header_params["location"] = regex_match.group("location")
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
 
         # Validate the universe domain.
         self._client._validate_universe_domain()
@@ -609,6 +654,9 @@ class RevisionsAsyncClient:
         await self.transport.close()
 
 DEFAULT_CLIENT_INFO = gapic_v1.client_info.ClientInfo(gapic_version=package_version.__version__)
+
+if hasattr(DEFAULT_CLIENT_INFO, "protobuf_runtime_version"):   # pragma: NO COVER
+    DEFAULT_CLIENT_INFO.protobuf_runtime_version = cloudsdk.google.protobuf.__version__
 
 
 __all__ = (

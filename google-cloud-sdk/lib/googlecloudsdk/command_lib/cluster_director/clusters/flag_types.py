@@ -54,7 +54,68 @@ STORAGE_CONFIG = arg_parsers.ArgObject(
     repeated=True,
 )
 
+PROTO_BOOT_DISK_TYPE = arg_parsers.ArgObject(
+    spec={
+        "type": str,
+        "sizeGb": int,
+        "image": str,
+    },
+    required_keys=["type", "sizeGb"],
+    enable_shorthand=True,
+)
+
+SERVICE_ACCOUNT_TYPE = arg_parsers.ArgObject(
+    spec={
+        "email": str,
+        "scopes": arg_parsers.ArgList(),
+    }
+)
+
+SLURM_CONFIG_TYPE = arg_parsers.ArgObject(
+    spec={
+        "requeueExitCodes": arg_parsers.ArgList(element_type=int),
+        "requeueHoldExitCodes": arg_parsers.ArgList(element_type=int),
+        "prologFlags": arg_parsers.ArgList(element_type=str),
+        "prologEpilogTimeout": str,
+        "accountingStorageEnforceFlags": arg_parsers.ArgList(element_type=str),
+        "priorityType": str,
+        "priorityWeightAge": int,
+        "priorityWeightAssoc": int,
+        "priorityWeightFairshare": int,
+        "priorityWeightJobSize": int,
+        "priorityWeightPartition": int,
+        "priorityWeightQos": int,
+        "priorityWeightTres": str,
+        "preemptMode": arg_parsers.ArgList(element_type=str),
+        "preemptType": str,
+        "preemptExemptTime": str,
+    }
+)
+
 _CLUSTER = {
+    "compute": arg_parsers.ArgObject(  # v1alpha only field
+        spec={
+            "resourceRequests": arg_parsers.ArgObject(
+                spec={
+                    "disks": DISK,
+                    "id": str,
+                    "machineType": str,
+                    "maxRunDuration": int,
+                    "provisioningModel": str,
+                    "reservationAffinity": arg_parsers.ArgObject(
+                        spec={
+                            "key": str,
+                            "type": str,
+                            "values": arg_parsers.ArgList(),
+                        }
+                    ),
+                    "terminationAction": str,
+                    "zone": str,
+                },
+                repeated=True,
+            ),
+        }
+    ),
     "computeResources": arg_parsers.ArgObject(
         key_type=str,
         value_type=arg_parsers.ArgObject(
@@ -66,6 +127,9 @@ _CLUSTER = {
                                 "machineType": str,
                                 "maxDuration": str,
                                 "zone": str,
+                                "atmTags": LABEL,
+                                "bootDisk": BOOT_DISK,
+                                "terminationAction": str,
                             }
                         ),
                         "newDwsFlexInstances": arg_parsers.ArgObject(
@@ -73,12 +137,17 @@ _CLUSTER = {
                                 "machineType": str,
                                 "maxDuration": str,
                                 "zone": str,
+                                "atmTags": LABEL,
+                                "bootDisk": BOOT_DISK,
+                                "terminationAction": str,
                             }
                         ),
                         "newOnDemandInstances": arg_parsers.ArgObject(
                             spec={
                                 "machineType": str,
                                 "zone": str,
+                                "atmTags": LABEL,
+                                "bootDisk": BOOT_DISK,
                             }
                         ),
                         "newReservedInstances": arg_parsers.ArgObject(
@@ -87,12 +156,19 @@ _CLUSTER = {
                                 "reservation": str,
                                 "type": str,
                                 "zone": str,
+                                "atmTags": LABEL,
+                                "bootDisk": BOOT_DISK,
+                                "reservationBlock": str,
+                                "reservationSubBlock": str,
                             }
                         ),
                         "newSpotInstances": arg_parsers.ArgObject(
                             spec={
                                 "machineType": str,
                                 "zone": str,
+                                "atmTags": LABEL,
+                                "bootDisk": BOOT_DISK,
+                                "terminationAction": str,
                             }
                         ),
                     }
@@ -103,6 +179,23 @@ _CLUSTER = {
     "description": str,
     "labels": LABEL,
     "name": str,
+    "networks": arg_parsers.ArgObject(  # v1alpha only field
+        spec={
+            "initializeParams": arg_parsers.ArgObject(
+                spec={
+                    "description": str,
+                    "network": str,
+                }
+            ),
+            "networkSource": arg_parsers.ArgObject(
+                spec={
+                    "network": str,
+                    "subnetwork": str,
+                }
+            ),
+        },
+        repeated=True,
+    ),
     "networkResources": arg_parsers.ArgObject(
         key_type=str,
         value_type=arg_parsers.ArgObject(
@@ -119,6 +212,18 @@ _CLUSTER = {
                             spec={
                                 "description": str,
                                 "network": str,
+                            }
+                        ),
+                        "newComputeNetwork": arg_parsers.ArgObject(
+                            spec={
+                                "description": str,
+                                "network": str,
+                            }
+                        ),
+                        "existingComputeNetwork": arg_parsers.ArgObject(
+                            spec={
+                                "network": str,
+                                "subnetwork": str,
                             }
                         ),
                     }
@@ -142,6 +247,8 @@ _CLUSTER = {
                             "startupScript": arg_parsers.ArgObject(),
                             "storageConfigs": STORAGE_CONFIG,
                             "zone": str,
+                            "bootDisk": PROTO_BOOT_DISK_TYPE,
+                            "serviceAccount": SERVICE_ACCOUNT_TYPE,
                         }
                     ),
                     "nodeSets": arg_parsers.ArgObject(
@@ -154,6 +261,19 @@ _CLUSTER = {
                             "startupScript": arg_parsers.ArgObject(),
                             "staticNodeCount": int,
                             "storageConfigs": STORAGE_CONFIG,
+                            "computeId": str,
+                            "serviceAccount": SERVICE_ACCOUNT_TYPE,
+                            "enableOsLogin": bool,
+                            "canIpForward": bool,
+                            "enablePublicIps": bool,
+                            "computeInstance": arg_parsers.ArgObject(
+                                spec={
+                                    "startupScript": arg_parsers.ArgObject(),
+                                    "labels": LABEL,
+                                    "bootDisk": PROTO_BOOT_DISK_TYPE,
+                                }
+                            ),
+                            "containerNodePool": arg_parsers.ArgObject(spec={}),
                         },
                         repeated=True,
                     ),
@@ -167,9 +287,66 @@ _CLUSTER = {
                         },
                         repeated=True,
                     ),
+                    "prologBashScripts": arg_parsers.ArgList(),
+                    "epilogBashScripts": arg_parsers.ArgList(),
+                    "taskPrologBashScripts": arg_parsers.ArgList(),
+                    "taskEpilogBashScripts": arg_parsers.ArgList(),
+                    "config": SLURM_CONFIG_TYPE,
                 }
             ),
         }
+    ),
+    "storages": arg_parsers.ArgObject(  # v1alpha only field
+        spec={
+            "id": str,
+            "initializeParams": arg_parsers.ArgObject(
+                spec={
+                    "filestore": arg_parsers.ArgObject(
+                        spec={
+                            "description": str,
+                            "fileShares": arg_parsers.ArgObject(
+                                spec={"capacityGb": int, "fileShare": str},
+                                repeated=True,
+                            ),
+                            "filestore": str,
+                            "protocol": str,
+                            "tier": str,
+                        }
+                    ),
+                    "gcs": arg_parsers.ArgObject(
+                        spec={
+                            "autoclass": arg_parsers.ArgObject(
+                                spec={
+                                    "enabled": bool,
+                                    "terminalStorageClass": str,
+                                }
+                            ),
+                            "bucket": str,
+                            "hierarchicalNamespace": arg_parsers.ArgObject(
+                                spec={"enabled": bool}
+                            ),
+                            "storageClass": str,
+                        }
+                    ),
+                    "lustre": arg_parsers.ArgObject(
+                        spec={
+                            "capacityGb": int,
+                            "description": str,
+                            "filesystem": str,
+                            "lustre": str,
+                        }
+                    ),
+                }
+            ),
+            "storageSource": arg_parsers.ArgObject(
+                spec={
+                    "bucket": str,
+                    "filestore": str,
+                    "lustre": str,
+                }
+            ),
+        },
+        repeated=True,
     ),
     "storageResources": arg_parsers.ArgObject(
         key_type=str,
@@ -191,6 +368,7 @@ _CLUSTER = {
                                 "autoclass": arg_parsers.ArgObject(
                                     spec={
                                         "enabled": bool,
+                                        "terminalStorageClass": str,
                                     }
                                 ),
                                 "bucket": str,
@@ -218,6 +396,7 @@ _CLUSTER = {
                                 "description": str,
                                 "filesystem": str,
                                 "lustre": str,
+                                "perUnitStorageThroughput": int,
                             }
                         ),
                     },

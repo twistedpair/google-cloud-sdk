@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -96,10 +96,10 @@ class BatchCreateSessionsRequest(proto.Message):
             Parameters to apply to each created session.
         session_count (int):
             Required. The number of sessions to be created in this batch
-            call. The API can return fewer than the requested number of
-            sessions. If a specific number of sessions are desired, the
-            client can make additional calls to ``BatchCreateSessions``
-            (adjusting
+            call. At least one session is created. The API can return
+            fewer than the requested number of sessions. If a specific
+            number of sessions are desired, the client can make
+            additional calls to ``BatchCreateSessions`` (adjusting
             [session_count][google.spanner.v1.BatchCreateSessionsRequest.session_count]
             as necessary).
     """
@@ -145,14 +145,14 @@ class Session(proto.Message):
         labels (MutableMapping[str, str]):
             The labels for the session.
 
-            -  Label keys must be between 1 and 63 characters long and
-               must conform to the following regular expression:
-               ``[a-z]([-a-z0-9]*[a-z0-9])?``.
-            -  Label values must be between 0 and 63 characters long and
-               must conform to the regular expression
-               ``([a-z]([-a-z0-9]*[a-z0-9])?)?``.
-            -  No more than 64 labels can be associated with a given
-               session.
+            - Label keys must be between 1 and 63 characters long and
+              must conform to the following regular expression:
+              ``[a-z]([-a-z0-9]*[a-z0-9])?``.
+            - Label values must be between 0 and 63 characters long and
+              must conform to the regular expression
+              ``([a-z]([-a-z0-9]*[a-z0-9])?)?``.
+            - No more than 64 labels can be associated with a given
+              session.
 
             See https://goo.gl/xmQnxf for more information on and
             examples of labels.
@@ -167,9 +167,9 @@ class Session(proto.Message):
             The database role which created this session.
         multiplexed (bool):
             Optional. If ``true``, specifies a multiplexed session. Use
-            a multiplexed session for multiple, concurrent read-only
-            operations. Don't use them for read-write transactions,
-            partitioned reads, or partitioned queries. Use
+            a multiplexed session for multiple, concurrent operations
+            including any combination of read-only and read-write
+            transactions. Use
             [``sessions.create``][google.spanner.v1.Spanner.CreateSession]
             to create multiplexed sessions. Don't use
             [BatchCreateSessions][google.spanner.v1.Spanner.BatchCreateSessions]
@@ -243,13 +243,13 @@ class ListSessionsRequest(proto.Message):
             Filter rules are case insensitive. The fields eligible for
             filtering are:
 
-            -  ``labels.key`` where key is the name of a label
+            - ``labels.key`` where key is the name of a label
 
             Some examples of using filters are:
 
-            -  ``labels.env:*`` --> The session has the label "env".
-            -  ``labels.env:dev`` --> The session has the label "env"
-               and the value of the label contains the string "dev".
+            - ``labels.env:*`` --> The session has the label "env".
+            - ``labels.env:dev`` --> The session has the label "env" and
+              the value of the label contains the string "dev".
     """
 
     database: str = proto.Field(
@@ -329,7 +329,7 @@ class RequestOptions(proto.Message):
             values are all printable characters (ASCII 32 - 126) and the
             length of a request_tag is limited to 50 characters. Values
             that exceed this limit are truncated. Any leading underscore
-            (_) characters are removed from the string.
+            (\_) characters are removed from the string.
         transaction_tag (str):
             A tag used for statistics collection about this transaction.
             Both ``request_tag`` and ``transaction_tag`` can be
@@ -341,7 +341,10 @@ class RequestOptions(proto.Message):
             all printable characters (ASCII 32 - 126) and the length of
             a ``transaction_tag`` is limited to 50 characters. Values
             that exceed this limit are truncated. Any leading underscore
-            (_) characters are removed from the string.
+            (\_) characters are removed from the string.
+        client_context (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.RequestOptions.ClientContext):
+            Optional. Optional context that may be needed
+            for some requests.
     """
     class Priority(proto.Enum):
         r"""The relative priority for requests. Note that priority isn't
@@ -351,16 +354,16 @@ class RequestOptions(proto.Message):
         The priority acts as a hint to the Cloud Spanner scheduler and
         doesn't guarantee priority or order of execution. For example:
 
-        -  Some parts of a write operation always execute at
-           ``PRIORITY_HIGH``, regardless of the specified priority. This can
-           cause you to see an increase in high priority workload even when
-           executing a low priority request. This can also potentially cause
-           a priority inversion where a lower priority request is fulfilled
-           ahead of a higher priority request.
-        -  If a transaction contains multiple operations with different
-           priorities, Cloud Spanner doesn't guarantee to process the higher
-           priority operations first. There might be other constraints to
-           satisfy, such as the order of operations.
+        - Some parts of a write operation always execute at
+          ``PRIORITY_HIGH``, regardless of the specified priority. This can
+          cause you to see an increase in high priority workload even when
+          executing a low priority request. This can also potentially cause
+          a priority inversion where a lower priority request is fulfilled
+          ahead of a higher priority request.
+        - If a transaction contains multiple operations with different
+          priorities, Cloud Spanner doesn't guarantee to process the higher
+          priority operations first. There might be other constraints to
+          satisfy, such as the order of operations.
 
         Values:
             PRIORITY_UNSPECIFIED (0):
@@ -380,6 +383,12 @@ class RequestOptions(proto.Message):
         PRIORITY_MEDIUM = 2
         PRIORITY_HIGH = 3
 
+    class ClientContext(proto.Message):
+        r"""Container for various pieces of client-owned context attached
+        to a request.
+
+        """
+
     priority: Priority = proto.Field(
         proto.ENUM,
         number=1,
@@ -392,6 +401,11 @@ class RequestOptions(proto.Message):
     transaction_tag: str = proto.Field(
         proto.STRING,
         number=3,
+    )
+    client_context: ClientContext = proto.Field(
+        proto.MESSAGE,
+        number=4,
+        message=ClientContext,
     )
 
 
@@ -432,18 +446,18 @@ class DirectedReadOptions(proto.Message):
         r"""The directed read replica selector. Callers must provide one or more
         of the following fields for replica selection:
 
-        -  ``location`` - The location must be one of the regions within the
-           multi-region configuration of your database.
-        -  ``type`` - The type of the replica.
+        - ``location`` - The location must be one of the regions within the
+          multi-region configuration of your database.
+        - ``type`` - The type of the replica.
 
         Some examples of using replica_selectors are:
 
-        -  ``location:us-east1`` --> The "us-east1" replica(s) of any
-           available type is used to process the request.
-        -  ``type:READ_ONLY`` --> The "READ_ONLY" type replica(s) in the
-           nearest available location are used to process the request.
-        -  ``location:us-east1 type:READ_ONLY`` --> The "READ_ONLY" type
-           replica(s) in location "us-east1" is used to process the request.
+        - ``location:us-east1`` --> The "us-east1" replica(s) of any
+          available type is used to process the request.
+        - ``type:READ_ONLY`` --> The "READ_ONLY" type replica(s) in the
+          nearest available location are used to process the request.
+        - ``location:us-east1 type:READ_ONLY`` --> The "READ_ONLY" type
+          replica(s) in location "us-east1" is used to process the request.
 
         Attributes:
             location (str):
@@ -977,19 +991,18 @@ class ExecuteBatchDmlResponse(proto.Message):
 
     Example 1:
 
-    -  Request: 5 DML statements, all executed successfully.
-    -  Response: 5 [ResultSet][google.spanner.v1.ResultSet] messages,
-       with the status ``OK``.
+    - Request: 5 DML statements, all executed successfully.
+    - Response: 5 [ResultSet][google.spanner.v1.ResultSet] messages,
+      with the status ``OK``.
 
     Example 2:
 
-    -  Request: 5 DML statements. The third statement has a syntax
-       error.
-    -  Response: 2 [ResultSet][google.spanner.v1.ResultSet] messages,
-       and a syntax error (``INVALID_ARGUMENT``) status. The number of
-       [ResultSet][google.spanner.v1.ResultSet] messages indicates that
-       the third statement failed, and the fourth and fifth statements
-       were not executed.
+    - Request: 5 DML statements. The third statement has a syntax error.
+    - Response: 2 [ResultSet][google.spanner.v1.ResultSet] messages, and
+      a syntax error (``INVALID_ARGUMENT``) status. The number of
+      [ResultSet][google.spanner.v1.ResultSet] messages indicates that
+      the third statement failed, and the fourth and fifth statements
+      were not executed.
 
     Attributes:
         result_sets (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.ResultSet]):

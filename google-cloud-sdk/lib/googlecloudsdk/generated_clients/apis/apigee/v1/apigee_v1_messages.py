@@ -3489,9 +3489,9 @@ class ApigeeOrganizationsEnvironmentsSecurityActionsDeleteRequest(_messages.Mess
   r"""A ApigeeOrganizationsEnvironmentsSecurityActionsDeleteRequest object.
 
   Fields:
-    name: Required. The name of the security monitoring condition to delete.
-      Format: `organizations/{org}/environment/{env}/securityActions/{security
-      _action}`
+    name: Required. The name of the security action to delete. Format:
+      `organizations/{org}/environment/{env}/securityActions/{security_action}
+      `
   """
 
   name = _messages.StringField(1, required=True)
@@ -5357,27 +5357,71 @@ class ApigeeOrganizationsSecurityProfilesV2CreateRequest(_messages.Message):
 class ApigeeOrganizationsSecurityProfilesV2DeleteRequest(_messages.Message):
   r"""A ApigeeOrganizationsSecurityProfilesV2DeleteRequest object.
 
+  Enums:
+    RiskAssessmentTypeValueValuesEnum: Optional. The risk assessment type of
+      the security profile. Defaults to ADVANCED_API_SECURITY.
+
   Fields:
     name: Required. The name of the security profile v2 to delete. Format:
       `organizations/{org}/securityProfilesV2/{profile}`
+    riskAssessmentType: Optional. The risk assessment type of the security
+      profile. Defaults to ADVANCED_API_SECURITY.
   """
 
+  class RiskAssessmentTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The risk assessment type of the security profile. Defaults
+    to ADVANCED_API_SECURITY.
+
+    Values:
+      RISK_ASSESSMENT_TYPE_UNSPECIFIED: Risk assessment type is not specified.
+      APIGEE: Risk assessment type is Apigee.
+      API_HUB: Risk assessment type is API Hub.
+    """
+    RISK_ASSESSMENT_TYPE_UNSPECIFIED = 0
+    APIGEE = 1
+    API_HUB = 2
+
   name = _messages.StringField(1, required=True)
+  riskAssessmentType = _messages.EnumField('RiskAssessmentTypeValueValuesEnum', 2)
 
 
 class ApigeeOrganizationsSecurityProfilesV2GetRequest(_messages.Message):
   r"""A ApigeeOrganizationsSecurityProfilesV2GetRequest object.
 
+  Enums:
+    RiskAssessmentTypeValueValuesEnum: Optional. The risk assessment type of
+      the security profile. Defaults to ADVANCED_API_SECURITY.
+
   Fields:
     name: Required. The name of the security profile v2 to get. Format:
       `organizations/{org}/securityProfilesV2/{profile}`
+    riskAssessmentType: Optional. The risk assessment type of the security
+      profile. Defaults to ADVANCED_API_SECURITY.
   """
 
+  class RiskAssessmentTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The risk assessment type of the security profile. Defaults
+    to ADVANCED_API_SECURITY.
+
+    Values:
+      RISK_ASSESSMENT_TYPE_UNSPECIFIED: Risk assessment type is not specified.
+      APIGEE: Risk assessment type is Apigee.
+      API_HUB: Risk assessment type is API Hub.
+    """
+    RISK_ASSESSMENT_TYPE_UNSPECIFIED = 0
+    APIGEE = 1
+    API_HUB = 2
+
   name = _messages.StringField(1, required=True)
+  riskAssessmentType = _messages.EnumField('RiskAssessmentTypeValueValuesEnum', 2)
 
 
 class ApigeeOrganizationsSecurityProfilesV2ListRequest(_messages.Message):
   r"""A ApigeeOrganizationsSecurityProfilesV2ListRequest object.
+
+  Enums:
+    RiskAssessmentTypeValueValuesEnum: Optional. The risk assessment type of
+      the security profiles. Defaults to ADVANCED_API_SECURITY.
 
   Fields:
     pageSize: Optional. The maximum number of profiles to return
@@ -5386,11 +5430,27 @@ class ApigeeOrganizationsSecurityProfilesV2ListRequest(_messages.Message):
       page.
     parent: Required. For a specific organization, list of all the security
       profiles. Format: `organizations/{org}`
+    riskAssessmentType: Optional. The risk assessment type of the security
+      profiles. Defaults to ADVANCED_API_SECURITY.
   """
+
+  class RiskAssessmentTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The risk assessment type of the security profiles. Defaults
+    to ADVANCED_API_SECURITY.
+
+    Values:
+      RISK_ASSESSMENT_TYPE_UNSPECIFIED: Risk assessment type is not specified.
+      APIGEE: Risk assessment type is Apigee.
+      API_HUB: Risk assessment type is API Hub.
+    """
+    RISK_ASSESSMENT_TYPE_UNSPECIFIED = 0
+    APIGEE = 1
+    API_HUB = 2
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  riskAssessmentType = _messages.EnumField('RiskAssessmentTypeValueValuesEnum', 4)
 
 
 class ApigeeOrganizationsSecurityProfilesV2PatchRequest(_messages.Message):
@@ -7439,6 +7499,10 @@ class GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequest(_messages.
   r"""Request for BatchComputeSecurityAssessmentResults.
 
   Fields:
+    apiHubApis: An array of API Hub APIs to assess. A maximum of 1 API can be
+      assessed.
+    apiHubGateways: An array of API Hub Gateways to assess. A maximum of 3
+      gateways can be assessed.
     include: Include only these resources.
     includeAllResources: Include all resources under the scope.
     pageSize: Optional. The maximum number of results to return. The service
@@ -7448,16 +7512,42 @@ class GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequest(_messages.
       `BatchComputeSecurityAssessmentResults` call. Provide this to retrieve
       the subsequent page.
     profile: Required. Name of the profile that is used for computation.
-    scope: Optional. Scope of the resources for the computation. For Apigee,
-      the environment is the scope of the resources.
+    scope: Optional. Scope of the resources for the computation. When
+      computing scores for Apigee proxies, the scope should be set to the
+      environment of the resources. When computing scores for API Hub
+      deployments, api_hub_scope should be set instead.
   """
 
-  include = _messages.MessageField('GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequestResourceArray', 1)
-  includeAllResources = _messages.MessageField('GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequestIncludeAll', 2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  profile = _messages.StringField(5)
-  scope = _messages.StringField(6)
+  apiHubApis = _messages.MessageField('GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequestApiHubApiArray', 1)
+  apiHubGateways = _messages.MessageField('GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequestApiHubGatewayArray', 2)
+  include = _messages.MessageField('GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequestResourceArray', 3)
+  includeAllResources = _messages.MessageField('GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequestIncludeAll', 4)
+  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(6)
+  profile = _messages.StringField(7)
+  scope = _messages.StringField(8)
+
+
+class GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequestApiHubApiArray(_messages.Message):
+  r"""Message for the array of API Hub APIs.
+
+  Fields:
+    apis: Required. The array of API Hub API IDs. Format:
+      `projects/{project}/locations/{location}/apis/{api}`
+  """
+
+  apis = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequestApiHubGatewayArray(_messages.Message):
+  r"""Message for the array of API Hub Gateways.
+
+  Fields:
+    gateways: Required. The array of API Hub Gateway IDs. Format: `projects/{p
+      roject}/locations/{location}/plugins/{plugin}/instances/{instance}`
+  """
+
+  gateways = _messages.StringField(1, repeated=True)
 
 
 class GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequestIncludeAll(_messages.Message):
@@ -7483,7 +7573,9 @@ class GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequestResourceArr
     TypeValueValuesEnum: Required. Type of this resource.
 
   Fields:
-    name: Required. Name of this resource.
+    name: Required. Name of this resource. For an Apigee API Proxy, this
+      should be the id of the API proxy. For an API Hub Deployment, this
+      should be the id of the deployment.
     type: Required. Type of this resource.
   """
 
@@ -7493,9 +7585,11 @@ class GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequestResourceArr
     Values:
       RESOURCE_TYPE_UNSPECIFIED: ResourceType not specified.
       API_PROXY: Resource is an Apigee Proxy.
+      API_HUB_DEPLOYMENT: Resource is an API Hub deployment.
     """
     RESOURCE_TYPE_UNSPECIFIED = 0
     API_PROXY = 1
+    API_HUB_DEPLOYMENT = 2
 
   name = _messages.StringField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -12887,7 +12981,11 @@ class GoogleCloudApigeeV1SecurityAssessmentResultResource(_messages.Message):
     TypeValueValuesEnum: Required. Type of this resource.
 
   Fields:
-    name: Required. Name of this resource.
+    apiHubDeploymentDetails: Output only. Additional details for the API Hub
+      deployment.
+    name: Required. Name of this resource. For an Apigee API Proxy, this
+      should be the id of the API proxy. For an API Hub Deployment, this
+      should be the id of the deployment.
     resourceRevisionId: The revision id for the resource. In case of Apigee,
       this is proxy revision id.
     type: Required. Type of this resource.
@@ -12899,13 +12997,54 @@ class GoogleCloudApigeeV1SecurityAssessmentResultResource(_messages.Message):
     Values:
       RESOURCE_TYPE_UNSPECIFIED: ResourceType not specified.
       API_PROXY: Resource is an Apigee Proxy.
+      API_HUB_DEPLOYMENT: Resource is an API Hub deployment.
     """
     RESOURCE_TYPE_UNSPECIFIED = 0
     API_PROXY = 1
+    API_HUB_DEPLOYMENT = 2
 
-  name = _messages.StringField(1)
-  resourceRevisionId = _messages.StringField(2)
-  type = _messages.EnumField('TypeValueValuesEnum', 3)
+  apiHubDeploymentDetails = _messages.MessageField('GoogleCloudApigeeV1SecurityAssessmentResultResourceApiHubDeploymentDetails', 1)
+  name = _messages.StringField(2)
+  resourceRevisionId = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+
+
+class GoogleCloudApigeeV1SecurityAssessmentResultResourceApiHubDeploymentDetails(_messages.Message):
+  r"""Additional details if the resource is an API Hub deployment.
+
+  Enums:
+    GatewayTypeValueValuesEnum: The gateway type for the API Hub deployment.
+
+  Fields:
+    displayName: The display name of the API Hub deployment.
+    gateway: The gateway for the API Hub deployment. Format: `projects/{projec
+      t}/locations/{location}/plugins/{plugin}/instances/{instance}`
+    gatewayType: The gateway type for the API Hub deployment.
+    resourceUri: The resource uri for the API Hub deployment.
+    sourceProject: The source project for the API Hub deployment.
+  """
+
+  class GatewayTypeValueValuesEnum(_messages.Enum):
+    r"""The gateway type for the API Hub deployment.
+
+    Values:
+      API_HUB_GATEWAY_TYPE_UNSPECIFIED: Gateway type is not specified.
+      APIGEE_X: Gateway is Apigee X for API Hub.
+      APIGEE_HYBRID: Gateway is Apigee Hybrid for API Hub.
+      APIGEE_EDGE: Gateway is Apigee Edge for API Hub.
+      APIGEE_OPDK: Gateway is Apigee OPDK for API Hub.
+    """
+    API_HUB_GATEWAY_TYPE_UNSPECIFIED = 0
+    APIGEE_X = 1
+    APIGEE_HYBRID = 2
+    APIGEE_EDGE = 3
+    APIGEE_OPDK = 4
+
+  displayName = _messages.StringField(1)
+  gateway = _messages.StringField(2)
+  gatewayType = _messages.EnumField('GatewayTypeValueValuesEnum', 3)
+  resourceUri = _messages.StringField(4)
+  sourceProject = _messages.StringField(5)
 
 
 class GoogleCloudApigeeV1SecurityAssessmentResultScoringResult(_messages.Message):
@@ -13037,10 +13176,12 @@ class GoogleCloudApigeeV1SecurityAssessmentResultScoringResultAssessmentRecommen
       VERDICT_UNSPECIFIED: The verdict is unspecified.
       PASS: The assessment has passed.
       FAIL: The assessment has failed.
+      NOT_APPLICABLE: The verdict is not applicable.
     """
     VERDICT_UNSPECIFIED = 0
     PASS = 1
     FAIL = 2
+    NOT_APPLICABLE = 3
 
   class WeightValueValuesEnum(_messages.Enum):
     r"""The weight of the assessment which was set in the profile.
@@ -13386,6 +13527,10 @@ class GoogleCloudApigeeV1SecurityProfileScoringConfig(_messages.Message):
 class GoogleCloudApigeeV1SecurityProfileV2(_messages.Message):
   r"""Security profile for risk assessment version 2.
 
+  Enums:
+    RiskAssessmentTypeValueValuesEnum: Optional. The risk assessment type of
+      the security profile. Defaults to ADVANCED_API_SECURITY.
+
   Messages:
     ProfileAssessmentConfigsValue: Required. The configuration for each
       assessment in this profile. Key is the name/id of the assessment.
@@ -13399,8 +13544,23 @@ class GoogleCloudApigeeV1SecurityProfileV2(_messages.Message):
       organizations/{org}/securityProfilesV2/{profile}
     profileAssessmentConfigs: Required. The configuration for each assessment
       in this profile. Key is the name/id of the assessment.
+    riskAssessmentType: Optional. The risk assessment type of the security
+      profile. Defaults to ADVANCED_API_SECURITY.
     updateTime: Output only. The time of the security profile update.
   """
+
+  class RiskAssessmentTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The risk assessment type of the security profile. Defaults
+    to ADVANCED_API_SECURITY.
+
+    Values:
+      RISK_ASSESSMENT_TYPE_UNSPECIFIED: Risk assessment type is not specified.
+      APIGEE: Risk assessment type is Apigee.
+      API_HUB: Risk assessment type is API Hub.
+    """
+    RISK_ASSESSMENT_TYPE_UNSPECIFIED = 0
+    APIGEE = 1
+    API_HUB = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ProfileAssessmentConfigsValue(_messages.Message):
@@ -13435,7 +13595,8 @@ class GoogleCloudApigeeV1SecurityProfileV2(_messages.Message):
   googleDefined = _messages.BooleanField(3)
   name = _messages.StringField(4)
   profileAssessmentConfigs = _messages.MessageField('ProfileAssessmentConfigsValue', 5)
-  updateTime = _messages.StringField(6)
+  riskAssessmentType = _messages.EnumField('RiskAssessmentTypeValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
 
 
 class GoogleCloudApigeeV1SecurityProfileV2ProfileAssessmentConfig(_messages.Message):
@@ -13445,6 +13606,7 @@ class GoogleCloudApigeeV1SecurityProfileV2ProfileAssessmentConfig(_messages.Mess
     WeightValueValuesEnum: The weight of the assessment.
 
   Fields:
+    include: Include only these Gateway Types.
     weight: The weight of the assessment.
   """
 
@@ -13462,7 +13624,37 @@ class GoogleCloudApigeeV1SecurityProfileV2ProfileAssessmentConfig(_messages.Mess
     MODERATE = 2
     MAJOR = 3
 
-  weight = _messages.EnumField('WeightValueValuesEnum', 1)
+  include = _messages.MessageField('GoogleCloudApigeeV1SecurityProfileV2ProfileAssessmentConfigApiHubGatewayTypeArray', 1)
+  weight = _messages.EnumField('WeightValueValuesEnum', 2)
+
+
+class GoogleCloudApigeeV1SecurityProfileV2ProfileAssessmentConfigApiHubGatewayTypeArray(_messages.Message):
+  r"""Message for the array of API Hub Gateway Types.
+
+  Enums:
+    GatewayTypesValueListEntryValuesEnum:
+
+  Fields:
+    gatewayTypes: Required. The array of API Hub Gateway Types.
+  """
+
+  class GatewayTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""GatewayTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      API_HUB_GATEWAY_TYPE_UNSPECIFIED: Gateway type is not specified.
+      APIGEE_X: Gateway is Apigee X for API Hub.
+      APIGEE_HYBRID: Gateway is Apigee Hybrid for API Hub.
+      APIGEE_EDGE: Gateway is Apigee Edge for API Hub.
+      APIGEE_OPDK: Gateway is Apigee OPDK for API Hub.
+    """
+    API_HUB_GATEWAY_TYPE_UNSPECIFIED = 0
+    APIGEE_X = 1
+    APIGEE_HYBRID = 2
+    APIGEE_EDGE = 3
+    APIGEE_OPDK = 4
+
+  gatewayTypes = _messages.EnumField('GatewayTypesValueListEntryValuesEnum', 1, repeated=True)
 
 
 class GoogleCloudApigeeV1SecurityReport(_messages.Message):

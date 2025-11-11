@@ -572,6 +572,7 @@ def AddFileShareArg(
     api_version,
     include_snapshot_flags=False,
     include_backup_flags=False,
+    include_backupdr_flags=False,
     clear_nfs_export_options_required=False,
     required=True,
 ):
@@ -582,6 +583,8 @@ def AddFileShareArg(
     api_version: filestore_client api version.
     include_snapshot_flags: bool, whether to include --source-snapshot flags.
     include_backup_flags: bool, whether to include --source-backup flags.
+    include_backupdr_flags: bool, whether to include --source-backupdr-backup
+    flag.
     clear_nfs_export_options_required: bool, whether to include
       --clear-nfs-export-options flags.
     required: bool, passthrough to parser.add_argument.
@@ -731,6 +734,8 @@ instance-zone will be used.
   if include_snapshot_flags:
     spec['source-snapshot'] = str
     spec['source-snapshot-region'] = str
+  if include_backupdr_flags:
+    spec['source-backupdr-backup'] = str
 
   file_share_help = file_share_help[api_version]
   if clear_nfs_export_options_required:
@@ -846,6 +851,7 @@ def AddInstanceCreateArgs(parser, api_version):
           api_version == filestore_client.ALPHA_API_VERSION
       ),
       include_backup_flags=True,
+      include_backupdr_flags=api_version != filestore_client.ALPHA_API_VERSION,
   )
   if api_version in [
       filestore_client.BETA_API_VERSION,

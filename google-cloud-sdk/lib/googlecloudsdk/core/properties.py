@@ -2190,6 +2190,17 @@ class _SectionContextAware(_Section):
         validator=ExistingAbsoluteFilepathValidator,
         help_text='File path for certificate configuration file.',
         hidden=True)
+    self.use_ecp_http_proxy = self._AddBool(
+        'use_ecp_http_proxy',
+        help_text=(
+            'If True, use the ECP HTTP proxy for requests. This property is'
+            ' used to determine if the ECP HTTP proxy should be used. If set to'
+            ' True, the ECP HTTP proxy will be used for all ECP requests. If'
+            ' set to False, the ECP HTTP proxy will not be used.'
+        ),
+        default=False,
+        hidden=True,
+    )
 
 
 class _SectionCore(_Section):

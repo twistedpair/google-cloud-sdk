@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import datetime
 import re
 
+from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py.exceptions import HttpForbiddenError
 from googlecloudsdk.api_lib.cloudresourcemanager import organizations
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
@@ -29,6 +30,7 @@ from googlecloudsdk.api_lib.iam import policies
 from googlecloudsdk.api_lib.resource_manager import folders
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.projects import exceptions
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 
@@ -278,7 +280,21 @@ def GetStandardEnvironmentValue(value):
   return _ENV_VARIANT_TO_STANDARD_VALUE_MAPPING.get(value, None)
 
 
-def CheckAndPrintEnvironmentTagMessage(project):
+def CheckAndPrintEnvironmentTagMessageWithProjectID(project_id):
+  """Checks for environment tag and prints a message given project ID."""
+  try:
+    project_ref = ParseProject(project_id)
+    project = projects_api.Get(project_ref)
+    CheckAndPrintEnvironmentTagMessageWithProject(project)
+  except (apitools_exceptions.HttpError, core_exceptions.Error) as e:
+    # Gracefully print a warning message.
+    log.status.Print(
+        'WARNING: Unable to get environment tag for project [{0}]: {1}'
+        .format(project_id, e)
+    )
+
+
+def CheckAndPrintEnvironmentTagMessageWithProject(project):
   """Checks for environment tag and prints a message."""
   env_tag = GetEnvironmentTag(project.tags) if project.tags else None
   if env_tag:

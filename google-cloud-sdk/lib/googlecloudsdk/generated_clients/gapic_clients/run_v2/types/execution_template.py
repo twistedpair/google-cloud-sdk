@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -85,7 +85,27 @@ class ExecutionTemplate(proto.Message):
         template (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.TaskTemplate):
             Required. Describes the task(s) that will be
             created when executing an execution.
+        priority_tier (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.ExecutionTemplate.PriorityTier):
+            Optional. The priority tier of the execution.
     """
+    class PriorityTier(proto.Enum):
+        r"""Priority tier of the execution.
+
+        Values:
+            PRIORITY_TIER_UNSPECIFIED (0):
+                The default value, uses STANDARD if not
+                specified.
+            STANDARD (1):
+                The system will start the job as soon as
+                possible.
+            FLEX (2):
+                The system will start the job within the next
+                6 hours depending on available capacity. Flex
+                executions are limited to 12 hours of run time.
+        """
+        PRIORITY_TIER_UNSPECIFIED = 0
+        STANDARD = 1
+        FLEX = 2
 
     labels: MutableMapping[str, str] = proto.MapField(
         proto.STRING,
@@ -109,6 +129,11 @@ class ExecutionTemplate(proto.Message):
         proto.MESSAGE,
         number=5,
         message=task_template.TaskTemplate,
+    )
+    priority_tier: PriorityTier = proto.Field(
+        proto.ENUM,
+        number=7,
+        enum=PriorityTier,
     )
 
 

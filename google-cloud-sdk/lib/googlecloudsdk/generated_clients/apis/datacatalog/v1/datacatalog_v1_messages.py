@@ -1941,6 +1941,7 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       only later. Can be used for search and lookup of the entries.
     gcsFilesetSpec: Specification that applies to a Cloud Storage fileset.
       Valid only for entries with the `FILESET` type.
+    graphSpec: Spec for graph.
     integratedSystem: Output only. Indicates the entry's source system that
       Data Catalog integrates with, such as BigQuery, Pub/Sub, or Dataproc
       Metastore.
@@ -2120,22 +2121,23 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
   filesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1FilesetSpec', 14)
   fullyQualifiedName = _messages.StringField(15)
   gcsFilesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1GcsFilesetSpec', 16)
-  integratedSystem = _messages.EnumField('IntegratedSystemValueValuesEnum', 17)
-  labels = _messages.MessageField('LabelsValue', 18)
-  linkedResource = _messages.StringField(19)
-  lookerSystemSpec = _messages.MessageField('GoogleCloudDatacatalogV1LookerSystemSpec', 20)
-  modelSpec = _messages.MessageField('GoogleCloudDatacatalogV1ModelSpec', 21)
-  name = _messages.StringField(22)
-  personalDetails = _messages.MessageField('GoogleCloudDatacatalogV1PersonalDetails', 23)
-  routineSpec = _messages.MessageField('GoogleCloudDatacatalogV1RoutineSpec', 24)
-  schema = _messages.MessageField('GoogleCloudDatacatalogV1Schema', 25)
-  serviceSpec = _messages.MessageField('GoogleCloudDatacatalogV1ServiceSpec', 26)
-  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 27)
-  sqlDatabaseSystemSpec = _messages.MessageField('GoogleCloudDatacatalogV1SqlDatabaseSystemSpec', 28)
-  type = _messages.EnumField('TypeValueValuesEnum', 29)
-  usageSignal = _messages.MessageField('GoogleCloudDatacatalogV1UsageSignal', 30)
-  userSpecifiedSystem = _messages.StringField(31)
-  userSpecifiedType = _messages.StringField(32)
+  graphSpec = _messages.MessageField('GoogleCloudDatacatalogV1GraphSpec', 17)
+  integratedSystem = _messages.EnumField('IntegratedSystemValueValuesEnum', 18)
+  labels = _messages.MessageField('LabelsValue', 19)
+  linkedResource = _messages.StringField(20)
+  lookerSystemSpec = _messages.MessageField('GoogleCloudDatacatalogV1LookerSystemSpec', 21)
+  modelSpec = _messages.MessageField('GoogleCloudDatacatalogV1ModelSpec', 22)
+  name = _messages.StringField(23)
+  personalDetails = _messages.MessageField('GoogleCloudDatacatalogV1PersonalDetails', 24)
+  routineSpec = _messages.MessageField('GoogleCloudDatacatalogV1RoutineSpec', 25)
+  schema = _messages.MessageField('GoogleCloudDatacatalogV1Schema', 26)
+  serviceSpec = _messages.MessageField('GoogleCloudDatacatalogV1ServiceSpec', 27)
+  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 28)
+  sqlDatabaseSystemSpec = _messages.MessageField('GoogleCloudDatacatalogV1SqlDatabaseSystemSpec', 29)
+  type = _messages.EnumField('TypeValueValuesEnum', 30)
+  usageSignal = _messages.MessageField('GoogleCloudDatacatalogV1UsageSignal', 31)
+  userSpecifiedSystem = _messages.StringField(32)
+  userSpecifiedType = _messages.StringField(33)
 
 
 class GoogleCloudDatacatalogV1EntryGroup(_messages.Message):
@@ -2336,6 +2338,112 @@ class GoogleCloudDatacatalogV1GcsFilesetSpec(_messages.Message):
 
   filePatterns = _messages.StringField(1, repeated=True)
   sampleGcsFileSpecs = _messages.MessageField('GoogleCloudDatacatalogV1GcsFileSpec', 2, repeated=True)
+
+
+class GoogleCloudDatacatalogV1GraphSpec(_messages.Message):
+  r"""Specification that applies to a graph.
+
+  Fields:
+    edgeTables: Optional. Edge tables of the graph.
+    name: Output only. Fully qualified graph name. e.g.
+      `named_catalog.MyGraph`
+    nodeTables: Required. Node tables of the graph.
+  """
+
+  edgeTables = _messages.MessageField('GoogleCloudDatacatalogV1GraphSpecGraphElementTable', 1, repeated=True)
+  name = _messages.StringField(2)
+  nodeTables = _messages.MessageField('GoogleCloudDatacatalogV1GraphSpecGraphElementTable', 3, repeated=True)
+
+
+class GoogleCloudDatacatalogV1GraphSpecGraphElementTable(_messages.Message):
+  r"""Element table definition.
+
+  Enums:
+    InputSourceValueValuesEnum: Required. The input source of the graph
+      element.
+    KindValueValuesEnum: Required. The kind of the graph element.
+
+  Fields:
+    alias: Required. The alias name of the graph element.
+    dataSource: Required. The name of the data source. This is either a table
+      name or a view name that is used for graph element input source. E.g.
+      `Person` table or `PersonView` view.
+    destinationNodeReference: Optional. Only applies to `kind = EDGE`.
+    dynamicLabelEnabled: Optional. If true, the graph element has a dynamic
+      label in schemaless model.
+    dynamicPropertiesEnabled: Optional. If true, the graph element has dynamic
+      properties in schemaless model.
+    elementKeys: Required. The name of the keys of the elements in the table.
+    inputSource: Required. The input source of the graph element.
+    kind: Required. The kind of the graph element.
+    labelAndProperties: Required. The labels and their properties for the
+      graph element.
+    sourceNodeReference: Optional. Only applies to `kind = EDGE`. The
+      reference to the source node of the edge. This name must be a valid
+      `alias` of a node element in the same graph. Example, `Person` node can
+      be a source node of an edge element `Person_to_Address`. Similar rule
+      applies to `destination_node_reference`.
+  """
+
+  class InputSourceValueValuesEnum(_messages.Enum):
+    r"""Required. The input source of the graph element.
+
+    Values:
+      INPUT_SOURCE_UNSPECIFIED: Default unknown input source.
+      TABLE: Table input source.
+      VIEW: View input source.
+    """
+    INPUT_SOURCE_UNSPECIFIED = 0
+    TABLE = 1
+    VIEW = 2
+
+  class KindValueValuesEnum(_messages.Enum):
+    r"""Required. The kind of the graph element.
+
+    Values:
+      KIND_UNSPECIFIED: Default unknown kind.
+      NODE: Node kind.
+      EDGE: Edge kind.
+    """
+    KIND_UNSPECIFIED = 0
+    NODE = 1
+    EDGE = 2
+
+  alias = _messages.StringField(1)
+  dataSource = _messages.StringField(2)
+  destinationNodeReference = _messages.StringField(3)
+  dynamicLabelEnabled = _messages.BooleanField(4)
+  dynamicPropertiesEnabled = _messages.BooleanField(5)
+  elementKeys = _messages.StringField(6, repeated=True)
+  inputSource = _messages.EnumField('InputSourceValueValuesEnum', 7)
+  kind = _messages.EnumField('KindValueValuesEnum', 8)
+  labelAndProperties = _messages.MessageField('GoogleCloudDatacatalogV1GraphSpecGraphElementTableLabelAndProperties', 9, repeated=True)
+  sourceNodeReference = _messages.StringField(10)
+
+
+class GoogleCloudDatacatalogV1GraphSpecGraphElementTableLabelAndProperties(_messages.Message):
+  r"""The label and its properties. Each label is associated with a set of
+  properties.
+
+  Fields:
+    label: Required. The name of the label.
+    properties: Optional. The properties associated with the label.
+  """
+
+  label = _messages.StringField(1)
+  properties = _messages.MessageField('GoogleCloudDatacatalogV1GraphSpecGraphElementTableProperty', 2, repeated=True)
+
+
+class GoogleCloudDatacatalogV1GraphSpecGraphElementTableProperty(_messages.Message):
+  r"""A property declaration.
+
+  Fields:
+    name: Required. Property name.
+    type: Required. Property data type.
+  """
+
+  name = _messages.StringField(1)
+  type = _messages.StringField(2)
 
 
 class GoogleCloudDatacatalogV1ImportEntriesMetadata(_messages.Message):

@@ -14,6 +14,7 @@
 # limitations under the License.
 """Useful commands for interacting with the Cloud Filestore API."""
 
+import re
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.util import apis
@@ -839,6 +840,20 @@ class BetaFilestoreAdapter(AlphaFilestoreAdapter):
         project, location, file_share.get('source-backup')
     )
 
+  def _ParseSourceBackupdrFromFileshare(self, file_share):
+    """Parses and validates the sourceBackupdrBackup field from file_share."""
+    source_backupdr_backup = file_share.get('source-backupdr-backup')
+    if not source_backupdr_backup:
+      return None
+
+    pattern = r'^projects/[^/]+/locations/[^/]+/backupVaults/[^/]+/dataSources/[^/]+/backups/[^/]+'
+    if not re.match(pattern, source_backupdr_backup):
+      raise InvalidArgumentError(
+          "Invalid 'source-backupdr-backup' format. Expected format: "
+          'projects/{project_id}/locations/{location_id}/backupVaults/{backupvault_id}/dataSources/{datasource_id}/backups/{backup_id}'
+      )
+    return source_backupdr_backup
+
   def ParseManagedADIntoInstance(self, instance, managed_ad):
     """Parses managed-ad configs into an instance message.
 
@@ -954,6 +969,15 @@ class BetaFilestoreAdapter(AlphaFilestoreAdapter):
           )
 
       source_backup = self._ParseSourceBackupFromFileshare(file_share)
+      source_backupdr_backup = self._ParseSourceBackupdrFromFileshare(
+          file_share
+      )
+
+      if source_backup is not None and source_backupdr_backup is not None:
+        raise InvalidArgumentError(
+            "At most one of ['source-backup', 'source-backupdr-backup'] can be"
+            ' specified.'
+        )
 
       nfs_export_options = FilestoreClient.MakeNFSExportOptionsMsgBeta(
           self.messages, file_share.get('nfs-export-options', [])
@@ -962,6 +986,7 @@ class BetaFilestoreAdapter(AlphaFilestoreAdapter):
           name=file_share.get('name'),
           capacityGb=utils.BytesToGb(file_share.get('capacity')),
           sourceBackup=source_backup,
+          sourceBackupdrBackup=source_backupdr_backup,
           nfsExportOptions=nfs_export_options,
       )
       instance.fileShares.append(file_share_config)
@@ -993,15 +1018,24 @@ class FilestoreAdapter(BetaFilestoreAdapter):
       ]
 
       source_backup = self._ParseSourceBackupFromFileshare(file_share)
+      source_backupdr_backup = self._ParseSourceBackupdrFromFileshare(
+          file_share
+      )
+
+      if source_backup is not None and source_backupdr_backup is not None:
+        raise InvalidArgumentError(
+            "At most one of ['source-backup', 'source-backupdr-backup'] can be"
+            ' specified.'
+        )
 
       nfs_export_options = FilestoreClient.MakeNFSExportOptionsMsg(
           self.messages, file_share.get('nfs-export-options', [])
       )
-
       file_share_config = self.messages.FileShareConfig(
           name=file_share.get('name'),
           capacityGb=utils.BytesToGb(file_share.get('capacity')),
           sourceBackup=source_backup,
+          sourceBackupdrBackup=source_backupdr_backup,
           nfsExportOptions=nfs_export_options,
       )
       instance.fileShares.append(file_share_config)

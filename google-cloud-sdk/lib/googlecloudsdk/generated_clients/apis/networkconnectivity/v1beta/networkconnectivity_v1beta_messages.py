@@ -1556,9 +1556,9 @@ class GoogleCloudNetworkconnectivityV1betaPolicyBasedRoute(_messages.Message):
     kind: Output only. Type of this resource. Always
       networkconnectivity#policyBasedRoute for policy-based Route resources.
     labels: User-defined labels.
-    name: Immutable. A unique name of the resource in the form of `projects/{p
-      roject_number}/locations/global/PolicyBasedRoutes/{policy_based_route_id
-      }`
+    name: Immutable. Identifier. A unique name of the resource in the form of
+      `projects/{project_number}/locations/global/PolicyBasedRoutes/{policy_ba
+      sed_route_id}`
     network: Required. Fully-qualified URL of the network that this route
       applies to, for example: projects/my-project/global/networks/my-network.
     nextHopIlbIp: Optional. The IP address of a global-access-enabled L4 ILB
@@ -1744,14 +1744,14 @@ class GoogleCloudNetworkconnectivityV1betaRegionalEndpoint(_messages.Message):
     name: Output only. The name of a RegionalEndpoint. Pattern: `projects/{pro
       ject}/locations/{location}/regionalEndpoints/^[-a-z0-9](?:[-a-z0-
       9]{0,44})[a-z0-9]$`.
-    network: The name of the VPC network for this private regional endpoint.
-      Format: `projects/{project}/global/networks/{network}`
+    network: Optional. The name of the VPC network for this private regional
+      endpoint. Format: `projects/{project}/global/networks/{network}`
     pscForwardingRule: Output only. The resource reference of the PSC
       Forwarding Rule created on behalf of the customer. Format: `//compute.go
       ogleapis.com/projects/{project}/regions/{region}/forwardingRules/{forwar
       ding_rule_name}`
-    subnetwork: The name of the subnetwork from which the IP address will be
-      allocated. Format:
+    subnetwork: Optional. The name of the subnetwork from which the IP address
+      will be allocated. Format:
       `projects/{project}/regions/{region}/subnetworks/{subnetwork}`
     targetGoogleApi: Required. The service endpoint this private regional
       endpoint connects to. Format: `{apiname}.{region}.p.rep.googleapis.com`
@@ -2962,10 +2962,15 @@ class GoogleLongrunningListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('GoogleLongrunningOperation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class GoogleLongrunningOperation(_messages.Message):
@@ -4196,12 +4201,20 @@ class NetworkconnectivityProjectsLocationsOperationsListRequest(_messages.Messag
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class NetworkconnectivityProjectsLocationsRegionalEndpointsCreateRequest(_messages.Message):

@@ -408,11 +408,11 @@ def GetImageSummaryMetadata(docker_version):
   return metadata
 
 
-def GetMavenArtifactOccurrences(project, maven_resource):
+def GetArtifactOccurrences(project, artifact_resource):
   """Retrieves occurrences for Maven artifacts."""
   metadata = ContainerAnalysisMetadata()
 
-  occ_filter = _CreateFilterForMaven(maven_resource)
+  occ_filter = _CreateFilterForMaven(artifact_resource)
 
   occurrences = ca_requests.ListOccurrences(project, occ_filter)
   for occ in occurrences:

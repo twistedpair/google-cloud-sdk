@@ -134,13 +134,12 @@ class GoogleIamV3betaAccessPolicyRule(_messages.Message):
       the FQDN of the service that they are relevant to, e.g.: "conditions": {
       "iam.googleapis.com": } Each rule is evaluated independently. If this
       rule does not apply to a request, other rules might still apply.
-      Currently supported keys are: * `eventarc.googleapis.com// The
-      conditions that determine whether this rule applies to a request.
-      Conditions are identified by their key, which is the FQDN of the service
-      that they are relevant to, e.g.: "conditions": { "iam.googleapis.com": {
-      "cel_condition": } } Each rule is evaluated independently. If this rule
-      does not apply to a request, other rules might still apply. Currently
-      supported keys are: * `eventarc.googleapis.com` * `iam.googleapis.com`
+      Currently supported keys are: * `eventarc.googleapis.com`: Can use `CEL`
+      functions that evaluate resource fields. * `iam.googleapis.com`: Can use
+      `CEL` functions that evaluate [resource
+      tags](https://cloud.google.com/iam/help/conditions/resource-tags) and
+      combine them using boolean and logical operators. Other functions and
+      operators are not supported.
 
   Fields:
     conditions: Optional. The conditions that determine whether this rule
@@ -148,13 +147,12 @@ class GoogleIamV3betaAccessPolicyRule(_messages.Message):
       the FQDN of the service that they are relevant to, e.g.: "conditions": {
       "iam.googleapis.com": } Each rule is evaluated independently. If this
       rule does not apply to a request, other rules might still apply.
-      Currently supported keys are: * `eventarc.googleapis.com// The
-      conditions that determine whether this rule applies to a request.
-      Conditions are identified by their key, which is the FQDN of the service
-      that they are relevant to, e.g.: "conditions": { "iam.googleapis.com": {
-      "cel_condition": } } Each rule is evaluated independently. If this rule
-      does not apply to a request, other rules might still apply. Currently
-      supported keys are: * `eventarc.googleapis.com` * `iam.googleapis.com`
+      Currently supported keys are: * `eventarc.googleapis.com`: Can use `CEL`
+      functions that evaluate resource fields. * `iam.googleapis.com`: Can use
+      `CEL` functions that evaluate [resource
+      tags](https://cloud.google.com/iam/help/conditions/resource-tags) and
+      combine them using boolean and logical operators. Other functions and
+      operators are not supported.
     description: Optional. Customer specified description of the rule. Must be
       less than or equal to 256 characters.
     effect: Required. The effect of the rule.
@@ -220,13 +218,12 @@ class GoogleIamV3betaAccessPolicyRule(_messages.Message):
     service that they are relevant to, e.g.: "conditions": {
     "iam.googleapis.com": } Each rule is evaluated independently. If this rule
     does not apply to a request, other rules might still apply. Currently
-    supported keys are: * `eventarc.googleapis.com// The conditions that
-    determine whether this rule applies to a request. Conditions are
-    identified by their key, which is the FQDN of the service that they are
-    relevant to, e.g.: "conditions": { "iam.googleapis.com": {
-    "cel_condition": } } Each rule is evaluated independently. If this rule
-    does not apply to a request, other rules might still apply. Currently
-    supported keys are: * `eventarc.googleapis.com` * `iam.googleapis.com`
+    supported keys are: * `eventarc.googleapis.com`: Can use `CEL` functions
+    that evaluate resource fields. * `iam.googleapis.com`: Can use `CEL`
+    functions that evaluate [resource
+    tags](https://cloud.google.com/iam/help/conditions/resource-tags) and
+    combine them using boolean and logical operators. Other functions and
+    operators are not supported.
 
     Messages:
       AdditionalProperty: An additional property for a ConditionsValue object.

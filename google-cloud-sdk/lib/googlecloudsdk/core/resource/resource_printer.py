@@ -186,10 +186,9 @@ _FORMATTERS = {
 _HIDDEN_FORMATTERS = {}
 
 
-def RegisterFormatter(format_name, printer, hidden=False):
+def RegisterFormatter(format_name, printer):
   _FORMATTERS[format_name] = printer
-  if hidden:
-    _HIDDEN_FORMATTERS[format_name] = True
+  _HIDDEN_FORMATTERS[format_name] = True
 
 
 def GetFormatRegistry(hidden=False):

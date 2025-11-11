@@ -54,6 +54,18 @@ _BUILD_NAME_REGEX = re.compile(
     r'\/(?P<region>[^\/]+)\/builds\/(?P<buildid>[^\/]+)'
 )
 
+_GEN2_ONLY_FLAGS = {
+    # flag: feature_name
+    'binary_authorization': 'Binary authorization',
+    'clear_binary_authorization': 'Binary authorization',
+    'network': 'Direct VPC',
+    'subnet': 'Direct VPC',
+    'clear_network': 'Direct VPC',
+    'network_tags': 'Direct VPC',
+    'clear_network_tags': 'Direct VPC',
+    'direct_vpc_egress': 'Direct VPC',
+}
+
 
 def _ApplyBuildEnvVarsArgsToFunction(function, args):
   """Determines if build environment variables have to be updated.
@@ -434,17 +446,20 @@ def _CreateCloudBuildLogURL(build_name):
   )
 
 
-def _ValidateV1Flag(args):
-  if args.timeout and args.timeout > 540:
-    raise ArgumentTypeError(
-        '--timeout: value must be less than or equal to '
-        '540s; received: {}s'.format(args.timeout)
-    )
+def _ValidateGen2OnlyFlag(args):
+  """Validate flags that are only supported in GCFv2."""
+  for flag, feature in _GEN2_ONLY_FLAGS.items():
+    if args.IsKnownAndSpecified(flag):
+      raise calliope_exceptions.InvalidArgumentException(
+          '--' + flag.replace('_', '-'),
+          '{} is not supported for 1st gen Cloud Functions.'.format(feature),
+      )
 
 
 def Run(args, track=None):
   """Run a function deployment with the given args."""
   flags.ValidateV1TimeoutFlag(args)
+  _ValidateGen2OnlyFlag(args)
 
   # Check for labels that start with `deployment`, which is not allowed.
   labels_util.CheckNoDeploymentLabels('--remove-labels', args.remove_labels)
@@ -489,18 +504,6 @@ def Run(args, track=None):
     # raise error
     trigger_util.CheckLegacyTriggerUpdate(
         function.eventTrigger, trigger_params['trigger_event']
-    )
-
-  if args.IsKnownAndSpecified('binary_authorization'):
-    raise calliope_exceptions.InvalidArgumentException(
-        '--binary_authorization',
-        'Binary authorization is not supported for 1st gen Cloud Functions.',
-    )
-
-  if args.IsKnownAndSpecified('clear_binary_authorization'):
-    raise calliope_exceptions.InvalidArgumentException(
-        '--clear_binary_authorization',
-        'Binary authorization is not supported for 1st gen Cloud Functions.',
     )
 
   # Keep track of which fields are updated in the case of patching.

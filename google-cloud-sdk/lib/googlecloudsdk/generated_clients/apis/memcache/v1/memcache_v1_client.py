@@ -162,6 +162,33 @@ class MemcacheV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetTags(self, request, global_params=None):
+      r"""Returns tags directly bound to a GCP resource.
+
+      Args:
+        request: (MemcacheProjectsLocationsInstancesGetTagsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GetTagsResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetTags')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetTags.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:getTags',
+        http_method='GET',
+        method_id='memcache.projects.locations.instances.getTags',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:getTags',
+        request_field='',
+        request_type_name='MemcacheProjectsLocationsInstancesGetTagsRequest',
+        response_type_name='GetTagsResponse',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists Instances in a given location.
 
@@ -240,6 +267,33 @@ class MemcacheV1(base_api.BaseApiClient):
         request_field='rescheduleMaintenanceRequest',
         request_type_name='MemcacheProjectsLocationsInstancesRescheduleMaintenanceRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetTags(self, request, global_params=None):
+      r"""Updates tags directly bound to a GCP resource.
+
+      Args:
+        request: (SetTagsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SetTagsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SetTags')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetTags.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:setTags',
+        http_method='POST',
+        method_id='memcache.projects.locations.instances.setTags',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:setTags',
+        request_field='<request>',
+        request_type_name='SetTagsRequest',
+        response_type_name='SetTagsResponse',
         supports_download=False,
     )
 

@@ -62,7 +62,7 @@ class GsutilJsonPrinter(resource_printer_base.ResourcePrinter):
   def Register():
     """Register this as a custom resource printer."""
     resource_printer.RegisterFormatter(
-        _PRINTER_FORMAT, GsutilJsonPrinter, hidden=True
+        _PRINTER_FORMAT, GsutilJsonPrinter
     )
 
   def _AddRecord(self, record, delimit=True):

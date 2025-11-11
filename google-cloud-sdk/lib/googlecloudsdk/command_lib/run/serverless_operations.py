@@ -2191,11 +2191,16 @@ class ServerlessOperations(object):
     for change in config_changes:
       run_job = change.Adjust(run_job)
 
-  def GetExecutionOverrides(self, tasks, task_timeout, container_overrides):
+  def GetExecutionOverrides(
+      self, tasks, task_timeout, priority_tier, container_overrides
+  ):
     return self.messages_module.Overrides(
         containerOverrides=container_overrides,
         taskCount=tasks,
         timeoutSeconds=task_timeout,
+        priorityTier=self.messages_module.Overrides.PriorityTierValueValuesEnum(
+            priority_tier.upper()
+        ),
     )
 
   def MakeContainerOverride(self, name, update_env_vars, args, clear_args):

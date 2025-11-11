@@ -104,10 +104,10 @@ class CloudnumberregistryProjectsLocationsCustomRangesFindFreeIpRangeRequest(_me
   object.
 
   Fields:
-    freeRangeCount: Optional. The number of free IP ranges to find.
-    freeRangePrefixLength: Required. The prefix length of the free IP ranges
-      to find.
+    cidrPrefixLength: Required. The prefix length of the free IP ranges to
+      find.
     name: Required. Name of the CustomRange.
+    rangeCount: Optional. The number of free IP ranges to find.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -121,9 +121,9 @@ class CloudnumberregistryProjectsLocationsCustomRangesFindFreeIpRangeRequest(_me
       not supported (00000000-0000-0000-0000-000000000000).
   """
 
-  freeRangeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  freeRangePrefixLength = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  name = _messages.StringField(3, required=True)
+  cidrPrefixLength = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  name = _messages.StringField(2, required=True)
+  rangeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   requestId = _messages.StringField(4)
 
 
@@ -204,10 +204,10 @@ class CloudnumberregistryProjectsLocationsDiscoveredRangesFindFreeIpRangeRequest
   object.
 
   Fields:
-    freeRangeCount: Optional. The number of free IP ranges to find.
-    freeRangePrefixLength: Required. The prefix length of the free IP ranges
-      to find.
+    cidrPrefixLength: Required. The prefix length of the free IP ranges to
+      find.
     name: Required. Name of the DiscoveredRange.
+    rangeCount: Optional. The number of free IP ranges to find.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -221,9 +221,9 @@ class CloudnumberregistryProjectsLocationsDiscoveredRangesFindFreeIpRangeRequest
       not supported (00000000-0000-0000-0000-000000000000).
   """
 
-  freeRangeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  freeRangePrefixLength = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  name = _messages.StringField(3, required=True)
+  cidrPrefixLength = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  name = _messages.StringField(2, required=True)
+  rangeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   requestId = _messages.StringField(4)
 
 
@@ -703,6 +703,55 @@ class CloudnumberregistryProjectsLocationsRegistryBooksPatchRequest(_messages.Me
   updateMask = _messages.StringField(4)
 
 
+class CloudnumberregistryProjectsLocationsRegistryBooksSearchIpResourcesRequest(_messages.Message):
+  r"""A
+  CloudnumberregistryProjectsLocationsRegistryBooksSearchIpResourcesRequest
+  object.
+
+  Enums:
+    IpVersionValueValuesEnum: Optional. The IP version to search for.
+
+  Fields:
+    attributeText: Optional. The attribute text to search for in keys or
+      values.
+    ipAddress: Optional. The IP address to search for.
+    ipVersion: Optional. The IP version to search for.
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for SearchIpResourcesRequest
+    query: Optional. Search query.
+    realm: Optional. Realm name to search for.
+    showUtilization: Optional. Whether to show the utilization of the ranges
+      in the response.
+  """
+
+  class IpVersionValueValuesEnum(_messages.Enum):
+    r"""Optional. The IP version to search for.
+
+    Values:
+      IP_VERSION_UNSPECIFIED: Unspecified IP version.
+      IPV4: IPv4.
+      IPV6: IPv6.
+    """
+    IP_VERSION_UNSPECIFIED = 0
+    IPV4 = 1
+    IPV6 = 2
+
+  attributeText = _messages.StringField(1)
+  ipAddress = _messages.StringField(2)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 3)
+  orderBy = _messages.StringField(4)
+  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(6)
+  parent = _messages.StringField(7, required=True)
+  query = _messages.StringField(8)
+  realm = _messages.StringField(9)
+  showUtilization = _messages.BooleanField(10)
+
+
 class CustomRange(_messages.Message):
   r"""Message describing CustomRange object
 
@@ -854,6 +903,16 @@ class DiscoveryMetadata(_messages.Message):
       should be API-agnostic. Example:
       "projects/{project_number}/networks/{network_id}".
     resourceUri: Output only. The resource uri of the discovered resource.
+    sourceId: Output only. The canonical google.aip.dev/122 name of the source
+      resource. https://docs.google.com/document/d/1GuWokyKkXqOKIwRxvsQTSkmON7
+      R9nfDezaxouG4QAP0/edit?tab=t.0#bookmark=id.wt75ca9ffaeh
+    sourceSubId: Output only. A single source resource can be the source of
+      multiple CNR resources. This sub_id is used to distinguish between the
+      different CNR resources derived from the same upstream resource. For
+      example, a single subnetwork can be the source of multiple ranges, one
+      for each protocol. In this case, the sub_id could be "private-ipv4" or
+      "private-ipv6". https://docs.google.com/document/d/1GuWokyKkXqOKIwRxvsQT
+      SkmON7R9nfDezaxouG4QAP0/edit?tab=t.0#bookmark=id.wt75ca9ffaeh
     state: Output only. The state of the resource.
     updateTime: Output only. The time when the resource was last modified.
   """
@@ -881,8 +940,10 @@ class DiscoveryMetadata(_messages.Message):
   eventTime = _messages.StringField(2)
   resource = _messages.StringField(3)
   resourceUri = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  updateTime = _messages.StringField(6)
+  sourceId = _messages.StringField(5)
+  sourceSubId = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class Empty(_messages.Message):
@@ -1330,6 +1391,20 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class Range(_messages.Message):
+  r"""Message describing either a CustomRange or a DiscoveredRange.
+
+  Fields:
+    customRange: A custom range.
+    discoveredRange: A discovered range.
+    utilization: The utilization of the range.
+  """
+
+  customRange = _messages.MessageField('CustomRange', 1)
+  discoveredRange = _messages.MessageField('DiscoveredRange', 2)
+  utilization = _messages.MessageField('RangeUtilization', 3)
+
+
 class RangeUtilization(_messages.Message):
   r"""Message for the utilization of an IP range
 
@@ -1489,6 +1564,21 @@ class RegistryBook(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
   updateTime = _messages.StringField(6)
+
+
+class SearchIpResourcesResponse(_messages.Message):
+  r"""Message for response to searching IP resources
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    ranges: The list of ranges matching the search query.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  ranges = _messages.MessageField('Range', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ShowCustomRangeUtilizationResponse(_messages.Message):

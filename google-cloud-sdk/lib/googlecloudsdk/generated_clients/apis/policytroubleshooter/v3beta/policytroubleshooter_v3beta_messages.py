@@ -2761,13 +2761,15 @@ class GoogleIamV3PolicyBinding(_messages.Message):
       PRINCIPAL_ACCESS_BOUNDARY: Principal access boundary policy kind
       ACCESS: Access policy kind. Keep behind visibility label until Access
         Policy launch.
-      TRUST_BOUNDARY: Trust boundary policy kind. Keep behind visibility label
-        until Trust Boundary launch.
+      TRUST_BOUNDARY: <no description>
+      REGIONAL_ACCESS_BOUNDARY: Regional access boundary policy kind. Keep
+        behind visibility label until Regional Access Boundary launch.
     """
     POLICY_KIND_UNSPECIFIED = 0
     PRINCIPAL_ACCESS_BOUNDARY = 1
     ACCESS = 2
     TRUST_BOUNDARY = 3
+    REGIONAL_ACCESS_BOUNDARY = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):

@@ -74,8 +74,11 @@ class BackupPlanAssociationsClient(util.BackupDrClientBase):
     return self.service.Delete(request)
 
   def TriggerBackup(
-      self, resource: resources.Resource, backup_rule: str,
+      self,
+      resource: resources.Resource,
+      backup_rule: str,
       custom_retention_days: int | None = None,
+      labels: dict[str, str] | None = None,
   ) -> backupdr_v1_messages.Operation:
     """Triggers an on demand backup according to the given backup rule.
 
@@ -84,13 +87,25 @@ class BackupPlanAssociationsClient(util.BackupDrClientBase):
       backup_rule: The backup rule to be used for the adhoc backup
       custom_retention_days: The custom retention days to be used for the adhoc
         backup
+      labels: The labels to be applied to the backup.
 
     Returns:
       A long running operation
     """
+    labels_value = None
+    if labels:
+      labels_value = self.messages.TriggerBackupRequest.LabelsValue(
+          additionalProperties=[
+              self.messages.TriggerBackupRequest.LabelsValue.AdditionalProperty(
+                  key=key, value=value
+              )
+              for key, value in labels.items()
+          ]
+      )
     trigger_backup_request = self.messages.TriggerBackupRequest(
         ruleId=backup_rule,
         customRetentionDays=custom_retention_days,
+        labels=labels_value,
     )
     request = self.messages.BackupdrProjectsLocationsBackupPlanAssociationsTriggerBackupRequest(
         name=resource.RelativeName(),

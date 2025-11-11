@@ -1587,6 +1587,33 @@ class AppengineV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def List(self, request, global_params=None):
+      r"""Lists the domain mappings on an application.
+
+      Args:
+        request: (AppengineProjectsLocationsApplicationsDomainMappingsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDomainMappingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}/domainMappings',
+        http_method='GET',
+        method_id='appengine.projects.locations.applications.domainMappings.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/domainMappings',
+        request_field='',
+        request_type_name='AppengineProjectsLocationsApplicationsDomainMappingsListRequest',
+        response_type_name='ListDomainMappingsResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates the specified domain mapping. To map an SSL certificate to a domain mapping, update certificate_id to point to an AuthorizedCertificate resource. A user must be authorized to administer the associated domain in order to update a DomainMapping resource.
 

@@ -133,6 +133,22 @@ def IsImageVersionStringComposerV1(image_version):
   )
 
 
+def IsImageVersionStringComposerV2(image_version):
+  """Checks if string composer-X.Y.Z-airflow-A.B.C is Composer v2 version."""
+  return image_version is not None and (
+      image_version.startswith('composer-2.')
+      or image_version.startswith('composer-2-')
+  )
+
+
+def IsImageVersionStringComposerV3(image_version):
+  """Checks if string composer-X.Y.Z-airflow-A.B.C is Composer v3 version."""
+  return image_version is not None and (
+      image_version.startswith('composer-3.')
+      or image_version.startswith('composer-3-')
+  )
+
+
 def IsDefaultImageVersion(image_version):
   return image_version is None or image_version.startswith('composer-latest')
 

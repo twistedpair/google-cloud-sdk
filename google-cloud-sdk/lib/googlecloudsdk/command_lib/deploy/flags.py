@@ -278,35 +278,6 @@ def AddSkaffoldFileFlag():
   return base.Argument('--skaffold-file', help=help_text)
 
 
-def AddDeployConfigFileFlag(hidden=True):
-  """Add --deploy-config-file flag."""
-  help_text = textwrap.dedent("""\
-  Path of the deploy config file absolute or relative to the source directory.
-
-  Examples:
-
-  Use deploy config file with relative path:
-  The current working directory is expected to be some part of the deploy config path (e.g. the current working directory could be /home/user)
-
-    $ {command} --source=/home/user/source --deploy-config-file=config/deploy-config.yaml
-
-  The deploy config file absolute file path is expected to be:
-  /home/user/source/config/deploy-config.yaml
-
-
-  Use deploy config file with absolute path and with or without source argument:
-
-
-    $ {command} --source=/home/user/source --deploy-config-file=/home/user/source/config/deploy-config.yaml
-
-    $ {command} --deploy-config-file=/home/user/source/config/deploy-config.yaml
-
-  """)
-  return base.Argument(
-      '--deploy-config-file', help=help_text, hidden=hidden
-  )
-
-
 def AddSourceFlag():
   """Adds source flag."""
   return base.Argument(
@@ -340,18 +311,15 @@ def AddCloudRunFileFlag():
   )
 
 
-def AddConfigSourcesGroup(parser):
-  """Add config sources."""
+def AddSkaffoldSources(parser):
+  """Add Skaffold sources."""
   config_group = parser.add_mutually_exclusive_group()
   AddKubernetesFileFlag().AddToParser(config_group)
   AddCloudRunFileFlag().AddToParser(config_group)
 
   source_group = config_group.add_group(mutex=False)
   AddSourceFlag().AddToParser(source_group)
-
-  config_file_group = source_group.add_group(mutex=True)
-  AddSkaffoldFileFlag().AddToParser(config_file_group)
-  AddDeployConfigFileFlag().AddToParser(config_file_group)
+  AddSkaffoldFileFlag().AddToParser(source_group)
 
 
 def AddDescriptionFlag(parser):

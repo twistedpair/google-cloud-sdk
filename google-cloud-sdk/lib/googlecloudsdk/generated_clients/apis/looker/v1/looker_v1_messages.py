@@ -289,6 +289,7 @@ class Instance(_messages.Message):
     name: Output only. Format:
       `projects/{project}/locations/{location}/instances/{instance}`.
     oauthConfig: Looker instance OAuth login settings.
+    periodicExportConfig: Optional. Configuration for periodic export.
     platformEdition: Platform edition.
     privateIpEnabled: Whether private IP is enabled on the Looker instance.
     pscConfig: Optional. PSC configuration. Used when `psc_enabled` is true.
@@ -395,17 +396,18 @@ class Instance(_messages.Message):
   maintenanceWindow = _messages.MessageField('MaintenanceWindow', 20)
   name = _messages.StringField(21)
   oauthConfig = _messages.MessageField('OAuthConfig', 22)
-  platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 23)
-  privateIpEnabled = _messages.BooleanField(24)
-  pscConfig = _messages.MessageField('PscConfig', 25)
-  pscEnabled = _messages.BooleanField(26)
-  publicIpEnabled = _messages.BooleanField(27)
-  reservedRange = _messages.StringField(28)
-  satisfiesPzi = _messages.BooleanField(29)
-  satisfiesPzs = _messages.BooleanField(30)
-  state = _messages.EnumField('StateValueValuesEnum', 31)
-  updateTime = _messages.StringField(32)
-  userMetadata = _messages.MessageField('UserMetadata', 33)
+  periodicExportConfig = _messages.MessageField('PeriodicExportConfig', 23)
+  platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 24)
+  privateIpEnabled = _messages.BooleanField(25)
+  pscConfig = _messages.MessageField('PscConfig', 26)
+  pscEnabled = _messages.BooleanField(27)
+  publicIpEnabled = _messages.BooleanField(28)
+  reservedRange = _messages.StringField(29)
+  satisfiesPzi = _messages.BooleanField(30)
+  satisfiesPzs = _messages.BooleanField(31)
+  state = _messages.EnumField('StateValueValuesEnum', 32)
+  updateTime = _messages.StringField(33)
+  userMetadata = _messages.MessageField('UserMetadata', 34)
 
 
 class InstanceBackup(_messages.Message):
@@ -1063,6 +1065,22 @@ class OperationMetadata(_messages.Message):
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class PeriodicExportConfig(_messages.Message):
+  r"""Configuration for periodic export.
+
+  Fields:
+    gcsUri: Required. Cloud Storage bucket URI for periodic export. Format:
+      gs://{bucket_name}
+    kmsKey: Required. Name of the CMEK key in KMS. Format: projects/{project}/
+      locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}
+    startTime: Required. Time in UTC to start the periodic export job.
+  """
+
+  gcsUri = _messages.StringField(1)
+  kmsKey = _messages.StringField(2)
+  startTime = _messages.MessageField('TimeOfDay', 3)
 
 
 class PscConfig(_messages.Message):

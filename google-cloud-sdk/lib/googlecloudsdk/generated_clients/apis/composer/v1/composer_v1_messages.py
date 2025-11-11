@@ -1090,11 +1090,13 @@ class EnvironmentConfig(_messages.Message):
       ENVIRONMENT_SIZE_SMALL: The environment size is small.
       ENVIRONMENT_SIZE_MEDIUM: The environment size is medium.
       ENVIRONMENT_SIZE_LARGE: The environment size is large.
+      ENVIRONMENT_SIZE_EXTRA_LARGE: The environment size is extra large.
     """
     ENVIRONMENT_SIZE_UNSPECIFIED = 0
     ENVIRONMENT_SIZE_SMALL = 1
     ENVIRONMENT_SIZE_MEDIUM = 2
     ENVIRONMENT_SIZE_LARGE = 3
+    ENVIRONMENT_SIZE_EXTRA_LARGE = 4
 
   class ResilienceModeValueValuesEnum(_messages.Enum):
     r"""Optional. Resilience mode of the Cloud Composer Environment. This

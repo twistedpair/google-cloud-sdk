@@ -14,10 +14,6 @@
 # limitations under the License.
 """Generic flags that apply to multiple commands."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
 import enum
 
 from googlecloudsdk.api_lib.storage import cloud_api
@@ -1381,13 +1377,16 @@ def add_batch_jobs_flags(parser):
           ' `Content-Type={VALUE}`. To set how caches should handle requests'
           ' and responses, specify the key-value pair `Cache-Control={VALUE}`.'
           ' To set custom time for Cloud Storage objects in RFC 3339 format,'
-          ' specify the key-value pair `Custom-Time={VALUE}`. To set custom'
-          ' metadata on objects, specify key-value pairs'
-          ' `{CUSTOM-KEY}:{VALUE}`. Note that all predefined keys (e.g.'
+          ' specify the key-value pair `Custom-Time={VALUE}`. To set object'
+          ' retention, specify `Retain-Until={TIMESTAMP}` in RFC 3339 format'
+          ' and `Retention-Mode={MODE}` where mode can be `Locked` or'
+          ' `Unlocked`. To set custom metadata on objects, specify key-value'
+          ' pairs `{CUSTOM-KEY}:{VALUE}`. Note that all predefined keys (e.g.'
           ' Content-Disposition) are case-insensitive. Any other key that is'
-          ' not specified above will be treated as a custom key. Multiple'
-          ' key-value pairs can be specified by separating them with commas.'
-          ' For example,'
+          ' not specified above will be treated as a custom key. To clear a'
+          ' field, provide the key with an empty value (e.g.'
+          ' `Content-Disposition=`). Multiple key-value pairs can be specified'
+          ' by separating them with commas. For example,'
           ' `--put-metadata=Content-Disposition=inline,Content-Encoding=gzip`'
       ),
       type=arg_parsers.ArgDict(min_length=1),

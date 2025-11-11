@@ -80,8 +80,8 @@ def Create(
       or autoscaling_max_nodes
       or autoscaling_min_processing_units
       or autoscaling_max_processing_units
-      or autoscaling_high_priority_cpu_target
-      or autoscaling_total_cpu_target
+      or autoscaling_high_priority_cpu_target is not None
+      or autoscaling_total_cpu_target is not None
       or autoscaling_storage_target
   ):
     instance_partition_obj.autoscalingConfig = msgs.AutoscalingConfig(
@@ -143,7 +143,8 @@ def Patch(
       (autoscaling_min_nodes and autoscaling_max_nodes)
       or (autoscaling_min_processing_units and autoscaling_max_processing_units)
   ) and (
-      (autoscaling_high_priority_cpu_target or autoscaling_total_cpu_target)
+      (autoscaling_high_priority_cpu_target is not None or
+       autoscaling_total_cpu_target is not None)
       and autoscaling_storage_target
   ):
     fields.append('autoscalingConfig')
@@ -156,11 +157,11 @@ def Patch(
       fields.append('autoscalingConfig.autoscalingLimits.minProcessingUnits')
     if autoscaling_max_processing_units:
       fields.append('autoscalingConfig.autoscalingLimits.maxProcessingUnits')
-    if autoscaling_high_priority_cpu_target:
+    if autoscaling_high_priority_cpu_target is not None:
       fields.append(
           'autoscalingConfig.autoscalingTargets.highPriorityCpuUtilizationPercent'
       )
-    if autoscaling_total_cpu_target:
+    if autoscaling_total_cpu_target is not None:
       fields.append(
           'autoscalingConfig.autoscalingTargets.totalCpuUtilizationPercent'
       )
@@ -182,8 +183,8 @@ def Patch(
       or autoscaling_max_nodes
       or autoscaling_min_processing_units
       or autoscaling_max_processing_units
-      or autoscaling_high_priority_cpu_target
-      or autoscaling_total_cpu_target
+      or autoscaling_high_priority_cpu_target is not None
+      or autoscaling_total_cpu_target is not None
       or autoscaling_storage_target
   ):
     instance_partition_obj.autoscalingConfig = msgs.AutoscalingConfig(

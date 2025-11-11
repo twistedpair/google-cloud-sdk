@@ -1120,6 +1120,21 @@ def AddReservationAffinity(parser):
   )
 
 
+def AddStartUpScriptUri(parser):
+  """Adds the --startup-script-uri flag to the given parser."""
+  help_text = """\
+  Link to the startup script stored in Cloud Storage. The script is executed
+  on the workstation VM after it is booted.
+
+  Example:
+
+    $ {command} --startup-script-uri gs://{bucket-name}/{object-name}
+  """
+  parser.add_argument(
+      '--startup-script-uri', type=str, help=help_text
+  )
+
+
 def ValidateConsumeReservationType(value):
   """Validates the consume-reservation-type value."""
   allowed_values = [

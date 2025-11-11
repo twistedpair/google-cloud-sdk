@@ -225,6 +225,33 @@ class CloudshellV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GenerateAccessToken(self, request, global_params=None):
+      r"""Generates an access token for the user's environment.
+
+      Args:
+        request: (CloudshellUsersEnvironmentsGenerateAccessTokenRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GenerateAccessTokenResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateAccessToken')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateAccessToken.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/users/{usersId}/environments/{environmentsId}:generateAccessToken',
+        http_method='GET',
+        method_id='cloudshell.users.environments.generateAccessToken',
+        ordered_params=['environment'],
+        path_params=['environment'],
+        query_params=['expireTime', 'ttl'],
+        relative_path='v1/{+environment}:generateAccessToken',
+        request_field='',
+        request_type_name='CloudshellUsersEnvironmentsGenerateAccessTokenRequest',
+        response_type_name='GenerateAccessTokenResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets an environment. Returns NOT_FOUND if the environment does not exist.
 

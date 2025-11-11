@@ -964,9 +964,10 @@ class CustomMirroringProfile(_messages.Message):
   (mirroring). It is used by mirroring rules with a MIRROR action.
 
   Fields:
-    mirroringEndpointGroup: Required. The target MirroringEndpointGroup. When
-      a mirroring rule with this security profile attached matches a packet, a
-      replica will be mirrored to the location-local target in this group.
+    mirroringEndpointGroup: Required. Immutable. The target
+      MirroringEndpointGroup. When a mirroring rule with this security profile
+      attached matches a packet, a replica will be mirrored to the location-
+      local target in this group.
   """
 
   mirroringEndpointGroup = _messages.StringField(1)

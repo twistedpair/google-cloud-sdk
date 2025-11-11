@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,10 +25,14 @@ from google.api_core import gapic_v1
 from google.api_core import retry as retries
 from google.auth import credentials as ga_credentials  # type: ignore
 from google.oauth2 import service_account # type: ignore
+import cloudsdk.google.protobuf
 
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import task
 
 DEFAULT_CLIENT_INFO = gapic_v1.client_info.ClientInfo(gapic_version=package_version.__version__)
+
+if hasattr(DEFAULT_CLIENT_INFO, "protobuf_runtime_version"):  # pragma: NO COVER
+    DEFAULT_CLIENT_INFO.protobuf_runtime_version = cloudsdk.google.protobuf.__version__
 
 
 class TasksTransport(abc.ABC):
@@ -39,6 +43,7 @@ class TasksTransport(abc.ABC):
     )
 
     DEFAULT_HOST: str = 'run.googleapis.com'
+
     def __init__(
             self, *,
             host: str = DEFAULT_HOST,
@@ -61,9 +66,10 @@ class TasksTransport(abc.ABC):
                 credentials identify the application to the service; if none
                 are specified, the client will attempt to ascertain the
                 credentials from the environment.
-            credentials_file (Optional[str]): A file with credentials that can
+            credentials_file (Optional[str]): Deprecated. A file with credentials that can
                 be loaded with :func:`google.auth.load_credentials_from_file`.
-                This argument is mutually exclusive with credentials.
+                This argument is mutually exclusive with credentials. This argument will be
+                removed in the next major version of this library.
             scopes (Optional[Sequence[str]]): A list of scopes.
             quota_project_id (Optional[str]): An optional project to use for billing
                 and quota.
@@ -80,6 +86,8 @@ class TasksTransport(abc.ABC):
 
         # Save the scopes.
         self._scopes = scopes
+        if not hasattr(self, "_ignore_credentials"):
+            self._ignore_credentials: bool = False
 
         # If no credentials are provided, then determine the appropriate
         # defaults.
@@ -92,7 +100,7 @@ class TasksTransport(abc.ABC):
                                 **scopes_kwargs,
                                 quota_project_id=quota_project_id
                             )
-        elif credentials is None:
+        elif credentials is None and not self._ignore_credentials:
             credentials, _ = google.auth.default(**scopes_kwargs, quota_project_id=quota_project_id)
             # Don't apply audience if the credentials file passed from user.
             if hasattr(credentials, "with_gdch_audience"):

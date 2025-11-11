@@ -128,8 +128,6 @@ apis:
   apikeys:
     v2:
       discovery_doc: apikeys_v2.json
-    v2alpha1:
-      discovery_doc: apikeys_v2alpha1.json
       default: true
   apigateway:
     v1alpha1:

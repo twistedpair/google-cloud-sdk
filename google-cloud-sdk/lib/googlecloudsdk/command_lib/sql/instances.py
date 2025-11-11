@@ -247,6 +247,14 @@ def _ParseServerCaMode(sql_messages, server_ca_mode):
   )
 
 
+def _ParseServerCertificateRotationMode(sql_messages, server_certificate_rotation_mode):
+  return (
+      sql_messages.IpConfiguration.ServerCertificateRotationModeValueValuesEnum.lookup_by_name(
+          server_certificate_rotation_mode.upper()
+      )
+  )
+
+
 # TODO(b/122660263): Remove when V1 instances are no longer supported.
 def ShowV1DeprecationWarning(plural=False):
   message = (
@@ -548,6 +556,15 @@ class _BaseInstances(object):
           ),
       )
 
+    if args.IsKnownAndSpecified('server_certificate_rotation_mode'):
+      if not settings.ipConfiguration:
+        settings.ipConfiguration = sql_messages.IpConfiguration()
+      settings.ipConfiguration.serverCertificateRotationMode = (
+          _ParseServerCertificateRotationMode(
+              sql_messages, args.server_certificate_rotation_mode
+          )
+      )
+
     if args.IsKnownAndSpecified('custom_subject_alternative_names'):
       if not settings.ipConfiguration:
         settings.ipConfiguration = sql_messages.IpConfiguration()
@@ -778,6 +795,21 @@ class _BaseInstances(object):
       if db_aligned_atomic_writes_config is not None:
         settings.dbAlignedAtomicWritesConfig = db_aligned_atomic_writes_config
 
+      if args.IsKnownAndSpecified('performance_capture_config'):
+        performance_capture_config = reducers.PerformanceCaptureConfig(
+            sql_messages,
+            performance_capture_config=args.performance_capture_config,
+            current_config=None,
+        )
+        if performance_capture_config is not None:
+          settings.performanceCaptureConfig = performance_capture_config
+
+      if args.IsKnownAndSpecified('unc_mappings'):
+        settings.uncMappings = reducers.UncMappings(
+            sql_messages,
+            unc_mappings=args.unc_mappings,
+        )
+
     return settings
 
   @classmethod
@@ -858,6 +890,11 @@ class _BaseInstances(object):
               deny_maintenance_period_end_date=args.deny_maintenance_period_end_date,
               deny_maintenance_period_time=args.deny_maintenance_period_time,
           )
+      )
+
+    if args.storage_type:
+      settings.dataDiskType = _ParseStorageType(
+          sql_messages, STORAGE_TYPE_MAPPING.get(args.storage_type)
       )
 
     settings.insightsConfig = reducers.InsightsConfig(
@@ -973,6 +1010,16 @@ class _BaseInstances(object):
             unc_mappings=args.unc_mappings,
             clear_unc_mappings=args.clear_unc_mappings,
         )
+
+      if args.IsKnownAndSpecified('performance_capture_config'):
+        performance_capture_config = reducers.PerformanceCaptureConfig(
+            sql_messages,
+            performance_capture_config=args.performance_capture_config,
+            current_config=original_settings.performanceCaptureConfig,
+        )
+        if performance_capture_config is not None:
+          settings.performanceCaptureConfig = performance_capture_config
+
     # ALPHA args.
     if _IsAlpha(release_track):
       pass

@@ -131,7 +131,7 @@ class CloudnumberregistryV1alpha(base_api.BaseApiClient):
         method_id='cloudnumberregistry.projects.locations.customRanges.findFreeIpRange',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['freeRangeCount', 'freeRangePrefixLength', 'requestId'],
+        query_params=['cidrPrefixLength', 'rangeCount', 'requestId'],
         relative_path='v1alpha/{+name}:findFreeIpRange',
         request_field='',
         request_type_name='CloudnumberregistryProjectsLocationsCustomRangesFindFreeIpRangeRequest',
@@ -276,7 +276,7 @@ class CloudnumberregistryV1alpha(base_api.BaseApiClient):
         method_id='cloudnumberregistry.projects.locations.discoveredRanges.findFreeIpRange',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['freeRangeCount', 'freeRangePrefixLength', 'requestId'],
+        query_params=['cidrPrefixLength', 'rangeCount', 'requestId'],
         relative_path='v1alpha/{+name}:findFreeIpRange',
         request_field='',
         request_type_name='CloudnumberregistryProjectsLocationsDiscoveredRangesFindFreeIpRangeRequest',
@@ -969,6 +969,33 @@ class CloudnumberregistryV1alpha(base_api.BaseApiClient):
         request_field='registryBook',
         request_type_name='CloudnumberregistryProjectsLocationsRegistryBooksPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SearchIpResources(self, request, global_params=None):
+      r"""Searches IP resources in a given RegistryBook.
+
+      Args:
+        request: (CloudnumberregistryProjectsLocationsRegistryBooksSearchIpResourcesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchIpResourcesResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchIpResources')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchIpResources.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/registryBooks/{registryBooksId}:searchIpResources',
+        http_method='GET',
+        method_id='cloudnumberregistry.projects.locations.registryBooks.searchIpResources',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['attributeText', 'ipAddress', 'ipVersion', 'orderBy', 'pageSize', 'pageToken', 'query', 'realm', 'showUtilization'],
+        relative_path='v1alpha/{+parent}:searchIpResources',
+        request_field='',
+        request_type_name='CloudnumberregistryProjectsLocationsRegistryBooksSearchIpResourcesRequest',
+        response_type_name='SearchIpResourcesResponse',
         supports_download=False,
     )
 

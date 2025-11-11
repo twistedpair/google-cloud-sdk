@@ -140,7 +140,6 @@ def AddStoragePoolTypeArg(parser, messages):
       help_str='The type of the Storage Pool. `FILE` pools support file-based '
                'volumes only. `UNIFIED` pools support both file and block '
                'volumes.',
-      hidden=True,
       custom_mappings={
           'FILE': ('file', 'File-based volumes only (default).'),
           'UNIFIED': ('unified', 'Both file and block volumes.'),

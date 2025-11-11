@@ -2297,7 +2297,9 @@ class UpgradeInfo(_messages.Message):
       ROLLBACK_FUNCTION_UPGRADE_TRAFFIC_ERROR: RollbackFunctionUpgradeTraffic
         API was un-successful.
       COMMIT_FUNCTION_UPGRADE_ERROR: CommitFunctionUpgrade API was un-
-        successful.
+        successful and 1st gen function might have broken.
+      COMMIT_FUNCTION_UPGRADE_ERROR_ROLLBACK_SAFE: CommitFunctionUpgrade API
+        was un-successful but safe to rollback traffic or abort.
     """
     UPGRADE_STATE_UNSPECIFIED = 0
     ELIGIBLE_FOR_2ND_GEN_UPGRADE = 1
@@ -2310,6 +2312,7 @@ class UpgradeInfo(_messages.Message):
     REDIRECT_FUNCTION_UPGRADE_TRAFFIC_ERROR = 8
     ROLLBACK_FUNCTION_UPGRADE_TRAFFIC_ERROR = 9
     COMMIT_FUNCTION_UPGRADE_ERROR = 10
+    COMMIT_FUNCTION_UPGRADE_ERROR_ROLLBACK_SAFE = 11
 
   buildConfig = _messages.MessageField('BuildConfig', 1)
   eventTrigger = _messages.MessageField('EventTrigger', 2)

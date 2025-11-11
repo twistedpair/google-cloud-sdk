@@ -1678,7 +1678,21 @@ class CycleStep(_messages.Message):
 
 
 class DataDiskImageImport(_messages.Message):
-  r"""Mentions that the image import is not using OS adaptation process."""
+  r"""Used when the image import is not using OS adaptation process.
+
+  Fields:
+    guestOsFeatures: Optional. A list of guest OS features to apply to the
+      imported image. These features are flags that are used by Compute Engine
+      to enable certain capabilities for virtual machine instances that are
+      created from the image. This field does not change the OS of the image;
+      it only marks the image with the specified features. The user must
+      ensure that the OS is compatible with the features. For a list of
+      available features, see
+      https://cloud.google.com/compute/docs/images/create-custom#guest-os-
+      features.
+  """
+
+  guestOsFeatures = _messages.StringField(1, repeated=True)
 
 
 class DatacenterConnector(_messages.Message):

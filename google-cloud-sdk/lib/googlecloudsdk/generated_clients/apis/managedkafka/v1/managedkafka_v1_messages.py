@@ -244,6 +244,8 @@ class Cluster(_messages.Message):
       The number of brokers per zone.
     capacityConfig: Required. Capacity configuration for the Kafka cluster.
     createTime: Output only. The time when the cluster was created.
+    effectiveCapacityConfig: Output only. Only populated when FULL view is
+      requested. The effective capacity configuration of the cluster.
     gcpConfig: Required. Configuration properties for a Kafka cluster deployed
       to Google Cloud Platform.
     kafkaVersion: Output only. Only populated when FULL view is requested. The
@@ -359,17 +361,18 @@ class Cluster(_messages.Message):
   brokersPerZone = _messages.MessageField('BrokersPerZoneValue', 4)
   capacityConfig = _messages.MessageField('CapacityConfig', 5)
   createTime = _messages.StringField(6)
-  gcpConfig = _messages.MessageField('GcpConfig', 7)
-  kafkaVersion = _messages.StringField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  rebalanceConfig = _messages.MessageField('RebalanceConfig', 11)
-  satisfiesPzi = _messages.BooleanField(12)
-  satisfiesPzs = _messages.BooleanField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  tlsConfig = _messages.MessageField('TlsConfig', 15)
-  updateOptions = _messages.MessageField('UpdateOptions', 16)
-  updateTime = _messages.StringField(17)
+  effectiveCapacityConfig = _messages.MessageField('EffectiveCapacityConfig', 7)
+  gcpConfig = _messages.MessageField('GcpConfig', 8)
+  kafkaVersion = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  name = _messages.StringField(11)
+  rebalanceConfig = _messages.MessageField('RebalanceConfig', 12)
+  satisfiesPzi = _messages.BooleanField(13)
+  satisfiesPzs = _messages.BooleanField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  tlsConfig = _messages.MessageField('TlsConfig', 16)
+  updateOptions = _messages.MessageField('UpdateOptions', 17)
+  updateTime = _messages.StringField(18)
 
 
 class ConnectAccessConfig(_messages.Message):
@@ -812,6 +815,20 @@ class CreateVersionResponse(_messages.Message):
   """
 
   id = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class EffectiveCapacityConfig(_messages.Message):
+  r"""Describes the effective capacity configuration of a Kafka cluster, both
+  cluster-wide and per-broker.
+
+  Fields:
+    brokerCount: Output only. The number of brokers in the cluster.
+    brokerDiskSizeGb: Output only. The disk assigned to each broker in
+      Gigabytes.
+  """
+
+  brokerCount = _messages.IntegerField(1)
+  brokerDiskSizeGb = _messages.IntegerField(2)
 
 
 class Empty(_messages.Message):

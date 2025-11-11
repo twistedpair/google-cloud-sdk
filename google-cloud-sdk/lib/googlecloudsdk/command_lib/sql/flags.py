@@ -892,7 +892,10 @@ def AddStorageType(parser, hidden=False):
       ),
       default=None,
       hidden=hidden,
-      help='The storage type for the instance. The default is SSD.',
+      help=(
+          'The storage type for the instance, determined by the selected'
+          ' machine type.'
+      ),
   )
 
 
@@ -3586,6 +3589,26 @@ def AddClearUncMappings(parser, hidden=True):
   )
 
 
+def AddPerformanceCaptureConfig(parser, hidden=True):
+  """Adds --performance-capture-config argument."""
+  parser.add_argument(
+      '--performance-capture-config',
+      type=arg_parsers.ArgDict(min_length=1),
+      required=False,
+      metavar='KEY=VALUE',
+      help=(
+          'A comma-separated list of performance capture settings to add to the'
+          ' MySQL instance. The input should be in a format of key=value.'
+          ' Available keys are: enabled, probing-interval-seconds,'
+          ' probe-threshold, running-threads-threshold,'
+          ' seconds-behind-source-threshold, '
+          ' and transaction-duration-threshold. Example:'
+          ' --performance-capture-config enabled=true,probe-threshold=5'
+      ),
+      hidden=hidden,
+  )
+
+
 def AddDatabaseRoles(parser, required=False):
   """Add the flag to specify database roles for the user.
 
@@ -3762,4 +3785,20 @@ def AddDataApiAccess(parser):
       required=False,
       default=None,
       help='Controls connectivity to the instance using ExecuteSql API.',
+  )
+
+
+def AddServerCertificateRotationMode(parser):
+  """Adds the '--server-certificate-rotation-mode' flag to the parser.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  help_text = 'Set the server certificate rotation mode of the instance.'
+  parser.add_argument(
+      '--server-certificate-rotation-mode',
+      required=False,
+      default=None,
+      help=help_text,
+      hidden=True,
   )

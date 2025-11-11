@@ -69,3 +69,21 @@ presets:
   config_values:
     Container Concurrency: 1
   example_gcloud_usage: gcloud alpha run deploy <service-name> --preset=single-concurrency
+- name: static-website
+  display_name: Static Website
+  version: 0.0.1
+  category: CATEGORY_QUICKSTART
+  description: Serve your static website assets from a GCS bucket with an NGINX server behind a Cloud Run endpoint, allowing you to use IAP, a load balancer or private networking.
+  supported_resources:
+  - SERVICE
+  parameters:
+  - name: bucket
+    label: GCS Bucket Name
+    description: Unique bucket name (and optional folder path) with static assets.
+    type: GCS_BUCKET
+    required: true
+    data_type: DATA_TYPE_STRING
+  config_values:
+    Container Image: nginx:stable
+    GCS Bucket: <bucket-name>
+  example_gcloud_usage: gcloud alpha run deploy <service-name> --preset=static-website:bucket=<bucket-name>

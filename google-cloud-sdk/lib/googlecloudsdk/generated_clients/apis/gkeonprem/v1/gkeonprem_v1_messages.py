@@ -46,6 +46,53 @@ class BareMetalAdminApiServerArgument(_messages.Message):
   value = _messages.StringField(2)
 
 
+class BareMetalAdminBgpLbConfig(_messages.Message):
+  r"""BareMetalAdminBgpLbConfig represents configuration parameters for a
+  Border Gateway Protocol (BGP) load balancer.
+
+  Fields:
+    addressPools: Required. AddressPools is a list of non-overlapping IP pools
+      used by load balancer typed services. All addresses must be routable to
+      load balancer nodes. IngressVIP must be included in the pools.
+    asn: Required. BGP autonomous system number (ASN) of the cluster. This
+      field can be updated after cluster creation.
+    bgpPeerConfigs: Required. The list of BGP peers that the cluster will
+      connect to. At least one peer must be configured for each control plane
+      node. Control plane nodes will connect to these peers to advertise the
+      control plane VIP. The Services load balancer also uses these peers by
+      default. This field can be updated after cluster creation.
+    loadBalancerNodePoolConfig: Specifies the node pool running data plane
+      load balancing. L2 connectivity is required among nodes in this pool. If
+      missing, the control plane node pool is used for data plane load
+      balancing.
+  """
+
+  addressPools = _messages.MessageField('BareMetalAdminLoadBalancerAddressPool', 1, repeated=True)
+  asn = _messages.IntegerField(2)
+  bgpPeerConfigs = _messages.MessageField('BareMetalAdminBgpPeerConfig', 3, repeated=True)
+  loadBalancerNodePoolConfig = _messages.MessageField('BareMetalAdminLoadBalancerNodePoolConfig', 4)
+
+
+class BareMetalAdminBgpPeerConfig(_messages.Message):
+  r"""BareMetalAdminBgpPeerConfig represents configuration parameters for a
+  Border Gateway Protocol (BGP) peer.
+
+  Fields:
+    asn: Required. BGP autonomous system number (ASN) for the network that
+      contains the external peer device.
+    controlPlaneNodes: The IP address of the control plane node that connects
+      to the external peer. If you don't specify any control plane nodes, all
+      control plane nodes can connect to the external peer. If you specify one
+      or more IP addresses, only the nodes specified participate in peering
+      sessions.
+    ipAddress: Required. The IP address of the external peer device.
+  """
+
+  asn = _messages.IntegerField(1)
+  controlPlaneNodes = _messages.StringField(2, repeated=True)
+  ipAddress = _messages.StringField(3)
+
+
 class BareMetalAdminCluster(_messages.Message):
   r"""Resource that represents a bare metal admin cluster.
 
@@ -295,19 +342,53 @@ class BareMetalAdminIslandModeCidrConfig(_messages.Message):
   serviceAddressCidrBlocks = _messages.StringField(2, repeated=True)
 
 
+class BareMetalAdminLoadBalancerAddressPool(_messages.Message):
+  r"""Represents an IP pool used by the load balancer.
+
+  Fields:
+    addresses: Required. The addresses that are part of this pool. Each
+      address must be either in the CIDR form (1.2.3.0/24) or range form
+      (1.2.3.1-1.2.3.5).
+    avoidBuggyIps: If true, avoid using IPs ending in .0 or .255. This avoids
+      buggy consumer devices mistakenly dropping IPv4 traffic for those
+      special IP addresses.
+    manualAssign: If true, prevent IP addresses from being automatically
+      assigned.
+    pool: Required. The name of the address pool.
+  """
+
+  addresses = _messages.StringField(1, repeated=True)
+  avoidBuggyIps = _messages.BooleanField(2)
+  manualAssign = _messages.BooleanField(3)
+  pool = _messages.StringField(4)
+
+
 class BareMetalAdminLoadBalancerConfig(_messages.Message):
   r"""BareMetalAdminLoadBalancerConfig specifies the load balancer
   configuration.
 
   Fields:
+    bgpLbConfig: Configuration for BGP typed load balancers.
     manualLbConfig: Manually configured load balancers.
     portConfig: Configures the ports that the load balancer will listen on.
     vipConfig: The VIPs used by the load balancer.
   """
 
-  manualLbConfig = _messages.MessageField('BareMetalAdminManualLbConfig', 1)
-  portConfig = _messages.MessageField('BareMetalAdminPortConfig', 2)
-  vipConfig = _messages.MessageField('BareMetalAdminVipConfig', 3)
+  bgpLbConfig = _messages.MessageField('BareMetalAdminBgpLbConfig', 1)
+  manualLbConfig = _messages.MessageField('BareMetalAdminManualLbConfig', 2)
+  portConfig = _messages.MessageField('BareMetalAdminPortConfig', 3)
+  vipConfig = _messages.MessageField('BareMetalAdminVipConfig', 4)
+
+
+class BareMetalAdminLoadBalancerNodePoolConfig(_messages.Message):
+  r"""Specifies the load balancer's node pool configuration.
+
+  Fields:
+    nodePoolConfig: The generic configuration for a node pool running a load
+      balancer.
+  """
+
+  nodePoolConfig = _messages.MessageField('BareMetalNodePoolConfig', 1)
 
 
 class BareMetalAdminMachineDrainStatus(_messages.Message):
@@ -361,14 +442,33 @@ class BareMetalAdminManualLbConfig(_messages.Message):
   enabled = _messages.BooleanField(1)
 
 
+class BareMetalAdminMultipleNetworkInterfacesConfig(_messages.Message):
+  r"""Specifies the multiple networking interfaces cluster configuration.
+
+  Fields:
+    enabled: Whether to enable multiple network interfaces for your pods. When
+      set network_config.advanced_networking is automatically set to true.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class BareMetalAdminNetworkConfig(_messages.Message):
   r"""BareMetalAdminNetworkConfig specifies the cluster network configuration.
 
   Fields:
+    advancedNetworking: Enables the use of advanced Anthos networking
+      features, such as Bundled Load Balancing with BGP or the egress NAT
+      gateway. Setting configuration for advanced networking features will
+      automatically set this flag.
     islandModeCidr: Configuration for Island mode CIDR.
+    multipleNetworkInterfacesConfig: Configuration for multiple network
+      interfaces.
   """
 
-  islandModeCidr = _messages.MessageField('BareMetalAdminIslandModeCidrConfig', 1)
+  advancedNetworking = _messages.BooleanField(1)
+  islandModeCidr = _messages.MessageField('BareMetalAdminIslandModeCidrConfig', 2)
+  multipleNetworkInterfacesConfig = _messages.MessageField('BareMetalAdminMultipleNetworkInterfacesConfig', 3)
 
 
 class BareMetalAdminNodeAccessConfig(_messages.Message):
@@ -4085,6 +4185,7 @@ class GkeonpremProjectsLocationsVmwareAdminClustersCreateRequest(_messages.Messa
       is required to fix the cluster.
     parent: Required. The parent of the project and location where the cluster
       is created in. Format: "projects/{project}/locations/{location}"
+    skipValidations: Optional. If set, skip the specified validations.
     validateOnly: Validate the request without actually doing any updates.
     vmwareAdminCluster: A VmwareAdminCluster resource to be passed as the
       request body.
@@ -4096,9 +4197,10 @@ class GkeonpremProjectsLocationsVmwareAdminClustersCreateRequest(_messages.Messa
 
   allowPreflightFailure = _messages.BooleanField(1)
   parent = _messages.StringField(2, required=True)
-  validateOnly = _messages.BooleanField(3)
-  vmwareAdminCluster = _messages.MessageField('VmwareAdminCluster', 4)
-  vmwareAdminClusterId = _messages.StringField(5)
+  skipValidations = _messages.StringField(3, repeated=True)
+  validateOnly = _messages.BooleanField(4)
+  vmwareAdminCluster = _messages.MessageField('VmwareAdminCluster', 5)
+  vmwareAdminClusterId = _messages.StringField(6)
 
 
 class GkeonpremProjectsLocationsVmwareAdminClustersEnrollRequest(_messages.Message):
@@ -4280,6 +4382,8 @@ class GkeonpremProjectsLocationsVmwareAdminClustersPatchRequest(_messages.Messag
 
   Fields:
     name: Immutable. The VMware admin cluster resource name.
+    skipValidations: Optional. If set, the server-side preflight checks will
+      be skipped.
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the VMwareAdminCluster resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
@@ -4293,9 +4397,10 @@ class GkeonpremProjectsLocationsVmwareAdminClustersPatchRequest(_messages.Messag
   """
 
   name = _messages.StringField(1, required=True)
-  updateMask = _messages.StringField(2)
-  validateOnly = _messages.BooleanField(3)
-  vmwareAdminCluster = _messages.MessageField('VmwareAdminCluster', 4)
+  skipValidations = _messages.StringField(2, repeated=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+  vmwareAdminCluster = _messages.MessageField('VmwareAdminCluster', 5)
 
 
 class GkeonpremProjectsLocationsVmwareAdminClustersSetIamPolicyRequest(_messages.Message):
@@ -4372,6 +4477,8 @@ class GkeonpremProjectsLocationsVmwareClustersCreateRequest(_messages.Message):
       is required to fix the cluster.
     parent: Required. The parent of the project and location where this
       cluster is created in. Format: "projects/{project}/locations/{location}"
+    skipValidations: Optional. List of validations to skip during cluster
+      creation.
     validateOnly: Validate the request without actually doing any updates.
     vmwareCluster: A VmwareCluster resource to be passed as the request body.
     vmwareClusterId: User provided identifier that is used as part of the
@@ -4381,9 +4488,10 @@ class GkeonpremProjectsLocationsVmwareClustersCreateRequest(_messages.Message):
 
   allowPreflightFailure = _messages.BooleanField(1)
   parent = _messages.StringField(2, required=True)
-  validateOnly = _messages.BooleanField(3)
-  vmwareCluster = _messages.MessageField('VmwareCluster', 4)
-  vmwareClusterId = _messages.StringField(5)
+  skipValidations = _messages.StringField(3, repeated=True)
+  validateOnly = _messages.BooleanField(4)
+  vmwareCluster = _messages.MessageField('VmwareCluster', 5)
+  vmwareClusterId = _messages.StringField(6)
 
 
 class GkeonpremProjectsLocationsVmwareClustersDeleteRequest(_messages.Message):
@@ -4601,6 +4709,7 @@ class GkeonpremProjectsLocationsVmwareClustersPatchRequest(_messages.Message):
       configuration. The user must have both create and update permission to
       call Update with allow_missing set to true.
     name: Immutable. The VMware user cluster resource name.
+    skipValidations: A string attribute.
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the VMwareCluster resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
@@ -4614,9 +4723,10 @@ class GkeonpremProjectsLocationsVmwareClustersPatchRequest(_messages.Message):
 
   allowMissing = _messages.BooleanField(1)
   name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
-  validateOnly = _messages.BooleanField(4)
-  vmwareCluster = _messages.MessageField('VmwareCluster', 5)
+  skipValidations = _messages.StringField(3, repeated=True)
+  updateMask = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+  vmwareCluster = _messages.MessageField('VmwareCluster', 6)
 
 
 class GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest(_messages.Message):
@@ -7094,6 +7204,7 @@ class VmwareNodePool(_messages.Message):
     updateTime: Output only. The time at which this node pool was last
       updated.
     upgradePolicy: Upgrade policy for the node pool.
+    validationCheck: The validation check for the node pool.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -7167,6 +7278,7 @@ class VmwareNodePool(_messages.Message):
   uid = _messages.StringField(13)
   updateTime = _messages.StringField(14)
   upgradePolicy = _messages.MessageField('VmwareNodePoolUpgradePolicy', 15)
+  validationCheck = _messages.MessageField('ValidationCheck', 16)
 
 
 class VmwareNodePoolAutoscalingConfig(_messages.Message):

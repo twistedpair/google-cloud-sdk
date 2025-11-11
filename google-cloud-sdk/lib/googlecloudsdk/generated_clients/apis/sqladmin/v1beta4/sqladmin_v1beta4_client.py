@@ -585,6 +585,32 @@ class SqladminV1beta4(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def ListEntraIdCertificates(self, request, global_params=None):
+      r"""Lists all versions of EntraID certificates for the specified instance. There can be up to three sets of certificates listed: the certificate that is currently in use, a future that has been added but not yet used to sign a certificate, and a certificate that has been rotated out.
+
+      Args:
+        request: (SqlInstancesListEntraIdCertificatesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstancesListEntraIdCertificatesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListEntraIdCertificates')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListEntraIdCertificates.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='sql.instances.ListEntraIdCertificates',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
+        query_params=[],
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/listEntraIdCertificates',
+        request_field='',
+        request_type_name='SqlInstancesListEntraIdCertificatesRequest',
+        response_type_name='InstancesListEntraIdCertificatesResponse',
+        supports_download=False,
+    )
+
     def ListServerCertificates(self, request, global_params=None):
       r"""Lists all versions of server certificates and certificate authorities (CAs) for the specified instance. There can be up to three sets of certs listed: the certificate that is currently in use, a future that has been added but not yet used to sign a certificate, and a certificate that has been rotated out. For instances not using Certificate Authority Service (CAS) server CA, use ListServerCas instead.
 
@@ -608,6 +634,32 @@ class SqladminV1beta4(base_api.BaseApiClient):
         request_field='',
         request_type_name='SqlInstancesListServerCertificatesRequest',
         response_type_name='InstancesListServerCertificatesResponse',
+        supports_download=False,
+    )
+
+    def RotateEntraIdCertificate(self, request, global_params=None):
+      r"""Rotates the Entra Id certificate version to one previously added with the addEntraIdCertificate method.
+
+      Args:
+        request: (SqlInstancesRotateEntraIdCertificateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RotateEntraIdCertificate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RotateEntraIdCertificate.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='sql.instances.RotateEntraIdCertificate',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
+        query_params=[],
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/rotateEntraIdCertificate',
+        request_field='instancesRotateEntraIdCertificateRequest',
+        request_type_name='SqlInstancesRotateEntraIdCertificateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -660,6 +712,32 @@ class SqladminV1beta4(base_api.BaseApiClient):
         request_field='instancesAcquireSsrsLeaseRequest',
         request_type_name='SqlInstancesAcquireSsrsLeaseRequest',
         response_type_name='SqlInstancesAcquireSsrsLeaseResponse',
+        supports_download=False,
+    )
+
+    def AddEntraIdCertificate(self, request, global_params=None):
+      r"""Adds a new Entra ID certificate for the specified instance. If an Entra ID certificate was previously added but never used in a certificate rotation, this operation replaces that version.
+
+      Args:
+        request: (SqlInstancesAddEntraIdCertificateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddEntraIdCertificate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddEntraIdCertificate.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='sql.instances.addEntraIdCertificate',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
+        query_params=[],
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/addEntraIdCertificate',
+        request_field='sqlInstancesAddEntraIdCertificateRequest',
+        request_type_name='SqlInstancesAddEntraIdCertificateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

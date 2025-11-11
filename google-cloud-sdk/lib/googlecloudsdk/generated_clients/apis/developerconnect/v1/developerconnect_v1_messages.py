@@ -163,6 +163,9 @@ class ArtifactDeployment(_messages.Message):
     artifactAlias: Output only. The artifact alias in the deployment spec,
       with Tag/SHA. e.g. us-docker.pkg.dev/my-project/my-repo/image:1.0.0
     artifactReference: Output only. The artifact that is deployed.
+    containerStatusSummary: Output only. The summary of container status of
+      the artifact deployment. Format as `ContainerStatusState-Reason :
+      restartCount` e.g. "Waiting-ImagePullBackOff : 3"
     deployTime: Output only. The time at which the deployment was deployed.
     id: Output only. Unique identifier of `ArtifactDeployment`.
     sourceCommitUris: Output only. The source commits at which this artifact
@@ -174,10 +177,11 @@ class ArtifactDeployment(_messages.Message):
 
   artifactAlias = _messages.StringField(1)
   artifactReference = _messages.StringField(2)
-  deployTime = _messages.StringField(3)
-  id = _messages.StringField(4)
-  sourceCommitUris = _messages.StringField(5, repeated=True)
-  undeployTime = _messages.StringField(6)
+  containerStatusSummary = _messages.StringField(3)
+  deployTime = _messages.StringField(4)
+  id = _messages.StringField(5)
+  sourceCommitUris = _messages.StringField(6, repeated=True)
+  undeployTime = _messages.StringField(7)
 
 
 class BitbucketCloudConfig(_messages.Message):

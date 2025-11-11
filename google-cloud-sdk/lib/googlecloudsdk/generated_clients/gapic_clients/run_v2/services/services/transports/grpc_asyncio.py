@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import inspect
+import json
+import pickle
+import logging as std_logging
 import warnings
 from typing import Awaitable, Callable, Dict, Optional, Sequence, Tuple, Union
 
@@ -23,8 +27,11 @@ from google.api_core import retry_async as retries
 from google.api_core import operations_v1
 from google.auth import credentials as ga_credentials   # type: ignore
 from google.auth.transport.grpc import SslCredentials  # type: ignore
+from cloudsdk.google.protobuf.json_format import MessageToJson
+import cloudsdk.google.protobuf.message
 
 import grpc                        # type: ignore
+import proto                       # type: ignore
 from grpc.experimental import aio  # type: ignore
 
 from google.iam.v1 import iam_policy_pb2  # type: ignore
@@ -34,6 +41,73 @@ from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import service
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import service as gcr_service
 from .base import ServicesTransport, DEFAULT_CLIENT_INFO
 from .grpc import ServicesGrpcTransport
+
+try:
+    from google.api_core import client_logging  # type: ignore
+    CLIENT_LOGGING_SUPPORTED = True  # pragma: NO COVER
+except ImportError:  # pragma: NO COVER
+    CLIENT_LOGGING_SUPPORTED = False
+
+_LOGGER = std_logging.getLogger(__name__)
+
+
+class _LoggingClientAIOInterceptor(grpc.aio.UnaryUnaryClientInterceptor):  # pragma: NO COVER
+    async def intercept_unary_unary(self, continuation, client_call_details, request):
+        logging_enabled = CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(std_logging.DEBUG)
+        if logging_enabled:  # pragma: NO COVER
+            request_metadata = client_call_details.metadata
+            if isinstance(request, proto.Message):
+                request_payload = type(request).to_json(request)
+            elif isinstance(request, cloudsdk.google.protobuf.message.Message):
+                request_payload = MessageToJson(request)
+            else:
+                request_payload = f"{type(request).__name__}: {pickle.dumps(request)}"
+
+            request_metadata = {
+                key: value.decode("utf-8") if isinstance(value, bytes) else value
+                for key, value in request_metadata
+            }
+            grpc_request = {
+                "payload": request_payload,
+                "requestMethod": "grpc",
+                "metadata": dict(request_metadata),
+            }
+            _LOGGER.debug(
+                f"Sending request for {client_call_details.method}",
+                extra = {
+                    "serviceName": "google.cloud.run.v2.Services",
+                    "rpcName": str(client_call_details.method),
+                    "request": grpc_request,
+                    "metadata": grpc_request["metadata"],
+                },
+            )
+        response = await continuation(client_call_details, request)
+        if logging_enabled:  # pragma: NO COVER
+            response_metadata = await response.trailing_metadata()
+            # Convert gRPC metadata `<class 'grpc.aio._metadata.Metadata'>` to list of tuples
+            metadata = dict([(k, str(v)) for k, v in response_metadata]) if response_metadata else None
+            result = await response
+            if isinstance(result, proto.Message):
+                response_payload = type(result).to_json(result)
+            elif isinstance(result, cloudsdk.google.protobuf.message.Message):
+                response_payload = MessageToJson(result)
+            else:
+                response_payload = f"{type(result).__name__}: {pickle.dumps(result)}"
+            grpc_response = {
+                "payload": response_payload,
+                "metadata": metadata,
+                "status": "OK",
+            }
+            _LOGGER.debug(
+                f"Received response to rpc {client_call_details.method}.",
+                extra = {
+                    "serviceName": "google.cloud.run.v2.Services",
+                    "rpcName": str(client_call_details.method),
+                    "response": grpc_response,
+                    "metadata": grpc_response["metadata"],
+                },
+            )
+        return response
 
 
 class ServicesGrpcAsyncIOTransport(ServicesTransport):
@@ -68,8 +142,9 @@ class ServicesGrpcAsyncIOTransport(ServicesTransport):
                 credentials identify this application to the service. If
                 none are specified, the client will attempt to ascertain
                 the credentials from the environment.
-            credentials_file (Optional[str]): A file with credentials that can
-                be loaded with :func:`google.auth.load_credentials_from_file`.
+            credentials_file (Optional[str]): Deprecated. A file with credentials that can
+                be loaded with :func:`google.auth.load_credentials_from_file`. This argument will be
+                removed in the next major version of this library.
             scopes (Optional[Sequence[str]]): A optional list of scopes needed for this
                 service. These are only used when credentials are not specified and
                 are passed to :func:`google.auth.default`.
@@ -118,9 +193,10 @@ class ServicesGrpcAsyncIOTransport(ServicesTransport):
                 are specified, the client will attempt to ascertain the
                 credentials from the environment.
                 This argument is ignored if a ``channel`` instance is provided.
-            credentials_file (Optional[str]): A file with credentials that can
+            credentials_file (Optional[str]): Deprecated. A file with credentials that can
                 be loaded with :func:`google.auth.load_credentials_from_file`.
                 This argument is ignored if a ``channel`` instance is provided.
+                This argument will be removed in the next major version of this library.
             scopes (Optional[Sequence[str]]): A optional list of scopes needed for this
                 service. These are only used when credentials are not specified and
                 are passed to :func:`google.auth.default`.
@@ -171,7 +247,8 @@ class ServicesGrpcAsyncIOTransport(ServicesTransport):
 
         if isinstance(channel, aio.Channel):
             # Ignore credentials if a channel was passed.
-            credentials = False
+            credentials = None
+            self._ignore_credentials = True
             # If a channel was explicitly provided, set it.
             self._grpc_channel = channel
             self._ssl_channel_credentials = None
@@ -227,7 +304,11 @@ class ServicesGrpcAsyncIOTransport(ServicesTransport):
                 ],
             )
 
-        # Wrap messages. This must be done after self._grpc_channel exists
+        self._interceptor = _LoggingClientAIOInterceptor()
+        self._grpc_channel._unary_unary_interceptors.append(self._interceptor)
+        self._logged_channel = self._grpc_channel
+        self._wrap_with_kind = "kind" in inspect.signature(gapic_v1.method_async.wrap_method).parameters
+        # Wrap messages. This must be done after self._logged_channel exists
         self._prep_wrapped_messages(client_info)
 
     @property
@@ -250,7 +331,7 @@ class ServicesGrpcAsyncIOTransport(ServicesTransport):
         # Quick check: Only create a new client if we do not already have one.
         if self._operations_client is None:
             self._operations_client = operations_v1.OperationsAsyncClient(
-                self.grpc_channel
+                self._logged_channel
             )
 
         # Return the client from cache.
@@ -276,7 +357,7 @@ class ServicesGrpcAsyncIOTransport(ServicesTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'create_service' not in self._stubs:
-            self._stubs['create_service'] = self.grpc_channel.unary_unary(
+            self._stubs['create_service'] = self._logged_channel.unary_unary(
                 '/google.cloud.run.v2.Services/CreateService',
                 request_serializer=gcr_service.CreateServiceRequest.serialize,
                 response_deserializer=operations_pb2.Operation.FromString,
@@ -302,7 +383,7 @@ class ServicesGrpcAsyncIOTransport(ServicesTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'get_service' not in self._stubs:
-            self._stubs['get_service'] = self.grpc_channel.unary_unary(
+            self._stubs['get_service'] = self._logged_channel.unary_unary(
                 '/google.cloud.run.v2.Services/GetService',
                 request_serializer=service.GetServiceRequest.serialize,
                 response_deserializer=service.Service.deserialize,
@@ -329,7 +410,7 @@ class ServicesGrpcAsyncIOTransport(ServicesTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'list_services' not in self._stubs:
-            self._stubs['list_services'] = self.grpc_channel.unary_unary(
+            self._stubs['list_services'] = self._logged_channel.unary_unary(
                 '/google.cloud.run.v2.Services/ListServices',
                 request_serializer=service.ListServicesRequest.serialize,
                 response_deserializer=service.ListServicesResponse.deserialize,
@@ -355,7 +436,7 @@ class ServicesGrpcAsyncIOTransport(ServicesTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'update_service' not in self._stubs:
-            self._stubs['update_service'] = self.grpc_channel.unary_unary(
+            self._stubs['update_service'] = self._logged_channel.unary_unary(
                 '/google.cloud.run.v2.Services/UpdateService',
                 request_serializer=gcr_service.UpdateServiceRequest.serialize,
                 response_deserializer=operations_pb2.Operation.FromString,
@@ -383,7 +464,7 @@ class ServicesGrpcAsyncIOTransport(ServicesTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'delete_service' not in self._stubs:
-            self._stubs['delete_service'] = self.grpc_channel.unary_unary(
+            self._stubs['delete_service'] = self._logged_channel.unary_unary(
                 '/google.cloud.run.v2.Services/DeleteService',
                 request_serializer=service.DeleteServiceRequest.serialize,
                 response_deserializer=operations_pb2.Operation.FromString,
@@ -411,7 +492,7 @@ class ServicesGrpcAsyncIOTransport(ServicesTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'get_iam_policy' not in self._stubs:
-            self._stubs['get_iam_policy'] = self.grpc_channel.unary_unary(
+            self._stubs['get_iam_policy'] = self._logged_channel.unary_unary(
                 '/google.cloud.run.v2.Services/GetIamPolicy',
                 request_serializer=iam_policy_pb2.GetIamPolicyRequest.SerializeToString,
                 response_deserializer=policy_pb2.Policy.FromString,
@@ -438,7 +519,7 @@ class ServicesGrpcAsyncIOTransport(ServicesTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'set_iam_policy' not in self._stubs:
-            self._stubs['set_iam_policy'] = self.grpc_channel.unary_unary(
+            self._stubs['set_iam_policy'] = self._logged_channel.unary_unary(
                 '/google.cloud.run.v2.Services/SetIamPolicy',
                 request_serializer=iam_policy_pb2.SetIamPolicyRequest.SerializeToString,
                 response_deserializer=policy_pb2.Policy.FromString,
@@ -467,7 +548,7 @@ class ServicesGrpcAsyncIOTransport(ServicesTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'test_iam_permissions' not in self._stubs:
-            self._stubs['test_iam_permissions'] = self.grpc_channel.unary_unary(
+            self._stubs['test_iam_permissions'] = self._logged_channel.unary_unary(
                 '/google.cloud.run.v2.Services/TestIamPermissions',
                 request_serializer=iam_policy_pb2.TestIamPermissionsRequest.SerializeToString,
                 response_deserializer=iam_policy_pb2.TestIamPermissionsResponse.FromString,
@@ -477,12 +558,12 @@ class ServicesGrpcAsyncIOTransport(ServicesTransport):
     def _prep_wrapped_messages(self, client_info):
         """ Precompute the wrapped methods, overriding the base class method to use async wrappers."""
         self._wrapped_methods = {
-            self.create_service: gapic_v1.method_async.wrap_method(
+            self.create_service: self._wrap_method(
                 self.create_service,
                 default_timeout=15.0,
                 client_info=client_info,
             ),
-            self.get_service: gapic_v1.method_async.wrap_method(
+            self.get_service: self._wrap_method(
                 self.get_service,
                 default_retry=retries.AsyncRetry(
                     initial=1.0,
@@ -496,7 +577,7 @@ class ServicesGrpcAsyncIOTransport(ServicesTransport):
                 default_timeout=10.0,
                 client_info=client_info,
             ),
-            self.list_services: gapic_v1.method_async.wrap_method(
+            self.list_services: self._wrap_method(
                 self.list_services,
                 default_retry=retries.AsyncRetry(
                     initial=1.0,
@@ -510,35 +591,44 @@ class ServicesGrpcAsyncIOTransport(ServicesTransport):
                 default_timeout=10.0,
                 client_info=client_info,
             ),
-            self.update_service: gapic_v1.method_async.wrap_method(
+            self.update_service: self._wrap_method(
                 self.update_service,
                 default_timeout=15.0,
                 client_info=client_info,
             ),
-            self.delete_service: gapic_v1.method_async.wrap_method(
+            self.delete_service: self._wrap_method(
                 self.delete_service,
                 default_timeout=10.0,
                 client_info=client_info,
             ),
-            self.get_iam_policy: gapic_v1.method_async.wrap_method(
+            self.get_iam_policy: self._wrap_method(
                 self.get_iam_policy,
                 default_timeout=None,
                 client_info=client_info,
             ),
-            self.set_iam_policy: gapic_v1.method_async.wrap_method(
+            self.set_iam_policy: self._wrap_method(
                 self.set_iam_policy,
                 default_timeout=None,
                 client_info=client_info,
             ),
-            self.test_iam_permissions: gapic_v1.method_async.wrap_method(
+            self.test_iam_permissions: self._wrap_method(
                 self.test_iam_permissions,
                 default_timeout=None,
                 client_info=client_info,
             ),
-         }
+        }
+
+    def _wrap_method(self, func, *args, **kwargs):
+        if self._wrap_with_kind:  # pragma: NO COVER
+            kwargs["kind"] = self.kind
+        return gapic_v1.method_async.wrap_method(func, *args, **kwargs)
 
     def close(self):
-        return self.grpc_channel.close()
+        return self._logged_channel.close()
+
+    @property
+    def kind(self) -> str:
+        return "grpc_asyncio"
 
 
 __all__ = (

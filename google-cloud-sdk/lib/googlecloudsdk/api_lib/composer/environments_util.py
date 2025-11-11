@@ -1041,6 +1041,30 @@ def CheckUpgrade(environment_ref,
   return GetService(release_track=release_track).CheckUpgrade(request_message)
 
 
+def Migrate(
+    environment_ref,
+    request,
+    release_track=base.ReleaseTrack.BETA,
+):
+  """Calls the Composer Environments.Migrate method.
+
+  Args:
+    environment_ref: Resource, the Composer environment resource to migrate.
+    request: MigrateEnvironmentRequest.
+    release_track: base.ReleaseTrack, the release track of command. Determines
+      which Composer client library is used.
+
+  Returns:
+    Operation: the operation corresponding to the migration.
+  """
+  message_module = api_util.GetMessagesModule(release_track=release_track)
+  request_message = (
+      message_module.ComposerProjectsLocationsEnvironmentsMigrateRequest(
+          name=environment_ref.RelativeName(),
+          migrateEnvironmentRequest=request))
+  return GetService(release_track=release_track).Migrate(request_message)
+
+
 def Get(environment_ref, release_track=base.ReleaseTrack.GA):
   """Calls the Composer Environments.Get method.
 

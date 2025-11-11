@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,30 +13,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import logging
+import json  # type: ignore
 
 from google.auth.transport.requests import AuthorizedSession  # type: ignore
-import json  # type: ignore
-import grpc  # type: ignore
-from google.auth.transport.grpc import SslCredentials  # type: ignore
 from google.auth import credentials as ga_credentials  # type: ignore
 from google.api_core import exceptions as core_exceptions
 from google.api_core import retry as retries
 from google.api_core import rest_helpers
 from google.api_core import rest_streaming
-from google.api_core import path_template
 from google.api_core import gapic_v1
+import cloudsdk.google.protobuf
 
 from cloudsdk.google.protobuf import json_format
+
 from requests import __version__ as requests_version
 import dataclasses
-import re
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 import warnings
-
-try:
-    OptionalRetry = Union[retries.Retry, gapic_v1.method._MethodDefault, None]
-except AttributeError:  # pragma: NO COVER
-    OptionalRetry = Union[retries.Retry, object, None]  # type: ignore
 
 
 from google.iam.v1 import iam_policy_pb2  # type: ignore
@@ -44,14 +38,31 @@ from google.iam.v1 import policy_pb2  # type: ignore
 from cloudsdk.google.protobuf import empty_pb2  # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.storage_v2.types import storage
 
-from .base import StorageTransport, DEFAULT_CLIENT_INFO as BASE_DEFAULT_CLIENT_INFO
 
+from .rest_base import _BaseStorageRestTransport
+from .base import DEFAULT_CLIENT_INFO as BASE_DEFAULT_CLIENT_INFO
+
+try:
+    OptionalRetry = Union[retries.Retry, gapic_v1.method._MethodDefault, None]
+except AttributeError:  # pragma: NO COVER
+    OptionalRetry = Union[retries.Retry, object, None]  # type: ignore
+
+try:
+    from google.api_core import client_logging  # type: ignore
+    CLIENT_LOGGING_SUPPORTED = True  # pragma: NO COVER
+except ImportError:  # pragma: NO COVER
+    CLIENT_LOGGING_SUPPORTED = False
+
+_LOGGER = logging.getLogger(__name__)
 
 DEFAULT_CLIENT_INFO = gapic_v1.client_info.ClientInfo(
     gapic_version=BASE_DEFAULT_CLIENT_INFO.gapic_version,
     grpc_version=None,
-    rest_version=requests_version,
+    rest_version=f"requests@{requests_version}",
 )
+
+if hasattr(DEFAULT_CLIENT_INFO, "protobuf_runtime_version"):  # pragma: NO COVER
+    DEFAULT_CLIENT_INFO.protobuf_runtime_version = cloudsdk.google.protobuf.__version__
 
 
 class StorageRestInterceptor:
@@ -243,45 +254,48 @@ class StorageRestStub:
     _interceptor: StorageRestInterceptor
 
 
-class StorageRestTransport(StorageTransport):
-    """REST backend transport for Storage.
+class StorageRestTransport(_BaseStorageRestTransport):
+    """REST backend synchronous transport for Storage.
 
     API Overview and Naming Syntax
     ------------------------------
 
     The Cloud Storage gRPC API allows applications to read and write
     data through the abstractions of buckets and objects. For a
-    description of these abstractions please see
-    https://cloud.google.com/storage/docs.
+    description of these abstractions please see `Cloud Storage
+    documentation <https://cloud.google.com/storage/docs>`__.
 
     Resources are named as follows:
 
-    -  Projects are referred to as they are defined by the Resource
-       Manager API, using strings like ``projects/123456`` or
-       ``projects/my-string-id``.
+    - Projects are referred to as they are defined by the Resource
+      Manager API, using strings like ``projects/123456`` or
+      ``projects/my-string-id``.
 
-    -  Buckets are named using string names of the form:
-       ``projects/{project}/buckets/{bucket}`` For globally unique
-       buckets, ``_`` may be substituted for the project.
+    - Buckets are named using string names of the form:
+      ``projects/{project}/buckets/{bucket}``. For globally unique
+      buckets, ``_`` might be substituted for the project.
 
-    -  Objects are uniquely identified by their name along with the name
-       of the bucket they belong to, as separate strings in this API.
-       For example:
+    - Objects are uniquely identified by their name along with the name
+      of the bucket they belong to, as separate strings in this API. For
+      example:
 
-       ReadObjectRequest { bucket: 'projects/_/buckets/my-bucket'
-       object: 'my-object' } Note that object names can contain ``/``
-       characters, which are treated as any other character (no special
-       directory semantics).
+      ::
+
+         ```
+         ReadObjectRequest {
+         bucket: 'projects/_/buckets/my-bucket'
+         object: 'my-object'
+         }
+         ```
+
+    Note that object names can contain ``/`` characters, which are
+    treated as any other character (no special directory semantics).
 
     This class defines the same methods as the primary client, so the
     primary client can load the underlying transport implementation
     and call it.
 
     It sends JSON representations of protocol buffers over HTTP/1.1
-
-    NOTE: This REST transport functionality is currently in a beta
-    state (preview). We welcome your feedback via an issue in this
-    library's source repository. Thank you!
     """
 
     def __init__(self, *,
@@ -313,9 +327,10 @@ class StorageRestTransport(StorageTransport):
                 are specified, the client will attempt to ascertain the
                 credentials from the environment.
 
-            credentials_file (Optional[str]): A file with credentials that can
+            credentials_file (Optional[str]): Deprecated. A file with credentials that can
                 be loaded with :func:`google.auth.load_credentials_from_file`.
-                This argument is ignored if ``channel`` is provided.
+                This argument is ignored if ``channel`` is provided. This argument will be
+                removed in the next major version of this library.
             scopes (Optional(Sequence[str])): A list of scopes. This argument is
                 ignored if ``channel`` is provided.
             client_cert_source_for_mtls (Callable[[], Tuple[bytes, bytes]]): Client
@@ -338,19 +353,12 @@ class StorageRestTransport(StorageTransport):
         # TODO(yon-mg): resolve other ctor params i.e. scopes, quota, etc.
         # TODO: When custom host (api_endpoint) is set, `scopes` must *also* be set on the
         # credentials object
-        maybe_url_match = re.match("^(?P<scheme>http(?:s)?://)?(?P<host>.*)$", host)
-        if maybe_url_match is None:
-            raise ValueError(f"Unexpected hostname structure: {host}")  # pragma: NO COVER
-
-        url_match_items = maybe_url_match.groupdict()
-
-        host = f"{url_scheme}://{host}" if not url_match_items["scheme"] else host
-
         super().__init__(
             host=host,
             credentials=credentials,
             client_info=client_info,
             always_use_jwt_access=always_use_jwt_access,
+            url_scheme=url_scheme,
             api_audience=api_audience
         )
         self._session = AuthorizedSession(
@@ -360,314 +368,314 @@ class StorageRestTransport(StorageTransport):
         self._interceptor = interceptor or StorageRestInterceptor()
         self._prep_wrapped_messages(client_info)
 
-    class _BidiReadObject(StorageRestStub):
+    class _BidiReadObject(_BaseStorageRestTransport._BaseBidiReadObject, StorageRestStub):
         def __hash__(self):
-            return hash("BidiReadObject")
+            return hash("StorageRestTransport.BidiReadObject")
 
         def __call__(self,
                 request: storage.BidiReadObjectRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> rest_streaming.ResponseIterator:
             raise NotImplementedError(
                 "Method BidiReadObject is not available over REST transport"
             )
-    class _BidiWriteObject(StorageRestStub):
+    class _BidiWriteObject(_BaseStorageRestTransport._BaseBidiWriteObject, StorageRestStub):
         def __hash__(self):
-            return hash("BidiWriteObject")
+            return hash("StorageRestTransport.BidiWriteObject")
 
         def __call__(self,
                 request: storage.BidiWriteObjectRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> rest_streaming.ResponseIterator:
             raise NotImplementedError(
                 "Method BidiWriteObject is not available over REST transport"
             )
-    class _CancelResumableWrite(StorageRestStub):
+    class _CancelResumableWrite(_BaseStorageRestTransport._BaseCancelResumableWrite, StorageRestStub):
         def __hash__(self):
-            return hash("CancelResumableWrite")
+            return hash("StorageRestTransport.CancelResumableWrite")
 
         def __call__(self,
                 request: storage.CancelResumableWriteRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> storage.CancelResumableWriteResponse:
             raise NotImplementedError(
                 "Method CancelResumableWrite is not available over REST transport"
             )
-    class _ComposeObject(StorageRestStub):
+    class _ComposeObject(_BaseStorageRestTransport._BaseComposeObject, StorageRestStub):
         def __hash__(self):
-            return hash("ComposeObject")
+            return hash("StorageRestTransport.ComposeObject")
 
         def __call__(self,
                 request: storage.ComposeObjectRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> storage.Object:
             raise NotImplementedError(
                 "Method ComposeObject is not available over REST transport"
             )
-    class _CreateBucket(StorageRestStub):
+    class _CreateBucket(_BaseStorageRestTransport._BaseCreateBucket, StorageRestStub):
         def __hash__(self):
-            return hash("CreateBucket")
+            return hash("StorageRestTransport.CreateBucket")
 
         def __call__(self,
                 request: storage.CreateBucketRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> storage.Bucket:
             raise NotImplementedError(
                 "Method CreateBucket is not available over REST transport"
             )
-    class _DeleteBucket(StorageRestStub):
+    class _DeleteBucket(_BaseStorageRestTransport._BaseDeleteBucket, StorageRestStub):
         def __hash__(self):
-            return hash("DeleteBucket")
+            return hash("StorageRestTransport.DeleteBucket")
 
         def __call__(self,
                 request: storage.DeleteBucketRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ):
             raise NotImplementedError(
                 "Method DeleteBucket is not available over REST transport"
             )
-    class _DeleteObject(StorageRestStub):
+    class _DeleteObject(_BaseStorageRestTransport._BaseDeleteObject, StorageRestStub):
         def __hash__(self):
-            return hash("DeleteObject")
+            return hash("StorageRestTransport.DeleteObject")
 
         def __call__(self,
                 request: storage.DeleteObjectRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ):
             raise NotImplementedError(
                 "Method DeleteObject is not available over REST transport"
             )
-    class _GetBucket(StorageRestStub):
+    class _GetBucket(_BaseStorageRestTransport._BaseGetBucket, StorageRestStub):
         def __hash__(self):
-            return hash("GetBucket")
+            return hash("StorageRestTransport.GetBucket")
 
         def __call__(self,
                 request: storage.GetBucketRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> storage.Bucket:
             raise NotImplementedError(
                 "Method GetBucket is not available over REST transport"
             )
-    class _GetIamPolicy(StorageRestStub):
+    class _GetIamPolicy(_BaseStorageRestTransport._BaseGetIamPolicy, StorageRestStub):
         def __hash__(self):
-            return hash("GetIamPolicy")
+            return hash("StorageRestTransport.GetIamPolicy")
 
         def __call__(self,
                 request: iam_policy_pb2.GetIamPolicyRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> policy_pb2.Policy:
             raise NotImplementedError(
                 "Method GetIamPolicy is not available over REST transport"
             )
-    class _GetObject(StorageRestStub):
+    class _GetObject(_BaseStorageRestTransport._BaseGetObject, StorageRestStub):
         def __hash__(self):
-            return hash("GetObject")
+            return hash("StorageRestTransport.GetObject")
 
         def __call__(self,
                 request: storage.GetObjectRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> storage.Object:
             raise NotImplementedError(
                 "Method GetObject is not available over REST transport"
             )
-    class _ListBuckets(StorageRestStub):
+    class _ListBuckets(_BaseStorageRestTransport._BaseListBuckets, StorageRestStub):
         def __hash__(self):
-            return hash("ListBuckets")
+            return hash("StorageRestTransport.ListBuckets")
 
         def __call__(self,
                 request: storage.ListBucketsRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> storage.ListBucketsResponse:
             raise NotImplementedError(
                 "Method ListBuckets is not available over REST transport"
             )
-    class _ListObjects(StorageRestStub):
+    class _ListObjects(_BaseStorageRestTransport._BaseListObjects, StorageRestStub):
         def __hash__(self):
-            return hash("ListObjects")
+            return hash("StorageRestTransport.ListObjects")
 
         def __call__(self,
                 request: storage.ListObjectsRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> storage.ListObjectsResponse:
             raise NotImplementedError(
                 "Method ListObjects is not available over REST transport"
             )
-    class _LockBucketRetentionPolicy(StorageRestStub):
+    class _LockBucketRetentionPolicy(_BaseStorageRestTransport._BaseLockBucketRetentionPolicy, StorageRestStub):
         def __hash__(self):
-            return hash("LockBucketRetentionPolicy")
+            return hash("StorageRestTransport.LockBucketRetentionPolicy")
 
         def __call__(self,
                 request: storage.LockBucketRetentionPolicyRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> storage.Bucket:
             raise NotImplementedError(
                 "Method LockBucketRetentionPolicy is not available over REST transport"
             )
-    class _MoveObject(StorageRestStub):
+    class _MoveObject(_BaseStorageRestTransport._BaseMoveObject, StorageRestStub):
         def __hash__(self):
-            return hash("MoveObject")
+            return hash("StorageRestTransport.MoveObject")
 
         def __call__(self,
                 request: storage.MoveObjectRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> storage.Object:
             raise NotImplementedError(
                 "Method MoveObject is not available over REST transport"
             )
-    class _QueryWriteStatus(StorageRestStub):
+    class _QueryWriteStatus(_BaseStorageRestTransport._BaseQueryWriteStatus, StorageRestStub):
         def __hash__(self):
-            return hash("QueryWriteStatus")
+            return hash("StorageRestTransport.QueryWriteStatus")
 
         def __call__(self,
                 request: storage.QueryWriteStatusRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> storage.QueryWriteStatusResponse:
             raise NotImplementedError(
                 "Method QueryWriteStatus is not available over REST transport"
             )
-    class _ReadObject(StorageRestStub):
+    class _ReadObject(_BaseStorageRestTransport._BaseReadObject, StorageRestStub):
         def __hash__(self):
-            return hash("ReadObject")
+            return hash("StorageRestTransport.ReadObject")
 
         def __call__(self,
                 request: storage.ReadObjectRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> rest_streaming.ResponseIterator:
             raise NotImplementedError(
                 "Method ReadObject is not available over REST transport"
             )
-    class _RestoreObject(StorageRestStub):
+    class _RestoreObject(_BaseStorageRestTransport._BaseRestoreObject, StorageRestStub):
         def __hash__(self):
-            return hash("RestoreObject")
+            return hash("StorageRestTransport.RestoreObject")
 
         def __call__(self,
                 request: storage.RestoreObjectRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> storage.Object:
             raise NotImplementedError(
                 "Method RestoreObject is not available over REST transport"
             )
-    class _RewriteObject(StorageRestStub):
+    class _RewriteObject(_BaseStorageRestTransport._BaseRewriteObject, StorageRestStub):
         def __hash__(self):
-            return hash("RewriteObject")
+            return hash("StorageRestTransport.RewriteObject")
 
         def __call__(self,
                 request: storage.RewriteObjectRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> storage.RewriteResponse:
             raise NotImplementedError(
                 "Method RewriteObject is not available over REST transport"
             )
-    class _SetIamPolicy(StorageRestStub):
+    class _SetIamPolicy(_BaseStorageRestTransport._BaseSetIamPolicy, StorageRestStub):
         def __hash__(self):
-            return hash("SetIamPolicy")
+            return hash("StorageRestTransport.SetIamPolicy")
 
         def __call__(self,
                 request: iam_policy_pb2.SetIamPolicyRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> policy_pb2.Policy:
             raise NotImplementedError(
                 "Method SetIamPolicy is not available over REST transport"
             )
-    class _StartResumableWrite(StorageRestStub):
+    class _StartResumableWrite(_BaseStorageRestTransport._BaseStartResumableWrite, StorageRestStub):
         def __hash__(self):
-            return hash("StartResumableWrite")
+            return hash("StorageRestTransport.StartResumableWrite")
 
         def __call__(self,
                 request: storage.StartResumableWriteRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> storage.StartResumableWriteResponse:
             raise NotImplementedError(
                 "Method StartResumableWrite is not available over REST transport"
             )
-    class _TestIamPermissions(StorageRestStub):
+    class _TestIamPermissions(_BaseStorageRestTransport._BaseTestIamPermissions, StorageRestStub):
         def __hash__(self):
-            return hash("TestIamPermissions")
+            return hash("StorageRestTransport.TestIamPermissions")
 
         def __call__(self,
                 request: iam_policy_pb2.TestIamPermissionsRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> iam_policy_pb2.TestIamPermissionsResponse:
             raise NotImplementedError(
                 "Method TestIamPermissions is not available over REST transport"
             )
-    class _UpdateBucket(StorageRestStub):
+    class _UpdateBucket(_BaseStorageRestTransport._BaseUpdateBucket, StorageRestStub):
         def __hash__(self):
-            return hash("UpdateBucket")
+            return hash("StorageRestTransport.UpdateBucket")
 
         def __call__(self,
                 request: storage.UpdateBucketRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> storage.Bucket:
             raise NotImplementedError(
                 "Method UpdateBucket is not available over REST transport"
             )
-    class _UpdateObject(StorageRestStub):
+    class _UpdateObject(_BaseStorageRestTransport._BaseUpdateObject, StorageRestStub):
         def __hash__(self):
-            return hash("UpdateObject")
+            return hash("StorageRestTransport.UpdateObject")
 
         def __call__(self,
                 request: storage.UpdateObjectRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> storage.Object:
             raise NotImplementedError(
                 "Method UpdateObject is not available over REST transport"
             )
-    class _WriteObject(StorageRestStub):
+    class _WriteObject(_BaseStorageRestTransport._BaseWriteObject, StorageRestStub):
         def __hash__(self):
-            return hash("WriteObject")
+            return hash("StorageRestTransport.WriteObject")
 
         def __call__(self,
                 request: storage.WriteObjectRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> storage.WriteObjectResponse:
             raise NotImplementedError(
                 "Method WriteObject is not available over REST transport"

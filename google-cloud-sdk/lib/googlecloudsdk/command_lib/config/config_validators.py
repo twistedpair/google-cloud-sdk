@@ -27,7 +27,7 @@ from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.util import exceptions as api_lib_util_exceptions
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
-from googlecloudsdk.command_lib.projects import util as command_lib_util
+from googlecloudsdk.command_lib.projects import util as projects_util
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -243,14 +243,16 @@ def WarnIfSettingProjectWithNoAccess(scope, project):
   # If the above conditions are met, check that the project being set exists
   # and is accessible to the current user, otherwise show a warning.
   if scope == properties.Scope.USER and properties.VALUES.core.account.Get():
-    project_ref = command_lib_util.ParseProject(project)
+    project_ref = projects_util.ParseProject(project)
     try:
       with base.WithLegacyQuota():
         project = projects_api.Get(
             project_ref, disable_api_enablement_check=True
         )
         # Check project environment tag
-        command_lib_util.CheckAndPrintEnvironmentTagMessage(project)
+        projects_util.CheckAndPrintEnvironmentTagMessageWithProject(
+            project
+        )
     except (
         apitools_exceptions.HttpError,
         c_store.NoCredentialsForAccountException,

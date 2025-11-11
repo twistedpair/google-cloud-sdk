@@ -266,3 +266,36 @@ def UpdatePeriodicExportConfig(unused_instance_ref, args, patch_request):
   if args.IsSpecified('clear_periodic_export_config'):
     patch_request.instance.periodicExportConfig = None
   return patch_request
+
+
+def UpdateControlledEgressConfig(unused_instance_ref, args, patch_request):
+  """Hook to handle controlled egress config updates."""
+  if args.IsSpecified('egress_enabled'):
+    patch_request = AddFieldToUpdateMask(
+        'controlled_egress_enabled', patch_request
+    )
+  if args.IsSpecified('marketplace_enabled'):
+    if args.marketplace_enabled:
+      _WarnForMarketplaceEnabledUpdate()
+    patch_request = AddFieldToUpdateMask(
+        'controlled_egress_config.marketplace_enabled', patch_request
+    )
+  if args.IsSpecified('egress_fqdns'):
+    patch_request = AddFieldToUpdateMask(
+        'controlled_egress_config.egress_fqdns', patch_request
+    )
+  return patch_request
+
+
+def _WarnForMarketplaceEnabledUpdate():
+  """Adds prompt that warns about marketplace enabled update."""
+  message = 'Change to instance marketplace enabled requested. '
+  message += (
+      'Enabling connection to the Looker Marketplace will also allow egress to'
+      ' github.com.'
+  )
+  console_io.PromptContinue(
+      message=message,
+      prompt_string='Do you want to proceed with update?',
+      cancel_on_no=True,
+  )

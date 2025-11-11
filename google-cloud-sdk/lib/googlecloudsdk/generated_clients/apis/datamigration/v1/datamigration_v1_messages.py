@@ -5155,6 +5155,8 @@ class PostgreSqlConnectionProfile(_messages.Message):
     cloudSqlId: If the source is a Cloud SQL database, use this field to
       provide the Cloud SQL instance ID of the source.
     database: Optional. The name of the specific database within the host.
+    enableIamAuthentication: Optional. If true, Database Migration Service
+      will use IAM database authentication to connect to the database.
     forwardSshConnectivity: Forward SSH tunnel connectivity.
     host: Required. The IP or hostname of the source PostgreSQL database.
     networkArchitecture: Output only. If the source is a Cloud SQL database,
@@ -5195,17 +5197,18 @@ class PostgreSqlConnectionProfile(_messages.Message):
   alloydbClusterId = _messages.StringField(1)
   cloudSqlId = _messages.StringField(2)
   database = _messages.StringField(3)
-  forwardSshConnectivity = _messages.MessageField('ForwardSshTunnelConnectivity', 4)
-  host = _messages.StringField(5)
-  networkArchitecture = _messages.EnumField('NetworkArchitectureValueValuesEnum', 6)
-  password = _messages.StringField(7)
-  passwordSet = _messages.BooleanField(8)
-  port = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  privateConnectivity = _messages.MessageField('PrivateConnectivity', 10)
-  privateServiceConnectConnectivity = _messages.MessageField('PrivateServiceConnectConnectivity', 11)
-  ssl = _messages.MessageField('SslConfig', 12)
-  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 13)
-  username = _messages.StringField(14)
+  enableIamAuthentication = _messages.BooleanField(4)
+  forwardSshConnectivity = _messages.MessageField('ForwardSshTunnelConnectivity', 5)
+  host = _messages.StringField(6)
+  networkArchitecture = _messages.EnumField('NetworkArchitectureValueValuesEnum', 7)
+  password = _messages.StringField(8)
+  passwordSet = _messages.BooleanField(9)
+  port = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  privateConnectivity = _messages.MessageField('PrivateConnectivity', 11)
+  privateServiceConnectConnectivity = _messages.MessageField('PrivateServiceConnectConnectivity', 12)
+  ssl = _messages.MessageField('SslConfig', 13)
+  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 14)
+  username = _messages.StringField(15)
 
 
 class PostgresDestinationConfig(_messages.Message):

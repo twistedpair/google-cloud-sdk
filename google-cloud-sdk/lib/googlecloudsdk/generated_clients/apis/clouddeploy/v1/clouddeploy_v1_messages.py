@@ -4697,9 +4697,6 @@ class PhaseArtifact(_messages.Message):
   Fields:
     backendServicePath: Output only. File path of the rendered backend service
       configuration relative to the URI.
-    deployConfigPath: Output only. File path of the resolved Deploy Config
-      relative to the URI. Only one of deploy_config_path or
-      skaffold_config_path will be set.
     jobManifestsPath: Output only. File path of the directory of rendered job
       manifests relative to the URI. This is only set if it is applicable.
     manifestPath: Output only. File path of the rendered manifest relative to
@@ -4709,10 +4706,9 @@ class PhaseArtifact(_messages.Message):
   """
 
   backendServicePath = _messages.StringField(1)
-  deployConfigPath = _messages.StringField(2)
-  jobManifestsPath = _messages.StringField(3)
-  manifestPath = _messages.StringField(4)
-  skaffoldConfigPath = _messages.StringField(5)
+  jobManifestsPath = _messages.StringField(2)
+  manifestPath = _messages.StringField(3)
+  skaffoldConfigPath = _messages.StringField(4)
 
 
 class PhaseConfig(_messages.Message):
@@ -5164,12 +5160,6 @@ class Release(_messages.Message):
       types referenced by the targets taken at release creation time.
     deliveryPipelineSnapshot: Output only. Snapshot of the parent pipeline
       taken at release creation time.
-    deployConfigPath: Optional. Filepath of the Deploy Config file inside of
-      the config URI. Only one of skaffold_config_path or deploy_config_path
-      can be set.
-    deployConfigUri: Optional. Cloud Storage URI of tar.gz archive containing
-      the release configuration with a Deploy Config file. Only one of
-      skaffold_config_uri or deploy_config_uri can be set.
     deployParameters: Optional. The deploy parameters to use for all targets
       in this release.
     description: Optional. Description of the `Release`. Max length is 255
@@ -5371,24 +5361,22 @@ class Release(_messages.Message):
   createTime = _messages.StringField(5)
   customTargetTypeSnapshots = _messages.MessageField('CustomTargetType', 6, repeated=True)
   deliveryPipelineSnapshot = _messages.MessageField('DeliveryPipeline', 7)
-  deployConfigPath = _messages.StringField(8)
-  deployConfigUri = _messages.StringField(9)
-  deployParameters = _messages.MessageField('DeployParametersValue', 10)
-  description = _messages.StringField(11)
-  etag = _messages.StringField(12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  name = _messages.StringField(14)
-  renderEndTime = _messages.StringField(15)
-  renderStartTime = _messages.StringField(16)
-  renderState = _messages.EnumField('RenderStateValueValuesEnum', 17)
-  skaffoldConfigPath = _messages.StringField(18)
-  skaffoldConfigUri = _messages.StringField(19)
-  skaffoldVersion = _messages.StringField(20)
-  targetArtifacts = _messages.MessageField('TargetArtifactsValue', 21)
-  targetRenders = _messages.MessageField('TargetRendersValue', 22)
-  targetSnapshots = _messages.MessageField('Target', 23, repeated=True)
-  toolVersions = _messages.MessageField('ToolVersions', 24)
-  uid = _messages.StringField(25)
+  deployParameters = _messages.MessageField('DeployParametersValue', 8)
+  description = _messages.StringField(9)
+  etag = _messages.StringField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  name = _messages.StringField(12)
+  renderEndTime = _messages.StringField(13)
+  renderStartTime = _messages.StringField(14)
+  renderState = _messages.EnumField('RenderStateValueValuesEnum', 15)
+  skaffoldConfigPath = _messages.StringField(16)
+  skaffoldConfigUri = _messages.StringField(17)
+  skaffoldVersion = _messages.StringField(18)
+  targetArtifacts = _messages.MessageField('TargetArtifactsValue', 19)
+  targetRenders = _messages.MessageField('TargetRendersValue', 20)
+  targetSnapshots = _messages.MessageField('Target', 21, repeated=True)
+  toolVersions = _messages.MessageField('ToolVersions', 22)
+  uid = _messages.StringField(23)
 
 
 class ReleaseCondition(_messages.Message):
@@ -6956,9 +6944,6 @@ class TargetArtifact(_messages.Message):
     artifactUri: Output only. URI of a directory containing the artifacts.
       This contains deployment configuration used by Skaffold during a
       rollout, and all paths are relative to this location.
-    deployConfigPath: Output only. File path of the resolved Deploy Config for
-      the stable phase, relative to the URI. Only one of deploy_config_path or
-      skaffold_config_path will be set.
     manifestPath: Output only. File path of the rendered manifest relative to
       the URI for the stable phase.
     phaseArtifacts: Output only. Map from the phase ID to the phase artifacts
@@ -6994,10 +6979,9 @@ class TargetArtifact(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   artifactUri = _messages.StringField(1)
-  deployConfigPath = _messages.StringField(2)
-  manifestPath = _messages.StringField(3)
-  phaseArtifacts = _messages.MessageField('PhaseArtifactsValue', 4)
-  skaffoldConfigPath = _messages.StringField(5)
+  manifestPath = _messages.StringField(2)
+  phaseArtifacts = _messages.MessageField('PhaseArtifactsValue', 3)
+  skaffoldConfigPath = _messages.StringField(4)
 
 
 class TargetAttribute(_messages.Message):

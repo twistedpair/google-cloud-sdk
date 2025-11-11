@@ -136,6 +136,85 @@ class ArtifactPoliciesEvaluation(_messages.Message):
   scanTime = _messages.StringField(5)
 
 
+class ArtifactscanguardFoldersLocationsConnectorsCreateRequest(_messages.Message):
+  r"""A ArtifactscanguardFoldersLocationsConnectorsCreateRequest object.
+
+  Fields:
+    connector: A Connector resource to be passed as the request body.
+    connectorId: Required. Id of the requesting object connector_id from the
+      method_signature of Create RPC
+    parent: Required. The parent resource where this connector will be
+      created. Format: organizations/{organization_id}/locations/{location}
+  """
+
+  connector = _messages.MessageField('Connector', 1)
+  connectorId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ArtifactscanguardFoldersLocationsConnectorsDeleteRequest(_messages.Message):
+  r"""A ArtifactscanguardFoldersLocationsConnectorsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ArtifactscanguardFoldersLocationsConnectorsGetRequest(_messages.Message):
+  r"""A ArtifactscanguardFoldersLocationsConnectorsGetRequest object.
+
+  Fields:
+    name: Required. The name of the connector, in the format
+      `organizations/{organization}/locations/global/connectors/{connector_id}
+      `
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ArtifactscanguardFoldersLocationsConnectorsListRequest(_messages.Message):
+  r"""A ArtifactscanguardFoldersLocationsConnectorsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListConnectorsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class ArtifactscanguardFoldersLocationsConnectorsPatchRequest(_messages.Message):
+  r"""A ArtifactscanguardFoldersLocationsConnectorsPatchRequest object.
+
+  Fields:
+    connector: A Connector resource to be passed as the request body.
+    name: Required. Identifier. The name of the connector, in the format `orga
+      nizations/{organization}/locations/{location}/connectors/{connector_id}`
+      . connector_id is a free-text name.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the Connector resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields present in the request will be
+      overwritten.
+  """
+
+  connector = _messages.MessageField('Connector', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class ArtifactscanguardFoldersLocationsGetRequest(_messages.Message):
   r"""A ArtifactscanguardFoldersLocationsGetRequest object.
 
@@ -222,85 +301,6 @@ class ArtifactscanguardFoldersLocationsOperationsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   returnPartialSuccess = _messages.BooleanField(5)
-
-
-class ArtifactscanguardLocationsConnectorsCreateRequest(_messages.Message):
-  r"""A ArtifactscanguardLocationsConnectorsCreateRequest object.
-
-  Fields:
-    connector: A Connector resource to be passed as the request body.
-    connectorId: Required. Id of the requesting object connector_id from the
-      method_signature of Create RPC
-    parent: Required. The parent resource where this connector will be
-      created. Format: organizations/{organization_id}/locations/{location}
-  """
-
-  connector = _messages.MessageField('Connector', 1)
-  connectorId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class ArtifactscanguardLocationsConnectorsDeleteRequest(_messages.Message):
-  r"""A ArtifactscanguardLocationsConnectorsDeleteRequest object.
-
-  Fields:
-    name: Required. Name of the resource
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class ArtifactscanguardLocationsConnectorsGetRequest(_messages.Message):
-  r"""A ArtifactscanguardLocationsConnectorsGetRequest object.
-
-  Fields:
-    name: Required. The name of the connector, in the format
-      `organizations/{organization}/locations/global/connectors/{connector_id}
-      `
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class ArtifactscanguardLocationsConnectorsListRequest(_messages.Message):
-  r"""A ArtifactscanguardLocationsConnectorsListRequest object.
-
-  Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent value for ListConnectorsRequest
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class ArtifactscanguardLocationsConnectorsPatchRequest(_messages.Message):
-  r"""A ArtifactscanguardLocationsConnectorsPatchRequest object.
-
-  Fields:
-    connector: A Connector resource to be passed as the request body.
-    name: Required. Identifier. The name of the connector, in the format `orga
-      nizations/{organization}/locations/{location}/connectors/{connector_id}`
-      . connector_id is a free-text name.
-    updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the Connector resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields present in the request will be
-      overwritten.
-  """
-
-  connector = _messages.MessageField('Connector', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
 
 
 class ArtifactscanguardOrganizationsLocationsArtifactEvaluationsDataGatewayRequest(_messages.Message):
@@ -399,6 +399,85 @@ class ArtifactscanguardOrganizationsLocationsArtifactPoliciesEvaluationsRunReque
 
   parent = _messages.StringField(1, required=True)
   runArtifactPoliciesEvaluationRequest = _messages.MessageField('RunArtifactPoliciesEvaluationRequest', 2)
+
+
+class ArtifactscanguardOrganizationsLocationsConnectorsCreateRequest(_messages.Message):
+  r"""A ArtifactscanguardOrganizationsLocationsConnectorsCreateRequest object.
+
+  Fields:
+    connector: A Connector resource to be passed as the request body.
+    connectorId: Required. Id of the requesting object connector_id from the
+      method_signature of Create RPC
+    parent: Required. The parent resource where this connector will be
+      created. Format: organizations/{organization_id}/locations/{location}
+  """
+
+  connector = _messages.MessageField('Connector', 1)
+  connectorId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ArtifactscanguardOrganizationsLocationsConnectorsDeleteRequest(_messages.Message):
+  r"""A ArtifactscanguardOrganizationsLocationsConnectorsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ArtifactscanguardOrganizationsLocationsConnectorsGetRequest(_messages.Message):
+  r"""A ArtifactscanguardOrganizationsLocationsConnectorsGetRequest object.
+
+  Fields:
+    name: Required. The name of the connector, in the format
+      `organizations/{organization}/locations/global/connectors/{connector_id}
+      `
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ArtifactscanguardOrganizationsLocationsConnectorsListRequest(_messages.Message):
+  r"""A ArtifactscanguardOrganizationsLocationsConnectorsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListConnectorsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class ArtifactscanguardOrganizationsLocationsConnectorsPatchRequest(_messages.Message):
+  r"""A ArtifactscanguardOrganizationsLocationsConnectorsPatchRequest object.
+
+  Fields:
+    connector: A Connector resource to be passed as the request body.
+    name: Required. Identifier. The name of the connector, in the format `orga
+      nizations/{organization}/locations/{location}/connectors/{connector_id}`
+      . connector_id is a free-text name.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the Connector resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields present in the request will be
+      overwritten.
+  """
+
+  connector = _messages.MessageField('Connector', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class ArtifactscanguardOrganizationsLocationsGetRequest(_messages.Message):
@@ -626,6 +705,85 @@ class ArtifactscanguardOrganizationsLocationsReportsPolicyEvaluationSummariesLis
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class ArtifactscanguardProjectsLocationsConnectorsCreateRequest(_messages.Message):
+  r"""A ArtifactscanguardProjectsLocationsConnectorsCreateRequest object.
+
+  Fields:
+    connector: A Connector resource to be passed as the request body.
+    connectorId: Required. Id of the requesting object connector_id from the
+      method_signature of Create RPC
+    parent: Required. The parent resource where this connector will be
+      created. Format: organizations/{organization_id}/locations/{location}
+  """
+
+  connector = _messages.MessageField('Connector', 1)
+  connectorId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ArtifactscanguardProjectsLocationsConnectorsDeleteRequest(_messages.Message):
+  r"""A ArtifactscanguardProjectsLocationsConnectorsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ArtifactscanguardProjectsLocationsConnectorsGetRequest(_messages.Message):
+  r"""A ArtifactscanguardProjectsLocationsConnectorsGetRequest object.
+
+  Fields:
+    name: Required. The name of the connector, in the format
+      `organizations/{organization}/locations/global/connectors/{connector_id}
+      `
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ArtifactscanguardProjectsLocationsConnectorsListRequest(_messages.Message):
+  r"""A ArtifactscanguardProjectsLocationsConnectorsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListConnectorsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class ArtifactscanguardProjectsLocationsConnectorsPatchRequest(_messages.Message):
+  r"""A ArtifactscanguardProjectsLocationsConnectorsPatchRequest object.
+
+  Fields:
+    connector: A Connector resource to be passed as the request body.
+    name: Required. Identifier. The name of the connector, in the format `orga
+      nizations/{organization}/locations/{location}/connectors/{connector_id}`
+      . connector_id is a free-text name.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the Connector resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields present in the request will be
+      overwritten.
+  """
+
+  connector = _messages.MessageField('Connector', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class ArtifactscanguardProjectsLocationsGetRequest(_messages.Message):
@@ -1065,8 +1223,8 @@ class Jenkins(_messages.Message):
 
 
 class ListConnectorEvaluationsResponse(_messages.Message):
-  r"""Response message for the ListConnectorEvaluationSummaries RPC. Disable
-  the rule for the message's overall structure.
+  r"""Response message for the ListConnectorEvaluations RPC. Disable the rule
+  for the message's overall structure.
 
   Fields:
     connectorEvaluationSummaries: A list of connector evaluation summaries.

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ __protobuf__ = proto.module(
         'TCPSocketAction',
         'GRPCAction',
         'BuildInfo',
+        'SourceCode',
     },
 )
 
@@ -62,6 +63,8 @@ class Container(proto.Message):
             Dockerhub, Google Artifact Registry, or Google
             Container Registry. If the host is not provided,
             Dockerhub is assumed.
+        source_code (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.SourceCode):
+            Optional. Location of the source.
         command (MutableSequence[str]):
             Entrypoint array. Not executed within a
             shell. The docker image's ENTRYPOINT is used if
@@ -124,6 +127,11 @@ class Container(proto.Message):
     image: str = proto.Field(
         proto.STRING,
         number=2,
+    )
+    source_code: 'SourceCode' = proto.Field(
+        proto.MESSAGE,
+        number=17,
+        message='SourceCode',
     )
     command: MutableSequence[str] = proto.RepeatedField(
         proto.STRING,
@@ -480,17 +488,17 @@ class SecretVolumeSource(proto.Message):
 
             Notes
 
-            -  Internally, a umask of 0222 will be applied to any
-               non-zero value.
-            -  This is an integer representation of the mode bits. So,
-               the octal integer value should look exactly as the chmod
-               numeric notation with a leading zero. Some examples: for
-               chmod 640 (u=rw,g=r), set to 0640 (octal) or 416
-               (base-10). For chmod 755 (u=rwx,g=rx,o=rx), set to 0755
-               (octal) or 493 (base-10).
-            -  This might be in conflict with other options that affect
-               the file mode, like fsGroup, and the result can be other
-               mode bits set.
+            - Internally, a umask of 0222 will be applied to any
+              non-zero value.
+            - This is an integer representation of the mode bits. So,
+              the octal integer value should look exactly as the chmod
+              numeric notation with a leading zero. Some examples: for
+              chmod 640 (u=rw,g=r), set to 0640 (octal) or 416
+              (base-10). For chmod 755 (u=rwx,g=rx,o=rx), set to 0755
+              (octal) or 493 (base-10).
+            - This might be in conflict with other options that affect
+              the file mode, like fsGroup, and the result can be other
+              mode bits set.
 
             This might be in conflict with other options that affect the
             file mode, like fsGroup, and as a result, other mode bits
@@ -532,17 +540,17 @@ class VersionToPath(proto.Message):
 
             Notes
 
-            -  Internally, a umask of 0222 will be applied to any
-               non-zero value.
-            -  This is an integer representation of the mode bits. So,
-               the octal integer value should look exactly as the chmod
-               numeric notation with a leading zero. Some examples: for
-               chmod 640 (u=rw,g=r), set to 0640 (octal) or 416
-               (base-10). For chmod 755 (u=rwx,g=rx,o=rx), set to 0755
-               (octal) or 493 (base-10).
-            -  This might be in conflict with other options that affect
-               the file mode, like fsGroup, and the result can be other
-               mode bits set.
+            - Internally, a umask of 0222 will be applied to any
+              non-zero value.
+            - This is an integer representation of the mode bits. So,
+              the octal integer value should look exactly as the chmod
+              numeric notation with a leading zero. Some examples: for
+              chmod 640 (u=rw,g=r), set to 0640 (octal) or 416
+              (base-10). For chmod 755 (u=rwx,g=rx,o=rx), set to 0755
+              (octal) or 493 (base-10).
+            - This might be in conflict with other options that affect
+              the file mode, like fsGroup, and the result can be other
+              mode bits set.
     """
 
     path: str = proto.Field(
@@ -898,6 +906,52 @@ class BuildInfo(proto.Message):
     source_location: str = proto.Field(
         proto.STRING,
         number=2,
+    )
+
+
+class SourceCode(proto.Message):
+    r"""Source type for the container.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        cloud_storage_source (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.SourceCode.CloudStorageSource):
+            The source is a Cloud Storage bucket.
+
+            This field is a member of `oneof`_ ``source_type``.
+    """
+
+    class CloudStorageSource(proto.Message):
+        r"""Cloud Storage source.
+
+        Attributes:
+            bucket (str):
+                Required. The Cloud Storage bucket name.
+            object_ (str):
+                Required. The Cloud Storage object name.
+            generation (int):
+                Optional. The Cloud Storage object
+                generation.
+        """
+
+        bucket: str = proto.Field(
+            proto.STRING,
+            number=1,
+        )
+        object_: str = proto.Field(
+            proto.STRING,
+            number=2,
+        )
+        generation: int = proto.Field(
+            proto.INT64,
+            number=3,
+        )
+
+    cloud_storage_source: CloudStorageSource = proto.Field(
+        proto.MESSAGE,
+        number=1,
+        oneof='source_type',
+        message=CloudStorageSource,
     )
 
 

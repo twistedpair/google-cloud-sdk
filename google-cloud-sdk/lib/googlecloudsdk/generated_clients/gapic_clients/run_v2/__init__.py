@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -72,6 +72,7 @@ from .types.k8s_min import Probe
 from .types.k8s_min import ResourceRequirements
 from .types.k8s_min import SecretKeySelector
 from .types.k8s_min import SecretVolumeSource
+from .types.k8s_min import SourceCode
 from .types.k8s_min import TCPSocketAction
 from .types.k8s_min import VersionToPath
 from .types.k8s_min import Volume
@@ -197,6 +198,7 @@ __all__ = (
 'ServiceMesh',
 'ServiceScaling',
 'ServicesClient',
+'SourceCode',
 'StorageSource',
 'SubmitBuildRequest',
 'SubmitBuildResponse',

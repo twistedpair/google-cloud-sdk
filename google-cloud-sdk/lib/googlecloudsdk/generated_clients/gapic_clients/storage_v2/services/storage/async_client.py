@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import logging as std_logging
 from collections import OrderedDict
-import functools
 import re
 from typing import Dict, Callable, Mapping, MutableMapping, MutableSequence, Optional, AsyncIterable, Awaitable, AsyncIterator, Sequence, Tuple, Type, Union
 
@@ -26,6 +26,7 @@ from google.api_core import gapic_v1
 from google.api_core import retry_async as retries
 from google.auth import credentials as ga_credentials   # type: ignore
 from google.oauth2 import service_account              # type: ignore
+import cloudsdk.google.protobuf
 
 
 try:
@@ -43,6 +44,13 @@ from .transports.base import StorageTransport, DEFAULT_CLIENT_INFO
 from .transports.grpc_asyncio import StorageGrpcAsyncIOTransport
 from .client import StorageClient
 
+try:
+    from google.api_core import client_logging  # type: ignore
+    CLIENT_LOGGING_SUPPORTED = True  # pragma: NO COVER
+except ImportError:  # pragma: NO COVER
+    CLIENT_LOGGING_SUPPORTED = False
+
+_LOGGER = std_logging.getLogger(__name__)
 
 class StorageAsyncClient:
     """API Overview and Naming Syntax
@@ -50,27 +58,34 @@ class StorageAsyncClient:
 
     The Cloud Storage gRPC API allows applications to read and write
     data through the abstractions of buckets and objects. For a
-    description of these abstractions please see
-    https://cloud.google.com/storage/docs.
+    description of these abstractions please see `Cloud Storage
+    documentation <https://cloud.google.com/storage/docs>`__.
 
     Resources are named as follows:
 
-    -  Projects are referred to as they are defined by the Resource
-       Manager API, using strings like ``projects/123456`` or
-       ``projects/my-string-id``.
+    - Projects are referred to as they are defined by the Resource
+      Manager API, using strings like ``projects/123456`` or
+      ``projects/my-string-id``.
 
-    -  Buckets are named using string names of the form:
-       ``projects/{project}/buckets/{bucket}`` For globally unique
-       buckets, ``_`` may be substituted for the project.
+    - Buckets are named using string names of the form:
+      ``projects/{project}/buckets/{bucket}``. For globally unique
+      buckets, ``_`` might be substituted for the project.
 
-    -  Objects are uniquely identified by their name along with the name
-       of the bucket they belong to, as separate strings in this API.
-       For example:
+    - Objects are uniquely identified by their name along with the name
+      of the bucket they belong to, as separate strings in this API. For
+      example:
 
-       ReadObjectRequest { bucket: 'projects/_/buckets/my-bucket'
-       object: 'my-object' } Note that object names can contain ``/``
-       characters, which are treated as any other character (no special
-       directory semantics).
+      ::
+
+         ```
+         ReadObjectRequest {
+         bucket: 'projects/_/buckets/my-bucket'
+         object: 'my-object'
+         }
+         ```
+
+    Note that object names can contain ``/`` characters, which are
+    treated as any other character (no special directory semantics).
     """
 
     _client: StorageClient
@@ -192,7 +207,7 @@ class StorageAsyncClient:
         """
         return self._client._universe_domain
 
-    get_transport_class = functools.partial(type(StorageClient).get_transport_class, type(StorageClient))
+    get_transport_class = StorageClient.get_transport_class
 
     def __init__(self, *,
             credentials: Optional[ga_credentials.Credentials] = None,
@@ -260,15 +275,50 @@ class StorageAsyncClient:
 
         )
 
+        if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(std_logging.DEBUG):  # pragma: NO COVER
+            _LOGGER.debug(
+                "Created client `google.storage_v2.StorageAsyncClient`.",
+                extra = {
+                    "serviceName": "google.storage.v2.Storage",
+                    "universeDomain": getattr(self._client._transport._credentials, "universe_domain", ""),
+                    "credentialsType": f"{type(self._client._transport._credentials).__module__}.{type(self._client._transport._credentials).__qualname__}",
+                    "credentialsInfo": getattr(self.transport._credentials, "get_cred_info", lambda: None)(),
+                } if hasattr(self._client._transport, "_credentials") else {
+                    "serviceName": "google.storage.v2.Storage",
+                    "credentialsType": None,
+                }
+            )
+
     async def delete_bucket(self,
             request: Optional[Union[storage.DeleteBucketRequest, dict]] = None,
             *,
             name: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> None:
-        r"""Permanently deletes an empty bucket.
+        r"""Permanently deletes an empty bucket. The request fails if there
+        are any live or noncurrent objects in the bucket, but the
+        request succeeds if the bucket only contains soft-deleted
+        objects or incomplete uploads, such as ongoing XML API multipart
+        uploads. Does not permanently delete soft-deleted objects.
+
+        When this API is used to delete a bucket containing an object
+        that has a soft delete policy enabled, the object becomes soft
+        deleted, and the ``softDeleteTime`` and ``hardDeleteTime``
+        properties are set on the object.
+
+        Objects and multipart uploads that were in the bucket at the
+        time of deletion are also retained for the specified retention
+        duration. When a soft-deleted bucket reaches the end of its
+        retention duration, it is permanently deleted. The
+        ``hardDeleteTime`` of the bucket always equals or exceeds the
+        expiration time of the last soft-deleted object in the bucket.
+
+        **IAM Permissions**:
+
+        Requires ``storage.buckets.delete`` IAM permission on the
+        bucket.
 
         .. code-block:: python
 
@@ -295,7 +345,8 @@ class StorageAsyncClient:
 
         Args:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.DeleteBucketRequest, dict]]):
-                The request object. Request message for DeleteBucket.
+                The request object. Request message for
+                [DeleteBucket][google.storage.v2.Storage.DeleteBucket].
             name (:class:`str`):
                 Required. Name of a bucket to delete.
                 This corresponds to the ``name`` field
@@ -304,13 +355,16 @@ class StorageAsyncClient:
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
         """
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([name])
+        flattened_params = [name]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
@@ -329,6 +383,18 @@ class StorageAsyncClient:
         # and friendly error handling.
         rpc = self._client._transport._wrapped_methods[self._client._transport.delete_bucket]
 
+        header_params = {}
+
+        routing_param_regex = re.compile('^(?P<bucket>.*)$')
+        regex_match = routing_param_regex.match(request.name)
+        if regex_match and regex_match.group("bucket"):
+            header_params["bucket"] = regex_match.group("bucket")
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
+
         # Validate the universe domain.
         self._client._validate_universe_domain()
 
@@ -346,9 +412,19 @@ class StorageAsyncClient:
             name: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> storage.Bucket:
         r"""Returns metadata for the specified bucket.
+
+        **IAM Permissions**:
+
+        Requires ``storage.buckets.get`` IAM permission on the bucket.
+        Additionally, to return specific bucket metadata, the
+        authenticated user must have the following permissions:
+
+        - To return the IAM policies: ``storage.buckets.getIamPolicy``
+        - To return the bucket IP filtering rules:
+          ``storage.buckets.getIpFilter``
 
         .. code-block:: python
 
@@ -378,7 +454,8 @@ class StorageAsyncClient:
 
         Args:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.GetBucketRequest, dict]]):
-                The request object. Request message for GetBucket.
+                The request object. Request message for
+                [GetBucket][google.storage.v2.Storage.GetBucket].
             name (:class:`str`):
                 Required. Name of a bucket.
                 This corresponds to the ``name`` field
@@ -387,8 +464,10 @@ class StorageAsyncClient:
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket:
@@ -397,7 +476,8 @@ class StorageAsyncClient:
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([name])
+        flattened_params = [name]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
@@ -415,6 +495,18 @@ class StorageAsyncClient:
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
         rpc = self._client._transport._wrapped_methods[self._client._transport.get_bucket]
+
+        header_params = {}
+
+        routing_param_regex = re.compile('^(?P<bucket>.*)$')
+        regex_match = routing_param_regex.match(request.name)
+        if regex_match and regex_match.group("bucket"):
+            header_params["bucket"] = regex_match.group("bucket")
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
 
         # Validate the universe domain.
         self._client._validate_universe_domain()
@@ -438,9 +530,20 @@ class StorageAsyncClient:
             bucket_id: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> storage.Bucket:
         r"""Creates a new bucket.
+
+        **IAM Permissions**:
+
+        Requires ``storage.buckets.create`` IAM permission on the
+        bucket. Additionally, to enable specific bucket features, the
+        authenticated user must have the following permissions:
+
+        - To enable object retention using the ``enableObjectRetention``
+          query parameter: ``storage.buckets.enableObjectRetention``
+        - To set the bucket IP filtering rules:
+          ``storage.buckets.setIpFilter``
 
         .. code-block:: python
 
@@ -471,10 +574,11 @@ class StorageAsyncClient:
 
         Args:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.CreateBucketRequest, dict]]):
-                The request object. Request message for CreateBucket.
+                The request object. Request message for
+                [CreateBucket][google.storage.v2.Storage.CreateBucket].
             parent (:class:`str`):
-                Required. The project to which this bucket will belong.
-                This field must either be empty or ``projects/_``. The
+                Required. The project to which this bucket belongs. This
+                field must either be empty or ``projects/_``. The
                 project ID that owns this bucket should be specified in
                 the ``bucket.project`` field.
 
@@ -484,8 +588,8 @@ class StorageAsyncClient:
             bucket (:class:`googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket`):
                 Optional. Properties of the new bucket being inserted.
                 The name of the bucket is specified in the ``bucket_id``
-                field. Populating ``bucket.name`` field will result in
-                an error. The project of the bucket must be specified in
+                field. Populating ``bucket.name`` field results in an
+                error. The project of the bucket must be specified in
                 the ``bucket.project`` field. This field must be in
                 ``projects/{projectIdentifier}`` format,
                 {projectIdentifier} can be the project ID or project
@@ -496,10 +600,10 @@ class StorageAsyncClient:
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
             bucket_id (:class:`str`):
-                Required. The ID to use for this bucket, which will
-                become the final component of the bucket's resource
-                name. For example, the value ``foo`` might result in a
-                bucket with the name ``projects/123456/buckets/foo``.
+                Required. The ID to use for this bucket, which becomes
+                the final component of the bucket's resource name. For
+                example, the value ``foo`` might result in a bucket with
+                the name ``projects/123456/buckets/foo``.
 
                 This corresponds to the ``bucket_id`` field
                 on the ``request`` instance; if ``request`` is provided, this
@@ -507,8 +611,10 @@ class StorageAsyncClient:
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket:
@@ -517,7 +623,8 @@ class StorageAsyncClient:
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([parent, bucket, bucket_id])
+        flattened_params = [parent, bucket, bucket_id]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
@@ -540,6 +647,23 @@ class StorageAsyncClient:
         # and friendly error handling.
         rpc = self._client._transport._wrapped_methods[self._client._transport.create_bucket]
 
+        header_params = {}
+
+        routing_param_regex = re.compile('^(?P<project>.*)$')
+        regex_match = routing_param_regex.match(request.parent)
+        if regex_match and regex_match.group("project"):
+            header_params["project"] = regex_match.group("project")
+
+        routing_param_regex = re.compile('^(?P<project>.*)$')
+        regex_match = routing_param_regex.match(request.bucket.project)
+        if regex_match and regex_match.group("project"):
+            header_params["project"] = regex_match.group("project")
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
+
         # Validate the universe domain.
         self._client._validate_universe_domain()
 
@@ -560,9 +684,20 @@ class StorageAsyncClient:
             parent: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> pagers.ListBucketsAsyncPager:
-        r"""Retrieves a list of buckets for a given project.
+        r"""Retrieves a list of buckets for a given project, ordered
+        lexicographically by name.
+
+        **IAM Permissions**:
+
+        Requires ``storage.buckets.list`` IAM permission on the bucket.
+        Additionally, to enable specific bucket features, the
+        authenticated user must have the following permissions:
+
+        - To list the IAM policies: ``storage.buckets.getIamPolicy``
+        - To list the bucket IP filtering rules:
+          ``storage.buckets.getIpFilter``
 
         .. code-block:: python
 
@@ -593,7 +728,8 @@ class StorageAsyncClient:
 
         Args:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ListBucketsRequest, dict]]):
-                The request object. Request message for ListBuckets.
+                The request object. Request message for
+                [ListBuckets][google.storage.v2.Storage.ListBuckets].
             parent (:class:`str`):
                 Required. The project whose buckets
                 we are listing.
@@ -604,22 +740,25 @@ class StorageAsyncClient:
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.storage_v2.services.storage.pagers.ListBucketsAsyncPager:
-                The result of a call to
-                Buckets.ListBuckets
-                Iterating over this object will yield
-                results and resolve additional pages
-                automatically.
+                Response message for
+                [ListBuckets][google.storage.v2.Storage.ListBuckets].
+
+                Iterating over this object will yield results and
+                resolve additional pages automatically.
 
         """
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([parent])
+        flattened_params = [parent]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
@@ -638,6 +777,18 @@ class StorageAsyncClient:
         # and friendly error handling.
         rpc = self._client._transport._wrapped_methods[self._client._transport.list_buckets]
 
+        header_params = {}
+
+        routing_param_regex = re.compile('^(?P<project>.*)$')
+        regex_match = routing_param_regex.match(request.parent)
+        if regex_match and regex_match.group("project"):
+            header_params["project"] = regex_match.group("project")
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
+
         # Validate the universe domain.
         self._client._validate_universe_domain()
 
@@ -655,6 +806,8 @@ class StorageAsyncClient:
             method=rpc,
             request=request,
             response=response,
+            retry=retry,
+            timeout=timeout,
             metadata=metadata,
         )
 
@@ -667,9 +820,27 @@ class StorageAsyncClient:
             bucket: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> storage.Bucket:
-        r"""Locks retention policy on a bucket.
+        r"""Permanently locks the retention policy that is currently applied
+        to the specified bucket.
+
+        Caution: Locking a bucket is an irreversible action. Once you
+        lock a bucket:
+
+        - You cannot remove the retention policy from the bucket.
+        - You cannot decrease the retention period for the policy.
+
+        Once locked, you must delete the entire bucket in order to
+        remove the bucket's retention policy. However, before you can
+        delete the bucket, you must delete all the objects in the
+        bucket, which is only possible if all the objects have reached
+        the retention period set by the retention policy.
+
+        **IAM Permissions**:
+
+        Requires ``storage.buckets.update`` IAM permission on the
+        bucket.
 
         .. code-block:: python
 
@@ -701,7 +872,7 @@ class StorageAsyncClient:
         Args:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.LockBucketRetentionPolicyRequest, dict]]):
                 The request object. Request message for
-                LockBucketRetentionPolicyRequest.
+                [LockBucketRetentionPolicy][google.storage.v2.Storage.LockBucketRetentionPolicy].
             bucket (:class:`str`):
                 Required. Name of a bucket.
                 This corresponds to the ``bucket`` field
@@ -710,8 +881,10 @@ class StorageAsyncClient:
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket:
@@ -720,7 +893,8 @@ class StorageAsyncClient:
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([bucket])
+        flattened_params = [bucket]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
@@ -738,6 +912,18 @@ class StorageAsyncClient:
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
         rpc = self._client._transport._wrapped_methods[self._client._transport.lock_bucket_retention_policy]
+
+        header_params = {}
+
+        routing_param_regex = re.compile('^(?P<bucket>.*)$')
+        regex_match = routing_param_regex.match(request.bucket)
+        if regex_match and regex_match.group("bucket"):
+            header_params["bucket"] = regex_match.group("bucket")
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
 
         # Validate the universe domain.
         self._client._validate_universe_domain()
@@ -759,13 +945,19 @@ class StorageAsyncClient:
             resource: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> policy_pb2.Policy:
-        r"""Gets the IAM policy for a specified bucket. The ``resource``
-        field in the request should be ``projects/_/buckets/{bucket}``
-        for a bucket, or
+        r"""Gets the IAM policy for a specified bucket or managed folder.
+        The ``resource`` field in the request should be
+        ``projects/_/buckets/{bucket}`` for a bucket, or
         ``projects/_/buckets/{bucket}/managedFolders/{managedFolder}``
         for a managed folder.
+
+        **IAM Permissions**:
+
+        Requires ``storage.buckets.getIamPolicy`` on the bucket or
+        ``storage.managedFolders.getIamPolicy`` IAM permission on the
+        managed folder.
 
         .. code-block:: python
 
@@ -809,8 +1001,10 @@ class StorageAsyncClient:
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             google.iam.v1.policy_pb2.Policy:
@@ -855,11 +1049,11 @@ class StorageAsyncClient:
 
                    **YAML Example**
 
-                      bindings: - members: - user:\ mike@example.com -
-                      group:\ admins@example.com - domain:google.com -
-                      serviceAccount:\ my-project-id@appspot.gserviceaccount.com
+                      bindings: - members: - user:mike@example.com -
+                      group:admins@example.com - domain:google.com -
+                      serviceAccount:my-project-id@appspot.gserviceaccount.com
                       role: roles/resourcemanager.organizationAdmin -
-                      members: - user:\ eve@example.com role:
+                      members: - user:eve@example.com role:
                       roles/resourcemanager.organizationViewer
                       condition: title: expirable access description:
                       Does not grant access after Sep 2020 expression:
@@ -868,13 +1062,14 @@ class StorageAsyncClient:
 
                    For a description of IAM and its features, see the
                    [IAM developer's
-                   guide](\ https://cloud.google.com/iam/docs).
+                   guide](https://cloud.google.com/iam/docs).
 
         """
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([resource])
+        flattened_params = [resource]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
@@ -889,6 +1084,23 @@ class StorageAsyncClient:
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
         rpc = self._client._transport._wrapped_methods[self._client._transport.get_iam_policy]
+
+        header_params = {}
+
+        routing_param_regex = re.compile('^(?P<bucket>.*)$')
+        regex_match = routing_param_regex.match(request.resource)
+        if regex_match and regex_match.group("bucket"):
+            header_params["bucket"] = regex_match.group("bucket")
+
+        routing_param_regex = re.compile('^(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?$')
+        regex_match = routing_param_regex.match(request.resource)
+        if regex_match and regex_match.group("bucket"):
+            header_params["bucket"] = regex_match.group("bucket")
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
 
         # Validate the universe domain.
         self._client._validate_universe_domain()
@@ -910,11 +1122,11 @@ class StorageAsyncClient:
             resource: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> policy_pb2.Policy:
-        r"""Updates an IAM policy for the specified bucket. The ``resource``
-        field in the request should be ``projects/_/buckets/{bucket}``
-        for a bucket, or
+        r"""Updates an IAM policy for the specified bucket or managed
+        folder. The ``resource`` field in the request should be
+        ``projects/_/buckets/{bucket}`` for a bucket, or
         ``projects/_/buckets/{bucket}/managedFolders/{managedFolder}``
         for a managed folder.
 
@@ -960,8 +1172,10 @@ class StorageAsyncClient:
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             google.iam.v1.policy_pb2.Policy:
@@ -1006,11 +1220,11 @@ class StorageAsyncClient:
 
                    **YAML Example**
 
-                      bindings: - members: - user:\ mike@example.com -
-                      group:\ admins@example.com - domain:google.com -
-                      serviceAccount:\ my-project-id@appspot.gserviceaccount.com
+                      bindings: - members: - user:mike@example.com -
+                      group:admins@example.com - domain:google.com -
+                      serviceAccount:my-project-id@appspot.gserviceaccount.com
                       role: roles/resourcemanager.organizationAdmin -
-                      members: - user:\ eve@example.com role:
+                      members: - user:eve@example.com role:
                       roles/resourcemanager.organizationViewer
                       condition: title: expirable access description:
                       Does not grant access after Sep 2020 expression:
@@ -1019,13 +1233,14 @@ class StorageAsyncClient:
 
                    For a description of IAM and its features, see the
                    [IAM developer's
-                   guide](\ https://cloud.google.com/iam/docs).
+                   guide](https://cloud.google.com/iam/docs).
 
         """
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([resource])
+        flattened_params = [resource]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
@@ -1040,6 +1255,23 @@ class StorageAsyncClient:
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
         rpc = self._client._transport._wrapped_methods[self._client._transport.set_iam_policy]
+
+        header_params = {}
+
+        routing_param_regex = re.compile('^(?P<bucket>.*)$')
+        regex_match = routing_param_regex.match(request.resource)
+        if regex_match and regex_match.group("bucket"):
+            header_params["bucket"] = regex_match.group("bucket")
+
+        routing_param_regex = re.compile('^(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?$')
+        regex_match = routing_param_regex.match(request.resource)
+        if regex_match and regex_match.group("bucket"):
+            header_params["bucket"] = regex_match.group("bucket")
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
 
         # Validate the universe domain.
         self._client._validate_universe_domain()
@@ -1062,7 +1294,7 @@ class StorageAsyncClient:
             permissions: Optional[MutableSequence[str]] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> iam_policy_pb2.TestIamPermissionsResponse:
         r"""Tests a set of permissions on the given bucket, object, or
         managed folder to see which, if any, are held by the caller. The
@@ -1125,8 +1357,10 @@ class StorageAsyncClient:
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             google.iam.v1.iam_policy_pb2.TestIamPermissionsResponse:
@@ -1135,7 +1369,8 @@ class StorageAsyncClient:
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([resource, permissions])
+        flattened_params = [resource, permissions]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
@@ -1150,6 +1385,28 @@ class StorageAsyncClient:
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
         rpc = self._client._transport._wrapped_methods[self._client._transport.test_iam_permissions]
+
+        header_params = {}
+
+        routing_param_regex = re.compile('^(?P<bucket>.*)$')
+        regex_match = routing_param_regex.match(request.resource)
+        if regex_match and regex_match.group("bucket"):
+            header_params["bucket"] = regex_match.group("bucket")
+
+        routing_param_regex = re.compile('^(?P<bucket>projects/[^/]+/buckets/[^/]+)/objects(?:/.*)?$')
+        regex_match = routing_param_regex.match(request.resource)
+        if regex_match and regex_match.group("bucket"):
+            header_params["bucket"] = regex_match.group("bucket")
+
+        routing_param_regex = re.compile('^(?P<bucket>projects/[^/]+/buckets/[^/]+)/managedFolders(?:/.*)?$')
+        regex_match = routing_param_regex.match(request.resource)
+        if regex_match and regex_match.group("bucket"):
+            header_params["bucket"] = regex_match.group("bucket")
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
 
         # Validate the universe domain.
         self._client._validate_universe_domain()
@@ -1172,10 +1429,22 @@ class StorageAsyncClient:
             update_mask: Optional[field_mask_pb2.FieldMask] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> storage.Bucket:
-        r"""Updates a bucket. Equivalent to JSON API's
-        storage.buckets.patch method.
+        r"""Updates a bucket. Changes to the bucket are readable immediately
+        after writing, but configuration changes might take time to
+        propagate. This method supports ``patch`` semantics.
+
+        **IAM Permissions**:
+
+        Requires ``storage.buckets.update`` IAM permission on the
+        bucket. Additionally, to enable specific bucket features, the
+        authenticated user must have the following permissions:
+
+        - To set bucket IP filtering rules:
+          ``storage.buckets.setIpFilter``
+        - To update public access prevention policies or access control
+          lists (ACLs): ``storage.buckets.setIamPolicy``
 
         .. code-block:: python
 
@@ -1204,10 +1473,12 @@ class StorageAsyncClient:
 
         Args:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.UpdateBucketRequest, dict]]):
-                The request object. Request for UpdateBucket method.
+                The request object. Request for
+                [UpdateBucket][google.storage.v2.Storage.UpdateBucket]
+                method.
             bucket (:class:`googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket`):
                 Required. The bucket to update. The bucket's ``name``
-                field will be used to identify the bucket.
+                field is used to identify the bucket.
 
                 This corresponds to the ``bucket`` field
                 on the ``request`` instance; if ``request`` is provided, this
@@ -1219,7 +1490,7 @@ class StorageAsyncClient:
                 "update" function, specify a single field with the value
                 ``*``. Note: not recommended. If a new field is
                 introduced at a later time, an older client updating
-                with the ``*`` may accidentally reset the new field's
+                with the ``*`` might accidentally reset the new field's
                 value.
 
                 Not specifying any fields is an error.
@@ -1230,8 +1501,10 @@ class StorageAsyncClient:
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket:
@@ -1240,7 +1513,8 @@ class StorageAsyncClient:
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([bucket, update_mask])
+        flattened_params = [bucket, update_mask]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
@@ -1261,6 +1535,18 @@ class StorageAsyncClient:
         # and friendly error handling.
         rpc = self._client._transport._wrapped_methods[self._client._transport.update_bucket]
 
+        header_params = {}
+
+        routing_param_regex = re.compile('^(?P<bucket>.*)$')
+        regex_match = routing_param_regex.match(request.bucket.name)
+        if regex_match and regex_match.group("bucket"):
+            header_params["bucket"] = regex_match.group("bucket")
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
+
         # Validate the universe domain.
         self._client._validate_universe_domain()
 
@@ -1280,10 +1566,21 @@ class StorageAsyncClient:
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> storage.Object:
-        r"""Concatenates a list of existing objects into a new
-        object in the same bucket.
+        r"""Concatenates a list of existing objects into a new object in the
+        same bucket. The existing source objects are unaffected by this
+        operation.
+
+        **IAM Permissions**:
+
+        Requires the ``storage.objects.create`` and
+        ``storage.objects.get`` IAM permissions to use this method. If
+        the new composite object overwrites an existing object, the
+        authenticated user must also have the ``storage.objects.delete``
+        permission. If the request body includes the retention property,
+        the authenticated user must also have the
+        ``storage.objects.setRetention`` IAM permission.
 
         .. code-block:: python
 
@@ -1312,12 +1609,15 @@ class StorageAsyncClient:
 
         Args:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ComposeObjectRequest, dict]]):
-                The request object. Request message for ComposeObject.
+                The request object. Request message for
+                [ComposeObject][google.storage.v2.Storage.ComposeObject].
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Object:
@@ -1332,6 +1632,18 @@ class StorageAsyncClient:
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
         rpc = self._client._transport._wrapped_methods[self._client._transport.compose_object]
+
+        header_params = {}
+
+        routing_param_regex = re.compile('^(?P<bucket>.*)$')
+        regex_match = routing_param_regex.match(request.destination.bucket)
+        if regex_match and regex_match.group("bucket"):
+            header_params["bucket"] = regex_match.group("bucket")
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
 
         # Validate the universe domain.
         self._client._validate_universe_domain()
@@ -1355,19 +1667,17 @@ class StorageAsyncClient:
             generation: Optional[int] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> None:
         r"""Deletes an object and its metadata. Deletions are permanent if
         versioning is not enabled for the bucket, or if the generation
-        parameter is used, or if `soft
-        delete <https://cloud.google.com/storage/docs/soft-delete>`__ is
-        not enabled for the bucket. When this API is used to delete an
-        object from a bucket that has soft delete policy enabled, the
-        object becomes soft deleted, and the ``softDeleteTime`` and
-        ``hardDeleteTime`` properties are set on the object. This API
-        cannot be used to permanently delete soft-deleted objects.
-        Soft-deleted objects are permanently deleted according to their
-        ``hardDeleteTime``.
+        parameter is used, or if soft delete is not enabled for the
+        bucket. When this API is used to delete an object from a bucket
+        that has soft delete policy enabled, the object becomes soft
+        deleted, and the ``softDeleteTime`` and ``hardDeleteTime``
+        properties are set on the object. This API cannot be used to
+        permanently delete soft-deleted objects. Soft-deleted objects
+        are permanently deleted according to their ``hardDeleteTime``.
 
         You can use the
         [``RestoreObject``][google.storage.v2.Storage.RestoreObject] API
@@ -1376,9 +1686,8 @@ class StorageAsyncClient:
 
         **IAM Permissions**:
 
-        Requires ``storage.objects.delete`` `IAM
-        permission <https://cloud.google.com/iam/docs/overview#permissions>`__
-        on the bucket.
+        Requires ``storage.objects.delete`` IAM permission on the
+        bucket.
 
         .. code-block:: python
 
@@ -1406,8 +1715,8 @@ class StorageAsyncClient:
 
         Args:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.DeleteObjectRequest, dict]]):
-                The request object. Message for deleting an object. ``bucket`` and
-                ``object`` **must** be set.
+                The request object. Request message for deleting an
+                object.
             bucket (:class:`str`):
                 Required. Name of the bucket in which
                 the object resides.
@@ -1435,13 +1744,16 @@ class StorageAsyncClient:
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
         """
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([bucket, object_, generation])
+        flattened_params = [bucket, object_, generation]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
@@ -1464,6 +1776,18 @@ class StorageAsyncClient:
         # and friendly error handling.
         rpc = self._client._transport._wrapped_methods[self._client._transport.delete_object]
 
+        header_params = {}
+
+        routing_param_regex = re.compile('^(?P<bucket>.*)$')
+        regex_match = routing_param_regex.match(request.bucket)
+        if regex_match and regex_match.group("bucket"):
+            header_params["bucket"] = regex_match.group("bucket")
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
+
         # Validate the universe domain.
         self._client._validate_universe_domain()
 
@@ -1483,9 +1807,46 @@ class StorageAsyncClient:
             generation: Optional[int] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> storage.Object:
-        r"""Restores a soft-deleted object.
+        r"""Restores a soft-deleted object. When a soft-deleted object is
+        restored, a new copy of that object is created in the same
+        bucket and inherits the same metadata as the soft-deleted
+        object. The inherited metadata is the metadata that existed when
+        the original object became soft deleted, with the following
+        exceptions:
+
+        - The ``createTime`` of the new object is set to the time at
+          which the soft-deleted object was restored.
+        - The ``softDeleteTime`` and ``hardDeleteTime`` values are
+          cleared.
+        - A new generation is assigned and the metageneration is reset
+          to 1.
+        - If the soft-deleted object was in a bucket that had Autoclass
+          enabled, the new object is restored to Standard storage.
+        - The restored object inherits the bucket's default object ACL,
+          unless ``copySourceAcl`` is ``true``.
+
+        If a live object using the same name already exists in the
+        bucket and becomes overwritten, the live object becomes a
+        noncurrent object if Object Versioning is enabled on the bucket.
+        If Object Versioning is not enabled, the live object becomes
+        soft deleted.
+
+        **IAM Permissions**:
+
+        Requires the following IAM permissions to use this method:
+
+        - ``storage.objects.restore``
+        - ``storage.objects.create``
+        - ``storage.objects.delete`` (only required if overwriting an
+          existing object)
+        - ``storage.objects.getIamPolicy`` (only required if
+          ``projection`` is ``full`` and the relevant bucket has uniform
+          bucket-level access disabled)
+        - ``storage.objects.setIamPolicy`` (only required if
+          ``copySourceAcl`` is ``true`` and the relevant bucket has
+          uniform bucket-level access disabled)
 
         .. code-block:: python
 
@@ -1517,8 +1878,10 @@ class StorageAsyncClient:
 
         Args:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.RestoreObjectRequest, dict]]):
-                The request object. Message for restoring an object. ``bucket``, ``object``,
-                and ``generation`` **must** be set.
+                The request object. Request message for
+                [RestoreObject][google.storage.v2.Storage.RestoreObject].
+                ``bucket``, ``object``, and ``generation`` **must** be
+                set.
             bucket (:class:`str`):
                 Required. Name of the bucket in which
                 the object resides.
@@ -1543,8 +1906,10 @@ class StorageAsyncClient:
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Object:
@@ -1553,7 +1918,8 @@ class StorageAsyncClient:
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([bucket, object_, generation])
+        flattened_params = [bucket, object_, generation]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
@@ -1576,6 +1942,18 @@ class StorageAsyncClient:
         # and friendly error handling.
         rpc = self._client._transport._wrapped_methods[self._client._transport.restore_object]
 
+        header_params = {}
+
+        routing_param_regex = re.compile('^(?P<bucket>.*)$')
+        regex_match = routing_param_regex.match(request.bucket)
+        if regex_match and regex_match.group("bucket"):
+            header_params["bucket"] = regex_match.group("bucket")
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
+
         # Validate the universe domain.
         self._client._validate_universe_domain()
 
@@ -1596,16 +1974,16 @@ class StorageAsyncClient:
             upload_id: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> storage.CancelResumableWriteResponse:
         r"""Cancels an in-progress resumable upload.
 
         Any attempts to write to the resumable upload after
-        cancelling the upload will fail.
+        cancelling the upload fail.
 
-        The behavior for currently in progress write operations
-        is not guaranteed - they could either complete before
-        the cancellation or fail if the cancellation completes
+        The behavior for any in-progress write operations is not
+        guaranteed; they could either complete before the
+        cancellation or fail if the cancellation completes
         first.
 
         .. code-block:: python
@@ -1636,8 +2014,8 @@ class StorageAsyncClient:
 
         Args:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.CancelResumableWriteRequest, dict]]):
-                The request object. Message for canceling an in-progress resumable upload.
-                ``upload_id`` **must** be set.
+                The request object. Request message for
+                [CancelResumableWrite][google.storage.v2.Storage.CancelResumableWrite].
             upload_id (:class:`str`):
                 Required. The upload_id of the resumable upload to
                 cancel. This should be copied from the ``upload_id``
@@ -1649,20 +2027,23 @@ class StorageAsyncClient:
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.CancelResumableWriteResponse:
                 Empty response message for canceling
-                an in-progress resumable upload, will be
+                an in-progress resumable upload, is
                 extended as needed.
 
         """
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([upload_id])
+        flattened_params = [upload_id]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
@@ -1680,6 +2061,18 @@ class StorageAsyncClient:
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
         rpc = self._client._transport._wrapped_methods[self._client._transport.cancel_resumable_write]
+
+        header_params = {}
+
+        routing_param_regex = re.compile('^(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?$')
+        regex_match = routing_param_regex.match(request.upload_id)
+        if regex_match and regex_match.group("bucket"):
+            header_params["bucket"] = regex_match.group("bucket")
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
 
         # Validate the universe domain.
         self._client._validate_universe_domain()
@@ -1703,16 +2096,15 @@ class StorageAsyncClient:
             generation: Optional[int] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> storage.Object:
         r"""Retrieves object metadata.
 
         **IAM Permissions**:
 
-        Requires ``storage.objects.get`` `IAM
-        permission <https://cloud.google.com/iam/docs/overview#permissions>`__
-        on the bucket. To return object ACLs, the authenticated user
-        must also have the ``storage.objects.getIamPolicy`` permission.
+        Requires ``storage.objects.get`` IAM permission on the bucket.
+        To return object ACLs, the authenticated user must also have the
+        ``storage.objects.getIamPolicy`` permission.
 
         .. code-block:: python
 
@@ -1743,7 +2135,8 @@ class StorageAsyncClient:
 
         Args:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.GetObjectRequest, dict]]):
-                The request object. Request message for GetObject.
+                The request object. Request message for
+                [GetObject][google.storage.v2.Storage.GetObject].
             bucket (:class:`str`):
                 Required. Name of the bucket in which
                 the object resides.
@@ -1768,8 +2161,10 @@ class StorageAsyncClient:
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Object:
@@ -1778,7 +2173,8 @@ class StorageAsyncClient:
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([bucket, object_, generation])
+        flattened_params = [bucket, object_, generation]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
@@ -1800,6 +2196,18 @@ class StorageAsyncClient:
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
         rpc = self._client._transport._wrapped_methods[self._client._transport.get_object]
+
+        header_params = {}
+
+        routing_param_regex = re.compile('^(?P<bucket>.*)$')
+        regex_match = routing_param_regex.match(request.bucket)
+        if regex_match and regex_match.group("bucket"):
+            header_params["bucket"] = regex_match.group("bucket")
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
 
         # Validate the universe domain.
         self._client._validate_universe_domain()
@@ -1823,15 +2231,13 @@ class StorageAsyncClient:
             generation: Optional[int] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> Awaitable[AsyncIterable[storage.ReadObjectResponse]]:
         r"""Retrieves object data.
 
         **IAM Permissions**:
 
-        Requires ``storage.objects.get`` `IAM
-        permission <https://cloud.google.com/iam/docs/overview#permissions>`__
-        on the bucket.
+        Requires ``storage.objects.get`` IAM permission on the bucket.
 
         .. code-block:: python
 
@@ -1863,7 +2269,8 @@ class StorageAsyncClient:
 
         Args:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ReadObjectRequest, dict]]):
-                The request object. Request message for ReadObject.
+                The request object. Request message for
+                [ReadObject][google.storage.v2.Storage.ReadObject].
             bucket (:class:`str`):
                 Required. The name of the bucket
                 containing the object to read.
@@ -1890,17 +2297,22 @@ class StorageAsyncClient:
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             AsyncIterable[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ReadObjectResponse]:
-                Response message for ReadObject.
+                Response message for
+                [ReadObject][google.storage.v2.Storage.ReadObject].
+
         """
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([bucket, object_, generation])
+        flattened_params = [bucket, object_, generation]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
@@ -1923,6 +2335,18 @@ class StorageAsyncClient:
         # and friendly error handling.
         rpc = self._client._transport._wrapped_methods[self._client._transport.read_object]
 
+        header_params = {}
+
+        routing_param_regex = re.compile('^(?P<bucket>.*)$')
+        regex_match = routing_param_regex.match(request.bucket)
+        if regex_match and regex_match.group("bucket"):
+            header_params["bucket"] = regex_match.group("bucket")
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
+
         # Validate the universe domain.
         self._client._validate_universe_domain()
 
@@ -1942,29 +2366,21 @@ class StorageAsyncClient:
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> Awaitable[AsyncIterable[storage.BidiReadObjectResponse]]:
         r"""Reads an object's data.
 
-        This is a bi-directional API with the added support for reading
-        multiple ranges within one stream both within and across
-        multiple messages. If the server encountered an error for any of
-        the inputs, the stream will be closed with the relevant error
-        code. Because the API allows for multiple outstanding requests,
-        when the stream is closed the error response will contain a
-        BidiReadObjectRangesError proto in the error extension
-        describing the error for each outstanding read_id.
+        This bi-directional API reads data from an object, allowing you
+        to request multiple data ranges within a single stream, even
+        across several messages. If an error occurs with any request,
+        the stream closes with a relevant error code. Since you can have
+        multiple outstanding requests, the error response includes a
+        ``BidiReadObjectRangesError`` field detailing the specific error
+        for each pending ``read_id``.
 
         **IAM Permissions**:
 
-        Requires ``storage.objects.get``
-
-        `IAM
-        permission <https://cloud.google.com/iam/docs/overview#permissions>`__
-        on the bucket.
-
-        This API is currently in preview and is not yet available for
-        general use.
+        Requires ``storage.objects.get`` IAM permission on the bucket.
 
         .. code-block:: python
 
@@ -2004,21 +2420,33 @@ class StorageAsyncClient:
 
         Args:
             requests (AsyncIterator[`googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.BidiReadObjectRequest`]):
-                The request object AsyncIterator. Request message for BidiReadObject.
+                The request object AsyncIterator. Request message for
+                [BidiReadObject][google.storage.v2.Storage.BidiReadObject].
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             AsyncIterable[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.BidiReadObjectResponse]:
-                Response message for BidiReadObject.
+                Response message for
+                   [BidiReadObject][google.storage.v2.Storage.BidiReadObject].
+
         """
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
         rpc = self._client._transport._wrapped_methods[self._client._transport.bidi_read_object]
+
+        header_params = {}
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
 
         # Validate the universe domain.
         self._client._validate_universe_domain()
@@ -2041,10 +2469,15 @@ class StorageAsyncClient:
             update_mask: Optional[field_mask_pb2.FieldMask] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> storage.Object:
-        r"""Updates an object's metadata.
-        Equivalent to JSON API's storage.objects.patch.
+        r"""Updates an object's metadata. Equivalent to JSON API's
+        ``storage.objects.patch`` method.
+
+        **IAM Permissions**:
+
+        Requires ``storage.objects.update`` IAM permission on the
+        bucket.
 
         .. code-block:: python
 
@@ -2073,7 +2506,8 @@ class StorageAsyncClient:
 
         Args:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.UpdateObjectRequest, dict]]):
-                The request object. Request message for UpdateObject.
+                The request object. Request message for
+                [UpdateObject][google.storage.v2.Storage.UpdateObject].
             object_ (:class:`googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Object`):
                 Required. The object to update.
                 The object's bucket and name fields are
@@ -2094,7 +2528,7 @@ class StorageAsyncClient:
                 "update" function, specify a single field with the value
                 ``*``. Note: not recommended. If a new field is
                 introduced at a later time, an older client updating
-                with the ``*`` may accidentally reset the new field's
+                with the ``*`` might accidentally reset the new field's
                 value.
 
                 Not specifying any fields is an error.
@@ -2105,8 +2539,10 @@ class StorageAsyncClient:
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Object:
@@ -2115,7 +2551,8 @@ class StorageAsyncClient:
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([object_, update_mask])
+        flattened_params = [object_, update_mask]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
@@ -2136,6 +2573,18 @@ class StorageAsyncClient:
         # and friendly error handling.
         rpc = self._client._transport._wrapped_methods[self._client._transport.update_object]
 
+        header_params = {}
+
+        routing_param_regex = re.compile('^(?P<bucket>.*)$')
+        regex_match = routing_param_regex.match(request.object.bucket)
+        if regex_match and regex_match.group("bucket"):
+            header_params["bucket"] = regex_match.group("bucket")
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
+
         # Validate the universe domain.
         self._client._validate_universe_domain()
 
@@ -2155,7 +2604,7 @@ class StorageAsyncClient:
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> storage.WriteObjectResponse:
         r"""Stores a new object and metadata.
 
@@ -2174,63 +2623,62 @@ class StorageAsyncClient:
         explicitly by the client or due to a network error or an error
         response from the server), the client should do as follows:
 
-        -  Check the result Status of the stream, to determine if
-           writing can be resumed on this stream or must be restarted
-           from scratch (by calling ``StartResumableWrite()``). The
-           resumable errors are DEADLINE_EXCEEDED, INTERNAL, and
-           UNAVAILABLE. For each case, the client should use binary
-           exponential backoff before retrying. Additionally, writes can
-           be resumed after RESOURCE_EXHAUSTED errors, but only after
-           taking appropriate measures, which may include reducing
-           aggregate send rate across clients and/or requesting a quota
-           increase for your project.
-        -  If the call to ``WriteObject`` returns ``ABORTED``, that
-           indicates concurrent attempts to update the resumable write,
-           caused either by multiple racing clients or by a single
-           client where the previous request was timed out on the client
-           side but nonetheless reached the server. In this case the
-           client should take steps to prevent further concurrent writes
-           (e.g., increase the timeouts, stop using more than one
-           process to perform the upload, etc.), and then should follow
-           the steps below for resuming the upload.
-        -  For resumable errors, the client should call
-           ``QueryWriteStatus()`` and then continue writing from the
-           returned ``persisted_size``. This may be less than the amount
-           of data the client previously sent. Note also that it is
-           acceptable to send data starting at an offset earlier than
-           the returned ``persisted_size``; in this case, the service
-           will skip data at offsets that were already persisted
-           (without checking that it matches the previously written
-           data), and write only the data starting from the persisted
-           offset. Even though the data isn't written, it may still
-           incur a performance cost over resuming at the correct write
-           offset. This behavior can make client-side handling simpler
-           in some cases.
-        -  Clients must only send data that is a multiple of 256 KiB per
-           message, unless the object is being finished with
-           ``finish_write`` set to ``true``.
+        - Check the result Status of the stream, to determine if writing
+          can be resumed on this stream or must be restarted from
+          scratch (by calling ``StartResumableWrite()``). The resumable
+          errors are ``DEADLINE_EXCEEDED``, ``INTERNAL``, and
+          ``UNAVAILABLE``. For each case, the client should use binary
+          exponential backoff before retrying. Additionally, writes can
+          be resumed after ``RESOURCE_EXHAUSTED`` errors, but only after
+          taking appropriate measures, which might include reducing
+          aggregate send rate across clients and/or requesting a quota
+          increase for your project.
+        - If the call to ``WriteObject`` returns ``ABORTED``, that
+          indicates concurrent attempts to update the resumable write,
+          caused either by multiple racing clients or by a single client
+          where the previous request was timed out on the client side
+          but nonetheless reached the server. In this case the client
+          should take steps to prevent further concurrent writes. For
+          example, increase the timeouts and stop using more than one
+          process to perform the upload. Follow the steps below for
+          resuming the upload.
+        - For resumable errors, the client should call
+          ``QueryWriteStatus()`` and then continue writing from the
+          returned ``persisted_size``. This might be less than the
+          amount of data the client previously sent. Note also that it
+          is acceptable to send data starting at an offset earlier than
+          the returned ``persisted_size``; in this case, the service
+          skips data at offsets that were already persisted (without
+          checking that it matches the previously written data), and
+          write only the data starting from the persisted offset. Even
+          though the data isn't written, it might still incur a
+          performance cost over resuming at the correct write offset.
+          This behavior can make client-side handling simpler in some
+          cases.
+        - Clients must only send data that is a multiple of 256 KiB per
+          message, unless the object is being finished with
+          ``finish_write`` set to ``true``.
 
-        The service will not view the object as complete until the
+        The service does not view the object as complete until the
         client has sent a ``WriteObjectRequest`` with ``finish_write``
         set to ``true``. Sending any requests on a stream after sending
-        a request with ``finish_write`` set to ``true`` will cause an
-        error. The client **should** check the response it receives to
-        determine how much data the service was able to commit and
-        whether the service views the object as complete.
+        a request with ``finish_write`` set to ``true`` causes an error.
+        The client must check the response it receives to determine how
+        much data the service is able to commit and whether the service
+        views the object as complete.
 
-        Attempting to resume an already finalized object will result in
-        an OK status, with a ``WriteObjectResponse`` containing the
+        Attempting to resume an already finalized object results in an
+        ``OK`` status, with a ``WriteObjectResponse`` containing the
         finalized object's metadata.
 
-        Alternatively, the BidiWriteObject operation may be used to
+        Alternatively, you can use the ``BidiWriteObject`` operation to
         write an object with controls over flushing and the ability to
         fetch the ability to determine the current persisted size.
 
         **IAM Permissions**:
 
-        Requires ``storage.objects.create`` `IAM
-        permission <https://cloud.google.com/iam/docs/overview#permissions>`__
-        on the bucket.
+        Requires ``storage.objects.create`` IAM permission on the
+        bucket.
 
         .. code-block:: python
 
@@ -2271,16 +2719,21 @@ class StorageAsyncClient:
 
         Args:
             requests (AsyncIterator[`googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.WriteObjectRequest`]):
-                The request object AsyncIterator. Request message for WriteObject.
+                The request object AsyncIterator. Request message for
+                [WriteObject][google.storage.v2.Storage.WriteObject].
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.WriteObjectResponse:
-                Response message for WriteObject.
+                Response message for
+                   [WriteObject][google.storage.v2.Storage.WriteObject].
+
         """
 
         # Wrap the RPC method; this adds retry and timeout information,
@@ -2306,24 +2759,24 @@ class StorageAsyncClient:
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> Awaitable[AsyncIterable[storage.BidiWriteObjectResponse]]:
         r"""Stores a new object and metadata.
 
-        This is similar to the WriteObject call with the added support
-        for manual flushing of persisted state, and the ability to
-        determine current persisted size without closing the stream.
+        This is similar to the ``WriteObject`` call with the added
+        support for manual flushing of persisted state, and the ability
+        to determine current persisted size without closing the stream.
 
-        The client may specify one or both of the ``state_lookup`` and
-        ``flush`` fields in each BidiWriteObjectRequest. If ``flush`` is
-        specified, the data written so far will be persisted to storage.
-        If ``state_lookup`` is specified, the service will respond with
-        a BidiWriteObjectResponse that contains the persisted size. If
-        both ``flush`` and ``state_lookup`` are specified, the flush
-        will always occur before a ``state_lookup``, so that both may be
-        set in the same request and the returned state will be the state
-        of the object post-flush. When the stream is closed, a
-        BidiWriteObjectResponse will always be sent to the client,
+        The client might specify one or both of the ``state_lookup`` and
+        ``flush`` fields in each ``BidiWriteObjectRequest``. If
+        ``flush`` is specified, the data written so far is persisted to
+        storage. If ``state_lookup`` is specified, the service responds
+        with a ``BidiWriteObjectResponse`` that contains the persisted
+        size. If both ``flush`` and ``state_lookup`` are specified, the
+        flush always occurs before a ``state_lookup``, so that both
+        might be set in the same request and the returned state is the
+        state of the object post-flush. When the stream is closed, a
+        ``BidiWriteObjectResponse`` is always sent to the client,
         regardless of the value of ``state_lookup``.
 
         .. code-block:: python
@@ -2366,12 +2819,15 @@ class StorageAsyncClient:
 
         Args:
             requests (AsyncIterator[`googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.BidiWriteObjectRequest`]):
-                The request object AsyncIterator. Request message for BidiWriteObject.
+                The request object AsyncIterator. Request message for
+                [BidiWriteObject][google.storage.v2.Storage.BidiWriteObject].
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             AsyncIterable[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.BidiWriteObjectResponse]:
@@ -2402,17 +2858,16 @@ class StorageAsyncClient:
             parent: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> pagers.ListObjectsAsyncPager:
         r"""Retrieves a list of objects matching the criteria.
 
         **IAM Permissions**:
 
-        The authenticated user requires ``storage.objects.list`` `IAM
-        permission <https://cloud.google.com/iam/docs/overview#permissions>`__
-        to use this method. To return object ACLs, the authenticated
-        user must also have the ``storage.objects.getIamPolicy``
-        permission.
+        The authenticated user requires ``storage.objects.list`` IAM
+        permission to use this method. To return object ACLs, the
+        authenticated user must also have the
+        ``storage.objects.getIamPolicy`` permission.
 
         .. code-block:: python
 
@@ -2443,7 +2898,8 @@ class StorageAsyncClient:
 
         Args:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ListObjectsRequest, dict]]):
-                The request object. Request message for ListObjects.
+                The request object. Request message for
+                [ListObjects][google.storage.v2.Storage.ListObjects].
             parent (:class:`str`):
                 Required. Name of the bucket in which
                 to look for objects.
@@ -2454,8 +2910,10 @@ class StorageAsyncClient:
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.storage_v2.services.storage.pagers.ListObjectsAsyncPager:
@@ -2469,7 +2927,8 @@ class StorageAsyncClient:
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([parent])
+        flattened_params = [parent]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
@@ -2488,6 +2947,18 @@ class StorageAsyncClient:
         # and friendly error handling.
         rpc = self._client._transport._wrapped_methods[self._client._transport.list_objects]
 
+        header_params = {}
+
+        routing_param_regex = re.compile('^(?P<bucket>.*)$')
+        regex_match = routing_param_regex.match(request.parent)
+        if regex_match and regex_match.group("bucket"):
+            header_params["bucket"] = regex_match.group("bucket")
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
+
         # Validate the universe domain.
         self._client._validate_universe_domain()
 
@@ -2505,6 +2976,8 @@ class StorageAsyncClient:
             method=rpc,
             request=request,
             response=response,
+            retry=retry,
+            timeout=timeout,
             metadata=metadata,
         )
 
@@ -2516,7 +2989,7 @@ class StorageAsyncClient:
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> storage.RewriteResponse:
         r"""Rewrites a source object to a destination object.
         Optionally overrides metadata.
@@ -2552,22 +3025,27 @@ class StorageAsyncClient:
 
         Args:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.RewriteObjectRequest, dict]]):
-                The request object. Request message for RewriteObject. If the source object
-                is encrypted using a Customer-Supplied Encryption Key
-                the key information must be provided in the
-                copy_source_encryption_algorithm,
-                copy_source_encryption_key_bytes, and
-                copy_source_encryption_key_sha256_bytes fields. If the
-                destination object should be encrypted the keying
+                The request object. Request message for
+                [RewriteObject][google.storage.v2.Storage.RewriteObject].
+                If the source object is encrypted using a
+                Customer-Supplied Encryption Key the key information
+                must be provided in the
+                ``copy_source_encryption_algorithm``,
+                ``copy_source_encryption_key_bytes``, and
+                ``copy_source_encryption_key_sha256_bytes`` fields. If
+                the destination object should be encrypted the keying
                 information should be provided in the
-                encryption_algorithm, encryption_key_bytes, and
-                encryption_key_sha256_bytes fields of the
-                common_object_request_params.customer_encryption field.
+                ``encryption_algorithm``, ``encryption_key_bytes``, and
+                ``encryption_key_sha256_bytes`` fields of the
+                ``common_object_request_params.customer_encryption``
+                field.
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.RewriteResponse:
@@ -2582,6 +3060,21 @@ class StorageAsyncClient:
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
         rpc = self._client._transport._wrapped_methods[self._client._transport.rewrite_object]
+
+        header_params = {}
+
+        if request.source_bucket:
+            header_params["source_bucket"] = request.source_bucket
+
+        routing_param_regex = re.compile('^(?P<bucket>.*)$')
+        regex_match = routing_param_regex.match(request.destination_bucket)
+        if regex_match and regex_match.group("bucket"):
+            header_params["bucket"] = regex_match.group("bucket")
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
 
         # Validate the universe domain.
         self._client._validate_universe_domain()
@@ -2602,21 +3095,19 @@ class StorageAsyncClient:
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> storage.StartResumableWriteResponse:
         r"""Starts a resumable write operation. This method is part of the
-        `Resumable
-        upload <https://cloud.google.com/storage/docs/resumable-uploads>`__
-        feature. This allows you to upload large objects in multiple
-        chunks, which is more resilient to network interruptions than a
-        single upload. The validity duration of the write operation, and
-        the consequences of it becoming invalid, are service-dependent.
+        Resumable upload feature. This allows you to upload large
+        objects in multiple chunks, which is more resilient to network
+        interruptions than a single upload. The validity duration of the
+        write operation, and the consequences of it becoming invalid,
+        are service-dependent.
 
         **IAM Permissions**:
 
-        Requires ``storage.objects.create`` `IAM
-        permission <https://cloud.google.com/iam/docs/overview#permissions>`__
-        on the bucket.
+        Requires ``storage.objects.create`` IAM permission on the
+        bucket.
 
         .. code-block:: python
 
@@ -2645,16 +3136,21 @@ class StorageAsyncClient:
 
         Args:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.StartResumableWriteRequest, dict]]):
-                The request object. Request message StartResumableWrite.
+                The request object. Request message for
+                [StartResumableWrite][google.storage.v2.Storage.StartResumableWrite].
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.StartResumableWriteResponse:
-                Response object for StartResumableWrite.
+                Response object for
+                   [StartResumableWrite][google.storage.v2.Storage.StartResumableWrite].
+
         """
         # Create or coerce a protobuf request object.
         # - Use the request object if provided (there's no risk of modifying the input as
@@ -2665,6 +3161,18 @@ class StorageAsyncClient:
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
         rpc = self._client._transport._wrapped_methods[self._client._transport.start_resumable_write]
+
+        header_params = {}
+
+        routing_param_regex = re.compile('^(?P<bucket>.*)$')
+        regex_match = routing_param_regex.match(request.write_object_spec.resource.bucket)
+        if regex_match and regex_match.group("bucket"):
+            header_params["bucket"] = regex_match.group("bucket")
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
 
         # Validate the universe domain.
         self._client._validate_universe_domain()
@@ -2686,14 +3194,13 @@ class StorageAsyncClient:
             upload_id: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> storage.QueryWriteStatusResponse:
         r"""Determines the ``persisted_size`` of an object that is being
-        written. This method is part of the `resumable
-        upload <https://cloud.google.com/storage/docs/resumable-uploads>`__
-        feature. The returned value is the size of the object that has
-        been persisted so far. The value can be used as the
-        ``write_offset`` for the next ``Write()`` call.
+        written. This method is part of the resumable upload feature.
+        The returned value is the size of the object that has been
+        persisted so far. The value can be used as the ``write_offset``
+        for the next ``Write()`` call.
 
         If the object does not exist, meaning if it was deleted, or the
         first ``Write()`` has not yet reached the service, this method
@@ -2735,7 +3242,8 @@ class StorageAsyncClient:
 
         Args:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.QueryWriteStatusRequest, dict]]):
-                The request object. Request object for ``QueryWriteStatus``.
+                The request object. Request object for
+                [QueryWriteStatus][google.storage.v2.Storage.QueryWriteStatus].
             upload_id (:class:`str`):
                 Required. The name of the resume
                 token for the object whose write status
@@ -2747,17 +3255,22 @@ class StorageAsyncClient:
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.QueryWriteStatusResponse:
-                Response object for QueryWriteStatus.
+                Response object for
+                   [QueryWriteStatus][google.storage.v2.Storage.QueryWriteStatus].
+
         """
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([upload_id])
+        flattened_params = [upload_id]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
@@ -2775,6 +3288,18 @@ class StorageAsyncClient:
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
         rpc = self._client._transport._wrapped_methods[self._client._transport.query_write_status]
+
+        header_params = {}
+
+        routing_param_regex = re.compile('^(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?$')
+        regex_match = routing_param_regex.match(request.upload_id)
+        if regex_match and regex_match.group("bucket"):
+            header_params["bucket"] = regex_match.group("bucket")
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
 
         # Validate the universe domain.
         self._client._validate_universe_domain()
@@ -2798,10 +3323,22 @@ class StorageAsyncClient:
             destination_object: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> storage.Object:
-        r"""Moves the source object to the destination object in
-        the same bucket.
+        r"""Moves the source object to the destination object in the same
+        bucket. This operation moves a source object to a destination
+        object in the same bucket by renaming the object. The move
+        itself is an atomic transaction, ensuring all steps either
+        complete successfully or no changes are made.
+
+        **IAM Permissions**:
+
+        Requires the following IAM permissions to use this method:
+
+        - ``storage.objects.move``
+        - ``storage.objects.create``
+        - ``storage.objects.delete`` (only required if overwriting an
+          existing object)
 
         .. code-block:: python
 
@@ -2833,7 +3370,8 @@ class StorageAsyncClient:
 
         Args:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.MoveObjectRequest, dict]]):
-                The request object. Request message for MoveObject.
+                The request object. Request message for
+                [MoveObject][google.storage.v2.Storage.MoveObject].
             bucket (:class:`str`):
                 Required. Name of the bucket in which
                 the object resides.
@@ -2856,8 +3394,10 @@ class StorageAsyncClient:
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Object:
@@ -2866,7 +3406,8 @@ class StorageAsyncClient:
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([bucket, source_object, destination_object])
+        flattened_params = [bucket, source_object, destination_object]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
@@ -2889,6 +3430,18 @@ class StorageAsyncClient:
         # and friendly error handling.
         rpc = self._client._transport._wrapped_methods[self._client._transport.move_object]
 
+        header_params = {}
+
+        routing_param_regex = re.compile('^(?P<bucket>.*)$')
+        regex_match = routing_param_regex.match(request.bucket)
+        if regex_match and regex_match.group("bucket"):
+            header_params["bucket"] = regex_match.group("bucket")
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
+
         # Validate the universe domain.
         self._client._validate_universe_domain()
 
@@ -2910,6 +3463,9 @@ class StorageAsyncClient:
         await self.transport.close()
 
 DEFAULT_CLIENT_INFO = gapic_v1.client_info.ClientInfo(gapic_version=package_version.__version__)
+
+if hasattr(DEFAULT_CLIENT_INFO, "protobuf_runtime_version"):   # pragma: NO COVER
+    DEFAULT_CLIENT_INFO.protobuf_runtime_version = cloudsdk.google.protobuf.__version__
 
 
 __all__ = (

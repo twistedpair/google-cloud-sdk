@@ -6167,11 +6167,11 @@ class VmwareengineProjectsLocationsPrivateCloudsRefreshVmAuthTokenRequest(_messa
   object.
 
   Fields:
-    privateCloud: Required. The resource name of the private cloud to be
-      queried for firewall rules. Resource names are schemeless URIs that
-      follow the conventions in
-      https://cloud.google.com/apis/design/resource_names. For example:
-      projects/my-project/locations/us-central1-a/privateClouds/my-cloud
+    privateCloud: Required. The resource name of the private cloud where the
+      VM is located. Resource names are schemeless URIs that follow the
+      conventions in https://cloud.google.com/apis/design/resource_names. For
+      example: projects/my-project/locations/us-central1-a/privateClouds/my-
+      cloud
     refreshVmAuthTokenRequest: A RefreshVmAuthTokenRequest resource to be
       passed as the request body.
   """

@@ -1620,7 +1620,7 @@ class DatabaseResourceId(_messages.Message):
 
 
 class DatabaseResourceMetadata(_messages.Message):
-  r"""Common model for database resource instance metadata. Next ID: 29
+  r"""Common model for database resource instance metadata. Next ID: 30
 
   Enums:
     CurrentStateValueValuesEnum: Current state of the instance.
@@ -1654,6 +1654,8 @@ class DatabaseResourceMetadata(_messages.Message):
     gcbdrConfiguration: GCBDR configuration for the resource.
     id: Required. Unique identifier for a Database resource
     instanceType: The type of the instance. Specified at creation time.
+    isDeletionProtectionEnabled: Optional. Whether deletion protection is
+      enabled for this resource.
     location: The resource location. REQUIRED
     machineConfiguration: Machine configuration for this resource.
     maintenanceInfo: Optional. Maintenance info for the resource.
@@ -1803,19 +1805,20 @@ class DatabaseResourceMetadata(_messages.Message):
   gcbdrConfiguration = _messages.MessageField('GCBDRConfiguration', 11)
   id = _messages.MessageField('DatabaseResourceId', 12)
   instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 13)
-  location = _messages.StringField(14)
-  machineConfiguration = _messages.MessageField('MachineConfiguration', 15)
-  maintenanceInfo = _messages.MessageField('ResourceMaintenanceInfo', 16)
-  primaryResourceId = _messages.MessageField('DatabaseResourceId', 17)
-  primaryResourceLocation = _messages.StringField(18)
-  product = _messages.MessageField('Product', 19)
-  resourceContainer = _messages.StringField(20)
-  resourceName = _messages.StringField(21)
-  suspensionReason = _messages.EnumField('SuspensionReasonValueValuesEnum', 22)
-  tagsSet = _messages.MessageField('Tags', 23)
-  updationTime = _messages.StringField(24)
-  userLabelSet = _messages.MessageField('UserLabels', 25)
-  zone = _messages.StringField(26)
+  isDeletionProtectionEnabled = _messages.BooleanField(14)
+  location = _messages.StringField(15)
+  machineConfiguration = _messages.MessageField('MachineConfiguration', 16)
+  maintenanceInfo = _messages.MessageField('ResourceMaintenanceInfo', 17)
+  primaryResourceId = _messages.MessageField('DatabaseResourceId', 18)
+  primaryResourceLocation = _messages.StringField(19)
+  product = _messages.MessageField('Product', 20)
+  resourceContainer = _messages.StringField(21)
+  resourceName = _messages.StringField(22)
+  suspensionReason = _messages.EnumField('SuspensionReasonValueValuesEnum', 23)
+  tagsSet = _messages.MessageField('Tags', 24)
+  updationTime = _messages.StringField(25)
+  userLabelSet = _messages.MessageField('UserLabels', 26)
+  zone = _messages.StringField(27)
 
 
 class DatabaseResourceRecommendationSignalData(_messages.Message):

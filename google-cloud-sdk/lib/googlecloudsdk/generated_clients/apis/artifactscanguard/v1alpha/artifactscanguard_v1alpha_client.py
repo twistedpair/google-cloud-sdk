@@ -39,13 +39,13 @@ class ArtifactscanguardV1alpha(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.folders_locations_connectors = self.FoldersLocationsConnectorsService(self)
     self.folders_locations_operations = self.FoldersLocationsOperationsService(self)
     self.folders_locations = self.FoldersLocationsService(self)
     self.folders = self.FoldersService(self)
-    self.locations_connectors = self.LocationsConnectorsService(self)
-    self.locations = self.LocationsService(self)
     self.organizations_locations_artifactEvaluations = self.OrganizationsLocationsArtifactEvaluationsService(self)
     self.organizations_locations_artifactPoliciesEvaluations = self.OrganizationsLocationsArtifactPoliciesEvaluationsService(self)
+    self.organizations_locations_connectors = self.OrganizationsLocationsConnectorsService(self)
     self.organizations_locations_operations = self.OrganizationsLocationsOperationsService(self)
     self.organizations_locations_policies = self.OrganizationsLocationsPoliciesService(self)
     self.organizations_locations_reports_connectorEvaluations = self.OrganizationsLocationsReportsConnectorEvaluationsService(self)
@@ -53,9 +53,155 @@ class ArtifactscanguardV1alpha(base_api.BaseApiClient):
     self.organizations_locations_reports = self.OrganizationsLocationsReportsService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations = self.OrganizationsService(self)
+    self.projects_locations_connectors = self.ProjectsLocationsConnectorsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class FoldersLocationsConnectorsService(base_api.BaseApiService):
+    """Service class for the folders_locations_connectors resource."""
+
+    _NAME = 'folders_locations_connectors'
+
+    def __init__(self, client):
+      super(ArtifactscanguardV1alpha.FoldersLocationsConnectorsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new Connector in a given project and location.
+
+      Args:
+        request: (ArtifactscanguardFoldersLocationsConnectorsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/connectors',
+        http_method='POST',
+        method_id='artifactscanguard.folders.locations.connectors.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['connectorId'],
+        relative_path='v1alpha/{+parent}/connectors',
+        request_field='connector',
+        request_type_name='ArtifactscanguardFoldersLocationsConnectorsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single Connector.
+
+      Args:
+        request: (ArtifactscanguardFoldersLocationsConnectorsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/connectors/{connectorsId}',
+        http_method='DELETE',
+        method_id='artifactscanguard.folders.locations.connectors.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ArtifactscanguardFoldersLocationsConnectorsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single Connector.
+
+      Args:
+        request: (ArtifactscanguardFoldersLocationsConnectorsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Connector) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/connectors/{connectorsId}',
+        http_method='GET',
+        method_id='artifactscanguard.folders.locations.connectors.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ArtifactscanguardFoldersLocationsConnectorsGetRequest',
+        response_type_name='Connector',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Connectors in a given project and location.
+
+      Args:
+        request: (ArtifactscanguardFoldersLocationsConnectorsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListConnectorsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/connectors',
+        http_method='GET',
+        method_id='artifactscanguard.folders.locations.connectors.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/connectors',
+        request_field='',
+        request_type_name='ArtifactscanguardFoldersLocationsConnectorsListRequest',
+        response_type_name='ListConnectorsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single Connector.
+
+      Args:
+        request: (ArtifactscanguardFoldersLocationsConnectorsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/connectors/{connectorsId}',
+        http_method='PATCH',
+        method_id='artifactscanguard.folders.locations.connectors.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='connector',
+        request_type_name='ArtifactscanguardFoldersLocationsConnectorsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
   class FoldersLocationsOperationsService(base_api.BaseApiService):
     """Service class for the folders_locations_operations resource."""
@@ -249,161 +395,6 @@ class ArtifactscanguardV1alpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-  class LocationsConnectorsService(base_api.BaseApiService):
-    """Service class for the locations_connectors resource."""
-
-    _NAME = 'locations_connectors'
-
-    def __init__(self, client):
-      super(ArtifactscanguardV1alpha.LocationsConnectorsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a new Connector in a given project and location.
-
-      Args:
-        request: (ArtifactscanguardLocationsConnectorsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/{v1alphaId}/{v1alphaId1}/locations/{locationsId}/connectors',
-        http_method='POST',
-        method_id='artifactscanguard.locations.connectors.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['connectorId'],
-        relative_path='v1alpha/{+parent}/connectors',
-        request_field='connector',
-        request_type_name='ArtifactscanguardLocationsConnectorsCreateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single Connector.
-
-      Args:
-        request: (ArtifactscanguardLocationsConnectorsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/{v1alphaId}/{v1alphaId1}/locations/{locationsId}/connectors/{connectorsId}',
-        http_method='DELETE',
-        method_id='artifactscanguard.locations.connectors.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='ArtifactscanguardLocationsConnectorsDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single Connector.
-
-      Args:
-        request: (ArtifactscanguardLocationsConnectorsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Connector) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/{v1alphaId}/{v1alphaId1}/locations/{locationsId}/connectors/{connectorsId}',
-        http_method='GET',
-        method_id='artifactscanguard.locations.connectors.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='ArtifactscanguardLocationsConnectorsGetRequest',
-        response_type_name='Connector',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists Connectors in a given project and location.
-
-      Args:
-        request: (ArtifactscanguardLocationsConnectorsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListConnectorsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/{v1alphaId}/{v1alphaId1}/locations/{locationsId}/connectors',
-        http_method='GET',
-        method_id='artifactscanguard.locations.connectors.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha/{+parent}/connectors',
-        request_field='',
-        request_type_name='ArtifactscanguardLocationsConnectorsListRequest',
-        response_type_name='ListConnectorsResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Connector.
-
-      Args:
-        request: (ArtifactscanguardLocationsConnectorsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/{v1alphaId}/{v1alphaId1}/locations/{locationsId}/connectors/{connectorsId}',
-        http_method='PATCH',
-        method_id='artifactscanguard.locations.connectors.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['updateMask'],
-        relative_path='v1alpha/{+name}',
-        request_field='connector',
-        request_type_name='ArtifactscanguardLocationsConnectorsPatchRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-  class LocationsService(base_api.BaseApiService):
-    """Service class for the locations resource."""
-
-    _NAME = 'locations'
-
-    def __init__(self, client):
-      super(ArtifactscanguardV1alpha.LocationsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
   class OrganizationsLocationsArtifactEvaluationsService(base_api.BaseApiService):
     """Service class for the organizations_locations_artifactEvaluations resource."""
 
@@ -555,6 +546,151 @@ class ArtifactscanguardV1alpha(base_api.BaseApiClient):
         relative_path='v1alpha/{+parent}/artifactPoliciesEvaluations:run',
         request_field='runArtifactPoliciesEvaluationRequest',
         request_type_name='ArtifactscanguardOrganizationsLocationsArtifactPoliciesEvaluationsRunRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsConnectorsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_connectors resource."""
+
+    _NAME = 'organizations_locations_connectors'
+
+    def __init__(self, client):
+      super(ArtifactscanguardV1alpha.OrganizationsLocationsConnectorsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new Connector in a given project and location.
+
+      Args:
+        request: (ArtifactscanguardOrganizationsLocationsConnectorsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/connectors',
+        http_method='POST',
+        method_id='artifactscanguard.organizations.locations.connectors.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['connectorId'],
+        relative_path='v1alpha/{+parent}/connectors',
+        request_field='connector',
+        request_type_name='ArtifactscanguardOrganizationsLocationsConnectorsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single Connector.
+
+      Args:
+        request: (ArtifactscanguardOrganizationsLocationsConnectorsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/connectors/{connectorsId}',
+        http_method='DELETE',
+        method_id='artifactscanguard.organizations.locations.connectors.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ArtifactscanguardOrganizationsLocationsConnectorsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single Connector.
+
+      Args:
+        request: (ArtifactscanguardOrganizationsLocationsConnectorsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Connector) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/connectors/{connectorsId}',
+        http_method='GET',
+        method_id='artifactscanguard.organizations.locations.connectors.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ArtifactscanguardOrganizationsLocationsConnectorsGetRequest',
+        response_type_name='Connector',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Connectors in a given project and location.
+
+      Args:
+        request: (ArtifactscanguardOrganizationsLocationsConnectorsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListConnectorsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/connectors',
+        http_method='GET',
+        method_id='artifactscanguard.organizations.locations.connectors.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/connectors',
+        request_field='',
+        request_type_name='ArtifactscanguardOrganizationsLocationsConnectorsListRequest',
+        response_type_name='ListConnectorsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single Connector.
+
+      Args:
+        request: (ArtifactscanguardOrganizationsLocationsConnectorsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/connectors/{connectorsId}',
+        http_method='PATCH',
+        method_id='artifactscanguard.organizations.locations.connectors.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='connector',
+        request_type_name='ArtifactscanguardOrganizationsLocationsConnectorsPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -979,6 +1115,151 @@ class ArtifactscanguardV1alpha(base_api.BaseApiClient):
       super(ArtifactscanguardV1alpha.OrganizationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class ProjectsLocationsConnectorsService(base_api.BaseApiService):
+    """Service class for the projects_locations_connectors resource."""
+
+    _NAME = 'projects_locations_connectors'
+
+    def __init__(self, client):
+      super(ArtifactscanguardV1alpha.ProjectsLocationsConnectorsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new Connector in a given project and location.
+
+      Args:
+        request: (ArtifactscanguardProjectsLocationsConnectorsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/connectors',
+        http_method='POST',
+        method_id='artifactscanguard.projects.locations.connectors.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['connectorId'],
+        relative_path='v1alpha/{+parent}/connectors',
+        request_field='connector',
+        request_type_name='ArtifactscanguardProjectsLocationsConnectorsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single Connector.
+
+      Args:
+        request: (ArtifactscanguardProjectsLocationsConnectorsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/connectors/{connectorsId}',
+        http_method='DELETE',
+        method_id='artifactscanguard.projects.locations.connectors.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ArtifactscanguardProjectsLocationsConnectorsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single Connector.
+
+      Args:
+        request: (ArtifactscanguardProjectsLocationsConnectorsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Connector) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/connectors/{connectorsId}',
+        http_method='GET',
+        method_id='artifactscanguard.projects.locations.connectors.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ArtifactscanguardProjectsLocationsConnectorsGetRequest',
+        response_type_name='Connector',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Connectors in a given project and location.
+
+      Args:
+        request: (ArtifactscanguardProjectsLocationsConnectorsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListConnectorsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/connectors',
+        http_method='GET',
+        method_id='artifactscanguard.projects.locations.connectors.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/connectors',
+        request_field='',
+        request_type_name='ArtifactscanguardProjectsLocationsConnectorsListRequest',
+        response_type_name='ListConnectorsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single Connector.
+
+      Args:
+        request: (ArtifactscanguardProjectsLocationsConnectorsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/connectors/{connectorsId}',
+        http_method='PATCH',
+        method_id='artifactscanguard.projects.locations.connectors.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='connector',
+        request_type_name='ArtifactscanguardProjectsLocationsConnectorsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""

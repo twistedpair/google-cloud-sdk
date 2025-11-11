@@ -23,7 +23,7 @@ class AdaptiveMtDataset(_messages.Message):
       can be up to 32 characters long and can consist only of ASCII Latin
       letters A-Z and a-z, underscores (_), and ASCII digits 0-9.
     exampleCount: The number of examples in the dataset.
-    name: Required. The resource name of the dataset, in form of
+    name: Identifier. The resource name of the dataset, in form of
       `projects/{project-number-or-
       id}/locations/{location_id}/adaptiveMtDatasets/{dataset_id}`
     sourceLanguageCode: The BCP-47 language code of the source language.
@@ -47,7 +47,7 @@ class AdaptiveMtFile(_messages.Message):
     createTime: Output only. Timestamp when this file was created.
     displayName: The file's display name.
     entryCount: The number of entries that the file contains.
-    name: Required. The resource name of the file, in form of
+    name: Identifier. The resource name of the file, in form of
       `projects/{project-number-or-id}/locations/{location_id}/adaptiveMtDatas
       ets/{dataset}/adaptiveMtFiles/{file}`
     updateTime: Output only. Timestamp when this file was last updated.
@@ -65,7 +65,7 @@ class AdaptiveMtSentence(_messages.Message):
 
   Fields:
     createTime: Output only. Timestamp when this sentence was created.
-    name: Required. The resource name of the file, in form of
+    name: Identifier. The resource name of the file, in form of
       `projects/{project-number-or-id}/locations/{location_id}/adaptiveMtDatas
       ets/{dataset}/adaptiveMtFiles/{file}/adaptiveMtSentences/{sentence}`
     sourceSentence: Required. The source sentence.
@@ -864,8 +864,8 @@ class Glossary(_messages.Message):
       glossary must not exceed 10M Unicode codepoints.
     languageCodesSet: Used with equivalent term set glossaries.
     languagePair: Used with unidirectional glossaries.
-    name: Required. The resource name of the glossary. Glossary names have the
-      form `projects/{project-number-or-id}/locations/{location-
+    name: Identifier. The resource name of the glossary. Glossary names have
+      the form `projects/{project-number-or-id}/locations/{location-
       id}/glossaries/{glossary-id}`.
     submitTime: Output only. When CreateGlossary was called.
   """
@@ -1068,8 +1068,8 @@ class LanguageCodesSet(_messages.Message):
   r"""Used with equivalent term set glossaries.
 
   Fields:
-    languageCodes: The ISO-639 language code(s) for terms defined in the
-      glossary. All entries are unique. The list contains at least two
+    languageCodes: Optional. The ISO-639 language code(s) for terms defined in
+      the glossary. All entries are unique. The list contains at least two
       entries. Expected to be an exact match for GlossaryTerm.language_code.
   """
 
@@ -1543,6 +1543,47 @@ class ReferenceSentencePairList(_messages.Message):
   """
 
   referenceSentencePairs = _messages.MessageField('ReferenceSentencePair', 1, repeated=True)
+
+
+class RefineTextRequest(_messages.Message):
+  r"""Request message for RefineText.
+
+  Fields:
+    refinementEntries: Required. The source texts and original translations in
+      the source and target languages.
+    sourceLanguageCode: Required. The BCP-47 language code of the source text
+      in the request, for example, "en-US".
+    targetLanguageCode: Required. The BCP-47 language code for translation
+      output, for example, "zh-CN".
+  """
+
+  refinementEntries = _messages.MessageField('RefinementEntry', 1, repeated=True)
+  sourceLanguageCode = _messages.StringField(2)
+  targetLanguageCode = _messages.StringField(3)
+
+
+class RefineTextResponse(_messages.Message):
+  r"""Response message for RefineText.
+
+  Fields:
+    refinedTranslations: The refined translations obtained from the original
+      translations.
+  """
+
+  refinedTranslations = _messages.StringField(1, repeated=True)
+
+
+class RefinementEntry(_messages.Message):
+  r"""A single refinement entry for RefineTextRequest.
+
+  Fields:
+    originalTranslation: Required. The original translation of the source
+      text.
+    sourceText: Required. The source text to be refined.
+  """
+
+  originalTranslation = _messages.StringField(1)
+  sourceText = _messages.StringField(2)
 
 
 class Romanization(_messages.Message):
@@ -2424,8 +2465,8 @@ class TranslateProjectsLocationsGlossariesPatchRequest(_messages.Message):
 
   Fields:
     glossary: A Glossary resource to be passed as the request body.
-    name: Required. The resource name of the glossary. Glossary names have the
-      form `projects/{project-number-or-id}/locations/{location-
+    name: Identifier. The resource name of the glossary. Glossary names have
+      the form `projects/{project-number-or-id}/locations/{location-
       id}/glossaries/{glossary-id}`.
     updateMask: The list of fields to be updated. Currently, only
       `display_name` and `input_config` are supported.
@@ -2582,6 +2623,22 @@ class TranslateProjectsLocationsOperationsWaitRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   waitOperationRequest = _messages.MessageField('WaitOperationRequest', 2)
+
+
+class TranslateProjectsLocationsRefineTextRequest(_messages.Message):
+  r"""A TranslateProjectsLocationsRefineTextRequest object.
+
+  Fields:
+    parent: Required. Project or location to make a call. Must refer to a
+      caller's project. Format: `projects/{project-number-or-
+      id}/locations/{location-id}`. For global calls, use `projects/{project-
+      number-or-id}/locations/global` or `projects/{project-number-or-id}`.
+    refineTextRequest: A RefineTextRequest resource to be passed as the
+      request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  refineTextRequest = _messages.MessageField('RefineTextRequest', 2)
 
 
 class TranslateProjectsLocationsRomanizeTextRequest(_messages.Message):

@@ -1103,6 +1103,17 @@ class PatchConfig(_messages.Message):
     postStep: The `ExecStep` to run after the patch update.
     preStep: The `ExecStep` to run before the patch update.
     rebootConfig: Post-patch reboot settings.
+    skipUnpatchableVms: Optional. Enables enhanced reporting for the patch
+      job: 1. Allows the patch job to skip unpatchable instances, reporting
+      them as SKIPPED. An instance can be unpatchable for two reasons: a. The
+      instance runs Container-Optimized OS (COS), which cannot be patched. b.
+      The patch job's configuration prohibits patching on Managed Instance
+      Groups (MIGs) through the PatchConfig.migInstancesAllowed field, and the
+      instance is part of one. 2. The system reports the patch job as
+      SUCCEEDED if it completes without errors, regardless of whether any
+      instances were SKIPPED. 3. The system reports the patch job as
+      COMPLETED_WITH_INACTIVE_VMS if it completes without errors, but some
+      instances were INACTIVE and therefore not patched.
     windowsUpdate: Windows update settings. Use this override the default
       windows patch rules.
     yum: Yum update settings. Use this setting to override the default `yum`
@@ -1134,9 +1145,10 @@ class PatchConfig(_messages.Message):
   postStep = _messages.MessageField('ExecStep', 4)
   preStep = _messages.MessageField('ExecStep', 5)
   rebootConfig = _messages.EnumField('RebootConfigValueValuesEnum', 6)
-  windowsUpdate = _messages.MessageField('WindowsUpdateSettings', 7)
-  yum = _messages.MessageField('YumSettings', 8)
-  zypper = _messages.MessageField('ZypperSettings', 9)
+  skipUnpatchableVms = _messages.BooleanField(7)
+  windowsUpdate = _messages.MessageField('WindowsUpdateSettings', 8)
+  yum = _messages.MessageField('YumSettings', 9)
+  zypper = _messages.MessageField('ZypperSettings', 10)
 
 
 class PatchDeployment(_messages.Message):
@@ -1322,6 +1334,8 @@ class PatchJob(_messages.Message):
         on.
       PATCHING: Instances are being patched.
       SUCCEEDED: Patch job completed successfully.
+      COMPLETED_WITH_INACTIVE_VMS: The patch job completed without errors, but
+        some instances were inactive and therefore not patched.
       COMPLETED_WITH_ERRORS: Patch job completed but there were errors.
       CANCELED: The patch job was canceled.
       TIMED_OUT: The patch job timed out.
@@ -1331,9 +1345,10 @@ class PatchJob(_messages.Message):
     INSTANCE_LOOKUP = 2
     PATCHING = 3
     SUCCEEDED = 4
-    COMPLETED_WITH_ERRORS = 5
-    CANCELED = 6
-    TIMED_OUT = 7
+    COMPLETED_WITH_INACTIVE_VMS = 5
+    COMPLETED_WITH_ERRORS = 6
+    CANCELED = 7
+    TIMED_OUT = 8
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
@@ -1394,6 +1409,10 @@ class PatchJobInstanceDetails(_messages.Message):
       NO_AGENT_DETECTED: The service could not detect the presence of the
         agent. Check to ensure that the agent is installed, running, and able
         to communicate with the service.
+      SKIPPED: The instance was skipped during patching due to one of two
+        reasons: 1. The instance runs Container-Optimized OS (COS), which
+        cannot be patched. 2. The patch job's configuration prohibits patching
+        on Managed Instance Groups (MIGs), and the instance is part of one.
     """
     PATCH_STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -1411,6 +1430,7 @@ class PatchJobInstanceDetails(_messages.Message):
     RUNNING_PRE_PATCH_STEP = 13
     RUNNING_POST_PATCH_STEP = 14
     NO_AGENT_DETECTED = 15
+    SKIPPED = 16
 
   attemptCount = _messages.IntegerField(1)
   failureReason = _messages.StringField(2)
@@ -1444,6 +1464,8 @@ class PatchJobInstanceDetailsSummary(_messages.Message):
     prePatchStepInstanceCount: Number of instances that are running the pre-
       patch step.
     rebootingInstanceCount: Number of instances rebooting.
+    skippedInstanceCount: Number of instances that were skipped during
+      patching.
     startedInstanceCount: Number of instances that have started.
     succeededInstanceCount: Number of instances that have completed
       successfully.
@@ -1464,10 +1486,11 @@ class PatchJobInstanceDetailsSummary(_messages.Message):
   postPatchStepInstanceCount = _messages.IntegerField(9)
   prePatchStepInstanceCount = _messages.IntegerField(10)
   rebootingInstanceCount = _messages.IntegerField(11)
-  startedInstanceCount = _messages.IntegerField(12)
-  succeededInstanceCount = _messages.IntegerField(13)
-  succeededRebootRequiredInstanceCount = _messages.IntegerField(14)
-  timedOutInstanceCount = _messages.IntegerField(15)
+  skippedInstanceCount = _messages.IntegerField(12)
+  startedInstanceCount = _messages.IntegerField(13)
+  succeededInstanceCount = _messages.IntegerField(14)
+  succeededRebootRequiredInstanceCount = _messages.IntegerField(15)
+  timedOutInstanceCount = _messages.IntegerField(16)
 
 
 class PatchRollout(_messages.Message):

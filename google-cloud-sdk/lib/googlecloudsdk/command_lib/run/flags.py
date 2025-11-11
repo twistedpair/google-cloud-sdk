@@ -129,6 +129,14 @@ _SANDBOX_CHOICES = {
     'gen2': 'Run the application in a second generation execution environment.',
 }
 
+_PRIORITY_CHOICES = {
+    'standard': 'The system will start the job as soon as possible.',
+    'flex': (
+        'The system will start the job within the next 6 hours depending on'
+        ' available capacity."'
+    ),
+}
+
 _DEFAULT_KUBECONFIG_PATH = '~/.kube/config'
 
 _POST_CMEK_KEY_REVOCATION_ACTION_TYPE_CHOICES = {
@@ -1521,13 +1529,13 @@ class UtilizationValue:
             "Utilization value %s is not an decimal or 'default'." % value
         )
 
-      if self.utilization < 0:
+      if self.utilization != 0.0 and self.utilization < 0.5:
         raise serverless_exceptions.ArgumentError(
-            'Utilization value %s is negative.' % value
+            'Utilization value %s is less than 0.5.' % value
         )
-      if self.utilization > 1:
+      if self.utilization > 0.95:
         raise serverless_exceptions.ArgumentError(
-            'Utilization value %s is greater than 1.' % value
+            'Utilization value %s is greater than 0.95.' % value
         )
 
 
@@ -1958,6 +1966,16 @@ def AddParallelismFlag(parser):
   )
 
 
+def AddPriorityFlag(parser):
+  """Add job priority flag."""
+  parser.add_argument(
+      '--priority-tier',
+      choices=_PRIORITY_CHOICES,
+      hidden=True,
+      help='Priority of the job.',
+  )
+
+
 def AddTasksFlag(parser, for_execution_overrides=False):
   """Add job number of tasks flag which maps to job.spec.template.spec.task_count."""
   help_text = (
@@ -2238,7 +2256,7 @@ def AddCpuUtilizationFlag(parser):
       '--scaling-cpu-utilization',
       type=UtilizationValue,
       help=(
-          'A value between 0.0 and 1.0 that indicates the target CPU'
+          'A value between 0.5 and 0.95 that indicates the target CPU'
           ' utilization where a new instance should be started.  Also accepts '
           '"default" to restore the default value or "disabled" to disable '
           'CPU utilization scaling.'
@@ -2252,7 +2270,7 @@ def AddConcurrencyUtilizationFlag(parser):
       '--scaling-concurrency-utilization',
       type=UtilizationValue,
       help=(
-          'A value between 0.0 and 1.0 that indicates the target concurrency'
+          'A value between 0.5 and 0.95 that indicates the target concurrency'
           ' utilization where a new instance should be started. Also accepts '
           '"default" to restore the default value or "disabled" to disable '
           'concurrency utilization scaling.'
@@ -2360,6 +2378,7 @@ def HasExecutionOverrides(args):
       'update_env_vars',
       'task_timeout',
       'tasks',
+      'priority_tier',
   ]
   return HasChanges(args, overrides_flags) or FlagIsExplicitlySet(
       args, 'containers'
@@ -3468,6 +3487,12 @@ def GetJobConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
     changes.append(
         config_changes.ExecutionTemplateSpecChange(
             'parallelism', args.parallelism
+        )
+    )
+  if FlagIsExplicitlySet(args, 'priority_tier'):
+    changes.append(
+        config_changes.JobPriorityTierChange(
+            priority_tier=args.priority_tier
         )
     )
   if FlagIsExplicitlySet(args, 'tasks'):

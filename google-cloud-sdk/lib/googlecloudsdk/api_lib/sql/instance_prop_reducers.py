@@ -909,6 +909,63 @@ def UncMappings(sql_messages, unc_mappings=None, clear_unc_mappings=False):
   return updated_mappings
 
 
+def PerformanceCaptureConfig(
+    sql_messages,
+    performance_capture_config=None,
+    current_config=None,
+):
+  """Generates the performance capture config for the instance.
+
+  Args:
+    sql_messages: module, The messages module that should be used.
+    performance_capture_config: dict of the performance capture config.
+    current_config: sql_messages.PerformanceCaptureConfig, the original
+      performance capture config, if the previous state is needed.
+
+  Returns:
+    sql_messages.PerformanceCaptureConfig object, or None
+
+  Raises:
+    exceptions.InvalidArgumentException: If an unknown key is provided in
+      performance_capture_config.
+  """
+
+  if performance_capture_config is None:
+    return None
+
+  config = current_config or sql_messages.PerformanceCaptureConfig()
+
+  # Map CLI keys to config attributes
+  bool_keys = {
+      'enabled': 'enabled',
+  }
+  int_keys = {
+      'probing-interval-seconds': 'probingIntervalSeconds',
+      'probe-threshold': 'probeThreshold',
+      'running-threads-threshold': 'runningThreadsThreshold',
+      'seconds-behind-source-threshold': 'secondsBehindSourceThreshold',
+      'transaction-duration-threshold': 'transactionDurationThreshold',
+  }
+
+  for key, value in sorted(performance_capture_config.items()):
+    if key in bool_keys:
+      setattr(config, bool_keys[key], value.lower() == 'true')
+    elif key in int_keys:
+      try:
+        setattr(config, int_keys[key], int(value))
+      except ValueError:
+        raise exceptions.InvalidArgumentException(
+            '--performance-capture-config',
+            'Invalid integer value for key [{0}]: {1}'.format(key, value),
+        )
+    else:
+      raise exceptions.InvalidArgumentException(
+          '--performance-capture-config', 'Unknown key: {0}'.format(key)
+      )
+
+  return config
+
+
 def FinalBackupConfiguration(
     sql_messages,
     instance=None,

@@ -36,7 +36,7 @@ class AssetQueryPrinter(cp.CustomPrinterBase):
   def Register(parser):
     """Register this custom printer with the given parser."""
     resource_printer.RegisterFormatter(
-        ASSET_QUERY_PRINTER_FORMAT, AssetQueryPrinter, hidden=True)
+        ASSET_QUERY_PRINTER_FORMAT, AssetQueryPrinter)
     parser.display_info.AddFormat(ASSET_QUERY_PRINTER_FORMAT)
 
   def _FormatMetadata(self, resp):

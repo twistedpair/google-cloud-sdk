@@ -122,8 +122,7 @@ class GetTagsRequest(_messages.Message):
   r"""Request message for GetTags.
 
   Fields:
-    name: Required. The full One Platform resource name of the service
-      resource.
+    name: Required. The full resource name of the service resource.
   """
 
   name = _messages.StringField(1)
@@ -138,13 +137,12 @@ class GetTagsResponse(_messages.Message):
       "123/environment" : "production", "123/costCenter" : "marketing"
 
   Fields:
-    name: Required. The full One Platform resource name of the service
-      resource.
+    etag: A checksum based on the current bindings. This field is always set
+      in server responses.
+    name: Required. The full resource name of the service resource.
     tags: Required. Tag keys/values directly bound to this resource. Each item
       in the map must be expressed as " : ". For example: "123/environment" :
       "production", "123/costCenter" : "marketing"
-    tagsEtag: A checksum based on the current bindings. This field is always
-      set in server responses.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -173,9 +171,9 @@ class GetTagsResponse(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  name = _messages.StringField(1)
-  tags = _messages.MessageField('TagsValue', 2)
-  tagsEtag = _messages.StringField(3)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2)
+  tags = _messages.MessageField('TagsValue', 3)
 
 
 class GoogleCloudMemcacheV1beta2LocationMetadata(_messages.Message):
@@ -1973,17 +1971,16 @@ class SetTagsRequest(_messages.Message):
       "123/costCenter" : "marketing"
 
   Fields:
-    name: Required. The full One Platform resource name of the service
-      resource.
+    etag: Optional. A checksum based on the current bindings which can be
+      passed to prevent race conditions. If not passed, etag check would be
+      skipped.
+    name: Required. The full resource name of the service resource.
     requestId: Optional. A unique identifier for this request. Must be a valid
       UUID. This request is only idempotent if a `request_id` is provided.
     tags: Required. These bindings will override any bindings previously set
       and will be effective immediately. Each item in the map must be
       expressed as " : ". For example: "123/environment" : "production",
       "123/costCenter" : "marketing"
-    tagsEtag: Optional. A checksum based on the current bindings which can be
-      passed to prevent race conditions. If not passed, etag check would be
-      skipped.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -2013,10 +2010,10 @@ class SetTagsRequest(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  name = _messages.StringField(1)
-  requestId = _messages.StringField(2)
-  tags = _messages.MessageField('TagsValue', 3)
-  tagsEtag = _messages.StringField(4)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2)
+  requestId = _messages.StringField(3)
+  tags = _messages.MessageField('TagsValue', 4)
 
 
 class SetTagsResponse(_messages.Message):
@@ -2028,13 +2025,12 @@ class SetTagsResponse(_messages.Message):
       "123/environment" : "production", "123/costCenter" : "marketing"
 
   Fields:
-    name: Required. The full One Platform resource name of the service
-      resource.
+    etag: A checksum based on the current bindings. This field is always set
+      in server responses.
+    name: Required. The full resource name of the service resource.
     tags: Required. Tag keys/values directly bound to this resource. Each item
       in the map must be expressed as " : ". For example: "123/environment" :
       "production", "123/costCenter" : "marketing"
-    tagsEtag: A checksum based on the current bindings. This field is always
-      set in server responses.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -2063,9 +2059,9 @@ class SetTagsResponse(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  name = _messages.StringField(1)
-  tags = _messages.MessageField('TagsValue', 2)
-  tagsEtag = _messages.StringField(3)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2)
+  tags = _messages.MessageField('TagsValue', 3)
 
 
 class StandardQueryParameters(_messages.Message):

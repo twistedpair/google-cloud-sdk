@@ -286,7 +286,30 @@ def _RepairECP(cert_config_file_path):
 
 
 def _GetCertificateConfigFile():
-  """Validates and returns the certificate config file path."""
+  """Loads, validates, and returns the enterprise certificate configuration.
+
+  This function determines the path to the config file by first checking the
+  `context_aware.certificate_config_file_path` property. If that is not set,
+  it falls back to the default path from `config.CertConfigDefaultFilePath()`.
+
+  The config file is read and parsed as JSON. It then performs validations,
+  such as ensuring that if an ECP binary path is specified, that binary file
+  actually exists.
+
+  Lastly, it may also trigger a repair of the ECP configuration if needed.
+
+  Returns:
+      A tuple of (str, dict): The path to the config file and its parsed
+      JSON content (as a dictionary).
+      Returns (None, None) if the config file does not exist.
+
+  Raises:
+      CertProvisionException:
+          - If the config file fails to be read (e.g., file permissions).
+          - If the config file content is not valid JSON.
+          - If the 'ecp' binary path is specified in the config but the
+            file is not found.
+  """
 
   # First see if there is a config file.
   file_path = properties.VALUES.context_aware.certificate_config_file_path.Get()
@@ -294,7 +317,7 @@ def _GetCertificateConfigFile():
     file_path = config.CertConfigDefaultFilePath()
 
   if not os.path.exists(file_path):
-    return None
+    return None, None
 
   # Make sure the config file is a valid JSON file.
   try:
@@ -335,7 +358,7 @@ def _GetCertificateConfigFile():
   if _ShouldRepairECP(cert_config):
     _RepairECP(file_path)
 
-  return file_path
+  return file_path, cert_config
 
 
 class ConfigType(enum.Enum):
@@ -358,11 +381,16 @@ class _ConfigImpl(object):
     if not properties.VALUES.context_aware.use_client_certificate.GetBool():
       return None
 
-    certificate_config_file_path = _GetCertificateConfigFile()
+    certificate_config_file_path, cert_config = _GetCertificateConfigFile()
     if certificate_config_file_path:
       # The enterprise cert config file path will be used.
       log.debug('enterprise certificate is used for mTLS')
-      return _EnterpriseCertConfigImpl(certificate_config_file_path)
+      ecp_proxy_binary_path = cert_config.get('libs', {}).get(
+          'ecp_proxy_binary_path'
+      )
+      return _EnterpriseCertConfigImpl(
+          certificate_config_file_path, ecp_proxy_binary_path
+      )
 
     log.debug('on disk certificate is used for mTLS')
     config_path = _AutoDiscoveryFilePath()
@@ -382,11 +410,21 @@ class _ConfigImpl(object):
 class _EnterpriseCertConfigImpl(_ConfigImpl):
   """Represents the configurations associated with context aware access through a enterprise certificate on TPM or OS key store."""
 
-  def __init__(self, certificate_config_file_path):
+  def __init__(self, certificate_config_file_path, ecp_proxy_binary_path=None):
     super(_EnterpriseCertConfigImpl, self).__init__(
         ConfigType.ENTERPRISE_CERTIFICATE
     )
     self.certificate_config_file_path = certificate_config_file_path
+    self.ecp_proxy_binary_path = ecp_proxy_binary_path
+
+  @property
+  def use_local_proxy(self) -> bool:
+    """Returns True if the necessary conditions to use the local proxy are met."""
+    use_ecp_http_proxy = (
+        properties.VALUES.context_aware.use_ecp_http_proxy.GetBool()
+    )
+
+    return use_ecp_http_proxy and properties.IsInternalUserCheck()
 
 
 class _OnDiskCertConfigImpl(_ConfigImpl):

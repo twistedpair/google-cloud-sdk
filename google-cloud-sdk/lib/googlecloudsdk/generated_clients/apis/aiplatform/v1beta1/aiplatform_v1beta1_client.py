@@ -132,6 +132,9 @@ class AiplatformV1beta1(base_api.BaseApiClient):
     self.persistentResources = self.PersistentResourcesService(self)
     self.pipelineJobs_operations = self.PipelineJobsOperationsService(self)
     self.pipelineJobs = self.PipelineJobsService(self)
+    self.project_locations_datasets = self.ProjectLocationsDatasetsService(self)
+    self.project_locations = self.ProjectLocationsService(self)
+    self.project = self.ProjectService(self)
     self.projects_locations_agents_operations = self.ProjectsLocationsAgentsOperationsService(self)
     self.projects_locations_agents = self.ProjectsLocationsAgentsService(self)
     self.projects_locations_apps_operations = self.ProjectsLocationsAppsOperationsService(self)
@@ -160,6 +163,8 @@ class AiplatformV1beta1(base_api.BaseApiClient):
     self.projects_locations_endpoints_chat = self.ProjectsLocationsEndpointsChatService(self)
     self.projects_locations_endpoints_deployedModels_invoke = self.ProjectsLocationsEndpointsDeployedModelsInvokeService(self)
     self.projects_locations_endpoints_deployedModels = self.ProjectsLocationsEndpointsDeployedModelsService(self)
+    self.projects_locations_endpoints_google_science = self.ProjectsLocationsEndpointsGoogleScienceService(self)
+    self.projects_locations_endpoints_google = self.ProjectsLocationsEndpointsGoogleService(self)
     self.projects_locations_endpoints_invoke = self.ProjectsLocationsEndpointsInvokeService(self)
     self.projects_locations_endpoints_openapi = self.ProjectsLocationsEndpointsOpenapiService(self)
     self.projects_locations_endpoints_operations = self.ProjectsLocationsEndpointsOperationsService(self)
@@ -7717,6 +7722,63 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+  class ProjectLocationsDatasetsService(base_api.BaseApiService):
+    """Service class for the project_locations_datasets resource."""
+
+    _NAME = 'project_locations_datasets'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.ProjectLocationsDatasetsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (AiplatformProjectLocationsDatasetsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/project/{projectId}/locations/{locationsId}/datasets/{datasetsId}:getIamPolicy',
+        http_method='POST',
+        method_id='aiplatform.project.locations.datasets.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1beta1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='AiplatformProjectLocationsDatasetsGetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+  class ProjectLocationsService(base_api.BaseApiService):
+    """Service class for the project_locations resource."""
+
+    _NAME = 'project_locations'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.ProjectLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ProjectService(base_api.BaseApiService):
+    """Service class for the project resource."""
+
+    _NAME = 'project'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.ProjectService, self).__init__(client)
+      self._upload_configs = {
+          }
+
   class ProjectsLocationsAgentsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_agents_operations resource."""
 
@@ -10249,6 +10311,60 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (AiplatformProjectsLocationsDatasetsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}:setIamPolicy',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.datasets.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1beta1/{+resource}:setIamPolicy',
+        request_field='googleIamV1SetIamPolicyRequest',
+        request_type_name='AiplatformProjectsLocationsDatasetsSetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (AiplatformProjectsLocationsDatasetsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}:testIamPermissions',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.datasets.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['permissions'],
+        relative_path='v1beta1/{+resource}:testIamPermissions',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsDatasetsTestIamPermissionsRequest',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsDeploymentResourcePoolsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_deploymentResourcePools_operations resource."""
 
@@ -10802,6 +10918,53 @@ class AiplatformV1beta1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(AiplatformV1beta1.ProjectsLocationsEndpointsDeployedModelsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ProjectsLocationsEndpointsGoogleScienceService(base_api.BaseApiService):
+    """Service class for the projects_locations_endpoints_google_science resource."""
+
+    _NAME = 'projects_locations_endpoints_google_science'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.ProjectsLocationsEndpointsGoogleScienceService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Inference(self, request, global_params=None):
+      r"""Forwards arbitrary HTTP requests for both streaming and non-streaming cases. To use this method, invoke_route_prefix must be set to allow the paths that will be specified in the request.
+
+      Args:
+        request: (AiplatformProjectsLocationsEndpointsGoogleScienceInferenceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleApiHttpBody) The response message.
+      """
+      config = self.GetMethodConfig('Inference')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Inference.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/endpoints/google/science/inference',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.endpoints.google.science.inference',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=['deployedModelId'],
+        relative_path='v1beta1/{+endpoint}/science/inference',
+        request_field='googleApiHttpBody',
+        request_type_name='AiplatformProjectsLocationsEndpointsGoogleScienceInferenceRequest',
+        response_type_name='GoogleApiHttpBody',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsEndpointsGoogleService(base_api.BaseApiService):
+    """Service class for the projects_locations_endpoints_google resource."""
+
+    _NAME = 'projects_locations_endpoints_google'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.ProjectsLocationsEndpointsGoogleService, self).__init__(client)
       self._upload_configs = {
           }
 
@@ -24925,6 +25088,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Purge(self, request, global_params=None):
+      r"""Purge memories.
+
+      Args:
+        request: (AiplatformProjectsLocationsReasoningEnginesMemoriesPurgeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Purge')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Purge.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/reasoningEngines/{reasoningEnginesId}/memories:purge',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.reasoningEngines.memories.purge',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/memories:purge',
+        request_field='googleCloudAiplatformV1beta1PurgeMemoriesRequest',
+        request_type_name='AiplatformProjectsLocationsReasoningEnginesMemoriesPurgeRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Retrieve(self, request, global_params=None):
       r"""Retrieve memories.
 
@@ -25829,6 +26019,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AiplatformProjectsLocationsReasoningEnginesDeleteRequest',
         response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def ExecuteCode(self, request, global_params=None):
+      r"""Executes code statelessly.
+
+      Args:
+        request: (AiplatformProjectsLocationsReasoningEnginesExecuteCodeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ExecuteCodeResponse) The response message.
+      """
+      config = self.GetMethodConfig('ExecuteCode')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExecuteCode.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/reasoningEngines/{reasoningEnginesId}:executeCode',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.reasoningEngines.executeCode',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:executeCode',
+        request_field='googleCloudAiplatformV1beta1ExecuteCodeRequest',
+        request_type_name='AiplatformProjectsLocationsReasoningEnginesExecuteCodeRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ExecuteCodeResponse',
         supports_download=False,
     )
 
@@ -31345,6 +31562,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Purge(self, request, global_params=None):
+      r"""Purge memories.
+
+      Args:
+        request: (AiplatformReasoningEnginesMemoriesPurgeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Purge')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Purge.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/reasoningEngines/{reasoningEnginesId}/memories:purge',
+        http_method='POST',
+        method_id='aiplatform.reasoningEngines.memories.purge',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/memories:purge',
+        request_field='googleCloudAiplatformV1beta1PurgeMemoriesRequest',
+        request_type_name='AiplatformReasoningEnginesMemoriesPurgeRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Retrieve(self, request, global_params=None):
       r"""Retrieve memories.
 
@@ -31698,6 +31942,141 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       super(AiplatformV1beta1.ReasoningEnginesSandboxEnvironmentsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a SandboxEnvironment in a given reasoning engine.
+
+      Args:
+        request: (AiplatformReasoningEnginesSandboxEnvironmentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/reasoningEngines/{reasoningEnginesId}/sandboxEnvironments',
+        http_method='POST',
+        method_id='aiplatform.reasoningEngines.sandboxEnvironments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/sandboxEnvironments',
+        request_field='googleCloudAiplatformV1beta1SandboxEnvironment',
+        request_type_name='AiplatformReasoningEnginesSandboxEnvironmentsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specific SandboxEnvironment.
+
+      Args:
+        request: (AiplatformReasoningEnginesSandboxEnvironmentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/reasoningEngines/{reasoningEnginesId}/sandboxEnvironments/{sandboxEnvironmentsId}',
+        http_method='DELETE',
+        method_id='aiplatform.reasoningEngines.sandboxEnvironments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformReasoningEnginesSandboxEnvironmentsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Execute(self, request, global_params=None):
+      r"""Executes using a sandbox environment.
+
+      Args:
+        request: (AiplatformReasoningEnginesSandboxEnvironmentsExecuteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ExecuteSandboxEnvironmentResponse) The response message.
+      """
+      config = self.GetMethodConfig('Execute')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Execute.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/reasoningEngines/{reasoningEnginesId}/sandboxEnvironments/{sandboxEnvironmentsId}:execute',
+        http_method='POST',
+        method_id='aiplatform.reasoningEngines.sandboxEnvironments.execute',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:execute',
+        request_field='googleCloudAiplatformV1beta1ExecuteSandboxEnvironmentRequest',
+        request_type_name='AiplatformReasoningEnginesSandboxEnvironmentsExecuteRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ExecuteSandboxEnvironmentResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of the specific SandboxEnvironment.
+
+      Args:
+        request: (AiplatformReasoningEnginesSandboxEnvironmentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1SandboxEnvironment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/reasoningEngines/{reasoningEnginesId}/sandboxEnvironments/{sandboxEnvironmentsId}',
+        http_method='GET',
+        method_id='aiplatform.reasoningEngines.sandboxEnvironments.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformReasoningEnginesSandboxEnvironmentsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1SandboxEnvironment',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists SandboxEnvironments in a given reasoning engine.
+
+      Args:
+        request: (AiplatformReasoningEnginesSandboxEnvironmentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ListSandboxEnvironmentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/reasoningEngines/{reasoningEnginesId}/sandboxEnvironments',
+        http_method='GET',
+        method_id='aiplatform.reasoningEngines.sandboxEnvironments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/sandboxEnvironments',
+        request_field='',
+        request_type_name='AiplatformReasoningEnginesSandboxEnvironmentsListRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ListSandboxEnvironmentsResponse',
+        supports_download=False,
+    )
 
   class ReasoningEnginesSessionsEventsService(base_api.BaseApiService):
     """Service class for the reasoningEngines_sessions_events resource."""
@@ -32113,6 +32492,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AiplatformReasoningEnginesDeleteRequest',
         response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def ExecuteCode(self, request, global_params=None):
+      r"""Executes code statelessly.
+
+      Args:
+        request: (AiplatformReasoningEnginesExecuteCodeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ExecuteCodeResponse) The response message.
+      """
+      config = self.GetMethodConfig('ExecuteCode')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExecuteCode.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/reasoningEngines/{reasoningEnginesId}:executeCode',
+        http_method='POST',
+        method_id='aiplatform.reasoningEngines.executeCode',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:executeCode',
+        request_field='googleCloudAiplatformV1beta1ExecuteCodeRequest',
+        request_type_name='AiplatformReasoningEnginesExecuteCodeRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ExecuteCodeResponse',
         supports_download=False,
     )
 

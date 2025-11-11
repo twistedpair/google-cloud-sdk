@@ -46,6 +46,7 @@ class CloudsecuritycomplianceV1(base_api.BaseApiClient):
     self.folders_locations_frameworkComplianceReports_controlComplianceSummaries = self.FoldersLocationsFrameworkComplianceReportsControlComplianceSummariesService(self)
     self.folders_locations_frameworkComplianceReports = self.FoldersLocationsFrameworkComplianceReportsService(self)
     self.folders_locations_frameworkComplianceSummaries = self.FoldersLocationsFrameworkComplianceSummariesService(self)
+    self.folders_locations_operationDetails = self.FoldersLocationsOperationDetailsService(self)
     self.folders_locations = self.FoldersLocationsService(self)
     self.folders = self.FoldersService(self)
     self.organizations_locations_cloudControlDeployments = self.OrganizationsLocationsCloudControlDeploymentsService(self)
@@ -59,6 +60,7 @@ class CloudsecuritycomplianceV1(base_api.BaseApiClient):
     self.organizations_locations_frameworkComplianceSummaries = self.OrganizationsLocationsFrameworkComplianceSummariesService(self)
     self.organizations_locations_frameworkDeployments = self.OrganizationsLocationsFrameworkDeploymentsService(self)
     self.organizations_locations_frameworks = self.OrganizationsLocationsFrameworksService(self)
+    self.organizations_locations_operationDetails = self.OrganizationsLocationsOperationDetailsService(self)
     self.organizations_locations_operations = self.OrganizationsLocationsOperationsService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations = self.OrganizationsService(self)
@@ -69,6 +71,7 @@ class CloudsecuritycomplianceV1(base_api.BaseApiClient):
     self.projects_locations_frameworkComplianceReports_controlComplianceSummaries = self.ProjectsLocationsFrameworkComplianceReportsControlComplianceSummariesService(self)
     self.projects_locations_frameworkComplianceReports = self.ProjectsLocationsFrameworkComplianceReportsService(self)
     self.projects_locations_frameworkComplianceSummaries = self.ProjectsLocationsFrameworkComplianceSummariesService(self)
+    self.projects_locations_operationDetails = self.ProjectsLocationsOperationDetailsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -194,7 +197,7 @@ class CloudsecuritycomplianceV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates an audit scope report for a framework.
+      r"""Creates a framework audit.
 
       Args:
         request: (CloudsecuritycomplianceFoldersLocationsFrameworkAuditsCreateRequest) input message
@@ -355,7 +358,7 @@ class CloudsecuritycomplianceV1(base_api.BaseApiClient):
         request: (CloudsecuritycomplianceFoldersLocationsFrameworkComplianceReportsFetchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (FetchFrameworkComplianceReportResponse) The response message.
+        (FrameworkComplianceReport) The response message.
       """
       config = self.GetMethodConfig('Fetch')
       return self._RunMethod(
@@ -371,7 +374,7 @@ class CloudsecuritycomplianceV1(base_api.BaseApiClient):
         relative_path='v1/{+name}:fetch',
         request_field='',
         request_type_name='CloudsecuritycomplianceFoldersLocationsFrameworkComplianceReportsFetchRequest',
-        response_type_name='FetchFrameworkComplianceReportResponse',
+        response_type_name='FrameworkComplianceReport',
         supports_download=False,
     )
 
@@ -409,6 +412,43 @@ class CloudsecuritycomplianceV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='CloudsecuritycomplianceFoldersLocationsFrameworkComplianceSummariesListRequest',
         response_type_name='ListFrameworkComplianceSummariesResponse',
+        supports_download=False,
+    )
+
+  class FoldersLocationsOperationDetailsService(base_api.BaseApiService):
+    """Service class for the folders_locations_operationDetails resource."""
+
+    _NAME = 'folders_locations_operationDetails'
+
+    def __init__(self, client):
+      super(CloudsecuritycomplianceV1.FoldersLocationsOperationDetailsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets details for the generate audit report operation.
+
+      Args:
+        request: (CloudsecuritycomplianceFoldersLocationsOperationDetailsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations/{locationsId}/operationDetails/{operationDetailsId}',
+        http_method='GET',
+        method_id='cloudsecuritycompliance.folders.locations.operationDetails.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='CloudsecuritycomplianceFoldersLocationsOperationDetailsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -790,7 +830,7 @@ class CloudsecuritycomplianceV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates an audit scope report for a framework.
+      r"""Creates a framework audit.
 
       Args:
         request: (CloudsecuritycomplianceOrganizationsLocationsFrameworkAuditsCreateRequest) input message
@@ -951,7 +991,7 @@ class CloudsecuritycomplianceV1(base_api.BaseApiClient):
         request: (CloudsecuritycomplianceOrganizationsLocationsFrameworkComplianceReportsFetchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (FetchFrameworkComplianceReportResponse) The response message.
+        (FrameworkComplianceReport) The response message.
       """
       config = self.GetMethodConfig('Fetch')
       return self._RunMethod(
@@ -967,7 +1007,7 @@ class CloudsecuritycomplianceV1(base_api.BaseApiClient):
         relative_path='v1/{+name}:fetch',
         request_field='',
         request_type_name='CloudsecuritycomplianceOrganizationsLocationsFrameworkComplianceReportsFetchRequest',
-        response_type_name='FetchFrameworkComplianceReportResponse',
+        response_type_name='FrameworkComplianceReport',
         supports_download=False,
     )
 
@@ -1268,6 +1308,43 @@ class CloudsecuritycomplianceV1(base_api.BaseApiClient):
         request_field='framework',
         request_type_name='CloudsecuritycomplianceOrganizationsLocationsFrameworksPatchRequest',
         response_type_name='Framework',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsOperationDetailsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_operationDetails resource."""
+
+    _NAME = 'organizations_locations_operationDetails'
+
+    def __init__(self, client):
+      super(CloudsecuritycomplianceV1.OrganizationsLocationsOperationDetailsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets details for the generate audit report operation.
+
+      Args:
+        request: (CloudsecuritycomplianceOrganizationsLocationsOperationDetailsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/operationDetails/{operationDetailsId}',
+        http_method='GET',
+        method_id='cloudsecuritycompliance.organizations.locations.operationDetails.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='CloudsecuritycomplianceOrganizationsLocationsOperationDetailsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1612,7 +1689,7 @@ class CloudsecuritycomplianceV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates an audit scope report for a framework.
+      r"""Creates a framework audit.
 
       Args:
         request: (CloudsecuritycomplianceProjectsLocationsFrameworkAuditsCreateRequest) input message
@@ -1773,7 +1850,7 @@ class CloudsecuritycomplianceV1(base_api.BaseApiClient):
         request: (CloudsecuritycomplianceProjectsLocationsFrameworkComplianceReportsFetchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (FetchFrameworkComplianceReportResponse) The response message.
+        (FrameworkComplianceReport) The response message.
       """
       config = self.GetMethodConfig('Fetch')
       return self._RunMethod(
@@ -1789,7 +1866,7 @@ class CloudsecuritycomplianceV1(base_api.BaseApiClient):
         relative_path='v1/{+name}:fetch',
         request_field='',
         request_type_name='CloudsecuritycomplianceProjectsLocationsFrameworkComplianceReportsFetchRequest',
-        response_type_name='FetchFrameworkComplianceReportResponse',
+        response_type_name='FrameworkComplianceReport',
         supports_download=False,
     )
 
@@ -1827,6 +1904,43 @@ class CloudsecuritycomplianceV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='CloudsecuritycomplianceProjectsLocationsFrameworkComplianceSummariesListRequest',
         response_type_name='ListFrameworkComplianceSummariesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsOperationDetailsService(base_api.BaseApiService):
+    """Service class for the projects_locations_operationDetails resource."""
+
+    _NAME = 'projects_locations_operationDetails'
+
+    def __init__(self, client):
+      super(CloudsecuritycomplianceV1.ProjectsLocationsOperationDetailsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets details for the generate audit report operation.
+
+      Args:
+        request: (CloudsecuritycomplianceProjectsLocationsOperationDetailsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operationDetails/{operationDetailsId}',
+        http_method='GET',
+        method_id='cloudsecuritycompliance.projects.locations.operationDetails.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='CloudsecuritycomplianceProjectsLocationsOperationDetailsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

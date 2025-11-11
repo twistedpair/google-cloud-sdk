@@ -20,24 +20,30 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import abc
+import atexit
 import collections
 import inspect
 import io
+import json
+import os
+import socket
+import subprocess
 import sys
+import time
 
 from google.auth.transport import requests as google_auth_requests
 from google.auth.transport.requests import _MutualTlsOffloadAdapter
 from googlecloudsdk.core import context_aware
+from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import transport
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import http_proxy_types
 from googlecloudsdk.core.util import platforms
-
 import httplib2
 import requests
 import six
-
 from six.moves import http_client as httplib
 from six.moves import urllib
 import socks
@@ -217,8 +223,216 @@ _GOOGLER_BUNDLED_PYTHON_WARNING = (
 )
 
 
-def CreateMutualTlsOffloadAdapter(certificate_config_file_path):
-  return _MutualTlsOffloadAdapter(certificate_config_file_path)
+class ECPProxyError(Exception):
+  """Custom exception for errors related to the ECP proxy communication.
+
+  For example, startup failures or receiving a specific proxy error header.
+  """
+
+  def __init__(self, message, original_exception=None):
+    self.original_exception = original_exception
+    super().__init__(
+        f'{message}: {original_exception}' if original_exception else message
+    )
+
+
+class _LocalECPProxyAdapter(requests.adapters.HTTPAdapter):
+  """A requests adapter that routes HTTPS requests through a local ECP proxy.
+
+  This adapter starts the ECP proxy as a background process upon instantiation
+  and manages its lifecycle, terminating it when the adapter is closed.
+  This avoids the overhead of starting a new process for every request.
+  """
+
+  def __init__(
+      self,
+      certificate_config_file_path: str,
+      ecp_proxy_binary_path: str,
+      gcloud_proxy_url: str = None,
+      startup_timeout: int = 5,
+      **kwargs,
+  ):
+    """Initializes the adapter and starts the local ECP proxy process.
+
+    Args:
+        certificate_config_file_path: Path to the JSON certificate config file.
+        ecp_proxy_binary_path: Path to the LocalECPProxy executable.
+        gcloud_proxy_url: Optional URL for proxy chaining.
+        startup_timeout: Seconds to wait for the proxy to become available.
+        **kwargs: Additional arguments for the HTTPAdapter.
+    """
+    self.certificate_config_file_path = certificate_config_file_path
+    self.ecp_proxy_binary_path = ecp_proxy_binary_path
+    self.gcloud_proxy_url = gcloud_proxy_url
+
+    self.proxy_process = None
+    self.proxy_port = self._find_free_port()
+    self.proxy_address = f'http://localhost:{self.proxy_port}'
+
+    super().__init__(**kwargs)
+
+    self._start_ecp_proxy(startup_timeout)
+
+  def _find_free_port(self) -> int:
+    """Dynamically finds and returns an available TCP port."""
+    with socket.socket() as s:
+      s.bind(('', 0))
+      return s.getsockname()[1]
+
+  def _start_ecp_proxy(self, timeout: int):
+    """Starts the LocalECPProxy as a subprocess and waits for it to be ready."""
+    log.debug(f'Starting local ECP proxy server on port {self.proxy_port}...')
+
+    args = [
+        '-enterprise_certificate_file_path',
+        self.certificate_config_file_path,
+        '-port',
+        str(self.proxy_port),
+    ]
+
+    if self.gcloud_proxy_url:
+      args.extend(
+          ['-gcloud_configured_upstream_proxy_url', self.gcloud_proxy_url]
+      )
+
+    proxy_args = execution_utils.ArgsForExecutableTool(
+        self.ecp_proxy_binary_path, *args
+    )
+    try:
+      self.proxy_process = subprocess.Popen(
+          proxy_args,
+          stdout=None,
+          stderr=None,
+      )
+      # Ensure the proxy is cleaned up if the application exits unexpectedly.
+      atexit.register(self.close)
+    except (OSError, ValueError) as e:
+      log.error(f'Failed to start ECP proxy executable: {e}')
+      raise ECPProxyError(
+          'Failed to start ECP proxy process', original_exception=e
+      ) from e
+
+    self._wait_for_proxy('localhost', self.proxy_port, timeout)
+
+  def _wait_for_proxy(self, host: str, port: int, timeout: int):
+    """Waits for the proxy server to become available on the specified host and port."""
+    log.debug(f'Waiting for the proxy to be ready on port {port}...')
+    start_time = time.monotonic()
+    while time.monotonic() - start_time < timeout:
+      try:
+        with socket.create_connection((host, port), timeout=0.1):
+          log.debug('Proxy is ready.')
+          return
+      except OSError:
+        # Check if the process exited prematurely.
+        if self.proxy_process.poll() is not None:
+          raise ECPProxyError(
+              'Proxy process terminated unexpectedly with code '
+              f'{self.proxy_process.returncode} while waiting for it to start.'
+          )
+        time.sleep(0.1)
+
+    # If the loop finishes, the proxy timed out.
+    self.close()  # Clean up the zombie process.
+    raise ECPProxyError(
+        f'ECP Proxy on {host}:{port} did not become ready in {timeout} seconds.'
+    )
+
+  def send(self, request, **kwargs):
+    """Sends a PreparedRequest through the local ECP proxy."""
+    # Rewrite the request to target the proxy
+    original_url = urllib.parse.urlsplit(request.url)
+    request.headers['x-goog-ecpproxy-target-host'] = original_url.hostname
+
+    # The new URL for the request is the proxy address + original path/query
+    # urlunsplit takes (scheme, netloc, path, query, fragment).
+    # The empty strings for scheme, netloc, and fragment ensure that only
+    # the path and query components from the original URL are used to form
+    # the part of the URL that comes after the proxy address.
+    proxy_path = urllib.parse.urlunsplit(
+        ('', '', original_url.path, original_url.query, '')
+    )
+    request.url = self.proxy_address + proxy_path
+
+    # We are connecting to the proxy over HTTP, not HTTPS.
+    kwargs['verify'] = False
+
+    log.debug(
+        f'Redirecting request for {original_url.geturl()} to proxy at'
+        f' {request.url}'
+    )
+    try:
+      response = super().send(request, **kwargs)
+    except requests.exceptions.RequestException as e:
+      raise ECPProxyError(
+          'Failed to send request to proxy', original_exception=e
+      ) from e
+
+    return self._handle_proxy_response(response)
+
+  def _handle_proxy_response(self, response):
+    """Checks for the custom ECP proxy error header and raises an exception if found."""
+    proxy_error_header = response.headers.get('x-goog-ecpproxy-error')
+    if proxy_error_header:
+      log.error('ECP Proxy returned an error')
+      try:
+        # Attempt to parse a more detailed error from the JSON body.
+        error_details = response.json().get('message', 'No message in body.')
+        message = f'ECP Proxy indicated an internal error: {error_details}'
+      except json.JSONDecodeError:
+        message = (
+            'ECP Proxy indicated an internal error. Response body:'
+            f' {response.text}'
+        )
+      raise ECPProxyError(message)
+
+    return response
+
+  def close(self):
+    """Cleans up the adapter's resources by terminating the proxy process."""
+    log.debug('Closing ECP Proxy Adapter and terminating proxy process...')
+    if self.proxy_process and self.proxy_process.poll() is None:
+      self.proxy_process.terminate()
+      try:
+        # Wait a moment for graceful shutdown before killing.
+        self.proxy_process.wait(timeout=0.5)
+      except subprocess.TimeoutExpired:
+        log.warning('Proxy process did not terminate gracefully, killing it.')
+        self.proxy_process.kill()
+    super().close()
+
+
+def _CreateMutualTlsOffloadAdapter(
+    ca_config: context_aware._EnterpriseCertConfigImpl,
+) -> requests.adapters.BaseAdapter:
+  """Factory function that creates and returns the correct adapter.
+
+  Decides whether to use the LocalECPProxyAdapter or a standard
+  _MutualTlsOffloadAdapter based on environment variables and user status.
+
+  Args:
+      ca_config: The enterprise certificate configuration object.
+
+  Returns:
+      An instance of a requests adapter.
+
+  Raises:
+      ValueError: If configuration is missing or invalid.
+  """
+  if not ca_config or not ca_config.certificate_config_file_path:
+    raise ValueError('Certificate config file path must be provided.')
+
+  if ca_config.use_local_proxy:
+    if not ca_config.ecp_proxy_binary_path:
+      raise ValueError(
+          'ECP Proxy is enabled, but the binary path is not configured.'
+      )
+    return _LocalECPProxyAdapter(
+        certificate_config_file_path=ca_config.certificate_config_file_path,
+        ecp_proxy_binary_path=ca_config.ecp_proxy_binary_path,
+    )
+  else:
+    return _MutualTlsOffloadAdapter(ca_config.certificate_config_file_path)
 
 
 def _LinuxNonbundledPythonAndGooglerCheck():
@@ -312,8 +526,7 @@ def Session(
     if ca_config:
       _LinuxNonbundledPythonAndGooglerCheck()
       if ca_config.config_type == context_aware.ConfigType.ENTERPRISE_CERTIFICATE:
-        adapter = CreateMutualTlsOffloadAdapter(
-            ca_config.certificate_config_file_path)
+        adapter = _CreateMutualTlsOffloadAdapter(ca_config)
       elif ca_config.config_type == context_aware.ConfigType.ON_DISK_CERTIFICATE:
         log.debug('Using client certificate %s',
                   ca_config.encrypted_client_cert_path)
@@ -432,7 +645,31 @@ class RequestWrapper(transport.RequestWrapper):
 
 def GoogleAuthRequest():
   """Returns a gcloud's requests session to refresh google-auth credentials."""
-  return google_auth_requests.Request(session=GetSession())
+  session = GetSession()
+
+  # Ensure requests to the GCE metadata server are not proxied. We respect the
+  # same env vars for overriding the metadata server hostname/IP as google-auth:
+  # https://googleapis.dev/python/google-auth/latest/reference/google.auth.environment_vars.html
+  metadata_root = encoding.GetEncodedValue(
+      os.environ,
+      'GCE_METADATA_HOST',
+      encoding.GetEncodedValue(
+          os.environ,
+          'GCE_METADATA_ROOT',
+          'metadata.google.internal'))
+  metadata_ip_root = encoding.GetEncodedValue(
+      os.environ, 'GCE_METADATA_IP', '169.254.169.254')
+  # Ideally we would set 'no_proxy' in the proxies dict, but requests doesn't
+  # actually handle this correctly: https://github.com/psf/requests/issues/5000.
+  # Instead we specify the hostnames/addresses not to proxy as individual keys
+  # with empty values, which works because requests also consider these keys
+  # when evaluating whether to proxy a URL.
+  session.proxies.update({
+      f'http://{metadata_root}': '',
+      f'http://{metadata_ip_root}': '',
+  })
+
+  return google_auth_requests.Request(session=session)
 
 
 class _GoogleAuthApitoolsCredentials():

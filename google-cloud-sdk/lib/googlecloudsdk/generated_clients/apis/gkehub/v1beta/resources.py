@@ -129,6 +129,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_ROLLOUTSEQUENCES = (
+      'projects.locations.rolloutSequences',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'rolloutSequences/{rolloutSequencesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_ROLLOUTS = (
+      'projects.locations.rollouts',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/rollouts/'
+              '{rolloutsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_SCOPES = (
       'projects.locations.scopes',
       '{+name}',

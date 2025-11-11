@@ -509,7 +509,7 @@ class FirebasedataconnectV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Schemas in a given project and location. Note that only `schemas/main` is supported, so this will always return at most one Schema.
+      r"""Lists Schemas in a given project and location.
 
       Args:
         request: (FirebasedataconnectProjectsLocationsServicesSchemasListRequest) input message

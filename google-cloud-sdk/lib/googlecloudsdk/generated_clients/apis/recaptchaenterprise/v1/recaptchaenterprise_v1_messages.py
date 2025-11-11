@@ -1071,10 +1071,14 @@ class GoogleCloudRecaptchaenterpriseV1Policy(_messages.Message):
       sequence. Evaluation stops when the first matching rule group is found.
     name: Identifier. Resource name/identifier for this policy. Format:
       "projects/{project}/keys/{key}/policy" for a policy under a key.
+    protectedEndpointGroup: Optional. Configuration for all API endpoints to
+      protect with reCAPTCHA. If this field is not set, reCAPTCHA will not
+      automatically request tokens on any API endpoints.
   """
 
   challengeRuleGroups = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1ChallengeRuleGroup', 1, repeated=True)
   name = _messages.StringField(2)
+  protectedEndpointGroup = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1ProtectedEndpointGroup', 3)
 
 
 class GoogleCloudRecaptchaenterpriseV1PrivatePasswordLeakVerification(_messages.Message):
@@ -1100,6 +1104,41 @@ class GoogleCloudRecaptchaenterpriseV1PrivatePasswordLeakVerification(_messages.
   encryptedUserCredentialsHash = _messages.BytesField(2)
   lookupHashPrefix = _messages.BytesField(3)
   reencryptedUserCredentialsHash = _messages.BytesField(4)
+
+
+class GoogleCloudRecaptchaenterpriseV1ProtectedEndpoint(_messages.Message):
+  r"""Configuration for an API endpoint to protect with reCAPTCHA.
+
+  Fields:
+    action: Required. Action name to be used for token generation for this
+      endpoint. The action name is not case-sensitive and can only contain
+      alphanumeric characters, slashes, and underscores.
+    path: Required. URI path of the API endpoint to protect. Supports glob
+      characters * to match any path segment and ** to match any path
+      including multiple segments. This will be matched against the path only,
+      and will not be matched against the domain, scheme, or query parameters.
+      For example, `/login` matches `/login`, `https://example.com/login`,
+      /login?query=1` but not `/login/step1`. `/products/*` matches
+      `/products/123` but not `/products/123/456`. `/content/**` matches
+      `/content/articles/2024/01/01`.
+  """
+
+  action = _messages.StringField(1)
+  path = _messages.StringField(2)
+
+
+class GoogleCloudRecaptchaenterpriseV1ProtectedEndpointGroup(_messages.Message):
+  r"""Configuration for all API endpoints to protect with reCAPTCHA.
+
+  Fields:
+    protectedEndpoints: Optional. List of API endpoints to automatically
+      protect with reCAPTCHA. If any of these endpoints is invoked from a page
+      where reCAPTCHA is installed, a reCAPTCHA token will be automatically
+      generated and attached to the request. If multiple protected endpoints
+      match a given API endpoint, the first one in the list is used.
+  """
+
+  protectedEndpoints = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1ProtectedEndpoint', 1, repeated=True)
 
 
 class GoogleCloudRecaptchaenterpriseV1RelatedAccountGroup(_messages.Message):

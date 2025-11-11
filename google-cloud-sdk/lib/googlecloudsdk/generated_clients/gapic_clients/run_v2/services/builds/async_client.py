@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import logging as std_logging
 from collections import OrderedDict
-import functools
 import re
 from typing import Dict, Callable, Mapping, MutableMapping, MutableSequence, Optional, Sequence, Tuple, Type, Union
 
@@ -26,6 +26,7 @@ from google.api_core import gapic_v1
 from google.api_core import retry_async as retries
 from google.auth import credentials as ga_credentials   # type: ignore
 from google.oauth2 import service_account              # type: ignore
+import cloudsdk.google.protobuf
 
 
 try:
@@ -39,6 +40,13 @@ from .transports.base import BuildsTransport, DEFAULT_CLIENT_INFO
 from .transports.grpc_asyncio import BuildsGrpcAsyncIOTransport
 from .client import BuildsClient
 
+try:
+    from google.api_core import client_logging  # type: ignore
+    CLIENT_LOGGING_SUPPORTED = True  # pragma: NO COVER
+except ImportError:  # pragma: NO COVER
+    CLIENT_LOGGING_SUPPORTED = False
+
+_LOGGER = std_logging.getLogger(__name__)
 
 class BuildsAsyncClient:
     """Cloud Run Build Control Plane API"""
@@ -160,7 +168,7 @@ class BuildsAsyncClient:
         """
         return self._client._universe_domain
 
-    get_transport_class = functools.partial(type(BuildsClient).get_transport_class, type(BuildsClient))
+    get_transport_class = BuildsClient.get_transport_class
 
     def __init__(self, *,
             credentials: Optional[ga_credentials.Credentials] = None,
@@ -228,12 +236,26 @@ class BuildsAsyncClient:
 
         )
 
+        if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(std_logging.DEBUG):  # pragma: NO COVER
+            _LOGGER.debug(
+                "Created client `google.cloud.run_v2.BuildsAsyncClient`.",
+                extra = {
+                    "serviceName": "google.cloud.run.v2.Builds",
+                    "universeDomain": getattr(self._client._transport._credentials, "universe_domain", ""),
+                    "credentialsType": f"{type(self._client._transport._credentials).__module__}.{type(self._client._transport._credentials).__qualname__}",
+                    "credentialsInfo": getattr(self.transport._credentials, "get_cred_info", lambda: None)(),
+                } if hasattr(self._client._transport, "_credentials") else {
+                    "serviceName": "google.cloud.run.v2.Builds",
+                    "credentialsType": None,
+                }
+            )
+
     async def submit_build(self,
             request: Optional[Union[build.SubmitBuildRequest, dict]] = None,
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> build.SubmitBuildResponse:
         r"""Submits a build in a given project.
 
@@ -276,8 +298,10 @@ class BuildsAsyncClient:
             retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.run_v2.types.SubmitBuildResponse:
@@ -324,6 +348,9 @@ class BuildsAsyncClient:
         await self.transport.close()
 
 DEFAULT_CLIENT_INFO = gapic_v1.client_info.ClientInfo(gapic_version=package_version.__version__)
+
+if hasattr(DEFAULT_CLIENT_INFO, "protobuf_runtime_version"):   # pragma: NO COVER
+    DEFAULT_CLIENT_INFO.protobuf_runtime_version = cloudsdk.google.protobuf.__version__
 
 
 __all__ = (

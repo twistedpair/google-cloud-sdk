@@ -2132,11 +2132,13 @@ class GoogleCloudPolicysimulatorV1alphaIamV3PolicyBinding(_messages.Message):
     Values:
       POLICY_KIND_UNSPECIFIED: Unspecified policy kind; Not a valid state
       PRINCIPAL_ACCESS_BOUNDARY: Principal access boundary policy kind
-      TRUST_BOUNDARY: Trust boundary policy kind
+      TRUST_BOUNDARY: <no description>
+      REGIONAL_ACCESS_BOUNDARY: Regional access boundary policy kind
     """
     POLICY_KIND_UNSPECIFIED = 0
     PRINCIPAL_ACCESS_BOUNDARY = 1
     TRUST_BOUNDARY = 2
+    REGIONAL_ACCESS_BOUNDARY = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -3256,12 +3258,7 @@ class GoogleCloudPolicysimulatorV1alphaProposedChange(_messages.Message):
     updateIamV3PrincipalAccessBoundaryPolicy: Test an update to an
       IamV3PrincipalAccessBoundaryPolicy.
     updateIamV3TrustBoundaryPolicy: Test an update to an
-      IamV3TrustBoundaryPolicy. Test a delete to an IamV3TrustBoundaryPolicy.
-      Deletion of an IamV3TrustBoundaryPolicy would result in access changing
-      from denied to allowed. This is currently out of scope.
-      DeleteIamV3TrustBoundaryPolicy delete_iam_v3_trust_boundary_policy = 14
-      [(google.api.field_visibility).restriction = "GOOGLE_INTERNAL,
-      TRUST_BOUNDARY_V3_GA_TRUSTED_TESTER"];
+      IamV3TrustBoundaryPolicy.
   """
 
   createIamV2Policy = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaCreateIamV2Policy', 1)

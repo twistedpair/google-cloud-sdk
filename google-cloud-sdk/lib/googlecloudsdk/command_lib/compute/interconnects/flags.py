@@ -235,11 +235,11 @@ def AddCreateArgs(parser, track, required=True):
   """Adds flags for create command to the argparse.ArgumentParser."""
   AddCreateCommonArgs(parser, required)
   AddSubzone(parser)
+  AddResourceManagerTags(parser)
   if track == base.ReleaseTrack.GA:
     AddInterconnectTypeGA(parser, required)
   else:
     AddInterconnectTypeBetaAndAlpha(parser)
-    AddResourceManagerTags(parser)
 
 
 def AddCreateArgsForInterconnectGroupsCreateMembers(parser, required=True):

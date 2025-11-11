@@ -163,6 +163,25 @@ class CloudshellUsersEnvironmentsAuthorizeRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class CloudshellUsersEnvironmentsGenerateAccessTokenRequest(_messages.Message):
+  r"""A CloudshellUsersEnvironmentsGenerateAccessTokenRequest object.
+
+  Fields:
+    environment: Required. The environment to generate the access token for.
+    expireTime: Desired expiration time of the access token. This value must
+      be at most 24 hours in the future. If a value is not specified, the
+      token's expiration time will be set to a default value of 1 hour in the
+      future.
+    ttl: Desired lifetime duration of the access token. This value must be at
+      most 24 hours. If a value is not specified, the token's lifetime will be
+      set to a default value of 1 hour.
+  """
+
+  environment = _messages.StringField(1, required=True)
+  expireTime = _messages.StringField(2)
+  ttl = _messages.StringField(3)
+
+
 class CloudshellUsersEnvironmentsGetRequest(_messages.Message):
   r"""A CloudshellUsersEnvironmentsGetRequest object.
 
@@ -292,6 +311,16 @@ class Environment(_messages.Message):
   sshUsername = _messages.StringField(7)
   state = _messages.EnumField('StateValueValuesEnum', 8)
   webHost = _messages.StringField(9)
+
+
+class GenerateAccessTokenResponse(_messages.Message):
+  r"""Response message for GenerateAccessToken.
+
+  Fields:
+    accessToken: The access token.
+  """
+
+  accessToken = _messages.StringField(1)
 
 
 class ListOperationsResponse(_messages.Message):

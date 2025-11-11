@@ -1101,6 +1101,33 @@ class ApphubV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetBoundary(self, request, global_params=None):
+      r"""Gets a Boundary.
+
+      Args:
+        request: (ApphubProjectsLocationsGetBoundaryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Boundary) The response message.
+      """
+      config = self.GetMethodConfig('GetBoundary')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetBoundary.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/boundary',
+        http_method='GET',
+        method_id='apphub.projects.locations.getBoundary',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsGetBoundaryRequest',
+        response_type_name='Boundary',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists information about the supported locations for this service.
 
@@ -1152,6 +1179,33 @@ class ApphubV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApphubProjectsLocationsLookupServiceProjectAttachmentRequest',
         response_type_name='LookupServiceProjectAttachmentResponse',
+        supports_download=False,
+    )
+
+    def UpdateBoundary(self, request, global_params=None):
+      r"""Updates a Boundary.
+
+      Args:
+        request: (ApphubProjectsLocationsUpdateBoundaryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateBoundary')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateBoundary.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/boundary',
+        http_method='PATCH',
+        method_id='apphub.projects.locations.updateBoundary',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='boundary',
+        request_type_name='ApphubProjectsLocationsUpdateBoundaryRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

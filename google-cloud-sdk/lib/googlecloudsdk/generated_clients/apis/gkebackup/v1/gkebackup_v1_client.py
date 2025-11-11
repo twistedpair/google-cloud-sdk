@@ -844,6 +844,33 @@ class GkebackupV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetTags(self, request, global_params=None):
+      r"""Returns tags directly bound to a GCP resource.
+
+      Args:
+        request: (GkebackupProjectsLocationsBackupPlansGetTagsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GetTagsResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetTags')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetTags.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}:getTags',
+        http_method='GET',
+        method_id='gkebackup.projects.locations.backupPlans.getTags',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:getTags',
+        request_field='',
+        request_type_name='GkebackupProjectsLocationsBackupPlansGetTagsRequest',
+        response_type_name='GetTagsResponse',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists BackupPlans in a given location.
 
@@ -922,6 +949,33 @@ class GkebackupV1(base_api.BaseApiClient):
         request_field='setIamPolicyRequest',
         request_type_name='GkebackupProjectsLocationsBackupPlansSetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def SetTags(self, request, global_params=None):
+      r"""Updates tags directly bound to a GCP resource.
+
+      Args:
+        request: (GkebackupProjectsLocationsBackupPlansSetTagsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SetTagsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SetTags')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetTags.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}:setTags',
+        http_method='POST',
+        method_id='gkebackup.projects.locations.backupPlans.setTags',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:setTags',
+        request_field='setTagsRequest',
+        request_type_name='GkebackupProjectsLocationsBackupPlansSetTagsRequest',
+        response_type_name='SetTagsResponse',
         supports_download=False,
     )
 
@@ -1832,6 +1886,33 @@ class GkebackupV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetTags(self, request, global_params=None):
+      r"""Returns tags directly bound to a GCP resource.
+
+      Args:
+        request: (GkebackupProjectsLocationsRestorePlansGetTagsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GetTagsResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetTags')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetTags.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/restorePlans/{restorePlansId}:getTags',
+        http_method='GET',
+        method_id='gkebackup.projects.locations.restorePlans.getTags',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:getTags',
+        request_field='',
+        request_type_name='GkebackupProjectsLocationsRestorePlansGetTagsRequest',
+        response_type_name='GetTagsResponse',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists RestorePlans in a given location.
 
@@ -1910,6 +1991,33 @@ class GkebackupV1(base_api.BaseApiClient):
         request_field='setIamPolicyRequest',
         request_type_name='GkebackupProjectsLocationsRestorePlansSetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def SetTags(self, request, global_params=None):
+      r"""Updates tags directly bound to a GCP resource.
+
+      Args:
+        request: (GkebackupProjectsLocationsRestorePlansSetTagsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SetTagsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SetTags')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetTags.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/restorePlans/{restorePlansId}:setTags',
+        http_method='POST',
+        method_id='gkebackup.projects.locations.restorePlans.setTags',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:setTags',
+        request_field='setTagsRequest',
+        request_type_name='GkebackupProjectsLocationsRestorePlansSetTagsRequest',
+        response_type_name='SetTagsResponse',
         supports_download=False,
     )
 

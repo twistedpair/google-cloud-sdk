@@ -598,38 +598,27 @@ class DataplexProjectsLocationsDataAttributeBindingsTestIamPermissionsRequest(_m
   resource = _messages.StringField(2, required=True)
 
 
-class DataplexProjectsLocationsDataProductsDataAssetsSetIamPolicyRequest(_messages.Message):
-  r"""A DataplexProjectsLocationsDataProductsDataAssetsSetIamPolicyRequest
-  object.
+class DataplexProjectsLocationsDataProductsGetIamPolicyRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsDataProductsGetIamPolicyRequest object.
 
   Fields:
-    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
-      to be passed as the request body.
-    resource: REQUIRED: The resource for which the policy is being specified.
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy.Valid values are 0, 1, and 3. Requests
+      specifying an invalid value will be rejected.Requests for policies with
+      any conditional role bindings must specify version 3. Policies with no
+      conditional role bindings may specify any valid value or leave the field
+      unset.The policy in the response might use the policy version that you
+      specified, or it might use a lower policy version. For example, if you
+      specify version 3, but the policy has no conditional role bindings, the
+      response uses version 1.To learn which resources support conditions in
+      their IAM policies, see the IAM documentation
+      (https://cloud.google.com/iam/help/conditions/resource-policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
       See Resource names (https://cloud.google.com/apis/design/resource_names)
       for the appropriate value for this field.
   """
 
-  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class DataplexProjectsLocationsDataProductsDataAssetsTestIamPermissionsRequest(_messages.Message):
-  r"""A
-  DataplexProjectsLocationsDataProductsDataAssetsTestIamPermissionsRequest
-  object.
-
-  Fields:
-    googleIamV1TestIamPermissionsRequest: A
-      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
-      request body.
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See Resource names
-      (https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
 
 
@@ -1388,17 +1377,20 @@ class DataplexProjectsLocationsEntryGroupsEntriesListRequest(_messages.Message):
   Fields:
     filter: Optional. A filter on the entries to return. Filters are case-
       sensitive. You can filter the request by the following fields:
-      entry_type entry_source.display_nameThe comparison operators are =, !=,
-      <, >, <=, >=. The service compares strings according to lexical
-      order.You can use the logical operators AND, OR, NOT in the filter.You
-      can use Wildcard "*", but for entry_type you need to provide the full
-      project id or number.Example filter expressions:
-      "entry_source.display_name=AnExampleDisplayName"
+      entry_type entry_source.display_name parent_entryThe comparison
+      operators are =, !=, <, >, <=, >=. The service compares strings
+      according to lexical order.You can use the logical operators AND, OR,
+      NOT in the filter.You can use Wildcard "*", but for entry_type and
+      parent_entry you need to provide the full project id or number.You
+      cannot use parent_entry in conjunction with other fields.Example filter
+      expressions: "entry_source.display_name=AnExampleDisplayName"
       "entry_type=projects/example-
       project/locations/global/entryTypes/example-entry_type"
       "entry_type=projects/example-project/locations/us/entryTypes/a* OR
       entry_type=projects/another-project/locations/*" "NOT
       entry_source.display_name=AnotherExampleDisplayName"
+      "parent_entry=projects/example-project/locations/us/entryGroups/example-
+      entry-group/entries/example-entry"
     pageSize: Optional. Number of items to return per page. If there are
       remaining results, the service returns a next_page_token. If
       unspecified, the service returns at most 10 Entries. The maximum value
@@ -5581,16 +5573,19 @@ class GoogleCloudDataplexV1DataProfileResult(_messages.Message):
   the table will have field type specific profile result.
 
   Fields:
+    catalogPublishingStatus: Output only. The status of publishing the data
+      scan as Dataplex Universal Catalog metadata.
     postScanActionsResult: Output only. The result of post scan actions.
     profile: Output only. The profile information per field.
     rowCount: Output only. The count of rows scanned.
     scannedData: Output only. The data scanned for this result.
   """
 
-  postScanActionsResult = _messages.MessageField('GoogleCloudDataplexV1DataProfileResultPostScanActionsResult', 1)
-  profile = _messages.MessageField('GoogleCloudDataplexV1DataProfileResultProfile', 2)
-  rowCount = _messages.IntegerField(3)
-  scannedData = _messages.MessageField('GoogleCloudDataplexV1ScannedData', 4)
+  catalogPublishingStatus = _messages.MessageField('GoogleCloudDataplexV1DataScanCatalogPublishingStatus', 1)
+  postScanActionsResult = _messages.MessageField('GoogleCloudDataplexV1DataProfileResultPostScanActionsResult', 2)
+  profile = _messages.MessageField('GoogleCloudDataplexV1DataProfileResultProfile', 3)
+  rowCount = _messages.IntegerField(4)
+  scannedData = _messages.MessageField('GoogleCloudDataplexV1ScannedData', 5)
 
 
 class GoogleCloudDataplexV1DataProfileResultPostScanActionsResult(_messages.Message):
@@ -5797,6 +5792,8 @@ class GoogleCloudDataplexV1DataProfileSpec(_messages.Message):
   r"""DataProfileScan related setting.
 
   Fields:
+    catalogPublishingEnabled: Optional. If set, the latest DataScan job result
+      will be published as Dataplex Universal Catalog metadata.
     excludeFields: Optional. The fields to exclude from data profile.If
       specified, the fields will be excluded from data profile, regardless of
       include_fields value.
@@ -5813,11 +5810,12 @@ class GoogleCloudDataplexV1DataProfileSpec(_messages.Message):
       sampling_percent is not specified, 0 or 100.
   """
 
-  excludeFields = _messages.MessageField('GoogleCloudDataplexV1DataProfileSpecSelectedFields', 1)
-  includeFields = _messages.MessageField('GoogleCloudDataplexV1DataProfileSpecSelectedFields', 2)
-  postScanActions = _messages.MessageField('GoogleCloudDataplexV1DataProfileSpecPostScanActions', 3)
-  rowFilter = _messages.StringField(4)
-  samplingPercent = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+  catalogPublishingEnabled = _messages.BooleanField(1)
+  excludeFields = _messages.MessageField('GoogleCloudDataplexV1DataProfileSpecSelectedFields', 2)
+  includeFields = _messages.MessageField('GoogleCloudDataplexV1DataProfileSpecSelectedFields', 3)
+  postScanActions = _messages.MessageField('GoogleCloudDataplexV1DataProfileSpecPostScanActions', 4)
+  rowFilter = _messages.StringField(5)
+  samplingPercent = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudDataplexV1DataProfileSpecPostScanActions(_messages.Message):
@@ -11831,6 +11829,8 @@ encoding.AddCustomJsonFieldMapping(
     DataplexProjectsLocationsChangeRequestsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     DataplexProjectsLocationsDataAttributeBindingsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    DataplexProjectsLocationsDataProductsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     DataplexProjectsLocationsDataScansGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(

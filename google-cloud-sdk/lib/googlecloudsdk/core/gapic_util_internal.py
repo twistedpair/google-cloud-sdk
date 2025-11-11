@@ -898,6 +898,7 @@ def MakeTransport(
     mtls_enabled=False,
     attempt_direct_path=False,
     redact_request_body_reason=None,
+    custom_interceptors=None,
 ):
   """Instantiates a grpc transport."""
   transport_class = client_class.get_transport_class()
@@ -927,6 +928,8 @@ def MakeTransport(
             redact_request_body_reason=redact_request_body_reason,
         )
     )
+  if custom_interceptors is not None:
+    interceptors.extend(custom_interceptors)
 
   channel = grpc.intercept_channel(channel, *interceptors)
   return transport_class(channel=channel, host=address)

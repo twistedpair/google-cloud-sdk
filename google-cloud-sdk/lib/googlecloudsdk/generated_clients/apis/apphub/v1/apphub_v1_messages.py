@@ -1133,6 +1133,75 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class ExtendedMetadata(_messages.Message):
+  r"""Additional metadata for a Service or Workload.
+
+  Messages:
+    MetadataStructValue: Output only. The metadata contents.
+
+  Fields:
+    extendedMetadataSchema: Output only. The resource name for the Extended
+      Metadata Schema that describes the contents of `metadata_struct`. Use
+      `GetExtendedMetadataSchema` API to get the schema. Format:
+      projects//locations//extendedMetadataSchemas/
+    metadataStruct: Output only. The metadata contents.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataStructValue(_messages.Message):
+    r"""Output only. The metadata contents.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataStructValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataStructValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  extendedMetadataSchema = _messages.StringField(1)
+  metadataStruct = _messages.MessageField('MetadataStructValue', 2)
+
+
+class FunctionalType(_messages.Message):
+  r"""The functional type of a service or workload.
+
+  Enums:
+    TypeValueValuesEnum: Output only. The functional type of a service or
+      workload.
+
+  Fields:
+    type: Output only. The functional type of a service or workload.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The functional type of a service or workload.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified type.
+      AGENT: Agent type.
+      MCP_SERVER: MCP Server type.
+    """
+    TYPE_UNSPECIFIED = 0
+    AGENT = 1
+    MCP_SERVER = 2
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
+
+
 class ListApplicationsResponse(_messages.Message):
   r"""Response for ListApplications.
 
@@ -1611,6 +1680,31 @@ class ReconciliationOperationMetadata(_messages.Message):
   exclusiveAction = _messages.EnumField('ExclusiveActionValueValuesEnum', 2)
 
 
+class RegistrationType(_messages.Message):
+  r"""The registration type of a service.
+
+  Enums:
+    TypeValueValuesEnum: Output only. The registration type of a service.
+
+  Fields:
+    type: Output only. The registration type of a service.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The registration type of a service.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified registration type. Defaults to EXCLUSIVE.
+      EXCLUSIVE: The service can only be registered to one application.
+      SHARED: The service can be registered to multiple applications.
+    """
+    TYPE_UNSPECIFIED = 0
+    EXCLUSIVE = 1
+    SHARED = 2
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
+
+
 class Scope(_messages.Message):
   r"""Scope of an application.
 
@@ -1746,18 +1840,68 @@ class ServiceProjectAttachment(_messages.Message):
 class ServiceProperties(_messages.Message):
   r"""Properties of an underlying cloud resource that can comprise a Service.
 
+  Messages:
+    ExtendedMetadataValue: Output only. Additional metadata specific to the
+      resource type. The key is a string that identifies the type of metadata
+      and the value is the metadata contents specific to that type. Key
+      format: `apphub.googleapis.com/{metadataType}` The list of supported
+      metadata types and their schemas can be obtained via
+      `ListExtendedMetadataSchemas` API.
+
   Fields:
+    extendedMetadata: Output only. Additional metadata specific to the
+      resource type. The key is a string that identifies the type of metadata
+      and the value is the metadata contents specific to that type. Key
+      format: `apphub.googleapis.com/{metadataType}` The list of supported
+      metadata types and their schemas can be obtained via
+      `ListExtendedMetadataSchemas` API.
+    functionalType: Output only. The type of the service.
     gcpProject: Output only. The service project identifier that the
       underlying cloud resource resides in.
     location: Output only. The location that the underlying resource resides
       in, for example, us-west1.
+    registrationType: Output only. The registration type of the service.
     zone: Output only. The location that the underlying resource resides in if
       it is zonal, for example, us-west1-a).
   """
 
-  gcpProject = _messages.StringField(1)
-  location = _messages.StringField(2)
-  zone = _messages.StringField(3)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExtendedMetadataValue(_messages.Message):
+    r"""Output only. Additional metadata specific to the resource type. The
+    key is a string that identifies the type of metadata and the value is the
+    metadata contents specific to that type. Key format:
+    `apphub.googleapis.com/{metadataType}` The list of supported metadata
+    types and their schemas can be obtained via `ListExtendedMetadataSchemas`
+    API.
+
+    Messages:
+      AdditionalProperty: An additional property for a ExtendedMetadataValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ExtendedMetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExtendedMetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ExtendedMetadata attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ExtendedMetadata', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  extendedMetadata = _messages.MessageField('ExtendedMetadataValue', 1)
+  functionalType = _messages.MessageField('FunctionalType', 2)
+  gcpProject = _messages.StringField(3)
+  location = _messages.StringField(4)
+  registrationType = _messages.MessageField('RegistrationType', 5)
+  zone = _messages.StringField(6)
 
 
 class ServiceReference(_messages.Message):
@@ -1992,7 +2136,22 @@ class WorkloadProperties(_messages.Message):
   r"""Properties of an underlying compute resource represented by the
   Workload.
 
+  Messages:
+    ExtendedMetadataValue: Output only. Additional metadata specific to the
+      resource type. The key is a string that identifies the type of metadata
+      and the value is the metadata contents specific to that type. Key
+      format: `apphub.googleapis.com/{metadataType}` The list of supported
+      metadata types and their schemas can be obtained via
+      `ListExtendedMetadataSchemas` API.
+
   Fields:
+    extendedMetadata: Output only. Additional metadata specific to the
+      resource type. The key is a string that identifies the type of metadata
+      and the value is the metadata contents specific to that type. Key
+      format: `apphub.googleapis.com/{metadataType}` The list of supported
+      metadata types and their schemas can be obtained via
+      `ListExtendedMetadataSchemas` API.
+    functionalType: Output only. The type of the workload.
     gcpProject: Output only. The service project identifier that the
       underlying cloud resource resides in. Empty for non-cloud resources.
     location: Output only. The location that the underlying compute resource
@@ -2001,9 +2160,42 @@ class WorkloadProperties(_messages.Message):
       resides in if it is zonal (for example, us-west1-a).
   """
 
-  gcpProject = _messages.StringField(1)
-  location = _messages.StringField(2)
-  zone = _messages.StringField(3)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExtendedMetadataValue(_messages.Message):
+    r"""Output only. Additional metadata specific to the resource type. The
+    key is a string that identifies the type of metadata and the value is the
+    metadata contents specific to that type. Key format:
+    `apphub.googleapis.com/{metadataType}` The list of supported metadata
+    types and their schemas can be obtained via `ListExtendedMetadataSchemas`
+    API.
+
+    Messages:
+      AdditionalProperty: An additional property for a ExtendedMetadataValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ExtendedMetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExtendedMetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ExtendedMetadata attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ExtendedMetadata', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  extendedMetadata = _messages.MessageField('ExtendedMetadataValue', 1)
+  functionalType = _messages.MessageField('FunctionalType', 2)
+  gcpProject = _messages.StringField(3)
+  location = _messages.StringField(4)
+  zone = _messages.StringField(5)
 
 
 class WorkloadReference(_messages.Message):

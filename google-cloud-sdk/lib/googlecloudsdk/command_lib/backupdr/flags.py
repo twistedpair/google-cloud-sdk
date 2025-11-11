@@ -21,6 +21,7 @@ from typing import Any
 import frozendict
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.backupdr import util
@@ -340,6 +341,14 @@ def AddTriggerBackupFlags(parser):
           'If not specified, the default retention period will be used.'
       ),
   )
+
+  base.Argument(
+      '--labels',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(value_type=str),
+      action=arg_parsers.UpdateAction,
+      help='Labels to be applied to the backup.',
+      hidden=True).AddToParser(parser)
 
 
 def AddNetwork(parser, required=False):

@@ -30,13 +30,13 @@ from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.api_lib.storage.gcs_grpc import grpc_util
 from googlecloudsdk.api_lib.storage.gcs_grpc import metadata_util
 from googlecloudsdk.api_lib.storage.gcs_grpc import retry_util
+from googlecloudsdk.api_lib.storage.gcs_grpc_bidi_streaming import retry_util as bidi_retry_util
 from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage import fast_crc32c_util
 from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.command_lib.util import crc32c
-from googlecloudsdk.core import gapic_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 import six
@@ -101,6 +101,9 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
         properties.VALUES.storage.bidi_streaming_finalize_writes.GetBool()
     )
     self._finalized_resource = None
+    self._redirection_handler = bidi_retry_util.BidiRedirectedTokenErrorHandler(
+        self._client, self._destination_resource
+    )
 
   def _get_max_buffer_size(self):
     """Returns the maximum buffer size."""
@@ -201,39 +204,13 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
         ),
     )
 
-  def _get_updated_bidi_write_rpc_if_retrying(self, bidi_write_rpc):
-    """Returns the updated bidi write RPC for resuming an upload."""
-    # If the call is None, it means that the RPC was not initialized, and its a
-    # new upload. In this case we need not initialize the RPC again. As it is
-    # already done by the caller.
-    if bidi_write_rpc.call is not None:
-      # If the call is not None, it means that the RPC was initialized before
-      # and we need to create a new RPC with the updated initial request for
-      # retrying the upload.
-      bidi_write_rpc = gapic_util.MakeBidiRpc(
-          self._client,
-          self._client.storage.bidi_write_object,
-          initial_request=self._initial_request,
-          metadata=metadata_util.get_bucket_name_routing_header(
-              grpc_util.get_full_bucket_name(
-                  self._destination_resource.storage_url.bucket_name
-              )
-          ),
-      )
-    return bidi_write_rpc
-
   @retry_util.grpc_default_retryer
-  def _bidi_write_appendable_object(
-      self, bidi_write_rpc, resuming_upload: bool = False
-  ):
+  def _bidi_write_appendable_object(self, resuming_upload: bool = False):
     """Performs the bidi write RPC for an appendable object."""
-    bidi_write_rpc = self._get_updated_bidi_write_rpc_if_retrying(
-        bidi_write_rpc
+    bidi_write_rpc = self._redirection_handler.start_bidi_rpc_with_retry_on_redirected_token_error(
+        self._initial_request
     )
     try:
-      bidi_write_rpc.open()
-      # TODO: b/440507899 - Add support for retrying an upload with a token.
-      # (Redirected token error handling) and/or error handling/retries.
       response = bidi_write_rpc.recv()
       self._update_initial_request(response)
 
@@ -284,6 +261,10 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
 
         if finish_write:
           break
+    except StopIteration as e:
+      raise bidi_retry_util.BidiUploadStreamClosedError(
+          'The BiDi upload stream was unexpectedly closed.'
+      ) from e
     finally:
       bidi_write_rpc.close()
 
@@ -399,18 +380,10 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
             generation=self._initial_request.append_object_spec.generation,
         )
     )
-    bidi_rpc = gapic_util.MakeBidiRpc(
-        self._client,
-        self._client.storage.bidi_read_object,
-        initial_request=read_request,
-        metadata=metadata_util.get_bucket_name_routing_header(
-            grpc_util.get_full_bucket_name(
-                self._destination_resource.storage_url.bucket_name
-            )
-        ),
+    bidi_rpc = self._redirection_handler.start_bidi_rpc_with_retry_on_redirected_token_error(
+        read_request
     )
     try:
-      bidi_rpc.open()
       response = bidi_rpc.recv()
     finally:
       bidi_rpc.close()
@@ -435,18 +408,8 @@ class SimpleUpload(_Upload):
       CloudApiError: API returned an error.
     """
     self._initial_request = self._get_request_for_creating_append_object()
-    bidi_write_rpc = gapic_util.MakeBidiRpc(
-        self._client,
-        self._client.storage.bidi_write_object,
-        initial_request=self._initial_request,
-        metadata=metadata_util.get_bucket_name_routing_header(
-            grpc_util.get_full_bucket_name(
-                self._destination_resource.storage_url.bucket_name
-            )
-        ),
-    )
 
-    self._bidi_write_appendable_object(bidi_write_rpc)
+    self._bidi_write_appendable_object()
 
     return self._get_object_metadata_after_upload()
 
@@ -463,24 +426,12 @@ class ResumableUpload(_Upload):
     Raises:
       CloudApiError: API returned an error.
     """
-    metadata = metadata_util.get_bucket_name_routing_header(
-        grpc_util.get_full_bucket_name(
-            self._destination_resource.storage_url.bucket_name
-        )
-    )
-
     destination_object = self._get_object_if_exists()
     if destination_object:
       self._initial_request = (
           self._get_request_for_resuming_appendable_object_upload(
               destination_object
           )
-      )
-      bidi_write_rpc = gapic_util.MakeBidiRpc(
-          self._client,
-          self._client.storage.bidi_write_object,
-          initial_request=self._initial_request,
-          metadata=metadata,
       )
       self._start_offset = destination_object.size
       log.info(
@@ -489,7 +440,7 @@ class ResumableUpload(_Upload):
           destination_object.size,
       )
       try:
-        self._bidi_write_appendable_object(bidi_write_rpc, resuming_upload=True)
+        self._bidi_write_appendable_object(resuming_upload=True)
         return self._get_object_metadata_after_upload()
       except command_errors.HashMismatchError as e:
         log.info(e)

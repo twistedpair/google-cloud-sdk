@@ -299,15 +299,16 @@ class ConnectionProfilesClient(object):
       )
 
   def _GetSslConfig(self, args):
+    ssl_type = None
+    if self._SupportsSslType() and args.IsSpecified('ssl_type'):
+      ssl_type = self.messages.SslConfig.TypeValueValuesEnum.lookup_by_name(
+          args.ssl_type
+      )
     return self.messages.SslConfig(
         clientKey=args.private_key,
         clientCertificate=args.GetValue(self._ClientCertificateArgName()),
         caCertificate=args.ca_certificate,
-        type=self.messages.SslConfig.TypeValueValuesEnum.lookup_by_name(
-            args.ssl_type
-        )
-        if self._SupportsSslType() and args.IsSpecified('ssl_type')
-        else None,
+        type=ssl_type,
     )
 
   def _UpdateMySqlSslConfig(self, connection_profile, args, update_fields):
@@ -463,6 +464,11 @@ class ConnectionProfilesClient(object):
         alloydbClusterId=alloydb_cluster,
     )
 
+    if args.IsKnownAndSpecified('enable_iam_authentication'):
+      connection_profile_obj.enableIamAuthentication = bool(
+          args.enable_iam_authentication
+      )
+
     if args.IsKnownAndSpecified('private_connection'):
       private_connectivity = args.CONCEPTS.private_connection.Parse()
       connection_profile_obj.privateConnectivity = (
@@ -503,6 +509,11 @@ class ConnectionProfilesClient(object):
     if args.IsSpecified('password'):
       connection_profile.postgresql.password = args.password
       update_fields.append('postgresql.password')
+    if args.IsKnownAndSpecified('enable_iam_authentication'):
+      connection_profile.postgresql.enableIamAuthentication = bool(
+          args.enable_iam_authentication
+      )
+      update_fields.append('postgresql.enable_iam_authentication')
     if args.IsSpecified(self._InstanceArgName()):
       connection_profile.postgresql.cloudSqlId = args.GetValue(
           self._InstanceArgName())

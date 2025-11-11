@@ -130,7 +130,8 @@ def IpCollectionArgument(required=False):
       detailed_help="""
           Resource reference to a public delegated prefix. The
           PublicDelegatedPrefix must be a sub-prefix in
-          EXTERNAL_IPV6_SUBNETWORK_CREATION mode.
+          EXTERNAL_IPV6_SUBNETWORK_CREATION or INTERNAL_IPV6_SUBNETWORK_CREATION
+          mode.
           """
   )
 
@@ -144,7 +145,6 @@ def SubnetworkResolver():
 def AddUpdateArgs(
     parser,
     include_alpha_logging,
-    include_internal_ipv6_prefix,
     include_allow_cidr_routes_overlap,
     api_version,
     update_purpose_to_private,
@@ -154,7 +154,6 @@ def AddUpdateArgs(
   Args:
     parser: The argparse parser.
     include_alpha_logging: Include alpha-specific logging args.
-    include_internal_ipv6_prefix: Include user assigned internal IPv6 prefix.
     include_allow_cidr_routes_overlap: Include CIDR routes overlap args.
     api_version: The api version of the request.
     update_purpose_to_private: Allow updating purpose to private.
@@ -215,16 +214,18 @@ def AddUpdateArgs(
       For example, `--external-ipv6-prefix=2600:1901:0:0:0:0:0:0/64`
       """))
 
-  if include_internal_ipv6_prefix:
-    parser.add_argument(
-        '--internal-ipv6-prefix',
-        help=("""
-        Set internal IPv6 prefix to be allocated for this subnetwork.
-        When ULA is enabled, the prefix will be ignored.
+  parser.add_argument(
+      '--internal-ipv6-prefix',
+      help=("""
+      The /64 internal IPv6 CIDR range to assign to this subnet. The range must
+      be associated with an IPv6 BYOIP sub-prefix that is defined by the
+      --ip-collection flag. If you specify --ip-collection but not
+      --internal-ipv6-prefix, a random /64 range is allocated from the
+      sub-prefix.
 
-        For example, `--internal-ipv6-prefix 2600:1901:0:0:0:0:0:0/64`
-        """),
-    )
+      For example, `--internal-ipv6-prefix 2600:1901:0:0:0:0:0:0/64`
+      """),
+  )
 
   updated_field.add_argument(
       '--remove-secondary-ranges',

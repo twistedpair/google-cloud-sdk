@@ -104,6 +104,12 @@ ssl-principal-mapping-rules:
     to apply the change. An empty string means that the default Kafka behavior is used.
     Example: "RULE:^CN=(.*?),OU=ServiceUsers.*$/$1@example.com/,DEFAULT"
 
+broker-disk-size-gb:
+  api_field: cluster.brokerCapacityConfig.diskSizeGb
+  arg_name: broker-disk-size-gb
+  help_text: |
+    The amount of local disk to provision for each broker in Gigabytes. Minimum: 100 GB.
+
 # Trying to define this as a resouce causes test failures in yaml_command_schema_test so we define
 # it as a flag instead.
 kafka-cluster:

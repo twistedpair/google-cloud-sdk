@@ -1140,6 +1140,13 @@ class Rollout(_messages.Message):
       Rollout States (such as RUNNING -> SUCCEEDED or RUNNING -> FAILED).
       Requests can only be made when the Rollout is in a non-terminal state.
     createTime: Output only. The timestamp when the resource was created.
+    effectiveUnitFilter: Optional. Output only. Output only snapshot of the
+      effective unit filter at Rollout start time. Contains a
+      CEL(https://github.com/google/cel-spec) expression consisting of a
+      conjunction of Rollout.unit_filter and RolloutKind.unit_filter. This
+      field captures the filter applied by the Rollout to determine the Unit
+      population. If the associated RolloutKind's unit_filter is modified
+      after the rollout is started, it will not be updated here.
     endTime: Optional. Output only. The time when the rollout finished
       execution (regardless of success, failure, or cancellation). Will be
       empty if the rollout hasn't finished yet. Once set, the rollout is in
@@ -1287,25 +1294,26 @@ class Rollout(_messages.Message):
   annotations = _messages.MessageField('AnnotationsValue', 1)
   control = _messages.MessageField('RolloutControl', 2)
   createTime = _messages.StringField(3)
-  endTime = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  flagRelease = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  parentRollout = _messages.StringField(9)
-  release = _messages.StringField(10)
-  results = _messages.MessageField('RolloutResults', 11)
-  rolloutKind = _messages.StringField(12)
-  rolloutOrchestrationStrategy = _messages.StringField(13)
-  rootRollout = _messages.StringField(14)
-  startTime = _messages.StringField(15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  stateMessage = _messages.StringField(17)
-  stateTransitionTime = _messages.StringField(18)
-  stats = _messages.MessageField('RolloutStats', 19)
-  uid = _messages.StringField(20)
-  unitFilter = _messages.StringField(21)
-  updateTime = _messages.StringField(22)
+  effectiveUnitFilter = _messages.StringField(4)
+  endTime = _messages.StringField(5)
+  etag = _messages.StringField(6)
+  flagRelease = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  parentRollout = _messages.StringField(10)
+  release = _messages.StringField(11)
+  results = _messages.MessageField('RolloutResults', 12)
+  rolloutKind = _messages.StringField(13)
+  rolloutOrchestrationStrategy = _messages.StringField(14)
+  rootRollout = _messages.StringField(15)
+  startTime = _messages.StringField(16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  stateMessage = _messages.StringField(18)
+  stateTransitionTime = _messages.StringField(19)
+  stats = _messages.MessageField('RolloutStats', 20)
+  uid = _messages.StringField(21)
+  unitFilter = _messages.StringField(22)
+  updateTime = _messages.StringField(23)
 
 
 class RolloutControl(_messages.Message):

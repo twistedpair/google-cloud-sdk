@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import json
+import logging as std_logging
+import pickle
 import warnings
 from typing import Callable, Dict, Optional, Sequence, Tuple, Union
 
@@ -22,12 +25,82 @@ from google.api_core import gapic_v1
 import google.auth                         # type: ignore
 from google.auth import credentials as ga_credentials  # type: ignore
 from google.auth.transport.grpc import SslCredentials  # type: ignore
+from cloudsdk.google.protobuf.json_format import MessageToJson
+import cloudsdk.google.protobuf.message
 
 import grpc  # type: ignore
+import proto  # type: ignore
 
 from google.longrunning import operations_pb2 # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import execution
 from .base import ExecutionsTransport, DEFAULT_CLIENT_INFO
+
+try:
+    from google.api_core import client_logging  # type: ignore
+    CLIENT_LOGGING_SUPPORTED = True  # pragma: NO COVER
+except ImportError:  # pragma: NO COVER
+    CLIENT_LOGGING_SUPPORTED = False
+
+_LOGGER = std_logging.getLogger(__name__)
+
+
+class _LoggingClientInterceptor(grpc.UnaryUnaryClientInterceptor):  # pragma: NO COVER
+    def intercept_unary_unary(self, continuation, client_call_details, request):
+        logging_enabled = CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(std_logging.DEBUG)
+        if logging_enabled:  # pragma: NO COVER
+            request_metadata = client_call_details.metadata
+            if isinstance(request, proto.Message):
+                request_payload = type(request).to_json(request)
+            elif isinstance(request, cloudsdk.google.protobuf.message.Message):
+                request_payload = MessageToJson(request)
+            else:
+                request_payload = f"{type(request).__name__}: {pickle.dumps(request)}"
+
+            request_metadata = {
+                key: value.decode("utf-8") if isinstance(value, bytes) else value
+                for key, value in request_metadata
+            }
+            grpc_request = {
+                "payload": request_payload,
+                "requestMethod": "grpc",
+                "metadata": dict(request_metadata),
+            }
+            _LOGGER.debug(
+                f"Sending request for {client_call_details.method}",
+                extra = {
+                    "serviceName": "google.cloud.run.v2.Executions",
+                    "rpcName": str(client_call_details.method),
+                    "request": grpc_request,
+                    "metadata": grpc_request["metadata"],
+                },
+            )
+        response = continuation(client_call_details, request)
+        if logging_enabled:  # pragma: NO COVER
+            response_metadata = response.trailing_metadata()
+            # Convert gRPC metadata `<class 'grpc.aio._metadata.Metadata'>` to list of tuples
+            metadata = dict([(k, str(v)) for k, v in response_metadata]) if response_metadata else None
+            result = response.result()
+            if isinstance(result, proto.Message):
+                response_payload = type(result).to_json(result)
+            elif isinstance(result, cloudsdk.google.protobuf.message.Message):
+                response_payload = MessageToJson(result)
+            else:
+                response_payload = f"{type(result).__name__}: {pickle.dumps(result)}"
+            grpc_response = {
+                "payload": response_payload,
+                "metadata": metadata,
+                "status": "OK",
+            }
+            _LOGGER.debug(
+                f"Received response for {client_call_details.method}.",
+                extra = {
+                    "serviceName": "google.cloud.run.v2.Executions",
+                    "rpcName": client_call_details.method,
+                    "response": grpc_response,
+                    "metadata": grpc_response["metadata"],
+                },
+            )
+        return response
 
 
 class ExecutionsGrpcTransport(ExecutionsTransport):
@@ -70,9 +143,10 @@ class ExecutionsGrpcTransport(ExecutionsTransport):
                 are specified, the client will attempt to ascertain the
                 credentials from the environment.
                 This argument is ignored if a ``channel`` instance is provided.
-            credentials_file (Optional[str]): A file with credentials that can
+            credentials_file (Optional[str]): Deprecated. A file with credentials that can
                 be loaded with :func:`google.auth.load_credentials_from_file`.
                 This argument is ignored if a ``channel`` instance is provided.
+                This argument will be removed in the next major version of this library.
             scopes (Optional(Sequence[str])): A list of scopes. This argument is
                 ignored if a ``channel`` instance is provided.
             channel (Optional[Union[grpc.Channel, Callable[..., grpc.Channel]]]):
@@ -122,7 +196,8 @@ class ExecutionsGrpcTransport(ExecutionsTransport):
 
         if isinstance(channel, grpc.Channel):
             # Ignore credentials if a channel was passed.
-            credentials = False
+            credentials = None
+            self._ignore_credentials = True
             # If a channel was explicitly provided, set it.
             self._grpc_channel = channel
             self._ssl_channel_credentials = None
@@ -179,7 +254,10 @@ class ExecutionsGrpcTransport(ExecutionsTransport):
                 ],
             )
 
-        # Wrap messages. This must be done after self._grpc_channel exists
+        self._interceptor = _LoggingClientInterceptor()
+        self._logged_channel =  grpc.intercept_channel(self._grpc_channel, self._interceptor)
+
+        # Wrap messages. This must be done after self._logged_channel exists
         self._prep_wrapped_messages(client_info)
 
     @classmethod
@@ -198,9 +276,10 @@ class ExecutionsGrpcTransport(ExecutionsTransport):
                 credentials identify this application to the service. If
                 none are specified, the client will attempt to ascertain
                 the credentials from the environment.
-            credentials_file (Optional[str]): A file with credentials that can
+            credentials_file (Optional[str]): Deprecated. A file with credentials that can
                 be loaded with :func:`google.auth.load_credentials_from_file`.
-                This argument is mutually exclusive with credentials.
+                This argument is mutually exclusive with credentials.  This argument will be
+                removed in the next major version of this library.
             scopes (Optional[Sequence[str]]): A optional list of scopes needed for this
                 service. These are only used when credentials are not specified and
                 are passed to :func:`google.auth.default`.
@@ -243,7 +322,7 @@ class ExecutionsGrpcTransport(ExecutionsTransport):
         # Quick check: Only create a new client if we do not already have one.
         if self._operations_client is None:
             self._operations_client = operations_v1.OperationsClient(
-                self.grpc_channel
+                self._logged_channel
             )
 
         # Return the client from cache.
@@ -268,7 +347,7 @@ class ExecutionsGrpcTransport(ExecutionsTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'get_execution' not in self._stubs:
-            self._stubs['get_execution'] = self.grpc_channel.unary_unary(
+            self._stubs['get_execution'] = self._logged_channel.unary_unary(
                 '/google.cloud.run.v2.Executions/GetExecution',
                 request_serializer=execution.GetExecutionRequest.serialize,
                 response_deserializer=execution.Execution.deserialize,
@@ -295,7 +374,7 @@ class ExecutionsGrpcTransport(ExecutionsTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'list_executions' not in self._stubs:
-            self._stubs['list_executions'] = self.grpc_channel.unary_unary(
+            self._stubs['list_executions'] = self._logged_channel.unary_unary(
                 '/google.cloud.run.v2.Executions/ListExecutions',
                 request_serializer=execution.ListExecutionsRequest.serialize,
                 response_deserializer=execution.ListExecutionsResponse.deserialize,
@@ -321,7 +400,7 @@ class ExecutionsGrpcTransport(ExecutionsTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'delete_execution' not in self._stubs:
-            self._stubs['delete_execution'] = self.grpc_channel.unary_unary(
+            self._stubs['delete_execution'] = self._logged_channel.unary_unary(
                 '/google.cloud.run.v2.Executions/DeleteExecution',
                 request_serializer=execution.DeleteExecutionRequest.serialize,
                 response_deserializer=operations_pb2.Operation.FromString,
@@ -347,7 +426,7 @@ class ExecutionsGrpcTransport(ExecutionsTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'cancel_execution' not in self._stubs:
-            self._stubs['cancel_execution'] = self.grpc_channel.unary_unary(
+            self._stubs['cancel_execution'] = self._logged_channel.unary_unary(
                 '/google.cloud.run.v2.Executions/CancelExecution',
                 request_serializer=execution.CancelExecutionRequest.serialize,
                 response_deserializer=operations_pb2.Operation.FromString,
@@ -355,7 +434,7 @@ class ExecutionsGrpcTransport(ExecutionsTransport):
         return self._stubs['cancel_execution']
 
     def close(self):
-        self.grpc_channel.close()
+        self._logged_channel.close()
 
     @property
     def kind(self) -> str:

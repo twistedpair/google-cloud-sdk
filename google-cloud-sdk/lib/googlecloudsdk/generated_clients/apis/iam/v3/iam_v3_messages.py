@@ -172,12 +172,9 @@ class GoogleIamV3PolicyBinding(_messages.Message):
     Values:
       POLICY_KIND_UNSPECIFIED: Unspecified policy kind; Not a valid state
       PRINCIPAL_ACCESS_BOUNDARY: Principal access boundary policy kind
-      ACCESS: Access policy kind. Keep behind visibility label until Access
-        Policy launch.
     """
     POLICY_KIND_UNSPECIFIED = 0
     PRINCIPAL_ACCESS_BOUNDARY = 1
-    ACCESS = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -242,17 +239,9 @@ class GoogleIamV3PolicyBindingTarget(_messages.Message):
       `//cloudresourcemanager.googleapis.com/projects/PROJECT_ID` * Workload
       Identity Pool: `//iam.googleapis.com/projects/PROJECT_NUMBER/locations/L
       OCATION/workloadIdentityPools/WORKLOAD_POOL_ID`
-    resource: Immutable. The full resource name that's used for access policy
-      bindings Examples: * Organization:
-      `//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID` *
-      Folder: `//cloudresourcemanager.googleapis.com/folders/FOLDER_ID` *
-      Project: *
-      `//cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER` *
-      `//cloudresourcemanager.googleapis.com/projects/PROJECT_ID`
   """
 
   principalSet = _messages.StringField(1)
-  resource = _messages.StringField(2)
 
 
 class GoogleIamV3PrincipalAccessBoundaryPolicy(_messages.Message):

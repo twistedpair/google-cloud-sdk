@@ -771,8 +771,8 @@ class CloudsecuritycomplianceFoldersLocationsFrameworkAuditScopeReportsGenerateF
     generateFrameworkAuditScopeReportRequest: A
       GenerateFrameworkAuditScopeReportRequest resource to be passed as the
       request body.
-    scope: Required. The organization, folder or project for the audit report.
-      Supported formats are the following: *
+    scope: Required. The organization, folder, or project for the audit
+      report. Supported formats are the following: *
       `projects/{project_id}/locations/{location}` *
       `folders/{folder_id}/locations/{location}` *
       `organizations/{organization_id}/locations/{location}`
@@ -791,8 +791,8 @@ class CloudsecuritycomplianceFoldersLocationsFrameworkAuditsCreateRequest(_messa
       body.
     frameworkAuditId: Optional. The ID to use for the framework audit. The ID
       becomes the final component of the framework audit's full resource name.
-      The ID must be between 4-63 characters, and valid characters are
-      `\a-z-\`.
+      The ID must be between 4 and 63 characters and can contain lowercase
+      letters, numbers, and hyphens.
     parent: Required. The parent resource where this framework audit is
       created. Supported formats are the following: *
       `organizations/{organization_id}/locations/{location}` *
@@ -924,6 +924,17 @@ class CloudsecuritycomplianceFoldersLocationsFrameworkComplianceSummariesListReq
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class CloudsecuritycomplianceFoldersLocationsOperationDetailsGetRequest(_messages.Message):
+  r"""A CloudsecuritycomplianceFoldersLocationsOperationDetailsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class CloudsecuritycomplianceFoldersLocationsUpdateCmEnrollmentRequest(_messages.Message):
@@ -1130,8 +1141,8 @@ class CloudsecuritycomplianceOrganizationsLocationsFrameworkAuditScopeReportsGen
     generateFrameworkAuditScopeReportRequest: A
       GenerateFrameworkAuditScopeReportRequest resource to be passed as the
       request body.
-    scope: Required. The organization, folder or project for the audit report.
-      Supported formats are the following: *
+    scope: Required. The organization, folder, or project for the audit
+      report. Supported formats are the following: *
       `projects/{project_id}/locations/{location}` *
       `folders/{folder_id}/locations/{location}` *
       `organizations/{organization_id}/locations/{location}`
@@ -1151,8 +1162,8 @@ class CloudsecuritycomplianceOrganizationsLocationsFrameworkAuditsCreateRequest(
       body.
     frameworkAuditId: Optional. The ID to use for the framework audit. The ID
       becomes the final component of the framework audit's full resource name.
-      The ID must be between 4-63 characters, and valid characters are
-      `\a-z-\`.
+      The ID must be between 4 and 63 characters and can contain lowercase
+      letters, numbers, and hyphens.
     parent: Required. The parent resource where this framework audit is
       created. Supported formats are the following: *
       `organizations/{organization_id}/locations/{location}` *
@@ -1497,6 +1508,18 @@ class CloudsecuritycomplianceOrganizationsLocationsListRequest(_messages.Message
   pageToken = _messages.StringField(5)
 
 
+class CloudsecuritycomplianceOrganizationsLocationsOperationDetailsGetRequest(_messages.Message):
+  r"""A
+  CloudsecuritycomplianceOrganizationsLocationsOperationDetailsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class CloudsecuritycomplianceOrganizationsLocationsOperationsCancelRequest(_messages.Message):
   r"""A CloudsecuritycomplianceOrganizationsLocationsOperationsCancelRequest
   object.
@@ -1622,8 +1645,8 @@ class CloudsecuritycomplianceProjectsLocationsFrameworkAuditScopeReportsGenerate
     generateFrameworkAuditScopeReportRequest: A
       GenerateFrameworkAuditScopeReportRequest resource to be passed as the
       request body.
-    scope: Required. The organization, folder or project for the audit report.
-      Supported formats are the following: *
+    scope: Required. The organization, folder, or project for the audit
+      report. Supported formats are the following: *
       `projects/{project_id}/locations/{location}` *
       `folders/{folder_id}/locations/{location}` *
       `organizations/{organization_id}/locations/{location}`
@@ -1642,8 +1665,8 @@ class CloudsecuritycomplianceProjectsLocationsFrameworkAuditsCreateRequest(_mess
       body.
     frameworkAuditId: Optional. The ID to use for the framework audit. The ID
       becomes the final component of the framework audit's full resource name.
-      The ID must be between 4-63 characters, and valid characters are
-      `\a-z-\`.
+      The ID must be between 4 and 63 characters and can contain lowercase
+      letters, numbers, and hyphens.
     parent: Required. The parent resource where this framework audit is
       created. Supported formats are the following: *
       `organizations/{organization_id}/locations/{location}` *
@@ -1777,6 +1800,17 @@ class CloudsecuritycomplianceProjectsLocationsFrameworkComplianceSummariesListRe
   parent = _messages.StringField(4, required=True)
 
 
+class CloudsecuritycomplianceProjectsLocationsOperationDetailsGetRequest(_messages.Message):
+  r"""A CloudsecuritycomplianceProjectsLocationsOperationDetailsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class CloudsecuritycomplianceProjectsLocationsUpdateCmEnrollmentRequest(_messages.Message):
   r"""A CloudsecuritycomplianceProjectsLocationsUpdateCmEnrollmentRequest
   object.
@@ -1800,7 +1834,7 @@ class CmEligibleDestination(_messages.Message):
   r"""The destination details where audit reports are uploaded.
 
   Fields:
-    gcsBucket: The Cloud Storage bucket where audit reports and evidences can
+    gcsBucket: The Cloud Storage bucket where audit reports and evidence can
       be uploaded. The format is `gs://{bucket_name}`.
   """
 
@@ -1808,7 +1842,7 @@ class CmEligibleDestination(_messages.Message):
 
 
 class CmEnrollment(_messages.Message):
-  r"""The settings for Compliance Manager at a specific resource scope.=
+  r"""The settings for Compliance Manager at a specific resource scope.
 
   Fields:
     auditConfig: Optional. The audit configuration for Compliance Manager. If
@@ -1948,89 +1982,6 @@ class EvidenceDetails(_messages.Message):
   evidencePath = _messages.StringField(1)
   resource = _messages.StringField(2)
   service = _messages.StringField(3)
-
-
-class FetchFrameworkComplianceReportResponse(_messages.Message):
-  r"""The response message for FetchFrameworkComplianceReport.
-
-  Enums:
-    FrameworkCategoriesValueListEntryValuesEnum:
-    FrameworkTypeValueValuesEnum: The type of the framework.
-    SupportedCloudProvidersValueListEntryValuesEnum:
-
-  Fields:
-    controlAssessmentDetails: The control assessment details of the framework.
-    framework: The name of the framework.
-    frameworkCategories: The list of framework categories supported.
-    frameworkDescription: The description of the framework.
-    frameworkDisplayName: Optional. The display name for the framework.
-    frameworkType: The type of the framework.
-    majorRevisionId: The latest major revision ID of the framework.
-    minorRevisionId: The latest minor revision ID of the latest major revision
-      of the framework.
-    name: The name of the framework compliance report.
-    supportedCloudProviders: The list of cloud providers that are supported by
-      the framework.
-    targetResourceDetails: The target resource details of the framework.
-    updateTime: Output only. The last updated time of the report.
-  """
-
-  class FrameworkCategoriesValueListEntryValuesEnum(_messages.Enum):
-    r"""FrameworkCategoriesValueListEntryValuesEnum enum type.
-
-    Values:
-      FRAMEWORK_CATEGORY_UNSPECIFIED: Default value. This value is unused.
-      INDUSTRY_DEFINED_STANDARD: An industry-defined framework.
-      ASSURED_WORKLOADS: An Assured Workloads framework.
-      DATA_SECURITY: A data security posture framework.
-      GOOGLE_BEST_PRACTICES: A Google's best practices framework.
-      CUSTOM_FRAMEWORK: A user-created framework.
-    """
-    FRAMEWORK_CATEGORY_UNSPECIFIED = 0
-    INDUSTRY_DEFINED_STANDARD = 1
-    ASSURED_WORKLOADS = 2
-    DATA_SECURITY = 3
-    GOOGLE_BEST_PRACTICES = 4
-    CUSTOM_FRAMEWORK = 5
-
-  class FrameworkTypeValueValuesEnum(_messages.Enum):
-    r"""The type of the framework.
-
-    Values:
-      FRAMEWORK_TYPE_UNSPECIFIED: Default value. This value is unused.
-      BUILT_IN: A framework that's provided and managed by Google.
-      CUSTOM: A framework that's created and managed by you.
-    """
-    FRAMEWORK_TYPE_UNSPECIFIED = 0
-    BUILT_IN = 1
-    CUSTOM = 2
-
-  class SupportedCloudProvidersValueListEntryValuesEnum(_messages.Enum):
-    r"""SupportedCloudProvidersValueListEntryValuesEnum enum type.
-
-    Values:
-      CLOUD_PROVIDER_UNSPECIFIED: Default value. This value is unused.
-      AWS: Amazon Web Services (AWS).
-      AZURE: Microsoft Azure.
-      GCP: Google Cloud.
-    """
-    CLOUD_PROVIDER_UNSPECIFIED = 0
-    AWS = 1
-    AZURE = 2
-    GCP = 3
-
-  controlAssessmentDetails = _messages.MessageField('ControlAssessmentDetails', 1)
-  framework = _messages.StringField(2)
-  frameworkCategories = _messages.EnumField('FrameworkCategoriesValueListEntryValuesEnum', 3, repeated=True)
-  frameworkDescription = _messages.StringField(4)
-  frameworkDisplayName = _messages.StringField(5)
-  frameworkType = _messages.EnumField('FrameworkTypeValueValuesEnum', 6)
-  majorRevisionId = _messages.IntegerField(7)
-  minorRevisionId = _messages.IntegerField(8)
-  name = _messages.StringField(9)
-  supportedCloudProviders = _messages.EnumField('SupportedCloudProvidersValueListEntryValuesEnum', 10, repeated=True)
-  targetResourceDetails = _messages.MessageField('TargetResourceDetails', 11, repeated=True)
-  updateTime = _messages.StringField(12)
 
 
 class FindingDetails(_messages.Message):
@@ -2402,6 +2353,89 @@ class FrameworkAuditDestination(_messages.Message):
   bucket = _messages.MessageField('BucketDestination', 1)
 
 
+class FrameworkComplianceReport(_messages.Message):
+  r"""The response message for GetFrameworkComplianceReport.
+
+  Enums:
+    FrameworkCategoriesValueListEntryValuesEnum:
+    FrameworkTypeValueValuesEnum: The type of framework.
+    SupportedCloudProvidersValueListEntryValuesEnum:
+
+  Fields:
+    controlAssessmentDetails: The control assessment details of the framework.
+    framework: The name of the framework.
+    frameworkCategories: The list of framework categories supported.
+    frameworkDescription: The description of the framework.
+    frameworkDisplayName: Optional. The display name for the framework.
+    frameworkType: The type of framework.
+    majorRevisionId: The latest major revision ID of the framework.
+    minorRevisionId: The latest minor revision ID of the latest major revision
+      of the framework.
+    name: Identifier. The name of the framework compliance report.
+    supportedCloudProviders: The list of cloud providers supported by the
+      framework.
+    targetResourceDetails: The target resource details of the framework.
+    updateTime: Output only. The last updated time of the report.
+  """
+
+  class FrameworkCategoriesValueListEntryValuesEnum(_messages.Enum):
+    r"""FrameworkCategoriesValueListEntryValuesEnum enum type.
+
+    Values:
+      FRAMEWORK_CATEGORY_UNSPECIFIED: Default value. This value is unused.
+      INDUSTRY_DEFINED_STANDARD: An industry-defined framework.
+      ASSURED_WORKLOADS: An Assured Workloads framework.
+      DATA_SECURITY: A data security posture framework.
+      GOOGLE_BEST_PRACTICES: A Google's best practices framework.
+      CUSTOM_FRAMEWORK: A user-created framework.
+    """
+    FRAMEWORK_CATEGORY_UNSPECIFIED = 0
+    INDUSTRY_DEFINED_STANDARD = 1
+    ASSURED_WORKLOADS = 2
+    DATA_SECURITY = 3
+    GOOGLE_BEST_PRACTICES = 4
+    CUSTOM_FRAMEWORK = 5
+
+  class FrameworkTypeValueValuesEnum(_messages.Enum):
+    r"""The type of framework.
+
+    Values:
+      FRAMEWORK_TYPE_UNSPECIFIED: Default value. This value is unused.
+      BUILT_IN: A framework that's provided and managed by Google.
+      CUSTOM: A framework that's created and managed by you.
+    """
+    FRAMEWORK_TYPE_UNSPECIFIED = 0
+    BUILT_IN = 1
+    CUSTOM = 2
+
+  class SupportedCloudProvidersValueListEntryValuesEnum(_messages.Enum):
+    r"""SupportedCloudProvidersValueListEntryValuesEnum enum type.
+
+    Values:
+      CLOUD_PROVIDER_UNSPECIFIED: Default value. This value is unused.
+      AWS: Amazon Web Services (AWS).
+      AZURE: Microsoft Azure.
+      GCP: Google Cloud.
+    """
+    CLOUD_PROVIDER_UNSPECIFIED = 0
+    AWS = 1
+    AZURE = 2
+    GCP = 3
+
+  controlAssessmentDetails = _messages.MessageField('ControlAssessmentDetails', 1)
+  framework = _messages.StringField(2)
+  frameworkCategories = _messages.EnumField('FrameworkCategoriesValueListEntryValuesEnum', 3, repeated=True)
+  frameworkDescription = _messages.StringField(4)
+  frameworkDisplayName = _messages.StringField(5)
+  frameworkType = _messages.EnumField('FrameworkTypeValueValuesEnum', 6)
+  majorRevisionId = _messages.IntegerField(7)
+  minorRevisionId = _messages.IntegerField(8)
+  name = _messages.StringField(9)
+  supportedCloudProviders = _messages.EnumField('SupportedCloudProvidersValueListEntryValuesEnum', 10, repeated=True)
+  targetResourceDetails = _messages.MessageField('TargetResourceDetails', 11, repeated=True)
+  updateTime = _messages.StringField(12)
+
+
 class FrameworkComplianceSummary(_messages.Message):
   r"""The details for a framework compliance summary.
 
@@ -2612,18 +2646,17 @@ class GenerateFrameworkAuditScopeReportRequest(_messages.Message):
   r"""The request message for GenerateFrameworkAuditScopeReport.
 
   Enums:
-    ReportFormatValueValuesEnum: Required. The format that the scope report
-      bytes is returned in.
+    ReportFormatValueValuesEnum: Required. The format that the scope report is
+      returned in.
 
   Fields:
     complianceFramework: Required. The compliance framework that the scope
       report is generated for.
-    reportFormat: Required. The format that the scope report bytes is returned
-      in.
+    reportFormat: Required. The format that the scope report is returned in.
   """
 
   class ReportFormatValueValuesEnum(_messages.Enum):
-    r"""Required. The format that the scope report bytes is returned in.
+    r"""Required. The format that the scope report is returned in.
 
     Values:
       FORMAT_UNSPECIFIED: Default value. This value is unused.

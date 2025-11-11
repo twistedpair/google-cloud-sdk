@@ -68,12 +68,16 @@ class Counters(_messages.Message):
   Fields:
     failedObjectCount: Output only. Number of objects failed.
     succeededObjectCount: Output only. Number of objects completed.
+    totalBytesFound: Output only. Number of bytes found from source. This
+      field is only populated for jobs with a prefix list object
+      configuration.
     totalObjectCount: Output only. Number of objects listed.
   """
 
   failedObjectCount = _messages.IntegerField(1)
   succeededObjectCount = _messages.IntegerField(2)
-  totalObjectCount = _messages.IntegerField(3)
+  totalBytesFound = _messages.IntegerField(3)
+  totalObjectCount = _messages.IntegerField(4)
 
 
 class DeleteObject(_messages.Message):

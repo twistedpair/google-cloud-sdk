@@ -39,11 +39,20 @@ def AddDisplayNameFlag(parser):
 
 
 def AddDatabaseParamsFlags(parser, require_password=True,
-                           with_database_name=False):
+                           with_database_name=False, supports_iam_auth=False):
   """Adds the database connectivity flags to the given parser."""
   database_params_group = parser.add_group(required=False, mutex=False)
-  AddUsernameFlag(database_params_group, required=True)
-  AddPasswordFlagGroup(database_params_group, required=require_password)
+  if supports_iam_auth:
+    authentication_group = database_params_group.add_group(
+        mutex=True, required=False, help='Authentication method.'
+    )
+    AddEnableIamAuthenticationFlag(authentication_group, for_create=True)
+    builtin_auth_group = authentication_group.add_group()
+    AddUsernameFlag(builtin_auth_group, required=True)
+    AddPasswordFlagGroup(builtin_auth_group, required=require_password)
+  else:
+    AddUsernameFlag(database_params_group, required=True)
+    AddPasswordFlagGroup(database_params_group, required=require_password)
   AddHostFlag(database_params_group, required=True)
   AddPortFlag(database_params_group, required=True)
   if with_database_name:
@@ -267,3 +276,44 @@ def AddRoleFlag(parser):
   help_text = 'The role of the connection profile.'
   choices = ['SOURCE', 'DESTINATION']
   parser.add_argument('--role', help=help_text, choices=choices)
+
+
+def AddEnableIamAuthenticationFlag(parser, required=False, for_create=False):
+  """Adds --enable-iam-authentication flag to the given parser."""
+  help_text = (
+      'Use IAM database authentication to connect to the database. The'
+      ' username will be overridden by the DMS service agent principal.'
+      ' This flag is only supported for PostgreSQL Destinations.'
+  )
+  if for_create:
+    parser.add_argument(
+        '--enable-iam-authentication',
+        help=help_text,
+        action='store_const',
+        const=True,
+        dest='enable_iam_authentication',
+        hidden=True,
+        required=required,
+    )
+  else:
+    iam_authentication_group = parser.add_group(
+        required=required, mutex=True, hidden=True
+    )
+    iam_authentication_group.add_argument(
+        '--enable-iam-authentication',
+        help=help_text,
+        action='store_const',
+        const=True,
+        dest='enable_iam_authentication',
+        hidden=True,
+        required=False,
+    )
+    iam_authentication_group.add_argument(
+        '--disable-iam-authentication',
+        help=help_text,
+        action='store_const',
+        const=False,
+        dest='enable_iam_authentication',
+        hidden=True,
+        required=False,
+    )

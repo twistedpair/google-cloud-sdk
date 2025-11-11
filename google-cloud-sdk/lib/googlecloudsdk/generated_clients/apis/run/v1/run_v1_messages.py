@@ -748,6 +748,9 @@ class ExecutionReference(_messages.Message):
 class ExecutionSpec(_messages.Message):
   r"""ExecutionSpec describes how the execution will look.
 
+  Enums:
+    PriorityTierValueValuesEnum: Optional. The priority tier of the execution.
+
   Fields:
     parallelism: Optional. Specifies the maximum desired number of tasks the
       execution should run at given time. When the job is run, if this field
@@ -755,6 +758,7 @@ class ExecutionSpec(_messages.Message):
       execution. The actual number of tasks running in steady state will be
       less than this number when there are fewer tasks waiting to be
       completed, i.e. when the work left to do is less than max parallelism.
+    priorityTier: Optional. The priority tier of the execution.
     taskCount: Optional. Specifies the desired number of tasks the execution
       should run. Setting to 1 means that parallelism is limited to 1 and the
       success of that task signals the success of the execution. Defaults to
@@ -762,9 +766,25 @@ class ExecutionSpec(_messages.Message):
     template: Optional. The template used to create tasks for this execution.
   """
 
+  class PriorityTierValueValuesEnum(_messages.Enum):
+    r"""Optional. The priority tier of the execution.
+
+    Values:
+      PRIORITY_TIER_UNSPECIFIED: The default value, uses STANDARD if not
+        specified.
+      STANDARD: The system will start the job as soon as possible.
+      FLEX: The system will start the job within the next 6 hours depending on
+        available capacity. Flex executions are limited to 12 hours of run
+        time.
+    """
+    PRIORITY_TIER_UNSPECIFIED = 0
+    STANDARD = 1
+    FLEX = 2
+
   parallelism = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  taskCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  template = _messages.MessageField('TaskTemplateSpec', 3)
+  priorityTier = _messages.EnumField('PriorityTierValueValuesEnum', 2)
+  taskCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  template = _messages.MessageField('TaskTemplateSpec', 4)
 
 
 class ExecutionStatus(_messages.Message):
@@ -1627,6 +1647,8 @@ class GoogleDevtoolsCloudbuildV1BuiltImage(_messages.Message):
   r"""An image built by the pipeline.
 
   Fields:
+    artifactRegistryPackage: Output only. Path to the artifact in Artifact
+      Registry.
     digest: Docker Registry 2.0 digest.
     name: Name used to push the container image to Google Container Registry,
       as presented to `docker push`.
@@ -1634,9 +1656,10 @@ class GoogleDevtoolsCloudbuildV1BuiltImage(_messages.Message):
       specified image.
   """
 
-  digest = _messages.StringField(1)
-  name = _messages.StringField(2)
-  pushTiming = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 3)
+  artifactRegistryPackage = _messages.StringField(1)
+  digest = _messages.StringField(2)
+  name = _messages.StringField(3)
+  pushTiming = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 4)
 
 
 class GoogleDevtoolsCloudbuildV1ConnectedRepository(_messages.Message):
@@ -2379,30 +2402,36 @@ class GoogleDevtoolsCloudbuildV1UploadedGoModule(_messages.Message):
   directive.
 
   Fields:
+    artifactRegistryPackage: Output only. Path to the artifact in Artifact
+      Registry.
     fileHashes: Hash types and values of the Go Module Artifact.
     pushTiming: Output only. Stores timing information for pushing the
       specified artifact.
     uri: URI of the uploaded artifact.
   """
 
-  fileHashes = _messages.MessageField('GoogleDevtoolsCloudbuildV1FileHashes', 1)
-  pushTiming = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 2)
-  uri = _messages.StringField(3)
+  artifactRegistryPackage = _messages.StringField(1)
+  fileHashes = _messages.MessageField('GoogleDevtoolsCloudbuildV1FileHashes', 2)
+  pushTiming = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 3)
+  uri = _messages.StringField(4)
 
 
 class GoogleDevtoolsCloudbuildV1UploadedMavenArtifact(_messages.Message):
   r"""A Maven artifact uploaded using the MavenArtifact directive.
 
   Fields:
+    artifactRegistryPackage: Output only. Path to the artifact in Artifact
+      Registry.
     fileHashes: Hash types and values of the Maven Artifact.
     pushTiming: Output only. Stores timing information for pushing the
       specified artifact.
     uri: URI of the uploaded artifact.
   """
 
-  fileHashes = _messages.MessageField('GoogleDevtoolsCloudbuildV1FileHashes', 1)
-  pushTiming = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 2)
-  uri = _messages.StringField(3)
+  artifactRegistryPackage = _messages.StringField(1)
+  fileHashes = _messages.MessageField('GoogleDevtoolsCloudbuildV1FileHashes', 2)
+  pushTiming = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 3)
+  uri = _messages.StringField(4)
 
 
 class GoogleDevtoolsCloudbuildV1UploadedNpmPackage(_messages.Message):
@@ -2410,30 +2439,36 @@ class GoogleDevtoolsCloudbuildV1UploadedNpmPackage(_messages.Message):
   directive.
 
   Fields:
+    artifactRegistryPackage: Output only. Path to the artifact in Artifact
+      Registry.
     fileHashes: Hash types and values of the npm package.
     pushTiming: Output only. Stores timing information for pushing the
       specified artifact.
     uri: URI of the uploaded npm package.
   """
 
-  fileHashes = _messages.MessageField('GoogleDevtoolsCloudbuildV1FileHashes', 1)
-  pushTiming = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 2)
-  uri = _messages.StringField(3)
+  artifactRegistryPackage = _messages.StringField(1)
+  fileHashes = _messages.MessageField('GoogleDevtoolsCloudbuildV1FileHashes', 2)
+  pushTiming = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 3)
+  uri = _messages.StringField(4)
 
 
 class GoogleDevtoolsCloudbuildV1UploadedPythonPackage(_messages.Message):
   r"""Artifact uploaded using the PythonPackage directive.
 
   Fields:
+    artifactRegistryPackage: Output only. Path to the artifact in Artifact
+      Registry.
     fileHashes: Hash types and values of the Python Artifact.
     pushTiming: Output only. Stores timing information for pushing the
       specified artifact.
     uri: URI of the uploaded artifact.
   """
 
-  fileHashes = _messages.MessageField('GoogleDevtoolsCloudbuildV1FileHashes', 1)
-  pushTiming = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 2)
-  uri = _messages.StringField(3)
+  artifactRegistryPackage = _messages.StringField(1)
+  fileHashes = _messages.MessageField('GoogleDevtoolsCloudbuildV1FileHashes', 2)
+  pushTiming = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 3)
+  uri = _messages.StringField(4)
 
 
 class GoogleDevtoolsCloudbuildV1Volume(_messages.Message):
@@ -3380,8 +3415,12 @@ class Overrides(_messages.Message):
   r"""RunJob Overrides that contains Execution fields to be overridden on the
   go.
 
+  Enums:
+    PriorityTierValueValuesEnum: Optional. The priority tier of the execution.
+
   Fields:
     containerOverrides: Per container override specification.
+    priorityTier: Optional. The priority tier of the execution.
     taskCount: The desired number of tasks the execution should run. Will
       replace existing task_count value.
     timeoutSeconds: Duration in seconds the task may be active before the
@@ -3389,9 +3428,25 @@ class Overrides(_messages.Message):
       containers. Will replace existing timeout_seconds value.
   """
 
+  class PriorityTierValueValuesEnum(_messages.Enum):
+    r"""Optional. The priority tier of the execution.
+
+    Values:
+      PRIORITY_TIER_UNSPECIFIED: The default value, uses STANDARD if not
+        specified.
+      STANDARD: The system will start the job as soon as possible.
+      FLEX: The system will start the job within the next 6 hours depending on
+        available capacity. Flex executions are limited to 12 hours of run
+        time.
+    """
+    PRIORITY_TIER_UNSPECIFIED = 0
+    STANDARD = 1
+    FLEX = 2
+
   containerOverrides = _messages.MessageField('ContainerOverride', 1, repeated=True)
-  taskCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  timeoutSeconds = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  priorityTier = _messages.EnumField('PriorityTierValueValuesEnum', 2)
+  taskCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  timeoutSeconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class OwnerReference(_messages.Message):

@@ -41,6 +41,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  FOLDERS_LOCATIONS_CONNECTORS = (
+      'folders.locations.connectors',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/locations/{locationsId}/connectors/'
+              '{connectorsId}',
+      },
+      ['name'],
+      True
+  )
   FOLDERS_LOCATIONS_OPERATIONS = (
       'folders.locations.operations',
       '{+name}',
@@ -48,24 +59,6 @@ class Collections(enum.Enum):
           '':
               'folders/{foldersId}/locations/{locationsId}/operations/'
               '{operationsId}',
-      },
-      ['name'],
-      True
-  )
-  LOCATIONS = (
-      'locations',
-      '{v1alphaId}/{v1alphaId1}/locations/{locationsId}',
-      {},
-      ['v1alphaId', 'v1alphaId1', 'locationsId'],
-      True
-  )
-  LOCATIONS_CONNECTORS = (
-      'locations.connectors',
-      '{+name}',
-      {
-          '':
-              '{v1alphaId}/{v1alphaId1}/locations/{locationsId}/connectors/'
-              '{connectorsId}',
       },
       ['name'],
       True
@@ -109,6 +102,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_CONNECTORS = (
+      'organizations.locations.connectors',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'connectors/{connectorsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_LOCATIONS_OPERATIONS = (
       'organizations.locations.operations',
       '{+name}',
@@ -144,6 +148,17 @@ class Collections(enum.Enum):
       {
           '':
               'projects/{projectsId}/locations/{locationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_CONNECTORS = (
+      'projects.locations.connectors',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/connectors/'
+              '{connectorsId}',
       },
       ['name'],
       True

@@ -12326,7 +12326,8 @@ class GoogleCloudDialogflowV2ConversationEvent(_messages.Message):
         the API.
       CONVERSATION_FINISHED: An existing conversation has closed. This is
         fired when a telephone call is terminated, or a conversation is closed
-        via the API.
+        via the API. The event is fired for every CompleteConversation call,
+        even if the conversation is already closed.
       HUMAN_INTERVENTION_NEEDED: An existing conversation has received
         notification from Dialogflow that human intervention is required.
       NEW_MESSAGE: An existing conversation has received a new message, either
@@ -14185,7 +14186,7 @@ class GoogleCloudDialogflowV2GeneratorEvaluationConfigSummarizationConfig(_messa
       completeness. This will determine the prompt and model used at backend.
     enableAccuracyEvaluation: Optional. Enable accuracy evaluation.
     enableCompletenessEvaluation: Optional. Enable completeness evaluation.
-    evaluatorVersion: Output only. Version for summarization evaluation.
+    evaluatorVersion: Optional. Version for summarization evaluation.
   """
 
   accuracyEvaluationVersion = _messages.StringField(1)
@@ -16714,6 +16715,13 @@ class GoogleCloudDialogflowV2Participant(_messages.Message):
   user).
 
   Enums:
+    AgentDesktopSourceValueValuesEnum: Optional. For tracking the utilization
+      of prebuilt Agent Assist integration modules. This field is only inscope
+      for Integration type that include UI Modules, Backend Modules, and Agent
+      Desktop connector, it is out of scope for CCaaS and Direct Integration.
+      For each human agent, prebuilt UI Modules needs to trigger the
+      UpdateParticipant API to update this field. Both
+      CreateParticipantRequest and UpdateParticipantRequest will be supported.
     RoleValueValuesEnum: Immutable. The role this participant plays in the
       conversation. This field must be set during participant creation and is
       then immutable.
@@ -16730,6 +16738,13 @@ class GoogleCloudDialogflowV2Participant(_messages.Message):
       value: "agent" } ```
 
   Fields:
+    agentDesktopSource: Optional. For tracking the utilization of prebuilt
+      Agent Assist integration modules. This field is only inscope for
+      Integration type that include UI Modules, Backend Modules, and Agent
+      Desktop connector, it is out of scope for CCaaS and Direct Integration.
+      For each human agent, prebuilt UI Modules needs to trigger the
+      UpdateParticipant API to update this field. Both
+      CreateParticipantRequest and UpdateParticipantRequest will be supported.
     documentsMetadataFilters: Optional. Key-value filters on the metadata of
       documents returned by article suggestion. If specified, article
       suggestion only returns suggested documents that match all filters in
@@ -16762,6 +16777,31 @@ class GoogleCloudDialogflowV2Participant(_messages.Message):
       transcriptions from that media stream to this participant. This field
       can be updated.
   """
+
+  class AgentDesktopSourceValueValuesEnum(_messages.Enum):
+    r"""Optional. For tracking the utilization of prebuilt Agent Assist
+    integration modules. This field is only inscope for Integration type that
+    include UI Modules, Backend Modules, and Agent Desktop connector, it is
+    out of scope for CCaaS and Direct Integration. For each human agent,
+    prebuilt UI Modules needs to trigger the UpdateParticipant API to update
+    this field. Both CreateParticipantRequest and UpdateParticipantRequest
+    will be supported.
+
+    Values:
+      AGENT_DESKTOP_SOURCE_UNSPECIFIED: Agent Desktop Source is not specified.
+      LIVE_PERSON: Agent Desktop Source is Live Person.
+      GENESYS_CLOUD: Agent Desktop Source is Genesys Cloud.
+      TWILIO: Agent Desktop Source is Twilio.
+      SALESFORCE: Agent Desktop Source is Salesforce.
+      OTHER: UI Modules are in use but the desktop is either not currently
+        released or setting this field to the applicable desktop.
+    """
+    AGENT_DESKTOP_SOURCE_UNSPECIFIED = 0
+    LIVE_PERSON = 1
+    GENESYS_CLOUD = 2
+    TWILIO = 3
+    SALESFORCE = 4
+    OTHER = 5
 
   class RoleValueValuesEnum(_messages.Enum):
     r"""Immutable. The role this participant plays in the conversation. This
@@ -16813,11 +16853,12 @@ class GoogleCloudDialogflowV2Participant(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  documentsMetadataFilters = _messages.MessageField('DocumentsMetadataFiltersValue', 1)
-  name = _messages.StringField(2)
-  obfuscatedExternalUserId = _messages.StringField(3)
-  role = _messages.EnumField('RoleValueValuesEnum', 4)
-  sipRecordingMediaLabel = _messages.StringField(5)
+  agentDesktopSource = _messages.EnumField('AgentDesktopSourceValueValuesEnum', 1)
+  documentsMetadataFilters = _messages.MessageField('DocumentsMetadataFiltersValue', 2)
+  name = _messages.StringField(3)
+  obfuscatedExternalUserId = _messages.StringField(4)
+  role = _messages.EnumField('RoleValueValuesEnum', 5)
+  sipRecordingMediaLabel = _messages.StringField(6)
 
 
 class GoogleCloudDialogflowV2QueryInput(_messages.Message):
@@ -20430,7 +20471,8 @@ class GoogleCloudDialogflowV2beta1ConversationEvent(_messages.Message):
         the API.
       CONVERSATION_FINISHED: An existing conversation has closed. This is
         fired when a telephone call is terminated, or a conversation is closed
-        via the API.
+        via the API. The event is fired for every CompleteConversation call,
+        even if the conversation is already closed.
       HUMAN_INTERVENTION_NEEDED: An existing conversation has received
         notification from Dialogflow that human intervention is required.
       NEW_MESSAGE: An existing conversation has received a new message, either

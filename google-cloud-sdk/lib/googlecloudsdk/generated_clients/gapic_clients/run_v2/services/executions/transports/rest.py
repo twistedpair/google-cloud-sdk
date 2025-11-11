@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,44 +13,55 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import logging
+import json  # type: ignore
 
 from google.auth.transport.requests import AuthorizedSession  # type: ignore
-import json  # type: ignore
-import grpc  # type: ignore
-from google.auth.transport.grpc import SslCredentials  # type: ignore
 from google.auth import credentials as ga_credentials  # type: ignore
 from google.api_core import exceptions as core_exceptions
 from google.api_core import retry as retries
 from google.api_core import rest_helpers
 from google.api_core import rest_streaming
-from google.api_core import path_template
 from google.api_core import gapic_v1
+import cloudsdk.google.protobuf
 
 from cloudsdk.google.protobuf import json_format
 from google.api_core import operations_v1
+
 from requests import __version__ as requests_version
 import dataclasses
-import re
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 import warnings
+
+
+from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import execution
+from google.longrunning import operations_pb2  # type: ignore
+
+
+from .rest_base import _BaseExecutionsRestTransport
+from .base import DEFAULT_CLIENT_INFO as BASE_DEFAULT_CLIENT_INFO
 
 try:
     OptionalRetry = Union[retries.Retry, gapic_v1.method._MethodDefault, None]
 except AttributeError:  # pragma: NO COVER
     OptionalRetry = Union[retries.Retry, object, None]  # type: ignore
 
+try:
+    from google.api_core import client_logging  # type: ignore
+    CLIENT_LOGGING_SUPPORTED = True  # pragma: NO COVER
+except ImportError:  # pragma: NO COVER
+    CLIENT_LOGGING_SUPPORTED = False
 
-from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import execution
-from google.longrunning import operations_pb2  # type: ignore
-
-from .base import ExecutionsTransport, DEFAULT_CLIENT_INFO as BASE_DEFAULT_CLIENT_INFO
-
+_LOGGER = logging.getLogger(__name__)
 
 DEFAULT_CLIENT_INFO = gapic_v1.client_info.ClientInfo(
     gapic_version=BASE_DEFAULT_CLIENT_INFO.gapic_version,
     grpc_version=None,
-    rest_version=requests_version,
+    rest_version=f"requests@{requests_version}",
 )
+
+if hasattr(DEFAULT_CLIENT_INFO, "protobuf_runtime_version"):  # pragma: NO COVER
+    DEFAULT_CLIENT_INFO.protobuf_runtime_version = cloudsdk.google.protobuf.__version__
 
 
 class ExecutionsRestInterceptor:
@@ -105,7 +116,7 @@ class ExecutionsRestInterceptor:
 
 
     """
-    def pre_cancel_execution(self, request: execution.CancelExecutionRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[execution.CancelExecutionRequest, Sequence[Tuple[str, str]]]:
+    def pre_cancel_execution(self, request: execution.CancelExecutionRequest, metadata: Sequence[Tuple[str, Union[str, bytes]]]) -> Tuple[execution.CancelExecutionRequest, Sequence[Tuple[str, Union[str, bytes]]]]:
         """Pre-rpc interceptor for cancel_execution
 
         Override in a subclass to manipulate the request or metadata
@@ -116,12 +127,32 @@ class ExecutionsRestInterceptor:
     def post_cancel_execution(self, response: operations_pb2.Operation) -> operations_pb2.Operation:
         """Post-rpc interceptor for cancel_execution
 
-        Override in a subclass to manipulate the response
+        DEPRECATED. Please use the `post_cancel_execution_with_metadata`
+        interceptor instead.
+
+        Override in a subclass to read or manipulate the response
         after it is returned by the Executions server but before
-        it is returned to user code.
+        it is returned to user code. This `post_cancel_execution` interceptor runs
+        before the `post_cancel_execution_with_metadata` interceptor.
         """
         return response
-    def pre_delete_execution(self, request: execution.DeleteExecutionRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[execution.DeleteExecutionRequest, Sequence[Tuple[str, str]]]:
+
+    def post_cancel_execution_with_metadata(self, response: operations_pb2.Operation, metadata: Sequence[Tuple[str, Union[str, bytes]]]) -> Tuple[operations_pb2.Operation, Sequence[Tuple[str, Union[str, bytes]]]]:
+        """Post-rpc interceptor for cancel_execution
+
+        Override in a subclass to read or manipulate the response or metadata after it
+        is returned by the Executions server but before it is returned to user code.
+
+        We recommend only using this `post_cancel_execution_with_metadata`
+        interceptor in new development instead of the `post_cancel_execution` interceptor.
+        When both interceptors are used, this `post_cancel_execution_with_metadata` interceptor runs after the
+        `post_cancel_execution` interceptor. The (possibly modified) response returned by
+        `post_cancel_execution` will be passed to
+        `post_cancel_execution_with_metadata`.
+        """
+        return response, metadata
+
+    def pre_delete_execution(self, request: execution.DeleteExecutionRequest, metadata: Sequence[Tuple[str, Union[str, bytes]]]) -> Tuple[execution.DeleteExecutionRequest, Sequence[Tuple[str, Union[str, bytes]]]]:
         """Pre-rpc interceptor for delete_execution
 
         Override in a subclass to manipulate the request or metadata
@@ -132,12 +163,32 @@ class ExecutionsRestInterceptor:
     def post_delete_execution(self, response: operations_pb2.Operation) -> operations_pb2.Operation:
         """Post-rpc interceptor for delete_execution
 
-        Override in a subclass to manipulate the response
+        DEPRECATED. Please use the `post_delete_execution_with_metadata`
+        interceptor instead.
+
+        Override in a subclass to read or manipulate the response
         after it is returned by the Executions server but before
-        it is returned to user code.
+        it is returned to user code. This `post_delete_execution` interceptor runs
+        before the `post_delete_execution_with_metadata` interceptor.
         """
         return response
-    def pre_get_execution(self, request: execution.GetExecutionRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[execution.GetExecutionRequest, Sequence[Tuple[str, str]]]:
+
+    def post_delete_execution_with_metadata(self, response: operations_pb2.Operation, metadata: Sequence[Tuple[str, Union[str, bytes]]]) -> Tuple[operations_pb2.Operation, Sequence[Tuple[str, Union[str, bytes]]]]:
+        """Post-rpc interceptor for delete_execution
+
+        Override in a subclass to read or manipulate the response or metadata after it
+        is returned by the Executions server but before it is returned to user code.
+
+        We recommend only using this `post_delete_execution_with_metadata`
+        interceptor in new development instead of the `post_delete_execution` interceptor.
+        When both interceptors are used, this `post_delete_execution_with_metadata` interceptor runs after the
+        `post_delete_execution` interceptor. The (possibly modified) response returned by
+        `post_delete_execution` will be passed to
+        `post_delete_execution_with_metadata`.
+        """
+        return response, metadata
+
+    def pre_get_execution(self, request: execution.GetExecutionRequest, metadata: Sequence[Tuple[str, Union[str, bytes]]]) -> Tuple[execution.GetExecutionRequest, Sequence[Tuple[str, Union[str, bytes]]]]:
         """Pre-rpc interceptor for get_execution
 
         Override in a subclass to manipulate the request or metadata
@@ -148,12 +199,32 @@ class ExecutionsRestInterceptor:
     def post_get_execution(self, response: execution.Execution) -> execution.Execution:
         """Post-rpc interceptor for get_execution
 
-        Override in a subclass to manipulate the response
+        DEPRECATED. Please use the `post_get_execution_with_metadata`
+        interceptor instead.
+
+        Override in a subclass to read or manipulate the response
         after it is returned by the Executions server but before
-        it is returned to user code.
+        it is returned to user code. This `post_get_execution` interceptor runs
+        before the `post_get_execution_with_metadata` interceptor.
         """
         return response
-    def pre_list_executions(self, request: execution.ListExecutionsRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[execution.ListExecutionsRequest, Sequence[Tuple[str, str]]]:
+
+    def post_get_execution_with_metadata(self, response: execution.Execution, metadata: Sequence[Tuple[str, Union[str, bytes]]]) -> Tuple[execution.Execution, Sequence[Tuple[str, Union[str, bytes]]]]:
+        """Post-rpc interceptor for get_execution
+
+        Override in a subclass to read or manipulate the response or metadata after it
+        is returned by the Executions server but before it is returned to user code.
+
+        We recommend only using this `post_get_execution_with_metadata`
+        interceptor in new development instead of the `post_get_execution` interceptor.
+        When both interceptors are used, this `post_get_execution_with_metadata` interceptor runs after the
+        `post_get_execution` interceptor. The (possibly modified) response returned by
+        `post_get_execution` will be passed to
+        `post_get_execution_with_metadata`.
+        """
+        return response, metadata
+
+    def pre_list_executions(self, request: execution.ListExecutionsRequest, metadata: Sequence[Tuple[str, Union[str, bytes]]]) -> Tuple[execution.ListExecutionsRequest, Sequence[Tuple[str, Union[str, bytes]]]]:
         """Pre-rpc interceptor for list_executions
 
         Override in a subclass to manipulate the request or metadata
@@ -164,11 +235,30 @@ class ExecutionsRestInterceptor:
     def post_list_executions(self, response: execution.ListExecutionsResponse) -> execution.ListExecutionsResponse:
         """Post-rpc interceptor for list_executions
 
-        Override in a subclass to manipulate the response
+        DEPRECATED. Please use the `post_list_executions_with_metadata`
+        interceptor instead.
+
+        Override in a subclass to read or manipulate the response
         after it is returned by the Executions server but before
-        it is returned to user code.
+        it is returned to user code. This `post_list_executions` interceptor runs
+        before the `post_list_executions_with_metadata` interceptor.
         """
         return response
+
+    def post_list_executions_with_metadata(self, response: execution.ListExecutionsResponse, metadata: Sequence[Tuple[str, Union[str, bytes]]]) -> Tuple[execution.ListExecutionsResponse, Sequence[Tuple[str, Union[str, bytes]]]]:
+        """Post-rpc interceptor for list_executions
+
+        Override in a subclass to read or manipulate the response or metadata after it
+        is returned by the Executions server but before it is returned to user code.
+
+        We recommend only using this `post_list_executions_with_metadata`
+        interceptor in new development instead of the `post_list_executions` interceptor.
+        When both interceptors are used, this `post_list_executions_with_metadata` interceptor runs after the
+        `post_list_executions` interceptor. The (possibly modified) response returned by
+        `post_list_executions` will be passed to
+        `post_list_executions_with_metadata`.
+        """
+        return response, metadata
 
 
 @dataclasses.dataclass
@@ -178,8 +268,8 @@ class ExecutionsRestStub:
     _interceptor: ExecutionsRestInterceptor
 
 
-class ExecutionsRestTransport(ExecutionsTransport):
-    """REST backend transport for Executions.
+class ExecutionsRestTransport(_BaseExecutionsRestTransport):
+    """REST backend synchronous transport for Executions.
 
     Cloud Run Execution Control Plane API.
 
@@ -188,10 +278,6 @@ class ExecutionsRestTransport(ExecutionsTransport):
     and call it.
 
     It sends JSON representations of protocol buffers over HTTP/1.1
-
-    NOTE: This REST transport functionality is currently in a beta
-    state (preview). We welcome your feedback via an issue in this
-    library's source repository. Thank you!
     """
 
     def __init__(self, *,
@@ -223,9 +309,10 @@ class ExecutionsRestTransport(ExecutionsTransport):
                 are specified, the client will attempt to ascertain the
                 credentials from the environment.
 
-            credentials_file (Optional[str]): A file with credentials that can
+            credentials_file (Optional[str]): Deprecated. A file with credentials that can
                 be loaded with :func:`google.auth.load_credentials_from_file`.
-                This argument is ignored if ``channel`` is provided.
+                This argument is ignored if ``channel`` is provided. This argument will be
+                removed in the next major version of this library.
             scopes (Optional(Sequence[str])): A list of scopes. This argument is
                 ignored if ``channel`` is provided.
             client_cert_source_for_mtls (Callable[[], Tuple[bytes, bytes]]): Client
@@ -248,19 +335,12 @@ class ExecutionsRestTransport(ExecutionsTransport):
         # TODO(yon-mg): resolve other ctor params i.e. scopes, quota, etc.
         # TODO: When custom host (api_endpoint) is set, `scopes` must *also* be set on the
         # credentials object
-        maybe_url_match = re.match("^(?P<scheme>http(?:s)?://)?(?P<host>.*)$", host)
-        if maybe_url_match is None:
-            raise ValueError(f"Unexpected hostname structure: {host}")  # pragma: NO COVER
-
-        url_match_items = maybe_url_match.groupdict()
-
-        host = f"{url_scheme}://{host}" if not url_match_items["scheme"] else host
-
         super().__init__(
             host=host,
             credentials=credentials,
             client_info=client_info,
             always_use_jwt_access=always_use_jwt_access,
+            url_scheme=url_scheme,
             api_audience=api_audience
         )
         self._session = AuthorizedSession(
@@ -296,22 +376,38 @@ class ExecutionsRestTransport(ExecutionsTransport):
         # Return the client from cache.
         return self._operations_client
 
-    class _CancelExecution(ExecutionsRestStub):
+    class _CancelExecution(_BaseExecutionsRestTransport._BaseCancelExecution, ExecutionsRestStub):
         def __hash__(self):
-            return hash("CancelExecution")
+            return hash("ExecutionsRestTransport.CancelExecution")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
+        @staticmethod
+        def _get_response(
+            host,
+            metadata,
+            query_params,
+            session,
+            timeout,
+            transcoded_request,
+            body=None):
 
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(session, method)(
+                "{host}{uri}".format(host=host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                data=body,
+                )
+            return response
 
         def __call__(self,
                 request: execution.CancelExecutionRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> operations_pb2.Operation:
             r"""Call the cancel execution method over HTTP.
 
@@ -322,8 +418,10 @@ class ExecutionsRestTransport(ExecutionsTransport):
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
-                metadata (Sequence[Tuple[str, str]]): Strings which should be
-                    sent along with the request as metadata.
+                metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                    sent along with the request as metadata. Normally, each value must be of type `str`,
+                    but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                    be of type `bytes`.
 
             Returns:
                 ~.operations_pb2.Operation:
@@ -333,42 +431,41 @@ class ExecutionsRestTransport(ExecutionsTransport):
 
             """
 
-            http_options: List[Dict[str, str]] = [{
-                'method': 'post',
-                'uri': '/v2/{name=projects/*/locations/*/jobs/*/executions/*}:cancel',
-                'body': '*',
-            },
-            ]
+            http_options = _BaseExecutionsRestTransport._BaseCancelExecution._get_http_options()
+
             request, metadata = self._interceptor.pre_cancel_execution(request, metadata)
-            pb_request = execution.CancelExecutionRequest.pb(request)
-            transcoded_request = path_template.transcode(http_options, pb_request)
+            transcoded_request = _BaseExecutionsRestTransport._BaseCancelExecution._get_transcoded_request(http_options, request)
 
-            # Jsonify the request body
-
-            body = json_format.MessageToJson(
-                transcoded_request['body'],
-                use_integers_for_enums=False
-            )
-            uri = transcoded_request['uri']
-            method = transcoded_request['method']
+            body = _BaseExecutionsRestTransport._BaseCancelExecution._get_request_body_json(transcoded_request)
 
             # Jsonify the query params
-            query_params = json.loads(json_format.MessageToJson(
-                transcoded_request['query_params'],
-                use_integers_for_enums=False,
-            ))
-            query_params.update(self._get_unset_required_fields(query_params))
+            query_params = _BaseExecutionsRestTransport._BaseCancelExecution._get_query_params_json(transcoded_request)
+
+            if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(logging.DEBUG):  # pragma: NO COVER
+                request_url = "{host}{uri}".format(host=self._host, uri=transcoded_request['uri'])
+                method = transcoded_request['method']
+                try:
+                    request_payload = json_format.MessageToJson(request)
+                except:
+                    request_payload = None
+                http_request = {
+                  "payload": request_payload,
+                  "requestMethod": method,
+                  "requestUrl": request_url,
+                  "headers": dict(metadata),
+                }
+                _LOGGER.debug(
+                    f"Sending request for google.cloud.run_v2.ExecutionsClient.CancelExecution",
+                    extra = {
+                        "serviceName": "google.cloud.run.v2.Executions",
+                        "rpcName": "CancelExecution",
+                        "httpRequest": http_request,
+                        "metadata": http_request["headers"],
+                    },
+                )
 
             # Send the request
-            headers = dict(metadata)
-            headers['Content-Type'] = 'application/json'
-            response = getattr(self._session, method)(
-                "{host}{uri}".format(host=self._host, uri=uri),
-                timeout=timeout,
-                headers=headers,
-                params=rest_helpers.flatten_query_params(query_params, strict=True),
-                data=body,
-                )
+            response = ExecutionsRestTransport._CancelExecution._get_response(self._host, metadata, query_params, self._session, timeout, transcoded_request, body)
 
             # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
             # subclass.
@@ -378,25 +475,62 @@ class ExecutionsRestTransport(ExecutionsTransport):
             # Return the response
             resp = operations_pb2.Operation()
             json_format.Parse(response.content, resp, ignore_unknown_fields=True)
+
             resp = self._interceptor.post_cancel_execution(resp)
+            response_metadata = [(k, str(v)) for k, v in response.headers.items()]
+            resp, _ = self._interceptor.post_cancel_execution_with_metadata(resp, response_metadata)
+            if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(logging.DEBUG):  # pragma: NO COVER
+                try:
+                    response_payload = json_format.MessageToJson(resp)
+                except:
+                    response_payload = None
+                http_response = {
+                "payload": response_payload,
+                "headers":  dict(response.headers),
+                "status": response.status_code,
+                }
+                _LOGGER.debug(
+                    "Received response for google.cloud.run_v2.ExecutionsClient.cancel_execution",
+                    extra = {
+                        "serviceName": "google.cloud.run.v2.Executions",
+                        "rpcName": "CancelExecution",
+                        "metadata": http_response["headers"],
+                        "httpResponse": http_response,
+                    },
+                )
             return resp
 
-    class _DeleteExecution(ExecutionsRestStub):
+    class _DeleteExecution(_BaseExecutionsRestTransport._BaseDeleteExecution, ExecutionsRestStub):
         def __hash__(self):
-            return hash("DeleteExecution")
+            return hash("ExecutionsRestTransport.DeleteExecution")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
+        @staticmethod
+        def _get_response(
+            host,
+            metadata,
+            query_params,
+            session,
+            timeout,
+            transcoded_request,
+            body=None):
 
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(session, method)(
+                "{host}{uri}".format(host=host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                )
+            return response
 
         def __call__(self,
                 request: execution.DeleteExecutionRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> operations_pb2.Operation:
             r"""Call the delete execution method over HTTP.
 
@@ -407,8 +541,10 @@ class ExecutionsRestTransport(ExecutionsTransport):
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
-                metadata (Sequence[Tuple[str, str]]): Strings which should be
-                    sent along with the request as metadata.
+                metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                    sent along with the request as metadata. Normally, each value must be of type `str`,
+                    but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                    be of type `bytes`.
 
             Returns:
                 ~.operations_pb2.Operation:
@@ -418,34 +554,39 @@ class ExecutionsRestTransport(ExecutionsTransport):
 
             """
 
-            http_options: List[Dict[str, str]] = [{
-                'method': 'delete',
-                'uri': '/v2/{name=projects/*/locations/*/jobs/*/executions/*}',
-            },
-            ]
-            request, metadata = self._interceptor.pre_delete_execution(request, metadata)
-            pb_request = execution.DeleteExecutionRequest.pb(request)
-            transcoded_request = path_template.transcode(http_options, pb_request)
+            http_options = _BaseExecutionsRestTransport._BaseDeleteExecution._get_http_options()
 
-            uri = transcoded_request['uri']
-            method = transcoded_request['method']
+            request, metadata = self._interceptor.pre_delete_execution(request, metadata)
+            transcoded_request = _BaseExecutionsRestTransport._BaseDeleteExecution._get_transcoded_request(http_options, request)
 
             # Jsonify the query params
-            query_params = json.loads(json_format.MessageToJson(
-                transcoded_request['query_params'],
-                use_integers_for_enums=False,
-            ))
-            query_params.update(self._get_unset_required_fields(query_params))
+            query_params = _BaseExecutionsRestTransport._BaseDeleteExecution._get_query_params_json(transcoded_request)
+
+            if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(logging.DEBUG):  # pragma: NO COVER
+                request_url = "{host}{uri}".format(host=self._host, uri=transcoded_request['uri'])
+                method = transcoded_request['method']
+                try:
+                    request_payload = json_format.MessageToJson(request)
+                except:
+                    request_payload = None
+                http_request = {
+                  "payload": request_payload,
+                  "requestMethod": method,
+                  "requestUrl": request_url,
+                  "headers": dict(metadata),
+                }
+                _LOGGER.debug(
+                    f"Sending request for google.cloud.run_v2.ExecutionsClient.DeleteExecution",
+                    extra = {
+                        "serviceName": "google.cloud.run.v2.Executions",
+                        "rpcName": "DeleteExecution",
+                        "httpRequest": http_request,
+                        "metadata": http_request["headers"],
+                    },
+                )
 
             # Send the request
-            headers = dict(metadata)
-            headers['Content-Type'] = 'application/json'
-            response = getattr(self._session, method)(
-                "{host}{uri}".format(host=self._host, uri=uri),
-                timeout=timeout,
-                headers=headers,
-                params=rest_helpers.flatten_query_params(query_params, strict=True),
-                )
+            response = ExecutionsRestTransport._DeleteExecution._get_response(self._host, metadata, query_params, self._session, timeout, transcoded_request)
 
             # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
             # subclass.
@@ -455,25 +596,62 @@ class ExecutionsRestTransport(ExecutionsTransport):
             # Return the response
             resp = operations_pb2.Operation()
             json_format.Parse(response.content, resp, ignore_unknown_fields=True)
+
             resp = self._interceptor.post_delete_execution(resp)
+            response_metadata = [(k, str(v)) for k, v in response.headers.items()]
+            resp, _ = self._interceptor.post_delete_execution_with_metadata(resp, response_metadata)
+            if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(logging.DEBUG):  # pragma: NO COVER
+                try:
+                    response_payload = json_format.MessageToJson(resp)
+                except:
+                    response_payload = None
+                http_response = {
+                "payload": response_payload,
+                "headers":  dict(response.headers),
+                "status": response.status_code,
+                }
+                _LOGGER.debug(
+                    "Received response for google.cloud.run_v2.ExecutionsClient.delete_execution",
+                    extra = {
+                        "serviceName": "google.cloud.run.v2.Executions",
+                        "rpcName": "DeleteExecution",
+                        "metadata": http_response["headers"],
+                        "httpResponse": http_response,
+                    },
+                )
             return resp
 
-    class _GetExecution(ExecutionsRestStub):
+    class _GetExecution(_BaseExecutionsRestTransport._BaseGetExecution, ExecutionsRestStub):
         def __hash__(self):
-            return hash("GetExecution")
+            return hash("ExecutionsRestTransport.GetExecution")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
+        @staticmethod
+        def _get_response(
+            host,
+            metadata,
+            query_params,
+            session,
+            timeout,
+            transcoded_request,
+            body=None):
 
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(session, method)(
+                "{host}{uri}".format(host=host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                )
+            return response
 
         def __call__(self,
                 request: execution.GetExecutionRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> execution.Execution:
             r"""Call the get execution method over HTTP.
 
@@ -484,8 +662,10 @@ class ExecutionsRestTransport(ExecutionsTransport):
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
-                metadata (Sequence[Tuple[str, str]]): Strings which should be
-                    sent along with the request as metadata.
+                metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                    sent along with the request as metadata. Normally, each value must be of type `str`,
+                    but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                    be of type `bytes`.
 
             Returns:
                 ~.execution.Execution:
@@ -497,34 +677,39 @@ class ExecutionsRestTransport(ExecutionsTransport):
 
             """
 
-            http_options: List[Dict[str, str]] = [{
-                'method': 'get',
-                'uri': '/v2/{name=projects/*/locations/*/jobs/*/executions/*}',
-            },
-            ]
-            request, metadata = self._interceptor.pre_get_execution(request, metadata)
-            pb_request = execution.GetExecutionRequest.pb(request)
-            transcoded_request = path_template.transcode(http_options, pb_request)
+            http_options = _BaseExecutionsRestTransport._BaseGetExecution._get_http_options()
 
-            uri = transcoded_request['uri']
-            method = transcoded_request['method']
+            request, metadata = self._interceptor.pre_get_execution(request, metadata)
+            transcoded_request = _BaseExecutionsRestTransport._BaseGetExecution._get_transcoded_request(http_options, request)
 
             # Jsonify the query params
-            query_params = json.loads(json_format.MessageToJson(
-                transcoded_request['query_params'],
-                use_integers_for_enums=False,
-            ))
-            query_params.update(self._get_unset_required_fields(query_params))
+            query_params = _BaseExecutionsRestTransport._BaseGetExecution._get_query_params_json(transcoded_request)
+
+            if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(logging.DEBUG):  # pragma: NO COVER
+                request_url = "{host}{uri}".format(host=self._host, uri=transcoded_request['uri'])
+                method = transcoded_request['method']
+                try:
+                    request_payload = type(request).to_json(request)
+                except:
+                    request_payload = None
+                http_request = {
+                  "payload": request_payload,
+                  "requestMethod": method,
+                  "requestUrl": request_url,
+                  "headers": dict(metadata),
+                }
+                _LOGGER.debug(
+                    f"Sending request for google.cloud.run_v2.ExecutionsClient.GetExecution",
+                    extra = {
+                        "serviceName": "google.cloud.run.v2.Executions",
+                        "rpcName": "GetExecution",
+                        "httpRequest": http_request,
+                        "metadata": http_request["headers"],
+                    },
+                )
 
             # Send the request
-            headers = dict(metadata)
-            headers['Content-Type'] = 'application/json'
-            response = getattr(self._session, method)(
-                "{host}{uri}".format(host=self._host, uri=uri),
-                timeout=timeout,
-                headers=headers,
-                params=rest_helpers.flatten_query_params(query_params, strict=True),
-                )
+            response = ExecutionsRestTransport._GetExecution._get_response(self._host, metadata, query_params, self._session, timeout, transcoded_request)
 
             # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
             # subclass.
@@ -536,25 +721,62 @@ class ExecutionsRestTransport(ExecutionsTransport):
             pb_resp = execution.Execution.pb(resp)
 
             json_format.Parse(response.content, pb_resp, ignore_unknown_fields=True)
+
             resp = self._interceptor.post_get_execution(resp)
+            response_metadata = [(k, str(v)) for k, v in response.headers.items()]
+            resp, _ = self._interceptor.post_get_execution_with_metadata(resp, response_metadata)
+            if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(logging.DEBUG):  # pragma: NO COVER
+                try:
+                    response_payload = execution.Execution.to_json(response)
+                except:
+                    response_payload = None
+                http_response = {
+                "payload": response_payload,
+                "headers":  dict(response.headers),
+                "status": response.status_code,
+                }
+                _LOGGER.debug(
+                    "Received response for google.cloud.run_v2.ExecutionsClient.get_execution",
+                    extra = {
+                        "serviceName": "google.cloud.run.v2.Executions",
+                        "rpcName": "GetExecution",
+                        "metadata": http_response["headers"],
+                        "httpResponse": http_response,
+                    },
+                )
             return resp
 
-    class _ListExecutions(ExecutionsRestStub):
+    class _ListExecutions(_BaseExecutionsRestTransport._BaseListExecutions, ExecutionsRestStub):
         def __hash__(self):
-            return hash("ListExecutions")
+            return hash("ExecutionsRestTransport.ListExecutions")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
+        @staticmethod
+        def _get_response(
+            host,
+            metadata,
+            query_params,
+            session,
+            timeout,
+            transcoded_request,
+            body=None):
 
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(session, method)(
+                "{host}{uri}".format(host=host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                )
+            return response
 
         def __call__(self,
                 request: execution.ListExecutionsRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> execution.ListExecutionsResponse:
             r"""Call the list executions method over HTTP.
 
@@ -565,8 +787,10 @@ class ExecutionsRestTransport(ExecutionsTransport):
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
-                metadata (Sequence[Tuple[str, str]]): Strings which should be
-                    sent along with the request as metadata.
+                metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                    sent along with the request as metadata. Normally, each value must be of type `str`,
+                    but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                    be of type `bytes`.
 
             Returns:
                 ~.execution.ListExecutionsResponse:
@@ -575,34 +799,39 @@ class ExecutionsRestTransport(ExecutionsTransport):
 
             """
 
-            http_options: List[Dict[str, str]] = [{
-                'method': 'get',
-                'uri': '/v2/{parent=projects/*/locations/*/jobs/*}/executions',
-            },
-            ]
-            request, metadata = self._interceptor.pre_list_executions(request, metadata)
-            pb_request = execution.ListExecutionsRequest.pb(request)
-            transcoded_request = path_template.transcode(http_options, pb_request)
+            http_options = _BaseExecutionsRestTransport._BaseListExecutions._get_http_options()
 
-            uri = transcoded_request['uri']
-            method = transcoded_request['method']
+            request, metadata = self._interceptor.pre_list_executions(request, metadata)
+            transcoded_request = _BaseExecutionsRestTransport._BaseListExecutions._get_transcoded_request(http_options, request)
 
             # Jsonify the query params
-            query_params = json.loads(json_format.MessageToJson(
-                transcoded_request['query_params'],
-                use_integers_for_enums=False,
-            ))
-            query_params.update(self._get_unset_required_fields(query_params))
+            query_params = _BaseExecutionsRestTransport._BaseListExecutions._get_query_params_json(transcoded_request)
+
+            if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(logging.DEBUG):  # pragma: NO COVER
+                request_url = "{host}{uri}".format(host=self._host, uri=transcoded_request['uri'])
+                method = transcoded_request['method']
+                try:
+                    request_payload = type(request).to_json(request)
+                except:
+                    request_payload = None
+                http_request = {
+                  "payload": request_payload,
+                  "requestMethod": method,
+                  "requestUrl": request_url,
+                  "headers": dict(metadata),
+                }
+                _LOGGER.debug(
+                    f"Sending request for google.cloud.run_v2.ExecutionsClient.ListExecutions",
+                    extra = {
+                        "serviceName": "google.cloud.run.v2.Executions",
+                        "rpcName": "ListExecutions",
+                        "httpRequest": http_request,
+                        "metadata": http_request["headers"],
+                    },
+                )
 
             # Send the request
-            headers = dict(metadata)
-            headers['Content-Type'] = 'application/json'
-            response = getattr(self._session, method)(
-                "{host}{uri}".format(host=self._host, uri=uri),
-                timeout=timeout,
-                headers=headers,
-                params=rest_helpers.flatten_query_params(query_params, strict=True),
-                )
+            response = ExecutionsRestTransport._ListExecutions._get_response(self._host, metadata, query_params, self._session, timeout, transcoded_request)
 
             # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
             # subclass.
@@ -614,7 +843,29 @@ class ExecutionsRestTransport(ExecutionsTransport):
             pb_resp = execution.ListExecutionsResponse.pb(resp)
 
             json_format.Parse(response.content, pb_resp, ignore_unknown_fields=True)
+
             resp = self._interceptor.post_list_executions(resp)
+            response_metadata = [(k, str(v)) for k, v in response.headers.items()]
+            resp, _ = self._interceptor.post_list_executions_with_metadata(resp, response_metadata)
+            if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(logging.DEBUG):  # pragma: NO COVER
+                try:
+                    response_payload = execution.ListExecutionsResponse.to_json(response)
+                except:
+                    response_payload = None
+                http_response = {
+                "payload": response_payload,
+                "headers":  dict(response.headers),
+                "status": response.status_code,
+                }
+                _LOGGER.debug(
+                    "Received response for google.cloud.run_v2.ExecutionsClient.list_executions",
+                    extra = {
+                        "serviceName": "google.cloud.run.v2.Executions",
+                        "rpcName": "ListExecutions",
+                        "metadata": http_response["headers"],
+                        "httpResponse": http_response,
+                    },
+                )
             return resp
 
     @property

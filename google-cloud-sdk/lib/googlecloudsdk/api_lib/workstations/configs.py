@@ -167,6 +167,9 @@ class Configs:
           )
       ]
       config.host.gceInstance.accelerators = accelerators
+    if self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA):
+      if args.startup_script_uri:
+        config.host.gceInstance.startupScriptUri = args.startup_script_uri
 
     if self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA):
       config.httpOptions = self.messages.HttpOptions()

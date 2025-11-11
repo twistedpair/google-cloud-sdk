@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -731,11 +731,11 @@ class ExplainRequest(proto.Message):
             of the DeployedModel. Can be used for explaining prediction
             results with different configurations, such as:
 
-            -  Explaining top-5 predictions results as opposed to top-1;
-            -  Increasing path count or step count of the attribution
-               methods to reduce approximate errors;
-            -  Using different baselines for explaining the prediction
-               results.
+            - Explaining top-5 predictions results as opposed to top-1;
+            - Increasing path count or step count of the attribution
+              methods to reduce approximate errors;
+            - Using different baselines for explaining the prediction
+              results.
         concurrent_explanation_spec_override (MutableMapping[str, googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.ExplanationSpecOverride]):
             Optional. This field is the same as the one above, but
             supports multiple explanations to occur in parallel. The key

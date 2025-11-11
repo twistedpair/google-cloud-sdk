@@ -15,6 +15,7 @@
 """Utility functions for normalizing gRPC messages."""
 
 from __future__ import absolute_import
+from __future__ import annotations
 from __future__ import division
 from __future__ import unicode_literals
 
@@ -432,13 +433,22 @@ def update_object_metadata_from_request_config(
       object_metadata.kms_key = resource_args.encryption_key.key
 
 
-def get_bucket_name_routing_header(bucket_name):
+def get_bucket_name_routing_header(
+    bucket_name: str, *, routing_token: str | None = None
+) -> list[tuple[str, str]]:
   """Gets routing header with bucket.
 
   Args:
     bucket_name (str): Name of the bucket.
+    routing_token (str): Token for routing requests.
 
   Returns:
     (List[Tuple[str, str]]) List with metadata.
   """
-  return [routing_header.to_grpc_metadata({'bucket': bucket_name})]
+  if routing_token is None:
+    return [routing_header.to_grpc_metadata({'bucket': bucket_name})]
+  return [
+      routing_header.to_grpc_metadata(
+          {'bucket': bucket_name, 'routing_token': routing_token}
+      )
+  ]

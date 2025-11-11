@@ -112,7 +112,8 @@ table(
 ROLLOUT_LIST_FORMAT = """
 table(
     name.basename():label=NAME,
-    name.segment(3):label=LOCATION
+    state:label=STATE,
+    create_time.date():sort=1:reverse:label=CREATE_TIME
 )
 """
 

@@ -150,23 +150,58 @@ class StorageBatchOperationsApi:
     job.rewriteObject = rewrite_object
 
   def _modify_job_put_metadata(self, job, put_metadata_dict):
-    """Modifies a job to put metadata."""
+    """Modifies a job to put metadata.
+
+    Args:
+      job: A Job object to modify.
+      put_metadata_dict (dict): A dictionary of metadata fields and values to
+        apply.
+
+    Raises:
+      errors.StorageBatchOperationsApiError: If an invalid value is provided
+        for "retention-mode".
+    """
     put_metadata = self.messages.PutMetadata()
     custom_metadata_value = self.messages.PutMetadata.CustomMetadataValue()
+    object_retention = self.messages.ObjectRetention()
+    is_object_retention_set = False
     # put_metadata_dict is garanteed to have at least one key-value pair.
     for key, value in put_metadata_dict.items():
-      if key.casefold() == "content-disposition":
+      lower_key = key.casefold()
+      if lower_key == "content-disposition":
         put_metadata.contentDisposition = value
-      elif key.casefold() == "content-encoding":
+      elif lower_key == "content-encoding":
         put_metadata.contentEncoding = value
-      elif key.casefold() == "content-language":
+      elif lower_key == "content-language":
         put_metadata.contentLanguage = value
-      elif key.casefold() == "content-type":
+      elif lower_key == "content-type":
         put_metadata.contentType = value
-      elif key.casefold() == "cache-control":
+      elif lower_key == "cache-control":
         put_metadata.cacheControl = value
-      elif key.casefold() == "custom-time":
+      elif lower_key == "custom-time":
         put_metadata.customTime = value
+      elif lower_key == "retain-until":
+        is_object_retention_set = True
+        if value:
+          object_retention.retainUntilTime = value
+      elif lower_key == "retention-mode":
+        is_object_retention_set = True
+        if value:
+          try:
+            retention_mode_enum = (
+                self.messages.ObjectRetention.RetentionModeValueValuesEnum(
+                    value.upper()
+                )
+            )
+            object_retention.retentionMode = retention_mode_enum
+          except TypeError:
+            valid_modes = (
+                self.messages.ObjectRetention.RetentionModeValueValuesEnum.to_dict().keys()
+            )
+            raise errors.StorageBatchOperationsApiError(
+                f"Invalid value for retention-mode: {value}. Must be one of"
+                f" {valid_modes}."
+            )
       else:
         custom_metadata_value.additionalProperties.append(
             self.messages.PutMetadata.CustomMetadataValue.AdditionalProperty(
@@ -175,6 +210,8 @@ class StorageBatchOperationsApi:
         )
     if custom_metadata_value.additionalProperties:
       put_metadata.customMetadata = custom_metadata_value
+    if is_object_retention_set:
+      put_metadata.objectRetention = object_retention
     job.putMetadata = put_metadata
 
   def _modify_job_logging_config(self, job, log_actions, log_action_states):

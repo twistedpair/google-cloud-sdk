@@ -62,36 +62,58 @@ def _BuildStartArgsForDocker(args):
         'When using docker, hostname specified via --host-port '
         'must be an IPV4 or IPV6 address, found ' + host_ip)
 
-  if args.enable_fault_injection:
-    return execution_utils.ArgsForExecutableTool(
-        'docker', 'run', '-p',
-        '{}:{}:{}'.format(host_ip, args.host_port.port,
-                          SPANNER_EMULATOR_DEFAULT_GRPC_PORT), '-p',
-        '{}:{}:{}'.format(host_ip, args.rest_port,
-                          SPANNER_EMULATOR_DEFAULT_REST_PORT),
-        SPANNER_EMULATOR_DOCKER_IMAGE, './gateway_main', '--hostname',
-        '0.0.0.0', '--enable_fault_injection')
-  else:
-    return execution_utils.ArgsForExecutableTool(
-        'docker', 'run', '-p',
-        '{}:{}:{}'.format(host_ip, args.host_port.port,
-                          SPANNER_EMULATOR_DEFAULT_GRPC_PORT), '-p',
-        '{}:{}:{}'.format(host_ip, args.rest_port,
-                          SPANNER_EMULATOR_DEFAULT_REST_PORT),
-        SPANNER_EMULATOR_DOCKER_IMAGE)
+  docker_args = [
+      'docker', 'run', '-p',
+      '{}:{}:{}'.format(host_ip, args.host_port.port,
+                        SPANNER_EMULATOR_DEFAULT_GRPC_PORT), '-p',
+      '{}:{}:{}'.format(host_ip, args.rest_port,
+                        SPANNER_EMULATOR_DEFAULT_REST_PORT),
+      SPANNER_EMULATOR_DOCKER_IMAGE
+  ]
+
+  gateway_args = []
+  # Some arguments must be specified after the image name.
+  # If any are specified, we must specify the executable.
+  enable_fault_injection = getattr(args, 'enable_fault_injection', False)
+  print_notices = getattr(args, 'print_notices', False)
+  if enable_fault_injection or print_notices:
+    gateway_args.extend(['./gateway_main', '--hostname', '0.0.0.0'])
+    if enable_fault_injection:
+      gateway_args.append('--enable_fault_injection')
+    if print_notices:
+      gateway_args.append('--notices')
+
+  return execution_utils.ArgsForExecutableTool(*(docker_args + gateway_args))
 
 
 def _BuildStartArgsForNativeExecutable(args):
+  """Builds arguments for starting the spanner emulator as a native executable.
+
+  Args:
+    args: An argparse.Namespace object containing the command line arguments.
+
+  Returns:
+    A list of strings representing the command and its arguments.
+
+  Raises:
+    InvalidHostPortFormat: If the host_port is missing the port.
+  """
   spanner_executable = os.path.join(util.GetCloudSDKRoot(), 'bin',
                                     SPANNER_EMULATOR_EXECUTABLE_DIR,
                                     SPANNER_EMULATOR_EXECUTABLE_FILE)
   if args.host_port.port is None:
     raise InvalidHostPortFormat(
         'Invalid value for --host-port. Must be in the format host:port')
-  return execution_utils.ArgsForExecutableTool(
+  native_args = [
       spanner_executable, '--hostname', args.host_port.host, '--grpc_port',
-      args.host_port.port, '--http_port', six.text_type(args.rest_port),
-      ('--enable_fault_injection' if args.enable_fault_injection else ''))
+      args.host_port.port, '--http_port',
+      six.text_type(args.rest_port)
+  ]
+  if getattr(args, 'enable_fault_injection', False):
+    native_args.append('--enable_fault_injection')
+  if getattr(args, 'print_notices', False):
+    native_args.append('--notices')
+  return execution_utils.ArgsForExecutableTool(*native_args)
 
 
 def _BuildStartArgs(args):

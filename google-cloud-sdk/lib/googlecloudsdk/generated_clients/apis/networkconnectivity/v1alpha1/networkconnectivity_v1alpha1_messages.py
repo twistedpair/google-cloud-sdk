@@ -38,9 +38,9 @@ class AllocationOptions(_messages.Message):
     allocation is requested means an implementation defined strategy is used.
 
     Values:
-      ALLOCATION_STRATEGY_UNSPECIFIED: Unspecified strategy must be used when
-        the range is specified explicitly using ip_cidr_range field.
-        Othherwise unspefified means using the default strategy.
+      ALLOCATION_STRATEGY_UNSPECIFIED: Unspecified is the only valid option
+        when the range is specified explicitly by ip_cidr_range field.
+        Otherwise unspefified means using the default strategy.
       RANDOM: Random strategy, the legacy algorithm, used for backwards
         compatibility. This allocation strategy remains efficient in the case
         of concurrent allocation requests in the same peered network space and
@@ -274,10 +274,15 @@ class GoogleLongrunningListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('GoogleLongrunningOperation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class GoogleLongrunningOperation(_messages.Message):
@@ -530,6 +535,7 @@ class InternalRange(_messages.Message):
   Enums:
     OverlapsValueListEntryValuesEnum:
     PeeringValueValuesEnum: The type of peering set for this internal range.
+    RangeStatusValueValuesEnum: Output only. Status of the Internal Range.
     UsageValueValuesEnum: The type of usage set for this internal range.
 
   Messages:
@@ -571,11 +577,14 @@ class InternalRange(_messages.Message):
       to change the range size. NOTE: For IPv6 this field only works if
       ip_cidr_range is set as well, and both fields must match. In other
       words, with IPv6 this field only works as a redundant parameter.
+    rangeStatus: Output only. Status of the Internal Range.
     targetCidrRange: Optional. Can be set to narrow down or pick a different
       address space while searching for a free range. If not set, defaults to
-      the "10.0.0.0/8" address space. This can be used to search in other
-      rfc-1918 address spaces like "172.16.0.0/12" and "192.168.0.0/16" or
-      non-rfc-1918 address spaces used in the VPC.
+      the ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"] address space (for
+      auto-mode networks, the "10.0.0.0/9" range is used instead of
+      "10.0.0.0/8"). This can be used to target the search in other rfc-1918
+      address spaces like "172.16.0.0/12" and "192.168.0.0/16" or non-rfc-1918
+      address spaces used in the VPC.
     updateTime: Time when the internal range was updated.
     usage: The type of usage set for this internal range.
     users: Output only. The list of resources that refer to this internal
@@ -629,6 +638,22 @@ class InternalRange(_messages.Message):
     FOR_SELF = 1
     FOR_PEER = 2
     NOT_SHARED = 3
+
+  class RangeStatusValueValuesEnum(_messages.Enum):
+    r"""Output only. Status of the Internal Range.
+
+    Values:
+      RANGE_STATUS_UNSPECIFIED: Unspecified status is the default value for an
+        Internal Range.
+      ACTIVE: Ranges with ACTIVE status will reserve the CIDR block from the
+        given VPC.
+      OBSOLETE: A range becomes OBSOLETE if its VPC network is deleted. An
+        OBSOLETE range is inactive, doesn't reserve any CIDR blocks, and can
+        only be deleted or have its labels and description updated.
+    """
+    RANGE_STATUS_UNSPECIFIED = 0
+    ACTIVE = 1
+    OBSOLETE = 2
 
   class UsageValueValuesEnum(_messages.Enum):
     r"""The type of usage set for this internal range.
@@ -692,10 +717,11 @@ class InternalRange(_messages.Message):
   overlaps = _messages.EnumField('OverlapsValueListEntryValuesEnum', 11, repeated=True)
   peering = _messages.EnumField('PeeringValueValuesEnum', 12)
   prefixLength = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  targetCidrRange = _messages.StringField(14, repeated=True)
-  updateTime = _messages.StringField(15)
-  usage = _messages.EnumField('UsageValueValuesEnum', 16)
-  users = _messages.StringField(17, repeated=True)
+  rangeStatus = _messages.EnumField('RangeStatusValueValuesEnum', 14)
+  targetCidrRange = _messages.StringField(15, repeated=True)
+  updateTime = _messages.StringField(16)
+  usage = _messages.EnumField('UsageValueValuesEnum', 17)
+  users = _messages.StringField(18, repeated=True)
 
 
 class ListHubsResponse(_messages.Message):
@@ -1218,8 +1244,9 @@ class NetworkconnectivityProjectsLocationsListRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsListRequest object.
 
   Fields:
-    extraLocationTypes: Optional. A list of extra location types that should
-      be used as conditions for controlling the visibility of the locations.
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1279,12 +1306,20 @@ class NetworkconnectivityProjectsLocationsOperationsListRequest(_messages.Messag
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class NetworkconnectivityProjectsLocationsSpokesCreateRequest(_messages.Message):

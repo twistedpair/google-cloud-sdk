@@ -1003,6 +1003,47 @@ class OutputConfig(_messages.Message):
   gcsDestination = _messages.MessageField('GcsDestination', 1)
 
 
+class RefineTextRequest(_messages.Message):
+  r"""Request message for RefineText.
+
+  Fields:
+    refinementEntries: Required. The source texts and original translations in
+      the source and target languages.
+    sourceLanguageCode: Required. The BCP-47 language code of the source text
+      in the request, for example, "en-US".
+    targetLanguageCode: Required. The BCP-47 language code for translation
+      output, for example, "zh-CN".
+  """
+
+  refinementEntries = _messages.MessageField('RefinementEntry', 1, repeated=True)
+  sourceLanguageCode = _messages.StringField(2)
+  targetLanguageCode = _messages.StringField(3)
+
+
+class RefineTextResponse(_messages.Message):
+  r"""Response message for RefineText.
+
+  Fields:
+    refinedTranslations: The refined translations obtained from the original
+      translations.
+  """
+
+  refinedTranslations = _messages.StringField(1, repeated=True)
+
+
+class RefinementEntry(_messages.Message):
+  r"""A single refinement entry for RefineTextRequest.
+
+  Fields:
+    originalTranslation: Required. The original translation of the source
+      text.
+    sourceText: Required. The source text to be refined.
+  """
+
+  originalTranslation = _messages.StringField(1)
+  sourceText = _messages.StringField(2)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -1578,6 +1619,22 @@ class TranslateProjectsLocationsOperationsWaitRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   waitOperationRequest = _messages.MessageField('WaitOperationRequest', 2)
+
+
+class TranslateProjectsLocationsRefineTextRequest(_messages.Message):
+  r"""A TranslateProjectsLocationsRefineTextRequest object.
+
+  Fields:
+    parent: Required. Project or location to make a call. Must refer to a
+      caller's project. Format: `projects/{project-number-or-
+      id}/locations/{location-id}`. For global calls, use `projects/{project-
+      number-or-id}/locations/global` or `projects/{project-number-or-id}`.
+    refineTextRequest: A RefineTextRequest resource to be passed as the
+      request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  refineTextRequest = _messages.MessageField('RefineTextRequest', 2)
 
 
 class TranslateProjectsLocationsTranslateDocumentRequest(_messages.Message):

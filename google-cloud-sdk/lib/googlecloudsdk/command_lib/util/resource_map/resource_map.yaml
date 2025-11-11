@@ -676,14 +676,9 @@ apikeys:
   operations:
     supported_apis:
     - v2
-    - v2alpha1
   projects:
     supported_apis:
     - v2
-    - v2alpha1
-  projects.keys:
-    supported_apis:
-    - v2alpha1
   projects.locations:
     supported_apis:
     - v2

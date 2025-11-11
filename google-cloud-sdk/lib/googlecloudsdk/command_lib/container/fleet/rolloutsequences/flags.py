@@ -59,8 +59,7 @@ class RolloutSequenceFlags:
         '--display-name',
         type=str,
         help=textwrap.dedent("""\
-            Display name of the rollout sequence to be created (optional). 4-30
-            characters, alphanumeric and [ \'"!-] only.
+            Display name of the rollout sequence to be created (optional).
         """),
     )
 
@@ -80,21 +79,28 @@ class RolloutSequenceFlags:
         help="""\
             Path to the YAML file containing the stage configurations. The YAML
             file should contain a list of stages. Fleet projects and soak_duration are required.
-            If label_selector is not specified, there is no filtering. Example:
+            If label_selector is not specified, there is no filtering.
+            A fleet project is the project where the fleet is hosted.
+            Example:
 
             ```yaml
             - stage:
               fleet-projects:
               # Expected format: projects/{project}
-              - projects/12345678
-              - projects/87654321
-              soak-duration: 1h
-              label-selector: key=value
+              - projects/my-dev-project
+              soak-duration: 604800s # 7 days
             - stage:
               fleet-projects:
-              - projects/11111111
-            ```
-        """
+              - projects/my-prod-project
+              soak-duration: 604800s # 7 days
+              label-selector: resource.labels.canary=='true'
+            - stage:
+              fleet-projects:
+              # Expected format: projects/{project}
+              - projects/my-prod-project
+              soak-duration: 604800s # 7 days
+              ```
+        """,
     )
 
   def AddRolloutSequenceResourceArg(self):
@@ -164,13 +170,11 @@ class RolloutSequenceFlagParser:
       return []
 
     try:
-      stage_data_list = yaml.load(
-          self.args.stage_config, location_value=True
-      )
+      stage_data_list = yaml.load(self.args.stage_config, location_value=True)
     except yaml.YAMLParseError as e:
-      raise ValueError(f'Error parsing YAML file: {e}')
+      raise ValueError(f'Error parsing YAML file: {e}') from e
     except Exception as e:
-      raise ValueError(f'Error reading config file: {e}')
+      raise ValueError(f'Error reading config file: {e}') from e
 
     if not isinstance(stage_data_list, list):
       raise ValueError('The config file should contain a list of stages.')

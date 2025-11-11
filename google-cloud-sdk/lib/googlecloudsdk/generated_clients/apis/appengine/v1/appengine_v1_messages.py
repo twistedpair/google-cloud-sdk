@@ -1020,6 +1020,22 @@ class AppengineProjectsLocationsApplicationsDomainMappingsGetRequest(_messages.M
   name = _messages.StringField(1, required=True)
 
 
+class AppengineProjectsLocationsApplicationsDomainMappingsListRequest(_messages.Message):
+  r"""A AppengineProjectsLocationsApplicationsDomainMappingsListRequest
+  object.
+
+  Fields:
+    pageSize: Maximum results to return per page.
+    pageToken: Continuation token for fetching the next page of results.
+    parent: Required. Name of the parent Application resource. Example:
+      apps/myapp.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class AppengineProjectsLocationsApplicationsDomainMappingsPatchRequest(_messages.Message):
   r"""A AppengineProjectsLocationsApplicationsDomainMappingsPatchRequest
   object.

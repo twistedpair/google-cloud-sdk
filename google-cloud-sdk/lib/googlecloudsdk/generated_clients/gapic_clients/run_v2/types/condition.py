@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ class Condition(proto.Message):
             https://github.com/knative/serving/blob/main/docs/spec/errors.md#error-conditions-and-reporting
             Types common to all resources include:
 
-            -  "Ready": True when the Resource is ready.
+            - "Ready": True when the Resource is ready.
         state (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.Condition.State):
             State of the condition.
         message (str):

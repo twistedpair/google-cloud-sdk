@@ -173,6 +173,25 @@ NC_CC_PRIVATE_CR_CONFIG = 'privateRegistryAccessConfig'
 NC_CC_PRIVATE_CR_CONFIG_ENABLED = 'enabled'
 NC_CC_WRITABLE_CGROUPS = 'writableCgroups'
 NC_CC_WRITABLE_CGROUPS_ENABLED = 'enabled'
+
+NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS = 'registryHosts'
+NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_SERVER = 'server'
+NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_HOSTS = 'hosts'
+NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_HOST = 'host'
+NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_OVERRIDE_PATH = 'overridePath'
+NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_HEADER = 'header'
+NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_HEADER_KEY = 'key'
+NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_HEADER_VALUE = 'value'
+NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_DIAL_TIMEOUT = 'dialTimeout'
+NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_CAPABILITIES = 'capabilities'
+NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_GCP_SECRET_URI = (
+    'gcpSecretManagerSecretUri'
+)
+NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_CA = 'ca'
+NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_CLIENT = 'client'
+NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_CLIENT_CERT = 'cert'
+NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_CLIENT_KEY = 'key'
+
 NC_CC_CA_CONFIG = 'certificateAuthorityDomainConfig'
 NC_CC_GCP_SECRET_CONFIG = 'gcpSecretManagerCertificateConfig'
 NC_CC_GCP_SECRET_CONFIG_SECRET_URI = 'secretURI'
@@ -1468,6 +1487,7 @@ def LoadContainerdConfigFromYAML(containerd_config, content, messages):
       {
           NC_CC_PRIVATE_CR_CONFIG: dict,
           NC_CC_WRITABLE_CGROUPS: dict,
+          NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS: list,
       },
   )
 
@@ -1533,6 +1553,187 @@ def LoadContainerdConfigFromYAML(containerd_config, content, messages):
     containerd_config.writableCgroups.enabled = writable_cgroups_opts.get(
         NC_CC_WRITABLE_CGROUPS_ENABLED
     )
+
+  registry_hosts_opts = opts.get(NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS)
+  if registry_hosts_opts:
+    containerd_config.registryHosts = []
+    for i, registry_host_opt in enumerate(registry_hosts_opts):
+      _CheckNodeConfigFields(
+          '{0}[{1}]'.format(NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS, i),
+          registry_host_opt,
+          {
+              NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_SERVER: str,
+              NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_HOSTS: list,
+          },
+      )
+      registry_host_msg = messages.RegistryHostConfig()
+      registry_host_msg.server = registry_host_opt.get(
+          NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_SERVER
+      )
+
+      hosts_opts = registry_host_opt.get(
+          NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_HOSTS
+      )
+      if hosts_opts:
+        registry_host_msg.hosts = []
+        for j, host_opt in enumerate(hosts_opts):
+          _CheckNodeConfigFields(
+              '{0}[{1}].{2}[{3}]'.format(
+                  NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS,
+                  i,
+                  NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_HOSTS,
+                  j,
+              ),
+              host_opt,
+              {
+                  NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_HOST: str,
+                  NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_OVERRIDE_PATH: bool,
+                  NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_CAPABILITIES: list,
+                  NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_HEADER: list,
+                  NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_DIAL_TIMEOUT: str,
+                  NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_CA: list,
+                  NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_CLIENT: list,
+              },
+          )
+          host_msg = messages.HostConfig()
+          host_msg.host = host_opt.get(
+              NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_HOST
+          )
+          host_msg.overridePath = host_opt.get(
+              NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_OVERRIDE_PATH
+          )
+
+          capabilities_opts = host_opt.get(
+              NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_CAPABILITIES
+          )
+          if capabilities_opts:
+            capability_mapping = {
+                'HOST_CAPABILITY_UNSPECIFIED': (
+                    messages.HostConfig.CapabilitiesValueListEntryValuesEnum.HOST_CAPABILITY_UNSPECIFIED
+                ),
+                'HOST_CAPABILITY_PULL': (
+                    messages.HostConfig.CapabilitiesValueListEntryValuesEnum.HOST_CAPABILITY_PULL
+                ),
+                'HOST_CAPABILITY_RESOLVE': (
+                    messages.HostConfig.CapabilitiesValueListEntryValuesEnum.HOST_CAPABILITY_RESOLVE
+                ),
+                'HOST_CAPABILITY_PUSH': (
+                    messages.HostConfig.CapabilitiesValueListEntryValuesEnum.HOST_CAPABILITY_PUSH
+                ),
+            }
+            for cap_opt in capabilities_opts:
+              if cap_opt not in capability_mapping:
+                raise NodeConfigError(
+                    'capability "{0}" is not supported, the supported options'
+                    ' are HOST_CAPABILITY_PULL, HOST_CAPABILITY_RESOLVE,'
+                    ' HOST_CAPABILITY_PUSH'.format(cap_opt)
+                )
+              if not host_msg.capabilities:
+                host_msg.capabilities = []
+              host_msg.capabilities.append(capability_mapping[cap_opt])
+
+          header_opts = host_opt.get(
+              NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_HEADER
+          )
+          if header_opts:
+            host_msg.header = []
+            for header_opt in header_opts:
+              _CheckNodeConfigFields(
+                  'header',
+                  header_opt,
+                  {
+                      NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_HEADER_KEY: str,
+                      NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_HEADER_VALUE: list,
+                  },
+              )
+              header_msg = messages.RegistryHeader()
+              header_msg.key = header_opt.get(
+                  NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_HEADER_KEY
+              )
+              header_msg.value = header_opt.get(
+                  NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_HEADER_VALUE
+              )
+              host_msg.header.append(header_msg)
+
+          dial_timeout_opt = host_opt.get(
+              NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_DIAL_TIMEOUT
+          )
+          if dial_timeout_opt:
+            host_msg.dialTimeout = dial_timeout_opt
+
+          ca_opts = host_opt.get(NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_CA)
+          if ca_opts:
+            host_msg.ca = []
+            for ca_opt in ca_opts:
+              _CheckNodeConfigFields(
+                  'ca',
+                  ca_opt,
+                  {NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_GCP_SECRET_URI: str},
+              )
+              ca_msg = messages.CertificateConfig()
+              ca_msg.gcpSecretManagerSecretUri = ca_opt.get(
+                  NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_GCP_SECRET_URI
+              )
+              host_msg.ca.append(ca_msg)
+
+          client_opts = host_opt.get(
+              NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_CLIENT
+          )
+          if client_opts:
+            host_msg.client = []
+            for client_opt in client_opts:
+              _CheckNodeConfigFields(
+                  'client',
+                  client_opt,
+                  {
+                      NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_CLIENT_CERT: dict,
+                      NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_CLIENT_KEY: dict,
+                  },
+              )
+              client_msg = messages.CertificateConfigPair()
+
+              cert_opt = client_opt.get(
+                  NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_CLIENT_CERT
+              )
+              if cert_opt:
+                _CheckNodeConfigFields(
+                    'cert',
+                    cert_opt,
+                    {
+                        NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_GCP_SECRET_URI: (
+                            str
+                        )
+                    },
+                )
+                cert_msg = messages.CertificateConfig()
+                cert_msg.gcpSecretManagerSecretUri = cert_opt.get(
+                    NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_GCP_SECRET_URI
+                )
+                client_msg.cert = cert_msg
+
+              key_opt = client_opt.get(
+                  NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_CLIENT_KEY
+              )
+              if key_opt:
+                _CheckNodeConfigFields(
+                    'key',
+                    key_opt,
+                    {
+                        NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_GCP_SECRET_URI: (
+                            str
+                        )
+                    },
+                )
+                key_msg = messages.CertificateConfig()
+                key_msg.gcpSecretManagerSecretUri = key_opt.get(
+                    NC_CC_PRIVATE_CR_CONFIG_REGISTRY_HOSTS_GCP_SECRET_URI
+                )
+                client_msg.key = key_msg
+
+              host_msg.client.append(client_msg)
+
+          registry_host_msg.hosts.append(host_msg)
+      containerd_config.registryHosts.append(registry_host_msg)
 
 
 def _CheckNodeConfigFields(parent_name, parent, spec):

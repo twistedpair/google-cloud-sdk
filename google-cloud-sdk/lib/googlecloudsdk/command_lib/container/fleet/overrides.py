@@ -18,11 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.container.fleet import gkehub_api_util
 from googlecloudsdk.api_lib.container.fleet.connectgateway import util as connectgateway_api_util
-from googlecloudsdk.command_lib.container.fleet.memberships import util as memberships_util
+from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 
@@ -30,15 +28,16 @@ class RegionalGatewayEndpoint:
   """Context manager for connecting to a particular regional Connect Gateway endpoint.
 
   This uses the provided region to temporarily override
-  `api_endpoint_overrides/connectgateway` to a regional endpoint. If the
-  `gkehub` endpoint is overridden, the `connectgateway` endpoint will use the
-  same environment.
+  `api_endpoint_overrides/connectgateway` to a regional endpoint.
 
   This context manager is a no-op if the `connectgateway` endpoint is already
   overridden.
   """
 
   API_NAME = connectgateway_api_util.API_NAME
+  API_VERSION = connectgateway_api_util.VERSION_MAP[
+      connectgateway_api_util.DEFAULT_TRACK
+  ]
 
   def __init__(self, region: str):
     """Initializes the context manager.
@@ -56,35 +55,30 @@ class RegionalGatewayEndpoint:
       )
     self.region = region
     # The overridden endpoint value.
-    self.endpoint: str = None
+    self.endpoint: str = ''
     # The Connect Gateway endpoint override property.
     self.override = properties.VALUES.api_endpoint_overrides.Property(
         self.API_NAME
     )
-    self._original_endpoint: str = None
+    self._original_endpoint: str = ''
 
   def __enter__(self):
-    if self.override.IsExplicitlySet():
-      log.warning(
-          'You are running this command with the `connectgateway` endpoint'
-          ' override set. Ensure you are using the correct regional endpoint.'
-          ' If you are only trying to change your environment, set only the'
-          ' `gkehub` endpoint override and not the `connectgateway` endpoint'
-          ' override.'
-      )
-      return
-
-    try:
-      hub_override = properties.VALUES.api_endpoint_overrides.Property(
-          gkehub_api_util.GKEHUB_API_NAME
-      ).Get()
-    except properties.NoSuchPropertyError:
-      hub_override = None
-
-    subdomain = memberships_util.GetConnectGatewayServiceName(
-        hub_override, self.region
+    subdomain_endpoint = core_apis.GetEffectiveApiEndpoint(
+        self.API_NAME, self.API_VERSION
     )
-    self.endpoint = f'https://{subdomain}/'
+
+    if self.region == 'global' or self.region in subdomain_endpoint:
+      self.endpoint = subdomain_endpoint
+    else:
+      if subdomain_endpoint.startswith('https://'):
+        self.endpoint = f'https://{self.region}-{subdomain_endpoint[8:]}'
+      elif subdomain_endpoint.startswith('http://'):
+        self.endpoint = f'http://{self.region}-{subdomain_endpoint[7:]}'
+      else:
+        raise exceptions.Error(
+            f'Invalid Connect Gateway endpoint: {subdomain_endpoint}'
+        )
+
     self._original_endpoint = self.override.Get()
     self.override.Set(self.endpoint)
     return self

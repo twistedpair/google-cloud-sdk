@@ -1719,6 +1719,7 @@ def _BuildIapTunnelProxyCommandArgs(iap_tunnel_args, env):
 
   Raises:
     BadCharacterError: If instance arg contains any invalid characters.
+    ValueError: If no instance or cloud run args are provided.
 
   Returns:
     [str], the additional arguments for OpenSSH or Putty.
@@ -1729,12 +1730,13 @@ def _BuildIapTunnelProxyCommandArgs(iap_tunnel_args, env):
   # A relaxed validation of the passed in instance name / IP / hostname.
   # Mostly so potentially malicious names don't get passed in the resulting
   # generated command.
-  allowed_non_alnum_chars = {'-', '_', '.'}
-  for char in iap_tunnel_args.instance:
-    if not char.isalnum() and char not in allowed_non_alnum_chars:
-      raise BadCharacterError(
-          'Instance name/IP/hostname contains illegal characters.'
-      )
+  if iap_tunnel_args.instance:
+    allowed_non_alnum_chars = {'-', '_', '.'}
+    for char in iap_tunnel_args.instance:
+      if not char.isalnum() and char not in allowed_non_alnum_chars:
+        raise BadCharacterError(
+            'Instance name/IP/hostname contains illegal characters.'
+        )
 
   gcloud_command = execution_utils.ArgsForGcloud()
   # Applying _EscapeProxyCommandArg to the first item (the python executable
@@ -1751,23 +1753,48 @@ def _BuildIapTunnelProxyCommandArgs(iap_tunnel_args, env):
   port_token, quotation = (
       ('%port', '\"') if env.suite is Suite.PUTTY else ('%p', '\'')
   )
-  gcloud_command.extend([
-      'compute',
-      'start-iap-tunnel',
-      quotation + iap_tunnel_args.instance + quotation,
-      quotation + port_token + quotation,
-      '--listen-on-stdin',
-      '--project=' + iap_tunnel_args.project,
-  ])
-  if iap_tunnel_args.zone:
-    gcloud_command.append('--zone=' + iap_tunnel_args.zone)
-  if iap_tunnel_args.region:
-    gcloud_command.append('--region=' + iap_tunnel_args.region)
-  if iap_tunnel_args.network:
-    gcloud_command.append('--network=' + iap_tunnel_args.network)
+  if iap_tunnel_args.cloud_run_args:
+    gcloud_command.extend([
+        'run',
+        'start-iap-tunnel',
+        '--project_number='
+        + str(iap_tunnel_args.cloud_run_args['project_number']),
+        '--project_id='
+        + iap_tunnel_args.project,
+        '--workload_type='
+        + iap_tunnel_args.cloud_run_args['workload_type'].value,
+        '--deployment_name='
+        + iap_tunnel_args.cloud_run_args['deployment_name'],
+        '--region=' + iap_tunnel_args.region,
+    ])
+    if iap_tunnel_args.cloud_run_args['instance_id']:
+      gcloud_command.append(
+          '--instance=' + iap_tunnel_args.cloud_run_args['instance_id']
+      )
+    if iap_tunnel_args.cloud_run_args['container_id']:
+      gcloud_command.append(
+          '--container=' + iap_tunnel_args.cloud_run_args['container_id']
+      )
+  elif iap_tunnel_args.instance:
+    gcloud_command.extend([
+        'compute',
+        'start-iap-tunnel',
+        quotation + iap_tunnel_args.instance + quotation,
+        quotation + port_token + quotation,
+        '--listen-on-stdin',
+        '--project=' + iap_tunnel_args.project,
+    ])
+    if iap_tunnel_args.zone:
+      gcloud_command.append('--zone=' + iap_tunnel_args.zone)
+    if iap_tunnel_args.region:
+      gcloud_command.append('--region=' + iap_tunnel_args.region)
+    if iap_tunnel_args.network:
+      gcloud_command.append('--network=' + iap_tunnel_args.network)
+  else:
+    raise ValueError('No instance or cloud run args provided.')
+
   for arg in iap_tunnel_args.pass_through_args:
     gcloud_command.append(_EscapeProxyCommandArg(arg, env))
-
   verbosity = log.GetVerbosityName()
   if verbosity:
     gcloud_command.append('--verbosity=' + verbosity)

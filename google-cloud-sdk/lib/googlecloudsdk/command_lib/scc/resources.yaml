@@ -238,3 +238,16 @@ policy:
     attribute_name: policy
     help: Artifact Guard Policy resource
   disable_auto_completers: false
+
+connector:
+  name: connector
+  collection: artifactscanguard.organizations.locations.connectors
+  request_id_field: connectorId
+  attributes:
+  - *artifact_scan_guard_organization
+  - *artifact_scan_guard_location
+  - &artifact_scan_guard_connector
+    parameter_name: connectorsId
+    attribute_name: connector
+    help: Artifact Guard Connector resource
+  disable_auto_completers: false

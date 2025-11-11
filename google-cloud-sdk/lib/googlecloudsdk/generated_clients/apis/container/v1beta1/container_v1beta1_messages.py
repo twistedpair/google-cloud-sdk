@@ -6198,6 +6198,23 @@ class NodeConfigDefaults(_messages.Message):
   stableFleetConfig = _messages.MessageField('StableFleetConfig', 6)
 
 
+class NodeDrainConfig(_messages.Message):
+  r"""NodeDrainConfig contains the node drain related configurations for this
+  nodepool.
+
+  Fields:
+    graceTerminationDuration: The duration of the grace termination period for
+      node drain.
+    pdbTimeoutDuration: The duration of the PDB timeout period for node drain.
+    respectPdbDuringNodePoolDeletion: Whether to respect PDB during node pool
+      deletion.
+  """
+
+  graceTerminationDuration = _messages.StringField(1)
+  pdbTimeoutDuration = _messages.StringField(2)
+  respectPdbDuringNodePoolDeletion = _messages.BooleanField(3)
+
+
 class NodeKernelModuleLoading(_messages.Message):
   r"""Configuration for kernel module loading on nodes.
 
@@ -6575,6 +6592,8 @@ class NodePool(_messages.Message):
     name: The name of the node pool.
     networkConfig: Networking configuration for this NodePool. If specified,
       it overrides the cluster-level defaults.
+    nodeDrainConfig: Specifies the node drain configuration for this node
+      pool.
     placementPolicy: Specifies the node placement policy.
     podIpv4CidrSize: Output only. The pod CIDR block size per node in this
       node pool.
@@ -6635,15 +6654,16 @@ class NodePool(_messages.Message):
   maxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 11)
   name = _messages.StringField(12)
   networkConfig = _messages.MessageField('NodeNetworkConfig', 13)
-  placementPolicy = _messages.MessageField('PlacementPolicy', 14)
-  podIpv4CidrSize = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  queuedProvisioning = _messages.MessageField('QueuedProvisioning', 16)
-  selfLink = _messages.StringField(17)
-  status = _messages.EnumField('StatusValueValuesEnum', 18)
-  statusMessage = _messages.StringField(19)
-  updateInfo = _messages.MessageField('UpdateInfo', 20)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 21)
-  version = _messages.StringField(22)
+  nodeDrainConfig = _messages.MessageField('NodeDrainConfig', 14)
+  placementPolicy = _messages.MessageField('PlacementPolicy', 15)
+  podIpv4CidrSize = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  queuedProvisioning = _messages.MessageField('QueuedProvisioning', 17)
+  selfLink = _messages.StringField(18)
+  status = _messages.EnumField('StatusValueValuesEnum', 19)
+  statusMessage = _messages.StringField(20)
+  updateInfo = _messages.MessageField('UpdateInfo', 21)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 22)
+  version = _messages.StringField(23)
 
 
 class NodePoolAutoConfig(_messages.Message):
@@ -9372,6 +9392,7 @@ class UpdateNodePoolRequest(_messages.Message):
       applied to existing nodes in the node pool. To ensure all nodes are
       updated consistently, use a separate API call for location changes.
     loggingConfig: Logging configuration.
+    lustreConfig: Configuration for Lustre settings on the node pool.
     machineType: Optional. The desired machine type for nodes in the node
       pool. Initiates an upgrade operation that migrates the nodes in the node
       pool to the specified machine type.
@@ -9380,6 +9401,8 @@ class UpdateNodePoolRequest(_messages.Message):
     name: The name (project, location, cluster, node pool) of the node pool to
       update. Specified in the format
       `projects/*/locations/*/clusters/*/nodePools/*`.
+    nodeDrainConfig: The desired node drain configuration for nodes in the
+      node pool.
     nodeNetworkConfig: Node network config.
     nodePoolId: Deprecated. The name of the node pool to upgrade. This field
       has been deprecated and replaced by the name field.
@@ -9444,23 +9467,25 @@ class UpdateNodePoolRequest(_messages.Message):
   linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 19)
   locations = _messages.StringField(20, repeated=True)
   loggingConfig = _messages.MessageField('NodePoolLoggingConfig', 21)
-  machineType = _messages.StringField(22)
-  maxRunDuration = _messages.StringField(23)
-  name = _messages.StringField(24)
-  nodeNetworkConfig = _messages.MessageField('NodeNetworkConfig', 25)
-  nodePoolId = _messages.StringField(26)
-  nodeVersion = _messages.StringField(27)
-  projectId = _messages.StringField(28)
-  queuedProvisioning = _messages.MessageField('QueuedProvisioning', 29)
-  resourceLabels = _messages.MessageField('ResourceLabels', 30)
-  resourceManagerTags = _messages.MessageField('ResourceManagerTags', 31)
-  storagePools = _messages.StringField(32, repeated=True)
-  tags = _messages.MessageField('NetworkTags', 33)
-  taints = _messages.MessageField('NodeTaints', 34)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 35)
-  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 36)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 37)
-  zone = _messages.StringField(38)
+  lustreConfig = _messages.MessageField('LustreConfig', 22)
+  machineType = _messages.StringField(23)
+  maxRunDuration = _messages.StringField(24)
+  name = _messages.StringField(25)
+  nodeDrainConfig = _messages.MessageField('NodeDrainConfig', 26)
+  nodeNetworkConfig = _messages.MessageField('NodeNetworkConfig', 27)
+  nodePoolId = _messages.StringField(28)
+  nodeVersion = _messages.StringField(29)
+  projectId = _messages.StringField(30)
+  queuedProvisioning = _messages.MessageField('QueuedProvisioning', 31)
+  resourceLabels = _messages.MessageField('ResourceLabels', 32)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTags', 33)
+  storagePools = _messages.StringField(34, repeated=True)
+  tags = _messages.MessageField('NetworkTags', 35)
+  taints = _messages.MessageField('NodeTaints', 36)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 37)
+  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 38)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 39)
+  zone = _messages.StringField(40)
 
 
 class UpgradeAvailableEvent(_messages.Message):

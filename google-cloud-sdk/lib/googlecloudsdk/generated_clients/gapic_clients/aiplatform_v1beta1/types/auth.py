@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -131,15 +131,15 @@ class AuthConfig(proto.Message):
                 resource storing the API key. Format:
                 ``projects/{project}/secrets/{secrete}/versions/{version}``
 
-                -  If both ``api_key_secret`` and ``api_key_string`` are
-                   specified, this field takes precedence over
-                   ``api_key_string``.
+                - If both ``api_key_secret`` and ``api_key_string`` are
+                  specified, this field takes precedence over
+                  ``api_key_string``.
 
-                -  If specified, the ``secretmanager.versions.access``
-                   permission should be granted to Vertex AI Extension
-                   Service Agent
-                   (https://cloud.google.com/vertex-ai/docs/general/access-control#service-agents)
-                   on the specified resource.
+                - If specified, the ``secretmanager.versions.access``
+                  permission should be granted to Vertex AI Extension
+                  Service Agent
+                  (https://cloud.google.com/vertex-ai/docs/general/access-control#service-agents)
+                  on the specified resource.
             api_key_string (str):
                 Optional. The API key to be used in the
                 request directly.
@@ -174,11 +174,11 @@ class AuthConfig(proto.Message):
                 resource storing the base64 encoded credentials. Format:
                 ``projects/{project}/secrets/{secrete}/versions/{version}``
 
-                -  If specified, the ``secretmanager.versions.access``
-                   permission should be granted to Vertex AI Extension
-                   Service Agent
-                   (https://cloud.google.com/vertex-ai/docs/general/access-control#service-agents)
-                   on the specified resource.
+                - If specified, the ``secretmanager.versions.access``
+                  permission should be granted to Vertex AI Extension
+                  Service Agent
+                  (https://cloud.google.com/vertex-ai/docs/general/access-control#service-agents)
+                  on the specified resource.
         """
 
         credential_secret: str = proto.Field(
@@ -194,14 +194,14 @@ class AuthConfig(proto.Message):
                 Optional. The service account that the extension execution
                 service runs as.
 
-                -  If the service account is specified, the
-                   ``iam.serviceAccounts.getAccessToken`` permission should
-                   be granted to Vertex AI Extension Service Agent
-                   (https://cloud.google.com/vertex-ai/docs/general/access-control#service-agents)
-                   on the specified service account.
+                - If the service account is specified, the
+                  ``iam.serviceAccounts.getAccessToken`` permission should
+                  be granted to Vertex AI Extension Service Agent
+                  (https://cloud.google.com/vertex-ai/docs/general/access-control#service-agents)
+                  on the specified service account.
 
-                -  If not specified, the Vertex AI Extension Service Agent
-                   will be used to execute the Extension.
+                - If not specified, the Vertex AI Extension Service Agent
+                  will be used to execute the Extension.
         """
 
         service_account: str = proto.Field(
@@ -230,11 +230,11 @@ class AuthConfig(proto.Message):
                 The service account used to generate access tokens for
                 executing the Extension.
 
-                -  If the service account is specified, the
-                   ``iam.serviceAccounts.getAccessToken`` permission should
-                   be granted to Vertex AI Extension Service Agent
-                   (https://cloud.google.com/vertex-ai/docs/general/access-control#service-agents)
-                   on the provided service account.
+                - If the service account is specified, the
+                  ``iam.serviceAccounts.getAccessToken`` permission should
+                  be granted to Vertex AI Extension Service Agent
+                  (https://cloud.google.com/vertex-ai/docs/general/access-control#service-agents)
+                  on the provided service account.
 
                 This field is a member of `oneof`_ ``oauth_config``.
         """
@@ -274,13 +274,13 @@ class AuthConfig(proto.Message):
                 Provider (accounts.google.com) for extension endpoint
                 (https://cloud.google.com/iam/docs/create-short-lived-credentials-direct#sa-credentials-oidc).
 
-                -  The audience for the token will be set to the URL in the
-                   server url defined in the OpenApi spec.
+                - The audience for the token will be set to the URL in the
+                  server url defined in the OpenApi spec.
 
-                -  If the service account is provided, the service account
-                   should grant ``iam.serviceAccounts.getOpenIdToken``
-                   permission to Vertex AI Extension Service Agent
-                   (https://cloud.google.com/vertex-ai/docs/general/access-control#service-agents).
+                - If the service account is provided, the service account
+                  should grant ``iam.serviceAccounts.getOpenIdToken``
+                  permission to Vertex AI Extension Service Agent
+                  (https://cloud.google.com/vertex-ai/docs/general/access-control#service-agents).
 
                 This field is a member of `oneof`_ ``oidc_config``.
         """

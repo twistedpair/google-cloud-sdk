@@ -1327,6 +1327,8 @@ class BuiltImage(_messages.Message):
   r"""An image built by the pipeline.
 
   Fields:
+    artifactRegistryPackage: Output only. Path to the artifact in Artifact
+      Registry.
     digest: Docker Registry 2.0 digest.
     name: Name used to push the container image to Google Container Registry,
       as presented to `docker push`.
@@ -1334,9 +1336,10 @@ class BuiltImage(_messages.Message):
       specified image.
   """
 
-  digest = _messages.StringField(1)
-  name = _messages.StringField(2)
-  pushTiming = _messages.MessageField('TimeSpan', 3)
+  artifactRegistryPackage = _messages.StringField(1)
+  digest = _messages.StringField(2)
+  name = _messages.StringField(3)
+  pushTiming = _messages.MessageField('TimeSpan', 4)
 
 
 class CancelBuildRequest(_messages.Message):
@@ -5500,30 +5503,36 @@ class UploadedGoModule(_messages.Message):
   directive.
 
   Fields:
+    artifactRegistryPackage: Output only. Path to the artifact in Artifact
+      Registry.
     fileHashes: Hash types and values of the Go Module Artifact.
     pushTiming: Output only. Stores timing information for pushing the
       specified artifact.
     uri: URI of the uploaded artifact.
   """
 
-  fileHashes = _messages.MessageField('FileHashes', 1)
-  pushTiming = _messages.MessageField('TimeSpan', 2)
-  uri = _messages.StringField(3)
+  artifactRegistryPackage = _messages.StringField(1)
+  fileHashes = _messages.MessageField('FileHashes', 2)
+  pushTiming = _messages.MessageField('TimeSpan', 3)
+  uri = _messages.StringField(4)
 
 
 class UploadedMavenArtifact(_messages.Message):
   r"""A Maven artifact uploaded using the MavenArtifact directive.
 
   Fields:
+    artifactRegistryPackage: Output only. Path to the artifact in Artifact
+      Registry.
     fileHashes: Hash types and values of the Maven Artifact.
     pushTiming: Output only. Stores timing information for pushing the
       specified artifact.
     uri: URI of the uploaded artifact.
   """
 
-  fileHashes = _messages.MessageField('FileHashes', 1)
-  pushTiming = _messages.MessageField('TimeSpan', 2)
-  uri = _messages.StringField(3)
+  artifactRegistryPackage = _messages.StringField(1)
+  fileHashes = _messages.MessageField('FileHashes', 2)
+  pushTiming = _messages.MessageField('TimeSpan', 3)
+  uri = _messages.StringField(4)
 
 
 class UploadedNpmPackage(_messages.Message):
@@ -5531,45 +5540,54 @@ class UploadedNpmPackage(_messages.Message):
   directive.
 
   Fields:
+    artifactRegistryPackage: Output only. Path to the artifact in Artifact
+      Registry.
     fileHashes: Hash types and values of the npm package.
     pushTiming: Output only. Stores timing information for pushing the
       specified artifact.
     uri: URI of the uploaded npm package.
   """
 
-  fileHashes = _messages.MessageField('FileHashes', 1)
-  pushTiming = _messages.MessageField('TimeSpan', 2)
-  uri = _messages.StringField(3)
+  artifactRegistryPackage = _messages.StringField(1)
+  fileHashes = _messages.MessageField('FileHashes', 2)
+  pushTiming = _messages.MessageField('TimeSpan', 3)
+  uri = _messages.StringField(4)
 
 
 class UploadedOCIArtifact(_messages.Message):
   r"""An oci image uploaded to Artifact Registry using the OCI directive.
 
   Fields:
+    artifactRegistryPackage: Output only. Path to the artifact in Artifact
+      Registry.
     fileHashes: Output only. Hash types and values of the OCI Artifact.
     pushTiming: Output only. Stores timing information for pushing the
       specified artifact.
     uri: Output only. URI of the uploaded OCI Artifact.
   """
 
-  fileHashes = _messages.MessageField('FileHashes', 1)
-  pushTiming = _messages.MessageField('TimeSpan', 2)
-  uri = _messages.StringField(3)
+  artifactRegistryPackage = _messages.StringField(1)
+  fileHashes = _messages.MessageField('FileHashes', 2)
+  pushTiming = _messages.MessageField('TimeSpan', 3)
+  uri = _messages.StringField(4)
 
 
 class UploadedPythonPackage(_messages.Message):
   r"""Artifact uploaded using the PythonPackage directive.
 
   Fields:
+    artifactRegistryPackage: Output only. Path to the artifact in Artifact
+      Registry.
     fileHashes: Hash types and values of the Python Artifact.
     pushTiming: Output only. Stores timing information for pushing the
       specified artifact.
     uri: URI of the uploaded artifact.
   """
 
-  fileHashes = _messages.MessageField('FileHashes', 1)
-  pushTiming = _messages.MessageField('TimeSpan', 2)
-  uri = _messages.StringField(3)
+  artifactRegistryPackage = _messages.StringField(1)
+  fileHashes = _messages.MessageField('FileHashes', 2)
+  pushTiming = _messages.MessageField('TimeSpan', 3)
+  uri = _messages.StringField(4)
 
 
 class Volume(_messages.Message):

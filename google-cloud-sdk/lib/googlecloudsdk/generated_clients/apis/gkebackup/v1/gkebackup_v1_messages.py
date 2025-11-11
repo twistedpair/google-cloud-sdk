@@ -1078,6 +1078,54 @@ class GetBackupIndexDownloadUrlResponse(_messages.Message):
   signedUrl = _messages.StringField(1)
 
 
+class GetTagsResponse(_messages.Message):
+  r"""Response message for GetTags.
+
+  Messages:
+    TagsValue: Required. Tag keys/values directly bound to this resource. Each
+      item in the map must be expressed as " : ". For example:
+      "123/environment" : "production", "123/costCenter" : "marketing"
+
+  Fields:
+    etag: A checksum based on the current bindings. This field is always set
+      in server responses.
+    name: Required. The full resource name of the service resource.
+    tags: Required. Tag keys/values directly bound to this resource. Each item
+      in the map must be expressed as " : ". For example: "123/environment" :
+      "production", "123/costCenter" : "marketing"
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Required. Tag keys/values directly bound to this resource. Each item
+    in the map must be expressed as " : ". For example: "123/environment" :
+    "production", "123/costCenter" : "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2)
+  tags = _messages.MessageField('TagsValue', 3)
+
+
 class GkebackupProjectsLocationsBackupChannelsBackupPlanAssociationsGetRequest(_messages.Message):
   r"""A
   GkebackupProjectsLocationsBackupChannelsBackupPlanAssociationsGetRequest
@@ -1608,6 +1656,16 @@ class GkebackupProjectsLocationsBackupPlansGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class GkebackupProjectsLocationsBackupPlansGetTagsRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsBackupPlansGetTagsRequest object.
+
+  Fields:
+    name: Required. The full resource name of the service resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class GkebackupProjectsLocationsBackupPlansListRequest(_messages.Message):
   r"""A GkebackupProjectsLocationsBackupPlansListRequest object.
 
@@ -1672,6 +1730,19 @@ class GkebackupProjectsLocationsBackupPlansSetIamPolicyRequest(_messages.Message
 
   resource = _messages.StringField(1, required=True)
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class GkebackupProjectsLocationsBackupPlansSetTagsRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsBackupPlansSetTagsRequest object.
+
+  Fields:
+    name: Required. The full resource name of the service resource.
+    setTagsRequest: A SetTagsRequest resource to be passed as the request
+      body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  setTagsRequest = _messages.MessageField('SetTagsRequest', 2)
 
 
 class GkebackupProjectsLocationsBackupPlansTestIamPermissionsRequest(_messages.Message):
@@ -2040,6 +2111,16 @@ class GkebackupProjectsLocationsRestorePlansGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class GkebackupProjectsLocationsRestorePlansGetTagsRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsRestorePlansGetTagsRequest object.
+
+  Fields:
+    name: Required. The full resource name of the service resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class GkebackupProjectsLocationsRestorePlansListRequest(_messages.Message):
   r"""A GkebackupProjectsLocationsRestorePlansListRequest object.
 
@@ -2363,6 +2444,19 @@ class GkebackupProjectsLocationsRestorePlansSetIamPolicyRequest(_messages.Messag
 
   resource = _messages.StringField(1, required=True)
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class GkebackupProjectsLocationsRestorePlansSetTagsRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsRestorePlansSetTagsRequest object.
+
+  Fields:
+    name: Required. The full resource name of the service resource.
+    setTagsRequest: A SetTagsRequest resource to be passed as the request
+      body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  setTagsRequest = _messages.MessageField('SetTagsRequest', 2)
 
 
 class GkebackupProjectsLocationsRestorePlansTestIamPermissionsRequest(_messages.Message):
@@ -3370,6 +3464,10 @@ class RestoreConfig(_messages.Message):
       behavior for handling the situation where sets of namespaced resources
       being restored already exist in the target cluster. This MUST be set to
       a value other than NAMESPACED_RESOURCE_RESTORE_MODE_UNSPECIFIED.
+    OrphanedVolumeDataBindingPolicyValueValuesEnum: Optional.
+      OrphanedVolumeDataBindingPolicy specifies the policy to use when
+      restoring a orphaned PVC which is a PVC that is no longer associated
+      with a pod but still existed in the cluster when the backup was taken.
     VolumeDataRestorePolicyValueValuesEnum: Optional. Specifies the mechanism
       to be used to restore volume data. Default:
       VOLUME_DATA_RESTORE_POLICY_UNSPECIFIED (will be treated as
@@ -3394,6 +3492,10 @@ class RestoreConfig(_messages.Message):
       NAMESPACED_RESOURCE_RESTORE_MODE_UNSPECIFIED.
     noNamespaces: Do not restore any namespaced resources if set to "True".
       Specifying this field to "False" is not allowed.
+    orphanedVolumeDataBindingPolicy: Optional. OrphanedVolumeDataBindingPolicy
+      specifies the policy to use when restoring a orphaned PVC which is a PVC
+      that is no longer associated with a pod but still existed in the cluster
+      when the backup was taken.
     restoreOrder: Optional. RestoreOrder contains custom ordering to use on a
       Restore.
     selectedApplications: A list of selected ProtectedApplications to restore.
@@ -3499,6 +3601,23 @@ class RestoreConfig(_messages.Message):
     MERGE_REPLACE_VOLUME_ON_CONFLICT = 4
     MERGE_REPLACE_ON_CONFLICT = 5
 
+  class OrphanedVolumeDataBindingPolicyValueValuesEnum(_messages.Enum):
+    r"""Optional. OrphanedVolumeDataBindingPolicy specifies the policy to use
+    when restoring a orphaned PVC which is a PVC that is no longer associated
+    with a pod but still existed in the cluster when the backup was taken.
+
+    Values:
+      ORPHANED_VOLUME_DATA_BINDING_POLICY_UNSPECIFIED: Unspecified. If chosen,
+        the default behavior of KEEP_ORIGINAL_BINDING will be used.
+      KEEP_ORIGINAL_BINDING: Keep the original binding of the PVC to PV. This
+        is the default behavior.
+      FORCE_IMMEDIATE: Force the PVC to be restored with an IMMEDIATE binding
+        mode.
+    """
+    ORPHANED_VOLUME_DATA_BINDING_POLICY_UNSPECIFIED = 0
+    KEEP_ORIGINAL_BINDING = 1
+    FORCE_IMMEDIATE = 2
+
   class VolumeDataRestorePolicyValueValuesEnum(_messages.Enum):
     r"""Optional. Specifies the mechanism to be used to restore volume data.
     Default: VOLUME_DATA_RESTORE_POLICY_UNSPECIFIED (will be treated as
@@ -3530,13 +3649,14 @@ class RestoreConfig(_messages.Message):
   excludedNamespaces = _messages.MessageField('Namespaces', 4)
   namespacedResourceRestoreMode = _messages.EnumField('NamespacedResourceRestoreModeValueValuesEnum', 5)
   noNamespaces = _messages.BooleanField(6)
-  restoreOrder = _messages.MessageField('RestoreOrder', 7)
-  selectedApplications = _messages.MessageField('NamespacedNames', 8)
-  selectedNamespaces = _messages.MessageField('Namespaces', 9)
-  substitutionRules = _messages.MessageField('SubstitutionRule', 10, repeated=True)
-  transformationRules = _messages.MessageField('TransformationRule', 11, repeated=True)
-  volumeDataRestorePolicy = _messages.EnumField('VolumeDataRestorePolicyValueValuesEnum', 12)
-  volumeDataRestorePolicyBindings = _messages.MessageField('VolumeDataRestorePolicyBinding', 13, repeated=True)
+  orphanedVolumeDataBindingPolicy = _messages.EnumField('OrphanedVolumeDataBindingPolicyValueValuesEnum', 7)
+  restoreOrder = _messages.MessageField('RestoreOrder', 8)
+  selectedApplications = _messages.MessageField('NamespacedNames', 9)
+  selectedNamespaces = _messages.MessageField('Namespaces', 10)
+  substitutionRules = _messages.MessageField('SubstitutionRule', 11, repeated=True)
+  transformationRules = _messages.MessageField('TransformationRule', 12, repeated=True)
+  volumeDataRestorePolicy = _messages.EnumField('VolumeDataRestorePolicyValueValuesEnum', 13)
+  volumeDataRestorePolicyBindings = _messages.MessageField('VolumeDataRestorePolicyBinding', 14, repeated=True)
 
 
 class RestoreOrder(_messages.Message):
@@ -3899,6 +4019,107 @@ class SetIamPolicyRequest(_messages.Message):
 
   policy = _messages.MessageField('Policy', 1)
   updateMask = _messages.StringField(2)
+
+
+class SetTagsRequest(_messages.Message):
+  r"""Request message for SetTags.
+
+  Messages:
+    TagsValue: Required. These bindings will override any bindings previously
+      set and will be effective immediately. Each item in the map must be
+      expressed as " : ". For example: "123/environment" : "production",
+      "123/costCenter" : "marketing"
+
+  Fields:
+    etag: Optional. A checksum based on the current bindings which can be
+      passed to prevent race conditions. If not passed, etag check would be
+      skipped.
+    requestId: Optional. A unique identifier for this request. Must be a valid
+      UUID. This request is only idempotent if a `request_id` is provided.
+    tags: Required. These bindings will override any bindings previously set
+      and will be effective immediately. Each item in the map must be
+      expressed as " : ". For example: "123/environment" : "production",
+      "123/costCenter" : "marketing"
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Required. These bindings will override any bindings previously set and
+    will be effective immediately. Each item in the map must be expressed as "
+    : ". For example: "123/environment" : "production", "123/costCenter" :
+    "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  etag = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+  tags = _messages.MessageField('TagsValue', 3)
+
+
+class SetTagsResponse(_messages.Message):
+  r"""Response message for SetTags.
+
+  Messages:
+    TagsValue: Required. Tag keys/values directly bound to this resource. Each
+      item in the map must be expressed as " : ". For example:
+      "123/environment" : "production", "123/costCenter" : "marketing"
+
+  Fields:
+    etag: A checksum based on the current bindings. This field is always set
+      in server responses.
+    name: Required. The full resource name of the service resource.
+    tags: Required. Tag keys/values directly bound to this resource. Each item
+      in the map must be expressed as " : ". For example: "123/environment" :
+      "production", "123/costCenter" : "marketing"
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Required. Tag keys/values directly bound to this resource. Each item
+    in the map must be expressed as " : ". For example: "123/environment" :
+    "production", "123/costCenter" : "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2)
+  tags = _messages.MessageField('TagsValue', 3)
 
 
 class StandardQueryParameters(_messages.Message):

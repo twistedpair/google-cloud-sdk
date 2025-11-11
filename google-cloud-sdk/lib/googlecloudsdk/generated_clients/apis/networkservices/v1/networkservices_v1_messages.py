@@ -202,9 +202,14 @@ class AuthzExtension(_messages.Message):
         The backend service for the extension must use HTTP2 or H2C as the
         protocol. All `supported_events` for a client request are sent as part
         of the same gRPC stream.
+      EXT_AUTHZ_GRPC: The extension service uses Envoy's `ext_authz` gRPC API.
+        The backend service for the extension must use HTTP2, or H2C as the
+        protocol. `EXT_AUTHZ_GRPC` is only supported for regional
+        `AuthzExtension` resources.
     """
     WIRE_FORMAT_UNSPECIFIED = 0
     EXT_PROC_GRPC = 1
+    EXT_AUTHZ_GRPC = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

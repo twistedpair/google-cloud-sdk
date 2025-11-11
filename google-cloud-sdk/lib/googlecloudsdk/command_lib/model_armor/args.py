@@ -176,13 +176,13 @@ def AddVertexAiFloorSetting(parser):
       mutex=False, help='Options for Vertex AI sanitization.'
   )
   group.add_argument(
-      _ArgOrFlag('enable-vertex-ai-cloud-logging', False),
+      '--enable-vertex-ai-cloud-logging',
+      dest='enable_vertex_ai_cloud_logging',
       help=(
           'Enable Cloud Logging for Vertex AI sanitization to log Model'
           ' Armor sanitization results.'
       ),
-      action='store_true',
-      default=False,
+      action=arg_parsers.StoreTrueFalseAction,
   )
   group.add_argument(
       _ArgOrFlag('vertex-ai-enforcement-type', False),
@@ -195,19 +195,44 @@ def AddVertexAiFloorSetting(parser):
   )
 
 
+def AddGoogleMcpServerFloorSetting(parser) -> None:
+  """Add flags for specifying Google MCP server floor setting."""
+  group = parser.add_group(
+      mutex=False, help='Options for Google MCP server sanitization.'
+  )
+  group.add_argument(
+      '--enable-google-mcp-server-cloud-logging',
+      dest='enable_google_mcp_server_cloud_logging',
+      help=(
+          'Enable Cloud Logging for Google MCP server sanitization to log'
+          ' Model Armor sanitization results.'
+      ),
+      action=arg_parsers.StoreTrueFalseAction,
+  )
+  group.add_argument(
+      _ArgOrFlag('google-mcp-server-enforcement-type', False),
+      dest='google_mcp_server_enforcement_type',
+      help=(
+          'Specifies the enforcement mode for Google MCP server sanitization,'
+          ' such as "INSPECT_ONLY" or "INSPECT_AND_BLOCK". Default is'
+          ' "INSPECT_ONLY".'
+      ),
+  )
+
+
 def AddMultiLanguageDetection(parser):
   """Add flags for specifying multi language detection."""
   group = parser.add_group(
       mutex=False, help='Multi language detection enablement.'
   )
   group.add_argument(
-      _ArgOrFlag('enable-multi-language-detection', False),
+      '--enable-multi-language-detection',
+      dest='enable_multi_language_detection',
       help=(
           'Enable multi-language detection for floor setting, allowing Model'
           ' Armor to process content in multiple languages.'
       ),
-      action='store_true',
-      default=False,
+      action=arg_parsers.StoreTrueFalseAction,
   )
 
 

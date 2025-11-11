@@ -412,6 +412,10 @@ class BackupVault(_messages.Message):
       retenton of backups.
     backupVaultType: Optional. Type of backup vault to be created. Default is
       IN_REGION.
+    backupsCryptoKeyVersion: Output only. The crypto key version used to
+      encrypt the backup vault. Format: projects/{project}/locations/{location
+      }/keyRings/{key_ring}/cryptoKeys/{crypto_key}/cryptoKeyVersions/{crypto_
+      key_version}
     createTime: Output only. Create time of the backup vault.
     description: Description of the backup vault.
     destinationBackupVault: Output only. Name of the Backup vault created in
@@ -505,16 +509,17 @@ class BackupVault(_messages.Message):
   backupRegion = _messages.StringField(1)
   backupRetentionPolicy = _messages.MessageField('BackupRetentionPolicy', 2)
   backupVaultType = _messages.EnumField('BackupVaultTypeValueValuesEnum', 3)
-  createTime = _messages.StringField(4)
-  description = _messages.StringField(5)
-  destinationBackupVault = _messages.StringField(6)
-  encryptionState = _messages.EnumField('EncryptionStateValueValuesEnum', 7)
-  kmsConfig = _messages.StringField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  sourceBackupVault = _messages.StringField(11)
-  sourceRegion = _messages.StringField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
+  backupsCryptoKeyVersion = _messages.StringField(4)
+  createTime = _messages.StringField(5)
+  description = _messages.StringField(6)
+  destinationBackupVault = _messages.StringField(7)
+  encryptionState = _messages.EnumField('EncryptionStateValueValuesEnum', 8)
+  kmsConfig = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  name = _messages.StringField(11)
+  sourceBackupVault = _messages.StringField(12)
+  sourceRegion = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
 
 
 class BlockDevice(_messages.Message):
@@ -619,7 +624,7 @@ class CacheConfig(_messages.Message):
       indicating how the prepopulation is progressing.
     cifsChangeNotifyEnabled: Optional. Flag indicating whether a CIFS change
       notification is enabled for the FlexCache volume.
-    writeBackEnabled: Optional. Flag indicating whether writeback is enabled
+    writebackEnabled: Optional. Flag indicating whether writeback is enabled
       for the FlexCache volume.
   """
 
@@ -649,7 +654,7 @@ class CacheConfig(_messages.Message):
   cachePrePopulate = _messages.MessageField('CachePrePopulate', 3)
   cachePrePopulateState = _messages.EnumField('CachePrePopulateStateValueValuesEnum', 4)
   cifsChangeNotifyEnabled = _messages.BooleanField(5)
-  writeBackEnabled = _messages.BooleanField(6)
+  writebackEnabled = _messages.BooleanField(6)
 
 
 class CacheParameters(_messages.Message):

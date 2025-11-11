@@ -1788,6 +1788,25 @@ class JobMaxRetriesChange(TemplateConfigChanger):
 
 
 @dataclasses.dataclass(frozen=True)
+class JobPriorityTierChange(TemplateConfigChanger):
+  """Represents the intent to update the job's priority tier.
+
+  Attributes:
+    priority_tier: The priority tier to set.
+  """
+
+  priority_tier: str
+
+  def Adjust(self, resource):
+    resource.execution_template.spec.priorityTier = (
+        run_v1_messages.ExecutionSpec.PriorityTierValueValuesEnum(
+            self.priority_tier.upper()
+        )
+    )
+    return resource
+
+
+@dataclasses.dataclass(frozen=True)
 class JobTaskTimeoutChange(TemplateConfigChanger):
   """Represents the user intent to update a job's instance deadline.
 

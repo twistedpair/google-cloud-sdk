@@ -126,6 +126,9 @@ class AwsS3Data(_messages.Message):
     path: Root path to transfer objects. Must be an empty string or full path
       name that ends with a '/'. This field is treated as an object prefix. As
       such, it should generally not begin with a '/'.
+    privateNetworkService: Service Directory Service to be used as the
+      endpoint for transfers from a custom VPC. Format: `projects/{project_id}
+      /locations/{location}/namespaces/{namespace}/services/{service}`
     roleArn: The Amazon Resource Name (ARN) of the role to support temporary
       credentials via `AssumeRoleWithWebIdentity`. For more information about
       ARNs, see [IAM ARNs](https://docs.aws.amazon.com/IAM/latest/UserGuide/re
@@ -141,7 +144,8 @@ class AwsS3Data(_messages.Message):
   credentialsSecret = _messages.StringField(4)
   managedPrivateNetwork = _messages.BooleanField(5)
   path = _messages.StringField(6)
-  roleArn = _messages.StringField(7)
+  privateNetworkService = _messages.StringField(7)
+  roleArn = _messages.StringField(8)
 
 
 class AzureBlobStorageData(_messages.Message):
@@ -177,6 +181,9 @@ class AzureBlobStorageData(_messages.Message):
     path: Root path to transfer objects. Must be an empty string or full path
       name that ends with a '/'. This field is treated as an object prefix. As
       such, it should generally not begin with a '/'.
+    privateNetworkService: Service Directory Service to be used as the
+      endpoint for transfers from a custom VPC. Format: `projects/{project_id}
+      /locations/{location}/namespaces/{namespace}/services/{service}`
     storageAccount: Required. The name of the Azure Storage account.
   """
 
@@ -185,7 +192,8 @@ class AzureBlobStorageData(_messages.Message):
   credentialsSecret = _messages.StringField(3)
   federatedIdentityConfig = _messages.MessageField('FederatedIdentityConfig', 4)
   path = _messages.StringField(5)
-  storageAccount = _messages.StringField(6)
+  privateNetworkService = _messages.StringField(6)
+  storageAccount = _messages.StringField(7)
 
 
 class AzureCredentials(_messages.Message):
@@ -998,6 +1006,8 @@ class ObjectConditions(_messages.Message):
       worth of data at a time. For that you'd set each of the fields as
       follows: * `last_modified_since` to the start of the day *
       `last_modified_before` to the end of the day
+    matchGlob: Optional. If specified, only objects matching this glob are
+      transferred.
     maxTimeElapsedSinceLastModification: Ensures that objects are not
       transferred if a specific maximum time has elapsed since the "last
       modification time". When a TransferOperation begins, objects with a
@@ -1020,8 +1030,9 @@ class ObjectConditions(_messages.Message):
   includePrefixes = _messages.StringField(2, repeated=True)
   lastModifiedBefore = _messages.StringField(3)
   lastModifiedSince = _messages.StringField(4)
-  maxTimeElapsedSinceLastModification = _messages.StringField(5)
-  minTimeElapsedSinceLastModification = _messages.StringField(6)
+  matchGlob = _messages.StringField(5)
+  maxTimeElapsedSinceLastModification = _messages.StringField(6)
+  minTimeElapsedSinceLastModification = _messages.StringField(7)
 
 
 class Operation(_messages.Message):

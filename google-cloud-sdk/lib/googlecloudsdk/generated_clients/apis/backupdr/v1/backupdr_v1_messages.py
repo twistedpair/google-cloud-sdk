@@ -456,6 +456,9 @@ class Backup(_messages.Message):
   r"""Message describing a Backup object.
 
   Enums:
+    BackupRetentionInheritanceValueValuesEnum: Output only. Setting for how
+      the enforced retention end time is inherited. This value is copied from
+      this backup's BackupVault.
     BackupTypeValueValuesEnum: Output only. Type of the backup, unspecified,
       scheduled or ondemand.
     StateValueValuesEnum: Output only. The Backup resource instance state.
@@ -470,6 +473,9 @@ class Backup(_messages.Message):
       backup properties.
     backupApplianceLocks: Optional. The list of BackupLocks taken by the
       accessor Backup Appliance.
+    backupRetentionInheritance: Output only. Setting for how the enforced
+      retention end time is inherited. This value is copied from this backup's
+      BackupVault.
     backupType: Output only. Type of the backup, unspecified, scheduled or
       ondemand.
     cloudSqlInstanceBackupProperties: Output only. Cloud SQL specific backup
@@ -508,6 +514,28 @@ class Backup(_messages.Message):
     state: Output only. The Backup resource instance state.
     updateTime: Output only. The time when the instance was updated.
   """
+
+  class BackupRetentionInheritanceValueValuesEnum(_messages.Enum):
+    r"""Output only. Setting for how the enforced retention end time is
+    inherited. This value is copied from this backup's BackupVault.
+
+    Values:
+      BACKUP_RETENTION_INHERITANCE_UNSPECIFIED: Inheritance behavior not set.
+        This will default to `INHERIT_VAULT_RETENTION`.
+      INHERIT_VAULT_RETENTION: The enforced retention end time of a backup
+        will be inherited from the backup vault's
+        `backup_minimum_enforced_retention_duration` field. This is the
+        default behavior.
+      MATCH_BACKUP_EXPIRE_TIME: The enforced retention end time of a backup
+        will always match the expire time of the backup. If this is set, the
+        backup's enforced retention end time will be set to match the expire
+        time during creation of the backup. When updating, the ERET and expire
+        time must be updated together and have the same value. Invalid update
+        requests will be rejected by the server.
+    """
+    BACKUP_RETENTION_INHERITANCE_UNSPECIFIED = 0
+    INHERIT_VAULT_RETENTION = 1
+    MATCH_BACKUP_EXPIRE_TIME = 2
 
   class BackupTypeValueValuesEnum(_messages.Enum):
     r"""Output only. Type of the backup, unspecified, scheduled or ondemand.
@@ -569,27 +597,28 @@ class Backup(_messages.Message):
   alloyDbBackupProperties = _messages.MessageField('AlloyDbClusterBackupProperties', 1)
   backupApplianceBackupProperties = _messages.MessageField('BackupApplianceBackupProperties', 2)
   backupApplianceLocks = _messages.MessageField('BackupLock', 3, repeated=True)
-  backupType = _messages.EnumField('BackupTypeValueValuesEnum', 4)
-  cloudSqlInstanceBackupProperties = _messages.MessageField('CloudSqlInstanceBackupProperties', 5)
-  computeInstanceBackupProperties = _messages.MessageField('ComputeInstanceBackupProperties', 6)
-  consistencyTime = _messages.StringField(7)
-  createTime = _messages.StringField(8)
-  description = _messages.StringField(9)
-  diskBackupProperties = _messages.MessageField('DiskBackupProperties', 10)
-  enforcedRetentionEndTime = _messages.StringField(11)
-  etag = _messages.StringField(12)
-  expireTime = _messages.StringField(13)
-  gcpBackupPlanInfo = _messages.MessageField('GCPBackupPlanInfo', 14)
-  gcpResource = _messages.MessageField('BackupGcpResource', 15)
-  kmsKeyVersions = _messages.StringField(16, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 17)
-  name = _messages.StringField(18)
-  resourceSizeBytes = _messages.IntegerField(19)
-  satisfiesPzi = _messages.BooleanField(20)
-  satisfiesPzs = _messages.BooleanField(21)
-  serviceLocks = _messages.MessageField('BackupLock', 22, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 23)
-  updateTime = _messages.StringField(24)
+  backupRetentionInheritance = _messages.EnumField('BackupRetentionInheritanceValueValuesEnum', 4)
+  backupType = _messages.EnumField('BackupTypeValueValuesEnum', 5)
+  cloudSqlInstanceBackupProperties = _messages.MessageField('CloudSqlInstanceBackupProperties', 6)
+  computeInstanceBackupProperties = _messages.MessageField('ComputeInstanceBackupProperties', 7)
+  consistencyTime = _messages.StringField(8)
+  createTime = _messages.StringField(9)
+  description = _messages.StringField(10)
+  diskBackupProperties = _messages.MessageField('DiskBackupProperties', 11)
+  enforcedRetentionEndTime = _messages.StringField(12)
+  etag = _messages.StringField(13)
+  expireTime = _messages.StringField(14)
+  gcpBackupPlanInfo = _messages.MessageField('GCPBackupPlanInfo', 15)
+  gcpResource = _messages.MessageField('BackupGcpResource', 16)
+  kmsKeyVersions = _messages.StringField(17, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 18)
+  name = _messages.StringField(19)
+  resourceSizeBytes = _messages.IntegerField(20)
+  satisfiesPzi = _messages.BooleanField(21)
+  satisfiesPzs = _messages.BooleanField(22)
+  serviceLocks = _messages.MessageField('BackupLock', 23, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
+  updateTime = _messages.StringField(25)
 
 
 class BackupApplianceBackupConfig(_messages.Message):
@@ -2753,6 +2782,19 @@ class BackupdrProjectsLocationsServiceConfigInitializeRequest(_messages.Message)
   name = _messages.StringField(2, required=True)
 
 
+class BackupdrProjectsLocationsTrialEndRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsTrialEndRequest object.
+
+  Fields:
+    endTrialRequest: A EndTrialRequest resource to be passed as the request
+      body.
+    parent: Required. The parent resource where this trial will be ended.
+  """
+
+  endTrialRequest = _messages.MessageField('EndTrialRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class BackupdrProjectsLocationsTrialSubscribeRequest(_messages.Message):
   r"""A BackupdrProjectsLocationsTrialSubscribeRequest object.
 
@@ -3924,6 +3966,32 @@ class EncryptionConfig(_messages.Message):
   kmsKeyName = _messages.StringField(2)
 
 
+class EndTrialRequest(_messages.Message):
+  r"""Request message for ending a trial.
+
+  Enums:
+    EndReasonValueValuesEnum: Required. The reason for ending the trial.
+
+  Fields:
+    endReason: Required. The reason for ending the trial.
+  """
+
+  class EndReasonValueValuesEnum(_messages.Enum):
+    r"""Required. The reason for ending the trial.
+
+    Values:
+      END_REASON_UNSPECIFIED: End reason not set.
+      MOVE_TO_PAID: Trial is deliberately ended by the user to transition to
+        paid usage.
+      DISCONTINUED: Trial is discontinued before expiration.
+    """
+    END_REASON_UNSPECIFIED = 0
+    MOVE_TO_PAID = 1
+    DISCONTINUED = 2
+
+  endReason = _messages.EnumField('EndReasonValueValuesEnum', 1)
+
+
 class Entry(_messages.Message):
   r"""A key/value pair to be used for storing metadata.
 
@@ -4483,10 +4551,12 @@ class ListDataSourceReferencesResponse(_messages.Message):
     dataSourceReferences: The DataSourceReferences from the specified parent.
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
+    unreachable: Locations that could not be reached.
   """
 
   dataSourceReferences = _messages.MessageField('DataSourceReference', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListDataSourcesResponse(_messages.Message):

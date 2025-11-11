@@ -1384,6 +1384,8 @@ class DropInfo(_messages.Message):
       HYBRID_SUBNET_REGION_MISMATCH: Packet is dropped because the region of
         the hybrid subnet is different from the region of the next hop of the
         route matched within this hybrid subnet.
+      HYBRID_SUBNET_NO_ROUTE: Packet is dropped because no matching route was
+        found in the hybrid subnet.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -1491,6 +1493,7 @@ class DropInfo(_messages.Message):
     L2_INTERCONNECT_DESTINATION_IP_MISMATCH = 103
     NCC_ROUTE_WITHIN_HYBRID_SUBNET_UNSUPPORTED = 104
     HYBRID_SUBNET_REGION_MISMATCH = 105
+    HYBRID_SUBNET_NO_ROUTE = 106
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   destinationGeolocationCode = _messages.StringField(2)
@@ -1789,14 +1792,18 @@ class FirewallInfo(_messages.Message):
         [VPC connector's implicit
         rules](https://cloud.google.com/functions/docs/networking/connecting-
         vpc#restrict-access).
-      NETWORK_FIREWALL_POLICY_RULE: Global network firewall policy rule. For
-        details, see [Network firewall
+      NETWORK_FIREWALL_POLICY_RULE: User-defined global network firewall
+        policy rule. For details, see [Network firewall
         policies](https://cloud.google.com/vpc/docs/network-firewall-
         policies).
-      NETWORK_REGIONAL_FIREWALL_POLICY_RULE: Regional network firewall policy
-        rule. For details, see [Regional network firewall
+      NETWORK_REGIONAL_FIREWALL_POLICY_RULE: User-defined regional network
+        firewall policy rule. For details, see [Regional network firewall
         policies](https://cloud.google.com/firewall/docs/regional-firewall-
         policies).
+      SYSTEM_NETWORK_FIREWALL_POLICY_RULE: System-defined global network
+        firewall policy rule.
+      SYSTEM_REGIONAL_NETWORK_FIREWALL_POLICY_RULE: System-defined regional
+        network firewall policy rule.
       UNSUPPORTED_FIREWALL_POLICY_RULE: Firewall policy rule containing
         attributes not yet supported in Connectivity tests. Firewall analysis
         is skipped if such a rule can potentially be matched. Please see the
@@ -1817,9 +1824,11 @@ class FirewallInfo(_messages.Message):
     SERVERLESS_VPC_ACCESS_MANAGED_FIREWALL_RULE = 4
     NETWORK_FIREWALL_POLICY_RULE = 5
     NETWORK_REGIONAL_FIREWALL_POLICY_RULE = 6
-    UNSUPPORTED_FIREWALL_POLICY_RULE = 7
-    TRACKING_STATE = 8
-    ANALYSIS_SKIPPED = 9
+    SYSTEM_NETWORK_FIREWALL_POLICY_RULE = 7
+    SYSTEM_REGIONAL_NETWORK_FIREWALL_POLICY_RULE = 8
+    UNSUPPORTED_FIREWALL_POLICY_RULE = 9
+    TRACKING_STATE = 10
+    ANALYSIS_SKIPPED = 11
 
   class TargetTypeValueValuesEnum(_messages.Enum):
     r"""Target type of the firewall rule.

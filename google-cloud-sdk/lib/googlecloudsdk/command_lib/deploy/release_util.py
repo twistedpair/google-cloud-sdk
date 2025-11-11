@@ -171,7 +171,6 @@ def CreateReleaseConfig(
     kustomize_version,
     skaffold_version,
     skaffold_file,
-    deploy_config_file,
     location,
     pipeline_uuid,
     from_k8s_manifest,
@@ -186,7 +185,7 @@ def CreateReleaseConfig(
   # a Skaffold file should be generated, so we should not check at this stage
   # if the Skaffold file exists.
   if not (from_k8s_manifest or from_run_manifest):
-    _VerifyConfigFileExists(source, skaffold_file, deploy_config_file)
+    _VerifySkaffoldFileExists(source, skaffold_file)
 
   messages = client_util.GetMessagesModule(client_util.GetClientInstance())
   release_config = messages.Release()
@@ -201,7 +200,6 @@ def CreateReleaseConfig(
       from_k8s_manifest,
       from_run_manifest,
       skaffold_file,
-      deploy_config_file,
       pipeline_obj,
       hide_logs,
   )
@@ -360,7 +358,6 @@ def _SetSource(
     kubernetes_manifest,
     cloud_run_manifest,
     skaffold_file,
-    deploy_config_file,
     pipeline_obj,
     hide_logs=False,
 ):
@@ -384,8 +381,6 @@ def _SetSource(
       and uploaded to GCS on behalf of the customer.
     skaffold_file: path of the skaffold file relative to the source directory
       that contains the Skaffold file.
-    deploy_config_file: path of the deploy config file relative to the source
-      directory that contains the deploy config file.
     pipeline_obj: the pipeline_obj used for this release.
     hide_logs: whether to show logs, defaults to False
 
@@ -494,14 +489,10 @@ def _SetSource(
           bucket=staged_source_obj.bucket, object=staged_source_obj.name
       )
 
-  if deploy_config_file:
-    release_config.deployConfigPath = deploy_config_file
-    release_config.deployConfigUri = gcs_uri
-  else:
-    release_config = _SetSkaffoldConfigPath(
-        release_config, skaffold_file, skaffold_is_generated
-    )
-    release_config.skaffoldConfigUri = gcs_uri
+  release_config = _SetSkaffoldConfigPath(
+      release_config, skaffold_file, skaffold_is_generated
+  )
+  release_config.skaffoldConfigUri = gcs_uri
 
   return release_config
 
@@ -625,25 +616,21 @@ def _UploadTarballGeneratedSkaffoldAndManifest(
     return gcs_uri
 
 
-def _VerifyConfigFileExists(source, skaffold_file, deploy_config_file):
-  """Checks that the specified source contains a skaffold or deploy config file.
+def _VerifySkaffoldFileExists(source, skaffold_file):
+  """Checks that the specified source contains a skaffold file.
 
   Args:
     source: the location of the source files
     skaffold_file: path of the skaffold file relative to the source directory
-    deploy_config_file: path of the deploy config file relative to the source
-      directory.
 
   Raises:
     BadFileException: If the source directory or files can't be found.
   """
   if not skaffold_file:
     skaffold_file = 'skaffold.yaml'
-  if not deploy_config_file:
-    deploy_config_file = 'deploy-config.yaml'
   if source.startswith('gs://'):
     log.status.Print(
-        'Skipping config file check. '
+        'Skipping skaffold file check. '
         'Reason: source is not a local archive or directory'
     )
   elif not os.path.exists(source):
@@ -651,18 +638,17 @@ def _VerifyConfigFileExists(source, skaffold_file, deploy_config_file):
         'could not find source [{src}]'.format(src=source)
     )
   elif os.path.isfile(source):
-    _VerifyConfigFileIsInArchive(source, skaffold_file, deploy_config_file)
+    _VerifySkaffoldFileIsInArchive(source, skaffold_file)
   else:
-    _VerifyConfigFileIsInFolder(source, skaffold_file, deploy_config_file)
+    _VerifySkaffoldFileIsInFolder(source, skaffold_file)
 
 
-def _VerifyConfigFileIsInArchive(source, skaffold_file, deploy_config_file):
+def _VerifySkaffoldFileIsInArchive(source, skaffold_file):
   """Verifies the skaffold or deploy config file is in the archive.
 
   Args:
     source: the location of the source archive.
     skaffold_file: path of the skaffold file in the source archive.
-    deploy_config_file: path of the deploy config file in the source archive.
 
   Raises:
     BadFileException: If the config file is not a readable compressed file or
@@ -681,38 +667,27 @@ def _VerifyConfigFileIsInArchive(source, skaffold_file, deploy_config_file):
     try:
       archive.getmember(skaffold_file)
     except KeyError:
-      try:
-        archive.getmember(deploy_config_file)
-      except KeyError:
-        raise c_exceptions.BadFileException(
-            'Could not find skaffold or deploy config file. File [{skaffold}]'
-            ' or [{deploy_config}] does not exist in source archive'.format(
-                skaffold=skaffold_file, deploy_config=deploy_config_file
-            )
-        )
+      raise c_exceptions.BadFileException(
+          'Could not find skaffold file. File [{skaffold}]'
+          ' does not exist in source archive'.format(skaffold=skaffold_file)
+      )
 
 
-def _VerifyConfigFileIsInFolder(source, skaffold_file, deploy_config_file):
+def _VerifySkaffoldFileIsInFolder(source, skaffold_file):
   """Verifies the skaffold or deploy config file is in the folder.
 
   Args:
     source: the location of the source files
     skaffold_file: path of the skaffold file relative to the source directory
-    deploy_config_file: path of the deploy config file relative to the source
-      directory.
 
   Raises:
     BadFileException: If the config file can't be found.
   """
   path_to_skaffold = os.path.join(source, skaffold_file)
-  path_to_deploy_config = os.path.join(source, deploy_config_file)
-  if not os.path.exists(path_to_skaffold) and not os.path.exists(
-      path_to_deploy_config
-  ):
+  if not os.path.exists(path_to_skaffold):
     raise c_exceptions.BadFileException(
-        'Could not find skaffold or deploy config file. File [{skaffold}] or'
-        ' [{deploy_config}] does not exist'.format(
-            skaffold=path_to_skaffold, deploy_config=path_to_deploy_config
+        'Could not find skaffold file. File [{skaffold}] does not exist'.format(
+            skaffold=path_to_skaffold
         )
     )
 
@@ -932,12 +907,14 @@ def CheckReleaseSupportState(release_obj, action):
   tools_in_maintenance = []
   tools_unsupported = []
   messages = client_util.GetMessagesModule(client_util.GetClientInstance())
-  tools = [Tools.DOCKER,
-           Tools.HELM,
-           Tools.KPT,
-           Tools.KUBECTL,
-           Tools.KUSTOMIZE,
-           Tools.SKAFFOLD]
+  tools = [
+      Tools.DOCKER,
+      Tools.HELM,
+      Tools.KPT,
+      Tools.KUBECTL,
+      Tools.KUSTOMIZE,
+      Tools.SKAFFOLD,
+  ]
   for t in tools:
     state = _GetToolVersionSupportState(release_obj, t)
     if not state:

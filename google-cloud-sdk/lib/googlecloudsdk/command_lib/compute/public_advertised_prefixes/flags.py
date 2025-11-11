@@ -28,7 +28,7 @@ def MakePublicAdvertisedPrefixesArg():
       global_collection='compute.publicAdvertisedPrefixes')
 
 
-def AddCreatePapArgsToParser(parser, include_ipv6_access_type=False):
+def AddCreatePapArgsToParser(parser):
   """Adds public advertised prefixes create related flags to parser."""
 
   parser.add_argument(
@@ -55,14 +55,13 @@ def AddCreatePapArgsToParser(parser, include_ipv6_access_type=False):
       help='Specifies how child public delegated prefix will be scoped.',
   )
   ipv6_access_type_choices = ['internal', 'external']
-  if include_ipv6_access_type:
-    base.ChoiceArgument(
-        '--ipv6-access-type',
-        choices=ipv6_access_type_choices,
-        help_str=(
-            'Specifies the IPv6 access type of the public advertised prefix.'
-        ),
-    ).AddToParser(parser)
+  base.ChoiceArgument(
+      '--ipv6-access-type',
+      choices=ipv6_access_type_choices,
+      help_str=(
+          'Specifies the IPv6 access type of the public advertised prefix.'
+      ),
+  ).AddToParser(parser)
 
 
 def AddUpdatePapArgsToParser(parser):

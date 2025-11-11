@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -194,16 +194,15 @@ class Tool(proto.Message):
             environment (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.Tool.ComputerUse.Environment):
                 Required. The environment being operated.
             excluded_predefined_functions (MutableSequence[str]):
-                Optional. By default, predefined functions
-                are included in the final model call. Some of
-                them can be explicitly excluded from being
-                automatically included. This can serve two
-                purposes:
+                Optional. By default, `predefined
+                functions <https://cloud.google.com/vertex-ai/generative-ai/docs/computer-use#supported-actions>`__
+                are included in the final model call. Some of them can be
+                explicitly excluded from being automatically included. This
+                can serve two purposes:
 
-                1. Using a more restricted / different action
-                    space.
-                2. Improving the definitions / instructions of
-                    predefined functions.
+                1. Using a more restricted / different action space.
+                2. Improving the definitions / instructions of predefined
+                   functions.
         """
         class Environment(proto.Enum):
             r"""Represents the environment being operated, such as a web

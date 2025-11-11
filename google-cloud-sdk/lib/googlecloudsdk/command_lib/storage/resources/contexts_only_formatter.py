@@ -42,7 +42,6 @@ class ContextsOnlyPrinter(custom_printer_base.CustomPrinterBase):
     resource_printer.RegisterFormatter(
         CONTEXT_ONLY_PRINTER_FORMAT,
         ContextsOnlyPrinter,
-        hidden=True,
     )
 
   def Transform(self, resp):

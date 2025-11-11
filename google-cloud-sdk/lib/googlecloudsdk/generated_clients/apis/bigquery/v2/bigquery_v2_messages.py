@@ -1768,9 +1768,11 @@ class BigtableColumn(_messages.Message):
     encoding: Optional. The encoding of the values when the type is not
       STRING. Acceptable encoding values are: TEXT - indicates values are
       alphanumeric text strings. BINARY - indicates values are encoded using
-      HBase Bytes.toBytes family of functions. 'encoding' can also be set at
-      the column family level. However, the setting at this level takes
-      precedence if 'encoding' is set at both levels.
+      HBase Bytes.toBytes family of functions. PROTO_BINARY - indicates values
+      are encoded using serialized proto messages. This can only be used in
+      combination with JSON type. 'encoding' can also be set at the column
+      family level. However, the setting at this level takes precedence if
+      'encoding' is set at both levels.
     fieldName: Optional. If the qualifier is not a valid BigQuery field
       identifier i.e. does not match a-zA-Z*, a valid identifier must be
       provided as the column field name and is used as field name in queries.
@@ -1818,9 +1820,10 @@ class BigtableColumnFamily(_messages.Message):
     encoding: Optional. The encoding of the values when the type is not
       STRING. Acceptable encoding values are: TEXT - indicates values are
       alphanumeric text strings. BINARY - indicates values are encoded using
-      HBase Bytes.toBytes family of functions. This can be overridden for a
-      specific column by listing that column in 'columns' and specifying an
-      encoding for it.
+      HBase Bytes.toBytes family of functions. PROTO_BINARY - indicates values
+      are encoded using serialized proto messages. This can only be used in
+      combination with JSON type. This can be overridden for a specific column
+      by listing that column in 'columns' and specifying an encoding for it.
     familyId: Identifier of the column family.
     onlyReadLatest: Optional. If this is set only the latest version of value
       are exposed for all columns in this column family. This can be

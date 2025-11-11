@@ -2495,10 +2495,13 @@ class Collections(enum.Enum):
   )
   REASONINGENGINES_SANDBOXENVIRONMENTS = (
       'reasoningEngines.sandboxEnvironments',
-      'reasoningEngines/{reasoningEnginesId}/sandboxEnvironments/'
-      '{sandboxEnvironmentsId}',
-      {},
-      ['reasoningEnginesId', 'sandboxEnvironmentsId'],
+      '{+name}',
+      {
+          '':
+              'reasoningEngines/{reasoningEnginesId}/sandboxEnvironments/'
+              '{sandboxEnvironmentsId}',
+      },
+      ['name'],
       True
   )
   REASONINGENGINES_SANDBOXENVIRONMENTS_OPERATIONS = (

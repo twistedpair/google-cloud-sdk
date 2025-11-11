@@ -163,33 +163,6 @@ class GeminicloudassistV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Investigation.
-
-      Args:
-        request: (GeminicloudassistProjectsLocationsInvestigationsRevisionsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (InvestigationRevision) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/investigations/{investigationsId}/revisions/{revisionsId}',
-        http_method='PATCH',
-        method_id='geminicloudassist.projects.locations.investigations.revisions.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1alpha/{+name}',
-        request_field='investigationRevision',
-        request_type_name='GeminicloudassistProjectsLocationsInvestigationsRevisionsPatchRequest',
-        response_type_name='InvestigationRevision',
-        supports_download=False,
-    )
-
     def Run(self, request, global_params=None):
       r"""Run an existing revision of an investigation.
 

@@ -29,6 +29,7 @@ from googlecloudsdk.api_lib.compute import iap_tunnel_websocket_utils as iap_uti
 from googlecloudsdk.api_lib.compute import sg_tunnel_utils as sg_utils
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import transport
 
 
 MAX_BYTES_SOCKET_READ = 32768
@@ -37,6 +38,7 @@ SEND_TIMEOUT_SECONDS = 5
 
 RESOURCE_KEY_HEADER = 'X-Resource-Key'
 PROXY_AUTH_HEADER = 'Proxy-Authorization'
+USER_AGENT_HEADER = 'User-Agent'
 
 
 class SGConnectionError(exceptions.Error):
@@ -103,6 +105,7 @@ class SecurityGatewayTunnel(object):
               self._target.project,
               self._target.region,
               self._target.security_gateway))
+    headers[USER_AGENT_HEADER] = transport.MakeUserAgentString()
     log.debug('Sending headers: %s', headers)
 
     conn.request('CONNECT', dst_addr, headers=headers)
@@ -179,14 +182,8 @@ class SecurityGatewayTunnel(object):
             if log.GetVerbosity() == logging.DEBUG:
               log.err.GetConsoleWriterStream().write(
                   'DEBUG: RECV data_len [%d] data[:20] %r\n' % (
-                      len(data), data[:20]))
-            if data_len == 0:
-              log.debug('Remote endpoint [%s:%d] closed connection',
-                        self._target.host, self._target.port)
-              self._send_local_data_callback(b'')
-              self._stopping = True
-              break
-            if data_len > 0:
+                      data_len, data[:20]))
+            if data_len >= 0:
               self._send_local_data_callback(data)
     finally:
       self._stopping = True

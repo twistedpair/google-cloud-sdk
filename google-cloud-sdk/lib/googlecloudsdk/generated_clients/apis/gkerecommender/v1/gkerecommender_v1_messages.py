@@ -70,6 +70,9 @@ class FetchBenchmarkingDataRequest(_messages.Message):
       valid configurations.
     pricingModel: Optional. The pricing model to use for the benchmarking
       data. Defaults to `spot`.
+    servingStack: Optional. The serving stack to filter benchmarking data by,
+      e.g. `llm-d/0.3`. If not provided, benchmarking data for all serving
+      stacks that support the given model and model server will be returned.
     useCase: Optional. The use case to filter benchmarking data by. If not
       provided, all benchmarking data for the given profile's
       `model_server_info` will be returned.
@@ -78,7 +81,8 @@ class FetchBenchmarkingDataRequest(_messages.Message):
   instanceType = _messages.StringField(1)
   modelServerInfo = _messages.MessageField('ModelServerInfo', 2)
   pricingModel = _messages.StringField(3)
-  useCase = _messages.StringField(4)
+  servingStack = _messages.MessageField('ServingStack', 4)
+  useCase = _messages.StringField(5)
 
 
 class FetchBenchmarkingDataResponse(_messages.Message):
@@ -169,6 +173,9 @@ class FetchProfilesRequest(_messages.Message):
     performanceRequirements: Optional. The performance requirements to filter
       profiles. Profiles that do not meet these requirements are filtered out.
       If not provided, all profiles are returned.
+    servingStack: Optional. The serving stack to filter profiles by. If not
+      provided, profiles for all serving stacks that support the given model
+      and model server will be returned.
     workloadSpec: Optional. The workload specification to filter profiles by.
       If not provided, all use cases are returned.
   """
@@ -179,7 +186,8 @@ class FetchProfilesRequest(_messages.Message):
   pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(5)
   performanceRequirements = _messages.MessageField('PerformanceRequirements', 6)
-  workloadSpec = _messages.MessageField('WorkloadSpec', 7)
+  servingStack = _messages.MessageField('ServingStack', 7)
+  workloadSpec = _messages.MessageField('WorkloadSpec', 8)
 
 
 class FetchProfilesResponse(_messages.Message):
@@ -201,6 +209,37 @@ class FetchProfilesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
   performanceRange = _messages.MessageField('PerformanceRange', 3)
   profile = _messages.MessageField('Profile', 4, repeated=True)
+
+
+class FetchServingStackVersionsResponse(_messages.Message):
+  r"""Response message for GkeInferenceQuickstart.FetchServingStackVersions.
+
+  Fields:
+    nextPageToken: Output only. A token which may be sent as page_token in a
+      subsequent `FetchServingStackVersionsResponse` call to retrieve the next
+      page of results. If this field is omitted or empty, then there are no
+      more results to return.
+    servingStackVersions: Output only. A list of available serving stack
+      versions.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  servingStackVersions = _messages.StringField(2, repeated=True)
+
+
+class FetchServingStacksResponse(_messages.Message):
+  r"""Response message for GkeInferenceQuickstart.FetchServingStacks.
+
+  Fields:
+    nextPageToken: Output only. A token which may be sent as page_token in a
+      subsequent `FetchServingStacksResponse` call to retrieve the next page
+      of results. If this field is omitted or empty, then there are no more
+      results to return.
+    servingStacks: Output only. List of available serving stacks.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  servingStacks = _messages.MessageField('ServingStack', 2, repeated=True)
 
 
 class FetchUseCasesRequest(_messages.Message):
@@ -237,6 +276,9 @@ class GenerateOptimizedManifestRequest(_messages.Message):
       Cost targets are not currently supported for HPA generation. If the
       specified targets are not achievable, the HPA manifest will not be
       generated.
+    servingStack: Optional. The serving stack to use for generating the
+      manifest. If not provided, the latest serving stack that supports the
+      given model and model server will be used.
     storageConfig: Optional. The storage configuration for the model. If not
       provided, the model is loaded from Huggingface.
     useCase: Optional. The use case of the workload. Can be one of: `advanced
@@ -248,8 +290,9 @@ class GenerateOptimizedManifestRequest(_messages.Message):
   kubernetesNamespace = _messages.StringField(2)
   modelServerInfo = _messages.MessageField('ModelServerInfo', 3)
   performanceRequirements = _messages.MessageField('PerformanceRequirements', 4)
-  storageConfig = _messages.MessageField('StorageConfig', 5)
-  useCase = _messages.StringField(6)
+  servingStack = _messages.MessageField('ServingStack', 5)
+  storageConfig = _messages.MessageField('StorageConfig', 6)
+  useCase = _messages.StringField(7)
 
 
 class GenerateOptimizedManifestResponse(_messages.Message):
@@ -343,6 +386,62 @@ class GkerecommenderModelsFetchRequest(_messages.Message):
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
+
+
+class GkerecommenderServingStackVersionsFetchRequest(_messages.Message):
+  r"""A GkerecommenderServingStackVersionsFetchRequest object.
+
+  Fields:
+    model: Optional. The model to filter serving stack versions by.
+    modelServer: Optional. The model server to filter serving stack versions
+      by.
+    pageSize: Optional. The target number of results to return in a single
+      response. If not specified, a default value will be chosen by the
+      service. Note that the response may include a partial list and a caller
+      should only rely on the response's next_page_token to determine if there
+      are more instances left to be queried.
+    pageToken: Optional. The value of next_page_token received from a previous
+      `FetchServingStackVersionsRequest` call. Provide this to retrieve the
+      subsequent page in a multi-page list of results. When paginating, all
+      other parameters provided to `FetchServingStackVersionsRequest` must
+      match the call that provided the page token.
+    servingStack: Required. The serving stack to list versions for.
+  """
+
+  model = _messages.StringField(1)
+  modelServer = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  servingStack = _messages.StringField(5)
+
+
+class GkerecommenderServingStacksFetchRequest(_messages.Message):
+  r"""A GkerecommenderServingStacksFetchRequest object.
+
+  Fields:
+    model: Optional. The model for which to list serving stacks. Open-source
+      models follow the Huggingface Hub `owner/model_name` format. Use
+      GkeInferenceQuickstart.FetchModels to find available models.
+    modelServer: Optional. The model server for which to list serving stacks.
+      Open-source model servers use simplified, lowercase names (e.g.,
+      `vllm`). Use GkeInferenceQuickstart.FetchModelServers to find available
+      model servers.
+    pageSize: Optional. The target number of results to return in a single
+      response. If not specified, a default value will be chosen by the
+      service. Note that the response may include a partial list and a caller
+      should only rely on the response's next_page_token to determine if there
+      are more instances left to be queried.
+    pageToken: Optional. The value of next_page_token received from a previous
+      `FetchServingStacksRequest` call. Provide this to retrieve the
+      subsequent page in a multi-page list of results. When paginating, all
+      other parameters provided to `FetchServingStacksRequest` must match the
+      call that provided the page token.
+  """
+
+  model = _messages.StringField(1)
+  modelServer = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class KubernetesManifest(_messages.Message):
@@ -530,6 +629,7 @@ class Profile(_messages.Message):
     performanceStats: Output only. The performance statistics for this
       profile.
     resourcesUsed: Output only. The resources used by the model deployment.
+    servingStack: Output only. The serving stack used for this profile.
     tpuTopology: Output only. The TPU topology (if applicable).
     workloadSpec: Output only. The workload specification.
   """
@@ -540,8 +640,9 @@ class Profile(_messages.Message):
   modelServerInfo = _messages.MessageField('ModelServerInfo', 4)
   performanceStats = _messages.MessageField('PerformanceStats', 5, repeated=True)
   resourcesUsed = _messages.MessageField('ResourcesUsed', 6)
-  tpuTopology = _messages.StringField(7)
-  workloadSpec = _messages.MessageField('WorkloadSpec', 8)
+  servingStack = _messages.MessageField('ServingStack', 7)
+  tpuTopology = _messages.StringField(8)
+  workloadSpec = _messages.MessageField('WorkloadSpec', 9)
 
 
 class ResourcesUsed(_messages.Message):
@@ -553,6 +654,18 @@ class ResourcesUsed(_messages.Message):
   """
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class ServingStack(_messages.Message):
+  r"""Serving stack information.
+
+  Fields:
+    name: Required. The name of the serving stack.
+    version: Optional. The version of the serving stack.
+  """
+
+  name = _messages.StringField(1)
+  version = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):

@@ -3071,6 +3071,21 @@ class InstancesImportRequest(_messages.Message):
   importContext = _messages.MessageField('ImportContext', 1)
 
 
+class InstancesListEntraIdCertificatesResponse(_messages.Message):
+  r"""Instances ListEntraIdCertificates response.
+
+  Fields:
+    activeVersion: The `sha1_fingerprint` of the active certificate from
+      `certs`.
+    certs: List of Entra ID certificates for the instance.
+    kind: This is always `sql#instancesListEntraIdCertificates`.
+  """
+
+  activeVersion = _messages.StringField(1)
+  certs = _messages.MessageField('SslCert', 2, repeated=True)
+  kind = _messages.StringField(3)
+
+
 class InstancesListResponse(_messages.Message):
   r"""Database instances list response.
 
@@ -3174,6 +3189,17 @@ class InstancesRestoreBackupRequest(_messages.Message):
   restoreBackupContext = _messages.MessageField('RestoreBackupContext', 3)
   restoreInstanceClearOverridesFieldNames = _messages.StringField(4, repeated=True)
   restoreInstanceSettings = _messages.MessageField('DatabaseInstance', 5)
+
+
+class InstancesRotateEntraIdCertificateRequest(_messages.Message):
+  r"""Rotate Entra ID Certificate request.
+
+  Fields:
+    rotateEntraIdCertificateContext: Optional. Contains details about the
+      rotate Entra ID certificate operation.
+  """
+
+  rotateEntraIdCertificateContext = _messages.MessageField('RotateEntraIdCertificateContext', 1)
 
 
 class InstancesRotateServerCaRequest(_messages.Message):
@@ -4614,6 +4640,20 @@ class RestoreBackupContext(_messages.Message):
   project = _messages.StringField(4)
 
 
+class RotateEntraIdCertificateContext(_messages.Message):
+  r"""Instance rotate Entra ID certificate context.
+
+  Fields:
+    kind: Optional. This is always `sql#rotateEntraIdCertificateContext`.
+    nextVersion: Optional. The fingerprint of the next version to be rotated
+      to. If left unspecified, will be rotated to the most recently added
+      Entra ID certificate version.
+  """
+
+  kind = _messages.StringField(1)
+  nextVersion = _messages.StringField(2)
+
+
 class RotateServerCaContext(_messages.Message):
   r"""Instance rotate server CA context.
 
@@ -4688,7 +4728,7 @@ class Settings(_messages.Message):
       NOT_REQUIRED is used. If this field is not specified when patching or
       updating an existing instance, it is left unchanged in the instance.
     DataApiAccessValueValuesEnum: This parameter controls whether to allow
-      using Data API to connect to the instance. Not allowed by default.
+      using ExecuteSql API to connect to the instance. Not allowed by default.
     DataDiskTypeValueValuesEnum: The type of data disk: `PD_SSD` (default) or
       `PD_HDD`. Not used for First Generation instances.
     EditionValueValuesEnum: Optional. The edition of the instance.
@@ -4744,8 +4784,8 @@ class Settings(_messages.Message):
       instances. Indicates whether database flags for crash-safe replication
       are enabled. This property was only applicable to First Generation
       instances.
-    dataApiAccess: This parameter controls whether to allow using Data API to
-      connect to the instance. Not allowed by default.
+    dataApiAccess: This parameter controls whether to allow using ExecuteSql
+      API to connect to the instance. Not allowed by default.
     dataCacheConfig: Configuration for data cache.
     dataDiskProvisionedIops: Optional. Provisioned number of I/O operations
       per second for the data disk. This field is only used for hyperdisk-
@@ -4776,6 +4816,8 @@ class Settings(_messages.Message):
       time predictions and insights to the AI. The default value is false.
       This applies only to Cloud SQL for MySQL and Cloud SQL for PostgreSQL
       instances.
+    entraidConfig: Optional. The Microsoft Entra ID configuration for the SQL
+      Server instance.
     finalBackupConfig: Optional. The final backup configuration for the
       instance.
     insightsConfig: Insights configuration, for now relevant only for
@@ -4891,16 +4933,17 @@ class Settings(_messages.Message):
     REQUIRED = 2
 
   class DataApiAccessValueValuesEnum(_messages.Enum):
-    r"""This parameter controls whether to allow using Data API to connect to
-    the instance. Not allowed by default.
+    r"""This parameter controls whether to allow using ExecuteSql API to
+    connect to the instance. Not allowed by default.
 
     Values:
       DATA_API_ACCESS_UNSPECIFIED: Unspecified, effectively the same as
         `DISALLOW_DATA_API`.
-      DISALLOW_DATA_API: Disallow using Data API to connect to the instance.
-      ALLOW_DATA_API: Allow using Data API to connect to the instance. For
-        private IP instances, this allows authorized users to access the
-        instance from the public internet using Data API.
+      DISALLOW_DATA_API: Disallow using ExecuteSql API to connect to the
+        instance.
+      ALLOW_DATA_API: Allow using ExecuteSql API to connect to the instance.
+        For private IP instances, this allows authorized users to access the
+        instance from the public internet using ExecuteSql API.
     """
     DATA_API_ACCESS_UNSPECIFIED = 0
     DISALLOW_DATA_API = 1
@@ -5020,30 +5063,31 @@ class Settings(_messages.Message):
   edition = _messages.EnumField('EditionValueValuesEnum', 24)
   enableDataplexIntegration = _messages.BooleanField(25)
   enableGoogleMlIntegration = _messages.BooleanField(26)
-  finalBackupConfig = _messages.MessageField('FinalBackupConfig', 27)
-  insightsConfig = _messages.MessageField('InsightsConfig', 28)
-  instanceVersion = _messages.StringField(29)
-  ipConfiguration = _messages.MessageField('IpConfiguration', 30)
-  kind = _messages.StringField(31)
-  locationPreference = _messages.MessageField('LocationPreference', 32)
-  maintenanceVersion = _messages.StringField(33)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 34)
-  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 35)
-  performanceCaptureConfig = _messages.MessageField('PerformanceCaptureConfig', 36)
-  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 37)
-  readPoolAutoScaleConfig = _messages.MessageField('ReadPoolAutoScaleConfig', 38)
-  recreateReplicasOnPrimaryCrash = _messages.BooleanField(39)
-  replicationLagMaxSeconds = _messages.IntegerField(40, variant=_messages.Variant.INT32)
-  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 41)
-  retainBackupsOnDelete = _messages.BooleanField(42)
-  settingsVersion = _messages.IntegerField(43)
-  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 44)
-  storageAutoResize = _messages.BooleanField(45)
-  storageAutoResizeLimit = _messages.IntegerField(46)
-  tier = _messages.StringField(47)
-  timeZone = _messages.StringField(48)
-  uncMappings = _messages.MessageField('UncMapping', 49, repeated=True)
-  userLabels = _messages.MessageField('UserLabelsValue', 50)
+  entraidConfig = _messages.MessageField('SqlServerEntraIdConfig', 27)
+  finalBackupConfig = _messages.MessageField('FinalBackupConfig', 28)
+  insightsConfig = _messages.MessageField('InsightsConfig', 29)
+  instanceVersion = _messages.StringField(30)
+  ipConfiguration = _messages.MessageField('IpConfiguration', 31)
+  kind = _messages.StringField(32)
+  locationPreference = _messages.MessageField('LocationPreference', 33)
+  maintenanceVersion = _messages.StringField(34)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 35)
+  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 36)
+  performanceCaptureConfig = _messages.MessageField('PerformanceCaptureConfig', 37)
+  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 38)
+  readPoolAutoScaleConfig = _messages.MessageField('ReadPoolAutoScaleConfig', 39)
+  recreateReplicasOnPrimaryCrash = _messages.BooleanField(40)
+  replicationLagMaxSeconds = _messages.IntegerField(41, variant=_messages.Variant.INT32)
+  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 42)
+  retainBackupsOnDelete = _messages.BooleanField(43)
+  settingsVersion = _messages.IntegerField(44)
+  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 45)
+  storageAutoResize = _messages.BooleanField(46)
+  storageAutoResizeLimit = _messages.IntegerField(47)
+  tier = _messages.StringField(48)
+  timeZone = _messages.StringField(49)
+  uncMappings = _messages.MessageField('UncMapping', 50, repeated=True)
+  userLabels = _messages.MessageField('UserLabelsValue', 51)
 
 
 class SqlActiveDirectoryConfig(_messages.Message):
@@ -5608,6 +5652,10 @@ class SqlInstancesAcquireSsrsLeaseResponse(_messages.Message):
   operationId = _messages.StringField(1)
 
 
+class SqlInstancesAddEntraIdCertificateRequest(_messages.Message):
+  r"""Request for AddEntraIdCertificate RPC."""
+
+
 class SqlInstancesAddReplicationSourceRequest(_messages.Message):
   r"""Instance add replication source request.
 
@@ -5875,6 +5923,19 @@ class SqlInstancesInsertRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
 
 
+class SqlInstancesListEntraIdCertificatesRequest(_messages.Message):
+  r"""A SqlInstancesListEntraIdCertificatesRequest object.
+
+  Fields:
+    instance: Required. Cloud SQL instance ID. This does not include the
+      project ID.
+    project: Required. Project ID of the project that contains the instance.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
 class SqlInstancesListRequest(_messages.Message):
   r"""A SqlInstancesListRequest object.
 
@@ -6125,6 +6186,23 @@ class SqlInstancesRestoreBackupRequest(_messages.Message):
 
   instance = _messages.StringField(1, required=True)
   instancesRestoreBackupRequest = _messages.MessageField('InstancesRestoreBackupRequest', 2)
+  project = _messages.StringField(3, required=True)
+
+
+class SqlInstancesRotateEntraIdCertificateRequest(_messages.Message):
+  r"""A SqlInstancesRotateEntraIdCertificateRequest object.
+
+  Fields:
+    instance: Required. Cloud SQL instance ID. This does not include the
+      project ID.
+    instancesRotateEntraIdCertificateRequest: A
+      InstancesRotateEntraIdCertificateRequest resource to be passed as the
+      request body.
+    project: Required. Project ID of the project that contains the instance.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  instancesRotateEntraIdCertificateRequest = _messages.MessageField('InstancesRotateEntraIdCertificateRequest', 2)
   project = _messages.StringField(3, required=True)
 
 
@@ -6652,6 +6730,21 @@ class SqlServerDatabaseDetails(_messages.Message):
 
   compatibilityLevel = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   recoveryModel = _messages.StringField(2)
+
+
+class SqlServerEntraIdConfig(_messages.Message):
+  r"""SQL Server Entra ID configuration.
+
+  Fields:
+    applicationId: Optional. The application ID for the Entra ID
+      configuration.
+    kind: Output only. This is always sql#sqlServerEntraIdConfig
+    tenantId: Optional. The tenant ID for the Entra ID configuration.
+  """
+
+  applicationId = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  tenantId = _messages.StringField(3)
 
 
 class SqlServerUserDetails(_messages.Message):
@@ -7254,6 +7347,7 @@ class User(_messages.Message):
       CLOUD_IAM_GROUP_SERVICE_ACCOUNT: Read-only. Login for a service account
         that belongs to the Cloud IAM group.
       CLOUD_IAM_WORKFORCE_IDENTITY: Cloud IAM workforce identity.
+      ENTRAID_USER: Microsoft Entra ID user.
     """
     BUILT_IN = 0
     CLOUD_IAM_USER = 1
@@ -7262,6 +7356,7 @@ class User(_messages.Message):
     CLOUD_IAM_GROUP_USER = 4
     CLOUD_IAM_GROUP_SERVICE_ACCOUNT = 5
     CLOUD_IAM_WORKFORCE_IDENTITY = 6
+    ENTRAID_USER = 7
 
   databaseRoles = _messages.StringField(1, repeated=True)
   dualPasswordType = _messages.EnumField('DualPasswordTypeValueValuesEnum', 2)

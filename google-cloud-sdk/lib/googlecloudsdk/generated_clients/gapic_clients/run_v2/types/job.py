@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -268,6 +268,8 @@ class RunJobRequest(proto.Message):
                 Duration in seconds the task may be active before the system
                 will actively try to mark it failed and kill associated
                 containers. Will replace existing timeout_seconds value.
+            priority_tier (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.ExecutionTemplate.PriorityTier):
+                Optional. The priority tier of the execution.
         """
 
         class ContainerOverride(proto.Message):
@@ -319,6 +321,11 @@ class RunJobRequest(proto.Message):
             proto.MESSAGE,
             number=4,
             message=duration_pb2.Duration,
+        )
+        priority_tier: execution_template.ExecutionTemplate.PriorityTier = proto.Field(
+            proto.ENUM,
+            number=5,
+            enum=execution_template.ExecutionTemplate.PriorityTier,
         )
 
     name: str = proto.Field(

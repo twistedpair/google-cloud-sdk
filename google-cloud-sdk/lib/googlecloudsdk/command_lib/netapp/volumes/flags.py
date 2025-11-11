@@ -535,7 +535,6 @@ def AddVolumeBlockDevicesArg(parser, messages):
           spec=block_device_arg_spec),
       action='append',
       help=block_devices_help,
-      hidden=True,
   )
 
 

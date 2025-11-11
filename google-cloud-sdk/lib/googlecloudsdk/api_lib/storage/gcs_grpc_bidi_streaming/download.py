@@ -16,20 +16,19 @@
 """Download workflow used by GCS gRPC bidi streaming client."""
 
 from __future__ import absolute_import
+from __future__ import annotations
 from __future__ import division
 from __future__ import unicode_literals
 
 import io
-from typing import Any, Callable, Dict, Optional, Tuple
+from typing import Any, Callable, Tuple
 
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors as cloud_errors
 from googlecloudsdk.api_lib.storage import gcs_download
 from googlecloudsdk.api_lib.storage.gcs_grpc import grpc_util
-from googlecloudsdk.api_lib.storage.gcs_grpc import metadata_util
 from googlecloudsdk.api_lib.storage.gcs_grpc import retry_util as grpc_retry_util
 from googlecloudsdk.api_lib.storage.gcs_grpc_bidi_streaming import retry_util
-from googlecloudsdk.core import gapic_util
 from googlecloudsdk.core import log
 
 
@@ -82,7 +81,7 @@ def _get_bidi_read_range(
   )
 
 
-def _get_bidi_read_object_rpc(
+def _get_bidi_read_object_request(
     gapic_client,
     cloud_resource,
     start_byte,
@@ -90,7 +89,7 @@ def _get_bidi_read_object_rpc(
     decryption_key,
     read_handle=None,
 ):
-  """Returns a bidi read object RPC."""
+  """Returns a bidi read object RPC request."""
   bucket_name = grpc_util.get_full_bucket_name(
       cloud_resource.storage_url.bucket_name
   )
@@ -101,18 +100,9 @@ def _get_bidi_read_object_rpc(
 
   read_range = _get_bidi_read_range(gapic_client, start_byte, end_byte)
 
-  request = gapic_client.types.BidiReadObjectRequest(
+  return gapic_client.types.BidiReadObjectRequest(
       read_object_spec=read_object_spec,
       read_ranges=[read_range],
-  )
-
-  grpc_metadata = metadata_util.get_bucket_name_routing_header(bucket_name)
-
-  return gapic_util.MakeBidiRpc(
-      gapic_client,
-      gapic_client.storage.bidi_read_object,
-      initial_request=request,
-      metadata=grpc_metadata,
   )
 
 
@@ -126,10 +116,11 @@ def _process_data_from_bidi_read_object_rpc(
     end_byte,
     download_strategy,
     decryption_key,
+    redirection_handler,
     read_handle=None,
 ):
   """Receives data from the bidi read object RPC."""
-  bidi_read_object_rpc = _get_bidi_read_object_rpc(
+  bidi_read_object_request = _get_bidi_read_object_request(
       gapic_client,
       cloud_resource,
       start_byte,
@@ -137,8 +128,12 @@ def _process_data_from_bidi_read_object_rpc(
       decryption_key,
       read_handle,
   )
-  bidi_read_object_rpc.open()
-  bidi_read_object_rpc._request_queue.put(None)  # pylint: disable=protected-access
+  bidi_read_object_rpc = (
+      redirection_handler.start_bidi_rpc_with_retry_on_redirected_token_error(
+          bidi_read_object_request
+      )
+  )
+  bidi_read_object_rpc.requests_done()
 
   processed_bytes = start_byte
   destination_pipe_is_broken = False
@@ -211,6 +206,7 @@ def bidi_download_object(
     end_byte,
     download_strategy,
     decryption_key,
+    redirection_handler,
 ):
   """Downloads the object using gRPC bidi streaming API.
 
@@ -231,6 +227,8 @@ def bidi_download_object(
       perform the download.
     decryption_key (encryption_util.EncryptionKey|None): The decryption key to
       be used to download the object if the object is encrypted.
+    redirection_handler (retry_util.BidiRedirectedTokenErrorHandler): The
+      redirection handler to handle redirected token errors.
   """
 
   target_size = _get_target_size(cloud_resource, start_byte, end_byte)
@@ -246,6 +244,7 @@ def bidi_download_object(
       download_strategy,
       decryption_key,
       target_size,
+      redirection_handler,
   )
 
   total_downloaded_data = processed_bytes - start_byte
@@ -276,13 +275,14 @@ class BidiDownloader:
       gapic_client: 'storage_client_v2.StorageClient',
       cloud_resource: 'resource_reference.ObjectResource',
       download_stream: io.IOBase,
-      digesters: Optional[Dict[str, Any]],
-      progress_callback: Optional[Callable[[int], None]],
+      digesters: dict[str, Any] | None,
+      progress_callback: Callable[[int], None] | None,
       start_byte: int,
-      end_byte: Optional[int],
+      end_byte: int | None,
       download_strategy: cloud_api.DownloadStrategy,
-      decryption_key: Optional['encryption_util.EncryptionKey'],
-      target_size: Optional[int],
+      decryption_key: 'encryption_util.EncryptionKey' | None,
+      target_size: int | None,
+      redirection_handler: retry_util.BidiRedirectedTokenErrorHandler,
   ):
     """Initializes a BidiDownloader instance.
 
@@ -295,18 +295,20 @@ class BidiDownloader:
       cloud_resource (resource_reference.ObjectResource): See
         cloud_api.CloudApi.download_object.
       download_stream (io.IOBase): Stream to send the object data to.
-      digesters (Optional[Dict[str, 'hashlib._Hash']]): See
+      digesters (Dict[str, 'hashlib._Hash'] | None): See
         cloud_api.CloudApi.download_object.
-      progress_callback (Optional[Callable[[int], None]]): See
+      progress_callback (Callable[[int], None] | None): See
         cloud_api.CloudApi.download_object.
       start_byte (int): Starting point for download.
-      end_byte (Optional[int]): Ending byte number, inclusive, for download. If
+      end_byte (int | None): Ending byte number, inclusive, for download. If
         None, download the rest of the object.
       download_strategy (cloud_api.DownloadStrategy): Download strategy used to
         perform the download.
-      decryption_key (Optional[EncryptionKey]): The decryption key to
+      decryption_key (EncryptionKey | None): The decryption key to
         be used to download the object if the object is encrypted.
-      target_size (Optional[int]): The total number of bytes to download.
+      target_size (int | None): The total number of bytes to download.
+      redirection_handler (retry_util.BidiRedirectedTokenErrorHandler): The
+        redirection handler to handle redirected token errors.
     """
     self.process_chunk_func = process_chunk_func
     self.gapic_client = gapic_client
@@ -320,6 +322,7 @@ class BidiDownloader:
     self.decryption_key = decryption_key
     self.target_size = target_size
     self.processed_bytes = start_byte
+    self.redirection_handler = redirection_handler
     self.destination_pipe_is_broken = False
     self.read_handle = None
 
@@ -352,6 +355,7 @@ class BidiDownloader:
         self.end_byte,
         self.download_strategy,
         self.decryption_key,
+        self.redirection_handler,
         read_handle=self.read_handle,
     )
     total_downloaded_data = self.processed_bytes - self.start_byte
@@ -402,6 +406,9 @@ class BidiGrpcDownload(gcs_download.GcsDownload):
     self._progress_callback = progress_callback
     self._download_strategy = download_strategy
     self._decryption_key = decryption_key
+    self._redirection_handler = retry_util.BidiRedirectedTokenErrorHandler(
+        self._gapic_client, self._cloud_resource
+    )
 
   def should_retry(self, exc_type, exc_value, exc_traceback):
     """See super class."""
@@ -419,6 +426,7 @@ class BidiGrpcDownload(gcs_download.GcsDownload):
         end_byte=self._end_byte,
         download_strategy=self._download_strategy,
         decryption_key=self._decryption_key,
+        redirection_handler=self._redirection_handler,
     )
 
   @grpc_retry_util.grpc_default_retryer

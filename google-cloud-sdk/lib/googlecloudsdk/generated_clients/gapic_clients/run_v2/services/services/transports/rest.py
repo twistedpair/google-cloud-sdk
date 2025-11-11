@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,31 +13,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import logging
+import json  # type: ignore
 
 from google.auth.transport.requests import AuthorizedSession  # type: ignore
-import json  # type: ignore
-import grpc  # type: ignore
-from google.auth.transport.grpc import SslCredentials  # type: ignore
 from google.auth import credentials as ga_credentials  # type: ignore
 from google.api_core import exceptions as core_exceptions
 from google.api_core import retry as retries
 from google.api_core import rest_helpers
 from google.api_core import rest_streaming
-from google.api_core import path_template
 from google.api_core import gapic_v1
+import cloudsdk.google.protobuf
 
 from cloudsdk.google.protobuf import json_format
 from google.api_core import operations_v1
+
 from requests import __version__ as requests_version
 import dataclasses
-import re
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 import warnings
-
-try:
-    OptionalRetry = Union[retries.Retry, gapic_v1.method._MethodDefault, None]
-except AttributeError:  # pragma: NO COVER
-    OptionalRetry = Union[retries.Retry, object, None]  # type: ignore
 
 
 from google.iam.v1 import iam_policy_pb2  # type: ignore
@@ -46,14 +40,31 @@ from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import service
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import service as gcr_service
 from google.longrunning import operations_pb2  # type: ignore
 
-from .base import ServicesTransport, DEFAULT_CLIENT_INFO as BASE_DEFAULT_CLIENT_INFO
 
+from .rest_base import _BaseServicesRestTransport
+from .base import DEFAULT_CLIENT_INFO as BASE_DEFAULT_CLIENT_INFO
+
+try:
+    OptionalRetry = Union[retries.Retry, gapic_v1.method._MethodDefault, None]
+except AttributeError:  # pragma: NO COVER
+    OptionalRetry = Union[retries.Retry, object, None]  # type: ignore
+
+try:
+    from google.api_core import client_logging  # type: ignore
+    CLIENT_LOGGING_SUPPORTED = True  # pragma: NO COVER
+except ImportError:  # pragma: NO COVER
+    CLIENT_LOGGING_SUPPORTED = False
+
+_LOGGER = logging.getLogger(__name__)
 
 DEFAULT_CLIENT_INFO = gapic_v1.client_info.ClientInfo(
     gapic_version=BASE_DEFAULT_CLIENT_INFO.gapic_version,
     grpc_version=None,
-    rest_version=requests_version,
+    rest_version=f"requests@{requests_version}",
 )
+
+if hasattr(DEFAULT_CLIENT_INFO, "protobuf_runtime_version"):  # pragma: NO COVER
+    DEFAULT_CLIENT_INFO.protobuf_runtime_version = cloudsdk.google.protobuf.__version__
 
 
 class ServicesRestInterceptor:
@@ -140,7 +151,7 @@ class ServicesRestInterceptor:
 
 
     """
-    def pre_create_service(self, request: gcr_service.CreateServiceRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[gcr_service.CreateServiceRequest, Sequence[Tuple[str, str]]]:
+    def pre_create_service(self, request: gcr_service.CreateServiceRequest, metadata: Sequence[Tuple[str, Union[str, bytes]]]) -> Tuple[gcr_service.CreateServiceRequest, Sequence[Tuple[str, Union[str, bytes]]]]:
         """Pre-rpc interceptor for create_service
 
         Override in a subclass to manipulate the request or metadata
@@ -151,12 +162,32 @@ class ServicesRestInterceptor:
     def post_create_service(self, response: operations_pb2.Operation) -> operations_pb2.Operation:
         """Post-rpc interceptor for create_service
 
-        Override in a subclass to manipulate the response
+        DEPRECATED. Please use the `post_create_service_with_metadata`
+        interceptor instead.
+
+        Override in a subclass to read or manipulate the response
         after it is returned by the Services server but before
-        it is returned to user code.
+        it is returned to user code. This `post_create_service` interceptor runs
+        before the `post_create_service_with_metadata` interceptor.
         """
         return response
-    def pre_delete_service(self, request: service.DeleteServiceRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[service.DeleteServiceRequest, Sequence[Tuple[str, str]]]:
+
+    def post_create_service_with_metadata(self, response: operations_pb2.Operation, metadata: Sequence[Tuple[str, Union[str, bytes]]]) -> Tuple[operations_pb2.Operation, Sequence[Tuple[str, Union[str, bytes]]]]:
+        """Post-rpc interceptor for create_service
+
+        Override in a subclass to read or manipulate the response or metadata after it
+        is returned by the Services server but before it is returned to user code.
+
+        We recommend only using this `post_create_service_with_metadata`
+        interceptor in new development instead of the `post_create_service` interceptor.
+        When both interceptors are used, this `post_create_service_with_metadata` interceptor runs after the
+        `post_create_service` interceptor. The (possibly modified) response returned by
+        `post_create_service` will be passed to
+        `post_create_service_with_metadata`.
+        """
+        return response, metadata
+
+    def pre_delete_service(self, request: service.DeleteServiceRequest, metadata: Sequence[Tuple[str, Union[str, bytes]]]) -> Tuple[service.DeleteServiceRequest, Sequence[Tuple[str, Union[str, bytes]]]]:
         """Pre-rpc interceptor for delete_service
 
         Override in a subclass to manipulate the request or metadata
@@ -167,12 +198,32 @@ class ServicesRestInterceptor:
     def post_delete_service(self, response: operations_pb2.Operation) -> operations_pb2.Operation:
         """Post-rpc interceptor for delete_service
 
-        Override in a subclass to manipulate the response
+        DEPRECATED. Please use the `post_delete_service_with_metadata`
+        interceptor instead.
+
+        Override in a subclass to read or manipulate the response
         after it is returned by the Services server but before
-        it is returned to user code.
+        it is returned to user code. This `post_delete_service` interceptor runs
+        before the `post_delete_service_with_metadata` interceptor.
         """
         return response
-    def pre_get_iam_policy(self, request: iam_policy_pb2.GetIamPolicyRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[iam_policy_pb2.GetIamPolicyRequest, Sequence[Tuple[str, str]]]:
+
+    def post_delete_service_with_metadata(self, response: operations_pb2.Operation, metadata: Sequence[Tuple[str, Union[str, bytes]]]) -> Tuple[operations_pb2.Operation, Sequence[Tuple[str, Union[str, bytes]]]]:
+        """Post-rpc interceptor for delete_service
+
+        Override in a subclass to read or manipulate the response or metadata after it
+        is returned by the Services server but before it is returned to user code.
+
+        We recommend only using this `post_delete_service_with_metadata`
+        interceptor in new development instead of the `post_delete_service` interceptor.
+        When both interceptors are used, this `post_delete_service_with_metadata` interceptor runs after the
+        `post_delete_service` interceptor. The (possibly modified) response returned by
+        `post_delete_service` will be passed to
+        `post_delete_service_with_metadata`.
+        """
+        return response, metadata
+
+    def pre_get_iam_policy(self, request: iam_policy_pb2.GetIamPolicyRequest, metadata: Sequence[Tuple[str, Union[str, bytes]]]) -> Tuple[iam_policy_pb2.GetIamPolicyRequest, Sequence[Tuple[str, Union[str, bytes]]]]:
         """Pre-rpc interceptor for get_iam_policy
 
         Override in a subclass to manipulate the request or metadata
@@ -183,12 +234,32 @@ class ServicesRestInterceptor:
     def post_get_iam_policy(self, response: policy_pb2.Policy) -> policy_pb2.Policy:
         """Post-rpc interceptor for get_iam_policy
 
-        Override in a subclass to manipulate the response
+        DEPRECATED. Please use the `post_get_iam_policy_with_metadata`
+        interceptor instead.
+
+        Override in a subclass to read or manipulate the response
         after it is returned by the Services server but before
-        it is returned to user code.
+        it is returned to user code. This `post_get_iam_policy` interceptor runs
+        before the `post_get_iam_policy_with_metadata` interceptor.
         """
         return response
-    def pre_get_service(self, request: service.GetServiceRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[service.GetServiceRequest, Sequence[Tuple[str, str]]]:
+
+    def post_get_iam_policy_with_metadata(self, response: policy_pb2.Policy, metadata: Sequence[Tuple[str, Union[str, bytes]]]) -> Tuple[policy_pb2.Policy, Sequence[Tuple[str, Union[str, bytes]]]]:
+        """Post-rpc interceptor for get_iam_policy
+
+        Override in a subclass to read or manipulate the response or metadata after it
+        is returned by the Services server but before it is returned to user code.
+
+        We recommend only using this `post_get_iam_policy_with_metadata`
+        interceptor in new development instead of the `post_get_iam_policy` interceptor.
+        When both interceptors are used, this `post_get_iam_policy_with_metadata` interceptor runs after the
+        `post_get_iam_policy` interceptor. The (possibly modified) response returned by
+        `post_get_iam_policy` will be passed to
+        `post_get_iam_policy_with_metadata`.
+        """
+        return response, metadata
+
+    def pre_get_service(self, request: service.GetServiceRequest, metadata: Sequence[Tuple[str, Union[str, bytes]]]) -> Tuple[service.GetServiceRequest, Sequence[Tuple[str, Union[str, bytes]]]]:
         """Pre-rpc interceptor for get_service
 
         Override in a subclass to manipulate the request or metadata
@@ -199,12 +270,32 @@ class ServicesRestInterceptor:
     def post_get_service(self, response: service.Service) -> service.Service:
         """Post-rpc interceptor for get_service
 
-        Override in a subclass to manipulate the response
+        DEPRECATED. Please use the `post_get_service_with_metadata`
+        interceptor instead.
+
+        Override in a subclass to read or manipulate the response
         after it is returned by the Services server but before
-        it is returned to user code.
+        it is returned to user code. This `post_get_service` interceptor runs
+        before the `post_get_service_with_metadata` interceptor.
         """
         return response
-    def pre_list_services(self, request: service.ListServicesRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[service.ListServicesRequest, Sequence[Tuple[str, str]]]:
+
+    def post_get_service_with_metadata(self, response: service.Service, metadata: Sequence[Tuple[str, Union[str, bytes]]]) -> Tuple[service.Service, Sequence[Tuple[str, Union[str, bytes]]]]:
+        """Post-rpc interceptor for get_service
+
+        Override in a subclass to read or manipulate the response or metadata after it
+        is returned by the Services server but before it is returned to user code.
+
+        We recommend only using this `post_get_service_with_metadata`
+        interceptor in new development instead of the `post_get_service` interceptor.
+        When both interceptors are used, this `post_get_service_with_metadata` interceptor runs after the
+        `post_get_service` interceptor. The (possibly modified) response returned by
+        `post_get_service` will be passed to
+        `post_get_service_with_metadata`.
+        """
+        return response, metadata
+
+    def pre_list_services(self, request: service.ListServicesRequest, metadata: Sequence[Tuple[str, Union[str, bytes]]]) -> Tuple[service.ListServicesRequest, Sequence[Tuple[str, Union[str, bytes]]]]:
         """Pre-rpc interceptor for list_services
 
         Override in a subclass to manipulate the request or metadata
@@ -215,12 +306,32 @@ class ServicesRestInterceptor:
     def post_list_services(self, response: service.ListServicesResponse) -> service.ListServicesResponse:
         """Post-rpc interceptor for list_services
 
-        Override in a subclass to manipulate the response
+        DEPRECATED. Please use the `post_list_services_with_metadata`
+        interceptor instead.
+
+        Override in a subclass to read or manipulate the response
         after it is returned by the Services server but before
-        it is returned to user code.
+        it is returned to user code. This `post_list_services` interceptor runs
+        before the `post_list_services_with_metadata` interceptor.
         """
         return response
-    def pre_set_iam_policy(self, request: iam_policy_pb2.SetIamPolicyRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[iam_policy_pb2.SetIamPolicyRequest, Sequence[Tuple[str, str]]]:
+
+    def post_list_services_with_metadata(self, response: service.ListServicesResponse, metadata: Sequence[Tuple[str, Union[str, bytes]]]) -> Tuple[service.ListServicesResponse, Sequence[Tuple[str, Union[str, bytes]]]]:
+        """Post-rpc interceptor for list_services
+
+        Override in a subclass to read or manipulate the response or metadata after it
+        is returned by the Services server but before it is returned to user code.
+
+        We recommend only using this `post_list_services_with_metadata`
+        interceptor in new development instead of the `post_list_services` interceptor.
+        When both interceptors are used, this `post_list_services_with_metadata` interceptor runs after the
+        `post_list_services` interceptor. The (possibly modified) response returned by
+        `post_list_services` will be passed to
+        `post_list_services_with_metadata`.
+        """
+        return response, metadata
+
+    def pre_set_iam_policy(self, request: iam_policy_pb2.SetIamPolicyRequest, metadata: Sequence[Tuple[str, Union[str, bytes]]]) -> Tuple[iam_policy_pb2.SetIamPolicyRequest, Sequence[Tuple[str, Union[str, bytes]]]]:
         """Pre-rpc interceptor for set_iam_policy
 
         Override in a subclass to manipulate the request or metadata
@@ -231,12 +342,32 @@ class ServicesRestInterceptor:
     def post_set_iam_policy(self, response: policy_pb2.Policy) -> policy_pb2.Policy:
         """Post-rpc interceptor for set_iam_policy
 
-        Override in a subclass to manipulate the response
+        DEPRECATED. Please use the `post_set_iam_policy_with_metadata`
+        interceptor instead.
+
+        Override in a subclass to read or manipulate the response
         after it is returned by the Services server but before
-        it is returned to user code.
+        it is returned to user code. This `post_set_iam_policy` interceptor runs
+        before the `post_set_iam_policy_with_metadata` interceptor.
         """
         return response
-    def pre_test_iam_permissions(self, request: iam_policy_pb2.TestIamPermissionsRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[iam_policy_pb2.TestIamPermissionsRequest, Sequence[Tuple[str, str]]]:
+
+    def post_set_iam_policy_with_metadata(self, response: policy_pb2.Policy, metadata: Sequence[Tuple[str, Union[str, bytes]]]) -> Tuple[policy_pb2.Policy, Sequence[Tuple[str, Union[str, bytes]]]]:
+        """Post-rpc interceptor for set_iam_policy
+
+        Override in a subclass to read or manipulate the response or metadata after it
+        is returned by the Services server but before it is returned to user code.
+
+        We recommend only using this `post_set_iam_policy_with_metadata`
+        interceptor in new development instead of the `post_set_iam_policy` interceptor.
+        When both interceptors are used, this `post_set_iam_policy_with_metadata` interceptor runs after the
+        `post_set_iam_policy` interceptor. The (possibly modified) response returned by
+        `post_set_iam_policy` will be passed to
+        `post_set_iam_policy_with_metadata`.
+        """
+        return response, metadata
+
+    def pre_test_iam_permissions(self, request: iam_policy_pb2.TestIamPermissionsRequest, metadata: Sequence[Tuple[str, Union[str, bytes]]]) -> Tuple[iam_policy_pb2.TestIamPermissionsRequest, Sequence[Tuple[str, Union[str, bytes]]]]:
         """Pre-rpc interceptor for test_iam_permissions
 
         Override in a subclass to manipulate the request or metadata
@@ -247,12 +378,32 @@ class ServicesRestInterceptor:
     def post_test_iam_permissions(self, response: iam_policy_pb2.TestIamPermissionsResponse) -> iam_policy_pb2.TestIamPermissionsResponse:
         """Post-rpc interceptor for test_iam_permissions
 
-        Override in a subclass to manipulate the response
+        DEPRECATED. Please use the `post_test_iam_permissions_with_metadata`
+        interceptor instead.
+
+        Override in a subclass to read or manipulate the response
         after it is returned by the Services server but before
-        it is returned to user code.
+        it is returned to user code. This `post_test_iam_permissions` interceptor runs
+        before the `post_test_iam_permissions_with_metadata` interceptor.
         """
         return response
-    def pre_update_service(self, request: gcr_service.UpdateServiceRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[gcr_service.UpdateServiceRequest, Sequence[Tuple[str, str]]]:
+
+    def post_test_iam_permissions_with_metadata(self, response: iam_policy_pb2.TestIamPermissionsResponse, metadata: Sequence[Tuple[str, Union[str, bytes]]]) -> Tuple[iam_policy_pb2.TestIamPermissionsResponse, Sequence[Tuple[str, Union[str, bytes]]]]:
+        """Post-rpc interceptor for test_iam_permissions
+
+        Override in a subclass to read or manipulate the response or metadata after it
+        is returned by the Services server but before it is returned to user code.
+
+        We recommend only using this `post_test_iam_permissions_with_metadata`
+        interceptor in new development instead of the `post_test_iam_permissions` interceptor.
+        When both interceptors are used, this `post_test_iam_permissions_with_metadata` interceptor runs after the
+        `post_test_iam_permissions` interceptor. The (possibly modified) response returned by
+        `post_test_iam_permissions` will be passed to
+        `post_test_iam_permissions_with_metadata`.
+        """
+        return response, metadata
+
+    def pre_update_service(self, request: gcr_service.UpdateServiceRequest, metadata: Sequence[Tuple[str, Union[str, bytes]]]) -> Tuple[gcr_service.UpdateServiceRequest, Sequence[Tuple[str, Union[str, bytes]]]]:
         """Pre-rpc interceptor for update_service
 
         Override in a subclass to manipulate the request or metadata
@@ -263,11 +414,30 @@ class ServicesRestInterceptor:
     def post_update_service(self, response: operations_pb2.Operation) -> operations_pb2.Operation:
         """Post-rpc interceptor for update_service
 
-        Override in a subclass to manipulate the response
+        DEPRECATED. Please use the `post_update_service_with_metadata`
+        interceptor instead.
+
+        Override in a subclass to read or manipulate the response
         after it is returned by the Services server but before
-        it is returned to user code.
+        it is returned to user code. This `post_update_service` interceptor runs
+        before the `post_update_service_with_metadata` interceptor.
         """
         return response
+
+    def post_update_service_with_metadata(self, response: operations_pb2.Operation, metadata: Sequence[Tuple[str, Union[str, bytes]]]) -> Tuple[operations_pb2.Operation, Sequence[Tuple[str, Union[str, bytes]]]]:
+        """Post-rpc interceptor for update_service
+
+        Override in a subclass to read or manipulate the response or metadata after it
+        is returned by the Services server but before it is returned to user code.
+
+        We recommend only using this `post_update_service_with_metadata`
+        interceptor in new development instead of the `post_update_service` interceptor.
+        When both interceptors are used, this `post_update_service_with_metadata` interceptor runs after the
+        `post_update_service` interceptor. The (possibly modified) response returned by
+        `post_update_service` will be passed to
+        `post_update_service_with_metadata`.
+        """
+        return response, metadata
 
 
 @dataclasses.dataclass
@@ -277,8 +447,8 @@ class ServicesRestStub:
     _interceptor: ServicesRestInterceptor
 
 
-class ServicesRestTransport(ServicesTransport):
-    """REST backend transport for Services.
+class ServicesRestTransport(_BaseServicesRestTransport):
+    """REST backend synchronous transport for Services.
 
     Cloud Run Service Control Plane API
 
@@ -287,10 +457,6 @@ class ServicesRestTransport(ServicesTransport):
     and call it.
 
     It sends JSON representations of protocol buffers over HTTP/1.1
-
-    NOTE: This REST transport functionality is currently in a beta
-    state (preview). We welcome your feedback via an issue in this
-    library's source repository. Thank you!
     """
 
     def __init__(self, *,
@@ -322,9 +488,10 @@ class ServicesRestTransport(ServicesTransport):
                 are specified, the client will attempt to ascertain the
                 credentials from the environment.
 
-            credentials_file (Optional[str]): A file with credentials that can
+            credentials_file (Optional[str]): Deprecated. A file with credentials that can
                 be loaded with :func:`google.auth.load_credentials_from_file`.
-                This argument is ignored if ``channel`` is provided.
+                This argument is ignored if ``channel`` is provided. This argument will be
+                removed in the next major version of this library.
             scopes (Optional(Sequence[str])): A list of scopes. This argument is
                 ignored if ``channel`` is provided.
             client_cert_source_for_mtls (Callable[[], Tuple[bytes, bytes]]): Client
@@ -347,19 +514,12 @@ class ServicesRestTransport(ServicesTransport):
         # TODO(yon-mg): resolve other ctor params i.e. scopes, quota, etc.
         # TODO: When custom host (api_endpoint) is set, `scopes` must *also* be set on the
         # credentials object
-        maybe_url_match = re.match("^(?P<scheme>http(?:s)?://)?(?P<host>.*)$", host)
-        if maybe_url_match is None:
-            raise ValueError(f"Unexpected hostname structure: {host}")  # pragma: NO COVER
-
-        url_match_items = maybe_url_match.groupdict()
-
-        host = f"{url_scheme}://{host}" if not url_match_items["scheme"] else host
-
         super().__init__(
             host=host,
             credentials=credentials,
             client_info=client_info,
             always_use_jwt_access=always_use_jwt_access,
+            url_scheme=url_scheme,
             api_audience=api_audience
         )
         self._session = AuthorizedSession(
@@ -395,22 +555,38 @@ class ServicesRestTransport(ServicesTransport):
         # Return the client from cache.
         return self._operations_client
 
-    class _CreateService(ServicesRestStub):
+    class _CreateService(_BaseServicesRestTransport._BaseCreateService, ServicesRestStub):
         def __hash__(self):
-            return hash("CreateService")
+            return hash("ServicesRestTransport.CreateService")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-            "serviceId" : "",        }
+        @staticmethod
+        def _get_response(
+            host,
+            metadata,
+            query_params,
+            session,
+            timeout,
+            transcoded_request,
+            body=None):
 
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(session, method)(
+                "{host}{uri}".format(host=host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                data=body,
+                )
+            return response
 
         def __call__(self,
                 request: gcr_service.CreateServiceRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> operations_pb2.Operation:
             r"""Call the create service method over HTTP.
 
@@ -421,8 +597,10 @@ class ServicesRestTransport(ServicesTransport):
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
-                metadata (Sequence[Tuple[str, str]]): Strings which should be
-                    sent along with the request as metadata.
+                metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                    sent along with the request as metadata. Normally, each value must be of type `str`,
+                    but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                    be of type `bytes`.
 
             Returns:
                 ~.operations_pb2.Operation:
@@ -432,42 +610,41 @@ class ServicesRestTransport(ServicesTransport):
 
             """
 
-            http_options: List[Dict[str, str]] = [{
-                'method': 'post',
-                'uri': '/v2/{parent=projects/*/locations/*}/services',
-                'body': 'service',
-            },
-            ]
+            http_options = _BaseServicesRestTransport._BaseCreateService._get_http_options()
+
             request, metadata = self._interceptor.pre_create_service(request, metadata)
-            pb_request = gcr_service.CreateServiceRequest.pb(request)
-            transcoded_request = path_template.transcode(http_options, pb_request)
+            transcoded_request = _BaseServicesRestTransport._BaseCreateService._get_transcoded_request(http_options, request)
 
-            # Jsonify the request body
-
-            body = json_format.MessageToJson(
-                transcoded_request['body'],
-                use_integers_for_enums=False
-            )
-            uri = transcoded_request['uri']
-            method = transcoded_request['method']
+            body = _BaseServicesRestTransport._BaseCreateService._get_request_body_json(transcoded_request)
 
             # Jsonify the query params
-            query_params = json.loads(json_format.MessageToJson(
-                transcoded_request['query_params'],
-                use_integers_for_enums=False,
-            ))
-            query_params.update(self._get_unset_required_fields(query_params))
+            query_params = _BaseServicesRestTransport._BaseCreateService._get_query_params_json(transcoded_request)
+
+            if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(logging.DEBUG):  # pragma: NO COVER
+                request_url = "{host}{uri}".format(host=self._host, uri=transcoded_request['uri'])
+                method = transcoded_request['method']
+                try:
+                    request_payload = json_format.MessageToJson(request)
+                except:
+                    request_payload = None
+                http_request = {
+                  "payload": request_payload,
+                  "requestMethod": method,
+                  "requestUrl": request_url,
+                  "headers": dict(metadata),
+                }
+                _LOGGER.debug(
+                    f"Sending request for google.cloud.run_v2.ServicesClient.CreateService",
+                    extra = {
+                        "serviceName": "google.cloud.run.v2.Services",
+                        "rpcName": "CreateService",
+                        "httpRequest": http_request,
+                        "metadata": http_request["headers"],
+                    },
+                )
 
             # Send the request
-            headers = dict(metadata)
-            headers['Content-Type'] = 'application/json'
-            response = getattr(self._session, method)(
-                "{host}{uri}".format(host=self._host, uri=uri),
-                timeout=timeout,
-                headers=headers,
-                params=rest_helpers.flatten_query_params(query_params, strict=True),
-                data=body,
-                )
+            response = ServicesRestTransport._CreateService._get_response(self._host, metadata, query_params, self._session, timeout, transcoded_request, body)
 
             # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
             # subclass.
@@ -477,25 +654,62 @@ class ServicesRestTransport(ServicesTransport):
             # Return the response
             resp = operations_pb2.Operation()
             json_format.Parse(response.content, resp, ignore_unknown_fields=True)
+
             resp = self._interceptor.post_create_service(resp)
+            response_metadata = [(k, str(v)) for k, v in response.headers.items()]
+            resp, _ = self._interceptor.post_create_service_with_metadata(resp, response_metadata)
+            if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(logging.DEBUG):  # pragma: NO COVER
+                try:
+                    response_payload = json_format.MessageToJson(resp)
+                except:
+                    response_payload = None
+                http_response = {
+                "payload": response_payload,
+                "headers":  dict(response.headers),
+                "status": response.status_code,
+                }
+                _LOGGER.debug(
+                    "Received response for google.cloud.run_v2.ServicesClient.create_service",
+                    extra = {
+                        "serviceName": "google.cloud.run.v2.Services",
+                        "rpcName": "CreateService",
+                        "metadata": http_response["headers"],
+                        "httpResponse": http_response,
+                    },
+                )
             return resp
 
-    class _DeleteService(ServicesRestStub):
+    class _DeleteService(_BaseServicesRestTransport._BaseDeleteService, ServicesRestStub):
         def __hash__(self):
-            return hash("DeleteService")
+            return hash("ServicesRestTransport.DeleteService")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
+        @staticmethod
+        def _get_response(
+            host,
+            metadata,
+            query_params,
+            session,
+            timeout,
+            transcoded_request,
+            body=None):
 
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(session, method)(
+                "{host}{uri}".format(host=host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                )
+            return response
 
         def __call__(self,
                 request: service.DeleteServiceRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> operations_pb2.Operation:
             r"""Call the delete service method over HTTP.
 
@@ -506,8 +720,10 @@ class ServicesRestTransport(ServicesTransport):
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
-                metadata (Sequence[Tuple[str, str]]): Strings which should be
-                    sent along with the request as metadata.
+                metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                    sent along with the request as metadata. Normally, each value must be of type `str`,
+                    but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                    be of type `bytes`.
 
             Returns:
                 ~.operations_pb2.Operation:
@@ -517,34 +733,39 @@ class ServicesRestTransport(ServicesTransport):
 
             """
 
-            http_options: List[Dict[str, str]] = [{
-                'method': 'delete',
-                'uri': '/v2/{name=projects/*/locations/*/services/*}',
-            },
-            ]
-            request, metadata = self._interceptor.pre_delete_service(request, metadata)
-            pb_request = service.DeleteServiceRequest.pb(request)
-            transcoded_request = path_template.transcode(http_options, pb_request)
+            http_options = _BaseServicesRestTransport._BaseDeleteService._get_http_options()
 
-            uri = transcoded_request['uri']
-            method = transcoded_request['method']
+            request, metadata = self._interceptor.pre_delete_service(request, metadata)
+            transcoded_request = _BaseServicesRestTransport._BaseDeleteService._get_transcoded_request(http_options, request)
 
             # Jsonify the query params
-            query_params = json.loads(json_format.MessageToJson(
-                transcoded_request['query_params'],
-                use_integers_for_enums=False,
-            ))
-            query_params.update(self._get_unset_required_fields(query_params))
+            query_params = _BaseServicesRestTransport._BaseDeleteService._get_query_params_json(transcoded_request)
+
+            if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(logging.DEBUG):  # pragma: NO COVER
+                request_url = "{host}{uri}".format(host=self._host, uri=transcoded_request['uri'])
+                method = transcoded_request['method']
+                try:
+                    request_payload = json_format.MessageToJson(request)
+                except:
+                    request_payload = None
+                http_request = {
+                  "payload": request_payload,
+                  "requestMethod": method,
+                  "requestUrl": request_url,
+                  "headers": dict(metadata),
+                }
+                _LOGGER.debug(
+                    f"Sending request for google.cloud.run_v2.ServicesClient.DeleteService",
+                    extra = {
+                        "serviceName": "google.cloud.run.v2.Services",
+                        "rpcName": "DeleteService",
+                        "httpRequest": http_request,
+                        "metadata": http_request["headers"],
+                    },
+                )
 
             # Send the request
-            headers = dict(metadata)
-            headers['Content-Type'] = 'application/json'
-            response = getattr(self._session, method)(
-                "{host}{uri}".format(host=self._host, uri=uri),
-                timeout=timeout,
-                headers=headers,
-                params=rest_helpers.flatten_query_params(query_params, strict=True),
-                )
+            response = ServicesRestTransport._DeleteService._get_response(self._host, metadata, query_params, self._session, timeout, transcoded_request)
 
             # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
             # subclass.
@@ -554,25 +775,62 @@ class ServicesRestTransport(ServicesTransport):
             # Return the response
             resp = operations_pb2.Operation()
             json_format.Parse(response.content, resp, ignore_unknown_fields=True)
+
             resp = self._interceptor.post_delete_service(resp)
+            response_metadata = [(k, str(v)) for k, v in response.headers.items()]
+            resp, _ = self._interceptor.post_delete_service_with_metadata(resp, response_metadata)
+            if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(logging.DEBUG):  # pragma: NO COVER
+                try:
+                    response_payload = json_format.MessageToJson(resp)
+                except:
+                    response_payload = None
+                http_response = {
+                "payload": response_payload,
+                "headers":  dict(response.headers),
+                "status": response.status_code,
+                }
+                _LOGGER.debug(
+                    "Received response for google.cloud.run_v2.ServicesClient.delete_service",
+                    extra = {
+                        "serviceName": "google.cloud.run.v2.Services",
+                        "rpcName": "DeleteService",
+                        "metadata": http_response["headers"],
+                        "httpResponse": http_response,
+                    },
+                )
             return resp
 
-    class _GetIamPolicy(ServicesRestStub):
+    class _GetIamPolicy(_BaseServicesRestTransport._BaseGetIamPolicy, ServicesRestStub):
         def __hash__(self):
-            return hash("GetIamPolicy")
+            return hash("ServicesRestTransport.GetIamPolicy")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
+        @staticmethod
+        def _get_response(
+            host,
+            metadata,
+            query_params,
+            session,
+            timeout,
+            transcoded_request,
+            body=None):
 
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(session, method)(
+                "{host}{uri}".format(host=host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                )
+            return response
 
         def __call__(self,
                 request: iam_policy_pb2.GetIamPolicyRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> policy_pb2.Policy:
             r"""Call the get iam policy method over HTTP.
 
@@ -582,8 +840,10 @@ class ServicesRestTransport(ServicesTransport):
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
-                metadata (Sequence[Tuple[str, str]]): Strings which should be
-                    sent along with the request as metadata.
+                metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                    sent along with the request as metadata. Normally, each value must be of type `str`,
+                    but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                    be of type `bytes`.
 
             Returns:
                 ~.policy_pb2.Policy:
@@ -655,34 +915,39 @@ class ServicesRestTransport(ServicesTransport):
 
             """
 
-            http_options: List[Dict[str, str]] = [{
-                'method': 'get',
-                'uri': '/v2/{resource=projects/*/locations/*/services/*}:getIamPolicy',
-            },
-            ]
-            request, metadata = self._interceptor.pre_get_iam_policy(request, metadata)
-            pb_request = request
-            transcoded_request = path_template.transcode(http_options, pb_request)
+            http_options = _BaseServicesRestTransport._BaseGetIamPolicy._get_http_options()
 
-            uri = transcoded_request['uri']
-            method = transcoded_request['method']
+            request, metadata = self._interceptor.pre_get_iam_policy(request, metadata)
+            transcoded_request = _BaseServicesRestTransport._BaseGetIamPolicy._get_transcoded_request(http_options, request)
 
             # Jsonify the query params
-            query_params = json.loads(json_format.MessageToJson(
-                transcoded_request['query_params'],
-                use_integers_for_enums=False,
-            ))
-            query_params.update(self._get_unset_required_fields(query_params))
+            query_params = _BaseServicesRestTransport._BaseGetIamPolicy._get_query_params_json(transcoded_request)
+
+            if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(logging.DEBUG):  # pragma: NO COVER
+                request_url = "{host}{uri}".format(host=self._host, uri=transcoded_request['uri'])
+                method = transcoded_request['method']
+                try:
+                    request_payload = json_format.MessageToJson(request)
+                except:
+                    request_payload = None
+                http_request = {
+                  "payload": request_payload,
+                  "requestMethod": method,
+                  "requestUrl": request_url,
+                  "headers": dict(metadata),
+                }
+                _LOGGER.debug(
+                    f"Sending request for google.cloud.run_v2.ServicesClient.GetIamPolicy",
+                    extra = {
+                        "serviceName": "google.cloud.run.v2.Services",
+                        "rpcName": "GetIamPolicy",
+                        "httpRequest": http_request,
+                        "metadata": http_request["headers"],
+                    },
+                )
 
             # Send the request
-            headers = dict(metadata)
-            headers['Content-Type'] = 'application/json'
-            response = getattr(self._session, method)(
-                "{host}{uri}".format(host=self._host, uri=uri),
-                timeout=timeout,
-                headers=headers,
-                params=rest_helpers.flatten_query_params(query_params, strict=True),
-                )
+            response = ServicesRestTransport._GetIamPolicy._get_response(self._host, metadata, query_params, self._session, timeout, transcoded_request)
 
             # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
             # subclass.
@@ -694,25 +959,62 @@ class ServicesRestTransport(ServicesTransport):
             pb_resp = resp
 
             json_format.Parse(response.content, pb_resp, ignore_unknown_fields=True)
+
             resp = self._interceptor.post_get_iam_policy(resp)
+            response_metadata = [(k, str(v)) for k, v in response.headers.items()]
+            resp, _ = self._interceptor.post_get_iam_policy_with_metadata(resp, response_metadata)
+            if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(logging.DEBUG):  # pragma: NO COVER
+                try:
+                    response_payload = json_format.MessageToJson(resp)
+                except:
+                    response_payload = None
+                http_response = {
+                "payload": response_payload,
+                "headers":  dict(response.headers),
+                "status": response.status_code,
+                }
+                _LOGGER.debug(
+                    "Received response for google.cloud.run_v2.ServicesClient.get_iam_policy",
+                    extra = {
+                        "serviceName": "google.cloud.run.v2.Services",
+                        "rpcName": "GetIamPolicy",
+                        "metadata": http_response["headers"],
+                        "httpResponse": http_response,
+                    },
+                )
             return resp
 
-    class _GetService(ServicesRestStub):
+    class _GetService(_BaseServicesRestTransport._BaseGetService, ServicesRestStub):
         def __hash__(self):
-            return hash("GetService")
+            return hash("ServicesRestTransport.GetService")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
+        @staticmethod
+        def _get_response(
+            host,
+            metadata,
+            query_params,
+            session,
+            timeout,
+            transcoded_request,
+            body=None):
 
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(session, method)(
+                "{host}{uri}".format(host=host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                )
+            return response
 
         def __call__(self,
                 request: service.GetServiceRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> service.Service:
             r"""Call the get service method over HTTP.
 
@@ -723,8 +1025,10 @@ class ServicesRestTransport(ServicesTransport):
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
-                metadata (Sequence[Tuple[str, str]]): Strings which should be
-                    sent along with the request as metadata.
+                metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                    sent along with the request as metadata. Normally, each value must be of type `str`,
+                    but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                    be of type `bytes`.
 
             Returns:
                 ~.service.Service:
@@ -740,34 +1044,39 @@ class ServicesRestTransport(ServicesTransport):
 
             """
 
-            http_options: List[Dict[str, str]] = [{
-                'method': 'get',
-                'uri': '/v2/{name=projects/*/locations/*/services/*}',
-            },
-            ]
-            request, metadata = self._interceptor.pre_get_service(request, metadata)
-            pb_request = service.GetServiceRequest.pb(request)
-            transcoded_request = path_template.transcode(http_options, pb_request)
+            http_options = _BaseServicesRestTransport._BaseGetService._get_http_options()
 
-            uri = transcoded_request['uri']
-            method = transcoded_request['method']
+            request, metadata = self._interceptor.pre_get_service(request, metadata)
+            transcoded_request = _BaseServicesRestTransport._BaseGetService._get_transcoded_request(http_options, request)
 
             # Jsonify the query params
-            query_params = json.loads(json_format.MessageToJson(
-                transcoded_request['query_params'],
-                use_integers_for_enums=False,
-            ))
-            query_params.update(self._get_unset_required_fields(query_params))
+            query_params = _BaseServicesRestTransport._BaseGetService._get_query_params_json(transcoded_request)
+
+            if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(logging.DEBUG):  # pragma: NO COVER
+                request_url = "{host}{uri}".format(host=self._host, uri=transcoded_request['uri'])
+                method = transcoded_request['method']
+                try:
+                    request_payload = type(request).to_json(request)
+                except:
+                    request_payload = None
+                http_request = {
+                  "payload": request_payload,
+                  "requestMethod": method,
+                  "requestUrl": request_url,
+                  "headers": dict(metadata),
+                }
+                _LOGGER.debug(
+                    f"Sending request for google.cloud.run_v2.ServicesClient.GetService",
+                    extra = {
+                        "serviceName": "google.cloud.run.v2.Services",
+                        "rpcName": "GetService",
+                        "httpRequest": http_request,
+                        "metadata": http_request["headers"],
+                    },
+                )
 
             # Send the request
-            headers = dict(metadata)
-            headers['Content-Type'] = 'application/json'
-            response = getattr(self._session, method)(
-                "{host}{uri}".format(host=self._host, uri=uri),
-                timeout=timeout,
-                headers=headers,
-                params=rest_helpers.flatten_query_params(query_params, strict=True),
-                )
+            response = ServicesRestTransport._GetService._get_response(self._host, metadata, query_params, self._session, timeout, transcoded_request)
 
             # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
             # subclass.
@@ -779,25 +1088,62 @@ class ServicesRestTransport(ServicesTransport):
             pb_resp = service.Service.pb(resp)
 
             json_format.Parse(response.content, pb_resp, ignore_unknown_fields=True)
+
             resp = self._interceptor.post_get_service(resp)
+            response_metadata = [(k, str(v)) for k, v in response.headers.items()]
+            resp, _ = self._interceptor.post_get_service_with_metadata(resp, response_metadata)
+            if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(logging.DEBUG):  # pragma: NO COVER
+                try:
+                    response_payload = service.Service.to_json(response)
+                except:
+                    response_payload = None
+                http_response = {
+                "payload": response_payload,
+                "headers":  dict(response.headers),
+                "status": response.status_code,
+                }
+                _LOGGER.debug(
+                    "Received response for google.cloud.run_v2.ServicesClient.get_service",
+                    extra = {
+                        "serviceName": "google.cloud.run.v2.Services",
+                        "rpcName": "GetService",
+                        "metadata": http_response["headers"],
+                        "httpResponse": http_response,
+                    },
+                )
             return resp
 
-    class _ListServices(ServicesRestStub):
+    class _ListServices(_BaseServicesRestTransport._BaseListServices, ServicesRestStub):
         def __hash__(self):
-            return hash("ListServices")
+            return hash("ServicesRestTransport.ListServices")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
+        @staticmethod
+        def _get_response(
+            host,
+            metadata,
+            query_params,
+            session,
+            timeout,
+            transcoded_request,
+            body=None):
 
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(session, method)(
+                "{host}{uri}".format(host=host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                )
+            return response
 
         def __call__(self,
                 request: service.ListServicesRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> service.ListServicesResponse:
             r"""Call the list services method over HTTP.
 
@@ -808,8 +1154,10 @@ class ServicesRestTransport(ServicesTransport):
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
-                metadata (Sequence[Tuple[str, str]]): Strings which should be
-                    sent along with the request as metadata.
+                metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                    sent along with the request as metadata. Normally, each value must be of type `str`,
+                    but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                    be of type `bytes`.
 
             Returns:
                 ~.service.ListServicesResponse:
@@ -818,34 +1166,39 @@ class ServicesRestTransport(ServicesTransport):
 
             """
 
-            http_options: List[Dict[str, str]] = [{
-                'method': 'get',
-                'uri': '/v2/{parent=projects/*/locations/*}/services',
-            },
-            ]
-            request, metadata = self._interceptor.pre_list_services(request, metadata)
-            pb_request = service.ListServicesRequest.pb(request)
-            transcoded_request = path_template.transcode(http_options, pb_request)
+            http_options = _BaseServicesRestTransport._BaseListServices._get_http_options()
 
-            uri = transcoded_request['uri']
-            method = transcoded_request['method']
+            request, metadata = self._interceptor.pre_list_services(request, metadata)
+            transcoded_request = _BaseServicesRestTransport._BaseListServices._get_transcoded_request(http_options, request)
 
             # Jsonify the query params
-            query_params = json.loads(json_format.MessageToJson(
-                transcoded_request['query_params'],
-                use_integers_for_enums=False,
-            ))
-            query_params.update(self._get_unset_required_fields(query_params))
+            query_params = _BaseServicesRestTransport._BaseListServices._get_query_params_json(transcoded_request)
+
+            if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(logging.DEBUG):  # pragma: NO COVER
+                request_url = "{host}{uri}".format(host=self._host, uri=transcoded_request['uri'])
+                method = transcoded_request['method']
+                try:
+                    request_payload = type(request).to_json(request)
+                except:
+                    request_payload = None
+                http_request = {
+                  "payload": request_payload,
+                  "requestMethod": method,
+                  "requestUrl": request_url,
+                  "headers": dict(metadata),
+                }
+                _LOGGER.debug(
+                    f"Sending request for google.cloud.run_v2.ServicesClient.ListServices",
+                    extra = {
+                        "serviceName": "google.cloud.run.v2.Services",
+                        "rpcName": "ListServices",
+                        "httpRequest": http_request,
+                        "metadata": http_request["headers"],
+                    },
+                )
 
             # Send the request
-            headers = dict(metadata)
-            headers['Content-Type'] = 'application/json'
-            response = getattr(self._session, method)(
-                "{host}{uri}".format(host=self._host, uri=uri),
-                timeout=timeout,
-                headers=headers,
-                params=rest_helpers.flatten_query_params(query_params, strict=True),
-                )
+            response = ServicesRestTransport._ListServices._get_response(self._host, metadata, query_params, self._session, timeout, transcoded_request)
 
             # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
             # subclass.
@@ -857,25 +1210,63 @@ class ServicesRestTransport(ServicesTransport):
             pb_resp = service.ListServicesResponse.pb(resp)
 
             json_format.Parse(response.content, pb_resp, ignore_unknown_fields=True)
+
             resp = self._interceptor.post_list_services(resp)
+            response_metadata = [(k, str(v)) for k, v in response.headers.items()]
+            resp, _ = self._interceptor.post_list_services_with_metadata(resp, response_metadata)
+            if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(logging.DEBUG):  # pragma: NO COVER
+                try:
+                    response_payload = service.ListServicesResponse.to_json(response)
+                except:
+                    response_payload = None
+                http_response = {
+                "payload": response_payload,
+                "headers":  dict(response.headers),
+                "status": response.status_code,
+                }
+                _LOGGER.debug(
+                    "Received response for google.cloud.run_v2.ServicesClient.list_services",
+                    extra = {
+                        "serviceName": "google.cloud.run.v2.Services",
+                        "rpcName": "ListServices",
+                        "metadata": http_response["headers"],
+                        "httpResponse": http_response,
+                    },
+                )
             return resp
 
-    class _SetIamPolicy(ServicesRestStub):
+    class _SetIamPolicy(_BaseServicesRestTransport._BaseSetIamPolicy, ServicesRestStub):
         def __hash__(self):
-            return hash("SetIamPolicy")
+            return hash("ServicesRestTransport.SetIamPolicy")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
+        @staticmethod
+        def _get_response(
+            host,
+            metadata,
+            query_params,
+            session,
+            timeout,
+            transcoded_request,
+            body=None):
 
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(session, method)(
+                "{host}{uri}".format(host=host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                data=body,
+                )
+            return response
 
         def __call__(self,
                 request: iam_policy_pb2.SetIamPolicyRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> policy_pb2.Policy:
             r"""Call the set iam policy method over HTTP.
 
@@ -885,8 +1276,10 @@ class ServicesRestTransport(ServicesTransport):
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
-                metadata (Sequence[Tuple[str, str]]): Strings which should be
-                    sent along with the request as metadata.
+                metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                    sent along with the request as metadata. Normally, each value must be of type `str`,
+                    but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                    be of type `bytes`.
 
             Returns:
                 ~.policy_pb2.Policy:
@@ -958,42 +1351,41 @@ class ServicesRestTransport(ServicesTransport):
 
             """
 
-            http_options: List[Dict[str, str]] = [{
-                'method': 'post',
-                'uri': '/v2/{resource=projects/*/locations/*/services/*}:setIamPolicy',
-                'body': '*',
-            },
-            ]
+            http_options = _BaseServicesRestTransport._BaseSetIamPolicy._get_http_options()
+
             request, metadata = self._interceptor.pre_set_iam_policy(request, metadata)
-            pb_request = request
-            transcoded_request = path_template.transcode(http_options, pb_request)
+            transcoded_request = _BaseServicesRestTransport._BaseSetIamPolicy._get_transcoded_request(http_options, request)
 
-            # Jsonify the request body
-
-            body = json_format.MessageToJson(
-                transcoded_request['body'],
-                use_integers_for_enums=False
-            )
-            uri = transcoded_request['uri']
-            method = transcoded_request['method']
+            body = _BaseServicesRestTransport._BaseSetIamPolicy._get_request_body_json(transcoded_request)
 
             # Jsonify the query params
-            query_params = json.loads(json_format.MessageToJson(
-                transcoded_request['query_params'],
-                use_integers_for_enums=False,
-            ))
-            query_params.update(self._get_unset_required_fields(query_params))
+            query_params = _BaseServicesRestTransport._BaseSetIamPolicy._get_query_params_json(transcoded_request)
+
+            if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(logging.DEBUG):  # pragma: NO COVER
+                request_url = "{host}{uri}".format(host=self._host, uri=transcoded_request['uri'])
+                method = transcoded_request['method']
+                try:
+                    request_payload = json_format.MessageToJson(request)
+                except:
+                    request_payload = None
+                http_request = {
+                  "payload": request_payload,
+                  "requestMethod": method,
+                  "requestUrl": request_url,
+                  "headers": dict(metadata),
+                }
+                _LOGGER.debug(
+                    f"Sending request for google.cloud.run_v2.ServicesClient.SetIamPolicy",
+                    extra = {
+                        "serviceName": "google.cloud.run.v2.Services",
+                        "rpcName": "SetIamPolicy",
+                        "httpRequest": http_request,
+                        "metadata": http_request["headers"],
+                    },
+                )
 
             # Send the request
-            headers = dict(metadata)
-            headers['Content-Type'] = 'application/json'
-            response = getattr(self._session, method)(
-                "{host}{uri}".format(host=self._host, uri=uri),
-                timeout=timeout,
-                headers=headers,
-                params=rest_helpers.flatten_query_params(query_params, strict=True),
-                data=body,
-                )
+            response = ServicesRestTransport._SetIamPolicy._get_response(self._host, metadata, query_params, self._session, timeout, transcoded_request, body)
 
             # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
             # subclass.
@@ -1005,25 +1397,63 @@ class ServicesRestTransport(ServicesTransport):
             pb_resp = resp
 
             json_format.Parse(response.content, pb_resp, ignore_unknown_fields=True)
+
             resp = self._interceptor.post_set_iam_policy(resp)
+            response_metadata = [(k, str(v)) for k, v in response.headers.items()]
+            resp, _ = self._interceptor.post_set_iam_policy_with_metadata(resp, response_metadata)
+            if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(logging.DEBUG):  # pragma: NO COVER
+                try:
+                    response_payload = json_format.MessageToJson(resp)
+                except:
+                    response_payload = None
+                http_response = {
+                "payload": response_payload,
+                "headers":  dict(response.headers),
+                "status": response.status_code,
+                }
+                _LOGGER.debug(
+                    "Received response for google.cloud.run_v2.ServicesClient.set_iam_policy",
+                    extra = {
+                        "serviceName": "google.cloud.run.v2.Services",
+                        "rpcName": "SetIamPolicy",
+                        "metadata": http_response["headers"],
+                        "httpResponse": http_response,
+                    },
+                )
             return resp
 
-    class _TestIamPermissions(ServicesRestStub):
+    class _TestIamPermissions(_BaseServicesRestTransport._BaseTestIamPermissions, ServicesRestStub):
         def __hash__(self):
-            return hash("TestIamPermissions")
+            return hash("ServicesRestTransport.TestIamPermissions")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
+        @staticmethod
+        def _get_response(
+            host,
+            metadata,
+            query_params,
+            session,
+            timeout,
+            transcoded_request,
+            body=None):
 
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(session, method)(
+                "{host}{uri}".format(host=host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                data=body,
+                )
+            return response
 
         def __call__(self,
                 request: iam_policy_pb2.TestIamPermissionsRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> iam_policy_pb2.TestIamPermissionsResponse:
             r"""Call the test iam permissions method over HTTP.
 
@@ -1033,50 +1463,51 @@ class ServicesRestTransport(ServicesTransport):
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
-                metadata (Sequence[Tuple[str, str]]): Strings which should be
-                    sent along with the request as metadata.
+                metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                    sent along with the request as metadata. Normally, each value must be of type `str`,
+                    but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                    be of type `bytes`.
 
             Returns:
                 ~.iam_policy_pb2.TestIamPermissionsResponse:
                     Response message for ``TestIamPermissions`` method.
             """
 
-            http_options: List[Dict[str, str]] = [{
-                'method': 'post',
-                'uri': '/v2/{resource=projects/*/locations/*/services/*}:testIamPermissions',
-                'body': '*',
-            },
-            ]
+            http_options = _BaseServicesRestTransport._BaseTestIamPermissions._get_http_options()
+
             request, metadata = self._interceptor.pre_test_iam_permissions(request, metadata)
-            pb_request = request
-            transcoded_request = path_template.transcode(http_options, pb_request)
+            transcoded_request = _BaseServicesRestTransport._BaseTestIamPermissions._get_transcoded_request(http_options, request)
 
-            # Jsonify the request body
-
-            body = json_format.MessageToJson(
-                transcoded_request['body'],
-                use_integers_for_enums=False
-            )
-            uri = transcoded_request['uri']
-            method = transcoded_request['method']
+            body = _BaseServicesRestTransport._BaseTestIamPermissions._get_request_body_json(transcoded_request)
 
             # Jsonify the query params
-            query_params = json.loads(json_format.MessageToJson(
-                transcoded_request['query_params'],
-                use_integers_for_enums=False,
-            ))
-            query_params.update(self._get_unset_required_fields(query_params))
+            query_params = _BaseServicesRestTransport._BaseTestIamPermissions._get_query_params_json(transcoded_request)
+
+            if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(logging.DEBUG):  # pragma: NO COVER
+                request_url = "{host}{uri}".format(host=self._host, uri=transcoded_request['uri'])
+                method = transcoded_request['method']
+                try:
+                    request_payload = json_format.MessageToJson(request)
+                except:
+                    request_payload = None
+                http_request = {
+                  "payload": request_payload,
+                  "requestMethod": method,
+                  "requestUrl": request_url,
+                  "headers": dict(metadata),
+                }
+                _LOGGER.debug(
+                    f"Sending request for google.cloud.run_v2.ServicesClient.TestIamPermissions",
+                    extra = {
+                        "serviceName": "google.cloud.run.v2.Services",
+                        "rpcName": "TestIamPermissions",
+                        "httpRequest": http_request,
+                        "metadata": http_request["headers"],
+                    },
+                )
 
             # Send the request
-            headers = dict(metadata)
-            headers['Content-Type'] = 'application/json'
-            response = getattr(self._session, method)(
-                "{host}{uri}".format(host=self._host, uri=uri),
-                timeout=timeout,
-                headers=headers,
-                params=rest_helpers.flatten_query_params(query_params, strict=True),
-                data=body,
-                )
+            response = ServicesRestTransport._TestIamPermissions._get_response(self._host, metadata, query_params, self._session, timeout, transcoded_request, body)
 
             # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
             # subclass.
@@ -1088,25 +1519,63 @@ class ServicesRestTransport(ServicesTransport):
             pb_resp = resp
 
             json_format.Parse(response.content, pb_resp, ignore_unknown_fields=True)
+
             resp = self._interceptor.post_test_iam_permissions(resp)
+            response_metadata = [(k, str(v)) for k, v in response.headers.items()]
+            resp, _ = self._interceptor.post_test_iam_permissions_with_metadata(resp, response_metadata)
+            if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(logging.DEBUG):  # pragma: NO COVER
+                try:
+                    response_payload = json_format.MessageToJson(resp)
+                except:
+                    response_payload = None
+                http_response = {
+                "payload": response_payload,
+                "headers":  dict(response.headers),
+                "status": response.status_code,
+                }
+                _LOGGER.debug(
+                    "Received response for google.cloud.run_v2.ServicesClient.test_iam_permissions",
+                    extra = {
+                        "serviceName": "google.cloud.run.v2.Services",
+                        "rpcName": "TestIamPermissions",
+                        "metadata": http_response["headers"],
+                        "httpResponse": http_response,
+                    },
+                )
             return resp
 
-    class _UpdateService(ServicesRestStub):
+    class _UpdateService(_BaseServicesRestTransport._BaseUpdateService, ServicesRestStub):
         def __hash__(self):
-            return hash("UpdateService")
+            return hash("ServicesRestTransport.UpdateService")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
+        @staticmethod
+        def _get_response(
+            host,
+            metadata,
+            query_params,
+            session,
+            timeout,
+            transcoded_request,
+            body=None):
 
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(session, method)(
+                "{host}{uri}".format(host=host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                data=body,
+                )
+            return response
 
         def __call__(self,
                 request: gcr_service.UpdateServiceRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: Optional[float]=None,
-                metadata: Sequence[Tuple[str, str]]=(),
+                metadata: Sequence[Tuple[str, Union[str, bytes]]]=(),
                 ) -> operations_pb2.Operation:
             r"""Call the update service method over HTTP.
 
@@ -1117,8 +1586,10 @@ class ServicesRestTransport(ServicesTransport):
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
                 timeout (float): The timeout for this request.
-                metadata (Sequence[Tuple[str, str]]): Strings which should be
-                    sent along with the request as metadata.
+                metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                    sent along with the request as metadata. Normally, each value must be of type `str`,
+                    but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                    be of type `bytes`.
 
             Returns:
                 ~.operations_pb2.Operation:
@@ -1128,42 +1599,41 @@ class ServicesRestTransport(ServicesTransport):
 
             """
 
-            http_options: List[Dict[str, str]] = [{
-                'method': 'patch',
-                'uri': '/v2/{service.name=projects/*/locations/*/services/*}',
-                'body': 'service',
-            },
-            ]
+            http_options = _BaseServicesRestTransport._BaseUpdateService._get_http_options()
+
             request, metadata = self._interceptor.pre_update_service(request, metadata)
-            pb_request = gcr_service.UpdateServiceRequest.pb(request)
-            transcoded_request = path_template.transcode(http_options, pb_request)
+            transcoded_request = _BaseServicesRestTransport._BaseUpdateService._get_transcoded_request(http_options, request)
 
-            # Jsonify the request body
-
-            body = json_format.MessageToJson(
-                transcoded_request['body'],
-                use_integers_for_enums=False
-            )
-            uri = transcoded_request['uri']
-            method = transcoded_request['method']
+            body = _BaseServicesRestTransport._BaseUpdateService._get_request_body_json(transcoded_request)
 
             # Jsonify the query params
-            query_params = json.loads(json_format.MessageToJson(
-                transcoded_request['query_params'],
-                use_integers_for_enums=False,
-            ))
-            query_params.update(self._get_unset_required_fields(query_params))
+            query_params = _BaseServicesRestTransport._BaseUpdateService._get_query_params_json(transcoded_request)
+
+            if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(logging.DEBUG):  # pragma: NO COVER
+                request_url = "{host}{uri}".format(host=self._host, uri=transcoded_request['uri'])
+                method = transcoded_request['method']
+                try:
+                    request_payload = json_format.MessageToJson(request)
+                except:
+                    request_payload = None
+                http_request = {
+                  "payload": request_payload,
+                  "requestMethod": method,
+                  "requestUrl": request_url,
+                  "headers": dict(metadata),
+                }
+                _LOGGER.debug(
+                    f"Sending request for google.cloud.run_v2.ServicesClient.UpdateService",
+                    extra = {
+                        "serviceName": "google.cloud.run.v2.Services",
+                        "rpcName": "UpdateService",
+                        "httpRequest": http_request,
+                        "metadata": http_request["headers"],
+                    },
+                )
 
             # Send the request
-            headers = dict(metadata)
-            headers['Content-Type'] = 'application/json'
-            response = getattr(self._session, method)(
-                "{host}{uri}".format(host=self._host, uri=uri),
-                timeout=timeout,
-                headers=headers,
-                params=rest_helpers.flatten_query_params(query_params, strict=True),
-                data=body,
-                )
+            response = ServicesRestTransport._UpdateService._get_response(self._host, metadata, query_params, self._session, timeout, transcoded_request, body)
 
             # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
             # subclass.
@@ -1173,7 +1643,29 @@ class ServicesRestTransport(ServicesTransport):
             # Return the response
             resp = operations_pb2.Operation()
             json_format.Parse(response.content, resp, ignore_unknown_fields=True)
+
             resp = self._interceptor.post_update_service(resp)
+            response_metadata = [(k, str(v)) for k, v in response.headers.items()]
+            resp, _ = self._interceptor.post_update_service_with_metadata(resp, response_metadata)
+            if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(logging.DEBUG):  # pragma: NO COVER
+                try:
+                    response_payload = json_format.MessageToJson(resp)
+                except:
+                    response_payload = None
+                http_response = {
+                "payload": response_payload,
+                "headers":  dict(response.headers),
+                "status": response.status_code,
+                }
+                _LOGGER.debug(
+                    "Received response for google.cloud.run_v2.ServicesClient.update_service",
+                    extra = {
+                        "serviceName": "google.cloud.run.v2.Services",
+                        "rpcName": "UpdateService",
+                        "metadata": http_response["headers"],
+                        "httpResponse": http_response,
+                    },
+                )
             return resp
 
     @property

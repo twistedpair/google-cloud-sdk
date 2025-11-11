@@ -2659,7 +2659,7 @@ class StorageProjectsLocationsIntelligenceFindingsListRequest(_messages.Message)
 
   Fields:
     filter: Optional. The filter expression to be applied. Supports filtering
-      by `FindingType`, `associated_resources` and `target_resource`.
+      by `type` and `associated_resources`.
     pageSize: Optional. The maximum number of `IntelligenceFinding` resources
       to return. The maximum value is `100`; values above `100` will be
       coerced to `100`. The default value is `100`.

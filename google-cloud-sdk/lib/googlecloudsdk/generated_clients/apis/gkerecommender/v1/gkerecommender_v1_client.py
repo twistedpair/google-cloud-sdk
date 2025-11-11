@@ -45,6 +45,8 @@ class GkerecommenderV1(base_api.BaseApiClient):
     self.models = self.ModelsService(self)
     self.optimizedManifest = self.OptimizedManifestService(self)
     self.profiles = self.ProfilesService(self)
+    self.servingStackVersions = self.ServingStackVersionsService(self)
+    self.servingStacks = self.ServingStacksService(self)
     self.useCases = self.UseCasesService(self)
 
   class BenchmarkingDataService(base_api.BaseApiService):
@@ -260,6 +262,78 @@ class GkerecommenderV1(base_api.BaseApiClient):
         request_field='<request>',
         request_type_name='FetchProfilesRequest',
         response_type_name='FetchProfilesResponse',
+        supports_download=False,
+    )
+
+  class ServingStackVersionsService(base_api.BaseApiService):
+    """Service class for the servingStackVersions resource."""
+
+    _NAME = 'servingStackVersions'
+
+    def __init__(self, client):
+      super(GkerecommenderV1.ServingStackVersionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Fetch(self, request, global_params=None):
+      r"""Fetches available serving stack versions.
+
+      Args:
+        request: (GkerecommenderServingStackVersionsFetchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FetchServingStackVersionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('Fetch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Fetch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='gkerecommender.servingStackVersions.fetch',
+        ordered_params=[],
+        path_params=[],
+        query_params=['model', 'modelServer', 'pageSize', 'pageToken', 'servingStack'],
+        relative_path='v1/servingStackVersions:fetch',
+        request_field='',
+        request_type_name='GkerecommenderServingStackVersionsFetchRequest',
+        response_type_name='FetchServingStackVersionsResponse',
+        supports_download=False,
+    )
+
+  class ServingStacksService(base_api.BaseApiService):
+    """Service class for the servingStacks resource."""
+
+    _NAME = 'servingStacks'
+
+    def __init__(self, client):
+      super(GkerecommenderV1.ServingStacksService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Fetch(self, request, global_params=None):
+      r"""Fetches available serving stacks.
+
+      Args:
+        request: (GkerecommenderServingStacksFetchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FetchServingStacksResponse) The response message.
+      """
+      config = self.GetMethodConfig('Fetch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Fetch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='gkerecommender.servingStacks.fetch',
+        ordered_params=[],
+        path_params=[],
+        query_params=['model', 'modelServer', 'pageSize', 'pageToken'],
+        relative_path='v1/servingStacks:fetch',
+        request_field='',
+        request_type_name='GkerecommenderServingStacksFetchRequest',
+        response_type_name='FetchServingStacksResponse',
         supports_download=False,
     )
 

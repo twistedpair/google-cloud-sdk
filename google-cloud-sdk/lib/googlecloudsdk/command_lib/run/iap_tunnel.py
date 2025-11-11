@@ -28,7 +28,6 @@ class CloudRunIAPWebsocketTunnelHelper(iap_tunnel.IAPWebsocketTunnelHelper):
   """Helper for starting a Cloud Run IAP WebSocket tunnel."""
 
   def __init__(self, args):
-    args.iap_tunnel_url_override = None
     args.iap_tunnel_insecure_disable_websocket_cert_check = None
     self._cloud_run_args = iap_tunnel_websocket_utils.CloudRunArgs(
         project_number=args.project_number,

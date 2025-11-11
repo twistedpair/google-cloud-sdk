@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +14,9 @@
 # limitations under the License.
 #
 from collections import OrderedDict
+from http import HTTPStatus
+import json
+import logging as std_logging
 import os
 import re
 from typing import Dict, Callable, Mapping, MutableMapping, MutableSequence, Optional, Iterable, Iterator, Sequence, Tuple, Type, Union, cast
@@ -30,11 +33,20 @@ from google.auth.transport import mtls                            # type: ignore
 from google.auth.transport.grpc import SslCredentials             # type: ignore
 from google.auth.exceptions import MutualTLSChannelError          # type: ignore
 from google.oauth2 import service_account                         # type: ignore
+import cloudsdk.google.protobuf
 
 try:
     OptionalRetry = Union[retries.Retry, gapic_v1.method._MethodDefault, None]
 except AttributeError:  # pragma: NO COVER
     OptionalRetry = Union[retries.Retry, object, None]  # type: ignore
+
+try:
+    from google.api_core import client_logging  # type: ignore
+    CLIENT_LOGGING_SUPPORTED = True  # pragma: NO COVER
+except ImportError:  # pragma: NO COVER
+    CLIENT_LOGGING_SUPPORTED = False
+
+_LOGGER = std_logging.getLogger(__name__)
 
 from google.api import httpbody_pb2  # type: ignore
 from google.longrunning import operations_pb2  # type: ignore
@@ -418,33 +430,6 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             raise ValueError("Universe Domain cannot be an empty string.")
         return universe_domain
 
-    @staticmethod
-    def _compare_universes(client_universe: str,
-                           credentials: ga_credentials.Credentials) -> bool:
-        """Returns True iff the universe domains used by the client and credentials match.
-
-        Args:
-            client_universe (str): The universe domain configured via the client options.
-            credentials (ga_credentials.Credentials): The credentials being used in the client.
-
-        Returns:
-            bool: True iff client_universe matches the universe in credentials.
-
-        Raises:
-            ValueError: when client_universe does not match the universe in credentials.
-        """
-
-        default_universe = PredictionServiceClient._DEFAULT_UNIVERSE
-        credentials_universe = getattr(credentials, "universe_domain", default_universe)
-
-        if client_universe != credentials_universe:
-            raise ValueError("The configured universe domain "
-                f"({client_universe}) does not match the universe domain "
-                f"found in the credentials ({credentials_universe}). "
-                "If you haven't configured the universe domain explicitly, "
-                f"`{default_universe}` is the default.")
-        return True
-
     def _validate_universe_domain(self):
         """Validates client's and credentials' universe domains are consistent.
 
@@ -454,9 +439,33 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         Raises:
             ValueError: If the configured universe domain is not valid.
         """
-        self._is_universe_domain_valid = (self._is_universe_domain_valid or
-            PredictionServiceClient._compare_universes(self.universe_domain, self.transport._credentials))
-        return self._is_universe_domain_valid
+
+        # NOTE (b/349488459): universe validation is disabled until further notice.
+        return True
+
+    def _add_cred_info_for_auth_errors(
+        self,
+        error: core_exceptions.GoogleAPICallError
+    ) -> None:
+        """Adds credential info string to error details for 401/403/404 errors.
+
+        Args:
+            error (google.api_core.exceptions.GoogleAPICallError): The error to add the cred info.
+        """
+        if error.code not in [HTTPStatus.UNAUTHORIZED, HTTPStatus.FORBIDDEN, HTTPStatus.NOT_FOUND]:
+            return
+
+        cred = self._transport._credentials
+
+        # get_cred_info is only available in google-auth>=2.35.0
+        if not hasattr(cred, "get_cred_info"):
+            return
+
+        # ignore the type check since pypy test fails when get_cred_info
+        # is not available
+        cred_info = cred.get_cred_info()  # type: ignore
+        if cred_info and hasattr(error._details, "append"):
+            error._details.append(json.dumps(cred_info))
 
     @property
     def api_endpoint(self):
@@ -551,6 +560,10 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # Initialize the universe domain validation.
         self._is_universe_domain_valid = False
 
+        if CLIENT_LOGGING_SUPPORTED:  # pragma: NO COVER
+            # Setup logging.
+            client_logging.initialize_logging()
+
         api_key_value = getattr(self._client_options, "api_key", None)
         if api_key_value and credentials:
             raise ValueError("client_options.api_key and credentials are mutually exclusive")
@@ -586,7 +599,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
                 credentials = google.auth._default.get_api_key_credentials(api_key_value)
 
             transport_init: Union[Type[PredictionServiceTransport], Callable[..., PredictionServiceTransport]] = (
-                type(self).get_transport_class(transport)
+                PredictionServiceClient.get_transport_class(transport)
                 if isinstance(transport, str) or transport is None
                 else cast(Callable[..., PredictionServiceTransport], transport)
             )
@@ -603,6 +616,21 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
                 api_audience=self._client_options.api_audience,
             )
 
+        if "async" not in str(self._transport):
+            if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(std_logging.DEBUG):  # pragma: NO COVER
+                _LOGGER.debug(
+                    "Created client `google.cloud.aiplatform_v1beta1.PredictionServiceClient`.",
+                    extra = {
+                        "serviceName": "google.cloud.aiplatform.v1beta1.PredictionService",
+                        "universeDomain": getattr(self._transport._credentials, "universe_domain", ""),
+                        "credentialsType": f"{type(self._transport._credentials).__module__}.{type(self._transport._credentials).__qualname__}",
+                        "credentialsInfo": getattr(self.transport._credentials, "get_cred_info", lambda: None)(),
+                    } if hasattr(self._transport, "_credentials") else {
+                        "serviceName": "google.cloud.aiplatform.v1beta1.PredictionService",
+                        "credentialsType": None,
+                    }
+                )
+
     def predict(self,
             request: Optional[Union[prediction_service.PredictRequest, dict]] = None,
             *,
@@ -611,7 +639,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             parameters: Optional[struct_pb2.Value] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> prediction_service.PredictResponse:
         r"""Perform an online prediction.
 
@@ -687,8 +715,10 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.PredictResponse:
@@ -699,7 +729,8 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([endpoint, instances, parameters])
+        flattened_params = [endpoint, instances, parameters]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError('If the `request` argument is set, then none of '
                              'the individual field arguments should be set.')
@@ -721,7 +752,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.predict]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -750,19 +781,19 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             http_body: Optional[httpbody_pb2.HttpBody] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> httpbody_pb2.HttpBody:
         r"""Perform an online prediction with an arbitrary HTTP payload.
 
         The response includes the following HTTP headers:
 
-        -  ``X-Vertex-AI-Endpoint-Id``: ID of the
-           [Endpoint][google.cloud.aiplatform.v1beta1.Endpoint] that
-           served this prediction.
+        - ``X-Vertex-AI-Endpoint-Id``: ID of the
+          [Endpoint][google.cloud.aiplatform.v1beta1.Endpoint] that
+          served this prediction.
 
-        -  ``X-Vertex-AI-Deployed-Model-Id``: ID of the Endpoint's
-           [DeployedModel][google.cloud.aiplatform.v1beta1.DeployedModel]
-           that served this prediction.
+        - ``X-Vertex-AI-Deployed-Model-Id``: ID of the Endpoint's
+          [DeployedModel][google.cloud.aiplatform.v1beta1.DeployedModel]
+          that served this prediction.
 
         .. code-block:: python
 
@@ -831,8 +862,10 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             google.api.httpbody_pb2.HttpBody:
@@ -887,7 +920,8 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([endpoint, http_body])
+        flattened_params = [endpoint, http_body]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError('If the `request` argument is set, then none of '
                              'the individual field arguments should be set.')
@@ -907,7 +941,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.raw_predict]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -936,7 +970,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             http_body: Optional[httpbody_pb2.HttpBody] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> Iterable[httpbody_pb2.HttpBody]:
         r"""Perform a streaming online prediction with an
         arbitrary HTTP payload.
@@ -990,8 +1024,10 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             Iterable[google.api.httpbody_pb2.HttpBody]:
@@ -1046,7 +1082,8 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([endpoint, http_body])
+        flattened_params = [endpoint, http_body]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError('If the `request` argument is set, then none of '
                              'the individual field arguments should be set.')
@@ -1066,7 +1103,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.stream_raw_predict]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -1093,7 +1130,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> prediction_service.DirectPredictResponse:
         r"""Perform an unary online prediction request to a gRPC
         model server for Vertex first-party products and
@@ -1132,8 +1169,10 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.DirectPredictResponse:
@@ -1151,7 +1190,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.direct_predict]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -1178,7 +1217,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> prediction_service.DirectRawPredictResponse:
         r"""Perform an unary online prediction request to a gRPC
         model server for custom containers.
@@ -1216,8 +1255,10 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.DirectRawPredictResponse:
@@ -1235,7 +1276,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.direct_raw_predict]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -1262,7 +1303,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> Iterable[prediction_service.StreamDirectPredictResponse]:
         r"""Perform a streaming online prediction request to a
         gRPC model server for Vertex first-party products and
@@ -1317,8 +1358,10 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             Iterable[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.StreamDirectPredictResponse]:
@@ -1350,7 +1393,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> Iterable[prediction_service.StreamDirectRawPredictResponse]:
         r"""Perform a streaming online prediction request to a
         gRPC model server for custom containers.
@@ -1410,8 +1453,10 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             Iterable[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.StreamDirectRawPredictResponse]:
@@ -1443,7 +1488,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> Iterable[prediction_service.StreamingPredictResponse]:
         r"""Perform a streaming online prediction request for
         Vertex first-party products and frameworks.
@@ -1497,8 +1542,10 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             Iterable[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.StreamingPredictResponse]:
@@ -1530,7 +1577,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> Iterable[prediction_service.StreamingPredictResponse]:
         r"""Perform a server-side streaming online prediction
         request for Vertex LLM streaming.
@@ -1574,8 +1621,10 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             Iterable[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.StreamingPredictResponse]:
@@ -1593,7 +1642,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.server_streaming_predict]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -1620,7 +1669,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> Iterable[prediction_service.StreamingRawPredictResponse]:
         r"""Perform a streaming online prediction request through
         gRPC.
@@ -1680,8 +1729,10 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             Iterable[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.StreamingRawPredictResponse]:
@@ -1716,7 +1767,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             parameters: Optional[struct_pb2.Value] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> operations_pb2.Operation:
         r"""
 
@@ -1794,8 +1845,10 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             google.longrunning.operations_pb2.Operation:
@@ -1807,7 +1860,8 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([endpoint, instances, parameters])
+        flattened_params = [endpoint, instances, parameters]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError('If the `request` argument is set, then none of '
                              'the individual field arguments should be set.')
@@ -1829,7 +1883,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.predict_long_running]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -1858,7 +1912,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             operation_name: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> operations_pb2.Operation:
         r"""Fetch an asynchronous online prediction operation.
 
@@ -1913,8 +1967,10 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             google.longrunning.operations_pb2.Operation:
@@ -1926,7 +1982,8 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([endpoint, operation_name])
+        flattened_params = [endpoint, operation_name]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError('If the `request` argument is set, then none of '
                              'the individual field arguments should be set.')
@@ -1946,7 +2003,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.fetch_predict_operation]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -1974,7 +2031,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             endpoint: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> Iterable[httpbody_pb2.HttpBody]:
         r"""Forwards arbitrary HTTP requests for both streaming and
         non-streaming cases. To use this method,
@@ -2024,8 +2081,10 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             Iterable[google.api.httpbody_pb2.HttpBody]:
@@ -2080,7 +2139,8 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([endpoint])
+        flattened_params = [endpoint]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError('If the `request` argument is set, then none of '
                              'the individual field arguments should be set.')
@@ -2098,7 +2158,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.invoke]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -2129,7 +2189,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             deployed_model_id: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> prediction_service.ExplainResponse:
         r"""Perform an online explanation.
 
@@ -2223,8 +2283,10 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.ExplainResponse:
@@ -2235,7 +2297,8 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([endpoint, instances, parameters, deployed_model_id])
+        flattened_params = [endpoint, instances, parameters, deployed_model_id]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError('If the `request` argument is set, then none of '
                              'the individual field arguments should be set.')
@@ -2259,7 +2322,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.explain]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -2288,7 +2351,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             instances: Optional[MutableSequence[struct_pb2.Value]] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> prediction_service.CountTokensResponse:
         r"""Perform a token counting.
 
@@ -2342,8 +2405,10 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.CountTokensResponse:
@@ -2354,7 +2419,8 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([endpoint, instances])
+        flattened_params = [endpoint, instances]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError('If the `request` argument is set, then none of '
                              'the individual field arguments should be set.')
@@ -2374,7 +2440,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.count_tokens]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -2403,7 +2469,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             contents: Optional[MutableSequence[content.Content]] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> prediction_service.GenerateContentResponse:
         r"""Generate content with multimodal inputs.
 
@@ -2467,8 +2533,10 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GenerateContentResponse:
@@ -2479,7 +2547,8 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([model, contents])
+        flattened_params = [model, contents]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError('If the `request` argument is set, then none of '
                              'the individual field arguments should be set.')
@@ -2499,7 +2568,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.generate_content]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -2528,7 +2597,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             contents: Optional[MutableSequence[content.Content]] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> Iterable[prediction_service.GenerateContentResponse]:
         r"""Generate content with multimodal inputs with
         streaming support.
@@ -2594,8 +2663,10 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             Iterable[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GenerateContentResponse]:
@@ -2606,7 +2677,8 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([model, contents])
+        flattened_params = [model, contents]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError('If the `request` argument is set, then none of '
                              'the individual field arguments should be set.')
@@ -2626,7 +2698,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.stream_generate_content]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -2655,7 +2727,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             http_body: Optional[httpbody_pb2.HttpBody] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> Iterable[httpbody_pb2.HttpBody]:
         r"""Exposes an OpenAI-compatible endpoint for chat
         completions.
@@ -2709,8 +2781,10 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             Iterable[google.api.httpbody_pb2.HttpBody]:
@@ -2765,7 +2839,8 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([endpoint, http_body])
+        flattened_params = [endpoint, http_body]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError('If the `request` argument is set, then none of '
                              'the individual field arguments should be set.')
@@ -2785,7 +2860,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.chat_completions]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -2814,7 +2889,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             content: Optional[gca_content.Content] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> prediction_service.EmbedContentResponse:
         r"""Embed content with multimodal inputs.
 
@@ -2865,8 +2940,10 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.EmbedContentResponse:
@@ -2877,7 +2954,8 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([model, content])
+        flattened_params = [model, content]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError('If the `request` argument is set, then none of '
                              'the individual field arguments should be set.')
@@ -2897,7 +2975,7 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.embed_content]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -2940,6 +3018,8 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
 
 DEFAULT_CLIENT_INFO = gapic_v1.client_info.ClientInfo(gapic_version=package_version.__version__)
 
+if hasattr(DEFAULT_CLIENT_INFO, "protobuf_runtime_version"):  # pragma: NO COVER
+    DEFAULT_CLIENT_INFO.protobuf_runtime_version = cloudsdk.google.protobuf.__version__
 
 __all__ = (
     "PredictionServiceClient",

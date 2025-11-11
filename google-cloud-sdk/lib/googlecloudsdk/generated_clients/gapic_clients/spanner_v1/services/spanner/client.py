@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +14,9 @@
 # limitations under the License.
 #
 from collections import OrderedDict
+from http import HTTPStatus
+import json
+import logging as std_logging
 import os
 import re
 from typing import Dict, Callable, Mapping, MutableMapping, MutableSequence, Optional, Iterable, Sequence, Tuple, Type, Union, cast
@@ -30,11 +33,20 @@ from google.auth.transport import mtls                            # type: ignore
 from google.auth.transport.grpc import SslCredentials             # type: ignore
 from google.auth.exceptions import MutualTLSChannelError          # type: ignore
 from google.oauth2 import service_account                         # type: ignore
+import cloudsdk.google.protobuf
 
 try:
     OptionalRetry = Union[retries.Retry, gapic_v1.method._MethodDefault, None]
 except AttributeError:  # pragma: NO COVER
     OptionalRetry = Union[retries.Retry, object, None]  # type: ignore
+
+try:
+    from google.api_core import client_logging  # type: ignore
+    CLIENT_LOGGING_SUPPORTED = True  # pragma: NO COVER
+except ImportError:  # pragma: NO COVER
+    CLIENT_LOGGING_SUPPORTED = False
+
+_LOGGER = std_logging.getLogger(__name__)
 
 from cloudsdk.google.protobuf import struct_pb2  # type: ignore
 from cloudsdk.google.protobuf import timestamp_pb2  # type: ignore
@@ -408,33 +420,6 @@ class SpannerClient(metaclass=SpannerClientMeta):
             raise ValueError("Universe Domain cannot be an empty string.")
         return universe_domain
 
-    @staticmethod
-    def _compare_universes(client_universe: str,
-                           credentials: ga_credentials.Credentials) -> bool:
-        """Returns True iff the universe domains used by the client and credentials match.
-
-        Args:
-            client_universe (str): The universe domain configured via the client options.
-            credentials (ga_credentials.Credentials): The credentials being used in the client.
-
-        Returns:
-            bool: True iff client_universe matches the universe in credentials.
-
-        Raises:
-            ValueError: when client_universe does not match the universe in credentials.
-        """
-
-        default_universe = SpannerClient._DEFAULT_UNIVERSE
-        credentials_universe = getattr(credentials, "universe_domain", default_universe)
-
-        if client_universe != credentials_universe:
-            raise ValueError("The configured universe domain "
-                f"({client_universe}) does not match the universe domain "
-                f"found in the credentials ({credentials_universe}). "
-                "If you haven't configured the universe domain explicitly, "
-                f"`{default_universe}` is the default.")
-        return True
-
     def _validate_universe_domain(self):
         """Validates client's and credentials' universe domains are consistent.
 
@@ -444,9 +429,33 @@ class SpannerClient(metaclass=SpannerClientMeta):
         Raises:
             ValueError: If the configured universe domain is not valid.
         """
-        self._is_universe_domain_valid = (self._is_universe_domain_valid or
-            SpannerClient._compare_universes(self.universe_domain, self.transport._credentials))
-        return self._is_universe_domain_valid
+
+        # NOTE (b/349488459): universe validation is disabled until further notice.
+        return True
+
+    def _add_cred_info_for_auth_errors(
+        self,
+        error: core_exceptions.GoogleAPICallError
+    ) -> None:
+        """Adds credential info string to error details for 401/403/404 errors.
+
+        Args:
+            error (google.api_core.exceptions.GoogleAPICallError): The error to add the cred info.
+        """
+        if error.code not in [HTTPStatus.UNAUTHORIZED, HTTPStatus.FORBIDDEN, HTTPStatus.NOT_FOUND]:
+            return
+
+        cred = self._transport._credentials
+
+        # get_cred_info is only available in google-auth>=2.35.0
+        if not hasattr(cred, "get_cred_info"):
+            return
+
+        # ignore the type check since pypy test fails when get_cred_info
+        # is not available
+        cred_info = cred.get_cred_info()  # type: ignore
+        if cred_info and hasattr(error._details, "append"):
+            error._details.append(json.dumps(cred_info))
 
     @property
     def api_endpoint(self):
@@ -541,6 +550,10 @@ class SpannerClient(metaclass=SpannerClientMeta):
         # Initialize the universe domain validation.
         self._is_universe_domain_valid = False
 
+        if CLIENT_LOGGING_SUPPORTED:  # pragma: NO COVER
+            # Setup logging.
+            client_logging.initialize_logging()
+
         api_key_value = getattr(self._client_options, "api_key", None)
         if api_key_value and credentials:
             raise ValueError("client_options.api_key and credentials are mutually exclusive")
@@ -576,7 +589,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
                 credentials = google.auth._default.get_api_key_credentials(api_key_value)
 
             transport_init: Union[Type[SpannerTransport], Callable[..., SpannerTransport]] = (
-                type(self).get_transport_class(transport)
+                SpannerClient.get_transport_class(transport)
                 if isinstance(transport, str) or transport is None
                 else cast(Callable[..., SpannerTransport], transport)
             )
@@ -593,13 +606,28 @@ class SpannerClient(metaclass=SpannerClientMeta):
                 api_audience=self._client_options.api_audience,
             )
 
+        if "async" not in str(self._transport):
+            if CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(std_logging.DEBUG):  # pragma: NO COVER
+                _LOGGER.debug(
+                    "Created client `google.spanner_v1.SpannerClient`.",
+                    extra = {
+                        "serviceName": "google.spanner.v1.Spanner",
+                        "universeDomain": getattr(self._transport._credentials, "universe_domain", ""),
+                        "credentialsType": f"{type(self._transport._credentials).__module__}.{type(self._transport._credentials).__qualname__}",
+                        "credentialsInfo": getattr(self.transport._credentials, "get_cred_info", lambda: None)(),
+                    } if hasattr(self._transport, "_credentials") else {
+                        "serviceName": "google.spanner.v1.Spanner",
+                        "credentialsType": None,
+                    }
+                )
+
     def create_session(self,
             request: Optional[Union[spanner.CreateSessionRequest, dict]] = None,
             *,
             database: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> spanner.Session:
         r"""Creates a new session. A session can be used to perform
         transactions that read and/or modify data in a Cloud Spanner
@@ -661,8 +689,10 @@ class SpannerClient(metaclass=SpannerClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.Session:
@@ -671,7 +701,8 @@ class SpannerClient(metaclass=SpannerClientMeta):
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([database])
+        flattened_params = [database]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError('If the `request` argument is set, then none of '
                              'the individual field arguments should be set.')
@@ -689,7 +720,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.create_session]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -718,7 +749,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
             session_count: Optional[int] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> spanner.BatchCreateSessionsResponse:
         r"""Creates multiple new sessions.
 
@@ -766,10 +797,11 @@ class SpannerClient(metaclass=SpannerClientMeta):
                 should not be set.
             session_count (int):
                 Required. The number of sessions to be created in this
-                batch call. The API can return fewer than the requested
-                number of sessions. If a specific number of sessions are
-                desired, the client can make additional calls to
-                ``BatchCreateSessions`` (adjusting
+                batch call. At least one session is created. The API can
+                return fewer than the requested number of sessions. If a
+                specific number of sessions are desired, the client can
+                make additional calls to ``BatchCreateSessions``
+                (adjusting
                 [session_count][google.spanner.v1.BatchCreateSessionsRequest.session_count]
                 as necessary).
 
@@ -779,8 +811,10 @@ class SpannerClient(metaclass=SpannerClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.BatchCreateSessionsResponse:
@@ -791,7 +825,8 @@ class SpannerClient(metaclass=SpannerClientMeta):
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([database, session_count])
+        flattened_params = [database, session_count]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError('If the `request` argument is set, then none of '
                              'the individual field arguments should be set.')
@@ -811,7 +846,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.batch_create_sessions]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -839,7 +874,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
             name: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> spanner.Session:
         r"""Gets a session. Returns ``NOT_FOUND`` if the session doesn't
         exist. This is mainly useful for determining whether a session
@@ -885,8 +920,10 @@ class SpannerClient(metaclass=SpannerClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.Session:
@@ -895,7 +932,8 @@ class SpannerClient(metaclass=SpannerClientMeta):
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([name])
+        flattened_params = [name]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError('If the `request` argument is set, then none of '
                              'the individual field arguments should be set.')
@@ -913,7 +951,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.get_session]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -941,7 +979,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
             database: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> pagers.ListSessionsPager:
         r"""Lists all sessions in a given database.
 
@@ -986,8 +1024,10 @@ class SpannerClient(metaclass=SpannerClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.spanner_v1.services.spanner.pagers.ListSessionsPager:
@@ -1001,7 +1041,8 @@ class SpannerClient(metaclass=SpannerClientMeta):
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([database])
+        flattened_params = [database]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError('If the `request` argument is set, then none of '
                              'the individual field arguments should be set.')
@@ -1019,7 +1060,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.list_sessions]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -1044,6 +1085,8 @@ class SpannerClient(metaclass=SpannerClientMeta):
             method=rpc,
             request=request,
             response=response,
+            retry=retry,
+            timeout=timeout,
             metadata=metadata,
         )
 
@@ -1056,7 +1099,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
             name: Optional[str] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> None:
         r"""Ends a session, releasing server resources associated
         with it. This asynchronously triggers the cancellation
@@ -1099,13 +1142,16 @@ class SpannerClient(metaclass=SpannerClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
         """
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([name])
+        flattened_params = [name]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError('If the `request` argument is set, then none of '
                              'the individual field arguments should be set.')
@@ -1123,7 +1169,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.delete_session]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -1147,7 +1193,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> result_set.ResultSet:
         r"""Executes an SQL statement, returning all results in a single
         reply. This method can't be used to return a result set larger
@@ -1202,8 +1248,10 @@ class SpannerClient(metaclass=SpannerClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.ResultSet:
@@ -1221,7 +1269,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.execute_sql]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -1248,7 +1296,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> Iterable[result_set.PartialResultSet]:
         r"""Like [ExecuteSql][google.spanner.v1.Spanner.ExecuteSql], except
         returns the result set as a stream. Unlike
@@ -1296,8 +1344,10 @@ class SpannerClient(metaclass=SpannerClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             Iterable[googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.PartialResultSet]:
@@ -1318,7 +1368,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.execute_streaming_sql]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -1345,7 +1395,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> spanner.ExecuteBatchDmlResponse:
         r"""Executes a batch of SQL DML statements. This method allows many
         statements to be run with lower latency than submitting them
@@ -1400,8 +1450,10 @@ class SpannerClient(metaclass=SpannerClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.ExecuteBatchDmlResponse:
@@ -1428,8 +1480,8 @@ class SpannerClient(metaclass=SpannerClientMeta):
 
                    Example 1:
 
-                   -  Request: 5 DML statements, all executed
-                      successfully.
+                   - Request: 5 DML statements, all executed
+                     successfully.
 
                    \* Response: 5
                    [ResultSet][google.spanner.v1.ResultSet] messages,
@@ -1437,8 +1489,8 @@ class SpannerClient(metaclass=SpannerClientMeta):
 
                    Example 2:
 
-                   -  Request: 5 DML statements. The third statement has
-                      a syntax error.
+                   - Request: 5 DML statements. The third statement has
+                     a syntax error.
 
                    \* Response: 2
                    [ResultSet][google.spanner.v1.ResultSet] messages,
@@ -1459,7 +1511,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.execute_batch_dml]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -1486,7 +1538,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> result_set.ResultSet:
         r"""Reads rows from the database using key lookups and scans, as a
         simple key/value style alternative to
@@ -1540,8 +1592,10 @@ class SpannerClient(metaclass=SpannerClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.ResultSet:
@@ -1559,7 +1613,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.read]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -1586,7 +1640,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> Iterable[result_set.PartialResultSet]:
         r"""Like [Read][google.spanner.v1.Spanner.Read], except returns the
         result set as a stream. Unlike
@@ -1632,8 +1686,10 @@ class SpannerClient(metaclass=SpannerClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             Iterable[googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.PartialResultSet]:
@@ -1654,7 +1710,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.streaming_read]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -1683,7 +1739,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
             options: Optional[transaction.TransactionOptions] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> transaction.Transaction:
         r"""Begins a new transaction. This step can often be skipped:
         [Read][google.spanner.v1.Spanner.Read],
@@ -1738,8 +1794,10 @@ class SpannerClient(metaclass=SpannerClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.Transaction:
@@ -1748,7 +1806,8 @@ class SpannerClient(metaclass=SpannerClientMeta):
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([session, options])
+        flattened_params = [session, options]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError('If the `request` argument is set, then none of '
                              'the individual field arguments should be set.')
@@ -1768,7 +1827,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.begin_transaction]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -1799,7 +1858,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
             single_use_transaction: Optional[transaction.TransactionOptions] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> commit_response.CommitResponse:
         r"""Commits a transaction. The request includes the mutations to be
         applied to rows in the database.
@@ -1890,8 +1949,10 @@ class SpannerClient(metaclass=SpannerClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.CommitResponse:
@@ -1902,7 +1963,8 @@ class SpannerClient(metaclass=SpannerClientMeta):
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([session, transaction_id, mutations, single_use_transaction])
+        flattened_params = [session, transaction_id, mutations, single_use_transaction]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError('If the `request` argument is set, then none of '
                              'the individual field arguments should be set.')
@@ -1926,7 +1988,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.commit]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -1955,7 +2017,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
             transaction_id: Optional[bytes] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> None:
         r"""Rolls back a transaction, releasing any locks it holds. It's a
         good idea to call this for any transaction that includes one or
@@ -2012,13 +2074,16 @@ class SpannerClient(metaclass=SpannerClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
         """
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([session, transaction_id])
+        flattened_params = [session, transaction_id]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError('If the `request` argument is set, then none of '
                              'the individual field arguments should be set.')
@@ -2038,7 +2103,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.rollback]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -2062,7 +2127,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> spanner.PartitionResponse:
         r"""Creates a set of partition tokens that can be used to execute a
         query operation in parallel. Each of the returned partition
@@ -2113,8 +2178,10 @@ class SpannerClient(metaclass=SpannerClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.PartitionResponse:
@@ -2133,7 +2200,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.partition_query]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -2160,7 +2227,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
             *,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> spanner.PartitionResponse:
         r"""Creates a set of partition tokens that can be used to execute a
         read operation in parallel. Each of the returned partition
@@ -2214,8 +2281,10 @@ class SpannerClient(metaclass=SpannerClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.PartitionResponse:
@@ -2234,7 +2303,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.partition_read]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -2263,7 +2332,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
             mutation_groups: Optional[MutableSequence[spanner.BatchWriteRequest.MutationGroup]] = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
+            metadata: Sequence[Tuple[str, Union[str, bytes]]] = (),
             ) -> Iterable[spanner.BatchWriteResponse]:
         r"""Batches the supplied mutation groups in a collection of
         efficient transactions. All mutations in a group are committed
@@ -2335,8 +2404,10 @@ class SpannerClient(metaclass=SpannerClientMeta):
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
+            metadata (Sequence[Tuple[str, Union[str, bytes]]]): Key/value pairs which should be
+                sent along with the request as metadata. Normally, each value must be of type `str`,
+                but for metadata keys ending with the suffix `-bin`, the corresponding values must
+                be of type `bytes`.
 
         Returns:
             Iterable[googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.BatchWriteResponse]:
@@ -2347,7 +2418,8 @@ class SpannerClient(metaclass=SpannerClientMeta):
         # Create or coerce a protobuf request object.
         # - Quick check: If we got a request object, we should *not* have
         #   gotten any keyword arguments that map to the request.
-        has_flattened_params = any([session, mutation_groups])
+        flattened_params = [session, mutation_groups]
+        has_flattened_params = len([param for param in flattened_params if param is not None]) > 0
         if request is not None and has_flattened_params:
             raise ValueError('If the `request` argument is set, then none of '
                              'the individual field arguments should be set.')
@@ -2367,7 +2439,7 @@ class SpannerClient(metaclass=SpannerClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.batch_write]
 
-         # Certain fields should be provided within the metadata header;
+        # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -2410,6 +2482,8 @@ class SpannerClient(metaclass=SpannerClientMeta):
 
 DEFAULT_CLIENT_INFO = gapic_v1.client_info.ClientInfo(gapic_version=package_version.__version__)
 
+if hasattr(DEFAULT_CLIENT_INFO, "protobuf_runtime_version"):  # pragma: NO COVER
+    DEFAULT_CLIENT_INFO.protobuf_runtime_version = cloudsdk.google.protobuf.__version__
 
 __all__ = (
     "SpannerClient",

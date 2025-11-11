@@ -3424,6 +3424,32 @@ class AiplatformPipelineJobsOperationsWaitRequest(_messages.Message):
   timeout = _messages.StringField(2)
 
 
+class AiplatformProjectLocationsDatasetsGetIamPolicyRequest(_messages.Message):
+  r"""A AiplatformProjectLocationsDatasetsGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsFetchPublisherModelConfigRequest(_messages.Message):
   r"""A AiplatformProjectsFetchPublisherModelConfigRequest object.
 
@@ -4865,6 +4891,40 @@ class AiplatformProjectsLocationsDatasetsSearchDataItemsRequest(_messages.Messag
   savedQuery = _messages.StringField(14)
 
 
+class AiplatformProjectsLocationsDatasetsSetIamPolicyRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDatasetsSetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsDatasetsTestIamPermissionsRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDatasetsTestIamPermissionsRequest object.
+
+  Fields:
+    permissions: The set of permissions to check for the `resource`.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+  resource = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsDeployPublisherModelRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsDeployPublisherModelRequest object.
 
@@ -5385,6 +5445,24 @@ class AiplatformProjectsLocationsEndpointsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsEndpointsGoogleScienceInferenceRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsEndpointsGoogleScienceInferenceRequest
+  object.
+
+  Fields:
+    deployedModelId: ID of the DeployedModel that serves the invoke request.
+    endpoint: Required. The name of the Endpoint requested to serve the
+      prediction. Format:
+      `projects/{project}/locations/{location}/endpoints/{endpoint}`
+    googleApiHttpBody: A GoogleApiHttpBody resource to be passed as the
+      request body.
+  """
+
+  deployedModelId = _messages.StringField(1)
+  endpoint = _messages.StringField(2, required=True)
+  googleApiHttpBody = _messages.MessageField('GoogleApiHttpBody', 3)
 
 
 class AiplatformProjectsLocationsEndpointsInvokeInvokeRequest(_messages.Message):
@@ -13715,6 +13793,22 @@ class AiplatformProjectsLocationsReasoningEnginesExamplesOperationsWaitRequest(_
   timeout = _messages.StringField(2)
 
 
+class AiplatformProjectsLocationsReasoningEnginesExecuteCodeRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsReasoningEnginesExecuteCodeRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1ExecuteCodeRequest: A
+      GoogleCloudAiplatformV1beta1ExecuteCodeRequest resource to be passed as
+      the request body.
+    name: Required. The resource name of the sandbox environment to execute.
+      Format: `projects/{project}/locations/{location}/reasoningEngines/{reaso
+      ning_engine}`
+  """
+
+  googleCloudAiplatformV1beta1ExecuteCodeRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1ExecuteCodeRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsReasoningEnginesGetRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsReasoningEnginesGetRequest object.
 
@@ -13807,8 +13901,10 @@ class AiplatformProjectsLocationsReasoningEnginesMemoriesListRequest(_messages.M
 
   Fields:
     filter: Optional. The standard list filter. More detail in
-      [AIP-160](https://google.aip.dev/160). Supported fields (equality match
-      only): * `scope` (as a JSON string)
+      [AIP-160](https://google.aip.dev/160). Supported fields: * `scope` (as a
+      JSON string with equality match only) * `topics` (i.e.
+      `topics.custom_memory_topic_label: "example topic" OR
+      topics.managed_memory_topic: USER_PREFERENCES`)
     orderBy: Optional. The standard list order by string. If not specified,
       the default order is `create_time desc`. If specified, the default
       sorting order of provided fields is ascending. More detail in
@@ -13924,6 +14020,23 @@ class AiplatformProjectsLocationsReasoningEnginesMemoriesPatchRequest(_messages.
   googleCloudAiplatformV1beta1Memory = _messages.MessageField('GoogleCloudAiplatformV1beta1Memory', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class AiplatformProjectsLocationsReasoningEnginesMemoriesPurgeRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsReasoningEnginesMemoriesPurgeRequest
+  object.
+
+  Fields:
+    googleCloudAiplatformV1beta1PurgeMemoriesRequest: A
+      GoogleCloudAiplatformV1beta1PurgeMemoriesRequest resource to be passed
+      as the request body.
+    parent: Required. The resource name of the ReasoningEngine to purge
+      memories from. Format: `projects/{project}/locations/{location}/reasonin
+      gEngines/{reasoning_engine}`
+  """
+
+  googleCloudAiplatformV1beta1PurgeMemoriesRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1PurgeMemoriesRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class AiplatformProjectsLocationsReasoningEnginesMemoriesRetrieveRequest(_messages.Message):
@@ -14341,8 +14454,8 @@ class AiplatformProjectsLocationsReasoningEnginesSessionsListRequest(_messages.M
 
   Fields:
     filter: Optional. The standard list filter. Supported fields: *
-      `display_name` * `user_id` Example: `display_name="abc"`,
-      `user_id="123"`.
+      `display_name` * `user_id` * `labels` Example: `display_name="abc"`,
+      `user_id="123"`, `labels.key="value"`.
     orderBy: Optional. A comma-separated list of fields to order by, sorted in
       ascending order. Use "desc" after a field name for descending. Supported
       fields: * `create_time` * `update_time` Example: `create_time desc`.
@@ -17004,6 +17117,22 @@ class AiplatformReasoningEnginesExamplesOperationsWaitRequest(_messages.Message)
   timeout = _messages.StringField(2)
 
 
+class AiplatformReasoningEnginesExecuteCodeRequest(_messages.Message):
+  r"""A AiplatformReasoningEnginesExecuteCodeRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1ExecuteCodeRequest: A
+      GoogleCloudAiplatformV1beta1ExecuteCodeRequest resource to be passed as
+      the request body.
+    name: Required. The resource name of the sandbox environment to execute.
+      Format: `projects/{project}/locations/{location}/reasoningEngines/{reaso
+      ning_engine}`
+  """
+
+  googleCloudAiplatformV1beta1ExecuteCodeRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1ExecuteCodeRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class AiplatformReasoningEnginesGetRequest(_messages.Message):
   r"""A AiplatformReasoningEnginesGetRequest object.
 
@@ -17093,8 +17222,10 @@ class AiplatformReasoningEnginesMemoriesListRequest(_messages.Message):
 
   Fields:
     filter: Optional. The standard list filter. More detail in
-      [AIP-160](https://google.aip.dev/160). Supported fields (equality match
-      only): * `scope` (as a JSON string)
+      [AIP-160](https://google.aip.dev/160). Supported fields: * `scope` (as a
+      JSON string with equality match only) * `topics` (i.e.
+      `topics.custom_memory_topic_label: "example topic" OR
+      topics.managed_memory_topic: USER_PREFERENCES`)
     orderBy: Optional. The standard list order by string. If not specified,
       the default order is `create_time desc`. If specified, the default
       sorting order of provided fields is ascending. More detail in
@@ -17199,6 +17330,22 @@ class AiplatformReasoningEnginesMemoriesPatchRequest(_messages.Message):
   googleCloudAiplatformV1beta1Memory = _messages.MessageField('GoogleCloudAiplatformV1beta1Memory', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class AiplatformReasoningEnginesMemoriesPurgeRequest(_messages.Message):
+  r"""A AiplatformReasoningEnginesMemoriesPurgeRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1PurgeMemoriesRequest: A
+      GoogleCloudAiplatformV1beta1PurgeMemoriesRequest resource to be passed
+      as the request body.
+    parent: Required. The resource name of the ReasoningEngine to purge
+      memories from. Format: `projects/{project}/locations/{location}/reasonin
+      gEngines/{reasoning_engine}`
+  """
+
+  googleCloudAiplatformV1beta1PurgeMemoriesRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1PurgeMemoriesRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class AiplatformReasoningEnginesMemoriesRetrieveRequest(_messages.Message):
@@ -17367,6 +17514,85 @@ class AiplatformReasoningEnginesQueryRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class AiplatformReasoningEnginesSandboxEnvironmentsCreateRequest(_messages.Message):
+  r"""A AiplatformReasoningEnginesSandboxEnvironmentsCreateRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1SandboxEnvironment: A
+      GoogleCloudAiplatformV1beta1SandboxEnvironment resource to be passed as
+      the request body.
+    parent: Required. The resource name of the reasoning engine to create the
+      SandboxEnvironment in. Format: `projects/{project}/locations/{location}/
+      reasoningEngines/{reasoning_engine}`.
+  """
+
+  googleCloudAiplatformV1beta1SandboxEnvironment = _messages.MessageField('GoogleCloudAiplatformV1beta1SandboxEnvironment', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class AiplatformReasoningEnginesSandboxEnvironmentsDeleteRequest(_messages.Message):
+  r"""A AiplatformReasoningEnginesSandboxEnvironmentsDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the SandboxEnvironment to delete.
+      Format: `projects/{project}/locations/{location}/reasoningEngines/{reaso
+      ning_engine}/sandboxEnvironments/{sandbox_environment}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformReasoningEnginesSandboxEnvironmentsExecuteRequest(_messages.Message):
+  r"""A AiplatformReasoningEnginesSandboxEnvironmentsExecuteRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1ExecuteSandboxEnvironmentRequest: A
+      GoogleCloudAiplatformV1beta1ExecuteSandboxEnvironmentRequest resource to
+      be passed as the request body.
+    name: Required. The resource name of the sandbox environment to execute.
+      Format: `projects/{project}/locations/{location}/reasoningEngines/{reaso
+      ning_engine}/sandboxEnvironments/{sandbox_environment}`
+  """
+
+  googleCloudAiplatformV1beta1ExecuteSandboxEnvironmentRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1ExecuteSandboxEnvironmentRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class AiplatformReasoningEnginesSandboxEnvironmentsGetRequest(_messages.Message):
+  r"""A AiplatformReasoningEnginesSandboxEnvironmentsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the sandbox environment. Format: `pro
+      jects/{project}/locations/{location}/reasoningEngines/{reasoning_engine}
+      /sandboxEnvironments/{sandbox_environment}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformReasoningEnginesSandboxEnvironmentsListRequest(_messages.Message):
+  r"""A AiplatformReasoningEnginesSandboxEnvironmentsListRequest object.
+
+  Fields:
+    filter: Optional. The standard list filter. More detail in
+      [AIP-160](https://google.aip.dev/160).
+    pageSize: Optional. The maximum number of SandboxEnvironments to return.
+      The service may return fewer than this value. If unspecified, at most
+      100 SandboxEnvironments will be returned.
+    pageToken: Optional. The standard list page token, received from a
+      previous `ListSandboxEnvironments` call. Provide this to retrieve the
+      subsequent page.
+    parent: Required. The resource name of the reasoning engine to list
+      sandbox environments from. Format: `projects/{project}/locations/{locati
+      on}/reasoningEngines/{reasoning_engine}`
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
 class AiplatformReasoningEnginesSandboxEnvironmentsOperationsCancelRequest(_messages.Message):
   r"""A AiplatformReasoningEnginesSandboxEnvironmentsOperationsCancelRequest
   object.
@@ -17514,8 +17740,8 @@ class AiplatformReasoningEnginesSessionsListRequest(_messages.Message):
 
   Fields:
     filter: Optional. The standard list filter. Supported fields: *
-      `display_name` * `user_id` Example: `display_name="abc"`,
-      `user_id="123"`.
+      `display_name` * `user_id` * `labels` Example: `display_name="abc"`,
+      `user_id="123"`, `labels.key="value"`.
     orderBy: Optional. A comma-separated list of fields to order by, sorted in
       ascending order. Use "desc" after a field name for descending. Supported
       fields: * `create_time` * `update_time` Example: `create_time desc`.
@@ -19619,7 +19845,8 @@ class GoogleCloudAiplatformV1beta1AutoscalingMetricSpec(_messages.Message):
       Online Prediction: *
       `aiplatform.googleapis.com/prediction/online/accelerator/duty_cycle` *
       `aiplatform.googleapis.com/prediction/online/cpu/utilization` *
-      `aiplatform.googleapis.com/prediction/online/request_count`
+      `aiplatform.googleapis.com/prediction/online/request_count` *
+      `pubsub.googleapis.com/subscription/num_undelivered_messages`
     monitoredResourceLabels: Optional. The Cloud Monitoring monitored resource
       labels as key value pairs used for metrics filtering. See Cloud
       Monitoring Labels https://cloud.google.com/monitoring/api/v3/metric-
@@ -22083,7 +22310,10 @@ class GoogleCloudAiplatformV1beta1CustomCodeExecutionSpec(_messages.Message):
       converted input: ``` { 'response': {'text': 'The answer is 4.'},
       'reference': {'text': '4'} } ``` Example python function: ``` def
       evaluate(instance: dict[str, Any]) -> float: if instance'response' ==
-      instance'reference': return 1.0 return 0.0 ```
+      instance'reference': return 1.0 return 0.0 ``` CustomCodeExecutionSpec
+      is also supported in Batch Evaluation (EvalDataset RPC) and Tuning
+      Evaluation. Each line in the input jsonl file will be converted to
+      dict[str, Any] and passed to the evaluation function.
   """
 
   evaluationFunction = _messages.StringField(1)
@@ -23897,6 +24127,8 @@ class GoogleCloudAiplatformV1beta1DeploymentResourcePool(_messages.Message):
       DeploymentResourcePool.
 
   Fields:
+    clusterAffinityLabel: Optional. Immutable. The affinity label of the
+      cluster that the DeploymentResourcePool is deployed to.
     createTime: Output only. Timestamp when this DeploymentResourcePool was
       created.
     dedicatedResources: Required. The underlying DedicatedResources that the
@@ -23942,15 +24174,16 @@ class GoogleCloudAiplatformV1beta1DeploymentResourcePool(_messages.Message):
     RESOURCE_POOL_TYPE_MODEL_COHOSTING = 1
     RESOURCE_POOL_TYPE_RESERVED_CAPACITY = 2
 
-  createTime = _messages.StringField(1)
-  dedicatedResources = _messages.MessageField('GoogleCloudAiplatformV1beta1DedicatedResources', 2)
-  disableContainerLogging = _messages.BooleanField(3)
-  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 4)
-  name = _messages.StringField(5)
-  resourcePoolType = _messages.EnumField('ResourcePoolTypeValueValuesEnum', 6)
-  satisfiesPzi = _messages.BooleanField(7)
-  satisfiesPzs = _messages.BooleanField(8)
-  serviceAccount = _messages.StringField(9)
+  clusterAffinityLabel = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  dedicatedResources = _messages.MessageField('GoogleCloudAiplatformV1beta1DedicatedResources', 3)
+  disableContainerLogging = _messages.BooleanField(4)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 5)
+  name = _messages.StringField(6)
+  resourcePoolType = _messages.EnumField('ResourcePoolTypeValueValuesEnum', 7)
+  satisfiesPzi = _messages.BooleanField(8)
+  satisfiesPzs = _messages.BooleanField(9)
+  serviceAccount = _messages.StringField(10)
 
 
 class GoogleCloudAiplatformV1beta1DestinationFeatureSetting(_messages.Message):
@@ -25075,7 +25308,7 @@ class GoogleCloudAiplatformV1beta1EvaluationInstance(_messages.Message):
       prompt template.
     reference: Optional. Data used to populate placeholder `reference` in a
       metric prompt template.
-    response: Required. Data used to populate placeholder `response` in a
+    response: Optional. Data used to populate placeholder `response` in a
       metric prompt template.
     rubricGroups: Optional. Named groups of rubrics associated with the
       prompt. This is used for rubric-based evaluations where rubrics can be
@@ -25153,7 +25386,6 @@ class GoogleCloudAiplatformV1beta1EvaluationInstanceAgentData(_messages.Message)
     developerInstruction: Optional. A field containing instructions from the
       developer for the agent.
     events: A list of events.
-    eventsText: A JSON string containing a sequence of events.
     tools: List of tools.
     toolsText: A JSON string containing a list of tools available to an agent
       with info such as name, description, parameters and required parameters.
@@ -25168,9 +25400,8 @@ class GoogleCloudAiplatformV1beta1EvaluationInstanceAgentData(_messages.Message)
   agentConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1EvaluationInstanceAgentConfig', 1)
   developerInstruction = _messages.MessageField('GoogleCloudAiplatformV1beta1EvaluationInstanceInstanceData', 2)
   events = _messages.MessageField('GoogleCloudAiplatformV1beta1EvaluationInstanceAgentDataEvents', 3)
-  eventsText = _messages.StringField(4)
-  tools = _messages.MessageField('GoogleCloudAiplatformV1beta1EvaluationInstanceAgentDataTools', 5)
-  toolsText = _messages.StringField(6)
+  tools = _messages.MessageField('GoogleCloudAiplatformV1beta1EvaluationInstanceAgentDataTools', 4)
+  toolsText = _messages.StringField(5)
 
 
 class GoogleCloudAiplatformV1beta1EvaluationInstanceAgentDataEvents(_messages.Message):
@@ -26483,6 +26714,26 @@ class GoogleCloudAiplatformV1beta1ExecutableCode(_messages.Message):
 
   code = _messages.StringField(1)
   language = _messages.EnumField('LanguageValueValuesEnum', 2)
+
+
+class GoogleCloudAiplatformV1beta1ExecuteCodeRequest(_messages.Message):
+  r"""Request message for SandboxEnvironmentExecutionService.ExecuteCode.
+
+  Fields:
+    inputs: Required. The inputs used for the stateless code execution.
+  """
+
+  inputs = _messages.MessageField('GoogleCloudAiplatformV1beta1Chunk', 1, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1ExecuteCodeResponse(_messages.Message):
+  r"""Response message for SandboxEnvironmentExecutionService.ExecuteCode.
+
+  Fields:
+    outputs: The outputs from the sandbox environment.
+  """
+
+  outputs = _messages.MessageField('GoogleCloudAiplatformV1beta1Chunk', 1, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1ExecuteExtensionRequest(_messages.Message):
@@ -41861,6 +42112,20 @@ class GoogleCloudAiplatformV1beta1PurgeExecutionsResponse(_messages.Message):
   purgeSample = _messages.StringField(2, repeated=True)
 
 
+class GoogleCloudAiplatformV1beta1PurgeMemoriesRequest(_messages.Message):
+  r"""Request message for MemoryBankService.PurgeMemories.
+
+  Fields:
+    filter: Required. The standard list filter to determine which memories to
+      purge. More detail in [AIP-160](https://google.aip.dev/160).
+    force: Optional. If true, the memories will actually be purged. If false,
+      the purge request will be validated but not executed.
+  """
+
+  filter = _messages.StringField(1)
+  force = _messages.BooleanField(2)
+
+
 class GoogleCloudAiplatformV1beta1PythonPackageSpec(_messages.Message):
   r"""The spec of a Python packaged code.
 
@@ -43438,6 +43703,12 @@ class GoogleCloudAiplatformV1beta1ReasoningEngineContextSpecMemoryBankConfigTtlC
 class GoogleCloudAiplatformV1beta1ReasoningEngineSpec(_messages.Message):
   r"""ReasoningEngine configurations
 
+  Enums:
+    IdentityTypeValueValuesEnum: Optional. The identity type to use for the
+      Reasoning Engine. If not specified, the `service_account` field will be
+      used if set, otherwise the default Vertex AI Reasoning Engine Service
+      Agent in the project will be used.
+
   Messages:
     AgentCardValue: Optional. The A2A Agent Card for the agent (if available).
       It follows the specification at
@@ -43457,6 +43728,17 @@ class GoogleCloudAiplatformV1beta1ReasoningEngineSpec(_messages.Message):
       specification format.
     deploymentSpec: Optional. The specification of a Reasoning Engine
       deployment.
+    effectiveIdentity: Output only. The identity to use for the Reasoning
+      Engine. It can contain one of the following values: *
+      service-{project}@gcp-sa-aiplatform-re.googleapis.com (for SERVICE_AGENT
+      identity type) * {name}@{project}.gserviceaccount.com (for
+      SERVICE_ACCOUNT identity type) * agents.global.{org}.system.id.goog/reso
+      urces/aiplatform/projects/{project}/locations/{location}/reasoningEngine
+      s/{reasoning_engine} (for AGENT_IDENTITY identity type)
+    identityType: Optional. The identity type to use for the Reasoning Engine.
+      If not specified, the `service_account` field will be used if set,
+      otherwise the default Vertex AI Reasoning Engine Service Agent in the
+      project will be used.
     packageSpec: Optional. User provided package spec of the ReasoningEngine.
       Ignored when users directly specify a deployment image through
       `deployment_spec.first_party_image_override`, but keeping the
@@ -43470,6 +43752,27 @@ class GoogleCloudAiplatformV1beta1ReasoningEngineSpec(_messages.Message):
       Engine Service Agent in the project will be used.
     sourceCodeSpec: Deploy from source code files with a defined entrypoint.
   """
+
+  class IdentityTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The identity type to use for the Reasoning Engine. If not
+    specified, the `service_account` field will be used if set, otherwise the
+    default Vertex AI Reasoning Engine Service Agent in the project will be
+    used.
+
+    Values:
+      IDENTITY_TYPE_UNSPECIFIED: Default value. Use a custom service account
+        if the `service_account` field is set, otherwise use the default
+        Vertex AI Reasoning Engine Service Agent in the project. Same behavior
+        as SERVICE_ACCOUNT.
+      SERVICE_ACCOUNT: Use a custom service account if the `service_account`
+        field is set, otherwise use the default Vertex AI Reasoning Engine
+        Service Agent in the project.
+      AGENT_IDENTITY: Use Agent Identity. The `service_account` field must not
+        be set.
+    """
+    IDENTITY_TYPE_UNSPECIFIED = 0
+    SERVICE_ACCOUNT = 1
+    AGENT_IDENTITY = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AgentCardValue(_messages.Message):
@@ -43527,9 +43830,11 @@ class GoogleCloudAiplatformV1beta1ReasoningEngineSpec(_messages.Message):
   agentFramework = _messages.StringField(2)
   classMethods = _messages.MessageField('ClassMethodsValueListEntry', 3, repeated=True)
   deploymentSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ReasoningEngineSpecDeploymentSpec', 4)
-  packageSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ReasoningEngineSpecPackageSpec', 5)
-  serviceAccount = _messages.StringField(6)
-  sourceCodeSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ReasoningEngineSpecSourceCodeSpec', 7)
+  effectiveIdentity = _messages.StringField(5)
+  identityType = _messages.EnumField('IdentityTypeValueValuesEnum', 6)
+  packageSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ReasoningEngineSpecPackageSpec', 7)
+  serviceAccount = _messages.StringField(8)
+  sourceCodeSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ReasoningEngineSpecSourceCodeSpec', 9)
 
 
 class GoogleCloudAiplatformV1beta1ReasoningEngineSpecDeploymentSpec(_messages.Message):
@@ -44299,7 +44604,9 @@ class GoogleCloudAiplatformV1beta1RetrieveMemoriesRequest(_messages.Message):
     filter: Optional. The standard list filter that will be applied to the
       retrieved memories. More detail in
       [AIP-160](https://google.aip.dev/160). Supported fields: * `fact` *
-      `create_time` * `update_time`
+      `create_time` * `update_time` * `topics` (i.e.
+      `topics.custom_memory_topic_label: "example topic" OR
+      topics.managed_memory_topic: USER_PREFERENCES`)
     scope: Required. The scope of the memories to retrieve. A memory must have
       exactly the same scope (`Memory.scope`) as the scope provided here to be
       retrieved (same keys and values). Order does not matter, but it is case-
@@ -50517,6 +50824,12 @@ class GoogleCloudAiplatformV1beta1Session(_messages.Message):
   r"""A session contains a set of actions between users and Vertex agents.
 
   Messages:
+    LabelsValue: The labels with user-defined metadata to organize your
+      Sessions. Label keys and values can be no longer than 64 characters
+      (Unicode codepoints), can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. See https://goo.gl/xmQnxf for more information and examples of
+      labels.
     SessionStateValue: Optional. Session specific memory which stores key
       conversation points.
 
@@ -50526,6 +50839,11 @@ class GoogleCloudAiplatformV1beta1Session(_messages.Message):
     expireTime: Optional. Timestamp of when this session is considered
       expired. This is *always* provided on output, regardless of what was
       sent on input.
+    labels: The labels with user-defined metadata to organize your Sessions.
+      Label keys and values can be no longer than 64 characters (Unicode
+      codepoints), can only contain lowercase letters, numeric characters,
+      underscores and dashes. International characters are allowed. See
+      https://goo.gl/xmQnxf for more information and examples of labels.
     name: Identifier. The resource name of the session. Format: 'projects/{pro
       ject}/locations/{location}/reasoningEngines/{reasoning_engine}/sessions/
       {session}'.
@@ -50535,6 +50853,34 @@ class GoogleCloudAiplatformV1beta1Session(_messages.Message):
     updateTime: Output only. Timestamp when the session was updated.
     userId: Required. Immutable. String id provided by the user
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels with user-defined metadata to organize your Sessions. Label
+    keys and values can be no longer than 64 characters (Unicode codepoints),
+    can only contain lowercase letters, numeric characters, underscores and
+    dashes. International characters are allowed. See https://goo.gl/xmQnxf
+    for more information and examples of labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SessionStateValue(_messages.Message):
@@ -50565,11 +50911,12 @@ class GoogleCloudAiplatformV1beta1Session(_messages.Message):
   createTime = _messages.StringField(1)
   displayName = _messages.StringField(2)
   expireTime = _messages.StringField(3)
-  name = _messages.StringField(4)
-  sessionState = _messages.MessageField('SessionStateValue', 5)
-  ttl = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
-  userId = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  sessionState = _messages.MessageField('SessionStateValue', 6)
+  ttl = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+  userId = _messages.StringField(9)
 
 
 class GoogleCloudAiplatformV1beta1SessionEvent(_messages.Message):
@@ -55990,6 +56337,8 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    AiplatformProjectLocationsDatasetsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     AiplatformProjectsLocationsDatasetsSearchDataItemsRequest, 'orderByAnnotation_orderBy', 'orderByAnnotation.orderBy')
 encoding.AddCustomJsonFieldMapping(

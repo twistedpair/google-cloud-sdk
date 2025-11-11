@@ -2890,7 +2890,7 @@ class FeatureState(_messages.Message):
 
 
 class FeatureUpdate(_messages.Message):
-  r"""LINT.IfChange Feature config to use for Rollout.
+  r"""Feature config to use for Rollout.
 
   Fields:
     binaryAuthorizationConfig: Optional. Configuration for Binary
@@ -5862,7 +5862,7 @@ class ManagedRolloutConfig(_messages.Message):
 
   Fields:
     soakDuration: Optional. Default soak time before starting the next wave.
-      The soak_duration in the wave_status overrides this value on a per-wave
+      The soak_duration in the stages overrides this value on a per-wave
       basis.
     uiprRolloutConfig: Optional. The UIPR specific configuration used for the
       Rollout.
@@ -7818,6 +7818,8 @@ class Rollout(_messages.Message):
     scheduledStartTime: Optional. The timestamp at which the Rollout is
       scheduled to start. If not specified, the Rollout will start
       immediately.
+    stages: Output only. The stages of the Rollout. Note: this is only
+      populated for google-initiated rollouts.
     state: Output only. State specifies various states of the Rollout.
     stateReason: Output only. A human-readable description explaining the
       reason for the current state.
@@ -7828,8 +7830,6 @@ class Rollout(_messages.Message):
       updated.
     versionUpgrade: Optional. Config for version upgrade of clusters. Note:
       Currently for GDCE clusters only.
-    waveStatus: Optional. Output only. The status of each wave in the Rollout.
-      Note: this is only populated for google-initiated rollouts.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -7945,12 +7945,12 @@ class Rollout(_messages.Message):
   rolloutSequence = _messages.StringField(15)
   schedule = _messages.MessageField('Schedule', 16)
   scheduledStartTime = _messages.StringField(17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  stateReason = _messages.StringField(19)
-  uid = _messages.StringField(20)
-  updateTime = _messages.StringField(21)
-  versionUpgrade = _messages.MessageField('VersionUpgrade', 22)
-  waveStatus = _messages.MessageField('WaveStatus', 23, repeated=True)
+  stages = _messages.MessageField('RolloutStage', 18, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  stateReason = _messages.StringField(20)
+  uid = _messages.StringField(21)
+  updateTime = _messages.StringField(22)
+  versionUpgrade = _messages.MessageField('VersionUpgrade', 23)
 
 
 class RolloutMembershipState(_messages.Message):
@@ -8034,6 +8034,46 @@ class RolloutSequence(_messages.Message):
   stages = _messages.MessageField('Stage', 7, repeated=True)
   uid = _messages.StringField(8)
   updateTime = _messages.StringField(9)
+
+
+class RolloutStage(_messages.Message):
+  r"""Stage represents a single stage in the Rollout.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the wave.
+
+  Fields:
+    endTime: Optional. Output only. The time at which the wave ended.
+    soakDuration: Optional. Duration to soak after this wave before starting
+      the next wave.
+    stageNumber: Output only. The wave number to which this status applies.
+    startTime: Optional. Output only. The time at which the wave started.
+    state: Output only. The state of the wave.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the wave.
+
+    Values:
+      STATE_UNSPECIFIED: Default value.
+      PENDING: The wave is pending.
+      RUNNING: The wave is running.
+      SOAKING: The wave is soaking.
+      COMPLETED: The wave is completed.
+      FORCED_SOAKING: The wave is force soaking.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    RUNNING = 2
+    SOAKING = 3
+    COMPLETED = 4
+    FORCED_SOAKING = 5
+
+  endTime = _messages.StringField(1)
+  soakDuration = _messages.StringField(2)
+  stageNumber = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class RolloutTarget(_messages.Message):
@@ -9590,46 +9630,6 @@ class WaveSchedule(_messages.Message):
   waveEndTime = _messages.StringField(1)
   waveNumber = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   waveStartTime = _messages.StringField(3)
-
-
-class WaveStatus(_messages.Message):
-  r"""A WaveStatus object.
-
-  Enums:
-    StateValueValuesEnum: Output only. The state of the wave.
-
-  Fields:
-    soakDuration: Optional. Duration to soak after this wave before starting
-      the next wave.
-    state: Output only. The state of the wave.
-    waveEndTime: Optional. Output only. The time at which the wave ended.
-    waveNumber: Output only. The wave number to which this status applies.
-    waveStartTime: Optional. Output only. The time at which the wave started.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The state of the wave.
-
-    Values:
-      STATE_UNSPECIFIED: Default value.
-      PENDING: The wave is pending.
-      RUNNING: The wave is running.
-      SOAKING: The wave is soaking.
-      COMPLETED: The wave is completed.
-      FORCED_SOAKING: The wave is force soaking.
-    """
-    STATE_UNSPECIFIED = 0
-    PENDING = 1
-    RUNNING = 2
-    SOAKING = 3
-    COMPLETED = 4
-    FORCED_SOAKING = 5
-
-  soakDuration = _messages.StringField(1)
-  state = _messages.EnumField('StateValueValuesEnum', 2)
-  waveEndTime = _messages.StringField(3)
-  waveNumber = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  waveStartTime = _messages.StringField(5)
 
 
 class WaveTemplate(_messages.Message):

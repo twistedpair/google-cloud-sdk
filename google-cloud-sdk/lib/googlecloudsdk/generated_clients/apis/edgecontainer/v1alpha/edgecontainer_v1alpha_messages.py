@@ -1573,9 +1573,12 @@ class GenerateServiceAccountKeyRequest(_messages.Message):
 
   Fields:
     caCertPath: Optional. The CA cert path.
+    validity: Optional. The lifetime of the key. If not specified, the default
+      lifetime is set to 14 days.
   """
 
   caCertPath = _messages.StringField(1)
+  validity = _messages.StringField(2)
 
 
 class GenerateServiceAccountKeyResponse(_messages.Message):

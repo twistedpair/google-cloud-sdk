@@ -377,16 +377,6 @@ MAP = {
                     client_classpath='apikeys_v2_client.ApikeysV2',
                     base_url='https://apikeys.googleapis.com/',
                     messages_modulepath='apikeys_v2_messages'),
-                default_version=False,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
-        'v2alpha1':
-            APIDef(
-                apitools=ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.apikeys.v2alpha1',
-                    client_classpath='apikeys_v2alpha1_client.ApikeysV2alpha1',
-                    base_url='https://apikeys.googleapis.com/',
-                    messages_modulepath='apikeys_v2alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),

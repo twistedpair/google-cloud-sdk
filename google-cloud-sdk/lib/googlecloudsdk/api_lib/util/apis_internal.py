@@ -217,6 +217,7 @@ def _GetGapicClientInstance(
     transport_choice=apis_util.GapicTransport.GRPC,
     attempt_direct_path=False,
     redact_request_body_reason=None,
+    custom_interceptors=None,
 ):
   """Returns an instance of the GAPIC API client specified in the args.
 
@@ -237,6 +238,8 @@ def _GetGapicClientInstance(
       possible.
     redact_request_body_reason: str, the reason why the request body must be
       redacted if --log-http is used. If None, the body is not redacted.
+    custom_interceptors: list[grpc interceptor], a list of custom interceptors
+    to add to the channel.
 
   Returns:
     An instance of the specified GAPIC API client.
@@ -268,6 +271,7 @@ def _GetGapicClientInstance(
       mtls_enabled=_MtlsEnabled(api_name, api_version),
       attempt_direct_path=attempt_direct_path,
       redact_request_body_reason=redact_request_body_reason,
+      custom_interceptors=custom_interceptors,
   )
 
 

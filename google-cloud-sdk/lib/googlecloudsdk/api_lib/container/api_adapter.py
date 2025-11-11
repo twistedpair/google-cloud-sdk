@@ -896,6 +896,7 @@ class CreateClusterOptions(object):
       enable_pod_snapshots=None,
       autopilot_privileged_admission=None,
       enable_kernel_module_signature_enforcement=None,
+      enable_lustre_multi_nic=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -1201,6 +1202,7 @@ class CreateClusterOptions(object):
     self.control_plane_egress_mode = control_plane_egress_mode
     self.enable_pod_snapshots = enable_pod_snapshots
     self.autopilot_privileged_admission = autopilot_privileged_admission
+    self.enable_lustre_multi_nic = enable_lustre_multi_nic
 
 
 class UpdateClusterOptions(object):
@@ -1760,6 +1762,7 @@ class CreateNodePoolOptions(object):
       control_node_pool=None,
       enable_attestation=None,
       tee_policy=None,
+      enable_lustre_multi_nic=None,
   ):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
@@ -1869,6 +1872,7 @@ class CreateNodePoolOptions(object):
     self.control_node_pool = control_node_pool
     self.enable_attestation = enable_attestation
     self.tee_policy = tee_policy
+    self.enable_lustre_multi_nic = enable_lustre_multi_nic
 
 
 class UpdateNodePoolOptions(object):
@@ -1926,6 +1930,7 @@ class UpdateNodePoolOptions(object):
       boot_disk_provisioned_iops=None,
       boot_disk_provisioned_throughput=None,
       enable_kernel_module_signature_enforcement=None,
+      enable_lustre_multi_nic=None,
   ):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
@@ -1984,6 +1989,7 @@ class UpdateNodePoolOptions(object):
     self.enable_kernel_module_signature_enforcement = (
         enable_kernel_module_signature_enforcement
     )
+    self.enable_lustre_multi_nic = enable_lustre_multi_nic
 
   def IsAutoscalingUpdate(self):
     return (
@@ -2043,6 +2049,7 @@ class UpdateNodePoolOptions(object):
         or self.provisioned_iops is not None
         or self.provisioned_throughput is not None
         or self.enable_kernel_module_signature_enforcement is not None
+        or self.enable_lustre_multi_nic is not None
     )
 
 
@@ -3597,6 +3604,13 @@ class APIAdapter(object):
 
     if options.flex_start is not None:
       node_config.flexStart = options.flex_start
+
+    if options.enable_lustre_multi_nic is not None:
+      if node_config.lustreConfig is None:
+        node_config.lustreConfig = self.messages.LustreConfig()
+      node_config.lustreConfig.multiRail = self.messages.MultiRail(
+          enabled=options.enable_lustre_multi_nic
+      )
 
     return node_config
 
@@ -6596,6 +6610,13 @@ class APIAdapter(object):
             )
         )
 
+    if options.enable_lustre_multi_nic is not None:
+      if node_config.lustreConfig is None:
+        node_config.lustreConfig = self.messages.LustreConfig()
+      node_config.lustreConfig.multiRail = self.messages.MultiRail(
+          enabled=options.enable_lustre_multi_nic
+      )
+
     return pool
 
   def CreateNodePool(self, node_pool_ref, options):
@@ -7035,6 +7056,11 @@ class APIAdapter(object):
     elif options.enable_kernel_module_signature_enforcement is not None:
       _AddKernelModuleSignatureEnforcementToNodeConfig(
           update_request, options, self.messages
+      )
+    elif options.enable_lustre_multi_nic is not None:
+      update_request.lustreConfig = self.messages.LustreConfig()
+      update_request.lustreConfig.multiRail = self.messages.MultiRail(
+          enabled=options.enable_lustre_multi_nic
       )
     return update_request
 

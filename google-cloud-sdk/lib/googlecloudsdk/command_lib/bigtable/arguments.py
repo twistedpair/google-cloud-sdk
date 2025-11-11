@@ -346,6 +346,42 @@ class ArgAdder(object):
     )
     return self
 
+  # TODO(b/447212097): add support for handling units as part of the arg value.
+  def AddMemoryLayerFixedCapacity(self):
+    """Add argument for fixed-capacity argument to the parser."""
+    self.parser.add_argument(
+        '--fixed-capacity',
+        type=arg_parsers.ArgDict(
+            spec={
+                'storage-size-gib': int,
+                'max-request-units-per-second': int,
+            },
+            min_length=1,
+            max_length=2,
+        ),
+        metavar='[storage-size-gib=SIZE],[max-request-units-per-second=UNITS]',
+        help=textwrap.dedent("""\
+        Specify fixed capacity for memory layer as a key-value dictionary.
+
+        Keys can be:
+
+          *storage-size-gib*: The storage size of the memory layer in GiB.
+
+          *max-request-units-per-second*: The max request units per second that can be served by the memory layer. Once request units reach the configured max request units per second, reads will be throttled and fallback to the backing persistent data store.
+        """),
+    )
+    return self
+
+  def AddMemoryLayerDisable(self):
+    """Add argument for disabling memory layer to the parser."""
+    self.parser.add_argument(
+        '--disable',
+        action='store_true',
+        default=False,
+        help='Disable the memory layer for the cluster.',
+    )
+    return self
+
   def AddIsolation(self):
     """Add argument for isolating this app profile's traffic to parser."""
     isolation_group = self.parser.add_mutually_exclusive_group()

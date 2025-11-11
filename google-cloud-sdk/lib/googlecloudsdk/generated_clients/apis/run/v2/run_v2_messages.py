@@ -217,6 +217,20 @@ class GoogleCloudRunV2CloudSqlInstance(_messages.Message):
   instances = _messages.StringField(1, repeated=True)
 
 
+class GoogleCloudRunV2CloudStorageSource(_messages.Message):
+  r"""Cloud Storage source.
+
+  Fields:
+    bucket: Required. The Cloud Storage bucket name.
+    generation: Optional. The Cloud Storage object generation.
+    object: Required. The Cloud Storage object name.
+  """
+
+  bucket = _messages.StringField(1)
+  generation = _messages.IntegerField(2)
+  object = _messages.StringField(3)
+
+
 class GoogleCloudRunV2Condition(_messages.Message):
   r"""Defines a status condition for a resource.
 
@@ -428,6 +442,7 @@ class GoogleCloudRunV2Container(_messages.Message):
       number will be chosen and passed to the container through the PORT
       environment variable for the container to listen on.
     resources: Compute Resource requirements by this container.
+    sourceCode: Optional. Location of the source.
     startupProbe: Startup probe of application within the container. All other
       probes are disabled if a startup probe is provided, until it succeeds.
       Container will not be added to service endpoints if the probe fails.
@@ -448,9 +463,10 @@ class GoogleCloudRunV2Container(_messages.Message):
   name = _messages.StringField(9)
   ports = _messages.MessageField('GoogleCloudRunV2ContainerPort', 10, repeated=True)
   resources = _messages.MessageField('GoogleCloudRunV2ResourceRequirements', 11)
-  startupProbe = _messages.MessageField('GoogleCloudRunV2Probe', 12)
-  volumeMounts = _messages.MessageField('GoogleCloudRunV2VolumeMount', 13, repeated=True)
-  workingDir = _messages.StringField(14)
+  sourceCode = _messages.MessageField('GoogleCloudRunV2SourceCode', 12)
+  startupProbe = _messages.MessageField('GoogleCloudRunV2Probe', 13)
+  volumeMounts = _messages.MessageField('GoogleCloudRunV2VolumeMount', 14, repeated=True)
+  workingDir = _messages.StringField(15)
 
 
 class GoogleCloudRunV2ContainerOverride(_messages.Message):
@@ -846,6 +862,9 @@ class GoogleCloudRunV2ExecutionTemplate(_messages.Message):
   r"""ExecutionTemplate describes the data an execution should have when
   created from a template.
 
+  Enums:
+    PriorityTierValueValuesEnum: Optional. The priority tier of the execution.
+
   Messages:
     AnnotationsValue: Unstructured key value map that may be set by external
       tools to store and arbitrary metadata. They are not queryable and should
@@ -895,12 +914,28 @@ class GoogleCloudRunV2ExecutionTemplate(_messages.Message):
       execution. The actual number of tasks running in steady state will be
       less than this number when there are fewer tasks waiting to be completed
       remaining, i.e. when the work left to do is less than max parallelism.
+    priorityTier: Optional. The priority tier of the execution.
     taskCount: Specifies the desired number of tasks the execution should run.
       Setting to 1 means that parallelism is limited to 1 and the success of
       that task signals the success of the execution. Defaults to 1.
     template: Required. Describes the task(s) that will be created when
       executing an execution.
   """
+
+  class PriorityTierValueValuesEnum(_messages.Enum):
+    r"""Optional. The priority tier of the execution.
+
+    Values:
+      PRIORITY_TIER_UNSPECIFIED: The default value, uses STANDARD if not
+        specified.
+      STANDARD: The system will start the job as soon as possible.
+      FLEX: The system will start the job within the next 6 hours depending on
+        available capacity. Flex executions are limited to 12 hours of run
+        time.
+    """
+    PRIORITY_TIER_UNSPECIFIED = 0
+    STANDARD = 1
+    FLEX = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -970,8 +1005,9 @@ class GoogleCloudRunV2ExecutionTemplate(_messages.Message):
   annotations = _messages.MessageField('AnnotationsValue', 1)
   labels = _messages.MessageField('LabelsValue', 2)
   parallelism = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  taskCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  template = _messages.MessageField('GoogleCloudRunV2TaskTemplate', 5)
+  priorityTier = _messages.EnumField('PriorityTierValueValuesEnum', 4)
+  taskCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  template = _messages.MessageField('GoogleCloudRunV2TaskTemplate', 6)
 
 
 class GoogleCloudRunV2ExportImageRequest(_messages.Message):
@@ -1612,8 +1648,12 @@ class GoogleCloudRunV2NodeSelector(_messages.Message):
 class GoogleCloudRunV2Overrides(_messages.Message):
   r"""RunJob Overrides that contains Execution fields to be overridden.
 
+  Enums:
+    PriorityTierValueValuesEnum: Optional. The priority tier of the execution.
+
   Fields:
     containerOverrides: Per container override specification.
+    priorityTier: Optional. The priority tier of the execution.
     taskCount: Optional. The desired number of tasks the execution should run.
       Will replace existing task_count value.
     timeout: Duration in seconds the task may be active before the system will
@@ -1621,9 +1661,25 @@ class GoogleCloudRunV2Overrides(_messages.Message):
       replace existing timeout_seconds value.
   """
 
+  class PriorityTierValueValuesEnum(_messages.Enum):
+    r"""Optional. The priority tier of the execution.
+
+    Values:
+      PRIORITY_TIER_UNSPECIFIED: The default value, uses STANDARD if not
+        specified.
+      STANDARD: The system will start the job as soon as possible.
+      FLEX: The system will start the job within the next 6 hours depending on
+        available capacity. Flex executions are limited to 12 hours of run
+        time.
+    """
+    PRIORITY_TIER_UNSPECIFIED = 0
+    STANDARD = 1
+    FLEX = 2
+
   containerOverrides = _messages.MessageField('GoogleCloudRunV2ContainerOverride', 1, repeated=True)
-  taskCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  timeout = _messages.StringField(3)
+  priorityTier = _messages.EnumField('PriorityTierValueValuesEnum', 2)
+  taskCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  timeout = _messages.StringField(4)
 
 
 class GoogleCloudRunV2Probe(_messages.Message):
@@ -2699,6 +2755,16 @@ class GoogleCloudRunV2ServiceScaling(_messages.Message):
   maxInstanceCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   minInstanceCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   scalingMode = _messages.EnumField('ScalingModeValueValuesEnum', 4)
+
+
+class GoogleCloudRunV2SourceCode(_messages.Message):
+  r"""Source type for the container.
+
+  Fields:
+    cloudStorageSource: The source is a Cloud Storage bucket.
+  """
+
+  cloudStorageSource = _messages.MessageField('GoogleCloudRunV2CloudStorageSource', 1)
 
 
 class GoogleCloudRunV2StorageSource(_messages.Message):
@@ -4541,6 +4607,8 @@ class GoogleDevtoolsCloudbuildV1BuiltImage(_messages.Message):
   r"""An image built by the pipeline.
 
   Fields:
+    artifactRegistryPackage: Output only. Path to the artifact in Artifact
+      Registry.
     digest: Docker Registry 2.0 digest.
     name: Name used to push the container image to Google Container Registry,
       as presented to `docker push`.
@@ -4548,9 +4616,10 @@ class GoogleDevtoolsCloudbuildV1BuiltImage(_messages.Message):
       specified image.
   """
 
-  digest = _messages.StringField(1)
-  name = _messages.StringField(2)
-  pushTiming = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 3)
+  artifactRegistryPackage = _messages.StringField(1)
+  digest = _messages.StringField(2)
+  name = _messages.StringField(3)
+  pushTiming = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 4)
 
 
 class GoogleDevtoolsCloudbuildV1ConnectedRepository(_messages.Message):
@@ -5328,30 +5397,36 @@ class GoogleDevtoolsCloudbuildV1UploadedGoModule(_messages.Message):
   directive.
 
   Fields:
+    artifactRegistryPackage: Output only. Path to the artifact in Artifact
+      Registry.
     fileHashes: Hash types and values of the Go Module Artifact.
     pushTiming: Output only. Stores timing information for pushing the
       specified artifact.
     uri: URI of the uploaded artifact.
   """
 
-  fileHashes = _messages.MessageField('GoogleDevtoolsCloudbuildV1FileHashes', 1)
-  pushTiming = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 2)
-  uri = _messages.StringField(3)
+  artifactRegistryPackage = _messages.StringField(1)
+  fileHashes = _messages.MessageField('GoogleDevtoolsCloudbuildV1FileHashes', 2)
+  pushTiming = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 3)
+  uri = _messages.StringField(4)
 
 
 class GoogleDevtoolsCloudbuildV1UploadedMavenArtifact(_messages.Message):
   r"""A Maven artifact uploaded using the MavenArtifact directive.
 
   Fields:
+    artifactRegistryPackage: Output only. Path to the artifact in Artifact
+      Registry.
     fileHashes: Hash types and values of the Maven Artifact.
     pushTiming: Output only. Stores timing information for pushing the
       specified artifact.
     uri: URI of the uploaded artifact.
   """
 
-  fileHashes = _messages.MessageField('GoogleDevtoolsCloudbuildV1FileHashes', 1)
-  pushTiming = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 2)
-  uri = _messages.StringField(3)
+  artifactRegistryPackage = _messages.StringField(1)
+  fileHashes = _messages.MessageField('GoogleDevtoolsCloudbuildV1FileHashes', 2)
+  pushTiming = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 3)
+  uri = _messages.StringField(4)
 
 
 class GoogleDevtoolsCloudbuildV1UploadedNpmPackage(_messages.Message):
@@ -5359,30 +5434,36 @@ class GoogleDevtoolsCloudbuildV1UploadedNpmPackage(_messages.Message):
   directive.
 
   Fields:
+    artifactRegistryPackage: Output only. Path to the artifact in Artifact
+      Registry.
     fileHashes: Hash types and values of the npm package.
     pushTiming: Output only. Stores timing information for pushing the
       specified artifact.
     uri: URI of the uploaded npm package.
   """
 
-  fileHashes = _messages.MessageField('GoogleDevtoolsCloudbuildV1FileHashes', 1)
-  pushTiming = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 2)
-  uri = _messages.StringField(3)
+  artifactRegistryPackage = _messages.StringField(1)
+  fileHashes = _messages.MessageField('GoogleDevtoolsCloudbuildV1FileHashes', 2)
+  pushTiming = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 3)
+  uri = _messages.StringField(4)
 
 
 class GoogleDevtoolsCloudbuildV1UploadedPythonPackage(_messages.Message):
   r"""Artifact uploaded using the PythonPackage directive.
 
   Fields:
+    artifactRegistryPackage: Output only. Path to the artifact in Artifact
+      Registry.
     fileHashes: Hash types and values of the Python Artifact.
     pushTiming: Output only. Stores timing information for pushing the
       specified artifact.
     uri: URI of the uploaded artifact.
   """
 
-  fileHashes = _messages.MessageField('GoogleDevtoolsCloudbuildV1FileHashes', 1)
-  pushTiming = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 2)
-  uri = _messages.StringField(3)
+  artifactRegistryPackage = _messages.StringField(1)
+  fileHashes = _messages.MessageField('GoogleDevtoolsCloudbuildV1FileHashes', 2)
+  pushTiming = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 3)
+  uri = _messages.StringField(4)
 
 
 class GoogleDevtoolsCloudbuildV1Volume(_messages.Message):

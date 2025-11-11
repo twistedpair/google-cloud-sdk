@@ -145,6 +145,7 @@ def MakeClient(
     mtls_enabled=False,
     attempt_direct_path=False,
     redact_request_body_reason=None,
+    custom_interceptors=None,
 ):
   """Instantiates a gapic API client with gcloud defaults and configuration.
 
@@ -163,6 +164,8 @@ def MakeClient(
       possible
     redact_request_body_reason: str, the reason why the request body must be
       redacted if --log-http is used. If None, the body is not redacted.
+    custom_interceptors: list[grpc interceptor], a list of custom
+      interceptors to add to the channel.
 
   Returns:
     A gapic API client.
@@ -178,6 +181,7 @@ def MakeClient(
           mtls_enabled,
           attempt_direct_path,
           redact_request_body_reason,
+          custom_interceptors=custom_interceptors,
       )
   )
 

@@ -3841,7 +3841,7 @@ https://cloud.google.com/kubernetes-engine/docs/how-to/pod-security-policies.
   )
 
 
-def AddPodSnapshotConfigFlags(parser, hidden=True):
+def AddPodSnapshotConfigFlags(parser, hidden=False):
   """Adds --enable-pod-snapshots and --disable-pod-snapshots flags to parser."""
   group = parser.add_group(mutex=True, hidden=hidden)
   group.add_argument(
@@ -8044,6 +8044,36 @@ def AddEnableLegacyLustrePortFlag(parser, hidden=False):
   """
   parser.add_argument(
       '--enable-legacy-lustre-port',
+      default=None,
+      hidden=hidden,
+      action='store_true',
+      help=help_text,
+  )
+
+
+def AddEnableLustreMultiRailFlag(parser, for_node_pool=False, hidden=True):
+  """Adds Lustre multi-NIC flag to the given parser.
+
+  Args:
+    parser: A given parser.
+    for_node_pool: Whether for node pool.
+    hidden: Indicates that the flags are hidden.
+  """
+  if for_node_pool:
+    help_text = """\
+Enable Lustre multi-NIC configuration for the node pool.
+When enabled, Lustre CSI driver will be configured to use multiple NICs on nodes in this pool.
+Use `--no-enable-lustre-multi-nic` to disable.
+"""
+  else:
+    help_text = """\
+Enable Lustre multi-NIC configuration for all new nodes in the cluster unless
+explicitly overridden with `--no-enable-lustre-multi-nic` when creating the nodepool.
+When enabled, Lustre CSI driver will be configured to use multiple NICs on nodes in this cluster.
+Use `--no-enable-lustre-multi-nic` to disable.
+"""
+  parser.add_argument(
+      '--enable-lustre-multi-nic',
       default=None,
       hidden=hidden,
       action='store_true',

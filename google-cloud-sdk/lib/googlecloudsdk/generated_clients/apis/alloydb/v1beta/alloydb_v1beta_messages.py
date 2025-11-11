@@ -86,15 +86,38 @@ class AlloydbProjectsLocationsBackupsDeleteRequest(_messages.Message):
 class AlloydbProjectsLocationsBackupsGetRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsBackupsGetRequest object.
 
+  Enums:
+    ViewValueValuesEnum: Optional. The view of the backup to return.
+
   Fields:
     name: Required. Name of the resource
+    view: Optional. The view of the backup to return.
   """
 
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. The view of the backup to return.
+
+    Values:
+      BACKUP_VIEW_UNSPECIFIED: Value unspecified, equivalent to BASIC.
+      BACKUP_VIEW_BASIC: Responses include all fields that aren't explicitly
+        gated behind another view.
+      BACKUP_VIEW_CLUSTER_DELETED: Response include all the field from BASIC
+        plus the field cluster_deleted, which specifies if the cluster
+        corresponding to this backup is deleted.
+    """
+    BACKUP_VIEW_UNSPECIFIED = 0
+    BACKUP_VIEW_BASIC = 1
+    BACKUP_VIEW_CLUSTER_DELETED = 2
+
   name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
 
 
 class AlloydbProjectsLocationsBackupsListRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsBackupsListRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Optional. The view of the backup to return.
 
   Fields:
     filter: Filtering results
@@ -103,13 +126,30 @@ class AlloydbProjectsLocationsBackupsListRequest(_messages.Message):
       requested. If unspecified, server will pick an appropriate default.
     pageToken: A token identifying a page of results the server should return.
     parent: Required. Parent value for ListBackupsRequest
+    view: Optional. The view of the backup to return.
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. The view of the backup to return.
+
+    Values:
+      BACKUP_VIEW_UNSPECIFIED: Value unspecified, equivalent to BASIC.
+      BACKUP_VIEW_BASIC: Responses include all fields that aren't explicitly
+        gated behind another view.
+      BACKUP_VIEW_CLUSTER_DELETED: Response include all the field from BASIC
+        plus the field cluster_deleted, which specifies if the cluster
+        corresponding to this backup is deleted.
+    """
+    BACKUP_VIEW_UNSPECIFIED = 0
+    BACKUP_VIEW_BASIC = 1
+    BACKUP_VIEW_CLUSTER_DELETED = 2
 
   filter = _messages.StringField(1)
   orderBy = _messages.StringField(2)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 6)
 
 
 class AlloydbProjectsLocationsBackupsPatchRequest(_messages.Message):
@@ -834,6 +874,36 @@ class AlloydbProjectsLocationsClustersUsersPatchRequest(_messages.Message):
   validateOnly = _messages.BooleanField(6)
 
 
+class AlloydbProjectsLocationsEndpointsCreateRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsEndpointsCreateRequest object.
+
+  Fields:
+    endpoint: A Endpoint resource to be passed as the request body.
+    endpointId: Required. ID of the requesting object.
+    parent: Required. The location of the new endpoint. For the required
+      format, see the comment on the Endpoint.name field.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      ignores the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if the original operation with the same request
+      ID was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, the backend validates the request, but
+      doesn't actually execute it.
+  """
+
+  endpoint = _messages.MessageField('Endpoint', 1)
+  endpointId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
 class AlloydbProjectsLocationsEndpointsGetRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsEndpointsGetRequest object.
 
@@ -1113,6 +1183,9 @@ class Backup(_messages.Message):
   Fields:
     annotations: Annotations to allow client tools to store small amount of
       arbitrary data. This is distinct from labels. https://google.aip.dev/128
+    clusterDeleted: Output only. Set to true if the cluster corresponding to
+      this backup is deleted. This field is only populated for when using the
+      BACKUP_VIEW_CLUSTER_DELETED view.
     clusterName: Required. The full resource name of the backup source cluster
       (e.g., projects/{project}/locations/{region}/clusters/{cluster_id}).
     clusterUid: Output only. The system-generated UID of the cluster which was
@@ -1300,30 +1373,31 @@ class Backup(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  clusterName = _messages.StringField(2)
-  clusterUid = _messages.StringField(3)
-  createCompletionTime = _messages.StringField(4)
-  createTime = _messages.StringField(5)
-  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 6)
-  deleteTime = _messages.StringField(7)
-  description = _messages.StringField(8)
-  displayName = _messages.StringField(9)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 10)
-  encryptionInfo = _messages.MessageField('EncryptionInfo', 11)
-  enforcedRetention = _messages.BooleanField(12)
-  etag = _messages.StringField(13)
-  expiryQuantity = _messages.MessageField('QuantityBasedExpiry', 14)
-  expiryTime = _messages.StringField(15)
-  labels = _messages.MessageField('LabelsValue', 16)
-  name = _messages.StringField(17)
-  reconciling = _messages.BooleanField(18)
-  satisfiesPzs = _messages.BooleanField(19)
-  sizeBytes = _messages.IntegerField(20)
-  state = _messages.EnumField('StateValueValuesEnum', 21)
-  tags = _messages.MessageField('TagsValue', 22)
-  type = _messages.EnumField('TypeValueValuesEnum', 23)
-  uid = _messages.StringField(24)
-  updateTime = _messages.StringField(25)
+  clusterDeleted = _messages.BooleanField(2)
+  clusterName = _messages.StringField(3)
+  clusterUid = _messages.StringField(4)
+  createCompletionTime = _messages.StringField(5)
+  createTime = _messages.StringField(6)
+  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 7)
+  deleteTime = _messages.StringField(8)
+  description = _messages.StringField(9)
+  displayName = _messages.StringField(10)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 11)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 12)
+  enforcedRetention = _messages.BooleanField(13)
+  etag = _messages.StringField(14)
+  expiryQuantity = _messages.MessageField('QuantityBasedExpiry', 15)
+  expiryTime = _messages.StringField(16)
+  labels = _messages.MessageField('LabelsValue', 17)
+  name = _messages.StringField(18)
+  reconciling = _messages.BooleanField(19)
+  satisfiesPzs = _messages.BooleanField(20)
+  sizeBytes = _messages.IntegerField(21)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  tags = _messages.MessageField('TagsValue', 23)
+  type = _messages.EnumField('TypeValueValuesEnum', 24)
+  uid = _messages.StringField(25)
+  updateTime = _messages.StringField(26)
 
 
 class BackupDrBackupSource(_messages.Message):
@@ -2860,8 +2934,8 @@ class Instance(_messages.Message):
     machineConfig: Configurations for the machines that host the underlying
       database engine.
     maintenanceVersionName: Output only. Maintenance version of the instance,
-      for example: POSTGRES_15_7.2025_07_15.04_00. Output only. Update this
-      field via the parent cluster's maintenance_version.
+      for example: POSTGRES_15.2025_07_15.04_00. Output only. Update this
+      field via the parent cluster's maintenance_version field(s).
     name: Output only. The name of the instance resource with the format: * pr
       ojects/{project}/locations/{region}/clusters/{cluster_id}/instances/{ins
       tance_id} where the cluster and instance ID segments should satisfy the
@@ -5365,7 +5439,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Message):
-  r"""Common model for database resource instance metadata. Next ID: 29
+  r"""Common model for database resource instance metadata. Next ID: 30
 
   Enums:
     CurrentStateValueValuesEnum: Current state of the instance.
@@ -5399,6 +5473,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
     gcbdrConfiguration: GCBDR configuration for the resource.
     id: Required. Unique identifier for a Database resource
     instanceType: The type of the instance. Specified at creation time.
+    isDeletionProtectionEnabled: Optional. Whether deletion protection is
+      enabled for this resource.
     location: The resource location. REQUIRED
     machineConfiguration: Machine configuration for this resource.
     maintenanceInfo: Optional. Maintenance info for the resource.
@@ -5548,19 +5624,20 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
   gcbdrConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainGCBDRConfiguration', 11)
   id = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 12)
   instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 13)
-  location = _messages.StringField(14)
-  machineConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainMachineConfiguration', 15)
-  maintenanceInfo = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainResourceMaintenanceInfo', 16)
-  primaryResourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 17)
-  primaryResourceLocation = _messages.StringField(18)
-  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 19)
-  resourceContainer = _messages.StringField(20)
-  resourceName = _messages.StringField(21)
-  suspensionReason = _messages.EnumField('SuspensionReasonValueValuesEnum', 22)
-  tagsSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainTags', 23)
-  updationTime = _messages.StringField(24)
-  userLabelSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainUserLabels', 25)
-  zone = _messages.StringField(26)
+  isDeletionProtectionEnabled = _messages.BooleanField(14)
+  location = _messages.StringField(15)
+  machineConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainMachineConfiguration', 16)
+  maintenanceInfo = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainResourceMaintenanceInfo', 17)
+  primaryResourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 18)
+  primaryResourceLocation = _messages.StringField(19)
+  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 20)
+  resourceContainer = _messages.StringField(21)
+  resourceName = _messages.StringField(22)
+  suspensionReason = _messages.EnumField('SuspensionReasonValueValuesEnum', 23)
+  tagsSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainTags', 24)
+  updationTime = _messages.StringField(25)
+  userLabelSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainUserLabels', 26)
+  zone = _messages.StringField(27)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData(_messages.Message):

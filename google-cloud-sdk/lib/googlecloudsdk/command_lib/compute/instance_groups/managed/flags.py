@@ -45,6 +45,20 @@ INSTANCE_TEMPLATE_ARG = compute_flags.ResourceArgument(
     """,
 )
 
+MULTI_MIG_ARG = compute_flags.ResourceArgument(
+    '--multi-mig',
+    resource_name='multi-MIG',
+    required=False,
+    plural=False,
+    scope_flags_usage=compute_flags.ScopeFlagsUsage.USE_EXISTING_SCOPE_FLAGS,
+    regional_collection='compute.regionMultiMigs',
+    region_help_text="""
+    Specifies the name or URL of the multi-MIG that will be attached to selected
+    managed instance group.
+    """,
+    region_hidden=True,
+)
+
 DEFAULT_CREATE_OR_LIST_FORMAT = """\
     table(
       name,
@@ -950,3 +964,17 @@ def AddOnRepairFlags(parser: parser_arguments.ArgumentInterceptor):
       choices=allow_changing_zone_choices,
       help="Specifies whether the MIG can change a VM's zone during a repair.",
   )
+
+
+def AddMultiMigFlags(parser):
+  """Adds Multi-MIG flags to the parser."""
+  multi_mig_group = parser.add_mutually_exclusive_group(hidden=True)
+  multi_mig_group.add_argument(
+      '--clear-multi-mig',
+      action='store_true',
+      default=None,
+      help="""\
+      Removes this managed instance group from the Multi-MIG it belongs to.
+      """,
+  )
+  MULTI_MIG_ARG.AddArgument(multi_mig_group)

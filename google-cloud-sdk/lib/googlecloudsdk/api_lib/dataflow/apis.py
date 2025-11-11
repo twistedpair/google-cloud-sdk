@@ -446,9 +446,11 @@ class Templates:
   FLEX_TEMPLATE_JAVA11_BASE_IMAGE = _GetBaseImagePath('java11')
   FLEX_TEMPLATE_JAVA17_BASE_IMAGE = _GetBaseImagePath('java17')
   FLEX_TEMPLATE_JAVA21_BASE_IMAGE = _GetBaseImagePath('java21')
+  FLEX_TEMPLATE_JAVA25_BASE_IMAGE = _GetBaseImagePath('java25')
   FLEX_TEMPLATE_JAVA11_DISTROLESS_BASE_IMAGE = _GetBaseImagePath('java11', True)
   FLEX_TEMPLATE_JAVA17_DISTROLESS_BASE_IMAGE = _GetBaseImagePath('java17', True)
   FLEX_TEMPLATE_JAVA21_DISTROLESS_BASE_IMAGE = _GetBaseImagePath('java21', True)
+  FLEX_TEMPLATE_JAVA25_DISTROLESS_BASE_IMAGE = _GetBaseImagePath('java25', True)
   FLEX_TEMPLATE_PYTHON3_BASE_IMAGE = _GetBaseImagePath('python3')
   FLEX_TEMPLATE_GO_BASE_IMAGE = _GetBaseImagePath('go')
   FLEX_TEMPLATE_GO_DISTROLESS_BASE_IMAGE = _GetBaseImagePath('go', True)
@@ -959,12 +961,16 @@ class Templates:
       return Templates.FLEX_TEMPLATE_JAVA17_BASE_IMAGE
     elif flex_template_base_image == 'JAVA21':
       return Templates.FLEX_TEMPLATE_JAVA21_BASE_IMAGE
+    elif flex_template_base_image == 'JAVA25':
+      return Templates.FLEX_TEMPLATE_JAVA25_BASE_IMAGE
     elif flex_template_base_image == 'JAVA11_DISTROLESS':
       return Templates.FLEX_TEMPLATE_JAVA11_DISTROLESS_BASE_IMAGE
     elif flex_template_base_image == 'JAVA17_DISTROLESS':
       return Templates.FLEX_TEMPLATE_JAVA17_DISTROLESS_BASE_IMAGE
     elif flex_template_base_image == 'JAVA21_DISTROLESS':
       return Templates.FLEX_TEMPLATE_JAVA21_DISTROLESS_BASE_IMAGE
+    elif flex_template_base_image == 'JAVA25_DISTROLESS':
+      return Templates.FLEX_TEMPLATE_JAVA25_DISTROLESS_BASE_IMAGE
     elif flex_template_base_image == 'JAVA8':
       log.warning(
           'JAVA8 is deprecated and redirected to JAVA11. This option '

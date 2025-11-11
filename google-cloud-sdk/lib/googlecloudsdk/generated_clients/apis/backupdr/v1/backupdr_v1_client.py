@@ -1605,6 +1605,33 @@ class BackupdrV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def End(self, request, global_params=None):
+      r"""Ends the trial for a project.
+
+      Args:
+        request: (BackupdrProjectsLocationsTrialEndRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Trial) The response message.
+      """
+      config = self.GetMethodConfig('End')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    End.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/trial:end',
+        http_method='POST',
+        method_id='backupdr.projects.locations.trial.end',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/trial:end',
+        request_field='endTrialRequest',
+        request_type_name='BackupdrProjectsLocationsTrialEndRequest',
+        response_type_name='Trial',
+        supports_download=False,
+    )
+
     def Subscribe(self, request, global_params=None):
       r"""Subscribes to a trial for a project.
 

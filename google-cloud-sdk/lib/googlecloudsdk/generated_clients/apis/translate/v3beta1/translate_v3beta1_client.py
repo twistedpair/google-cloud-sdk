@@ -479,6 +479,33 @@ class TranslateV3beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RefineText(self, request, global_params=None):
+      r"""Refines the input translated text to improve the quality.
+
+      Args:
+        request: (TranslateProjectsLocationsRefineTextRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RefineTextResponse) The response message.
+      """
+      config = self.GetMethodConfig('RefineText')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RefineText.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3beta1/projects/{projectsId}/locations/{locationsId}:refineText',
+        http_method='POST',
+        method_id='translate.projects.locations.refineText',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v3beta1/{+parent}:refineText',
+        request_field='refineTextRequest',
+        request_type_name='TranslateProjectsLocationsRefineTextRequest',
+        response_type_name='RefineTextResponse',
+        supports_download=False,
+    )
+
     def TranslateDocument(self, request, global_params=None):
       r"""Translates documents in synchronous mode.
 

@@ -133,15 +133,17 @@ properties:
       `projects/{project}/locations/{location}/wasmPlugins/{plugin}` or
       `//net workservices.googleapis.com/projects/{project}/locations/{locat
       ion}/wasm Plugins/{wasmPlugin}`. Plugin extensions are currently
-      supported for the `LbTrafficExtension` and the `LbRouteExtension`
-      resources.
+      supported for the `LbTrafficExtension`, the `LbRouteExtension`, and
+      the `LbEdgeExtension` resources.
     type: string
   supportedEvents:
     description: |-
       A set of events during request or response processing for which this
-      extension is called. This field is required for the
-      `LbTrafficExtension` resource. It must not be set for the
-      `LbRouteExtension` resource, otherwise a validation error is returned.
+      extension is called. For the `LbTrafficExtension` resource, this field
+      is required. For the `LbRouteExtension` resource, this field is
+      optional. If unspecified, `REQUEST_HEADERS` event is assumed as
+      supported. For the `LbEdgeExtension` resource, this field is required
+      and must only contain `REQUEST_HEADERS` event.
     type: array
     items:
       type: string

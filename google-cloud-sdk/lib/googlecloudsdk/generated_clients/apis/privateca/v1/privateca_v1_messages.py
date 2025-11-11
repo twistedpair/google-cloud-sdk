@@ -2259,8 +2259,15 @@ class PrivatecaProjectsLocationsCaPoolsCertificatesListRequest(_messages.Message
       unspecified, the server will pick an appropriate default.
     pageToken: Optional. Pagination token, returned earlier via
       ListCertificatesResponse.next_page_token.
-    parent: Required. The resource name of the location associated with the
-      Certificates, in the format `projects/*/locations/*/caPools/*`.
+    parent: Required. The resource name of the parent associated with the
+      Certificates, in the format `projects/*/locations/*/caPools/*`. The
+      parent resource name can be in one of two forms: 1. **Specific CA
+      Pool:** To list certificates within a single CA Pool:
+      `projects/*/locations/*/caPools/*` 2. **All CA Pools in a Location:** To
+      list certificates across *all* CA Pools in a given project and location,
+      use the wildcard character (`-`) in place of the CA Pool ID. Example:
+      `projects/*/locations/*/caPools/-` See go/ccfe-nested-
+      collections#aggregate-listing for more details.
   """
 
   filter = _messages.StringField(1)

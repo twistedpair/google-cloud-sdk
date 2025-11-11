@@ -193,6 +193,7 @@ class FloorSetting(_messages.Message):
       status.
     filterConfig: Required. ModelArmor filter configuration.
     floorSettingMetadata: Optional. Metadata for FloorSetting
+    googleMcpServerFloorSetting: Optional. Google MCP Server floor setting.
     integratedServices: Optional. List of integrated services for which the
       floor setting is applicable.
     name: Identifier. The resource name.
@@ -205,18 +206,21 @@ class FloorSetting(_messages.Message):
     Values:
       INTEGRATED_SERVICE_UNSPECIFIED: Unspecified integrated service.
       AI_PLATFORM: AI Platform.
+      GOOGLE_MCP_SERVER: Google MCP Server (via Shim Service Extension)
     """
     INTEGRATED_SERVICE_UNSPECIFIED = 0
     AI_PLATFORM = 1
+    GOOGLE_MCP_SERVER = 2
 
   aiPlatformFloorSetting = _messages.MessageField('AiPlatformFloorSetting', 1)
   createTime = _messages.StringField(2)
   enableFloorSettingEnforcement = _messages.BooleanField(3)
   filterConfig = _messages.MessageField('FilterConfig', 4)
   floorSettingMetadata = _messages.MessageField('FloorSettingMetadata', 5)
-  integratedServices = _messages.EnumField('IntegratedServicesValueListEntryValuesEnum', 6, repeated=True)
-  name = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  googleMcpServerFloorSetting = _messages.MessageField('McpServerFloorSetting', 6)
+  integratedServices = _messages.EnumField('IntegratedServicesValueListEntryValuesEnum', 7, repeated=True)
+  name = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class FloorSettingFloorSettingMetadataMultiLanguageDetection(_messages.Message):
@@ -442,6 +446,24 @@ class MaliciousUriMatchedItem(_messages.Message):
 
   locations = _messages.MessageField('RangeInfo', 1, repeated=True)
   uri = _messages.StringField(2)
+
+
+class McpServerFloorSetting(_messages.Message):
+  r"""Message describing MCP Server Floor Setting.
+
+  Fields:
+    enableCloudLogging: Optional. If true, log Model Armor filter results to
+      Cloud Logging.
+    inspectAndBlock: Optional. If true, Model Armor filters will be run in
+      inspect and block mode. Requests that trip Model Armor filters will be
+      blocked.
+    inspectOnly: Optional. If true, Model Armor filters will be run in inspect
+      only mode. No action will be taken on the request.
+  """
+
+  enableCloudLogging = _messages.BooleanField(1)
+  inspectAndBlock = _messages.BooleanField(2)
+  inspectOnly = _messages.BooleanField(3)
 
 
 class MessageItem(_messages.Message):
@@ -751,8 +773,14 @@ class MultiLanguageDetectionMetadata(_messages.Message):
     enableMultiLanguageDetection: Optional. Enable detection of multi-language
       prompts and responses.
     sourceLanguage: Optional. Optional Source language of the user prompt. If
-      multi-language detection is enabled but language is not set in that case
-      we would automatically detect the source language.
+      multi-language detection is enabled and this field is not set, the
+      source language will be automatically detected. This string field
+      accepts a language code from the ISO-639 standard. For a list of
+      languages supported by Model Armor, see [Model Armor supported
+      languages] (https://cloud.google.com/security-command-center/docs/model-
+      armor-overview#languages-supported). For a comprehensive list of
+      language codes, see
+      [ISO-639](https://cloud.google.com/translate/docs/languages#nmt).
   """
 
   enableMultiLanguageDetection = _messages.BooleanField(1)

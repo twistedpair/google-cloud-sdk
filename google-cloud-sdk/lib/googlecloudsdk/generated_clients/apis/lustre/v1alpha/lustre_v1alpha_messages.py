@@ -295,8 +295,8 @@ class Instance(_messages.Message):
     network: Required. Immutable. The full name of the VPC network to which
       the instance is connected. Must be in the format
       `projects/{project_id}/global/networks/{network_name}`.
-    perUnitStorageThroughput: Required. The throughput of the instance in
-      MB/s/TiB. Valid values are 125, 250, 500, 1000. See [Performance tiers
+    perUnitStorageThroughput: Required. The throughput of the instance in MBps
+      per TiB. Valid values are 125, 250, 500, 1000. See [Performance tiers
       and maximum storage capacities](https://cloud.google.com/managed-
       lustre/docs/create-instance#performance-tiers) for more information.
     placementPolicy: Optional. The placement policy name for the instance in
@@ -326,6 +326,8 @@ class Instance(_messages.Message):
       REPAIRING: The instance is being repaired.
       STOPPED: The instance is stopped.
       UPDATING: The instance is being updated.
+      SUSPENDED: The instance is suspended due to an issue related to KMS. The
+        details are available in suspension_reason.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -335,6 +337,7 @@ class Instance(_messages.Message):
     REPAIRING = 5
     STOPPED = 6
     UPDATING = 7
+    SUSPENDED = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
