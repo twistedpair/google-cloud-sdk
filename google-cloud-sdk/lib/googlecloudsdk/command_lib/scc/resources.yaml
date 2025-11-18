@@ -251,3 +251,16 @@ connector:
     attribute_name: connector
     help: Artifact Guard Connector resource
   disable_auto_completers: false
+
+artifact_scan_guard_operation:
+  name: operation
+  collection: artifactscanguard.organizations.locations.operations
+  request_id_field: name
+  attributes:
+  - *artifact_scan_guard_organization
+  - *artifact_scan_guard_location
+  - &artifact_scan_guard_operation
+    parameter_name: operationsId
+    attribute_name: operation
+    help: Artifact Guard Operation resource.
+  disable_auto_completers: false

@@ -44,6 +44,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
     self.projects_locations_applications = self.ProjectsLocationsApplicationsService(self)
     self.projects_locations_discoveredServices = self.ProjectsLocationsDiscoveredServicesService(self)
     self.projects_locations_discoveredWorkloads = self.ProjectsLocationsDiscoveredWorkloadsService(self)
+    self.projects_locations_extendedMetadataSchemas = self.ProjectsLocationsExtendedMetadataSchemasService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_serviceProjectAttachments = self.ProjectsLocationsServiceProjectAttachmentsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -798,6 +799,70 @@ class ApphubV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApphubProjectsLocationsDiscoveredWorkloadsLookupRequest',
         response_type_name='LookupDiscoveredWorkloadResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsExtendedMetadataSchemasService(base_api.BaseApiService):
+    """Service class for the projects_locations_extendedMetadataSchemas resource."""
+
+    _NAME = 'projects_locations_extendedMetadataSchemas'
+
+    def __init__(self, client):
+      super(ApphubV1alpha.ProjectsLocationsExtendedMetadataSchemasService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets an Extended Metadata Schema.
+
+      Args:
+        request: (ApphubProjectsLocationsExtendedMetadataSchemasGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ExtendedMetadataSchema) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/extendedMetadataSchemas/{extendedMetadataSchemasId}',
+        http_method='GET',
+        method_id='apphub.projects.locations.extendedMetadataSchemas.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsExtendedMetadataSchemasGetRequest',
+        response_type_name='ExtendedMetadataSchema',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Extended Metadata Schemas available in a host project and location.
+
+      Args:
+        request: (ApphubProjectsLocationsExtendedMetadataSchemasListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListExtendedMetadataSchemasResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/extendedMetadataSchemas',
+        http_method='GET',
+        method_id='apphub.projects.locations.extendedMetadataSchemas.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/extendedMetadataSchemas',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsExtendedMetadataSchemasListRequest',
+        response_type_name='ListExtendedMetadataSchemasResponse',
         supports_download=False,
     )
 

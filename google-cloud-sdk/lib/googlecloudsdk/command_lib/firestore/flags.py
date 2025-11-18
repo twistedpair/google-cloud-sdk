@@ -24,22 +24,22 @@ import textwrap
 from googlecloudsdk.calliope import arg_parsers
 
 
-def AddCollectionIdsFlag(parser):
-  """Adds flag for collection ids to the given parser.
+def AddCollectionGroupIdsFlag(parser):
+  """Adds flag for collection group ids to the given parser.
 
   Args:
     parser: The argparse parser.
   """
   parser.add_argument(
       '--collection-ids',
-      metavar='COLLECTION_IDS',
+      metavar='COLLECTION_GROUP_IDS',
       type=arg_parsers.ArgList(),
       help="""
-      List specifying which collections will be included in the operation.
-      When omitted, all collections are included.
+      List specifying which collection groups will be included in the operation.
+      When omitted, all collection groups are included.
 
       For example, to operate on only the `customers` and `orders`
-      collections:
+      collections groups:
 
         $ {command} --collection-ids='customers','orders'
       """,

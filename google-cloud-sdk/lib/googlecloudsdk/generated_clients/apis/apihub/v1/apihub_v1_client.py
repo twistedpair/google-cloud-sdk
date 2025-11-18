@@ -39,6 +39,7 @@ class ApihubV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_addons = self.ProjectsLocationsAddonsService(self)
     self.projects_locations_apiHubInstances = self.ProjectsLocationsApiHubInstancesService(self)
     self.projects_locations_apis_versions_definitions = self.ProjectsLocationsApisVersionsDefinitionsService(self)
     self.projects_locations_apis_versions_operations = self.ProjectsLocationsApisVersionsOperationsService(self)
@@ -60,6 +61,97 @@ class ApihubV1(base_api.BaseApiClient):
     self.projects_locations_runtimeProjectAttachments = self.ProjectsLocationsRuntimeProjectAttachmentsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsAddonsService(base_api.BaseApiService):
+    """Service class for the projects_locations_addons resource."""
+
+    _NAME = 'projects_locations_addons'
+
+    def __init__(self, client):
+      super(ApihubV1.ProjectsLocationsAddonsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get an addon.
+
+      Args:
+        request: (ApihubProjectsLocationsAddonsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApihubV1Addon) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/addons/{addonsId}',
+        http_method='GET',
+        method_id='apihub.projects.locations.addons.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApihubProjectsLocationsAddonsGetRequest',
+        response_type_name='GoogleCloudApihubV1Addon',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List addons.
+
+      Args:
+        request: (ApihubProjectsLocationsAddonsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApihubV1ListAddonsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/addons',
+        http_method='GET',
+        method_id='apihub.projects.locations.addons.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/addons',
+        request_field='',
+        request_type_name='ApihubProjectsLocationsAddonsListRequest',
+        response_type_name='GoogleCloudApihubV1ListAddonsResponse',
+        supports_download=False,
+    )
+
+    def ManageConfig(self, request, global_params=None):
+      r"""Manage addon config. This RPC is used for managing the config of the addon. Calling this RPC moves the addon into an updating state until the long-running operation succeeds.
+
+      Args:
+        request: (ApihubProjectsLocationsAddonsManageConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('ManageConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ManageConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/addons/{addonsId}:manageConfig',
+        http_method='POST',
+        method_id='apihub.projects.locations.addons.manageConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:manageConfig',
+        request_field='googleCloudApihubV1ManageAddonConfigRequest',
+        request_type_name='ApihubProjectsLocationsAddonsManageConfigRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
 
   class ProjectsLocationsApiHubInstancesService(base_api.BaseApiService):
     """Service class for the projects_locations_apiHubInstances resource."""

@@ -481,6 +481,33 @@ class FileV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def PauseReplica(self, request, global_params=None):
+      r"""Pause the standby instance (replica). WARNING: This operation makes the standby instance's NFS filesystem writable. Any data written to the standby instance while paused will be lost when the replica is resumed or promoted.
+
+      Args:
+        request: (FileProjectsLocationsInstancesPauseReplicaRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PauseReplica')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PauseReplica.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:pauseReplica',
+        http_method='POST',
+        method_id='file.projects.locations.instances.pauseReplica',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:pauseReplica',
+        request_field='pauseReplicaRequest',
+        request_type_name='FileProjectsLocationsInstancesPauseReplicaRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def PromoteReplica(self, request, global_params=None):
       r"""Promote the standby instance (replica).
 
@@ -531,6 +558,33 @@ class FileV1(base_api.BaseApiClient):
         relative_path='v1/{+name}:restore',
         request_field='restoreInstanceRequest',
         request_type_name='FileProjectsLocationsInstancesRestoreRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def ResumeReplica(self, request, global_params=None):
+      r"""Resume the standby instance (replica). WARNING: Any data written to the standby instance while paused will be lost when the replica is resumed.
+
+      Args:
+        request: (FileProjectsLocationsInstancesResumeReplicaRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ResumeReplica')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ResumeReplica.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:resumeReplica',
+        http_method='POST',
+        method_id='file.projects.locations.instances.resumeReplica',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:resumeReplica',
+        request_field='resumeReplicaRequest',
+        request_type_name='FileProjectsLocationsInstancesResumeReplicaRequest',
         response_type_name='Operation',
         supports_download=False,
     )

@@ -4211,6 +4211,11 @@ class PoolNodeConfig(_messages.Message):
       used to connect to the read pool node.
     name: Output only. The name of the read pool node, to be used for
       retrieving metrics and logs.
+    pscAutoConnections: Output only. The list of settings for requested
+      automatically-setup Private Service Connect (PSC) consumer endpoints
+      that can be used to connect to this read pool node.
+    pscServiceAttachmentLink: Output only. The Private Service Connect (PSC)
+      service attachment of the read pool node.
     state: Output only. The current state of the read pool node.
   """
 
@@ -4246,7 +4251,9 @@ class PoolNodeConfig(_messages.Message):
   gceZone = _messages.StringField(3)
   ipAddresses = _messages.MessageField('IpMapping', 4, repeated=True)
   name = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
+  pscAutoConnections = _messages.MessageField('PscAutoConnectionConfig', 6, repeated=True)
+  pscServiceAttachmentLink = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
 
 
 class PreCheckMajorVersionUpgradeContext(_messages.Message):
@@ -5653,7 +5660,16 @@ class SqlInstancesAcquireSsrsLeaseResponse(_messages.Message):
 
 
 class SqlInstancesAddEntraIdCertificateRequest(_messages.Message):
-  r"""Request for AddEntraIdCertificate RPC."""
+  r"""A SqlInstancesAddEntraIdCertificateRequest object.
+
+  Fields:
+    instance: Required. Cloud SQL instance ID. This does not include the
+      project ID.
+    project: Required. Project ID of the project that contains the instance.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
 
 
 class SqlInstancesAddReplicationSourceRequest(_messages.Message):

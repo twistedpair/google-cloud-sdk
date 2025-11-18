@@ -1071,6 +1071,33 @@ class AlloydbV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single Endpoint.
+
+      Args:
+        request: (AlloydbProjectsLocationsEndpointsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}',
+        http_method='PATCH',
+        method_id='alloydb.projects.locations.endpoints.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'requestId', 'updateMask', 'validateOnly'],
+        relative_path='v1beta/{+name}',
+        request_field='endpoint',
+        request_type_name='AlloydbProjectsLocationsEndpointsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 

@@ -25,6 +25,7 @@ from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.command_lib.storage.tasks.cp import upload_util
+from googlecloudsdk.core import properties
 
 
 class StreamingUploadTask(copy_util.ObjectCopyTask):
@@ -94,7 +95,14 @@ class StreamingUploadTask(copy_util.ObjectCopyTask):
 
     with stream:
       provider = self._destination_resource.storage_url.scheme
-      uploaded_object_resource = api_factory.get_api(provider).upload_object(
+      if properties.VALUES.storage.enable_zonal_buckets_bidi_streaming.GetBool():
+        api = api_factory.get_api(
+            provider,
+            bucket_name=self._destination_resource.storage_url.bucket_name,
+        )
+      else:
+        api = api_factory.get_api(provider)
+      uploaded_object_resource = api.upload_object(
           source_stream=stream,
           destination_resource=self._destination_resource,
           request_config=request_config,

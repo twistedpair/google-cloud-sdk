@@ -24,6 +24,7 @@ import os
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 
@@ -84,9 +85,22 @@ class ConfigType(enum.Enum):
 
 
 class WindowsBinaryPathConfig(object):
+  """Configuration for the paths to the ECP binaries on Windows.
 
-  def __init__(self, ecp, ecp_client, tls_offload):
+  Attributes:
+    ecp: Path to the ECP binary.
+    ecp_http_proxy: Path to the ECP HTTP proxy binary.
+    ecp_client: Path to the ECP client library.
+    tls_offload: Path to the TLS offload library.
+  """
+
+  def __init__(self, ecp, ecp_client, tls_offload, ecp_http_proxy):
     self.ecp = ecp if ecp else os.path.join(get_bin_folder(), 'ecp.exe')
+    self.ecp_http_proxy = (
+        ecp_http_proxy
+        if ecp_http_proxy
+        else os.path.join(get_bin_folder(), 'ecp_http_proxy.exe')
+    )
     self.ecp_client = (
         ecp_client
         if ecp_client
@@ -100,9 +114,22 @@ class WindowsBinaryPathConfig(object):
 
 
 class LinuxPathConfig(object):
+  """Configuration for the paths to the ECP binaries on Linux.
 
-  def __init__(self, ecp, ecp_client, tls_offload):
+  Attributes:
+    ecp: Path to the ECP binary.
+    ecp_http_proxy: Path to the ECP HTTP proxy binary.
+    ecp_client: Path to the ECP client library.
+    tls_offload: Path to the TLS offload library.
+  """
+
+  def __init__(self, ecp, ecp_client, tls_offload, ecp_http_proxy):
     self.ecp = ecp if ecp else os.path.join(get_bin_folder(), 'ecp')
+    self.ecp_http_proxy = (
+        ecp_http_proxy
+        if ecp_http_proxy
+        else os.path.join(get_bin_folder(), 'ecp_http_proxy')
+    )
     self.ecp_client = (
         ecp_client
         if ecp_client
@@ -116,9 +143,22 @@ class LinuxPathConfig(object):
 
 
 class MacOSBinaryPathConfig(object):
+  """Configuration for the paths to the ECP binaries on MacOS.
 
-  def __init__(self, ecp, ecp_client, tls_offload):
+  Attributes:
+    ecp: Path to the ECP binary.
+    ecp_http_proxy: Path to the ECP HTTP proxy binary.
+    ecp_client: Path to the ECP client library.
+    tls_offload: Path to the TLS offload library.
+  """
+
+  def __init__(self, ecp, ecp_client, tls_offload, ecp_http_proxy):
     self.ecp = ecp if ecp else os.path.join(get_bin_folder(), 'ecp')
+    self.ecp_http_proxy = (
+        ecp_http_proxy
+        if ecp_http_proxy
+        else os.path.join(get_bin_folder(), 'ecp_http_proxy')
+    )
     self.ecp_client = (
         ecp_client
         if ecp_client
@@ -195,6 +235,8 @@ def create_linux_config(base_config, **kwargs):
       or base_libs_config.get('ecp_client', None),
       kwargs.get('tls_offload', None)
       or base_libs_config.get('tls_offload', None),
+      kwargs.get('ecp_http_proxy', None)
+      or base_libs_config.get('ecp_http_proxy', None),
   )
   return {'pkcs11': vars(ecp_config)}, {'libs': vars(lib_config)}
 
@@ -229,6 +271,8 @@ def create_macos_config(base_config, **kwargs):
       or base_libs_config.get('ecp_client', None),
       kwargs.get('tls_offload', None)
       or base_libs_config.get('tls_offload', None),
+      kwargs.get('ecp_http_proxy', None)
+      or base_libs_config.get('ecp_http_proxy', None),
   )
   return {'macos_keychain': vars(ecp_config)}, {'libs': vars(lib_config)}
 
@@ -263,6 +307,8 @@ def create_windows_config(base_config, **kwargs):
       or base_libs_config.get('ecp_client', None),
       kwargs.get('tls_offload', None)
       or base_libs_config.get('tls_offload', None),
+      kwargs.get('ecp_http_proxy', None)
+      or base_libs_config.get('ecp_http_proxy', None),
   )
   return {'windows_store': vars(ecp_config)}, {'libs': vars(lib_config)}
 
@@ -325,6 +371,18 @@ def create_ecp_config(config_type, base_config=None, **kwargs):
             ' configuration. Valid options are: [PKCS11, KEYCHAIN, MYSTORE]'
         ).format(config_type)
     )
+
+  # TODO(b/459858373): remove gating for ECP HTTP Proxy on internal user check.
+  if (
+      not (
+          properties.VALUES.context_aware.use_ecp_http_proxy.GetBool()
+          and properties.IsInternalUserCheck()
+      )
+      and 'libs' in libs_config
+      and 'ecp_http_proxy' in libs_config['libs']
+  ):
+    del libs_config['libs']['ecp_http_proxy']
+
   return {'cert_configs': ecp_config, **libs_config}
 
 

@@ -334,10 +334,9 @@ def AddTriggerBackupFlags(parser):
   group.add_argument(
       '--custom-retention-days',
       required=False,
-      hidden=True,
       type=int,
       help=(
-          'Duration for which backup data will be retained.'
+          'Duration for which backup data will be retained. '
           'If not specified, the default retention period will be used.'
       ),
   )
@@ -347,8 +346,7 @@ def AddTriggerBackupFlags(parser):
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(value_type=str),
       action=arg_parsers.UpdateAction,
-      help='Labels to be applied to the backup.',
-      hidden=True).AddToParser(parser)
+      help='Labels to be applied to the backup.').AddToParser(parser)
 
 
 def AddNetwork(parser, required=False):
@@ -559,7 +557,6 @@ def AddBackupRetentionInheritance(parser):
           'inherit-vault-retention',
           'match-backup-expire-time',
       ],
-      hidden=True,
       help=(
           'The inheritance mode for enforced retention end time of the backup'
           ' within this backup vault. Once set, the inheritance mode cannot be'
@@ -748,7 +745,6 @@ def AddKmsKey(parser):
   parser.add_argument(
       '--kms-key',
       required=False,
-      hidden=True,
       type=str,
       help=(
           'The Cloud KMS key resource name to be used for encryption. Format:'
@@ -1030,7 +1026,6 @@ def AddMaxCustomOnDemandRetentionDays(parser):
       '--max-custom-on-demand-retention-days',
       required=False,
       type=int,
-      hidden=True,
       help=("""Configure the maximum retention period for on-demand backups.
           The value must be greater than or equal to the minimum enforced
           retention period set on the backup vault."""),

@@ -1275,7 +1275,7 @@ class _SectionApiEndpointOverrides(_Section):
         'cloudscheduler', command='gcloud scheduler')
     self.cloudsecuritycompliance = self._Add(
         'cloudsecuritycompliance',
-        command='gcloud compliance-manager', hidden=True)
+        command='gcloud compliance-manager')
     self.cloudshell = self._Add(
         'cloudshell', command='gcloud cloud-shell', hidden=True)
     self.cloudtasks = self._Add('cloudtasks', command='gcloud tasks')
@@ -1325,6 +1325,8 @@ class _SectionApiEndpointOverrides(_Section):
         'eventarcpublishing', command='gcloud eventarc publish')
     self.faultinjectiontesting = self._Add(
         'faultinjectiontesting', command='gcloud fault-injection')
+    self.faulttesting = self._Add(
+        'faulttesting', command='gcloud fault-testing')
     self.file = self._Add('file', command='gcloud filestore')
     self.firebasedataconnect = self._Add(
         'firebasedataconnect', command='gcloud firebase-data-connect')

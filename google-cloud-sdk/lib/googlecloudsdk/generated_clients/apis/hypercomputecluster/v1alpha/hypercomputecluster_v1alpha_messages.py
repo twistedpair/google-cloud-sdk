@@ -348,18 +348,6 @@ class ComputeInstanceSlurmNodeSet(_messages.Message):
   startupScript = _messages.StringField(3)
 
 
-class ComputeNetworkReference(_messages.Message):
-  r"""Deprecated: Use NetworkReference instead.
-
-  Fields:
-    network: Output only. The name of the network.
-    subnetwork: Output only. Subnetwork of the network.
-  """
-
-  network = _messages.StringField(1)
-  subnetwork = _messages.StringField(2)
-
-
 class ComputeResource(_messages.Message):
   r"""A resource defining how virtual machines and accelerators should be
   provisioned for the cluster.
@@ -500,8 +488,46 @@ class Configs(_messages.Message):
 class ContainerNodePoolSlurmNodeSet(_messages.Message):
   r"""When set in a SlurmNodeSet, indicates that the nodeset should be backed
   by a Kubernetes Engine node pool.
+
+  Messages:
+    ResourceLabelsValue: Optional. Resource labels that are applied to the
+      underlying Google Compute Engine resources.
+
+  Fields:
+    resourceLabels: Optional. Resource labels that are applied to the
+      underlying Google Compute Engine resources.
+    startupScript: Optional. Script to run in each pod in the nodeset when it
+      first starts. Max 256KB.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceLabelsValue(_messages.Message):
+    r"""Optional. Resource labels that are applied to the underlying Google
+    Compute Engine resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResourceLabelsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ResourceLabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 1)
+  startupScript = _messages.StringField(2)
 
 
 class CreateFilestoreInstance(_messages.Message):
@@ -740,18 +766,6 @@ class ExistingBucketConfig(_messages.Message):
   """
 
   bucket = _messages.StringField(1)
-
-
-class ExistingComputeNetworkConfig(_messages.Message):
-  r"""Deprecated: Use ExistingNetworkConfig instead.
-
-  Fields:
-    network: Immutable. The name of the network.
-    subnetwork: Immutable. Subnetwork of the network.
-  """
-
-  network = _messages.StringField(1)
-  subnetwork = _messages.StringField(2)
 
 
 class ExistingFilestoreConfig(_messages.Message):
@@ -1006,20 +1020,6 @@ class GcsInitializeParams(_messages.Message):
   bucket = _messages.StringField(2)
   hierarchicalNamespace = _messages.MessageField('GcsHierarchicalNamespaceConfig', 3)
   storageClass = _messages.EnumField('StorageClassValueValuesEnum', 4)
-
-
-class GuestAccelerator(_messages.Message):
-  r"""Message describing GuestAccelerator object
-
-  Fields:
-    acceleratorType: Optional. Accelerator type resource to attach to this
-      instance
-    count: Optional. Number of the guest accelerator cards exposed to this
-      instance
-  """
-
-  acceleratorType = _messages.StringField(1)
-  count = _messages.IntegerField(2)
 
 
 class HypercomputeclusterProjectsLocationsClustersCreateRequest(_messages.Message):
@@ -1881,7 +1881,6 @@ class NetworkResource(_messages.Message):
   of a cluster together.
 
   Fields:
-    computeNetwork: Deprecated: Use network instead.
     config: Immutable. Configuration for this network resource, which
       describes how it should be created or imported. This field only controls
       how the network resource is initially created or imported. Subsequent
@@ -1890,9 +1889,8 @@ class NetworkResource(_messages.Message):
     network: Reference to a network in Google Compute Engine.
   """
 
-  computeNetwork = _messages.MessageField('ComputeNetworkReference', 1)
-  config = _messages.MessageField('NetworkResourceConfig', 2)
-  network = _messages.MessageField('NetworkReference', 3)
+  config = _messages.MessageField('NetworkResourceConfig', 1)
+  network = _messages.MessageField('NetworkReference', 2)
 
 
 class NetworkResourceConfig(_messages.Message):
@@ -1901,19 +1899,14 @@ class NetworkResourceConfig(_messages.Message):
   initialized when the cluster is created.
 
   Fields:
-    existingComputeNetwork: Immutable. Deprecated: Use existing_network
-      instead.
     existingNetwork: Optional. Immutable. If set, indicates that an existing
       network should be imported.
-    newComputeNetwork: Immutable. Deprecated: Use new_network instead.
     newNetwork: Optional. Immutable. If set, indicates that a new network
       should be created.
   """
 
-  existingComputeNetwork = _messages.MessageField('ExistingComputeNetworkConfig', 1)
-  existingNetwork = _messages.MessageField('ExistingNetworkConfig', 2)
-  newComputeNetwork = _messages.MessageField('NewComputeNetworkConfig', 3)
-  newNetwork = _messages.MessageField('NewNetworkConfig', 4)
+  existingNetwork = _messages.MessageField('ExistingNetworkConfig', 1)
+  newNetwork = _messages.MessageField('NewNetworkConfig', 2)
 
 
 class NetworkSource(_messages.Message):
@@ -1969,18 +1962,6 @@ class NewBucketConfig(_messages.Message):
   bucket = _messages.StringField(2)
   hierarchicalNamespace = _messages.MessageField('GcsHierarchicalNamespaceConfig', 3)
   storageClass = _messages.EnumField('StorageClassValueValuesEnum', 4)
-
-
-class NewComputeNetworkConfig(_messages.Message):
-  r"""Deprecated: Use NewNetworkConfig instead.
-
-  Fields:
-    description: Immutable. Description of the network.
-    network: Immutable. The name of the network.
-  """
-
-  description = _messages.StringField(1)
-  network = _messages.StringField(2)
 
 
 class NewDWSFlexInstancesConfig(_messages.Message):
@@ -2104,17 +2085,11 @@ class NewFilestoreConfig(_messages.Message):
       REGIONAL: Offers features and availability needed for mission-critical,
         high-performance computing workloads.
       BASIC_HDD: Deprecated: Use a different tier instead.
-      BASIC_SSD: Deprecated: Use a different tier instead.
-      HIGH_SCALE_SSD: Deprecated: Use a different tier instead.
-      ENTERPRISE: Deprecated: Use a different tier instead.
     """
     TIER_UNSPECIFIED = 0
     ZONAL = 1
     REGIONAL = 2
     BASIC_HDD = 3
-    BASIC_SSD = 4
-    HIGH_SCALE_SSD = 5
-    ENTERPRISE = 6
 
   description = _messages.StringField(1)
   fileShares = _messages.MessageField('FileShareConfig', 2, repeated=True)
@@ -2823,8 +2798,6 @@ class ResourceRequest(_messages.Message):
 
   Fields:
     disks: Optional. Array of disks associated with this instance
-    guestAccelerators: Optional. Type and count of accelerator cards attached
-      to the instance
     id: Required. Id of resource request
     machineType: Required. Type of the machine e.g. c2-standard-60
     maxRunDuration: Optional. Max amount of time instance is allowed to run
@@ -2866,14 +2839,13 @@ class ResourceRequest(_messages.Message):
     TERMINATION_ACTION_DELETE = 2
 
   disks = _messages.MessageField('Disk', 1, repeated=True)
-  guestAccelerators = _messages.MessageField('GuestAccelerator', 2, repeated=True)
-  id = _messages.StringField(3)
-  machineType = _messages.StringField(4)
-  maxRunDuration = _messages.IntegerField(5)
-  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 6)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 7)
-  terminationAction = _messages.EnumField('TerminationActionValueValuesEnum', 8)
-  zone = _messages.StringField(9)
+  id = _messages.StringField(2)
+  machineType = _messages.StringField(3)
+  maxRunDuration = _messages.IntegerField(4)
+  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 5)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 6)
+  terminationAction = _messages.EnumField('TerminationActionValueValuesEnum', 7)
+  zone = _messages.StringField(8)
 
 
 class ServiceAccount(_messages.Message):

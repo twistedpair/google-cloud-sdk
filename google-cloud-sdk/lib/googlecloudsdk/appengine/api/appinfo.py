@@ -292,6 +292,7 @@ ENV_VARIABLES = 'env_variables'
 BUILD_ENV_VARIABLES = 'build_env_variables'
 STANDARD_WEBSOCKET = 'standard_websocket'
 APP_ENGINE_APIS = 'app_engine_apis'
+APP_ENGINE_BUNDLED_SERVICES = 'app_engine_bundled_services'
 
 SOURCE_REPO_RE_STRING = r'^[a-z][a-z0-9\-\+\.]*:[^#]*$'
 SOURCE_REVISION_RE_STRING = r'^[0-9a-fA-F]+$'
@@ -2340,10 +2341,12 @@ class AppInfoExternal(validation.Validated):
       APPLICATION: validation.Optional(APPLICATION_RE_STRING),
       # An alias for `APPLICATION`.
       PROJECT: validation.Optional(APPLICATION_RE_STRING),
-      SERVICE: validation.Preferred(MODULE,
-                                    validation.Optional(MODULE_ID_RE_STRING)),
-      MODULE: validation.Deprecated(SERVICE,
-                                    validation.Optional(MODULE_ID_RE_STRING)),
+      SERVICE: validation.Preferred(
+          MODULE, validation.Optional(MODULE_ID_RE_STRING)
+      ),
+      MODULE: validation.Deprecated(
+          SERVICE, validation.Optional(MODULE_ID_RE_STRING)
+      ),
       VERSION: validation.Optional(MODULE_VERSION_ID_RE_STRING),
       RUNTIME: validation.Optional(RUNTIME_RE_STRING),
       RUNTIME_CHANNEL: validation.Optional(validation.Type(str)),
@@ -2357,12 +2360,15 @@ class AppInfoExternal(validation.Validated):
       # The SDK will use this for generated Dockerfiles
       # hasattr guard the new Exec() validator temporarily
       ENTRYPOINT: validation.Optional(
-          validation.Exec() if hasattr(
-              validation, 'Exec') else validation.Type(str)),
+          validation.Exec()
+          if hasattr(validation, 'Exec')
+          else validation.Type(str)
+      ),
       RUNTIME_CONFIG: validation.Optional(RuntimeConfig),
       INSTANCE_CLASS: validation.Optional(validation.Type(str)),
       SOURCE_LANGUAGE: validation.Optional(
-          validation.Regex(SOURCE_LANGUAGE_RE_STRING)),
+          validation.Regex(SOURCE_LANGUAGE_RE_STRING)
+      ),
       AUTOMATIC_SCALING: validation.Optional(AutomaticScaling),
       MANUAL_SCALING: validation.Optional(ManualScaling),
       BASIC_SCALING: validation.Optional(BasicScaling),
@@ -2383,22 +2389,29 @@ class AppInfoExternal(validation.Validated):
       HANDLERS: validation.Optional(validation.Repeated(URLMap), default=[]),
       LIBRARIES: validation.Optional(validation.Repeated(Library)),
       # TODO(user): change to a regex when `validation.Repeated` supports it
-      SERVICES: validation.Optional(validation.Repeated(
-          validation.Regex(_SERVICE_RE_STRING))),
+      SERVICES: validation.Optional(
+          validation.Repeated(validation.Regex(_SERVICE_RE_STRING))
+      ),
       DEFAULT_EXPIRATION: validation.Optional(_EXPIRATION_REGEX),
       SKIP_FILES: validation.RegexStr(default=DEFAULT_SKIP_FILES),
       NOBUILD_FILES: validation.RegexStr(default=DEFAULT_NOBUILD_FILES),
-      DERIVED_FILE_TYPE: validation.Optional(validation.Repeated(
-          validation.Options(JAVA_PRECOMPILED, PYTHON_PRECOMPILED))),
+      DERIVED_FILE_TYPE: validation.Optional(
+          validation.Repeated(
+              validation.Options(JAVA_PRECOMPILED, PYTHON_PRECOMPILED)
+          )
+      ),
       ADMIN_CONSOLE: validation.Optional(AdminConsole),
       ERROR_HANDLERS: validation.Optional(validation.Repeated(ErrorHandlers)),
-      BACKENDS: validation.Optional(validation.Repeated(
-          backendinfo.BackendEntry)),
+      BACKENDS: validation.Optional(
+          validation.Repeated(backendinfo.BackendEntry)
+      ),
       THREADSAFE: validation.Optional(bool),
       SERVICEACCOUNT: validation.Optional(validation.Type(str)),
       DATASTORE_AUTO_ID_POLICY: validation.Optional(
-          validation.Options(DATASTORE_ID_POLICY_LEGACY,
-                             DATASTORE_ID_POLICY_DEFAULT)),
+          validation.Options(
+              DATASTORE_ID_POLICY_LEGACY, DATASTORE_ID_POLICY_DEFAULT
+          )
+      ),
       API_CONFIG: validation.Optional(ApiConfigHandler),
       CODE_LOCK: validation.Optional(bool),
       ENV_VARIABLES: validation.Optional(EnvironmentVariables),
@@ -2406,6 +2419,15 @@ class AppInfoExternal(validation.Validated):
       STANDARD_WEBSOCKET: validation.Optional(bool),
       APP_ENGINE_APIS: validation.Optional(bool),
       FLEXIBLE_RUNTIME_SETTINGS: validation.Optional(FlexibleRuntimeSettings),
+      APP_ENGINE_BUNDLED_SERVICES: validation.Optional(
+          validation.Repeated(
+              validation.Regex(
+                  r'^(app_identity_service|blobstore|capability_service|'
+                  r'datastore_v3|deferred|images|mail|memcache|modules|namespaces|ndb|search|taskqueue|'
+                  r'urlfetch|user)$'
+              )
+          )
+      ),
   }
 
   def CheckInitialized(self):

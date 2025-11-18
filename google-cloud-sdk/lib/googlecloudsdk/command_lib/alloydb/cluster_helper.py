@@ -529,6 +529,11 @@ def _ConstructClusterAndMaskForPatchRequestGA(alloydb_messages, args):
         _ConstructDenyPeriods(alloydb_messages, args, update=True)
     )
     update_masks.append('maintenance_update_policy.deny_maintenance_periods')
+  if args.maintenance_version:
+    cluster.maintenanceVersionSelectionPolicy = (
+        flags.GetValidatedMaintenanceVersion(args, alloydb_messages)
+    )
+    update_masks.append('maintenance_version_selection_policy')
 
   if args.subscription_type is not None:
     cluster.subscriptionType = args.subscription_type
@@ -564,11 +569,6 @@ def _ConstructClusterAndMaskForPatchRequestBeta(alloydb_messages, args):
             cluster.continuousBackupConfig, args
         )
     )
-  if args.maintenance_version:
-    cluster.maintenanceVersionSelectionPolicy = (
-        flags.GetValidatedMaintenanceVersion(args, alloydb_messages)
-    )
-    update_masks.append('maintenance_version_selection_policy')
 
   return cluster, update_masks
 

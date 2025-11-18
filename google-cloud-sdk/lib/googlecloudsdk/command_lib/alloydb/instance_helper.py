@@ -240,6 +240,25 @@ def _ConstructInstanceFromArgsBeta(client, alloydb_messages, args):
       observability_config_track_active_queries=args.observability_config_track_active_queries,
   )
 
+  if (
+      args.autoscaler_max_node_count is not None
+      or args.autoscaler_cool_down_period_seconds is not None
+      or args.autoscaler_target_cpu_usage is not None
+      or args.enable_autoscaler is not None
+      or args.autoscaler_set_schedule is not None
+      or args.autoscaler_schedule_cron_exp is not None
+      or args.autoscaler_schedule_duration_seconds is not None
+      or args.autoscaler_schedule_min_node_count is not None
+      or args.autoscaler_schedule_time_zone is not None
+      or args.autoscaler_schedule_description is not None
+  ):
+    auto_scaling_config = ParseAutoScalingConfig(
+        alloydb_messages, None, None, args
+    )
+    if not instance_resource.readPoolConfig:
+      instance_resource.readPoolConfig = alloydb_messages.ReadPoolConfig()
+    instance_resource.readPoolConfig.autoScalingConfig = auto_scaling_config
+
   return instance_resource
 
 
@@ -799,6 +818,103 @@ def ParseAvailabilityType(alloydb_messages, availability_type):
         availability_type.upper()
     )
   return None
+
+
+def ParseAutoScalingConfig(alloydb_messages, instance_ref, release_track, args):
+  """Parses command line arguments and creates an AutoScalingConfig object.
+
+  Args:
+    alloydb_messages: Messages module for the API client.
+    instance_ref: A reference to the instance.
+    release_track: The release track of the gcloud client.
+    args: Command line input arguments.
+
+  Returns:
+    A fully-constructed alloydb_messages.AutoScalingConfig object.
+  """
+  if args.enable_autoscaler is not None and not args.enable_autoscaler:
+    return None
+  auto_scaling_config = alloydb_messages.AutoScalingConfig()
+  if instance_ref and release_track:
+    client = api_util.AlloyDBClient(release_track)
+    alloydb_client = client.alloydb_client
+    req = alloydb_messages.AlloydbProjectsLocationsClustersInstancesGetRequest(
+        name=instance_ref.RelativeName()
+    )
+    existing_instance = (
+        alloydb_client.projects_locations_clusters_instances.Get(req)
+    )
+    if (
+        existing_instance.readPoolConfig
+        and existing_instance.readPoolConfig.autoScalingConfig
+    ):
+      auto_scaling_config = existing_instance.readPoolConfig.autoScalingConfig
+  if not auto_scaling_config.policy:
+    auto_scaling_config.policy = alloydb_messages.Policy()
+
+  if args.autoscaler_max_node_count is not None:
+    auto_scaling_config.policy.maxNodeCount = args.autoscaler_max_node_count
+  if args.autoscaler_cool_down_period_seconds is not None:
+    auto_scaling_config.policy.coolDownPeriodSec = (
+        args.autoscaler_cool_down_period_seconds
+    )
+  if not auto_scaling_config.policy.cpuUtilization:
+    auto_scaling_config.policy.cpuUtilization = (
+        alloydb_messages.CpuUtilization()
+    )
+  if args.autoscaler_target_cpu_usage is not None:
+    auto_scaling_config.policy.cpuUtilization.utilizationTarget = (
+        args.autoscaler_target_cpu_usage
+    )
+  if args.enable_autoscaler is not None:
+    auto_scaling_config.policy.enabled = (
+        args.enable_autoscaler or auto_scaling_config.policy.enabled
+    )
+  if instance_ref:
+    # Deleting, disabling, and enabling schedules are only for the update
+    # command.
+    if args.autoscaler_delete_schedule is not None:
+      new_schedules = []
+      for schedule in auto_scaling_config.schedules:
+        if schedule.name != args.autoscaler_delete_schedule:
+          new_schedules.append(schedule)
+      auto_scaling_config.schedules = new_schedules
+    if args.autoscaler_disable_schedule is not None:
+      new_schedules = []
+      for schedule in auto_scaling_config.schedules:
+        if schedule.name == args.autoscaler_disable_schedule:
+          schedule.disabled = True
+        new_schedules.append(schedule)
+      auto_scaling_config.schedules = new_schedules
+    if args.autoscaler_enable_schedule is not None:
+      new_schedules = []
+      for schedule in auto_scaling_config.schedules:
+        if schedule.name == args.autoscaler_enable_schedule:
+          schedule.disabled = False
+        new_schedules.append(schedule)
+      auto_scaling_config.schedules = new_schedules
+  if args.autoscaler_set_schedule is not None:
+    is_new_schedule = True
+    schedule = alloydb_messages.Schedule()
+    schedule.name = args.autoscaler_set_schedule
+    for s in auto_scaling_config.schedules:
+      if s.name == args.autoscaler_set_schedule:
+        schedule = s
+        is_new_schedule = False
+        break
+    if args.autoscaler_schedule_cron_exp is not None:
+      schedule.cronExpression = args.autoscaler_schedule_cron_exp
+    if args.autoscaler_schedule_duration_seconds is not None:
+      schedule.durationSec = args.autoscaler_schedule_duration_seconds
+    if args.autoscaler_schedule_min_node_count is not None:
+      schedule.minNodeCount = args.autoscaler_schedule_min_node_count
+    if args.autoscaler_schedule_time_zone is not None:
+      schedule.timeZone = args.autoscaler_schedule_time_zone
+    if args.autoscaler_schedule_description is not None:
+      schedule.description = args.autoscaler_schedule_description
+    if is_new_schedule:
+      auto_scaling_config.schedules.append(schedule)
+  return auto_scaling_config
 
 
 def _ParseInstanceType(alloydb_messages, instance_type):
@@ -1362,6 +1478,29 @@ def ConstructInstanceAndUpdatePathsFromArgsBeta(
         connection_pooling_client_connection_idle_timeout=args.connection_pooling_client_connection_idle_timeout,
         connection_pooling_max_prepared_statements=args.connection_pooling_max_prepared_statements,
     )
+
+  if (
+      args.autoscaler_max_node_count is not None
+      or args.autoscaler_cool_down_period_seconds is not None
+      or args.autoscaler_target_cpu_usage is not None
+      or args.enable_autoscaler is not None
+      or args.autoscaler_delete_schedule is not None
+      or args.autoscaler_set_schedule is not None
+      or args.autoscaler_schedule_cron_exp is not None
+      or args.autoscaler_schedule_duration_seconds is not None
+      or args.autoscaler_schedule_min_node_count is not None
+      or args.autoscaler_schedule_time_zone is not None
+      or args.autoscaler_disable_schedule is not None
+      or args.autoscaler_enable_schedule is not None
+      or args.autoscaler_schedule_description is not None
+  ):
+    auto_scaling_config = ParseAutoScalingConfig(
+        alloydb_messages, instance_ref, release_track, args
+    )
+    if not instance_resource.readPoolConfig:
+      instance_resource.readPoolConfig = alloydb_messages.ReadPoolConfig()
+    instance_resource.readPoolConfig.autoScalingConfig = auto_scaling_config
+    paths.append('readPoolConfig.autoScalingConfig')
 
   return instance_resource, paths
 

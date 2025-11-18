@@ -735,7 +735,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
         path_params=['instance', 'project'],
         query_params=[],
         relative_path='sql/v1beta4/projects/{project}/instances/{instance}/addEntraIdCertificate',
-        request_field='sqlInstancesAddEntraIdCertificateRequest',
+        request_field='',
         request_type_name='SqlInstancesAddEntraIdCertificateRequest',
         response_type_name='Operation',
         supports_download=False,

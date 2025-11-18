@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Common utility functions for Developer Connect Insights Configs Discover App Hub."""
+"""Common utility functions for Developer Connect Insights Configs Discover App Hub and Discover Projects."""
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.asset import client_util as asset_client_util
@@ -72,6 +72,58 @@ def query_cais_for_gke_assets(gke_workload):
   return list(assets)
 
 
+def query_cais_for_gke_assets_in_project(project):
+  """Queries CAIS for GKE assets in a given GCP project.
+
+  Args:
+    project: A GCP Project.
+
+  Returns:
+    The GKE assets that are associated with the GCP Project.
+  """
+  # DCI does not track system namespaces.
+  system_deployment_namespaces = [
+      'config-management-system',
+      'gke-gmp-system',
+      'gke-managed-checkpointing',
+      'gke-managed-cim',
+      'gke-managed-lustrecsi',
+      'gke-managed-parallelstorecsi',
+      'gke-managed-system',
+      'gke-managed-volumepopulator',
+      'gke-system',
+      'gmp-system',
+      'istio-system',
+      'knative-serving',
+      'kube-system',
+  ]
+
+  # Dynamically build the exclusion query string.
+  # Result matches: "NOT name:/namespaces/ns1/ NOT name:/namespaces/ns2/ ..."
+  namespace_exclusions = [
+      f'NOT name:/namespaces/{ns}/' for ns in system_deployment_namespaces
+  ]
+  query_string = ' '.join(namespace_exclusions)
+
+  log.status.Print(f'Finding GKE artifacts running in {project}...')
+  search_request = (
+      asset_client_util.GetMessages().CloudassetSearchAllResourcesRequest(
+          scope=f'projects/{project}',
+          query=query_string,
+          assetTypes=[_GKE_POD_ASSET_TYPE],
+          readMask='name,versioned_resources,create_time,state',
+      )
+  )
+  assets = list_pager.YieldFromList(
+      asset_client_util.GetClient().v1,
+      search_request,
+      method='SearchAllResources',
+      field='results',
+      batch_size_attribute='pageSize',
+  )
+  return list(assets)
+
+
 def query_cais_for_cloud_run_services(cloud_run_service):
   """Queries CAIS for assets associated with the given Cloud Run service.
 
@@ -89,6 +141,33 @@ def query_cais_for_cloud_run_services(cloud_run_service):
       asset_client_util.GetMessages().CloudassetSearchAllResourcesRequest(
           scope=f'projects/{cloud_run_service.project_id}',
           query=f'parentFullResourceName:{parent_full_service_resource_name}',
+          assetTypes=[_CLOUD_RUN_REVISION_ASSET_TYPE],
+          readMask='name,versioned_resources',
+      )
+  )
+  assets = list_pager.YieldFromList(
+      asset_client_util.GetClient().v1,
+      search_request,
+      method='SearchAllResources',
+      field='results',
+      batch_size_attribute='pageSize',
+  )
+  return list(assets)
+
+
+def query_cais_for_cloud_run_services_in_project(project):
+  """Queries CAIS for Cloud Run service assets associated with the given GCP Project.
+
+  Args:
+    project: A GCP Project.
+
+  Returns:
+    The Cloud Run assets that are associated with the GCP Project.
+  """
+  log.status.Print(f'Finding Cloud Run artifacts running in {project}...')
+  search_request = (
+      asset_client_util.GetMessages().CloudassetSearchAllResourcesRequest(
+          scope=f'projects/{project}',
           assetTypes=[_CLOUD_RUN_REVISION_ASSET_TYPE],
           readMask='name,versioned_resources',
       )

@@ -66,6 +66,16 @@ class RevisionPrinter(cp.CustomPrinterBase):
     return record.annotations.get(revision.MAX_SCALE_ANNOTATION, '')
 
   @staticmethod
+  def GetTargetCpuUtilization(record):
+    return record.annotations.get(revision.CPU_UTILIZATION_ANNOTATION, '')
+
+  @staticmethod
+  def GetTargetConcurrencyUtilization(record):
+    return record.annotations.get(
+        revision.CONCURRENCY_UTILIZATION_ANNOTATION, ''
+    )
+
+  @staticmethod
   def GetCMEK(record):
     cmek_key = record.annotations.get(container_resource.CMEK_KEY_ANNOTATION)
     if not cmek_key:
@@ -118,6 +128,14 @@ class RevisionPrinter(cp.CustomPrinterBase):
       labels.extend([
           ('Min instances', RevisionPrinter.GetMinInstances(record)),
           ('Max instances', RevisionPrinter.GetMaxInstances(record)),
+          (
+              'Target CPU utilization',
+              RevisionPrinter.GetTargetCpuUtilization(record),
+          ),
+          (
+              'Target concurrency utilization',
+              RevisionPrinter.GetTargetConcurrencyUtilization(record),
+          ),
       ])
     labels.extend([
         (

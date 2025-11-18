@@ -41,6 +41,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_ADDONS = (
+      'projects.locations.addons',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/addons/'
+              '{addonsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_APIHUBINSTANCES = (
       'projects.locations.apiHubInstances',
       '{+name}',

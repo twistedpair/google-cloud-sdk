@@ -56,6 +56,43 @@ For more information about supported configurations, see
 [Cloud Storage bucket IP filtering configurations](https://cloud.google.com/storage/docs/create-ip-filter#ip-filtering-configurations)
 """
 
+_ENCRYPTION_ENFORCEMENT_HELP_TEXT = """
+Sets the encryption enforcement configuration for the bucket from a JSON file.
+This configuration determines restrictions on the types of encryption (GMEK,
+CMEK, CSEK) allowed for new objects created in the bucket.
+
+The JSON file should contain an object with keys among "gmekEnforcement",
+"cmekEnforcement", and "csekEnforcement". Each of these keys, if present,
+should have a "restrictionMode" key, determining whether the corresponding
+encryption type should be allowed or restricted for new objects.
+
+Valid values for "restrictionMode" are:
+- "NotRestricted": The encryption type is allowed for new objects.
+- "FullyRestricted": The encryption type is not allowed for new objects.
+
+Example JSON file content, to enforce only CMEK for new objects:
+
+  {
+    "gmekEnforcement": {
+      "restrictionMode": "FullyRestricted"
+    },
+    "cmekEnforcement": {
+      "restrictionMode": "NotRestricted"
+    },
+    "csekEnforcement": {
+      "restrictionMode": "FullyRestricted"
+    }
+  }
+
+Omitted keys will not be sent in the API request. To clear a specific
+enforcement setting during an update, set its value to null.
+For example, to clear the "gmekEnforcement" setting:
+
+  {
+    "gmekEnforcement": null
+  }
+"""
+
 _CUSTOM_CONTEXT_FILE_HELP_TEXT = """
 Path to a local JSON or YAML file containing custom contexts one wants to set on
 an object. For example:
@@ -487,6 +524,19 @@ def add_encryption_flags(parser,
              ' if one exists, or else with a Google-managed encryption key.')
 
 
+def add_encryption_enforcement_file_flag(parser):
+  """Adds the --encryption-enforcement-file flag for buckets commands.
+
+  Args:
+    parser (parser_arguments.ArgumentInterceptor): Parser passed to surface.
+  """
+  parser.add_argument(
+      '--encryption-enforcement-file',
+      help=_ENCRYPTION_ENFORCEMENT_HELP_TEXT,
+      hidden=True,
+  )
+
+
 def add_continue_on_error_flag(parser):
   """Adds flag to indicate error should be skipped instead of being raised."""
   parser.add_argument(
@@ -631,12 +681,15 @@ def add_dataset_config_location_flag(parser, is_required=True):
   )
 
 
-def add_dataset_config_create_update_flags(parser, is_update=False):
+def add_dataset_config_create_update_flags(
+    parser, is_update=False, release_track=base.ReleaseTrack.GA
+):
   """Adds the flags for the dataset-config create and update commands.
 
   Args:
     parser (parser_arguments.ArgumentInterceptor): Parser passed to surface.
     is_update (bool): True if flags are for the dataset-configs update command.
+    release_track (base.ReleaseTrack): The release track of command.
   """
   parser.add_argument(
       '--retention-period-days',
@@ -646,15 +699,18 @@ def add_dataset_config_create_update_flags(parser, is_update=False):
       help='Provide retention period for the config.',
   )
 
-  parser.add_argument(
-      '--activity-data-retention-period-days',
-      type=int,
-      metavar='ACTIVITY_DATA_RETENTION_DAYS',
-      required=False,
-      help='Provide retention period for the activity data in the config. This'
-      ' overrides the retention period for activity data. Otherwise, the'
-      ' `retention_period_days` value is used for activity data as well.',
-  )
+  if release_track == base.ReleaseTrack.ALPHA:
+    parser.add_argument(
+        '--activity-data-retention-period-days',
+        type=int,
+        metavar='ACTIVITY_DATA_RETENTION_DAYS',
+        required=False,
+        help=(
+            'Provide retention period for the activity data in the config. This'
+            ' overrides the retention period for activity data. Otherwise, the'
+            ' `retention_period_days` value is used for activity data as well.'
+        ),
+    )
 
   parser.add_argument(
       '--description',

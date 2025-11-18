@@ -39,6 +39,7 @@ class GcsGrpcBidiStreamingClient(cloud_api.CloudApi):
   capabilities = [
       cloud_api.Capability.APPENDABLE_UPLOAD,
       cloud_api.Capability.RESUMABLE_UPLOAD,
+      cloud_api.Capability.SLICED_DOWNLOAD,
   ]
 
   def __init__(self):
@@ -177,6 +178,7 @@ class GcsGrpcBidiStreamingClient(cloud_api.CloudApi):
           request_config=request_config,
           source_resource=source_resource,
           delegator=self._delegator,
+          posix_to_set=posix_to_set,
       )
     elif upload_strategy == cloud_api.UploadStrategy.RESUMABLE:
       uploader = upload.ResumableUpload(
@@ -186,6 +188,7 @@ class GcsGrpcBidiStreamingClient(cloud_api.CloudApi):
           request_config=request_config,
           source_resource=source_resource,
           delegator=self._delegator,
+          posix_to_set=posix_to_set,
       )
     else:
       raise core_exceptions.InternalError(

@@ -941,6 +941,48 @@ class AlloydbProjectsLocationsEndpointsListRequest(_messages.Message):
   parent = _messages.StringField(5, required=True)
 
 
+class AlloydbProjectsLocationsEndpointsPatchRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsEndpointsPatchRequest object.
+
+  Fields:
+    allowMissing: Optional. If set to true, update succeeds even if endpoint
+      is not found. In that case, a new endpoint is created and `update_mask`
+      is ignored.
+    endpoint: A Endpoint resource to be passed as the request body.
+    name: Output only. Identifier. The name of the endpoint resource with the
+      format: * projects/{project}/locations/{region}/endpoints/{endpoint_id}
+      where the endpoint ID segment should satisfy the regex expression
+      `[a-z0-9-]+`. For more details see https://google.aip.dev/122. The
+      prefix of the endpoint resource name is the name of the parent resource:
+      * projects/{project}/locations/{region}
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      ignores the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if the original operation with the same request
+      ID was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the Endpoint resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields will be overwritten.
+    validateOnly: Optional. If set, the backend validates the request, but
+      doesn't actually execute it.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  endpoint = _messages.MessageField('Endpoint', 2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  updateMask = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
+
+
 class AlloydbProjectsLocationsGetRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsGetRequest object.
 

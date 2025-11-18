@@ -912,21 +912,6 @@ class PrivilegedaccessmanagerFoldersLocationsCheckOnboardingStatusRequest(_messa
   parent = _messages.StringField(1, required=True)
 
 
-class PrivilegedaccessmanagerFoldersLocationsEffectiveSettingsRequest(_messages.Message):
-  r"""A PrivilegedaccessmanagerFoldersLocationsEffectiveSettingsRequest
-  object.
-
-  Fields:
-    parent: Required. The resource for which the effective settings should be
-      fetched. Should be in one of the following formats: *
-      `projects/{project-number|project-id}/locations/{region}` *
-      `folders/{folder-number}/locations/{region}` *
-      `organizations/{organization-number}/locations/{region}`
-  """
-
-  parent = _messages.StringField(1, required=True)
-
-
 class PrivilegedaccessmanagerFoldersLocationsEntitlementsCreateRequest(_messages.Message):
   r"""A PrivilegedaccessmanagerFoldersLocationsEntitlementsCreateRequest
   object.
@@ -1386,21 +1371,6 @@ class PrivilegedaccessmanagerOrganizationsLocationsCheckOnboardingStatusRequest(
   Fields:
     parent: Required. The resource for which the onboarding status should be
       checked. Should be in one of the following formats: *
-      `projects/{project-number|project-id}/locations/{region}` *
-      `folders/{folder-number}/locations/{region}` *
-      `organizations/{organization-number}/locations/{region}`
-  """
-
-  parent = _messages.StringField(1, required=True)
-
-
-class PrivilegedaccessmanagerOrganizationsLocationsEffectiveSettingsRequest(_messages.Message):
-  r"""A PrivilegedaccessmanagerOrganizationsLocationsEffectiveSettingsRequest
-  object.
-
-  Fields:
-    parent: Required. The resource for which the effective settings should be
-      fetched. Should be in one of the following formats: *
       `projects/{project-number|project-id}/locations/{region}` *
       `folders/{folder-number}/locations/{region}` *
       `organizations/{organization-number}/locations/{region}`
@@ -1879,21 +1849,6 @@ class PrivilegedaccessmanagerProjectsLocationsCheckOnboardingStatusRequest(_mess
   Fields:
     parent: Required. The resource for which the onboarding status should be
       checked. Should be in one of the following formats: *
-      `projects/{project-number|project-id}/locations/{region}` *
-      `folders/{folder-number}/locations/{region}` *
-      `organizations/{organization-number}/locations/{region}`
-  """
-
-  parent = _messages.StringField(1, required=True)
-
-
-class PrivilegedaccessmanagerProjectsLocationsEffectiveSettingsRequest(_messages.Message):
-  r"""A PrivilegedaccessmanagerProjectsLocationsEffectiveSettingsRequest
-  object.
-
-  Fields:
-    parent: Required. The resource for which the effective settings should be
-      fetched. Should be in one of the following formats: *
       `projects/{project-number|project-id}/locations/{region}` *
       `folders/{folder-number}/locations/{region}` *
       `organizations/{organization-number}/locations/{region}`

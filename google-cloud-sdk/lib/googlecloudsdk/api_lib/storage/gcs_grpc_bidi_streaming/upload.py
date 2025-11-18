@@ -34,6 +34,7 @@ from googlecloudsdk.api_lib.storage.gcs_grpc_bidi_streaming import retry_util as
 from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage import fast_crc32c_util
 from googlecloudsdk.command_lib.storage import hash_util
+from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.command_lib.util import crc32c
@@ -67,6 +68,7 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
       ),
       start_offset: int = 0,
       delegator: cloud_api.CloudApi | None = None,
+      posix_to_set: posix_util.PosixAttributes | None = None,
   ):
     """Initializes _Upload.
 
@@ -82,6 +84,7 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
         the data should be written.
       delegator: The client used to make non-bidi streaming or metadata API
         calls.
+      posix_to_set: POSIX attributes to set on the destination object.
     """
     self._client = client
     self._source_stream = source_stream
@@ -104,6 +107,7 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
     self._redirection_handler = bidi_retry_util.BidiRedirectedTokenErrorHandler(
         self._client, self._destination_resource
     )
+    self._posix_to_set = posix_to_set
 
   def _get_max_buffer_size(self):
     """Returns the maximum buffer size."""
@@ -283,7 +287,10 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
     )
 
     metadata_util.update_object_metadata_from_request_config(
-        destination_object, self._request_config, self._source_resource
+        destination_object,
+        self._request_config,
+        self._source_resource,
+        posix_to_set=self._posix_to_set,
     )
 
     write_object_spec = self._client.types.WriteObjectSpec(
@@ -453,4 +460,5 @@ class ResumableUpload(_Upload):
         source_resource=self._source_resource,
         start_offset=0,
         delegator=self._delegator,
+        posix_to_set=self._posix_to_set,
     ).run()

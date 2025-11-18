@@ -2251,15 +2251,15 @@ def AddOverflowScalingFlag(parser):
 
 
 def AddCpuUtilizationFlag(parser):
-  """Add flag to modify cpu utilization scaling."""
+  """Add flag to modify cpu utilization scaling target."""
   parser.add_argument(
-      '--scaling-cpu-utilization',
+      '--scaling-cpu-target',
       type=UtilizationValue,
       help=(
           'A value between 0.5 and 0.95 that indicates the target CPU'
           ' utilization where a new instance should be started.  Also accepts '
           '"default" to restore the default value or "disabled" to disable '
-          'CPU utilization scaling.'
+          'CPU utilization scaling. If not set, the default value is 0.6.'
       ),
   )
 
@@ -2267,13 +2267,14 @@ def AddCpuUtilizationFlag(parser):
 def AddConcurrencyUtilizationFlag(parser):
   """Add flag to modify scaling concurrency utilization."""
   parser.add_argument(
-      '--scaling-concurrency-utilization',
+      '--scaling-concurrency-target',
       type=UtilizationValue,
       help=(
           'A value between 0.5 and 0.95 that indicates the target concurrency'
           ' utilization where a new instance should be started. Also accepts '
           '"default" to restore the default value or "disabled" to disable '
-          'concurrency utilization scaling.'
+          'concurrency utilization scaling. If not set, the default value is'
+          ' 0.6.'
       ),
   )
 
@@ -2646,8 +2647,8 @@ def _GetOverFlowScalingChanges(args):
 def _GetCpuUtilizationChanges(args):
   """Return cpu utilization scaling changes for given args."""
   config_maps_changes = []
-  if FlagIsExplicitlySet(args, 'scaling_cpu_utilization'):
-    if args.scaling_cpu_utilization.restore_default:
+  if FlagIsExplicitlySet(args, 'scaling_cpu_target'):
+    if args.scaling_cpu_target.restore_default:
       config_maps_changes.append(
           config_changes.DeleteTemplateAnnotationChange(
               revision.CPU_UTILIZATION_ANNOTATION
@@ -2657,7 +2658,7 @@ def _GetCpuUtilizationChanges(args):
       config_maps_changes.append(
           config_changes.SetTemplateAnnotationChange(
               revision.CPU_UTILIZATION_ANNOTATION,
-              str(args.scaling_cpu_utilization.utilization),
+              str(args.scaling_cpu_target.utilization),
           )
       )
   return config_maps_changes
@@ -2666,8 +2667,8 @@ def _GetCpuUtilizationChanges(args):
 def _GetConcurrencyUtilizationChanges(args):
   """Return concurrency utilization scaling changes for given args."""
   config_maps_changes = []
-  if FlagIsExplicitlySet(args, 'scaling_concurrency_utilization'):
-    if args.scaling_concurrency_utilization.restore_default:
+  if FlagIsExplicitlySet(args, 'scaling_concurrency_target'):
+    if args.scaling_concurrency_target.restore_default:
       config_maps_changes.append(
           config_changes.DeleteTemplateAnnotationChange(
               revision.CONCURRENCY_UTILIZATION_ANNOTATION
@@ -2677,7 +2678,7 @@ def _GetConcurrencyUtilizationChanges(args):
       config_maps_changes.append(
           config_changes.SetTemplateAnnotationChange(
               revision.CONCURRENCY_UTILIZATION_ANNOTATION,
-              str(args.scaling_concurrency_utilization.utilization),
+              str(args.scaling_concurrency_target.utilization),
           )
       )
   return config_maps_changes
@@ -4696,7 +4697,7 @@ def SourceAndImageFlags(
   group = base.ArgumentGroup(mutex=mutex)
   group.AddArgument(ImageArg(required=False, image=image, mutex=mutex))
   group.AddArgument(SourceArg())
-  if release_track == base.ReleaseTrack.ALPHA:
+  if release_track != base.ReleaseTrack.GA:
     group.AddArgument(NoBuildArg())
   return group
 

@@ -114,7 +114,10 @@ def MakeNetworkConfiguration(
         "--network-auto-configuration",
         "Only one network interface can be specified."
     )
-  network_config = network_config[0] if network_config else {}
+  if not network_config:
+    return None
+
+  network_config = network_config[0]
 
   if "stack-type" in network_config:
     network_config_parsed["stackType"] = network_config["stack-type"]

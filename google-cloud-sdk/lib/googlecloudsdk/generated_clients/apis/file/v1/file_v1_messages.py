@@ -480,6 +480,20 @@ class FileProjectsLocationsInstancesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class FileProjectsLocationsInstancesPauseReplicaRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesPauseReplicaRequest object.
+
+  Fields:
+    name: Required. The resource name of the instance, in the format
+      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`.
+    pauseReplicaRequest: A PauseReplicaRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pauseReplicaRequest = _messages.MessageField('PauseReplicaRequest', 2)
+
+
 class FileProjectsLocationsInstancesPromoteReplicaRequest(_messages.Message):
   r"""A FileProjectsLocationsInstancesPromoteReplicaRequest object.
 
@@ -506,6 +520,20 @@ class FileProjectsLocationsInstancesRestoreRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   restoreInstanceRequest = _messages.MessageField('RestoreInstanceRequest', 2)
+
+
+class FileProjectsLocationsInstancesResumeReplicaRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesResumeReplicaRequest object.
+
+  Fields:
+    name: Required. The resource name of the instance, in the format
+      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`.
+    resumeReplicaRequest: A ResumeReplicaRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  resumeReplicaRequest = _messages.MessageField('ResumeReplicaRequest', 2)
 
 
 class FileProjectsLocationsInstancesRevertRequest(_messages.Message):
@@ -2146,6 +2174,10 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class PauseReplicaRequest(_messages.Message):
+  r"""PauseReplicaRequest pauses a Filestore standby instance (replica)."""
+
+
 class PerformanceConfig(_messages.Message):
   r"""Used for setting the performance configuration. If the user doesn't
   specify PerformanceConfig, automatically provision the default performance
@@ -2341,6 +2373,10 @@ class RestoreInstanceRequest(_messages.Message):
 
   fileShare = _messages.StringField(1)
   sourceBackup = _messages.StringField(2)
+
+
+class ResumeReplicaRequest(_messages.Message):
+  r"""ResumeReplicaRequest resumes a Filestore standby instance (replica)."""
 
 
 class RevertInstanceRequest(_messages.Message):

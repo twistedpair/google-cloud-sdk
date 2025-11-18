@@ -26,6 +26,7 @@ from googlecloudsdk.command_lib.netapp import flags
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
 
 BACKUP_VAULTS_LIST_FORMAT = """\
@@ -85,6 +86,7 @@ def AddBackupVaultCreateArgs(parser, release_track):
   flags.AddResourceAsyncFlag(parser)
   labels_util.AddCreateLabelsFlags(parser)
   AddBackupRetentionPolicyArg(parser)
+  AddKmsConfigArg(parser)
   if (release_track == base.ReleaseTrack.BETA):
     AddBackupVaultTypeArg(parser)
     AddBackupVaultBackupLocationArg(parser)
@@ -131,3 +133,22 @@ def AddBackupRetentionPolicyArg(parser):
       required=False,
       help=backup_retention_policy_help,
       )
+
+
+def AddKmsConfigArg(parser):
+  """Adds the --kms-config flag to the parser."""
+  help_text = """\
+  The resource name of the KMS Config to use for encrypting backups within this backup vault.
+  Format: projects/{project_id}/locations/{location}/kmsConfigs/{kms_config_id}
+  """
+  kms_config_presentation_spec = presentation_specs.ResourcePresentationSpec(
+      '--kms-config',
+      flags.GetKmsConfigResourceSpec(),
+      help_text,
+      required=False,
+      hidden=True,
+      flag_name_overrides={'location': ''},
+  )
+  concept_parsers.ConceptParser([kms_config_presentation_spec]).AddToParser(
+      parser
+  )

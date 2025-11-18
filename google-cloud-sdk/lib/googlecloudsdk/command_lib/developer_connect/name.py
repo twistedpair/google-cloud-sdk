@@ -40,6 +40,7 @@ gke_deployment_path_regex = re.compile(
 cloud_run_service_path_regex = re.compile(
     rf"^(?:{RUN_SERVICE_PREFIX}/)?projects/((?:[^:]+:.)?[a-z0-9\\-]+)/locations/([\w-]{{2,40}})/services/{name_segment_re}$"
 )
+project_regex = re.compile(r"^(?:projects/)?((?:[^:]+:.)?[a-z0-9\\-]+)$")
 
 # https://cloud.google.com/artifact-registry/docs/transition/gcr-repositories#gcr-domain-support
 _GCR_HOST_TO_AR_LOCATION = {
@@ -120,9 +121,9 @@ def is_management_project(app_hub_application):
   return app_hub_application.startswith(_APPHUB_MANAGEMENT_PROJECT_PREFIX)
 
 
-def validate_build_project(build_project):
-  """Validates the build project."""
-  return projects_api.Get(projects_util.ParseProject(build_project))
+def validate_project(project_id):
+  """Validates the project."""
+  return projects_api.Get(projects_util.ParseProject(project_id))
 
 
 class GKECluster:
@@ -261,6 +262,43 @@ def parse_app_hub_application_uri(uri):
   )
 
 
+def parse_target_projects(target_projects):
+  """Parses a list of target projects into an array."""
+  projects = []
+  if not target_projects:
+    return projects
+  for target_project in dict.fromkeys(target_projects):
+    # Validate project is in the correct format.
+    match = project_regex.fullmatch(target_project)
+    if not match or len(match.groups()) != 1:
+      raise ValueError(
+          "target_project must be in the format"
+          "{project} or projects/{project}:"
+          f" {target_project}"
+      )
+    project_id = match.group(1)
+    # Validate project exists and user has access.
+    try:
+      validate_project(project_id)
+    except apitools_exceptions.HttpForbiddenError:
+      raise ValueError(
+          "Permission denied when checking target project [{}]. Please"
+          " ensure your account has necessary permissions "
+          "or that the project exists.".format(target_project)
+      )
+    except apitools_exceptions.HttpBadRequestError:
+      raise ValueError(
+          "Invalid user-provided target project ID [{}]. Please ensure it is a"
+          " valid project ID".format(target_project)
+      )
+    except exceptions.Error as e:
+      raise ValueError(
+          f"Error validating target project [{target_project}]: {e}"
+      )
+    projects.append(project_id)
+  return projects
+
+
 def parse_artifact_configs(user_artifact_configs):
   """Parses a list of artifact configs into a dictionary."""
   artifact_configs_dict = {}
@@ -270,7 +308,7 @@ def parse_artifact_configs(user_artifact_configs):
     for uri, build_project in user_config_data.items():
       valid_uri = validate_artifact_uri(uri)
       try:
-        validate_build_project(build_project)
+        validate_project(build_project)
       except apitools_exceptions.HttpForbiddenError:
         raise ValueError(
             "Permission denied when checking build project [{}]. Please"
@@ -291,7 +329,7 @@ def parse_artifact_configs(user_artifact_configs):
         artifact_configs_dict[valid_uri.base_uri] = build_project
       else:
         raise ValueError(
-            "Inalid user provided artifact uri, please check the format:"
+            "Invalid user provided artifact uri, please check the format:"
             f" {user_config_data}"
         )
   return artifact_configs_dict

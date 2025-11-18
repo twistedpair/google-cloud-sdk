@@ -5284,7 +5284,11 @@ def AddEnableKernelModuleSignatureEnforcementFlag(
   """Adds kernel module signature enforcement flag to the given parser."""
   if for_node_pool:
     help_text = """\
-Enforces that kernel modules are signed on all nodes in the node pool.
+Enforces that kernel modules are signed on all nodes in the node pool. This
+setting overrides the cluster-level setting. For example, if the cluster
+disables enforcement, you can enable enforcement only for a specific node pool.
+When the policy is modified on an existing node pool, nodes will be immediately
+recreated to use the new policy.
 Use `--no-enable-kernel-module-signature-enforcement` to disable.
 
 Examples:
@@ -8253,4 +8257,24 @@ Examples:
       hidden=hidden,
       help=help_text,
       metavar='GCS_PATH',
+  )
+
+
+def AddEnableSliceControllerFlag(parser, hidden=True):
+  """Adds Slice Controller flag to the given parser.
+
+  Args:
+    parser: A given parser.
+    hidden: Indicates that the flags are hidden.
+  """
+  help_text = """\
+Enable Slice Controller for the cluster.
+Use `--no-enable-slice-controller` to disable.
+"""
+  parser.add_argument(
+      '--enable-slice-controller',
+      default=None,
+      hidden=hidden,
+      action='store_true',
+      help=help_text,
   )

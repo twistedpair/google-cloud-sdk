@@ -13,6 +13,60 @@ from apitools.base.py import extra_types
 package = 'apihub'
 
 
+class ApihubProjectsLocationsAddonsGetRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsAddonsGetRequest object.
+
+  Fields:
+    name: Required. The name of the addon to get. Format:
+      `projects/{project}/locations/{location}/addons/{addon}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApihubProjectsLocationsAddonsListRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsAddonsListRequest object.
+
+  Fields:
+    filter: Optional. An expression that filters the list of addons. The only
+      supported filter is `plugin_instance_name`. It can be used to filter
+      addons that are enabled for a given plugin instance. The format of the
+      filter is `plugin_instance_name = "projects/{project}/locations/{locatio
+      n}/plugins/{plugin}/instances/{instance}"`.
+    pageSize: Optional. The maximum number of hub addons to return. The
+      service may return fewer than this value. If unspecified, at most 50 hub
+      addons will be returned. The maximum value is 1000; values above 1000
+      will be coerced to 1000.
+    pageToken: Optional. A page token, received from a previous `ListAddons`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters (except page_size) provided to `ListAddons` must match
+      the call that provided the page token.
+    parent: Required. The parent resource where this addon will be created.
+      Format: `projects/{project}/locations/{location}`.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class ApihubProjectsLocationsAddonsManageConfigRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsAddonsManageConfigRequest object.
+
+  Fields:
+    googleCloudApihubV1ManageAddonConfigRequest: A
+      GoogleCloudApihubV1ManageAddonConfigRequest resource to be passed as the
+      request body.
+    name: Required. The name of the addon for which the config is to be
+      managed. Format:
+      `projects/{project}/locations/{location}/addons/{addon}`.
+  """
+
+  googleCloudApihubV1ManageAddonConfigRequest = _messages.MessageField('GoogleCloudApihubV1ManageAddonConfigRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class ApihubProjectsLocationsApiHubInstancesCreateRequest(_messages.Message):
   r"""A ApihubProjectsLocationsApiHubInstancesCreateRequest object.
 
@@ -2031,6 +2085,92 @@ class GoogleCloudApihubV1ActionExecutionDetail(_messages.Message):
   actionId = _messages.StringField(1)
 
 
+class GoogleCloudApihubV1Addon(_messages.Message):
+  r"""Addon resource.
+
+  Enums:
+    DataSourceValueValuesEnum: Required. The data source on which the addon
+      operates. This determines which field in the `config` oneof is used.
+    StateValueValuesEnum: Output only. The state of the addon.
+
+  Fields:
+    config: Required. The configuration of the addon.
+    createTime: Output only. The time at which the addon was created.
+    dataSource: Required. The data source on which the addon operates. This
+      determines which field in the `config` oneof is used.
+    description: Optional. The description of the addon.
+    displayName: Required. The display name of the addon.
+    name: Identifier. The name of the addon to enable. Format:
+      `projects/{project}/locations/{location}/addons/{addon}`.
+    state: Output only. The state of the addon.
+    updateTime: Output only. The time at which the addon was last updated.
+  """
+
+  class DataSourceValueValuesEnum(_messages.Enum):
+    r"""Required. The data source on which the addon operates. This determines
+    which field in the `config` oneof is used.
+
+    Values:
+      DATA_SOURCE_UNSPECIFIED: The data source of the addon is not specified.
+      PLUGIN_INSTANCE: Addon operates on data collected from specific plugin
+        instances.
+      ALL_DATA: Addon operates on all data in the API hub.
+    """
+    DATA_SOURCE_UNSPECIFIED = 0
+    PLUGIN_INSTANCE = 1
+    ALL_DATA = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the addon.
+
+    Values:
+      ADDON_STATE_UNSPECIFIED: The addon state is not specified.
+      ACTIVE: The addon is active.
+      UPDATING: The addon is being updated.
+      ERROR: The addon is in error state.
+      INACTIVE: The addon is inactive.
+    """
+    ADDON_STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    UPDATING = 2
+    ERROR = 3
+    INACTIVE = 4
+
+  config = _messages.MessageField('GoogleCloudApihubV1AddonConfig', 1)
+  createTime = _messages.StringField(2)
+  dataSource = _messages.EnumField('DataSourceValueValuesEnum', 3)
+  description = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  name = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
+
+
+class GoogleCloudApihubV1AddonConfig(_messages.Message):
+  r"""Configuration for the addon.
+
+  Fields:
+    allDataAddonConfig: Configuration for addons which act on all data in the
+      API hub.
+    gatewayPluginAddonConfig: Configuration for gateway plugin addons.
+  """
+
+  allDataAddonConfig = _messages.MessageField('GoogleCloudApihubV1AllDataAddonConfig', 1)
+  gatewayPluginAddonConfig = _messages.MessageField('GoogleCloudApihubV1GatewayPluginAddonConfig', 2)
+
+
+class GoogleCloudApihubV1AllDataAddonConfig(_messages.Message):
+  r"""Configuration for addons which act on all data in the API hub. This is
+  used to specify if the addon is enabled for all data in the API hub.
+
+  Fields:
+    enabled: Required. If true, the addon is enabled for all data in the API
+      hub.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class GoogleCloudApihubV1AllowedValue(_messages.Message):
   r"""The value that can be assigned to the attribute when the data type is
   enum.
@@ -2455,6 +2595,51 @@ class GoogleCloudApihubV1ApiOperation(_messages.Message):
   sourceMetadata = _messages.MessageField('GoogleCloudApihubV1SourceMetadata', 5, repeated=True)
   spec = _messages.StringField(6)
   updateTime = _messages.StringField(7)
+
+
+class GoogleCloudApihubV1ApigeeEdgeConfig(_messages.Message):
+  r"""Configuration for Apigee Edge gateways. Applicability of a filter is
+  determined by the filter being provided. If none of the filters are provided
+  the addon will be enabled for all data brought in by the gateway plugin
+  instance.
+
+  Fields:
+    environmentFilter: Optional. The filter to apply on the resources managed
+      by the gateway plugin instance. If provided this filter applies
+      environment specific filtering.
+  """
+
+  environmentFilter = _messages.MessageField('GoogleCloudApihubV1EnvironmentFilter', 1)
+
+
+class GoogleCloudApihubV1ApigeeOPDKConfig(_messages.Message):
+  r"""Configuration for Apigee OPDK gateways. Applicability of a filter is
+  determined by the filter being provided. If none of the filters are provided
+  the addon will be enabled for all data brought in by the gateway plugin
+  instance.
+
+  Fields:
+    environmentFilter: Optional. The filter to apply on the resources managed
+      by the gateway plugin instance. If provided this filter applies
+      environment specific filtering.
+  """
+
+  environmentFilter = _messages.MessageField('GoogleCloudApihubV1EnvironmentFilter', 1)
+
+
+class GoogleCloudApihubV1ApigeeXHybridConfig(_messages.Message):
+  r"""Configuration for Apigee X and Apigee Hybrid gateways. Applicability of
+  a filter is determined by the filter being provided. If none of the filters
+  are provided the addon will be enabled for all data brought in by the
+  gateway plugin instance.
+
+  Fields:
+    environmentFilter: Optional. The filter to apply on the resources managed
+      by the gateway plugin instance. If provided this filter applies
+      environment specific filtering.
+  """
+
+  environmentFilter = _messages.MessageField('GoogleCloudApihubV1EnvironmentFilter', 1)
 
 
 class GoogleCloudApihubV1ApplicationIntegrationEndpointDetails(_messages.Message):
@@ -3580,6 +3765,21 @@ class GoogleCloudApihubV1EnumAttributeValues(_messages.Message):
   values = _messages.MessageField('GoogleCloudApihubV1AllowedValue', 1, repeated=True)
 
 
+class GoogleCloudApihubV1EnvironmentFilter(_messages.Message):
+  r"""Filter for environments.
+
+  Fields:
+    allEnvironments: Optional. Indicates if this filter should match all
+      environments or only a subset of environments. If set to true, all
+      environments are matched.
+    environments: Optional. If provided, only environments in this list are
+      matched. This field is ignored if `all_environments` is true.
+  """
+
+  allEnvironments = _messages.BooleanField(1)
+  environments = _messages.StringField(2, repeated=True)
+
+
 class GoogleCloudApihubV1ExecutePluginInstanceActionRequest(_messages.Message):
   r"""The ExecutePluginInstanceAction method's request.
 
@@ -3687,6 +3887,39 @@ class GoogleCloudApihubV1ExternalApi(_messages.Message):
   name = _messages.StringField(7)
   paths = _messages.StringField(8, repeated=True)
   updateTime = _messages.StringField(9)
+
+
+class GoogleCloudApihubV1GatewayPluginAddonConfig(_messages.Message):
+  r"""Configuration for gateway plugin addons. This is used to specify the
+  list of gateway plugin configs for which the addon is enabled.
+
+  Fields:
+    gatewayPluginConfigs: Required. The list of gateway plugin configs for
+      which the addon is enabled. Each gateway plugin config should have a
+      unique plugin instance.
+  """
+
+  gatewayPluginConfigs = _messages.MessageField('GoogleCloudApihubV1GatewayPluginConfig', 1, repeated=True)
+
+
+class GoogleCloudApihubV1GatewayPluginConfig(_messages.Message):
+  r"""Configuration for a gateway plugin. This is used to specify configs for
+  different gateways.
+
+  Fields:
+    apigeeEdgeConfig: Configuration for Apigee Edge gateways.
+    apigeeOpdkConfig: Configuration for Apigee OPDK gateways.
+    apigeeXHybridConfig: Configuration for Apigee X and Apigee Hybrid
+      gateways.
+    pluginInstance: Required. The name of the gateway plugin instance for
+      which the config is to be specified. Format: projects/{project}/location
+      s/{location}/plugins/{plugin}/pluginInstances/{plugin_instance}
+  """
+
+  apigeeEdgeConfig = _messages.MessageField('GoogleCloudApihubV1ApigeeEdgeConfig', 1)
+  apigeeOpdkConfig = _messages.MessageField('GoogleCloudApihubV1ApigeeOPDKConfig', 2)
+  apigeeXHybridConfig = _messages.MessageField('GoogleCloudApihubV1ApigeeXHybridConfig', 3)
+  pluginInstance = _messages.StringField(4)
 
 
 class GoogleCloudApihubV1GoogleServiceAccountConfig(_messages.Message):
@@ -4097,6 +4330,19 @@ class GoogleCloudApihubV1LintSpecRequest(_messages.Message):
   r"""The LintSpec method's request."""
 
 
+class GoogleCloudApihubV1ListAddonsResponse(_messages.Message):
+  r"""The ListAddons method's response.
+
+  Fields:
+    addons: The list of addons.
+    nextPageToken: A token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+  """
+
+  addons = _messages.MessageField('GoogleCloudApihubV1Addon', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class GoogleCloudApihubV1ListApiOperationsResponse(_messages.Message):
   r"""The ListApiOperations method's response.
 
@@ -4314,6 +4560,18 @@ class GoogleCloudApihubV1LookupRuntimeProjectAttachmentResponse(_messages.Messag
   """
 
   runtimeProjectAttachment = _messages.MessageField('GoogleCloudApihubV1RuntimeProjectAttachment', 1)
+
+
+class GoogleCloudApihubV1ManageAddonConfigRequest(_messages.Message):
+  r"""The ManageAddonConfig method's request.
+
+  Fields:
+    config: Required. The config of the addon to be managed. This config will
+      replace the config present in the addon. The type of the config should
+      match the config type already present in the addon.
+  """
+
+  config = _messages.MessageField('GoogleCloudApihubV1AddonConfig', 1)
 
 
 class GoogleCloudApihubV1ManagePluginInstanceSourceDataRequest(_messages.Message):
@@ -4777,6 +5035,9 @@ class GoogleCloudApihubV1PluginInstance(_messages.Message):
       call to plugin hosted service. The key will be the
       config_variable_template.display_name to uniquely identify the config
       variable.
+    SourceEnvironmentsConfigValue: Optional. The source environment's config
+      present in the gateway instance linked to the plugin instance. The key
+      is the `source_environment` name from the SourceEnvironment message.
 
   Fields:
     actions: Required. The action status for the plugin instance.
@@ -4799,6 +5060,9 @@ class GoogleCloudApihubV1PluginInstance(_messages.Message):
     name: Identifier. The unique name of the plugin instance resource. Format:
       `projects/{project}/locations/{location}/plugins/{plugin}/instances/{ins
       tance}`
+    sourceEnvironmentsConfig: Optional. The source environment's config
+      present in the gateway instance linked to the plugin instance. The key
+      is the `source_environment` name from the SourceEnvironment message.
     sourceProjectId: Optional. The source project id of the plugin instance.
       This will be the id of runtime project in case of gcp based plugins and
       org id in case of non gcp based plugins. This field will be a required
@@ -4872,6 +5136,34 @@ class GoogleCloudApihubV1PluginInstance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SourceEnvironmentsConfigValue(_messages.Message):
+    r"""Optional. The source environment's config present in the gateway
+    instance linked to the plugin instance. The key is the
+    `source_environment` name from the SourceEnvironment message.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        SourceEnvironmentsConfigValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        SourceEnvironmentsConfigValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SourceEnvironmentsConfigValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudApihubV1SourceEnvironment attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudApihubV1SourceEnvironment', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   actions = _messages.MessageField('GoogleCloudApihubV1PluginInstanceAction', 1, repeated=True)
   additionalConfig = _messages.MessageField('AdditionalConfigValue', 2)
   authConfig = _messages.MessageField('GoogleCloudApihubV1AuthConfig', 3)
@@ -4879,9 +5171,10 @@ class GoogleCloudApihubV1PluginInstance(_messages.Message):
   displayName = _messages.StringField(5)
   errorMessage = _messages.StringField(6)
   name = _messages.StringField(7)
-  sourceProjectId = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  updateTime = _messages.StringField(10)
+  sourceEnvironmentsConfig = _messages.MessageField('SourceEnvironmentsConfigValue', 8)
+  sourceProjectId = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
 
 
 class GoogleCloudApihubV1PluginInstanceAction(_messages.Message):
@@ -5180,6 +5473,27 @@ class GoogleCloudApihubV1Secret(_messages.Message):
   """
 
   secretVersion = _messages.StringField(1)
+
+
+class GoogleCloudApihubV1SourceEnvironment(_messages.Message):
+  r"""Message representing the source environment details.
+
+  Fields:
+    createTime: Optional. The time at which the environment was created at the
+      source.
+    sourceEnvironment: Required. The name of the environment at the source.
+      This should map to Deployment.
+    sourceEnvironmentUri: The location where additional information about
+      source environments can be found. The location should be relative path
+      of the environment manifest with respect to a plugin instance.
+    updateTime: Optional. The time at which the environment was last updated
+      at the source.
+  """
+
+  createTime = _messages.StringField(1)
+  sourceEnvironment = _messages.StringField(2)
+  sourceEnvironmentUri = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
 
 
 class GoogleCloudApihubV1SourceMetadata(_messages.Message):

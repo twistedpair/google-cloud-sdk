@@ -61,8 +61,25 @@ def AddAppHubApplicationArgument(parser):
       '--app-hub-application',
       metavar='APP_HUB_APPLICATION',
       dest='app_hub_application',
-      required=True,
       help='The App Hub application to which the insight config is associated.',
+  )
+
+
+def AddTargetProjectsArgument(parser):
+  """Creates target projects argument."""
+  parser.add_argument(
+      '--target-projects',
+      metavar='TARGET_PROJECTS',
+      dest='target_projects',
+      type=arg_parsers.ArgList(),
+      help="""\
+A comma-separated list of target project IDs/numbers to which the insight config is associated.
+
+Format examples:
+`--target-projects=123567890,my-project`
+`--target-projects=projects/1234567890,projects/my-project`
+ """,
+      hidden=True,
   )
 
 

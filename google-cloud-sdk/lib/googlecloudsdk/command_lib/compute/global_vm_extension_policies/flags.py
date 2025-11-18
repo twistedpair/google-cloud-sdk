@@ -214,6 +214,10 @@ def AddRolloutConflictBehavior(parser):
       project during a Rollout. Default behavior is to keep the local value
       if conflict happens. Specifying 'overwrite' will overwrite the local value
       if conflict happens.
+
+      The default value for --rollout-conflict-behavior is ''. If you set this
+      flag to overwrite and would like to go back to the default value,
+      use the update command and omit the --rollout-conflict-behavior flag.
       """)
 
 

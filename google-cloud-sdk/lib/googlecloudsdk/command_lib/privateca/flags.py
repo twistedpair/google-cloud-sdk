@@ -130,6 +130,27 @@ _VALID_EXTENDED_KEY_USAGES = [
 ]
 
 
+def AddEncryptionKeyFlag(parser):
+  """Adds the encryption key flag.
+
+  Registers the flag for the Cloud KMS key (CMEK) used to encrypt certificates
+  in this pool.
+
+  Args:
+    parser: The parser to add the flags to.
+  """
+  base.Argument(
+      '--encryption-key',
+      help=(
+          'The full resource name of the Cloud KMS key to use for encrypting'
+          ' certificate data at rest. The key must be in the same region as'
+          ' the CA pool.'
+      ),
+      required=False,
+      hidden=True,
+  ).AddToParser(parser)
+
+
 def AddPublishCrlFlag(parser, use_update_help_text=False):
   help_text = (
       PUBLISH_CRL_UPDATE_HELP
@@ -838,6 +859,16 @@ def AddPredefinedValuesFileFlag(parser):
 
 
 # Flag parsing
+
+
+def ParseEncryptionSpec(args):
+  """Parses the encryption-key flag from args."""
+  if not args.IsSpecified('encryption_key'):
+    return None
+
+  messages = privateca_base.GetMessagesModule('v1')
+
+  return messages.EncryptionSpec(cloudKmsKey=args.encryption_key)
 
 
 def ParseIdentityConstraints(args):

@@ -169,7 +169,11 @@ class Collections(enum.Enum):
       'globalVmExtensionPolicies',
       'projects/{project}/global/vmExtensionPolicies/'
       '{globalVmExtensionPolicy}',
-      {},
+      {
+          '':
+              'projects/{project}/global/vmExtensionPolicies/'
+              '{globalVmExtensionPolicy}',
+      },
       ['project', 'globalVmExtensionPolicy'],
       True
   )

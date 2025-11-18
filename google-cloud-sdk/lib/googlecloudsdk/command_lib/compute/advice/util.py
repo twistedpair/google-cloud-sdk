@@ -138,6 +138,7 @@ def GetVmFamily(tpu_version, messages):
       'V5E': vm_family.VM_FAMILY_CLOUD_TPU_LITE_POD_SLICE_CT5LP,
       'V5P': vm_family.VM_FAMILY_CLOUD_TPU_POD_SLICE_CT5P,
       'V6E': vm_family.VM_FAMILY_CLOUD_TPU_LITE_POD_SLICE_CT6E,
+      'TPU7X': vm_family.VM_FAMILY_CLOUD_TPU_POD_SLICE_TPU7X,
   }
 
   if tpu_version not in tpu_version_to_vm_family:

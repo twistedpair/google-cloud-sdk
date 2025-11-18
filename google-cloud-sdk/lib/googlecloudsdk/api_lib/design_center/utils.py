@@ -29,9 +29,7 @@ from googlecloudsdk.core import resources
 
 VERSION_MAP = {
     base.ReleaseTrack.ALPHA: 'v1alpha',
-    # TODO(b/430098857): Add GA release track
-    # base.ReleaseTrack.BETA: 'v1beta',
-    # base.ReleaseTrack.GA: 'v1',
+    base.ReleaseTrack.GA: 'v1',
 }
 
 OPERATIONS_COLLECTION = 'designcenter.projects.locations.operations'

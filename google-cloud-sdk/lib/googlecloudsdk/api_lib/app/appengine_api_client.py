@@ -38,6 +38,7 @@ from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app.api import appengine_api_client_base
 from googlecloudsdk.api_lib.cloudbuild import logs as cloudbuild_logs
 from googlecloudsdk.appengine.admin.tools.conversion import convert_yaml
+from googlecloudsdk.appengine.api import appinfo
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -254,7 +255,6 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     return operations_util.WaitForOperation(
         self.client.apps_operations,
         operation,
-        message=message,
         poller=done_poller)
 
   def _ResolveMetadataType(self):
@@ -730,6 +730,15 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     if 'entrypoint' not in config_dict:
       config_dict['entrypoint'] = ''
 
+    if (
+        'app_engine_apis' in config_dict
+        and 'app_engine_bundled_services' in config_dict
+    ):
+      raise exceptions.ConfigError(
+          'Cannot specify both `app_engine_apis` and '
+          '`app_engine_bundled_services` in the same `app.yaml` file.'
+      )
+
     try:
       # pylint: disable=protected-access
       schema_parser = convert_yaml.GetSchemaParser(self.client._VERSION)
@@ -788,11 +797,41 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
       version_resource.betaSettings = self.messages.Version.BetaSettingsValue(
           additionalProperties=attributes)
 
+    # Add the app engine bundled services to the version resource.
+    if 'appEngineBundledServices' in json_version_resource:
+      bundled_services_enums = []
+      for service_name in sorted(
+          json_version_resource['appEngineBundledServices']
+      ):
+        enum_value = service_name.upper()
+        log.debug('enum_value: %s', enum_value)
+        try:
+          bundled_services_enums.append(
+              getattr(
+                  self.messages.Version.AppEngineBundledServicesValueListEntryValuesEnum,
+                  enum_value,
+              )
+          )
+        except AttributeError:
+          raise appinfo.validation.ValidationError(
+              f'Invalid bundled service: {service_name}.'
+          )
+      if bundled_services_enums:
+        log.debug(
+            'Bundled services enums: %s', bundled_services_enums
+        )
+        version_resource.appEngineBundledServices = bundled_services_enums
+        log.debug(
+            'version_resource.appEngineBundledServices: %s',
+            version_resource.appEngineBundledServices,
+        )
+
     # The files in the deployment manifest also need to be sorted for unit
     # testing purposes.
     try:
       version_resource.deployment.files.additionalProperties.sort(
-          key=operator.attrgetter('key'))
+          key=operator.attrgetter('key')
+      )
     except AttributeError:  # manifest not present, or no files in manifest
       pass
 

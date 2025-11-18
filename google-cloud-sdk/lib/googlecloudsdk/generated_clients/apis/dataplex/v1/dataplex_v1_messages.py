@@ -6687,10 +6687,12 @@ class GoogleCloudDataplexV1DataScanEvent(_messages.Message):
       TRIGGER_UNSPECIFIED: An unspecified trigger type.
       ON_DEMAND: Data scan triggers on demand.
       SCHEDULE: Data scan triggers as per schedule.
+      ONE_TIME: Data scan is run one time on creation.
     """
     TRIGGER_UNSPECIFIED = 0
     ON_DEMAND = 1
     SCHEDULE = 2
+    ONE_TIME = 3
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the data scan.

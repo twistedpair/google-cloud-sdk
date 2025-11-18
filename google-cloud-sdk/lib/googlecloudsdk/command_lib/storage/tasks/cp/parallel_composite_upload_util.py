@@ -147,7 +147,13 @@ def is_composite_upload_eligible(source_resource,
     return True
 
   api_capabilities = api_factory.get_capabilities(
-      destination_resource.storage_url.scheme)
+      destination_resource.storage_url.scheme,
+      bucket_name=(
+          destination_resource.storage_url.bucket_name
+          if properties.VALUES.storage.enable_zonal_buckets_bidi_streaming.GetBool()
+          else None
+      ),
+  )
   if cloud_api.Capability.COMPOSE_OBJECTS not in api_capabilities:
     # We can silently disable parallel composite upload because the destination
     # capability will not change during the execution.

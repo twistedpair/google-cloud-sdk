@@ -459,6 +459,7 @@ def ParseUpdateOptionsBase(args, locations):
           args, 'boot_disk_provisioned_throughput', None
       ),
       enable_pod_snapshots=getattr(args, 'pod_snapshots_enabled', None),
+      enable_slice_controller=getattr(args, 'enable_slice_controller', None),
   )
 
   if (args.disable_addons and

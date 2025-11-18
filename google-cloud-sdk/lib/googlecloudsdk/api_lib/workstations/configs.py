@@ -519,6 +519,11 @@ class Configs:
       )
       update_mask.append('host.gce_instance.enable_nested_virtualization')
 
+    if self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA):
+      if args.startup_script_uri:
+        config.host.gceInstance.startupScriptUri = args.startup_script_uri
+        update_mask.append('host.gce_instance.startup_script_uri')
+
     # Shielded Instance Config
     gce_shielded_instance_config = self.messages.GceShieldedInstanceConfig()
     if args.IsSpecified('shielded_secure_boot'):

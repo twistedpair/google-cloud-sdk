@@ -203,7 +203,8 @@ class ContainerParser(object):
       # flag, add the flag and all arguments to 'remaining' list until the next
       # flag is encountered.
       elif (
-          self._release_track == calliope_base.ReleaseTrack.ALPHA
+          self._release_track
+          in [calliope_base.ReleaseTrack.BETA, calliope_base.ReleaseTrack.ALPHA]
           and containers
           and self._IsFlagArg(value)
           and self._ExtractFlag(value) not in self._GetContainerFlags()

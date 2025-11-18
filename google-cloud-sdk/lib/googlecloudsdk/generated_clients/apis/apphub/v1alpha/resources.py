@@ -74,6 +74,13 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_BOUNDARIES = (
+      'projects.locations.boundaries',
+      'projects/{projectsId}/locations/{locationsId}/boundaries',
+      {},
+      ['projectsId', 'locationsId'],
+      True
+  )
   PROJECTS_LOCATIONS_DISCOVEREDSERVICES = (
       'projects.locations.discoveredServices',
       '{+name}',
@@ -92,6 +99,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/'
               'discoveredWorkloads/{discoveredWorkloadsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_EXTENDEDMETADATASCHEMAS = (
+      'projects.locations.extendedMetadataSchemas',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'extendedMetadataSchemas/{extendedMetadataSchemasId}',
       },
       ['name'],
       True

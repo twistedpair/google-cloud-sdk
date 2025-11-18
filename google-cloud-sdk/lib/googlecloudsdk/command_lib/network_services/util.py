@@ -208,7 +208,6 @@ def MeshRouteViewResourceSpec():
       locationsId=LocationAttributeConfig(),
       meshesId=MeshAttributeConfig(),
       routeViewsId=RouteViewAttributeConfig(),
-      api_version='v1alpha1',
       is_positional=True,
   )
 
@@ -221,7 +220,6 @@ def GatewayRouteViewResourceSpec():
       locationsId=LocationAttributeConfig(),
       gatewaysId=GatewayAttributeConfig(),
       routeViewsId=RouteViewAttributeConfig(),
-      api_version='v1alpha1',
       is_positional=True,
   )
 

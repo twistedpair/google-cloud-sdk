@@ -199,7 +199,6 @@ def AddDockerVersion(parser):
   parser.add_argument(
       '--docker-version',
       help='Version of the Docker binary.',
-      hidden=True,
       type=str,
   )
 
@@ -209,7 +208,6 @@ def AddHelmVersion(parser):
   parser.add_argument(
       '--helm-version',
       help='Version of the Helm binary.',
-      hidden=True,
       type=str,
   )
 
@@ -219,7 +217,6 @@ def AddKptVersion(parser):
   parser.add_argument(
       '--kpt-version',
       help='Version of the Kpt binary.',
-      hidden=True,
       type=str,
   )
 
@@ -229,7 +226,6 @@ def AddKubectlVersion(parser):
   parser.add_argument(
       '--kubectl-version',
       help='Version of the Kubectl binary.',
-      hidden=True,
       type=str,
   )
 
@@ -239,7 +235,6 @@ def AddKustomizeVersion(parser):
   parser.add_argument(
       '--kustomize-version',
       help='Version of the Kustomize binary.',
-      hidden=True,
       type=str,
   )
 

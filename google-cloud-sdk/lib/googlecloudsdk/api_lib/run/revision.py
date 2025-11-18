@@ -54,9 +54,9 @@ SOURCES_ANNOTATION = (
 # If true, overflow scaling capabilities are enabled for this revision.
 OVERFLOW_SCALING_ANNOTATION = 'run.googleapis.com/overflow-scaling'
 # Annotation to set the CPU utilization target for scaling.
-CPU_UTILIZATION_ANNOTATION = 'run.googleapis.com/scaling-cpu-utilization'
+CPU_UTILIZATION_ANNOTATION = 'run.googleapis.com/scaling-cpu-target'
 # Annotation to set the concurrency utilization target for scaling.
-CONCURRENCY_UTILIZATION_ANNOTATION = 'run.googleapis.com/scaling-concurrency-utilization'
+CONCURRENCY_UTILIZATION_ANNOTATION = 'run.googleapis.com/scaling-concurrency-target'
 
 
 class Revision(container_resource.ContainerResource):

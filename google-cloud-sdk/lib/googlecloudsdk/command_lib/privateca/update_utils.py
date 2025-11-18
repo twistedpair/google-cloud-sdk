@@ -90,7 +90,7 @@ def UpdateCAFromArgs(args, current_labels):
 def UpdateCaPoolFromArgs(args, current_labels):
   """Creates a CA pool object and update mask from CA pool update flags.
 
-  Requires that args has 'publish-crl', 'publish-ca-cert', and
+  Requires that args has 'publish-crl', 'publish-ca-cert', 'encryption-key' and
   update labels flags registered.
 
   Args:
@@ -122,6 +122,12 @@ def UpdateCaPoolFromArgs(args, current_labels):
           flags.ParseEncodingFormatFlag(args)
       )
       update_mask.append('publishing_options.encoding_format')
+
+  if args.IsSpecified('encryption_key'):
+    pool_to_update.encryptionSpec = messages.EncryptionSpec(
+        cloudKmsKey=args.encryption_key
+    )
+    update_mask.append('encryption_spec')
 
   labels_diff = labels_util.Diff.FromUpdateArgs(args)
   labels_update = labels_diff.Apply(messages.CaPool.LabelsValue, current_labels)

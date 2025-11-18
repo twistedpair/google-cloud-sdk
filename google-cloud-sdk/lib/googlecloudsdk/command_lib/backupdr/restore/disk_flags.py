@@ -316,6 +316,19 @@ def AddKmsKeyArg(parser, required=False):
   )
 
 
+def AddClearEncryptionKeyArg(parser):
+  """Clear encryption key override for the disk."""
+  helptext = """\
+      The restored disk reverts to GMEK (CMEK is disabled).
+      """
+  parser.add_argument(
+      '--clear-encryption-key',
+      action='store_true',
+      required=False,
+      help=helptext,
+  )
+
+
 def AddStoragePoolArg(parser, required=False):
   helptext = """
       Specifies the URI of the storage pool in which the disk is created.

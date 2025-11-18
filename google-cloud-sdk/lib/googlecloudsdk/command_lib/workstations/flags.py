@@ -1120,7 +1120,7 @@ def AddReservationAffinity(parser):
   )
 
 
-def AddStartUpScriptUri(parser):
+def AddStartupScriptUri(parser):
   """Adds the --startup-script-uri flag to the given parser."""
   help_text = """\
   Link to the startup script stored in Cloud Storage. The script is executed
@@ -1128,7 +1128,7 @@ def AddStartUpScriptUri(parser):
 
   Example:
 
-    $ {command} --startup-script-uri gs://{bucket-name}/{object-name}
+    $ {command} --startup-script-uri=gs://{bucket-name}/{object-name}
   """
   parser.add_argument(
       '--startup-script-uri', type=str, help=help_text

@@ -90,6 +90,7 @@ class BackupVaultsClient(object):
       description=None,
       labels=None,
       backup_retention_policy=None,
+      kms_config=None,
   ):
     """Parses the command line arguments for Create BackupVault into a message.
 
@@ -100,6 +101,7 @@ class BackupVaultsClient(object):
       description: The description of the Backup Vault.
       labels: The parsed labels value.
       backup_retention_policy: The backup retention policy of the Backup Vault.
+      kms_config: The KMS Config resource name for CMEK.
 
     Returns:
       The configuration that will be used ass the request body for creating a
@@ -117,6 +119,8 @@ class BackupVaultsClient(object):
       backup_vault.backupRetentionPolicy = self.ParseBackupRetentionPolicy(
           backup_retention_policy
       )
+    if kms_config is not None:
+      backup_vault.kmsConfig = kms_config
     return backup_vault
 
   def ListBackupVaults(self, location_ref, limit=None):
@@ -196,9 +200,9 @@ class BackupVaultsClient(object):
       backup_vault,
       description=None,
       labels=None,
-      backup_retention_policy=None
+      backup_retention_policy=None,
   ):
-    """Parses updates into an kms config."""
+    """Parses updates into a kms config."""
     return self._adapter.ParseUpdatedBackupVault(
         backup_vault=backup_vault,
         description=description,
@@ -244,7 +248,7 @@ class BackupVaultsAdapter(object):
       backup_vault,
       description=None,
       labels=None,
-      backup_retention_policy=None
+      backup_retention_policy=None,
   ):
     """Parses updates into a new Backup Vault."""
     if description is not None:

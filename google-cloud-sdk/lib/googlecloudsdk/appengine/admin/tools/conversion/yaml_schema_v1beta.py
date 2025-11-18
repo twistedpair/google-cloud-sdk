@@ -92,8 +92,11 @@ SCHEMA = s.Message(
         element=s.Message(
             error_code=s.Value(converter=c.EnumConverter('ERROR_CODE')),
             file=s.Value('static_file', converter=c.ToJsonString),
-            mime_type=s.Value(converter=c.ToJsonString))),
-    runtime_config=s.Message('flexible_runtime_settings',
+            mime_type=s.Value(converter=c.ToJsonString),
+        )
+    ),
+    runtime_config=s.Message(
+        'flexible_runtime_settings',
         operating_system=s.Value(converter=c.ToJsonString),
         runtime_version=s.Value(converter=c.ToJsonString),
     ),
@@ -196,4 +199,7 @@ SCHEMA = s.Message(
         egress_setting=s.Value(converter=c.ToVpcEgressSettingEnum),
         network_tags=s.Value(converter=c.ToVpcNetworkTags),
     ),
-    zones=s.RepeatedField(element=s.Value(converter=c.ToJsonString)))
+    zones=s.RepeatedField(element=s.Value(converter=c.ToJsonString)),
+    app_engine_bundled_services=s.RepeatedField(
+        element=s.Value(converter=c.ToBundledServiceTypeEnum)
+    ))

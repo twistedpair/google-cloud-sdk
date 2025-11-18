@@ -14248,7 +14248,7 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfig(_messages.Message):
 class GoogleCloudDialogflowV2HumanAgentAssistantConfigConversationModelConfig(_messages.Message):
   r"""Custom conversation models used in agent assist feature. Supported
   feature: ARTICLE_SUGGESTION, SMART_COMPOSE, SMART_REPLY,
-  CONVERSATION_SUMMARIZATION.
+  CONVERSATION_SUMMARIZATION
 
   Fields:
     baselineModelVersion: Version of current baseline model. It will be

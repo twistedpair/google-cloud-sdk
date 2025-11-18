@@ -26,7 +26,7 @@ from googlecloudsdk.core import log
 
 
 # Default timeout for bidi RPC operations in seconds.
-_DEFAULT_TIMEOUT = 60
+_DEFAULT_TIMEOUT = 300  # 5 minutes
 _STORAGE_BIDI_RPC_WORKER_NAME = 'StorageBidiRpcWorker'
 
 
@@ -157,10 +157,21 @@ class StorageBidiRpc:
   def is_active(self) -> bool:
     return self._bidi_rpc.is_active
 
-  def recv(self) -> Any:
+  def recv(self, timeout_seconds: float | None = None) -> Any:
     """Receives a response from the bidi RPC."""
-    log.debug('Receiving response from bidi RPC.')
-    return self._bidi_rpc.recv()
+    effective_timeout = (
+        _DEFAULT_TIMEOUT if timeout_seconds is None else timeout_seconds
+    )
+    log.debug(
+        'Receiving response from bidi RPC with timeout: %s', effective_timeout
+    )
+    # Recv is a blocking call. If we are unlucky and some other thread or proxy
+    # closes the connection while the recv call is in progress, it can get stuck
+    # in the recv call forever. Hence, we need to timeout the recv call.
+    # The bidi rpc currently does not provide a way to provide per method
+    # timeout(see  https://github.com/grpc/grpc/issues/20562) so this custom
+    # timeout implemetation is needed.
+    return _execute_with_timeout(self._bidi_rpc.recv, timeout=effective_timeout)
 
   def send(self, request: Any) -> None:
     """Sends a request to the bidi RPC."""

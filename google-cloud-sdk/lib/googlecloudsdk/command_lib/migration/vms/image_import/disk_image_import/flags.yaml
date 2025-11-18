@@ -92,6 +92,16 @@ skip_os_adaptation:
   help_text: |
     If true, skip OS adaptation. Default false.
 
+guest_os_features:
+  api_field: imageImport.diskImageTargetDefaults.dataDiskImageImport.guestOsFeatures
+  arg_name: guest-os-features
+  type: "googlecloudsdk.calliope.arg_parsers:ArgList:"
+  required: false
+  help_text: |
+    Guest OS features to enable on the imported image.
+    This field does not change the OS of the image; it only marks the image with the specified features, so ensure they are compatible with the OS.
+    If specified, --skip-os-adaptation must be specified.
+
 single_region_storage:
   api_field: imageImport.diskImageTargetDefaults.singleRegionStorage
   arg_name: single-region-storage

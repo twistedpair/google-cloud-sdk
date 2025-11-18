@@ -109,6 +109,46 @@ _VPC_EGRESS_SETTING_MAP = {
 }
 
 
+# Maps bundled service type as specified in app.yaml to their proto enum values.
+_BUNDLED_SERVICE_TYPE_ENUM = {
+    'app_identity_service': 'BUNDLED_SERVICE_TYPE_APP_IDENTITY_SERVICE',
+    'blobstore': 'BUNDLED_SERVICE_TYPE_BLOBSTORE',
+    'capability_service': 'BUNDLED_SERVICE_TYPE_CAPABILITY_SERVICE',
+    'datastore_v3': 'BUNDLED_SERVICE_TYPE_DATASTORE_V3',
+    'deferred': 'BUNDLED_SERVICE_TYPE_DEFERRED',
+    'images': 'BUNDLED_SERVICE_TYPE_IMAGES',
+    'mail': 'BUNDLED_SERVICE_TYPE_MAIL',
+    'memcache': 'BUNDLED_SERVICE_TYPE_MEMCACHE',
+    'modules': 'BUNDLED_SERVICE_TYPE_MODULES',
+    'namespaces': 'BUNDLED_SERVICE_TYPE_NAMESPACES',
+    'ndb': 'BUNDLED_SERVICE_TYPE_NDB',
+    'search': 'BUNDLED_SERVICE_TYPE_SEARCH',
+    'taskqueue': 'BUNDLED_SERVICE_TYPE_TASKQUEUES',
+    'urlfetch': 'BUNDLED_SERVICE_TYPE_URLFETCH',
+    'user': 'BUNDLED_SERVICE_TYPE_USERS',
+}
+
+
+def ToBundledServiceTypeEnum(value):
+  """Converts a string to a bundled service type.
+
+  Args:
+    value: The bundled service name (string).
+
+  Returns:
+    The corresponding enum value (string).
+
+  Raises:
+    ValueError: If the provided value is not a valid bundled service name.
+  """
+  if str(value) not in _BUNDLED_SERVICE_TYPE_ENUM:
+    raise ValueError(
+        f'Value "{value}" is not a valid bundled service name. '
+        f'Expected one of: {_BUNDLED_SERVICE_TYPE_ENUM.keys()}'
+    )
+  return _BUNDLED_SERVICE_TYPE_ENUM[str(value)]
+
+
 def ToVpcEgressSettingEnum(value):
   """Converts a string to a VPC egress setting."""
   if str(value) not in _VPC_EGRESS_SETTING_MAP:

@@ -3973,6 +3973,14 @@ class InitScript(_messages.Message):
   Fields:
     args: Optional. The optional arguments line to be passed to the init
       script.
+    gcpSecretManagerSecretUri: The resource name of the secret manager secret
+      hosting the init script. Both global and regional secrets are supported
+      with format below: Global secret:
+      projects/{project}/secrets/{secret}/versions/{version} Regional secret:
+      projects/{project}/locations/{location}/secrets/{secret}/versions/{versi
+      on} Example: projects/1234567890/secrets/script_1/versions/1. Accept
+      version number only, not support version alias. User can't configure
+      both gcp_secret_manager_secret_uri and gcs_uri.
     gcsGeneration: The generation of the init script stored in Gloud Storage.
       This is the required field to identify the version of the init script.
       User can get the genetaion from `gcloud storage objects describe
@@ -3980,12 +3988,14 @@ class InitScript(_messages.Message):
       "Version history" tab of the object in the Cloud Console UI.
     gcsUri: The Cloud Storage URI for storing the init script. Format:
       gs://BUCKET_NAME/OBJECT_NAME The service account on the nodepool must
-      have read access to the object.
+      have read access to the object. User can't configure both gcs_uri and
+      gcp_secret_manager_secret_uri.
   """
 
   args = _messages.StringField(1, repeated=True)
-  gcsGeneration = _messages.IntegerField(2)
-  gcsUri = _messages.StringField(3)
+  gcpSecretManagerSecretUri = _messages.StringField(2)
+  gcsGeneration = _messages.IntegerField(3)
+  gcsUri = _messages.StringField(4)
 
 
 class IntraNodeVisibilityConfig(_messages.Message):
@@ -6899,7 +6909,7 @@ class RecurringTimeWindow(_messages.Message):
 
   Fields:
     recurrence: An RRULE (https://tools.ietf.org/html/rfc5545#section-3.8.5.3)
-      for how this window reccurs. They go on for the span of time between the
+      for how this window recurs. They go on for the span of time between the
       start and end time. For example, to have something repeat every weekday,
       you'd use: `FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR` To repeat some window
       daily (equivalent to the DailyMaintenanceWindow): `FREQ=DAILY` For the

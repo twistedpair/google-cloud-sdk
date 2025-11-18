@@ -701,6 +701,21 @@ def AddSrcNetworkType(parser, required=False):
   )
 
 
+def AddSrcNetworkContext(parser, required=False):
+  """Adds source network context to this rule."""
+  parser.add_argument(
+      '--src-network-context',
+      required=required,
+      help=(
+          'Use this flag to indicate that the rule should match internet,'
+          ' non-internet traffic or traffic coming from the network specified'
+          ' by --src-network. It applies to ingress rules. Valid values are'
+          ' INTERNET, NON_INTERNET, VPC_NETWORKS and INTRA_VPC. Use empty'
+          ' string to clear the field.'
+      ),
+  )
+
+
 def AddSrcNetworks(parser):
   """Adds source network urls list to this rule."""
   parser.add_argument(
@@ -736,6 +751,20 @@ def AddDestNetworkType(parser, required=False):
   """Adds destination network type to this rule."""
   parser.add_argument(
       '--dest-network-type',
+      required=required,
+      help=(
+          'Use this flag to indicate that the rule should match internet or'
+          ' non-internet traffic. It applies to destination traffic for egress'
+          ' rules. Valid values are INTERNET and NON_INTERNET. Use'
+          ' empty string to clear the field.'
+      ),
+  )
+
+
+def AddDestNetworkContext(parser, required=False):
+  """Adds destination network context to this rule."""
+  parser.add_argument(
+      '--dest-network-context',
       required=required,
       help=(
           'Use this flag to indicate that the rule should match internet or'

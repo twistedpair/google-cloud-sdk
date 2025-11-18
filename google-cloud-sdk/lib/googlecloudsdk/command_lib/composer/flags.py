@@ -164,7 +164,8 @@ _ENVIRONMENT_SIZE_MAPPING = {
     'ENVIRONMENT_SIZE_UNSPECIFIED': 'unspecified',
     'ENVIRONMENT_SIZE_SMALL': 'small',
     'ENVIRONMENT_SIZE_MEDIUM': 'medium',
-    'ENVIRONMENT_SIZE_LARGE': 'large'
+    'ENVIRONMENT_SIZE_LARGE': 'large',
+    'ENVIRONMENT_SIZE_EXTRA_LARGE': 'extra-large',
 }
 
 _ENVIRONMENT_SIZE_MAPPING_ALPHA = {
@@ -942,26 +943,41 @@ DISABLE_TRIGGERER = base.Argument(
 
 ENVIRONMENT_SIZE_GA = arg_utils.ChoiceEnumMapper(
     arg_name='--environment-size',
-    help_str='Size of the environment. Unspecified means that the default option will be chosen.',
-    message_enum=api_util.GetMessagesModule(release_track=base.ReleaseTrack.GA)
-    .EnvironmentConfig.EnvironmentSizeValueValuesEnum,
-    custom_mappings=_ENVIRONMENT_SIZE_MAPPING)
+    help_str=(
+        'Size of the environment. Unspecified means that the default option'
+        ' will be chosen.'
+    ),
+    hidden_choices=['extra-large'],
+    message_enum=api_util.GetMessagesModule(
+        release_track=base.ReleaseTrack.GA
+    ).EnvironmentConfig.EnvironmentSizeValueValuesEnum,
+    custom_mappings=_ENVIRONMENT_SIZE_MAPPING,
+)
 
 ENVIRONMENT_SIZE_BETA = arg_utils.ChoiceEnumMapper(
     arg_name='--environment-size',
-    help_str='Size of the environment. Unspecified means that the default option will be chosen.',
+    help_str=(
+        'Size of the environment. Unspecified means that the default option'
+        ' will be chosen.'
+    ),
+    hidden_choices=['extra-large'],
     message_enum=api_util.GetMessagesModule(
-        release_track=base.ReleaseTrack.BETA).EnvironmentConfig
-    .EnvironmentSizeValueValuesEnum,
-    custom_mappings=_ENVIRONMENT_SIZE_MAPPING)
+        release_track=base.ReleaseTrack.BETA
+    ).EnvironmentConfig.EnvironmentSizeValueValuesEnum,
+    custom_mappings=_ENVIRONMENT_SIZE_MAPPING,
+)
 
 ENVIRONMENT_SIZE_ALPHA = arg_utils.ChoiceEnumMapper(
     arg_name='--environment-size',
-    help_str='Size of the environment. Unspecified means that the default option will be chosen.',
+    help_str=(
+        'Size of the environment. Unspecified means that the default option'
+        ' will be chosen.'
+    ),
     message_enum=api_util.GetMessagesModule(
-        release_track=base.ReleaseTrack.ALPHA).EnvironmentConfig
-    .EnvironmentSizeValueValuesEnum,
-    custom_mappings=_ENVIRONMENT_SIZE_MAPPING_ALPHA)
+        release_track=base.ReleaseTrack.ALPHA
+    ).EnvironmentConfig.EnvironmentSizeValueValuesEnum,
+    custom_mappings=_ENVIRONMENT_SIZE_MAPPING_ALPHA,
+)
 
 AIRFLOW_DATABASE_RETENTION_DAYS = base.Argument(
     '--airflow-database-retention-days',

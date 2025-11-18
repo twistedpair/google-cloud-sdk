@@ -1889,7 +1889,9 @@ class BigtableProtoConfig(_messages.Message):
     schemaBundleId: Optional. The ID of the Bigtable SchemaBundle resource
       associated with this protobuf. The ID should be referred to within the
       parent table, e.g., `foo` rather than `projects/{project}/instances/{ins
-      tance}/tables/{table}/schemaBundles/foo`.
+      tance}/tables/{table}/schemaBundles/foo`. See [more details on Bigtable
+      SchemaBundles](https://docs.cloud.google.com/bigtable/docs/create-
+      manage-protobuf-schemas).
   """
 
   protoMessageName = _messages.StringField(1)

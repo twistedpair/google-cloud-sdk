@@ -5,6 +5,120 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 548.0.0 (2025-11-18)
+
+### AlloyDB
+
+* Added flag `--maintenance-version` to `gcloud alloydb clusters update` command
+in the GA track to support self-service maintenance.
+
+### App Engine
+
+* Updated the Java SDK to version 3.0.2 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v3.0.2>.
+* Upgraded Eclipse Webtide Jetty web servers to versions 12.0.30 and 12.1.4.
+
+### App Hub
+
+* Added `gcloud apphub extended-metadata-schemas` command group with `describe` and `list` commands to retrieve extended metadata schemas.
+
+### Cloud Backup DR
+
+* Added `gcloud backup-dr backups fetch-for-resource-type` command to GA track.
+* Added `gcloud backup-dr data-source-references list` command to GA track.
+* Added `--labels` to trigger backup command.
+* Added an optional `--max-custom-on-demand-retention-days` input to `gcloud backup-dr backup-plans create` and `gcloud backup-dr backup-plans update`.
+* Added an optional `--custom-retention-days` input to `gcloud backup-dr backup-plans-associations trigger-backup`.
+* Added `backup-retention-inheritance` flag to `gcloud backup-dr backup-vaults create` to specify backup retention inheritance mode during backup vault creation.
+* Added `--kms-key` flag to `gcloud backup-dr backup-vaults create` for customer-managed encryption key support for backup vault.
+* Added `--clear-encryption-key` flag to `gcloud backup-dr backups restore disk` to restore a CMEK-encrypted disk as a GMEK-encrypted disk.
+
+### Cloud Dataplex
+
+* Promoted `gcloud dataplex datascans create data-documentation` command to GA.
+* Promoted `gcloud dataplex datascans update data-documentation` command to GA.
+
+### Cloud Deploy
+
+*   Added `--docker-version` flag to `gcloud deploy releases create`.
+*   Added `--helm-version` flag to `gcloud deploy releases create`.
+*   Added `--kpt-version` flag to `gcloud deploy releases create`.
+*   Added `--kubectl-version` flag to `gcloud deploy releases create`.
+*   Added `--kustomize-version` flag to `gcloud deploy releases create`.
+
+### Cloud Run
+
+* Added `gcloud run compose up` command to alpha and beta.* Added support for `--readiness-probe` flag in beta for `gcloud run services` command groups.
+* Added `--no-build` flag to `gcloud run deploy --source` command in beta. This allow for faster deployment whne using a self-contained source by skipping the cloud build step.
+* Updated `--container` flag parsing to allow for non-container flags to be specified after a `--container` flag.
+
+### Cloud Storage
+
+* Promoted `gcloud storage intelligence-configs` commands to GA.
+* Promoted `gcloud storage insights dataset-configs` commands to GA.
+
+### Cloud Workstations
+
+* Fixed bugs and typos in startup_script_uri support for `gcloud beta workstations configs create` and `gcloud beta workstations configs update`.
+
+### Compliance Manager
+
+* Promoted `gcloud compliance-manager` to GA.
+
+### Compute Engine
+
+* Promoted `gcloud compute global-vm-extension-policies` to beta.
+
+### Compute Firewall Policies
+
+* Promoted `--target-type` flag to beta in
+ `gcloud compute network-firewall-policies create` and
+ `gcloud compute network-firewall-policies update`.
+* Promoted `--target-forwarding-rules` flag to beta in
+ `gcloud compute network-firewall-policies create` and
+ `gcloud compute network-firewall-policies update`.
+
+### Compute OS Config
+
+* Add `--skip-unpatchable-vms` flag to `gcloud compute os-config patch-jobs execute`.
+
+### Developer Connect
+
+* Added generic HTTP Endpoint config connection type to `gcloud developer-connect connection create|update commands`.
+
+### Kubernetes Engine
+
+* Add support for kernel module signature enforcement in node pools using
+  `--enable-kernel-module-signature-enforcement` flag, which applies to
+  `gcloud container cluster create|create-auto|update` and
+  `gcloud container node-pools create|update` commands.
+
+### Migrate to Virtual Machines
+
+*   Added `--guest-os-features` flag to `gcloud migration vms image-imports
+create` and `gcloud compute migrations image-imports
+create` commands.
+
+### Model Armor
+
+*   Added the following flags to `gcloud model-armor floorsettings update` command to support Vertex and MCP integrations:
+    *   `--add-integrated-services`
+    *   `--remove-integrated-services`
+    *   `--clear-integrated-services`
+    *   `--vertex-ai-enforcement-type`
+    *   `--enable-vertex-ai-cloud-logging`
+    *   `--google-mcp-server-enforcement-type`
+    *   `--enable-google-mcp-server-cloud-logging`
+    *   `--enable-multi-language-detection`
+
+### Security Command Center
+
+* Added `agent-engine-threat-detection` service to the `SUPPORTED_SERVICES` list.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 547.0.0 (2025-11-11)
 
 ### Breaking Changes
@@ -115,22 +229,6 @@ including policies inherited from ancestors.
 
     **Note**: Please refer to <https://docs.cloud.google.com/service-usage/docs/hierarchical-service-activation/overview> for more details on hierarchical service activation.
 
-* Promoted `gcloud services mcp enable command` to beta to enable the Model
-Context Protocol (MCP) endpoint for the specified service(s) on the given
-project, folder, or organization.
-* Promoted `gcloud services mcp disable` command to beta to disable the Model
-Context Protocol (MCP) endpoint for the specified service(s) on the given
-project, folder, or organization.
-* Promoted `gcloud services mcp list` command to beta to enumerate the MCP
-endpoints offered, showing them as either enabled or available for the
-given project, folder, or organization.
-* Promoted `gcloud services mcp content-security add` command to beta to add a
-Content Security Provider (e.g., Model Armor) to the given project.
-* Promoted `gcloud services mcp content-security get` command to beta to
-retrieve the current Content Security Provider(s) configured
-for the given project.
-* Promoted `gcloud services mcp content-security remove` command to beta to
-remove a Content Security Provider for the given project.
 
 ### Cloud Spanner Emulator
 

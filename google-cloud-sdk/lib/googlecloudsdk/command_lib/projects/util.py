@@ -41,7 +41,8 @@ LIST_FORMAT = """
     table(
       projectId:sort=1,
       name,
-      projectNumber
+      projectNumber,
+      tags.environment:label='ENVIRONMENT'
     )
 """
 
@@ -288,8 +289,8 @@ def CheckAndPrintEnvironmentTagMessageWithProjectID(project_id):
     CheckAndPrintEnvironmentTagMessageWithProject(project)
   except (apitools_exceptions.HttpError, core_exceptions.Error) as e:
     # Gracefully print a warning message.
-    log.status.Print(
-        'WARNING: Unable to get environment tag for project [{0}]: {1}'
+    log.info(
+        'Unable to get environment tag for project [{0}]: {1}'
         .format(project_id, e)
     )
 
@@ -300,8 +301,8 @@ def CheckAndPrintEnvironmentTagMessageWithProject(project):
   if env_tag:
     env_standard_value = GetStandardEnvironmentValue(env_tag.value)
     if env_standard_value:
-      log.status.Print(
-          "INFORMATION: Project '{0}' is tagged as 'environment: {1}'. Making"
+      log.info(
+          "Project '{0}' is tagged as 'environment: {1}'. Making"
           " changes could affect your '{2}' apps. If incorrect, you can update"
           " it by managing the tag binding for the 'environment' key using"
           ' `gcloud resource-manager tags bindings create`.'.format(
@@ -309,15 +310,15 @@ def CheckAndPrintEnvironmentTagMessageWithProject(project):
           )
       )
     else:
-      log.status.Print(
-          "INFORMATION: Project '{0}' has an 'environment' tag key with invalid"
+      log.info(
+          "Project '{0}' has an 'environment' tag key with invalid"
           " value. Use either 'Production', 'Development', 'Test', or"
           " 'Staging'. Add an 'environment' tag using `gcloud resource-manager"
           ' tags bindings create`.'.format(project.projectId)
       )
   else:
-    log.status.Print(
-        "INFORMATION: Project '{0}' has no 'environment' tag set. Use either"
+    log.info(
+        "Project '{0}' has no 'environment' tag set. Use either"
         " 'Production', 'Development', 'Test', or 'Staging'. Add an"
         " 'environment' tag using `gcloud resource-manager tags bindings"
         ' create`.'.format(project.projectId)

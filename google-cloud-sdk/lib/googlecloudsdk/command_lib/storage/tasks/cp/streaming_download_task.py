@@ -29,9 +29,12 @@ import threading
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import request_config_factory
+from googlecloudsdk.api_lib.storage.gcs_grpc_bidi_streaming import client as grpc_bidi_streaming_client
 from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
+from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import properties
 
 
 class StreamingDownloadTask(copy_util.ObjectCopyTask):
@@ -112,8 +115,16 @@ class StreamingDownloadTask(copy_util.ObjectCopyTask):
         user_request_args=self._user_request_args,
     )
 
-    provider = self._source_resource.storage_url.scheme
-    api_factory.get_api(provider).download_object(
+    args = [self._source_resource.storage_url.scheme]
+    if properties.VALUES.storage.enable_zonal_buckets_bidi_streaming.GetBool():
+      args.append(self._source_resource.storage_url.bucket_name)
+    api = api_factory.get_api(*args)
+    if isinstance(api, grpc_bidi_streaming_client.GcsGrpcBidiStreamingClient):
+      raise core_exceptions.InternalError(
+          'Only Simple/Sliced downloads are supported for zonal buckets via'
+          ' Grpc Bidi Streaming API.'
+      )
+    api.download_object(
         self._source_resource,
         self._download_stream,
         request_config,

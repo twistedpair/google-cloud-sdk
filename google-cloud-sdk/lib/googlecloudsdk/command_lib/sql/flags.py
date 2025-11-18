@@ -3589,6 +3589,43 @@ def AddClearUncMappings(parser, hidden=True):
   )
 
 
+def AddSqlServerEntraId(parser, hidden=False):
+  """Adds the `--entra-id-tenant-id` and `--entra-id-application-id` flags to the parser."""
+
+  entraid_group = parser.add_group(
+      required=False,
+      help='Entraid configuration for the SQL Server instance.',
+      hidden=hidden,
+  )
+
+  entraid_group.add_argument(
+      '--entra-id-tenant-id',
+      required=True,
+      help=(
+          'Set the Entraid tenant ID. '
+      ),
+      hidden=hidden,
+  )
+
+  entraid_group.add_argument(
+      '--entra-id-application-id',
+      required=True,
+      help=(
+          'Set the Entraid application ID. '
+      ),
+      hidden=hidden,
+  )
+
+
+def AddClearEntraIdConfig(parser, hidden=True):
+  parser.add_argument(
+      '--clear-entra-id-config',
+      action='store_true',
+      hidden=hidden,
+      help="""Clear the Entra ID config for the SQL Server instance.""",
+  )
+
+
 def AddPerformanceCaptureConfig(parser, hidden=True):
   """Adds --performance-capture-config argument."""
   parser.add_argument(

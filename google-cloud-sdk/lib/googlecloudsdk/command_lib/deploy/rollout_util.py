@@ -14,7 +14,6 @@
 # limitations under the License.
 """Utilities for the cloud deploy rollout resource."""
 
-
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.clouddeploy import client_util
 from googlecloudsdk.api_lib.clouddeploy import release
@@ -23,6 +22,8 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.deploy import exceptions as cd_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
+from googlecloudsdk.generated_clients.apis.clouddeploy.v1 import clouddeploy_v1_messages
+
 
 _ROLLOUT_COLLECTION = (
     'clouddeploy.projects.locations.deliveryPipelines.releases.rollouts'
@@ -126,7 +127,7 @@ def GetFilteredRollouts(
   )
 
 
-def GenerateRolloutId(to_target, release_ref):
+def GenerateRolloutId(to_target, release_ref) -> str:
   filter_str = ROLLOUT_IN_TARGET_FILTER_TEMPLATE.format(to_target)
   try:
     rollouts = rollout.RolloutClient().List(
@@ -146,7 +147,7 @@ def CreateRollout(
     description=None,
     starting_phase_id=None,
     override_deploy_policies=None,
-):
+) -> clouddeploy_v1_messages.Rollout:
   """Creates a rollout by calling the rollout create API and waits for the operation to finish.
 
   Args:
@@ -258,7 +259,7 @@ def _RolloutIsFromAbandonedRelease(rollout_obj):
   return release_obj.abandoned
 
 
-def ComputeRolloutID(release_id, target_id, rollouts):
+def ComputeRolloutID(release_id, target_id, rollouts) -> str:
   """Generates a rollout ID.
 
   Args:

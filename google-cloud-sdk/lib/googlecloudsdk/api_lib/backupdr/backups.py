@@ -99,6 +99,7 @@ class DiskRestoreConfig(util.RestrictedDict):
         "Size",
         "ProvisionedThroughput",
         "StoragePool",
+        "ClearOverridesFieldMask",
     ]
     super(DiskRestoreConfig, self).__init__(supported_flags, *args, **kwargs)
 
@@ -551,6 +552,12 @@ class BackupsClient(util.BackupDrClientBase):
               kmsKeyName=restore_config["KmsKey"],
           )
       )
+
+    # ClearOverridesFieldMask
+    if "ClearOverridesFieldMask" in restore_config:
+      restore_request.clearOverridesFieldMask = restore_config[
+          "ClearOverridesFieldMask"
+      ]
 
     # GuestOsFeatures
     if "GuestOsFeatures" in restore_config:

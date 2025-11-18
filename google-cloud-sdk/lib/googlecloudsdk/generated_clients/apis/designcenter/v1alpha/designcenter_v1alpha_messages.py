@@ -93,6 +93,8 @@ class Application(_messages.Message):
   r"""Represents the application resource.
 
   Enums:
+    CompositionTypeValueValuesEnum: Output only. The composition type of the
+      application: STANDARD OR COMPOSITE.
     StateValueValuesEnum: Output only. Deployment state of the application.
     TypeValueValuesEnum: Optional. The type of the application.
 
@@ -107,6 +109,8 @@ class Application(_messages.Message):
     attributes: Optional. Attributes of the application.
     componentParameters: Optional. A list of component parameters to associate
       with the application.
+    compositionType: Output only. The composition type of the application:
+      STANDARD OR COMPOSITE.
     connectionConfigs: Optional. Connection configuration for the application.
     createTime: Output only. Create timestamp.
     deploymentMetadata: Output only. Deployment metadata of the application.
@@ -136,6 +140,25 @@ class Application(_messages.Message):
     updatedTemplateRevision: Output only. The updated template revision
       because of which the application is outdated.
   """
+
+  class CompositionTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The composition type of the application: STANDARD OR
+    COMPOSITE.
+
+    Values:
+      APPLICATION_COMPOSITION_TYPE_UNSPECIFIED: ApplicationCompositionType is
+        UNSPECIFIED.
+      STANDARD: ApplicationCompositionType is STANDARD. The
+        applicationTemplate or application is composed of components only of
+        type service/workload/asset and has a single root module in terraform
+        code.
+      COMPOSITE: ApplicationCompositionType is COMPOSITE. The template is
+        composed of STANDARD applicationTemplate(s) and might be having
+        multiple root modules in terraform code.
+    """
+    APPLICATION_COMPOSITION_TYPE_UNSPECIFIED = 0
+    STANDARD = 1
+    COMPOSITE = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Deployment state of the application.
@@ -178,27 +201,28 @@ class Application(_messages.Message):
   artifactLocation = _messages.MessageField('ArtifactLocation', 3)
   attributes = _messages.MessageField('Attributes', 4)
   componentParameters = _messages.MessageField('ComponentParameters', 5, repeated=True)
-  connectionConfigs = _messages.MessageField('ConnectionConfig', 6, repeated=True)
-  createTime = _messages.StringField(7)
-  deploymentMetadata = _messages.MessageField('DeploymentMetadata', 8)
-  deploymentProject = _messages.StringField(9)
-  deploymentRegion = _messages.StringField(10)
-  deploymentRevision = _messages.StringField(11)
-  deploymentTarget = _messages.MessageField('DeploymentTarget', 12)
-  description = _messages.StringField(13)
-  displayName = _messages.StringField(14)
-  importExistingResources = _messages.BooleanField(15)
-  name = _messages.StringField(16)
-  previewReference = _messages.StringField(17)
-  projectParameters = _messages.MessageField('ProjectParameters', 18, repeated=True)
-  scope = _messages.MessageField('Scope', 19)
-  serializedApplicationTemplate = _messages.MessageField('SerializedApplicationTemplate', 20)
-  serviceAccount = _messages.StringField(21)
-  source = _messages.MessageField('DeploymentSource', 22)
-  state = _messages.EnumField('StateValueValuesEnum', 23)
-  type = _messages.EnumField('TypeValueValuesEnum', 24)
-  updateTime = _messages.StringField(25)
-  updatedTemplateRevision = _messages.MessageField('UpdatedTemplateRevision', 26)
+  compositionType = _messages.EnumField('CompositionTypeValueValuesEnum', 6)
+  connectionConfigs = _messages.MessageField('ConnectionConfig', 7, repeated=True)
+  createTime = _messages.StringField(8)
+  deploymentMetadata = _messages.MessageField('DeploymentMetadata', 9)
+  deploymentProject = _messages.StringField(10)
+  deploymentRegion = _messages.StringField(11)
+  deploymentRevision = _messages.StringField(12)
+  deploymentTarget = _messages.MessageField('DeploymentTarget', 13)
+  description = _messages.StringField(14)
+  displayName = _messages.StringField(15)
+  importExistingResources = _messages.BooleanField(16)
+  name = _messages.StringField(17)
+  previewReference = _messages.StringField(18)
+  projectParameters = _messages.MessageField('ProjectParameters', 19, repeated=True)
+  scope = _messages.MessageField('Scope', 20)
+  serializedApplicationTemplate = _messages.MessageField('SerializedApplicationTemplate', 21)
+  serviceAccount = _messages.StringField(22)
+  source = _messages.MessageField('DeploymentSource', 23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
+  type = _messages.EnumField('TypeValueValuesEnum', 25)
+  updateTime = _messages.StringField(26)
+  updatedTemplateRevision = _messages.MessageField('UpdatedTemplateRevision', 27)
 
 
 class ApplicationOperationMetadata(_messages.Message):
@@ -230,6 +254,9 @@ class ApplicationTemplate(_messages.Message):
   r"""Application template resource.
 
   Enums:
+    CompositionTypeValueValuesEnum: Optional. The composition type of the
+      applicationTemplate: STANDARD OR COMPOSITE. This is a create time only
+      param. In future, we may support conversion from STANDARD to COMPOSITE.
     IacFormatValueValuesEnum: Output only. The IaC format of the application
       template.
 
@@ -238,6 +265,9 @@ class ApplicationTemplate(_messages.Message):
       an application. You can specify projectID and region.
     artifactLocation: Output only. Details of the location where the IaC for
       this ApplicationTemplate was last successfully exported.
+    compositionType: Optional. The composition type of the
+      applicationTemplate: STANDARD OR COMPOSITE. This is a create time only
+      param. In future, we may support conversion from STANDARD to COMPOSITE.
     createTime: Output only. Application template creation timestamp.
     description: Optional. Application template description.
     displayName: Optional. Application template display name.
@@ -248,6 +278,26 @@ class ApplicationTemplate(_messages.Message):
       template.
     updateTime: Output only. Application template update timestamp.
   """
+
+  class CompositionTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The composition type of the applicationTemplate: STANDARD OR
+    COMPOSITE. This is a create time only param. In future, we may support
+    conversion from STANDARD to COMPOSITE.
+
+    Values:
+      APPLICATION_COMPOSITION_TYPE_UNSPECIFIED: ApplicationCompositionType is
+        UNSPECIFIED.
+      STANDARD: ApplicationCompositionType is STANDARD. The
+        applicationTemplate or application is composed of components only of
+        type service/workload/asset and has a single root module in terraform
+        code.
+      COMPOSITE: ApplicationCompositionType is COMPOSITE. The template is
+        composed of STANDARD applicationTemplate(s) and might be having
+        multiple root modules in terraform code.
+    """
+    APPLICATION_COMPOSITION_TYPE_UNSPECIFIED = 0
+    STANDARD = 1
+    COMPOSITE = 2
 
   class IacFormatValueValuesEnum(_messages.Enum):
     r"""Output only. The IaC format of the application template.
@@ -263,14 +313,15 @@ class ApplicationTemplate(_messages.Message):
 
   applicationParameters = _messages.MessageField('Parameter', 1, repeated=True)
   artifactLocation = _messages.MessageField('ArtifactLocation', 2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  iacFormat = _messages.EnumField('IacFormatValueValuesEnum', 6)
-  latestRevision = _messages.StringField(7)
-  name = _messages.StringField(8)
-  serializedApplicationTemplate = _messages.MessageField('SerializedApplicationTemplate', 9)
-  updateTime = _messages.StringField(10)
+  compositionType = _messages.EnumField('CompositionTypeValueValuesEnum', 3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  displayName = _messages.StringField(6)
+  iacFormat = _messages.EnumField('IacFormatValueValuesEnum', 7)
+  latestRevision = _messages.StringField(8)
+  name = _messages.StringField(9)
+  serializedApplicationTemplate = _messages.MessageField('SerializedApplicationTemplate', 10)
+  updateTime = _messages.StringField(11)
 
 
 class ApplicationTemplateRevision(_messages.Message):
@@ -603,6 +654,8 @@ class CatalogTemplateRevision(_messages.Message):
       gs://[bucket] or gs://[bucket]/[object].
     gitSource: Optional. The git source.
     helmChartMetadata: Output only. The helm chart metadata.
+    logicalProducts: Output only. The Product Main logical product type
+      information.
     metadataInput: Optional. Metadata input.
     name: Identifier. The catalog template revision name. projects/$project/lo
       cations/$location/spaces/$space/catalogs/$catalog/templates/$template/re
@@ -687,15 +740,16 @@ class CatalogTemplateRevision(_messages.Message):
   gcsSourceUri = _messages.StringField(6)
   gitSource = _messages.MessageField('GitSource', 7)
   helmChartMetadata = _messages.MessageField('HelmChartMetadata', 8)
-  metadataInput = _messages.MessageField('MetadataInput', 9)
-  name = _messages.StringField(10)
-  ociRepo = _messages.MessageField('OciRepo', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  templateCategory = _messages.EnumField('TemplateCategoryValueValuesEnum', 13)
-  templateMetadata = _messages.MessageField('TFBlueprintMetadata', 14)
-  type = _messages.EnumField('TypeValueValuesEnum', 15)
-  updateTime = _messages.StringField(16)
-  uuid = _messages.StringField(17)
+  logicalProducts = _messages.MessageField('LogicalProduct', 9, repeated=True)
+  metadataInput = _messages.MessageField('MetadataInput', 10)
+  name = _messages.StringField(11)
+  ociRepo = _messages.MessageField('OciRepo', 12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  templateCategory = _messages.EnumField('TemplateCategoryValueValuesEnum', 14)
+  templateMetadata = _messages.MessageField('TFBlueprintMetadata', 15)
+  type = _messages.EnumField('TypeValueValuesEnum', 16)
+  updateTime = _messages.StringField(17)
+  uuid = _messages.StringField(18)
 
 
 class Channel(_messages.Message):
@@ -1294,9 +1348,9 @@ class DesigncenterProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -3193,8 +3247,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -3341,6 +3395,21 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class LogicalProduct(_messages.Message):
+  r"""Represents a Product Main logical product.
+
+  Fields:
+    name: Output only. The resource name of the logical product. Format:
+      logicalProducts/{logical_product}
+    shortDescription: Output only. A short description of the logical product.
+    title: Output only. The display name of the logical product.
+  """
+
+  name = _messages.StringField(1)
+  shortDescription = _messages.StringField(2)
+  title = _messages.StringField(3)
 
 
 class MetadataInput(_messages.Message):
@@ -3783,6 +3852,8 @@ class SerializedApplicationTemplate(_messages.Message):
   r"""Serialized application template.
 
   Enums:
+    CompositionTypeValueValuesEnum: Output only. The composition type of the
+      applicationTemplate: STANDARD OR COMPOSITE.
     IacFormatValueValuesEnum: Optional. The IaC format of the application
       template.
 
@@ -3791,6 +3862,8 @@ class SerializedApplicationTemplate(_messages.Message):
     applicationParameters: Optional. Parameters to apply to all components in
       the application template.
     components: Optional. The application template components.
+    compositionType: Output only. The composition type of the
+      applicationTemplate: STANDARD OR COMPOSITE.
     description: Optional. The application template description.
     displayName: Optional. The application template display name.
     hasGlobalResource: Output only. Whether the application template is
@@ -3798,6 +3871,25 @@ class SerializedApplicationTemplate(_messages.Message):
     iacFormat: Optional. The IaC format of the application template.
     uri: Optional. The application template URI.
   """
+
+  class CompositionTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The composition type of the applicationTemplate: STANDARD
+    OR COMPOSITE.
+
+    Values:
+      APPLICATION_COMPOSITION_TYPE_UNSPECIFIED: ApplicationCompositionType is
+        UNSPECIFIED.
+      STANDARD: ApplicationCompositionType is STANDARD. The
+        applicationTemplate or application is composed of components only of
+        type service/workload/asset and has a single root module in terraform
+        code.
+      COMPOSITE: ApplicationCompositionType is COMPOSITE. The template is
+        composed of STANDARD applicationTemplate(s) and might be having
+        multiple root modules in terraform code.
+    """
+    APPLICATION_COMPOSITION_TYPE_UNSPECIFIED = 0
+    STANDARD = 1
+    COMPOSITE = 2
 
   class IacFormatValueValuesEnum(_messages.Enum):
     r"""Optional. The IaC format of the application template.
@@ -3814,11 +3906,12 @@ class SerializedApplicationTemplate(_messages.Message):
   apphubApplicationParameters = _messages.MessageField('AppHubApplicationParameters', 1)
   applicationParameters = _messages.MessageField('Parameter', 2, repeated=True)
   components = _messages.MessageField('SerializedComponent', 3, repeated=True)
-  description = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  hasGlobalResource = _messages.BooleanField(6)
-  iacFormat = _messages.EnumField('IacFormatValueValuesEnum', 7)
-  uri = _messages.StringField(8)
+  compositionType = _messages.EnumField('CompositionTypeValueValuesEnum', 4)
+  description = _messages.StringField(5)
+  displayName = _messages.StringField(6)
+  hasGlobalResource = _messages.BooleanField(7)
+  iacFormat = _messages.EnumField('IacFormatValueValuesEnum', 8)
+  uri = _messages.StringField(9)
 
 
 class SerializedComponent(_messages.Message):
@@ -4025,6 +4118,8 @@ class SharedTemplateRevision(_messages.Message):
       gs://[bucket] or gs://[bucket]/[object].
     gitSource: Optional. The git source.
     helmChartMetadata: Output only. The helm chart metadata.
+    logicalProducts: Output only. The Product Main logical product type
+      information.
     name: Identifier. The shared template revision name. $sharedTemplate is a
       server-generated UUID. projects/$project/locations/$location/spaces/$spa
       ce/sharedTemplates/$sharedTemplate/revisions/$revision
@@ -4092,12 +4187,13 @@ class SharedTemplateRevision(_messages.Message):
   gcsSourceUri = _messages.StringField(6)
   gitSource = _messages.MessageField('GitSource', 7)
   helmChartMetadata = _messages.MessageField('HelmChartMetadata', 8)
-  name = _messages.StringField(9)
-  ociRepo = _messages.MessageField('OciRepo', 10)
-  originTemplateRevision = _messages.StringField(11)
-  sharedTemplateMetadata = _messages.MessageField('TFBlueprintMetadata', 12)
-  templateCategory = _messages.EnumField('TemplateCategoryValueValuesEnum', 13)
-  type = _messages.EnumField('TypeValueValuesEnum', 14)
+  logicalProducts = _messages.MessageField('LogicalProduct', 9, repeated=True)
+  name = _messages.StringField(10)
+  ociRepo = _messages.MessageField('OciRepo', 11)
+  originTemplateRevision = _messages.StringField(12)
+  sharedTemplateMetadata = _messages.MessageField('TFBlueprintMetadata', 13)
+  templateCategory = _messages.EnumField('TemplateCategoryValueValuesEnum', 14)
+  type = _messages.EnumField('TypeValueValuesEnum', 15)
 
 
 class Space(_messages.Message):

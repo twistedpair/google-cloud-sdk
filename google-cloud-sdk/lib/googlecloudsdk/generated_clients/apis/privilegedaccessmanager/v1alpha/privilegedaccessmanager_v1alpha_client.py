@@ -581,33 +581,6 @@ class PrivilegedaccessmanagerV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def EffectiveSettings(self, request, global_params=None):
-      r"""`FetchEffectiveSettings` returns the effective PAM Settings for the given project, folder, or organization.
-
-      Args:
-        request: (PrivilegedaccessmanagerFoldersLocationsEffectiveSettingsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (FetchEffectiveSettingsResponse) The response message.
-      """
-      config = self.GetMethodConfig('EffectiveSettings')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    EffectiveSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}:effectiveSettings',
-        http_method='GET',
-        method_id='privilegedaccessmanager.folders.locations.effectiveSettings',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='v1alpha/{+parent}:effectiveSettings',
-        request_field='',
-        request_type_name='PrivilegedaccessmanagerFoldersLocationsEffectiveSettingsRequest',
-        response_type_name='FetchEffectiveSettingsResponse',
-        supports_download=False,
-    )
-
     def FetchEffectiveSettings(self, request, global_params=None):
       r"""`FetchEffectiveSettings` returns the effective PAM Settings for the given project, folder, or organization.
 
@@ -1279,33 +1252,6 @@ class PrivilegedaccessmanagerV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def EffectiveSettings(self, request, global_params=None):
-      r"""`FetchEffectiveSettings` returns the effective PAM Settings for the given project, folder, or organization.
-
-      Args:
-        request: (PrivilegedaccessmanagerOrganizationsLocationsEffectiveSettingsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (FetchEffectiveSettingsResponse) The response message.
-      """
-      config = self.GetMethodConfig('EffectiveSettings')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    EffectiveSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}:effectiveSettings',
-        http_method='GET',
-        method_id='privilegedaccessmanager.organizations.locations.effectiveSettings',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='v1alpha/{+parent}:effectiveSettings',
-        request_field='',
-        request_type_name='PrivilegedaccessmanagerOrganizationsLocationsEffectiveSettingsRequest',
-        response_type_name='FetchEffectiveSettingsResponse',
-        supports_download=False,
-    )
-
     def FetchEffectiveSettings(self, request, global_params=None):
       r"""`FetchEffectiveSettings` returns the effective PAM Settings for the given project, folder, or organization.
 
@@ -1974,33 +1920,6 @@ class PrivilegedaccessmanagerV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='PrivilegedaccessmanagerProjectsLocationsCheckOnboardingStatusRequest',
         response_type_name='CheckOnboardingStatusResponse',
-        supports_download=False,
-    )
-
-    def EffectiveSettings(self, request, global_params=None):
-      r"""`FetchEffectiveSettings` returns the effective PAM Settings for the given project, folder, or organization.
-
-      Args:
-        request: (PrivilegedaccessmanagerProjectsLocationsEffectiveSettingsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (FetchEffectiveSettingsResponse) The response message.
-      """
-      config = self.GetMethodConfig('EffectiveSettings')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    EffectiveSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}:effectiveSettings',
-        http_method='GET',
-        method_id='privilegedaccessmanager.projects.locations.effectiveSettings',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='v1alpha/{+parent}:effectiveSettings',
-        request_field='',
-        request_type_name='PrivilegedaccessmanagerProjectsLocationsEffectiveSettingsRequest',
-        response_type_name='FetchEffectiveSettingsResponse',
         supports_download=False,
     )
 

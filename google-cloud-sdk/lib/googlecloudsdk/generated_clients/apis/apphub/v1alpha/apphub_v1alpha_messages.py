@@ -595,6 +595,35 @@ class ApphubProjectsLocationsDiscoveredWorkloadsLookupRequest(_messages.Message)
   uri = _messages.StringField(2)
 
 
+class ApphubProjectsLocationsExtendedMetadataSchemasGetRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsExtendedMetadataSchemasGetRequest object.
+
+  Fields:
+    name: Required. Schema resource name Format:
+      projects//locations//extendedMetadataSchemas/ could be
+      "apphub.googleapis.com/Name"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApphubProjectsLocationsExtendedMetadataSchemasListRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsExtendedMetadataSchemasListRequest object.
+
+  Fields:
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Project and location to list Extended Metadata Schemas
+      on. Expected format: `projects/{project}/locations/{location}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class ApphubProjectsLocationsGetBoundaryRequest(_messages.Message):
   r"""A ApphubProjectsLocationsGetBoundaryRequest object.
 
@@ -695,9 +724,9 @@ class ApphubProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -1060,7 +1089,7 @@ class Boundary(_messages.Message):
   Fields:
     createTime: Output only. Create time.
     crmNode: Optional. The resource name of the CRM node being attached to the
-      boundary. Format: `projects/{project-id}`
+      boundary. Format: `projects/{project-number}` or `projects/{project-id}`
     name: Identifier. The resource name of the boundary. Format:
       "projects/{project}/locations/{location}/boundary"
     type: Output only. Boundary type.
@@ -1290,9 +1319,8 @@ class ExtendedMetadata(_messages.Message):
 
   Fields:
     extendedMetadataSchema: Output only. The resource name for the Extended
-      Metadata Schema that describes the contents of `metadata_struct`. Use
-      `GetExtendedMetadataSchema` API to get the schema. Format:
-      projects//locations//extendedMetadataSchemas/
+      Metadata Schema that describes the contents of `metadata_struct`.
+      Format: projects//locations//extendedMetadataSchemas/
     metadataStruct: Output only. The metadata contents.
   """
 
@@ -1323,6 +1351,23 @@ class ExtendedMetadata(_messages.Message):
 
   extendedMetadataSchema = _messages.StringField(1)
   metadataStruct = _messages.MessageField('MetadataStructValue', 2)
+
+
+class ExtendedMetadataSchema(_messages.Message):
+  r"""ExtendedMetadataSchema represents a schema for extended metadata of a
+  service or workload.
+
+  Fields:
+    jsonSchema: Output only. The JSON schema as a string.
+    name: Identifier. Resource name of the schema. Format:
+      projects//locations//extendedMetadataSchemas/
+    schemaVersion: Output only. The version of the schema. New versions are
+      required to be backwards compatible.
+  """
+
+  jsonSchema = _messages.StringField(1)
+  name = _messages.StringField(2)
+  schemaVersion = _messages.IntegerField(3)
 
 
 class FindUnregisteredServicesResponse(_messages.Message):
@@ -1426,6 +1471,19 @@ class ListDiscoveredWorkloadsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListExtendedMetadataSchemasResponse(_messages.Message):
+  r"""Response for ListExtendedMetadataSchemas.
+
+  Fields:
+    extendedMetadataSchemas: List of Extended Metadata Schemas.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+  """
+
+  extendedMetadataSchemas = _messages.MessageField('ExtendedMetadataSchema', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -1448,8 +1506,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1990,17 +2048,13 @@ class ServiceProperties(_messages.Message):
     ExtendedMetadataValue: Output only. Additional metadata specific to the
       resource type. The key is a string that identifies the type of metadata
       and the value is the metadata contents specific to that type. Key
-      format: `apphub.googleapis.com/{metadataType}` The list of supported
-      metadata types and their schemas can be obtained via
-      `ListExtendedMetadataSchemas` API.
+      format: `apphub.googleapis.com/{metadataType}`
 
   Fields:
     extendedMetadata: Output only. Additional metadata specific to the
       resource type. The key is a string that identifies the type of metadata
       and the value is the metadata contents specific to that type. Key
-      format: `apphub.googleapis.com/{metadataType}` The list of supported
-      metadata types and their schemas can be obtained via
-      `ListExtendedMetadataSchemas` API.
+      format: `apphub.googleapis.com/{metadataType}`
     functionalType: Output only. The type of the service.
     gcpProject: Output only. The service project identifier that the
       underlying cloud resource resides in.
@@ -2016,9 +2070,7 @@ class ServiceProperties(_messages.Message):
     r"""Output only. Additional metadata specific to the resource type. The
     key is a string that identifies the type of metadata and the value is the
     metadata contents specific to that type. Key format:
-    `apphub.googleapis.com/{metadataType}` The list of supported metadata
-    types and their schemas can be obtained via `ListExtendedMetadataSchemas`
-    API.
+    `apphub.googleapis.com/{metadataType}`
 
     Messages:
       AdditionalProperty: An additional property for a ExtendedMetadataValue
@@ -2290,17 +2342,13 @@ class WorkloadProperties(_messages.Message):
     ExtendedMetadataValue: Output only. Additional metadata specific to the
       resource type. The key is a string that identifies the type of metadata
       and the value is the metadata contents specific to that type. Key
-      format: `apphub.googleapis.com/{metadataType}` The list of supported
-      metadata types and their schemas can be obtained via
-      `ListExtendedMetadataSchemas` API.
+      format: `apphub.googleapis.com/{metadataType}`
 
   Fields:
     extendedMetadata: Output only. Additional metadata specific to the
       resource type. The key is a string that identifies the type of metadata
       and the value is the metadata contents specific to that type. Key
-      format: `apphub.googleapis.com/{metadataType}` The list of supported
-      metadata types and their schemas can be obtained via
-      `ListExtendedMetadataSchemas` API.
+      format: `apphub.googleapis.com/{metadataType}`
     functionalType: Output only. The type of the workload.
     gcpProject: Output only. The service project identifier that the
       underlying cloud resource resides in. Empty for non-cloud resources.
@@ -2315,9 +2363,7 @@ class WorkloadProperties(_messages.Message):
     r"""Output only. Additional metadata specific to the resource type. The
     key is a string that identifies the type of metadata and the value is the
     metadata contents specific to that type. Key format:
-    `apphub.googleapis.com/{metadataType}` The list of supported metadata
-    types and their schemas can be obtained via `ListExtendedMetadataSchemas`
-    API.
+    `apphub.googleapis.com/{metadataType}`
 
     Messages:
       AdditionalProperty: An additional property for a ExtendedMetadataValue

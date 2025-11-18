@@ -2585,15 +2585,15 @@ class PatchConfig(_messages.Message):
     rebootConfig: Post-patch reboot settings.
     skipUnpatchableVms: Optional. Enables enhanced reporting for the patch
       job: 1. Allows the patch job to skip unpatchable instances, reporting
-      them as SKIPPED. An instance can be unpatchable for two reasons: a. The
-      instance runs Container-Optimized OS (COS), which cannot be patched. b.
-      The patch job's configuration prohibits patching on Managed Instance
-      Groups (MIGs) through the PatchConfig.migInstancesAllowed field, and the
-      instance is part of one. 2. The system reports the patch job as
-      SUCCEEDED if it completes without errors, regardless of whether any
-      instances were SKIPPED. 3. The system reports the patch job as
-      COMPLETED_WITH_INACTIVE_VMS if it completes without errors, but some
-      instances were INACTIVE and therefore not patched.
+      them as `SKIPPED`. An instance can be unpatchable for two reasons: 1.
+      The instance runs Container-Optimized OS (COS), which cannot be patched.
+      2. The instance is part of a managed instance group (MIG), and patching
+      MIG instances is disabled in the patch job's configuration
+      (PatchConfig.migInstancesAllowed is `false`). 2. Reports the patch job
+      as `SUCCEEDED` if it completes without errors, even if some instances
+      were `SKIPPED`. 3. Reports the patch job as
+      `COMPLETED_WITH_INACTIVE_VMS` if it completes without errors, but some
+      instances were `INACTIVE` and were not patched.
     windowsUpdate: Windows update settings. Use this override the default
       windows patch rules.
     yum: Yum update settings. Use this setting to override the default `yum`

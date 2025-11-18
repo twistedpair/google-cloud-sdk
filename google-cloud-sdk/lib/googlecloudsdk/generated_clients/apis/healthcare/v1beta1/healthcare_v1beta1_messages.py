@@ -3069,10 +3069,25 @@ class GoogleCloudHealthcareV1beta1DicomBigQueryDestination(_messages.Message):
       write_disposition is specified, the `force` parameter is ignored.
 
   Fields:
+    changeDataCaptureConfig: Optional. Setting this field will enable
+      BigQuery's Change Data Capture (CDC) on the destination tables with JSON
+      schema. Set this field if you want to only keep the latest version of
+      each instance. Updates and deletes to an existing' instance will
+      overwrite the corresponding row. See
+      https://cloud.google.com/bigquery/docs/change-data-capture for details.
+      Note that this field is only supported with the SchemaJSON option. The
+      SchemaFlattened option is not compatible with CDC.
     force: Use `write_disposition` instead. If `write_disposition` is
       specified, this parameter is ignored. force=false is equivalent to
       write_disposition=WRITE_EMPTY and force=true is equivalent to
       write_disposition=WRITE_TRUNCATE.
+    includeSourceStore: Optional. If true, the source store name will be
+      included as a column in the BigQuery schema.
+    schemaFlattened: Optional. Setting this field will use flattened DICOM
+      instances schema for the BigQuery table. The flattened schema will have
+      one column for each DICOM tag.
+    schemaJson: Optional. Setting this field will store all the DICOM tags as
+      a JSON type in a single column.
     tableUri: BigQuery URI to a table, up to 2000 characters long, in the
       format `bq://projectId.bqDatasetId.tableId`
     writeDisposition: Determines whether the existing table in the destination
@@ -3098,9 +3113,17 @@ class GoogleCloudHealthcareV1beta1DicomBigQueryDestination(_messages.Message):
     WRITE_TRUNCATE = 2
     WRITE_APPEND = 3
 
-  force = _messages.BooleanField(1)
-  tableUri = _messages.StringField(2)
-  writeDisposition = _messages.EnumField('WriteDispositionValueValuesEnum', 3)
+  changeDataCaptureConfig = _messages.MessageField('GoogleCloudHealthcareV1beta1DicomChangeDataCaptureConfig', 1)
+  force = _messages.BooleanField(2)
+  includeSourceStore = _messages.BooleanField(3)
+  schemaFlattened = _messages.MessageField('SchemaFlattened', 4)
+  schemaJson = _messages.MessageField('SchemaJSON', 5)
+  tableUri = _messages.StringField(6)
+  writeDisposition = _messages.EnumField('WriteDispositionValueValuesEnum', 7)
+
+
+class GoogleCloudHealthcareV1beta1DicomChangeDataCaptureConfig(_messages.Message):
+  r"""BigQuery Change Data Capture configuration."""
 
 
 class GoogleCloudHealthcareV1beta1DicomGcsDestination(_messages.Message):
@@ -8392,6 +8415,14 @@ class SchemaConfig(_messages.Message):
   schemaType = _messages.EnumField('SchemaTypeValueValuesEnum', 3)
 
 
+class SchemaFlattened(_messages.Message):
+  r"""Using this field will flatten the DICOM instances into a BigQuery table.
+  The table will have one column for each DICOM tag. The column name will be
+  the DICOM tag's textual representation.
+  """
+
+
+
 class SchemaGroup(_messages.Message):
   r"""An HL7v2 logical group construct.
 
@@ -8411,6 +8442,27 @@ class SchemaGroup(_messages.Message):
   members = _messages.MessageField('GroupOrSegment', 3, repeated=True)
   minOccurs = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   name = _messages.StringField(5)
+
+
+class SchemaJSON(_messages.Message):
+  r"""Using this field will set the schema such that all DICOM tags will be
+  included in the BigQuery table as a single JSON type column. The BigQuery
+  table schema will include the following columns: * `StudyInstanceUID` (Type:
+  STRING): DICOM Tag 0020000D. * `SeriesInstanceUID` (Type: STRING): DICOM Tag
+  0020000E. * `SOPInstanceUID` (Type: STRING): DICOM Tag 00080018. *
+  `SourceDicomStore` (Type: STRING): The name of the source DICOM store. This
+  field is only included if the `include_source_store` option is set to true.
+  * `Metadata` (Type: JSON): All DICOM tags for the instance, stored in a
+  single JSON object. * `StructuredStorageSize` (Type: INTEGER): Size of the
+  structured storage in bytes. * `DroppedTags` (Type: STRING, Repeated: Yes):
+  List of tags that were dropped during the conversion. * `StorageClass`
+  (Type: STRING): The storage class of the instance. * `LastUpdated` (Type:
+  TIMESTAMP): Timestamp of the last update to the instance. *
+  `BlobStorageSize` (Type: INTEGER): Size of the blob storage in bytes. *
+  `Type` (Type: STRING): Indicates the type of operation (e.g., INSERT,
+  DELETE). This field is *omitted* if `ChangeDataCaptureConfig` is enabled.
+  """
+
 
 
 class SchemaPackage(_messages.Message):

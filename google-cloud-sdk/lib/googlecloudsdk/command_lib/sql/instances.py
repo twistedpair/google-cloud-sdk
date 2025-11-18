@@ -726,6 +726,15 @@ class _BaseInstances(object):
     if args.time_zone is not None:
       settings.timeZone = args.time_zone
 
+    if args.IsKnownAndSpecified(
+        'entra_id_tenant_id'
+    ) or args.IsKnownAndSpecified('entra_id_application_id'):
+      settings.entraidConfig = reducers.SqlServerEntraIdConfig(
+          sql_messages,
+          args.entra_id_tenant_id,
+          args.entra_id_application_id,
+      )
+
     if (
         args.IsKnownAndSpecified('threads_per_core')
         and args.threads_per_core is not None
@@ -938,6 +947,18 @@ class _BaseInstances(object):
 
     if args.time_zone is not None:
       settings.timeZone = args.time_zone
+
+    if (
+        args.IsKnownAndSpecified('entra_id_tenant_id')
+        or args.IsKnownAndSpecified('entra_id_application_id')
+        or args.IsKnownAndSpecified('clear_entra_id_config')
+    ):
+      settings.entraidConfig = reducers.SqlServerEntraIdConfig(
+          sql_messages,
+          args.entra_id_tenant_id,
+          args.entra_id_application_id,
+          args.clear_entra_id_config,
+      )
 
     final_backup_configuration = reducers.FinalBackupConfiguration(
         sql_messages,

@@ -716,6 +716,20 @@ class AccesscontextmanagerOrganizationsGcpUserAccessBindingsPatchRequest(_messag
   updateMask = _messages.StringField(4)
 
 
+class AccesscontextmanagerPermissionsListRequest(_messages.Message):
+  r"""A AccesscontextmanagerPermissionsListRequest object.
+
+  Fields:
+    pageSize: Optional. This flag specifies the maximum number of services to
+      return per page. Default is 100.
+    pageToken: Optional. Token to start on a later page. Default is the first
+      page.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+
+
 class AccesscontextmanagerServicesGetRequest(_messages.Message):
   r"""A AccesscontextmanagerServicesGetRequest object.
 
@@ -1737,6 +1751,19 @@ class ListServicePerimetersResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   servicePerimeters = _messages.MessageField('ServicePerimeter', 2, repeated=True)
+
+
+class ListSupportedPermissionsResponse(_messages.Message):
+  r"""A response to `ListSupportedPermissionsRequest`.
+
+  Fields:
+    nextPageToken: The pagination token to retrieve the next page of results.
+      If the value is empty, no further results remain.
+    supportedPermissions: List of VPC-SC supported permissions.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  supportedPermissions = _messages.StringField(2, repeated=True)
 
 
 class ListSupportedServicesResponse(_messages.Message):

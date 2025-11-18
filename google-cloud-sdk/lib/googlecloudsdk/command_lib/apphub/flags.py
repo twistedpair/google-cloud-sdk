@@ -178,6 +178,46 @@ def GetApplicationResourceArg(
   )
 
 
+def GetBoundaryResourceSpec():
+  """Constructs and returns the Resource specification for a Boundary."""
+  return concepts.ResourceSpec(
+      'apphub.projects.locations',
+      resource_name='boundary',
+      api_version='v1alpha',  # Force the use of the v1alpha API client
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+  )
+
+
+def GetBoundaryResourceArg(verb):
+  """Constructs and returns the Boundary Resource Argument."""
+  return concept_parsers.ConceptParser.ForResource(
+      '--location',  # The flag that identifies the resource
+      GetBoundaryResourceSpec(),
+      'The location of the App Hub boundary to {}.'.format(verb),
+      required=True,
+  )
+
+
+def AddDescribeBoundaryFlags(parser):
+  """Adds the resource argument for the boundary describe command."""
+  GetBoundaryResourceArg('describe').AddToParser(parser)
+
+
+def AddUpdateBoundaryFlags(parser):
+  """Adds the arguments for the boundary update command."""
+  GetBoundaryResourceArg('update').AddToParser(parser)
+  base.ASYNC_FLAG.AddToParser(parser)
+
+  update_group = parser.add_argument_group('Update Boundary Options')
+  update_group.add_argument(
+      '--crm-node', help='The CRM node to associate with the boundary.'
+  )
+  parser.add_argument(
+      '--request-id', help='An optional request ID to identify requests.'
+  )
+
+
 def AddDescribeServiceProjectFlags(parser):
   GetServiceProjectResourceArg().AddToParser(parser)
 
@@ -873,3 +913,50 @@ def AddSetIamPolicyFlags(parser):
 
 def AddDescribeLocationFlags(parser):
   GetLocationResourceArg(positional=True).AddToParser(parser)
+
+
+def GetExtendedMetadataSchemaResourceSpec(
+    arg_name='extended_metadata_schema', help_text=None
+):
+  """Constructs and returns the Resource specification for Extended Metadata Schema."""
+
+  def ExtendedMetadataSchemaAttributeConfig():
+    return concepts.ResourceParameterAttributeConfig(
+        name=arg_name,
+        help_text=help_text,
+    )
+
+  return concepts.ResourceSpec(
+      'apphub.projects.locations.extendedMetadataSchemas',
+      resource_name='extendedMetadataSchema',
+      api_version='v1alpha',
+      extendedMetadataSchemasId=ExtendedMetadataSchemaAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+  )
+
+
+def GetExtendedMetadataSchemaResourceArg(
+    arg_name='extended_metadata_schema',
+    help_text=None,
+    positional=True,
+    required=True,
+):
+  """Constructs and returns the Extended Metadata Schema Resource Argument."""
+
+  help_text = help_text or 'The Extended Metadata Schema ID.'
+
+  return concept_parsers.ConceptParser.ForResource(
+      '{}{}'.format('' if positional else '--', arg_name),
+      GetExtendedMetadataSchemaResourceSpec(),
+      help_text,
+      required=required,
+  )
+
+
+def AddDescribeExtendedMetadataSchemaFlags(parser):
+  GetExtendedMetadataSchemaResourceArg().AddToParser(parser)
+
+
+def AddListExtendedMetadataSchemaFlags(parser):
+  GetLocationResourceArg(required=True).AddToParser(parser)

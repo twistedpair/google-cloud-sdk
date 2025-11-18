@@ -155,8 +155,7 @@ def GetMessageTransformsFromFile(message, path, enable_vertex_ai_smt=False):
   Args:
     message: The message type to be parsed from the file.
     path: A local path to an object specification in YAML or JSON format.
-    enable_vertex_ai_smt: Whether or not to enable Vertex AI message
-      transforms.
+    enable_vertex_ai_smt: Whether or not to enable Vertex AI message transforms.
 
   Returns:
     Sequence of objects of type message, if successful.
@@ -201,8 +200,7 @@ def GetMessageTransformFromFileForValidation(
   Args:
     message: The message type to be parsed from the file.
     path: A local path to an object specification in YAML or JSON format.
-    enable_vertex_ai_smt: Whether or not to enable Vertex AI message
-      transforms.
+    enable_vertex_ai_smt: Whether or not to enable Vertex AI message transforms.
 
   Returns:
     Object of type message, if successful.

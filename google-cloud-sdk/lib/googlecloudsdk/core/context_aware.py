@@ -220,6 +220,13 @@ def _ShouldRepairECP(cert_config):
     return False
 
   expected_keys = set(['ecp', 'ecp_client', 'tls_offload'])
+  # TODO(b/459858373): remove gating for ECP HTTP Proxy on internal user check.
+  if (
+      properties.VALUES.context_aware.use_ecp_http_proxy.GetBool()
+      and properties.IsInternalUserCheck()
+  ):
+    expected_keys.add('ecp_http_proxy')
+
   actual_keys = set(cert_config['libs'].keys())
 
   if expected_keys == actual_keys:
@@ -285,44 +292,22 @@ def _RepairECP(cert_config_file_path):
     properties.VALUES.context_aware.use_client_certificate.Set(True)
 
 
-def _GetCertificateConfigFile():
-  """Loads, validates, and returns the enterprise certificate configuration.
+def GetCertificateConfig(certificate_config_file_path: str):
+  """Loads and returns the enterprise certificate configuration from the given file path.
 
-  This function determines the path to the config file by first checking the
-  `context_aware.certificate_config_file_path` property. If that is not set,
-  it falls back to the default path from `config.CertConfigDefaultFilePath()`.
-
-  The config file is read and parsed as JSON. It then performs validations,
-  such as ensuring that if an ECP binary path is specified, that binary file
-  actually exists.
-
-  Lastly, it may also trigger a repair of the ECP configuration if needed.
+  Args:
+    certificate_config_file_path: The path to the JSON configuration file.
 
   Returns:
-      A tuple of (str, dict): The path to the config file and its parsed
-      JSON content (as a dictionary).
-      Returns (None, None) if the config file does not exist.
+    A dictionary representing the parsed JSON configuration.
 
   Raises:
-      CertProvisionException:
-          - If the config file fails to be read (e.g., file permissions).
-          - If the config file content is not valid JSON.
-          - If the 'ecp' binary path is specified in the config but the
-            file is not found.
+    CertProvisionException: If the file cannot be read or is not valid JSON.
   """
 
-  # First see if there is a config file.
-  file_path = properties.VALUES.context_aware.certificate_config_file_path.Get()
-  if file_path is None:
-    file_path = config.CertConfigDefaultFilePath()
-
-  if not os.path.exists(file_path):
-    return None, None
-
-  # Make sure the config file is a valid JSON file.
   try:
-    content = files.ReadFileContents(file_path)
-    cert_config = json.loads(content)
+    content = files.ReadFileContents(certificate_config_file_path)
+    return json.loads(content)
   except ValueError as caught_exc:
     new_exc = CertProvisionException(
         'The enterprise certificate config file is not a valid JSON file',
@@ -334,6 +319,44 @@ def _GetCertificateConfigFile():
         'Failed to read enterprise certificate config file', caught_exc
     )
     six.raise_from(new_exc, caught_exc)
+
+
+def _GetCertificateConfigFile():
+  """Finds, loads, validates, and potentially repairs the enterprise certificate config file.
+
+  This function determines the path to the config file by first checking the
+  `context_aware.certificate_config_file_path` property. If that is not set,
+  it falls back to the default path from `config.CertConfigDefaultFilePath()`.
+
+  If the file exists, it's read and parsed as JSON. It then performs
+  validations, such as ensuring that if an ECP binary path is specified, that
+  binary file actually exists on the filesystem.
+
+  Lastly, it may also trigger an in-place repair of the ECP configuration
+  by installing missing components if needed.
+
+  Returns:
+      str: The path to the config file if found and valid.
+      Returns None if the config file does not exist.
+
+  Raises:
+      CertProvisionException:
+          - If the config file fails to be read (e.g., file permissions).
+          - If the config file content is not valid JSON.
+          - If an 'ecp' or 'ecp_http_proxy' (if enabled) binary path is
+          specified
+            in the config but the file is not found.
+  """
+
+  # First see if there is a config file.
+  file_path = properties.VALUES.context_aware.certificate_config_file_path.Get()
+  if file_path is None:
+    file_path = config.CertConfigDefaultFilePath()
+
+  if not os.path.exists(file_path):
+    return None
+
+  cert_config = GetCertificateConfig(file_path)
 
   # Check if the config file contains the ecp binary path.
   # If ecp binary path is provided but the binary doesn't exist, throw
@@ -355,10 +378,33 @@ def _GetCertificateConfigFile():
         )
     )
 
+  # TODO(b/459858373): remove gating for ECP HTTP Proxy on internal user check.
+  if (
+      'libs' in cert_config
+      and 'ecp_http_proxy' in cert_config['libs']
+      and not os.path.exists(cert_config['libs']['ecp_http_proxy'])
+      and (
+          properties.VALUES.context_aware.use_ecp_http_proxy.GetBool()
+          and properties.IsInternalUserCheck()
+      )
+  ):
+    raise CertProvisionException(
+        'Enterprise certificate provider (ECP) HTTP proxy binary path'
+        ' (cert_config["libs"]["ecp_http_proxy"]) specified in enterprise'
+        ' certificate config file was not found. Cannot use mTLS with ECP if'
+        ' the ECP HTTP proxy binary does not exist. Please check the ECP'
+        ' configuration. See `gcloud topic client-certificate` to learn more'
+        ' about ECP. \nIf this error is unexpected either delete {} or'
+        ' generate a new configuration with `$'
+        ' gcloud auth enterprise-certificate-config create --help` '.format(
+            file_path
+        )
+    )
+
   if _ShouldRepairECP(cert_config):
     _RepairECP(file_path)
 
-  return file_path, cert_config
+  return file_path
 
 
 class ConfigType(enum.Enum):
@@ -381,16 +427,11 @@ class _ConfigImpl(object):
     if not properties.VALUES.context_aware.use_client_certificate.GetBool():
       return None
 
-    certificate_config_file_path, cert_config = _GetCertificateConfigFile()
+    certificate_config_file_path = _GetCertificateConfigFile()
     if certificate_config_file_path:
       # The enterprise cert config file path will be used.
       log.debug('enterprise certificate is used for mTLS')
-      ecp_proxy_binary_path = cert_config.get('libs', {}).get(
-          'ecp_proxy_binary_path'
-      )
-      return _EnterpriseCertConfigImpl(
-          certificate_config_file_path, ecp_proxy_binary_path
-      )
+      return _EnterpriseCertConfigImpl(certificate_config_file_path)
 
     log.debug('on disk certificate is used for mTLS')
     config_path = _AutoDiscoveryFilePath()
@@ -410,12 +451,11 @@ class _ConfigImpl(object):
 class _EnterpriseCertConfigImpl(_ConfigImpl):
   """Represents the configurations associated with context aware access through a enterprise certificate on TPM or OS key store."""
 
-  def __init__(self, certificate_config_file_path, ecp_proxy_binary_path=None):
+  def __init__(self, certificate_config_file_path):
     super(_EnterpriseCertConfigImpl, self).__init__(
         ConfigType.ENTERPRISE_CERTIFICATE
     )
     self.certificate_config_file_path = certificate_config_file_path
-    self.ecp_proxy_binary_path = ecp_proxy_binary_path
 
   @property
   def use_local_proxy(self) -> bool:
@@ -424,6 +464,7 @@ class _EnterpriseCertConfigImpl(_ConfigImpl):
         properties.VALUES.context_aware.use_ecp_http_proxy.GetBool()
     )
 
+    # TODO(b/459858373): Remove gating for ECP HTTP Proxy on internal user check
     return use_ecp_http_proxy and properties.IsInternalUserCheck()
 
 

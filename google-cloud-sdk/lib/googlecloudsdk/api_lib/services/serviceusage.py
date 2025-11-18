@@ -78,6 +78,15 @@ def GetProtectedServiceWarning(service_name):
   return _PROTECTED_SERVICES.get(service_name)
 
 
+def GetMcpEnabledError(resource_name):
+  """Return the error message associated with a MCP enabled service."""
+  return (
+      'To enable the MCP endpoint, the service must be enabled first. '
+      'Do you want to enable the service for the resource'
+      f' {resource_name}?'
+  )
+
+
 def GetConsumerPolicyV2Beta(policy_name):
   """Make API call to get a consumer policy.
 

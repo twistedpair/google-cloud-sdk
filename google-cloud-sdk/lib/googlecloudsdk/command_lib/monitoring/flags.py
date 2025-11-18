@@ -455,7 +455,7 @@ def AddEndTimeFlag(parser, resource):
   parser.add_argument(
       '--end-time',
       type=arg_parsers.Datetime.Parse,
-      help='The start time for the {}.'.format(resource))
+      help='The end time for the {}.'.format(resource))
 
 
 def AddSnoozeSettingsFlags(parser, update=False):

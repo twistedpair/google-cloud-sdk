@@ -133,7 +133,12 @@ class GoogleCloudRecaptchaenterpriseV1AndroidKeySettings(_messages.Message):
     allowAllPackageNames: Optional. If set to true, allowed_package_names are
       not enforced.
     allowedPackageNames: Optional. Android package names of apps allowed to
-      use the key. Example: 'com.companyname.appname'
+      use the key. Example: 'com.companyname.appname' Each key supports a
+      maximum of 250 package names. To use a key on more apps, set
+      `allow_all_package_names` to true. When this is set, you are responsible
+      for validating the package name by checking the
+      `token_properties.android_package_name` field in each assessment
+      response against your list of allowed package names.
     supportNonGoogleAppStoreDistribution: Optional. Set to true for keys that
       are used in an Android application that is available for download in app
       stores in addition to the Google Play Store.
@@ -148,7 +153,10 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
   r"""The request message to annotate an Assessment.
 
   Enums:
-    AnnotationValueValuesEnum:
+    AnnotationValueValuesEnum: Optional. The annotation that is assigned to
+      the Event. This field can be left empty to provide reasons that apply to
+      an event without concluding whether the event is legitimate or
+      fraudulent.
     ReasonsValueListEntryValuesEnum:
 
   Fields:
@@ -156,7 +164,9 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
       assessment. This is an alternative to setting `account_id` in
       `CreateAssessment`, for example when a stable account identifier is not
       yet known in the initial request.
-    annotation: A AnnotationValueValuesEnum attribute.
+    annotation: Optional. The annotation that is assigned to the Event. This
+      field can be left empty to provide reasons that apply to an event
+      without concluding whether the event is legitimate or fraudulent.
     hashedAccountId: Optional. A stable hashed account identifier to apply to
       the assessment. This is an alternative to setting `hashed_account_id` in
       `CreateAssessment`, for example when a stable account identifier is not
@@ -164,14 +174,17 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
     phoneAuthenticationEvent: Optional. If using an external multi-factor
       authentication provider, provide phone authentication details for fraud
       detection purposes.
-    reasons: A ReasonsValueListEntryValuesEnum attribute.
+    reasons: Optional. Reasons for the annotation that are assigned to the
+      event.
     transactionEvent: Optional. If the assessment is part of a payment
       transaction, provide details on payment lifecycle events that occur in
       the transaction.
   """
 
   class AnnotationValueValuesEnum(_messages.Enum):
-    r"""AnnotationValueValuesEnum enum type.
+    r"""Optional. The annotation that is assigned to the Event. This field can
+    be left empty to provide reasons that apply to an event without concluding
+    whether the event is legitimate or fraudulent.
 
     Values:
       ANNOTATION_UNSPECIFIED: Default unspecified type.
@@ -826,8 +839,13 @@ class GoogleCloudRecaptchaenterpriseV1IOSKeySettings(_messages.Message):
   Fields:
     allowAllBundleIds: Optional. If set to true, allowed_bundle_ids are not
       enforced.
-    allowedBundleIds: Optional. iOS bundle ids of apps allowed to use the key.
-      Example: 'com.companyname.productname.appname'
+    allowedBundleIds: Optional. iOS bundle IDs of apps allowed to use the key.
+      Example: 'com.companyname.productname.appname' Each key supports a
+      maximum of 250 bundle IDs. To use a key on more apps, set
+      `allow_all_bundle_ids` to true. When this is set, you are responsible
+      for validating the bundle id by checking the
+      `token_properties.ios_bundle_id` field in each assessment response
+      against your list of allowed bundle IDs.
     appleDeveloperId: Optional. Apple Developer account details for the app
       that is protected by the reCAPTCHA Key. reCAPTCHA leverages platform-
       specific checks like Apple App Attest and Apple DeviceCheck to protect
@@ -1916,6 +1934,11 @@ class GoogleCloudRecaptchaenterpriseV1WebKeySettings(_messages.Message):
       the key. All subdomains of an allowed domain are automatically allowed.
       A valid domain requires a host and must not include any path, port,
       query or fragment. Examples: 'example.com' or 'subdomain.example.com'
+      Each key supports a maximum of 250 domains. To use a key on more
+      domains, set `allow_all_domains` to true. When this is set, you are
+      responsible for validating the hostname by checking the
+      `token_properties.hostname` field in each assessment response against
+      your list of allowed domains.
     challengeSecurityPreference: Optional. Settings for the frequency and
       difficulty at which this key triggers captcha challenges. This should
       only be specified for `IntegrationType` CHECKBOX, INVISIBLE or

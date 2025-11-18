@@ -2837,7 +2837,11 @@ class Relation(_messages.Message):
   r"""Represents a database relation.
 
   Enums:
+    FileFormatValueValuesEnum: Optional. The file format for the BigQuery
+      table.
     RelationTypeValueValuesEnum: The type of this relation.
+    TableFormatValueValuesEnum: Optional. The table format for the BigQuery
+      table.
 
   Messages:
     AdditionalOptionsValue: Additional options that will be provided as
@@ -2853,8 +2857,14 @@ class Relation(_messages.Message):
       definition-language for more information on which options are supported.
     clusterExpressions: A list of columns or SQL expressions used to cluster
       the table.
+    connection: Optional. The connection specifying the credentials to be used
+      to read and write to external storage, such as Cloud Storage. The
+      connection can have the form `{project}.{location}.{connection_id}` or
+      `projects/{project}/locations/{location}/connections/{connection_id}",
+      or be set to DEFAULT.
     dependencyTargets: A list of actions that this action depends on.
     disabled: Whether this action is disabled (i.e. should not be run).
+    fileFormat: Optional. The file format for the BigQuery table.
     incrementalTableConfig: Configures `INCREMENTAL_TABLE` settings for this
       relation. Only set if `relation_type` is `INCREMENTAL_TABLE`.
     partitionExpirationDays: Sets the partition expiration in days.
@@ -2867,8 +2877,22 @@ class Relation(_messages.Message):
       include a predicate filter that filters on the partitioning column.
     selectQuery: The SELECT query which returns rows which this relation
       should contain.
+    storageUri: Optional. The fully qualified location prefix of the external
+      folder where table data is stored. The URI should be in the format
+      `gs://bucket/path_to_table/`.
+    tableFormat: Optional. The table format for the BigQuery table.
     tags: Arbitrary, user-defined tags on this action.
   """
+
+  class FileFormatValueValuesEnum(_messages.Enum):
+    r"""Optional. The file format for the BigQuery table.
+
+    Values:
+      FILE_FORMAT_UNSPECIFIED: Default value.
+      PARQUET: Apache Parquet format.
+    """
+    FILE_FORMAT_UNSPECIFIED = 0
+    PARQUET = 1
 
   class RelationTypeValueValuesEnum(_messages.Enum):
     r"""The type of this relation.
@@ -2885,6 +2909,16 @@ class Relation(_messages.Message):
     VIEW = 2
     INCREMENTAL_TABLE = 3
     MATERIALIZED_VIEW = 4
+
+  class TableFormatValueValuesEnum(_messages.Enum):
+    r"""Optional. The table format for the BigQuery table.
+
+    Values:
+      TABLE_FORMAT_UNSPECIFIED: Default value.
+      ICEBERG: Apache Iceberg format.
+    """
+    TABLE_FORMAT_UNSPECIFIED = 0
+    ICEBERG = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalOptionsValue(_messages.Message):
@@ -2917,18 +2951,22 @@ class Relation(_messages.Message):
 
   additionalOptions = _messages.MessageField('AdditionalOptionsValue', 1)
   clusterExpressions = _messages.StringField(2, repeated=True)
-  dependencyTargets = _messages.MessageField('Target', 3, repeated=True)
-  disabled = _messages.BooleanField(4)
-  incrementalTableConfig = _messages.MessageField('IncrementalTableConfig', 5)
-  partitionExpirationDays = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  partitionExpression = _messages.StringField(7)
-  postOperations = _messages.StringField(8, repeated=True)
-  preOperations = _messages.StringField(9, repeated=True)
-  relationDescriptor = _messages.MessageField('RelationDescriptor', 10)
-  relationType = _messages.EnumField('RelationTypeValueValuesEnum', 11)
-  requirePartitionFilter = _messages.BooleanField(12)
-  selectQuery = _messages.StringField(13)
-  tags = _messages.StringField(14, repeated=True)
+  connection = _messages.StringField(3)
+  dependencyTargets = _messages.MessageField('Target', 4, repeated=True)
+  disabled = _messages.BooleanField(5)
+  fileFormat = _messages.EnumField('FileFormatValueValuesEnum', 6)
+  incrementalTableConfig = _messages.MessageField('IncrementalTableConfig', 7)
+  partitionExpirationDays = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  partitionExpression = _messages.StringField(9)
+  postOperations = _messages.StringField(10, repeated=True)
+  preOperations = _messages.StringField(11, repeated=True)
+  relationDescriptor = _messages.MessageField('RelationDescriptor', 12)
+  relationType = _messages.EnumField('RelationTypeValueValuesEnum', 13)
+  requirePartitionFilter = _messages.BooleanField(14)
+  selectQuery = _messages.StringField(15)
+  storageUri = _messages.StringField(16)
+  tableFormat = _messages.EnumField('TableFormatValueValuesEnum', 17)
+  tags = _messages.StringField(18, repeated=True)
 
 
 class RelationDescriptor(_messages.Message):

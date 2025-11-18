@@ -655,6 +655,21 @@ def AddSrcNetworkType(parser, required=False):
   )
 
 
+def AddSrcNetworkContext(parser, required=False):
+  """Adds source network context to this rule."""
+  parser.add_argument(
+      '--src-network-context',
+      required=required,
+      help=(
+          'Use this flag to indicate that the rule should match internet,'
+          ' non-internet traffic or traffic coming from the network specified'
+          ' by --src-networks. It applies to ingress rules. Valid values are'
+          ' INTERNET, NON_INTERNET, VPC_NETWORKS and INTRA_VPC. Use empty'
+          ' string to clear the field.'
+      ),
+  )
+
+
 def AddSrcNetworks(parser):
   """Adds source network urls list to this rule."""
   parser.add_argument(
@@ -700,6 +715,20 @@ def AddDestNetworkType(parser, required=False):
   )
 
 
+def AddDestNetworkContext(parser, required=False):
+  """Adds destination network context to this rule."""
+  parser.add_argument(
+      '--dest-network-context',
+      required=required,
+      help=(
+          'Use this flag to indicate that the rule should match internet or'
+          ' non-internet traffic. It applies to destination traffic for egress'
+          ' rules. Valid values are INTERNET and NON_INTERNET. Use'
+          ' empty string to clear the field.'
+      ),
+  )
+
+
 def AddTargetType(parser, required=False):
   """Adds target type to this rule."""
   parser.add_argument(
@@ -726,6 +755,6 @@ def AddTargetForwardingRules(parser, required=False):
           ' allows you to control which load balancers get this rule. If not'
           ' specified, the rule applies to all load balancers. This field is'
           ' only applicable when --target-type is INTERNAL_MANAGED_LB. It'
-          ' accepts full or partial resourceURLs.'
+          ' accepts full or partial resource URLs.'
       ),
   )

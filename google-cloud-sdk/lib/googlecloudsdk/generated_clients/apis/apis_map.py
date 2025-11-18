@@ -815,6 +815,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'cloudapiregistry': {
+        'v1alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.cloudapiregistry.v1alpha',
+                    client_classpath='cloudapiregistry_v1alpha_client.CloudapiregistryV1alpha',
+                    base_url='https://cloudapiregistry.googleapis.com/',
+                    messages_modulepath='cloudapiregistry_v1alpha_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'cloudasset': {
         'v1':
             APIDef(
@@ -1776,6 +1788,16 @@ MAP = {
                 mtls_endpoint_override='https://www.mtls.googleapis.com/deploymentmanager/v2beta/'),
     },
     'designcenter': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.designcenter.v1',
+                    client_classpath='designcenter_v1_client.DesigncenterV1',
+                    base_url='https://designcenter.googleapis.com/',
+                    messages_modulepath='designcenter_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1783,7 +1805,7 @@ MAP = {
                     client_classpath='designcenter_v1alpha_client.DesigncenterV1alpha',
                     base_url='https://designcenter.googleapis.com/',
                     messages_modulepath='designcenter_v1alpha_messages'),
-                default_version=True,
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
@@ -2061,6 +2083,18 @@ MAP = {
                     client_classpath='faultinjectiontesting_v1alpha1_client.FaultinjectiontestingV1alpha1',
                     base_url='https://faultinjectiontesting.googleapis.com/',
                     messages_modulepath='faultinjectiontesting_v1alpha1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
+    'faulttesting': {
+        'v1alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.faulttesting.v1alpha',
+                    client_classpath='faulttesting_v1alpha_client.FaulttestingV1alpha',
+                    base_url='https://faulttesting.googleapis.com/',
+                    messages_modulepath='faulttesting_v1alpha_messages'),
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),

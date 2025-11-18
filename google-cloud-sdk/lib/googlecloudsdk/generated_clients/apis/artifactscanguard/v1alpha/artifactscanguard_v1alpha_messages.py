@@ -199,9 +199,10 @@ class ArtifactscanguardFoldersLocationsConnectorsPatchRequest(_messages.Message)
 
   Fields:
     connector: A Connector resource to be passed as the request body.
-    name: Required. Identifier. The name of the connector, in the format `orga
-      nizations/{organization}/locations/{location}/connectors/{connector_id}`
-      . connector_id is a free-text name.
+    name: Optional. The name of the connector. Format: `organizations/{organiz
+      ation}/locations/{location}/connectors/{connector_id}`,
+      `folders/{folder}/locations/{location}/connectors/{connector_id}`, or
+      `projects/{project}/locations/{location}/connectors/{connector_id}`.
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the Connector resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
@@ -464,9 +465,10 @@ class ArtifactscanguardOrganizationsLocationsConnectorsPatchRequest(_messages.Me
 
   Fields:
     connector: A Connector resource to be passed as the request body.
-    name: Required. Identifier. The name of the connector, in the format `orga
-      nizations/{organization}/locations/{location}/connectors/{connector_id}`
-      . connector_id is a free-text name.
+    name: Optional. The name of the connector. Format: `organizations/{organiz
+      ation}/locations/{location}/connectors/{connector_id}`,
+      `folders/{folder}/locations/{location}/connectors/{connector_id}`, or
+      `projects/{project}/locations/{location}/connectors/{connector_id}`.
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the Connector resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
@@ -770,9 +772,10 @@ class ArtifactscanguardProjectsLocationsConnectorsPatchRequest(_messages.Message
 
   Fields:
     connector: A Connector resource to be passed as the request body.
-    name: Required. Identifier. The name of the connector, in the format `orga
-      nizations/{organization}/locations/{location}/connectors/{connector_id}`
-      . connector_id is a free-text name.
+    name: Optional. The name of the connector. Format: `organizations/{organiz
+      ation}/locations/{location}/connectors/{connector_id}`,
+      `folders/{folder}/locations/{location}/connectors/{connector_id}`, or
+      `projects/{project}/locations/{location}/connectors/{connector_id}`.
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the Connector resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
@@ -877,6 +880,23 @@ class ArtifactscanguardProjectsLocationsOperationsListRequest(_messages.Message)
   returnPartialSuccess = _messages.BooleanField(5)
 
 
+class BinAuthzPolicyFieldDrift(_messages.Message):
+  r"""BinAuthzPolicyFieldDrift represents the drift of a single field.
+
+  Fields:
+    detectedValue: Required. Detected value of the field which caused the
+      drift.
+    expectedValue: Required. Expected value of the field.
+    field: Required. Name of the field which is drifted. Format: field name in
+      the BinAuthz policy proto.
+      google/cloud/binaryauthorization/v1/resources.proto
+  """
+
+  detectedValue = _messages.StringField(1)
+  expectedValue = _messages.StringField(2)
+  field = _messages.StringField(3)
+
+
 class CVE(_messages.Message):
   r"""Nested message for CVE details specific to EvaluationResponse. The
   following fields are populated only if the verbose flag is set to true: -
@@ -960,9 +980,10 @@ class Connector(_messages.Message):
       Length should be less than or equal to 256 characters.
     etag: Optional. The etag for this connector. If this is provided on
       update, it must match the server's etag.
-    name: Required. Identifier. The name of the connector, in the format `orga
-      nizations/{organization}/locations/{location}/connectors/{connector_id}`
-      . connector_id is a free-text name.
+    name: Optional. The name of the connector. Format: `organizations/{organiz
+      ation}/locations/{location}/connectors/{connector_id}`,
+      `folders/{folder}/locations/{location}/connectors/{connector_id}`, or
+      `projects/{project}/locations/{location}/connectors/{connector_id}`.
     pipelineType: Required. Platform Type of the CI/CD Pipeline for the
       Connector.
     reconciling: Output only. Indicates if changes are in flight. Whether the
@@ -1047,6 +1068,39 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class EnableAdmissionControl(_messages.Message):
+  r"""EnableAdmissionControl defines the admission control to be taken when a
+  policy is violated in the runtime scope.
+
+  Enums:
+    EnforcementActionValueValuesEnum: Required. The enforcement action to take
+      when this policy is violated in the runtime scope.
+
+  Fields:
+    enforcementAction: Required. The enforcement action to take when this
+      policy is violated in the runtime scope.
+  """
+
+  class EnforcementActionValueValuesEnum(_messages.Enum):
+    r"""Required. The enforcement action to take when this policy is violated
+    in the runtime scope.
+
+    Values:
+      RUNTIME_ENFORCEMENT_ACTION_UNSPECIFIED: The enforcement action is
+        unspecified.
+      AUDIT_ONLY: The policy is evaluated but not enforced. The policy
+        violation is only logged and not reported.
+      BLOCK_DEPLOYMENT: The policy is evaluated and enforced. The policy
+        violation is reported and the resource is blocked. The deployment will
+        be blocked based on policy evaluation in registry.
+    """
+    RUNTIME_ENFORCEMENT_ACTION_UNSPECIFIED = 0
+    AUDIT_ONLY = 1
+    BLOCK_DEPLOYMENT = 2
+
+  enforcementAction = _messages.EnumField('EnforcementActionValueValuesEnum', 1)
 
 
 class EvaluatedPolicy(_messages.Message):
@@ -1622,6 +1676,8 @@ class Policy(_messages.Message):
       policy.
 
   Fields:
+    additionalInfo: Output only. Additional information about the policy like
+      drift and evaluations failing after image is deployed.
     annotations: Optional. Annotations are user-provided labels for the
       policy.
     createTime: Output only. The timestamp when the policy was created.
@@ -1690,17 +1746,33 @@ class Policy(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  annotations = _messages.MessageField('AnnotationsValue', 1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  enablementState = _messages.EnumField('EnablementStateValueValuesEnum', 5)
-  etag = _messages.StringField(6)
-  name = _messages.StringField(7)
-  reconciling = _messages.BooleanField(8)
-  scope = _messages.MessageField('PolicyScope', 9)
-  updateTime = _messages.StringField(10)
-  vulnerabilityPolicy = _messages.MessageField('VulnerabilityPolicy', 11)
+  additionalInfo = _messages.MessageField('PolicyAdditionalInfo', 1, repeated=True)
+  annotations = _messages.MessageField('AnnotationsValue', 2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  enablementState = _messages.EnumField('EnablementStateValueValuesEnum', 6)
+  etag = _messages.StringField(7)
+  name = _messages.StringField(8)
+  reconciling = _messages.BooleanField(9)
+  scope = _messages.MessageField('PolicyScope', 10)
+  updateTime = _messages.StringField(11)
+  vulnerabilityPolicy = _messages.MessageField('VulnerabilityPolicy', 12)
+
+
+class PolicyAdditionalInfo(_messages.Message):
+  r"""Defines the additional information about the policy like drift and
+  evaluations failing after image is deployed.
+
+  Fields:
+    binauthzPolicyFieldDrift: Optional. The information about the BinAuthz
+      policy drift for the project. This will be set only if there is a drift.
+    projectId: Required. The project ID that this information is associated
+      with. Format: {project_id}
+  """
+
+  binauthzPolicyFieldDrift = _messages.MessageField('BinAuthzPolicyFieldDrift', 1, repeated=True)
+  projectId = _messages.StringField(2)
 
 
 class PolicyEvaluationSummary(_messages.Message):
@@ -1929,12 +2001,15 @@ class RuntimeScope(_messages.Message):
   r"""RuntimeScope has the project IDs that are associated with the policy.
 
   Enums:
-    EnforcementActionValueValuesEnum: Required. The enforcement action to take
-      when this policy is violated in the runtime scope.
+    EnforcementActionValueValuesEnum: The enforcement action to take when this
+      policy is violated in the runtime scope.
 
   Fields:
-    enforcementAction: Required. The enforcement action to take when this
-      policy is violated in the runtime scope.
+    enableAdmissionControl: Optional. Whether to enable admission control for
+      the runtime scope. If true, the BinAuthz policy will be created based on
+      the enforcement action.
+    enforcementAction: The enforcement action to take when this policy is
+      violated in the runtime scope.
     gkeClusterNamePatterns: Optional. Google Kubernetes Engine clusters that
       are associated with the policy. Format: //container.googleapis.com/proje
       cts/{project_id}/locations/{location}/clusters/{cluster_name_pattern}
@@ -1951,8 +2026,8 @@ class RuntimeScope(_messages.Message):
   """
 
   class EnforcementActionValueValuesEnum(_messages.Enum):
-    r"""Required. The enforcement action to take when this policy is violated
-    in the runtime scope.
+    r"""The enforcement action to take when this policy is violated in the
+    runtime scope.
 
     Values:
       RUNTIME_ENFORCEMENT_ACTION_UNSPECIFIED: The enforcement action is
@@ -1967,11 +2042,12 @@ class RuntimeScope(_messages.Message):
     AUDIT_ONLY = 1
     BLOCK_DEPLOYMENT = 2
 
-  enforcementAction = _messages.EnumField('EnforcementActionValueValuesEnum', 1)
-  gkeClusterNamePatterns = _messages.StringField(2, repeated=True)
-  gkeClusterNamespacePatterns = _messages.StringField(3, repeated=True)
-  overrideBinauthzPolicy = _messages.BooleanField(4)
-  projectIds = _messages.StringField(5, repeated=True)
+  enableAdmissionControl = _messages.MessageField('EnableAdmissionControl', 1)
+  enforcementAction = _messages.EnumField('EnforcementActionValueValuesEnum', 2)
+  gkeClusterNamePatterns = _messages.StringField(3, repeated=True)
+  gkeClusterNamespacePatterns = _messages.StringField(4, repeated=True)
+  overrideBinauthzPolicy = _messages.BooleanField(5)
+  projectIds = _messages.StringField(6, repeated=True)
 
 
 class ScanMetadata(_messages.Message):

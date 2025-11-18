@@ -96,6 +96,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_EXTENDEDMETADATASCHEMAS = (
+      'projects.locations.extendedMetadataSchemas',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'extendedMetadataSchemas/{extendedMetadataSchemasId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

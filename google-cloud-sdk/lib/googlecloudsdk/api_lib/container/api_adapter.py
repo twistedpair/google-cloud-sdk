@@ -897,6 +897,7 @@ class CreateClusterOptions(object):
       autopilot_privileged_admission=None,
       enable_kernel_module_signature_enforcement=None,
       enable_lustre_multi_nic=None,
+      enable_slice_controller=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -1203,6 +1204,7 @@ class CreateClusterOptions(object):
     self.enable_pod_snapshots = enable_pod_snapshots
     self.autopilot_privileged_admission = autopilot_privileged_admission
     self.enable_lustre_multi_nic = enable_lustre_multi_nic
+    self.enable_slice_controller = enable_slice_controller
 
 
 class UpdateClusterOptions(object):
@@ -1396,6 +1398,7 @@ class UpdateClusterOptions(object):
       control_plane_soak_duration=None,
       enable_pod_snapshots=None,
       autopilot_privileged_admission=None,
+      enable_slice_controller=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1632,6 +1635,7 @@ class UpdateClusterOptions(object):
     self.control_plane_soak_duration = control_plane_soak_duration
     self.enable_pod_snapshots = enable_pod_snapshots
     self.autopilot_privileged_admission = autopilot_privileged_admission
+    self.enable_slice_controller = enable_slice_controller
 
 
 class SetMasterAuthOptions(object):
@@ -2604,6 +2608,16 @@ class APIAdapter(object):
       cluster.addonsConfig.podSnapshotConfig = self.messages.PodSnapshotConfig(
           enabled=options.enable_pod_snapshots
       )
+
+    if options.enable_slice_controller is not None:
+      if cluster.addonsConfig is None:
+        cluster.addonsConfig = self._AddonsConfig()
+      cluster.addonsConfig.sliceControllerConfig = (
+          self.messages.SliceControllerConfig(
+              enabled=options.enable_slice_controller
+          )
+      )
+
     if options.enable_kubernetes_alpha:
       cluster.enableKubernetesAlpha = options.enable_kubernetes_alpha
 
@@ -4902,6 +4916,15 @@ class APIAdapter(object):
           podSnapshotConfig=self.messages.PodSnapshotConfig(
               enabled=options.enable_pod_snapshots))
       update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
+
+    if options.enable_slice_controller is not None:
+      addons = self.messages.AddonsConfig(
+          sliceControllerConfig=self.messages.SliceControllerConfig(
+              enabled=options.enable_slice_controller
+          )
+      )
+      update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
+
     if (
         options.security_profile is not None
         and options.security_profile_runtime_rules is not None
@@ -5834,6 +5857,7 @@ class APIAdapter(object):
       enable_lustre_csi_driver=None,
       enable_pod_snapshots=None,
       enable_ray_operator=None,
+      enable_slice_controller=None,
   ):
     """Generates an AddonsConfig object given specific parameters.
 
@@ -5855,6 +5879,7 @@ class APIAdapter(object):
       enable_lustre_csi_driver: whether to enable LustreCsiDriver.
       enable_pod_snapshots: whether to enable PodSnapshots.
       enable_ray_operator: whether to enable RayOperator.
+      enable_slice_controller: whether to enable SliceController.
 
     Returns:
       An AddonsConfig object that contains the options defining what addons to
@@ -5922,6 +5947,10 @@ class APIAdapter(object):
       )
     if enable_ray_operator:
       addons.rayOperatorConfig = self.messages.RayOperatorConfig(enabled=True)
+    if enable_slice_controller:
+      addons.sliceControllerConfig = self.messages.SliceControllerConfig(
+          enabled=True
+      )
 
     return addons
 
@@ -8697,6 +8726,11 @@ class V1Beta1Adapter(V1Adapter):
       update = self.messages.ClusterUpdate(
           desiredPodSecurityPolicyConfig=config
       )
+    elif options.enable_slice_controller is not None:
+      addons = self._AddonsConfig(
+          enable_slice_controller=options.enable_slice_controller
+      )
+      update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
     elif options.enable_vertical_pod_autoscaling is not None:
       vertical_pod_autoscaling = self.messages.VerticalPodAutoscaling(
           enabled=options.enable_vertical_pod_autoscaling

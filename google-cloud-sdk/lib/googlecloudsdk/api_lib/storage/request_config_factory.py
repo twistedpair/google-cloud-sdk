@@ -47,6 +47,7 @@ S3_RESOURCE_ERROR_FIELDS = {
     'enable_autoclass': 'Enabling Autoclass',
     'enable_hierarchical_namespace': 'Enabling Hierarchical Namespace',
     'ip_filter_file_path': 'Setting IP Filter',
+    'encryption_enforcement_file_path': 'Setting Encryption Enforcement',
     'predefined_default_object_acl': 'Setting Predefined Default ACL',
     'public_access_prevention': 'Public Access Prevention',
     'recovery_point_objective': 'Setting Recovery Point Objective',
@@ -226,6 +227,7 @@ class _GcsBucketConfig(_BucketConfig):
       autoclass_terminal_storage_class=None,
       cors_file_path=None,
       default_encryption_key=None,
+      encryption_enforcement_file_path=None,
       default_event_based_hold=None,
       default_object_acl_file_path=None,
       default_object_acl_grants_to_add=None,
@@ -273,6 +275,7 @@ class _GcsBucketConfig(_BucketConfig):
     )
     self.autoclass_terminal_storage_class = autoclass_terminal_storage_class
     self.default_encryption_key = default_encryption_key
+    self.encryption_enforcement_file_path = encryption_enforcement_file_path
     self.default_event_based_hold = default_event_based_hold
     self.default_object_acl_file_path = default_object_acl_file_path
     self.default_object_acl_grants_to_add = default_object_acl_grants_to_add
@@ -301,6 +304,8 @@ class _GcsBucketConfig(_BucketConfig):
         and self.autoclass_terminal_storage_class
         == other.autoclass_terminal_storage_class
         and self.default_encryption_key == other.default_encryption_key
+        and self.encryption_enforcement_file_path
+        == other.encryption_enforcement_file_path
         and self.default_event_based_hold == other.default_event_based_hold
         and self.default_object_acl_grants_to_add
         == other.default_object_acl_grants_to_add
@@ -693,6 +698,9 @@ def _get_request_config_resource_args(url,
               user_resource_args.autoclass_terminal_storage_class)
           new_resource_args.default_encryption_key = (
               user_resource_args.default_encryption_key)
+          new_resource_args.encryption_enforcement_file_path = (
+              user_resource_args.encryption_enforcement_file_path
+          )
           new_resource_args.default_event_based_hold = (
               user_resource_args.default_event_based_hold)
           new_resource_args.default_object_acl_file_path = (

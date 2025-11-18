@@ -1928,7 +1928,6 @@ def AddMaintenanceVersion(parser):
       '--maintenance-version',
       required=False,
       type=str,
-      hidden=True,
       help=(
           'Maintenance version to update the cluster to. Use `latest` to'
           ' apply the latest available maintenance version.'
@@ -2417,4 +2416,129 @@ def AddMigrateCloudSqlFlags(parser: argparse.PARSER) -> None:
           'CloudSQL backup ID to migrate from. This must be the'
           ' backup ID (myBackup).'
       ),
+  )
+
+
+def _AddAutoscalerFlags(group):
+  """Add Autoscaler specific flags to the group."""
+  group.add_argument(
+      '--enable-autoscaler',
+      required=False,
+      action=arg_parsers.StoreTrueFalseAction,
+      help='Enable autoscaler for the instance.',
+  )
+
+  group.add_argument(
+      '--autoscaler-max-node-count',
+      required=False,
+      type=arg_parsers.BoundedInt(lower_bound=1, upper_bound=20),
+      default=None,
+      help='Maximum node count for the autoscaler.',
+  )
+
+  group.add_argument(
+      '--autoscaler-cool-down-period-seconds',
+      required=False,
+      type=arg_parsers.Duration(parsed_unit='s'),
+      default=None,
+      help='Cool down period in seconds for the autoscaler.',
+  )
+
+  group.add_argument(
+      '--autoscaler-target-cpu-usage',
+      required=False,
+      type=arg_parsers.BoundedFloat(lower_bound=0, upper_bound=1),
+      default=None,
+      help='Target CPU usage for the autoscaler.',
+  )
+
+  group.add_argument(
+      '--autoscaler-set-schedule',
+      required=False,
+      type=str,
+      default=None,
+      help='The name of the schedule to create or update for the autoscaler.',
+  )
+
+  group.add_argument(
+      '--autoscaler-schedule-cron-exp',
+      required=False,
+      type=str,
+      default=None,
+      help='Cron expression for the autoscaler schedule.',
+  )
+
+  group.add_argument(
+      '--autoscaler-schedule-duration-seconds',
+      required=False,
+      type=arg_parsers.Duration(parsed_unit='s'),
+      default=None,
+      help='Duration for which the autoscaler schedule is active in seconds.',
+  )
+
+  group.add_argument(
+      '--autoscaler-schedule-time-zone',
+      required=False,
+      type=str,
+      default=None,
+      help='Time zone for the autoscaler schedule.',
+  )
+
+  group.add_argument(
+      '--autoscaler-schedule-min-node-count',
+      required=False,
+      type=int,
+      default=None,
+      help='Minimum node count for the autoscaler schedule.',
+  )
+
+  group.add_argument(
+      '--autoscaler-schedule-description',
+      required=False,
+      type=str,
+      default=None,
+      help='Description for the autoscaler schedule.',
+  )
+
+
+def AddAutoscalerCreateFlags(parser):
+  """Add Autoscaler specific flags for create command.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+  """
+  group = parser.add_group(help='Autoscaler flags.', hidden=True)
+  _AddAutoscalerFlags(group)
+
+
+def AddAutoscalerUpdateFlags(parser):
+  """Add Autoscaler specific flags for update command.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+  """
+  group = parser.add_group(help='Autoscaler flags.', hidden=True)
+  _AddAutoscalerFlags(group)
+  group.add_argument(
+      '--autoscaler-delete-schedule',
+      required=False,
+      type=str,
+      default=None,
+      help='The name of the schedule to delete for the autoscaler.',
+  )
+
+  group.add_argument(
+      '--autoscaler-disable-schedule',
+      required=False,
+      type=str,
+      default=None,
+      help='The name of the schedule to disable for the autoscaler.',
+  )
+
+  group.add_argument(
+      '--autoscaler-enable-schedule',
+      required=False,
+      type=str,
+      default=None,
+      help='The name of the schedule to enable for the autoscaler.',
   )

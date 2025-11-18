@@ -112,6 +112,41 @@ def SqlServerAuditConfig(sql_messages,
   return config
 
 
+def SqlServerEntraIdConfig(
+    sql_messages,
+    tenant_id=None,
+    application_id=None,
+    clear_entraid_config=False,
+):
+  """Generates the Entra ID configuration for the SQL Server instance.
+
+  Args:
+    sql_messages: module, The messages module that should be used.
+    tenant_id: string, the Entra ID tenant ID.
+    application_id: string, the Entra ID application ID.
+    clear_entraid_config: If true, clear the Entra ID config.
+
+  Returns:
+    sql_messages.SqlServerEntraIdConfig object.
+  """
+
+  if clear_entraid_config:
+    return sql_messages.SqlServerEntraIdConfig(
+        tenantId='',
+        applicationId='',
+    )
+
+  if (tenant_id is None and application_id is None):
+    return None
+
+  config = sql_messages.SqlServerEntraIdConfig()
+  if tenant_id is not None:
+    config.tenantId = tenant_id
+  if application_id is not None:
+    config.applicationId = application_id
+  return config
+
+
 def BackupConfiguration(
     sql_messages,
     instance=None,

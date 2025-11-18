@@ -14,8 +14,10 @@
 # limitations under the License.
 """Management API gcloud constants."""
 
+from __future__ import annotations
+
 import dataclasses
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 # TODO: b/308433842 - This can be deleted once gcloud python migration to
 # 3.12 is complete
@@ -53,7 +55,7 @@ class SecurityCenterService:
   """Dataclass that reprsesents a Security Center Service."""
 
   name: str
-  abbreviation: Optional[str] = None
+  abbreviation: str | None = None
 
   def __str__(self) -> str:
     if self.abbreviation is not None:
@@ -132,6 +134,7 @@ SUPPORTED_SERVICES = (
         'azure-vulnerability-assessment', abbreviation='azure-va'
     ),
     SecurityCenterService('notebook-security-scanner', abbreviation='nss'),
+    SecurityCenterService('agent-engine-threat-detection', abbreviation='aetd'),
 )
 
 SERVICE_INVENTORY: Dict[str, SecurityCenterService] = make_service_inventory(

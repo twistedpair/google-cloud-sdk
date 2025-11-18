@@ -107,11 +107,39 @@ class InsightsConfigClient(object):
     self.api_version = api_version
     self.p4sa_email = None
 
-  def create(self, insight_config_ref, app_hub, user_artifact_configs):
+  def create(
+      self, insight_config_ref, app_hub, target_projects, user_artifact_configs
+  ):
     """Creates the insight config."""
+    if app_hub:
+      create_request = self.create_apphub_insights_config_request(
+          insight_config_ref, app_hub, user_artifact_configs
+      )
+    else:
+      create_request = self.create_project_scope_insights_config_request(
+          insight_config_ref, target_projects, user_artifact_configs
+      )
+
+    try:
+      return self.client.projects_locations_insightsConfigs.Create(
+          request=create_request
+      )
+    except apitools_exceptions.HttpConflictError:
+      raise exceptions.Error(
+          f'Insights Config [{insight_config_ref.insightsConfigsId}] already'
+          f' exists in project [{insight_config_ref.projectsId}] location'
+          f' [{insight_config_ref.locationsId}].'
+      )
+
+  def create_apphub_insights_config_request(
+      self, insight_config_ref, app_hub, user_artifact_configs
+  ) -> (
+      get_messages_module().DeveloperconnectProjectsLocationsInsightsConfigsCreateRequest
+  ):
+    """Creates the insight config request for app hub application scope."""
     app_hub_application = name.parse_app_hub_application_uri(app_hub)
-    # Check if the app hub application project is the same as the project where
-    # the insight config is being created.
+    # Check if the app hub application project is the same as the project
+    # where the insight config is being created.
     is_project_id_mismatch = (
         app_hub_application.project_id != insight_config_ref.projectsId
     )
@@ -125,9 +153,7 @@ class InsightsConfigClient(object):
           ' project where the insight config is being created'
           f' [{insight_config_ref.projectsId}].'
       )
-    user_artifact_configs_dict = name.parse_artifact_configs(
-        user_artifact_configs
-    )
+
     # Handle the management project and get the dependent projects and gke
     # workloads.
     dependent_projects, gke_workloads, cloud_run_services = (
@@ -137,6 +163,10 @@ class InsightsConfigClient(object):
     )
     cais_artifact_configs_dict = self.get_artifact_configs_from_cais(
         gke_workloads, cloud_run_services
+    )
+
+    user_artifact_configs_dict = name.parse_artifact_configs(
+        user_artifact_configs
     )
     merged_artifact_configs_dict = self.merge_artifact_configs(
         cais_artifact_configs_dict, user_artifact_configs_dict
@@ -157,7 +187,8 @@ class InsightsConfigClient(object):
           sorted(dependent_projects),
           management_project=False,
       )
-    create_request = self.messages.DeveloperconnectProjectsLocationsInsightsConfigsCreateRequest(
+
+    return self.messages.DeveloperconnectProjectsLocationsInsightsConfigsCreateRequest(
         parent=insight_config_ref.Parent().RelativeName(),
         insightsConfigId=insight_config_ref.insightsConfigsId,
         insightsConfig=self.messages.InsightsConfig(
@@ -166,16 +197,53 @@ class InsightsConfigClient(object):
             artifactConfigs=artifact_configs,
         ),
     )
-    try:
-      return self.client.projects_locations_insightsConfigs.Create(
-          request=create_request
+
+  def create_project_scope_insights_config_request(
+      self, insight_config_ref, target_projects, user_artifact_configs
+  ) -> (
+      get_messages_module().DeveloperconnectProjectsLocationsInsightsConfigsCreateRequest
+  ):
+    """Creates the insight config request for project scope."""
+    projects = name.parse_target_projects(target_projects)
+    dependent_projects = set(projects)
+    # Get the artifact configs from CAIS for the target projects.
+    cais_artifact_configs_dict = {}
+    for project in projects:
+      cais_artifacts = self.get_artifact_configs_from_cais_for_project(project)
+      cais_artifact_configs_dict.update(cais_artifacts)
+
+    user_artifact_configs_dict = name.parse_artifact_configs(
+        user_artifact_configs
+    )
+    merged_artifact_configs_dict = self.merge_artifact_configs(
+        cais_artifact_configs_dict, user_artifact_configs_dict
+    )
+
+    # Get the artifact configs and add new projects to the dependent projects
+    # set.
+    artifact_projects, artifact_configs = self.build_artifact_configs(
+        merged_artifact_configs_dict, cais_artifact_configs_dict
+    )
+    # Add the artifact projects to the dependent projects set.
+    dependent_projects.update(artifact_projects)
+    # Get the P4SA and grant IAM roles to it.
+    if dependent_projects:
+      # Sort projects for deterministic behavior, important for tests.
+      self.init_service_account(
+          insight_config_ref.projectsId,
+          sorted(dependent_projects),
+          management_project=False,
       )
-    except apitools_exceptions.HttpConflictError:
-      raise exceptions.Error(
-          f'Insights Config [{insight_config_ref.insightsConfigsId}] already'
-          f' exists in project [{insight_config_ref.projectsId}] location'
-          f' [{insight_config_ref.locationsId}].'
-      )
+
+    return self.messages.DeveloperconnectProjectsLocationsInsightsConfigsCreateRequest(
+        parent=insight_config_ref.Parent().RelativeName(),
+        insightsConfigId=insight_config_ref.insightsConfigsId,
+        insightsConfig=self.messages.InsightsConfig(
+            name=insight_config_ref.RelativeName(),
+            projects=self.messages.Projects(projectIds=projects),
+            artifactConfigs=artifact_configs,
+        ),
+    )
 
   def merge_artifact_configs(
       self,
@@ -270,6 +338,48 @@ class InsightsConfigClient(object):
               artifact_uris, artifact_configs_dict
           )
       )
+    return artifact_configs_dict
+
+  def get_artifact_configs_from_cais_for_project(
+      self, project: str
+  ) -> Dict[str, get_messages_module().ArtifactConfig]:
+    """Queries CAIS for artifacts associated with the GCP Project.
+
+    Args:
+      project: A GCP Project.
+
+    Returns:
+      A dict of artifact configs IC type.
+    """
+    artifact_configs_dict: Dict[str, get_messages_module().ArtifactConfig] = {}
+
+    # Get GKE assets and extract artifact URIs.
+    gke_assets = discover_artifacts.query_cais_for_gke_assets_in_project(
+        project
+    )
+    gke_artifact_uris = discover_artifacts.get_artifact_uris_from_gke_assets(
+        gke_assets
+    )
+    artifact_configs_dict.update(
+        self.update_artifact_config_dict_from_artifact_uri(
+            gke_artifact_uris, artifact_configs_dict
+        )
+    )
+
+    # Get Cloud Run assets and extract artifact URIs.
+    cloud_run_assets = (
+        discover_artifacts.query_cais_for_cloud_run_services_in_project(project)
+    )
+    cloud_run_artifact_uris = (
+        discover_artifacts.get_artifact_uris_from_cloud_run_assets(
+            cloud_run_assets
+        )
+    )
+    artifact_configs_dict.update(
+        self.update_artifact_config_dict_from_artifact_uri(
+            cloud_run_artifact_uris, artifact_configs_dict
+        )
+    )
     return artifact_configs_dict
 
   def update_artifact_config_dict_from_artifact_uri(
@@ -380,7 +490,7 @@ class InsightsConfigClient(object):
         continue
 
       try:
-        name.validate_build_project(build_project)
+        name.validate_project(build_project)
         found = True
       except apitools_exceptions.HttpForbiddenError:
         log.status.Print(
@@ -571,7 +681,7 @@ class InsightsConfigClient(object):
       )
     # Check if the build project exists.
     try:
-      name.validate_build_project(build_project)
+      name.validate_project(build_project)
     # Catch specific API errors first
     except apitools_exceptions.HttpForbiddenError:
       # Specific handling for permission errors
@@ -742,14 +852,14 @@ class InsightsConfigClient(object):
         return
 
       log.status.Print(
-          '\nService account [{}] is missing the role [{}].\n{}'.format(
-              sa_email, role, reason
-          )
+          '\nService account [{}] is missing the role [{}] in project [{}].\n{}'
+          .format(sa_email, role, resource_ref, reason)
       )
 
       bind = console_io.CanPrompt() and console_io.PromptContinue(
-          prompt_string='\nBind the role [{}] to service account [{}]?'.format(
-              role, sa_email
+          prompt_string=(
+              '\nBind the role [{}] to service account [{}] in project [{}]?'
+              .format(role, sa_email, resource_ref)
           )
       )
       if not bind:
@@ -766,9 +876,8 @@ class InsightsConfigClient(object):
         projects_api.AddIamPolicyBinding(resource_ref, member, role)
 
       log.status.Print(
-          'Successfully bound the role [{}] to service account [{}]'.format(
-              role, sa_email
-          )
+          'Successfully bound the role [{}] to service account [{}] in project'
+          ' [{}]'.format(role, sa_email, resource_ref)
       )
     except apitools_exceptions.HttpForbiddenError:
       log.warning(

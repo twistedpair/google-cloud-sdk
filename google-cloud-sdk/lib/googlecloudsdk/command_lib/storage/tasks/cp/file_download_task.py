@@ -52,22 +52,32 @@ def _should_perform_sliced_download(source_resource, destination_resource):
   if destination_resource.storage_url.is_stream:
     # Can't write to different indices of streams.
     return False
-  if (not source_resource.crc32c_hash and
-      properties.VALUES.storage.check_hashes.Get() !=
-      properties.CheckHashes.NEVER.value):
+  if (
+      not source_resource.crc32c_hash
+      and properties.VALUES.storage.check_hashes.Get()
+      != properties.CheckHashes.NEVER.value
+  ):
     # Do not perform sliced download if hash validation is not possible.
     return False
 
   threshold = scaled_integer.ParseInteger(
-      properties.VALUES.storage.sliced_object_download_threshold.Get())
+      properties.VALUES.storage.sliced_object_download_threshold.Get()
+  )
   component_size = scaled_integer.ParseInteger(
-      properties.VALUES.storage.sliced_object_download_component_size.Get())
-  api_capabilities = api_factory.get_capabilities(
-      source_resource.storage_url.scheme)
-  return (source_resource.size and threshold != 0 and
-          source_resource.size > threshold and component_size and
-          cloud_api.Capability.SLICED_DOWNLOAD in api_capabilities and
-          task_util.should_use_parallelism())
+      properties.VALUES.storage.sliced_object_download_component_size.Get()
+  )
+  args = [source_resource.storage_url.scheme]
+  if properties.VALUES.storage.enable_zonal_buckets_bidi_streaming.GetBool():
+    args.append(source_resource.storage_url.bucket_name)
+  api_capabilities = api_factory.get_capabilities(*args)
+  return (
+      source_resource.size
+      and threshold != 0
+      and source_resource.size > threshold
+      and component_size
+      and cloud_api.Capability.SLICED_DOWNLOAD in api_capabilities
+      and task_util.should_use_parallelism()
+  )
 
 
 class FileDownloadTask(copy_util.ObjectCopyTaskWithExitHandler):

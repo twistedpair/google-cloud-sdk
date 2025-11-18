@@ -56,7 +56,18 @@ class _ConvertValueType(usage_text.DefaultArgTypeWrapper):
     self.field = arg_gen.field
     self.repeated = arg_gen.repeated
     self.processor = arg_gen.processor
-    self.choices = arg_gen.choices
+    self._choices = arg_gen.choices
+
+  @property
+  def choices(self):
+    """Returns a map of choice values to choice help text.
+
+    Used in help text generation and not in actual input parsing.
+    """
+    if self._choices:
+      return {choice.arg_value: choice.help_text for choice in self._choices}
+    else:
+      return None
 
   def __call__(self, arg_value):
     """Converts arg_value into type arg_type."""
@@ -66,7 +77,7 @@ class _ConvertValueType(usage_text.DefaultArgTypeWrapper):
         value,
         repeated=self.repeated,
         processor=self.processor,
-        choices=util.Choice.ToChoiceMap(self.choices),
+        choices=util.Choice.ToChoiceMap(self._choices),
     )
 
 

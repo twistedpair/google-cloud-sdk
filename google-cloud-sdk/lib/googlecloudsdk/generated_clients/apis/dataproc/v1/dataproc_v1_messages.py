@@ -774,7 +774,7 @@ class AutotuningConfig(_messages.Message):
 
   Fields:
     cohort: Optional. Autotuning cohort identifier. Identifies families of the
-      workloads having the same shape, e.g. daily ETL jobs.
+      workloads that have the same shape, for example, daily ETL jobs.
     scenarios: Optional. Scenarios for which tunings are applied.
   """
 
@@ -9045,14 +9045,15 @@ class ResizeNodeGroupRequest(_messages.Message):
 
 
 class ResolvedCohortInfo(_messages.Message):
-  r"""Information about the cohort the workload belongs to.
+  r"""Information about the cohort that the workload belongs to.
 
   Enums:
     CohortSourceValueValuesEnum: Output only. Source of the cohort.
 
   Fields:
     cohortSource: Output only. Source of the cohort.
-    resolvedCohort: Output only. Final cohort used to tune the workload.
+    resolvedCohort: Output only. Final cohort that was used to tune the
+      workload.
   """
 
   class CohortSourceValueValuesEnum(_messages.Enum):
@@ -9164,7 +9165,7 @@ class RuntimeConfig(_messages.Message):
   Fields:
     autotuningConfig: Optional. Autotuning configuration of the workload.
     cohort: Optional. Cohort identifier. Identifies families of the workloads
-      having the same shape, e.g. daily ETL jobs.
+      that have the same shape, for example, daily ETL jobs.
     containerImage: Optional. Optional custom container image for the job
       runtime environment. If not specified, a default container image will be
       used.
@@ -9231,8 +9232,8 @@ class RuntimeInfo(_messages.Message):
     outputUri: Output only. A URI pointing to the location of the stdout and
       stderr of the workload.
     propertiesInfo: Optional. Properties of the workload organized by origin.
-    resolvedCohortInfo: Output only. Information about the cohort the workload
-      belongs to.
+    resolvedCohortInfo: Output only. Information about the cohort that the
+      workload belongs to.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
