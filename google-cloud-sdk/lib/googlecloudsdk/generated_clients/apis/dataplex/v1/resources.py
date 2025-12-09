@@ -99,6 +99,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_DATAPRODUCTS = (
+      'projects.locations.dataProducts',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/dataProducts/'
+              '{dataProductsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_DATAPRODUCTS_DATAASSETS = (
+      'projects.locations.dataProducts.dataAssets',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/dataProducts/'
+              '{dataProductsId}/dataAssets/{dataAssetsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_DATASCANS = (
       'projects.locations.dataScans',
       '{+name}',

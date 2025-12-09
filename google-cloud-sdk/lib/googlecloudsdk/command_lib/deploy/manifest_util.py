@@ -15,6 +15,8 @@
 """Utilities for parsing the cloud deploy resource to yaml definition."""
 
 
+from __future__ import annotations
+
 import collections
 import dataclasses
 import datetime
@@ -100,6 +102,16 @@ class _TransformContext:
   region: str
   manifest: dict[str, Any]
   field: str
+
+
+@enum.unique
+class TaskType(enum.Enum):
+  """The type of task to perform."""
+
+  CONTAINER = 'container'
+
+  def __str__(self):
+    return self.value
 
 
 def ParseDeployConfig(
@@ -191,7 +203,7 @@ def _RemoveApiVersionAndKind(
     value: dict[str, Any], transform_context: _TransformContext
 ) -> None:
   """Removes the apiVersion and kind fields from the manifest."""
-  del value
+  del value  # Unused by _RemoveApiVersionAndKind().
   del transform_context.manifest['apiVersion']
   del transform_context.manifest['kind']
 
@@ -231,7 +243,7 @@ def _ConvertLabelsToSnakeCase(
     labels: dict[str, str], transform_context: _TransformContext
 ) -> dict[str, str]:
   """Convert labels from camelCase to snake_case."""
-  del transform_context
+  del transform_context  # Unused by _ConvertLabelsToSnakeCase().
   # See go/unified-cloud-labels-proposal.
   return {resource_property.ConvertToSnakeCase(k): v for k, v in labels.items()}
 
@@ -250,7 +262,7 @@ def _RenameOldAutomationRules(
     rule: dict[str, Any], transform_context: _TransformContext
 ) -> dict[str, Any]:
   """Renames the old automation rule fields to the new format."""
-  del transform_context
+  del transform_context  # Unused by _RenameOldAutomationRules().
   if PROMOTE_RELEASE_FIELD in rule:
     rule[PROMOTE_RELEASE_RULE_FIELD] = rule[PROMOTE_RELEASE_FIELD]
     del rule[PROMOTE_RELEASE_FIELD]
@@ -283,7 +295,7 @@ def _AddEmptyRepairAutomationRetryMessage(
     repair_phase: dict[str, Any], transform_context: _TransformContext
 ) -> dict[str, Any]:
   """Add an empty retry field if it's defined in the manifest but set to None."""
-  del transform_context
+  del transform_context  # Unused by _AddEmptyRepairAutomationRetryMessage().
   if RETRY_FIELD in repair_phase and repair_phase[RETRY_FIELD] is None:
     repair_phase[RETRY_FIELD] = {}
   return repair_phase
@@ -293,7 +305,7 @@ def _ConvertRepairAutomationBackoffModeEnumValuesToProtoFormat(
     value: str, transform_context
 ) -> str:
   """Converts the backoffMode values to the proto enum names."""
-  del transform_context
+  del transform_context  # Unused by this function.
 
   if not value.startswith('BACKOFF_MODE_'):
     return 'BACKOFF_MODE_' + value
@@ -303,7 +315,7 @@ def _ConvertAutomationWaitMinToSec(
     wait: str, transform_context: _TransformContext
 ) -> str:
   """Converts the wait time from (for example) "5m" to "300s"."""
-  del transform_context
+  del transform_context  # Unused by _ConvertAutomationWaitMinToSec().
   if not re.fullmatch(r'\d+m', wait):
     raise exceptions.AutomationWaitFormatError()
   mins = wait[:-1]
@@ -433,6 +445,29 @@ def _ReplaceCustomTargetType(
   return custom_target_type_util.CustomTargetTypeReference(
       value, transform_context.project, transform_context.region
   ).RelativeName()
+
+
+def _ConvertYamlTaskToProto(
+    task: dict[str, Any], transform_context: _TransformContext
+) -> dict[str, Any]:
+  """Transforms a task in YAML format to proto-compatible format."""
+  # Schema validation verifies the presence of the 'type' key so we
+  # can just grab the value without supplying a default value.
+  task_type = task['type']
+  if task_type == TaskType.CONTAINER.value:
+    new_task = {}
+    container_task = {}
+    for k, v in task.items():
+      if k != 'type':
+        container_task[k] = v
+    new_task[TaskType.CONTAINER.value] = container_task
+    return new_task
+  raise exceptions.CloudDeployConfigError.for_resource_field(
+      transform_context.kind,
+      transform_context.name,
+      transform_context.field,
+      f'unsupported task type: {task_type}',
+  )
 
 
 @dataclasses.dataclass
@@ -570,6 +605,30 @@ _PARSE_TRANSFORMS = [
         replace=_ReplaceCustomTargetType,
         schema={'type': 'string'},
     ),
+    TransformConfig(
+        kinds=[ResourceKind.DELIVERY_PIPELINE],
+        fields=[
+            'serialPipeline.stages[].strategy.standard.predeploy.tasks[]',
+            'serialPipeline.stages[].strategy.standard.postdeploy.tasks[]',
+            'serialPipeline.stages[].strategy.standard.verifyConfig.tasks[]',
+            'serialPipeline.stages[].strategy.standard.analysis.customChecks[].task',
+            'serialPipeline.stages[].strategy.canary.canaryDeployment.predeploy.tasks[]',
+            'serialPipeline.stages[].strategy.canary.canaryDeployment.postdeploy.tasks[]',
+            'serialPipeline.stages[].strategy.canary.canaryDeployment.verifyConfig.tasks[]',
+            'serialPipeline.stages[].strategy.canary.canaryDeployment.analysis.customChecks[].task',
+            'serialPipeline.stages[].strategy.canary.customCanaryDeployment.phaseConfigs[].predeploy.tasks[]',
+            'serialPipeline.stages[].strategy.canary.customCanaryDeployment.phaseConfigs[].postdeploy.tasks[]',
+            'serialPipeline.stages[].strategy.canary.customCanaryDeployment.phaseConfigs[].verifyConfig.tasks[]',
+            'serialPipeline.stages[].strategy.canary.customCanaryDeployment.phaseConfigs[].analysis.customChecks[].task',
+        ],
+        replace=_ConvertYamlTaskToProto,
+        schema={
+            'type': 'object',
+            'properties': {'type': {'type': 'string'}},
+            'required': ['type'],
+            'additionalProperties': True,
+        },
+    ),
 ]
 
 
@@ -643,14 +702,14 @@ def AddApiVersionAndKind(
     value: Any, transform_context: _TransformContext
 ) -> None:
   """Adds the API version and kind to the manifest."""
-  del value
+  del value  # Unused by AddApiVersionAndKind.
   transform_context.manifest['apiVersion'] = API_VERSION_V1
   transform_context.manifest['kind'] = transform_context.kind.value
 
 
 def _RemoveField(value: Any, transform_context: _TransformContext) -> None:
   """Removes the field from the manifest."""
-  del value
+  del value  # Unused by _RemoveField.
   del transform_context.manifest[transform_context.field]
 
 
@@ -658,7 +717,7 @@ def _MetadataProtoToYaml(
     value: Any, transform_context: _TransformContext
 ) -> None:
   """Converts the metadata proto to YAML."""
-  del value
+  del value  # Unused by _MetadataProtoToYaml.
   transform_context.manifest['metadata'] = {}
   for k in METADATA_FIELDS:
     if k in transform_context.manifest:
@@ -670,13 +729,28 @@ def _MetadataProtoToYaml(
 def _ConvertAutomationWaitSecToMin(
     wait: str, transform_context: _TransformContext
 ) -> str:
-  del transform_context
+  del transform_context  # Unused by _ConvertAutomationWaitSecToMin.
   if not wait:
     return wait
   seconds = wait[:-1]
   # convert the minute to second
   mins = int(seconds) // 60
   return '%sm' % mins
+
+
+def _ConvertProtoTaskToYaml(
+    task: dict[str, Any], transform_context: _TransformContext
+) -> dict[str, Any]:
+  """Converts a proto task to YAML format suitable for export."""
+  del transform_context  # Unused by _ConvertProtoTaskToYaml.
+  new_task = {}
+  for task_type in TaskType:
+    if task[task_type.value] is not None:
+      new_task['type'] = task_type.value
+      task_data = task[task_type.value]
+      for k, v in task_data.items():
+        new_task[k] = v
+  return new_task
 
 
 def ConvertPolicyOneTimeWindowToYamlFormat(
@@ -717,7 +791,7 @@ def ConvertTimeProtoToString(
     time_obj: dict[str, str], transform_context: _TransformContext
 ) -> str:
   """Converts a time object to a string."""
-  del transform_context
+  del transform_context  # Unused by ConvertTimeProtoToString.
   hours = time_obj.get('hours') or 0
   minutes = time_obj.get('minutes') or 0
   time_str = f'{hours:02}:{minutes:02}'
@@ -807,6 +881,24 @@ _EXPORT_TRANSFORMS = [
             'rules[].rolloutRestriction.timeWindows.weeklyWindows[].endTime',
         ],
         replace=ConvertTimeProtoToString,
+    ),
+    TransformConfig(
+        kinds=[ResourceKind.DELIVERY_PIPELINE],
+        fields=[
+            'serialPipeline.stages[].strategy.standard.predeploy.tasks[]',
+            'serialPipeline.stages[].strategy.standard.postdeploy.tasks[]',
+            'serialPipeline.stages[].strategy.standard.verifyConfig.tasks[]',
+            'serialPipeline.stages[].strategy.standard.analysis.customChecks[].task',
+            'serialPipeline.stages[].strategy.canary.canaryDeployment.predeploy.tasks[]',
+            'serialPipeline.stages[].strategy.canary.canaryDeployment.postdeploy.tasks[]',
+            'serialPipeline.stages[].strategy.canary.canaryDeployment.verifyConfig.tasks[]',
+            'serialPipeline.stages[].strategy.canary.canaryDeployment.analysis.customChecks[].task',
+            'serialPipeline.stages[].strategy.canary.customCanaryDeployment.phaseConfigs[].predeploy.tasks[]',
+            'serialPipeline.stages[].strategy.canary.customCanaryDeployment.phaseConfigs[].postdeploy.tasks[]',
+            'serialPipeline.stages[].strategy.canary.customCanaryDeployment.phaseConfigs[].verifyConfig.tasks[]',
+            'serialPipeline.stages[].strategy.canary.customCanaryDeployment.phaseConfigs[].analysis.customChecks[].task',
+        ],
+        replace=_ConvertProtoTaskToYaml,
     ),
 ]
 

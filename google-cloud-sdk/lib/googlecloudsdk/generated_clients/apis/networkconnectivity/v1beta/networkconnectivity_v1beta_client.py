@@ -52,6 +52,8 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
     self.projects_locations_regionalEndpoints = self.ProjectsLocationsRegionalEndpointsService(self)
     self.projects_locations_spokes_gatewayAdvertisedRoutes = self.ProjectsLocationsSpokesGatewayAdvertisedRoutesService(self)
     self.projects_locations_spokes = self.ProjectsLocationsSpokesService(self)
+    self.projects_locations_transports_remoteProfiles = self.ProjectsLocationsTransportsRemoteProfilesService(self)
+    self.projects_locations_transports = self.ProjectsLocationsTransportsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -1964,6 +1966,192 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
         request_field='googleIamV1TestIamPermissionsRequest',
         request_type_name='NetworkconnectivityProjectsLocationsSpokesTestIamPermissionsRequest',
         response_type_name='GoogleIamV1TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsTransportsRemoteProfilesService(base_api.BaseApiService):
+    """Service class for the projects_locations_transports_remoteProfiles resource."""
+
+    _NAME = 'projects_locations_transports_remoteProfiles'
+
+    def __init__(self, client):
+      super(NetworkconnectivityV1beta.ProjectsLocationsTransportsRemoteProfilesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single RemoteProfile.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsTransportsRemoteProfilesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+
+      Returns:
+        (TransportsV1BetaRemoteProfile) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/remoteTransportProfiles/{remoteProfilesId}',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.transports.remoteProfiles.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsTransportsRemoteProfilesGetRequest',
+        response_type_name='TransportsV1BetaRemoteProfile',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists RemoteProfiles in a given project and location.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsTransportsRemoteProfilesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TransportsListRemoteProfilesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/remoteTransportProfiles',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.transports.remoteProfiles.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta/{+parent}/remoteTransportProfiles',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsTransportsRemoteProfilesListRequest',
+        response_type_name='TransportsListRemoteProfilesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsTransportsService(base_api.BaseApiService):
+    """Service class for the projects_locations_transports resource."""
+
+    _NAME = 'projects_locations_transports'
+
+    def __init__(self, client):
+      super(NetworkconnectivityV1beta.ProjectsLocationsTransportsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new Transport in a given project and location.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsTransportsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/transports',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.transports.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'transportId'],
+        relative_path='v1beta/{+parent}/transports',
+        request_field='transportsV1BetaCreateTransportRequest',
+        request_type_name='NetworkconnectivityProjectsLocationsTransportsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single Transport.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsTransportsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/transports/{transportsId}',
+        http_method='DELETE',
+        method_id='networkconnectivity.projects.locations.transports.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsTransportsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single Transport.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsTransportsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+
+      Returns:
+        (TransportsV1BetaTransport) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/transports/{transportsId}',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.transports.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsTransportsGetRequest',
+        response_type_name='TransportsV1BetaTransport',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Transports in a given project and location.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsTransportsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TransportsListTransportsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/transports',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.transports.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta/{+parent}/transports',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsTransportsListRequest',
+        response_type_name='TransportsListTransportsResponse',
         supports_download=False,
     )
 

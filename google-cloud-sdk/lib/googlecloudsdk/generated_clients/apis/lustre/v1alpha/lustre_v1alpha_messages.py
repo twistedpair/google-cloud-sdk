@@ -258,6 +258,8 @@ class Instance(_messages.Message):
   r"""A Managed Lustre instance.
 
   Enums:
+    AuditLogLevelValueValuesEnum: Optional. The file system audit log level
+      for the instance.
     StateValueValuesEnum: Output only. The state of the instance.
 
   Messages:
@@ -265,6 +267,7 @@ class Instance(_messages.Message):
 
   Fields:
     accessRulesOptions: Optional. The access rules options for the instance.
+    auditLogLevel: Optional. The file system audit log level for the instance.
     capacityGib: Required. The storage capacity of the instance in gibibytes
       (GiB). Allowed values are from `18000` to `7632000`, depending on the
       `perUnitStorageThroughput`. See [Performance tiers and maximum storage
@@ -313,6 +316,18 @@ class Instance(_messages.Message):
       maintenance for the instance, if a maintenance policy is set.
     updateTime: Output only. Timestamp when the instance was last updated.
   """
+
+  class AuditLogLevelValueValuesEnum(_messages.Enum):
+    r"""Optional. The file system audit log level for the instance.
+
+    Values:
+      AUDIT_LOG_LEVEL_UNSPECIFIED: Not set.
+      DISABLED: File system audit logs are explicitly disabled.
+      BASIC: File system basic audit logs are enabled.
+    """
+    AUDIT_LOG_LEVEL_UNSPECIFIED = 0
+    DISABLED = 1
+    BASIC = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of the instance.
@@ -364,26 +379,27 @@ class Instance(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   accessRulesOptions = _messages.MessageField('AccessRulesOptions', 1)
-  capacityGib = _messages.IntegerField(2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  filesystem = _messages.StringField(5)
-  gkeSupportEnabled = _messages.BooleanField(6)
-  kmsKey = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 9)
-  mountPoint = _messages.StringField(10)
-  name = _messages.StringField(11)
-  network = _messages.StringField(12)
-  perUnitStorageThroughput = _messages.IntegerField(13)
-  placementPolicy = _messages.StringField(14)
-  satisfiesPzi = _messages.BooleanField(15)
-  satisfiesPzs = _messages.BooleanField(16)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  stateReason = _messages.StringField(18)
-  uid = _messages.StringField(19)
-  upcomingMaintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 20)
-  updateTime = _messages.StringField(21)
+  auditLogLevel = _messages.EnumField('AuditLogLevelValueValuesEnum', 2)
+  capacityGib = _messages.IntegerField(3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  filesystem = _messages.StringField(6)
+  gkeSupportEnabled = _messages.BooleanField(7)
+  kmsKey = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 10)
+  mountPoint = _messages.StringField(11)
+  name = _messages.StringField(12)
+  network = _messages.StringField(13)
+  perUnitStorageThroughput = _messages.IntegerField(14)
+  placementPolicy = _messages.StringField(15)
+  satisfiesPzi = _messages.BooleanField(16)
+  satisfiesPzs = _messages.BooleanField(17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  stateReason = _messages.StringField(19)
+  uid = _messages.StringField(20)
+  upcomingMaintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 21)
+  updateTime = _messages.StringField(22)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -423,8 +439,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -749,9 +765,9 @@ class LustreProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """

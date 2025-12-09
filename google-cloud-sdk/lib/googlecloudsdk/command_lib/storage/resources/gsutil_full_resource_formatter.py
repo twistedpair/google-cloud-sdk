@@ -15,6 +15,7 @@
 """Gsutil-specific formatting of BucketResource and ObjectResource."""
 
 from __future__ import absolute_import
+from __future__ import annotations
 from __future__ import division
 from __future__ import unicode_literals
 
@@ -72,6 +73,15 @@ _BUCKET_DISPLAY_TITLES_AND_DEFAULTS = base.BucketDisplayTitlesAndDefaults(
     ),
     default_kms_key=base.FieldDisplayTitleAndDefault(
         title='Default KMS key', default=shim_format_util.NONE_STRING
+    ),
+    gmek_enforcement=base.FieldDisplayTitleAndDefault(
+        title='GMEK Enforcement', default=None
+    ),
+    cmek_enforcement=base.FieldDisplayTitleAndDefault(
+        title='CMEK Enforcement', default=None
+    ),
+    csek_enforcement=base.FieldDisplayTitleAndDefault(
+        title='CSEK Enforcement', default=None
     ),
     creation_time=base.FieldDisplayTitleAndDefault(
         title='Time created', default=None

@@ -214,8 +214,8 @@ class DataplexOrganizationsLocationsOperationsListRequest(_messages.Message):
     returnPartialSuccess: When set to true, operations that are reachable are
       returned as normal, and those that are unreachable are returned in the
       ListOperationsResponse.unreachable field.This can only be true when
-      reading across collections e.g. when parent is set to
-      "projects/example/locations/-".This field is not by default supported
+      reading across collections. For example, when parent is set to
+      "projects/example/locations/-".This field is not supported by default
       and will result in an UNIMPLEMENTED error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -598,6 +598,156 @@ class DataplexProjectsLocationsDataAttributeBindingsTestIamPermissionsRequest(_m
   resource = _messages.StringField(2, required=True)
 
 
+class DataplexProjectsLocationsDataProductsCreateRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsDataProductsCreateRequest object.
+
+  Fields:
+    dataProductId: Optional. The ID of the Data Product to create.The ID must
+      conform to RFC-1034 and contain only lower-case letters (a-z), numbers
+      (0-9), or hyphens, with the first character a letter, the last a letter
+      or a number, and a 63 character maximum. Characters outside of ASCII are
+      not permitted. Valid format regex: (^a-z?$) If not provided, a system
+      generated ID will be used.
+    googleCloudDataplexV1DataProduct: A GoogleCloudDataplexV1DataProduct
+      resource to be passed as the request body.
+    parent: Required. The parent resource where this Data Product will be
+      created. Format: projects/{project_id_or_number}/locations/{location_id}
+    validateOnly: Optional. Validates the request without actually creating
+      the Data Product. Default: false.
+  """
+
+  dataProductId = _messages.StringField(1)
+  googleCloudDataplexV1DataProduct = _messages.MessageField('GoogleCloudDataplexV1DataProduct', 2)
+  parent = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class DataplexProjectsLocationsDataProductsDataAssetsCreateRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsDataProductsDataAssetsCreateRequest object.
+
+  Fields:
+    dataAssetId: Optional. The ID of the Data Asset to create.The ID must
+      conform to RFC-1034 and contain only lower-case letters (a-z), numbers
+      (0-9), or hyphens, with the first character a letter, the last a letter
+      or a number, and a 63 character maximum. Characters outside of ASCII are
+      not permitted. Valid format regex: (^a-z?$) If not provided, a system
+      generated ID will be used.
+    googleCloudDataplexV1DataAsset: A GoogleCloudDataplexV1DataAsset resource
+      to be passed as the request body.
+    parent: Required. The parent resource where this Data Asset will be
+      created. Format: projects/{project_id_or_number}/locations/{location_id}
+      /dataProducts/{data_product_id}
+    validateOnly: Optional. Validates the request without actually creating
+      the Data Asset. Defaults to false.
+  """
+
+  dataAssetId = _messages.StringField(1)
+  googleCloudDataplexV1DataAsset = _messages.MessageField('GoogleCloudDataplexV1DataAsset', 2)
+  parent = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class DataplexProjectsLocationsDataProductsDataAssetsDeleteRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsDataProductsDataAssetsDeleteRequest object.
+
+  Fields:
+    etag: Optional. The etag of the Data Asset. If this is provided, it must
+      match the server's etag. If the etag is provided and does not match the
+      server-computed etag, the request must fail with a ABORTED error code.
+    name: Required. The name of the Data Asset to delete. Format: projects/{pr
+      oject_id_or_number}/locations/{location_id}/dataProducts/{data_product_i
+      d}/dataAssets/{data_asset_id}
+    validateOnly: Optional. Validates the request without actually deleting
+      the Data Asset. Defaults to false.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  validateOnly = _messages.BooleanField(3)
+
+
+class DataplexProjectsLocationsDataProductsDataAssetsGetRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsDataProductsDataAssetsGetRequest object.
+
+  Fields:
+    name: Required. The name of the Data Asset to retrieve. Format: projects/{
+      project_id_or_number}/locations/{location_id}/dataProducts/{data_product
+      _id}/dataAssets/{data_asset_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataplexProjectsLocationsDataProductsDataAssetsListRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsDataProductsDataAssetsListRequest object.
+
+  Fields:
+    filter: Optional. Filter expression that filters DataAssets listed in the
+      response.
+    orderBy: Optional. Order by expression that orders DataAssets listed in
+      the response.Supported Order by fields are: name or create_time.If not
+      specified, the ordering is undefined.
+    pageSize: Optional. The maximum number of Data Assets to return. The
+      service may return fewer than this value. If unspecified, at most 50
+      Data Assets will be returned. The maximum value is 1000; values above
+      1000 will be coerced to 1000.
+    pageToken: Optional. A page token, received from a previous ListDataAssets
+      call. Provide this to retrieve the subsequent page.When paginating, all
+      other parameters provided to ListDataAssets must match the call that
+      provided the page token.
+    parent: Required. The parent, which has this collection of Data Assets.
+      Format: projects/{project_id_or_number}/locations/{location_id}/dataProd
+      ucts/{data_product_id}
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class DataplexProjectsLocationsDataProductsDataAssetsPatchRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsDataProductsDataAssetsPatchRequest object.
+
+  Fields:
+    googleCloudDataplexV1DataAsset: A GoogleCloudDataplexV1DataAsset resource
+      to be passed as the request body.
+    name: Identifier. Resource name of the Data Asset. Format: projects/{proje
+      ct_id_or_number}/locations/{location_id}/dataProducts/{data_product_id}/
+      dataAssets/{data_asset_id}
+    updateMask: Optional. The list of fields to update. If this is empty or
+      not set, then all fields that are populated (have a non-empty value) in
+      data_asset above will be updated.
+    validateOnly: Optional. Validates the request without actually updating
+      the Data Asset. Defaults to false.
+  """
+
+  googleCloudDataplexV1DataAsset = _messages.MessageField('GoogleCloudDataplexV1DataAsset', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
+class DataplexProjectsLocationsDataProductsDeleteRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsDataProductsDeleteRequest object.
+
+  Fields:
+    etag: Optional. The etag of the Data Product.If an etag is provided and
+      does not match the current etag of the Data Product, then the deletion
+      will be blocked and an ABORTED error will be returned.
+    name: Required. The name of the Data Product to delete. Format: projects/{
+      project_id_or_number}/locations/{location_id}/dataProducts/{data_product
+      _id}
+    validateOnly: Optional. Validates the request without actually deleting
+      the Data Product. Default: false.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  validateOnly = _messages.BooleanField(3)
+
+
 class DataplexProjectsLocationsDataProductsGetIamPolicyRequest(_messages.Message):
   r"""A DataplexProjectsLocationsDataProductsGetIamPolicyRequest object.
 
@@ -620,6 +770,73 @@ class DataplexProjectsLocationsDataProductsGetIamPolicyRequest(_messages.Message
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsDataProductsGetRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsDataProductsGetRequest object.
+
+  Fields:
+    name: Required. The name of the Data Product to retrieve. Format: projects
+      /{project_id_or_number}/locations/{location_id}/dataProducts/{data_produ
+      ct_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataplexProjectsLocationsDataProductsListRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsDataProductsListRequest object.
+
+  Fields:
+    filter: Optional. Filter expression that filters Data Products listed in
+      the response.Example of using this filter is: display_name="my-data-
+      product"
+    orderBy: Optional. Order by expression that orders Data Products listed in
+      the response.Supported Order by fields are: name or create_time.If not
+      specified, the ordering is undefined.Ordering by create_time is not
+      supported when listing resources across locations (i.e. when request
+      contains /locations/-).
+    pageSize: Optional. The maximum number of Data Products to return. The
+      service may return fewer than this value. If unspecified, at most 50
+      Data Products will be returned. The maximum value is 1000; values above
+      1000 will be coerced to 1000.
+    pageToken: Optional. A page token, received from a previous
+      ListDataProducts call. Provide this to retrieve the subsequent page.When
+      paginating, all other parameters provided to ListDataProducts must match
+      the call that provided the page token.
+    parent: Required. The parent, which has this collection of Data
+      Products.Format:
+      projects/{project_id_or_number}/locations/{location_id}.Supports listing
+      across all locations with the wildcard - (hyphen) character. Example:
+      projects/{project_id_or_number}/locations/-
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class DataplexProjectsLocationsDataProductsPatchRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsDataProductsPatchRequest object.
+
+  Fields:
+    googleCloudDataplexV1DataProduct: A GoogleCloudDataplexV1DataProduct
+      resource to be passed as the request body.
+    name: Identifier. Resource name of the Data Product. Format: projects/{pro
+      ject_id_or_number}/locations/{location_id}/dataProducts/{data_product_id
+      }.
+    updateMask: Optional. The list of fields to update. If this is empty or
+      not set, then all the fields will be updated.
+    validateOnly: Optional. Validates the request without actually updating
+      the Data Product. Default: false.
+  """
+
+  googleCloudDataplexV1DataProduct = _messages.MessageField('GoogleCloudDataplexV1DataProduct', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
 
 
 class DataplexProjectsLocationsDataProductsSetIamPolicyRequest(_messages.Message):
@@ -1357,7 +1574,8 @@ class DataplexProjectsLocationsEntryGroupsEntriesGetRequest(_messages.Message):
         required aspects.
       CUSTOM: Returns aspects matching custom fields in GetEntryRequest. If
         the number of aspects exceeds 100, the first 100 will be returned.
-      ALL: <no description>
+      ALL: Returns all aspects. If the number of aspects exceeds 100, the
+        first 100 will be returned.
     """
     ENTRY_VIEW_UNSPECIFIED = 0
     BASIC = 1
@@ -3908,7 +4126,8 @@ class DataplexProjectsLocationsLookupEntryRequest(_messages.Message):
         required aspects.
       CUSTOM: Returns aspects matching custom fields in GetEntryRequest. If
         the number of aspects exceeds 100, the first 100 will be returned.
-      ALL: <no description>
+      ALL: Returns all aspects. If the number of aspects exceeds 100, the
+        first 100 will be returned.
     """
     ENTRY_VIEW_UNSPECIFIED = 0
     BASIC = 1
@@ -4043,8 +4262,8 @@ class DataplexProjectsLocationsOperationsListRequest(_messages.Message):
     returnPartialSuccess: When set to true, operations that are reachable are
       returned as normal, and those that are unreachable are returned in the
       ListOperationsResponse.unreachable field.This can only be true when
-      reading across collections e.g. when parent is set to
-      "projects/example/locations/-".This field is not by default supported
+      reading across collections. For example, when parent is set to
+      "projects/example/locations/-".This field is not supported by default
       and will result in an UNIMPLEMENTED error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -5142,6 +5361,130 @@ class GoogleCloudDataplexV1DataAccessSpec(_messages.Message):
   readers = _messages.StringField(1, repeated=True)
 
 
+class GoogleCloudDataplexV1DataAsset(_messages.Message):
+  r"""Represents a Data Asset resource that can be packaged and shared via a
+  Data Product.
+
+  Messages:
+    AccessGroupConfigsValue: Optional. Access groups configurations for this
+      Data Asset. The key is DataProduct.AccessGroup.id and the value is
+      AccessGroupConfig. Example: key: "analyst" value: { AccessGroupConfig :
+      { iam_roles : "roles/bigquery.dataViewer" } } Currently, at most one IAM
+      role is allowed per access group. For providing multiple predefined IAM
+      roles, wrap them in a custom IAM role as per
+      https://cloud.google.com/iam/docs/creating-custom-roles.
+    LabelsValue: Optional. User-defined labels for the Data Asset.
+
+  Fields:
+    accessGroupConfigs: Optional. Access groups configurations for this Data
+      Asset. The key is DataProduct.AccessGroup.id and the value is
+      AccessGroupConfig. Example: key: "analyst" value: { AccessGroupConfig :
+      { iam_roles : "roles/bigquery.dataViewer" } } Currently, at most one IAM
+      role is allowed per access group. For providing multiple predefined IAM
+      roles, wrap them in a custom IAM role as per
+      https://cloud.google.com/iam/docs/creating-custom-roles.
+    createTime: Output only. The time at which the Data Asset was created.
+    etag: This checksum is computed by the server based on the value of other
+      fields, and may be sent on update and delete requests to ensure the
+      client has an up-to-date value before proceeding.
+    labels: Optional. User-defined labels for the Data Asset.
+    name: Identifier. Resource name of the Data Asset. Format: projects/{proje
+      ct_id_or_number}/locations/{location_id}/dataProducts/{data_product_id}/
+      dataAssets/{data_asset_id}
+    resource: Required. Immutable. Full resource name of the cloud resource
+      represented by the Data Asset. This must follow
+      https://cloud.google.com/iam/docs/full-resource-names. Example: //bigque
+      ry.googleapis.com/projects/my_project_123/datasets/dataset_456/tables/ta
+      ble_789 Only BigQuery tables and datasets are currently supported. Data
+      Asset creator must have getIamPolicy and setIamPolicy permissions on the
+      resource. Data Asset creator must also have resource specific get
+      permission, for instance, bigquery.tables.get for BigQuery tables.
+    uid: Output only. System generated globally unique ID for the Data Asset.
+      This ID will be different if the Data Asset is deleted and re-created
+      with the same name.
+    updateTime: Output only. The time at which the Data Asset was last
+      updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AccessGroupConfigsValue(_messages.Message):
+    r"""Optional. Access groups configurations for this Data Asset. The key is
+    DataProduct.AccessGroup.id and the value is AccessGroupConfig. Example:
+    key: "analyst" value: { AccessGroupConfig : { iam_roles :
+    "roles/bigquery.dataViewer" } } Currently, at most one IAM role is allowed
+    per access group. For providing multiple predefined IAM roles, wrap them
+    in a custom IAM role as per https://cloud.google.com/iam/docs/creating-
+    custom-roles.
+
+    Messages:
+      AdditionalProperty: An additional property for a AccessGroupConfigsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AccessGroupConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AccessGroupConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudDataplexV1DataAssetAccessGroupConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudDataplexV1DataAssetAccessGroupConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. User-defined labels for the Data Asset.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  accessGroupConfigs = _messages.MessageField('AccessGroupConfigsValue', 1)
+  createTime = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  resource = _messages.StringField(6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
+class GoogleCloudDataplexV1DataAssetAccessGroupConfig(_messages.Message):
+  r"""Configuration for access group inherited from the parent Data Product.
+
+  Fields:
+    iamRoles: Optional. IAM roles granted on the resource to this access
+      group. Role name follows
+      https://cloud.google.com/iam/docs/reference/rest/v1/roles. Example:
+      "roles/bigquery.dataViewer"
+  """
+
+  iamRoles = _messages.StringField(1, repeated=True)
+
+
 class GoogleCloudDataplexV1DataAttribute(_messages.Message):
   r"""Denotes one dataAttribute in a dataTaxonomy, for example, PII.
   DataAttribute resources can be defined in a hierarchy. A single
@@ -5565,7 +5908,155 @@ class GoogleCloudDataplexV1DataDocumentationResultTableResult(_messages.Message)
 
 
 class GoogleCloudDataplexV1DataDocumentationSpec(_messages.Message):
-  r"""DataDocumentation scan related spec."""
+  r"""DataDocumentation scan related spec.
+
+  Fields:
+    catalogPublishingEnabled: Optional. Whether to publish result to Dataplex
+      Catalog.
+  """
+
+  catalogPublishingEnabled = _messages.BooleanField(1)
+
+
+class GoogleCloudDataplexV1DataProduct(_messages.Message):
+  r"""A Data Product is a curated collection of Data Assets, packaged to
+  address specific use cases. It's a way to manage and share data in a more
+  organized, product-like manner.
+
+  Messages:
+    AccessGroupsValue: Optional. Data Product access groups by access group id
+      as key. If Data Product is used only for packaging Data Assets, then
+      access groups may be empty. However, if a Data Product is used for
+      sharing Data Assets, then at least one access group must be specified.
+    LabelsValue: Optional. User-defined labels for the Data Product.
+
+  Fields:
+    accessGroups: Optional. Data Product access groups by access group id as
+      key. If Data Product is used only for packaging Data Assets, then access
+      groups may be empty. However, if a Data Product is used for sharing Data
+      Assets, then at least one access group must be specified.
+    assetCount: Output only. Number of Data Assets associated with this Data
+      Product.
+    createTime: Output only. The time at which the Data Product was created.
+    description: Optional. Description of the Data Product.
+    displayName: Required. User-friendly display name of the Data Product.
+    etag: This checksum is computed by the server based on the value of other
+      fields, and may be sent on update and delete requests to ensure the
+      client has an up-to-date value before proceeding.
+    icon: Optional. Base64 encoded image representing the Data Product. Max
+      Size: 3.0MiB Expected image dimensions are 512x512 pixels, however the
+      API only performs validation on size of the encoded data. Note: For byte
+      fields, the content of the fields are base64-encoded (which increases
+      the size of the data by 33-36%) when using JSON on the wire.
+    labels: Optional. User-defined labels for the Data Product.
+    name: Identifier. Resource name of the Data Product. Format: projects/{pro
+      ject_id_or_number}/locations/{location_id}/dataProducts/{data_product_id
+      }.
+    ownerEmails: Required. Emails of the Data Product owners.
+    uid: Output only. System generated unique ID for the Data Product. This ID
+      will be different if the Data Product is deleted and re-created with the
+      same name.
+    updateTime: Output only. The time at which the Data Product was last
+      updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AccessGroupsValue(_messages.Message):
+    r"""Optional. Data Product access groups by access group id as key. If
+    Data Product is used only for packaging Data Assets, then access groups
+    may be empty. However, if a Data Product is used for sharing Data Assets,
+    then at least one access group must be specified.
+
+    Messages:
+      AdditionalProperty: An additional property for a AccessGroupsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AccessGroupsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AccessGroupsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudDataplexV1DataProductAccessGroup attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudDataplexV1DataProductAccessGroup', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. User-defined labels for the Data Product.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  accessGroups = _messages.MessageField('AccessGroupsValue', 1)
+  assetCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  etag = _messages.StringField(6)
+  icon = _messages.BytesField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  ownerEmails = _messages.StringField(10, repeated=True)
+  uid = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
+
+
+class GoogleCloudDataplexV1DataProductAccessGroup(_messages.Message):
+  r"""Custom user defined access groups at the Data Product level. These are
+  used for granting different levels of access (IAM roles) on the individual
+  Data Product's Data Assets.
+
+  Fields:
+    description: Optional. Description of the access group.
+    displayName: Required. User friendly display name of the access group. Eg.
+      "Analyst", "Developer", etc.
+    id: Required. Unique identifier of the access group within the Data
+      Product. User defined. Eg. "analyst", "developer", etc.
+    principal: Required. The principal entity associated with this access
+      group.
+  """
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  id = _messages.StringField(3)
+  principal = _messages.MessageField('GoogleCloudDataplexV1DataProductPrincipal', 4)
+
+
+class GoogleCloudDataplexV1DataProductPrincipal(_messages.Message):
+  r"""Represents the principal entity associated with an access group, as per
+  https://cloud.google.com/iam/docs/principals-overview.
+
+  Fields:
+    googleGroup: Email of the Google Group, as per
+      https://cloud.google.com/iam/docs/principals-overview#google-group.
+  """
+
+  googleGroup = _messages.StringField(1)
 
 
 class GoogleCloudDataplexV1DataProfileResult(_messages.Message):
@@ -6594,26 +7085,30 @@ class GoogleCloudDataplexV1DataScan(_messages.Message):
 
 class GoogleCloudDataplexV1DataScanCatalogPublishingStatus(_messages.Message):
   r"""The status of publishing the data scan result as Dataplex Universal
-  Catalog metadata.
+  Catalog metadata. Multiple DataScan log events may exist, each with
+  different publishing information depending on the type of publishing
+  triggered.
 
   Enums:
-    StateValueValuesEnum: Output only. Execution state for catalog publishing.
+    StateValueValuesEnum: Output only. Execution state for publishing.
 
   Fields:
-    state: Output only. Execution state for catalog publishing.
+    state: Output only. Execution state for publishing.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. Execution state for catalog publishing.
+    r"""Output only. Execution state for publishing.
 
     Values:
       STATE_UNSPECIFIED: The publishing state is unspecified.
-      SUCCEEDED: Publish to catalog completed successfully.
+      SUCCEEDED: Publishing to catalog completed successfully.
       FAILED: Publish to catalog failed.
+      SKIPPED: Publishing to catalog was skipped.
     """
     STATE_UNSPECIFIED = 0
     SUCCEEDED = 1
     FAILED = 2
+    SKIPPED = 3
 
   state = _messages.EnumField('StateValueValuesEnum', 1)
 
@@ -9108,6 +9603,19 @@ class GoogleCloudDataplexV1ListContentResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class GoogleCloudDataplexV1ListDataAssetsResponse(_messages.Message):
+  r"""Response message for listing Data Assets.
+
+  Fields:
+    dataAssets: The Data Assets for the requested filter criteria.
+    nextPageToken: A token, which can be sent as page_token to retrieve the
+      next page. If this field is empty, then there are no subsequent pages.
+  """
+
+  dataAssets = _messages.MessageField('GoogleCloudDataplexV1DataAsset', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class GoogleCloudDataplexV1ListDataAttributeBindingsResponse(_messages.Message):
   r"""List DataAttributeBindings response.
 
@@ -9137,6 +9645,21 @@ class GoogleCloudDataplexV1ListDataAttributesResponse(_messages.Message):
   dataAttributes = _messages.MessageField('GoogleCloudDataplexV1DataAttribute', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachableLocations = _messages.StringField(3, repeated=True)
+
+
+class GoogleCloudDataplexV1ListDataProductsResponse(_messages.Message):
+  r"""Response message for listing Data Products.
+
+  Fields:
+    dataProducts: The Data Products for the requested filter criteria.
+    nextPageToken: A token, which can be sent as page_token to retrieve the
+      next page. If this field is empty, then there are no subsequent pages.
+    unreachable: Unordered list. Locations that the service couldn't reach.
+  """
+
+  dataProducts = _messages.MessageField('GoogleCloudDataplexV1DataProduct', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class GoogleCloudDataplexV1ListDataScanJobsResponse(_messages.Message):
@@ -10949,15 +11472,32 @@ class GoogleCloudDataplexV1Trigger(_messages.Message):
 
   Fields:
     onDemand: The scan runs once via RunDataScan API.
+    oneTime: The scan runs once, and does not create an associated ScanJob
+      child resource.
     schedule: The scan is scheduled to run periodically.
   """
 
   onDemand = _messages.MessageField('GoogleCloudDataplexV1TriggerOnDemand', 1)
-  schedule = _messages.MessageField('GoogleCloudDataplexV1TriggerSchedule', 2)
+  oneTime = _messages.MessageField('GoogleCloudDataplexV1TriggerOneTime', 2)
+  schedule = _messages.MessageField('GoogleCloudDataplexV1TriggerSchedule', 3)
 
 
 class GoogleCloudDataplexV1TriggerOnDemand(_messages.Message):
   r"""The scan runs once via RunDataScan API."""
+
+
+class GoogleCloudDataplexV1TriggerOneTime(_messages.Message):
+  r"""The scan runs once using create API.
+
+  Fields:
+    ttlAfterScanCompletion: Optional. Time to live for OneTime scans. default
+      value is 24 hours, minimum value is 0 seconds, and maximum value is 365
+      days. The time is calculated from the data scan job completion time. If
+      value is set as 0 seconds, the scan will be immediately deleted upon job
+      completion, regardless of whether the job succeeded or failed.
+  """
+
+  ttlAfterScanCompletion = _messages.StringField(1)
 
 
 class GoogleCloudDataplexV1TriggerSchedule(_messages.Message):
@@ -11551,8 +12091,8 @@ class GoogleLongrunningListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets ListOperationsRequest.return_partial_success and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)

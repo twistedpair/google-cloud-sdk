@@ -22,12 +22,41 @@ from googlecloudsdk.api_lib.api_registry import utils
 class McpToolsClient(object):
   """Client for MCP Tools API."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or utils.GetClientInstance()
-    self.messages = messages or utils.GetMessagesModule(client)
+  def __init__(self, version, client=None, messages=None):
+    self.client = client or utils.GetClientInstance(version=version)
+    self.messages = messages or utils.GetMessagesModule(
+        version, client=self.client
+    )
     self._service = self.client.projects_locations_mcpServers_mcpTools
 
-  def List(self, request, args):
+  def ListAlpha(self, request, args):
+    """List MCP Tools in the API Registry.
+
+    Args:
+      request: (CloudapiregistryProjectsLocationsMcpServersMcpToolsListRequest)
+        input message
+      args: (arg_parsers.ArgumentParser) command line arguments
+
+    Returns:
+      A list of MCP Tools.
+    """
+
+    # TODO: b/460124490 - Add UTs for api_lib files too.
+    filter_str = 'enabled=true'
+    if args.all:
+      filter_str = 'enabled=false'
+
+    list_req = (
+        self.messages.
+        CloudapiregistryProjectsLocationsMcpServersMcpToolsListRequest(
+            parent=request, filter=filter_str))
+    return list_pager.YieldFromList(
+        self._service,
+        list_req,
+        field='mcpTools',
+        batch_size_attribute='pageSize')
+
+  def ListBeta(self, request, args):
     """List MCP Tools in the API Registry.
 
     Args:
@@ -43,9 +72,9 @@ class McpToolsClient(object):
     """
 
     # TODO: b/460124490 - Add UTs for api_lib files too.
-    filter_str = None
+    filter_str = 'enabled=true'
     if args.all:
-      filter_str = 'available=true'
+      filter_str = 'enabled=false'
 
     list_req = (
         self.messages.

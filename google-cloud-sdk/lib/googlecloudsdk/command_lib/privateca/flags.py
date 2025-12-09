@@ -147,7 +147,6 @@ def AddEncryptionKeyFlag(parser):
           ' the CA pool.'
       ),
       required=False,
-      hidden=True,
   ).AddToParser(parser)
 
 

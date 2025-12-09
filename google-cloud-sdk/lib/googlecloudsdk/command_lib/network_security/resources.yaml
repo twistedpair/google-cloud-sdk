@@ -231,6 +231,18 @@ securityProfileGroup:
     attribute_name: security_profile_group
     help: ID of the security profile group.
 
+firewallEndpoint:
+  name: firewall endpoint
+  collection: networksecurity.organizations.locations.firewallEndpoints
+  request_id_field: firewallEndpointId
+  attributes:
+  - *organization
+  - *locationDefaultGlobal
+  - &firewallEndpoint
+    parameter_name: firewallEndpointsId
+    attribute_name: firewall_endpoint
+    help: Id of the firewall endpoint.
+
 sacRealm:
   name: SAC realm
   collection: networksecurity.projects.locations.sacRealms
@@ -326,6 +338,19 @@ partnerSSEGateway:
     parameter_name: partnerSSEGatewaysId
     attribute_name: partner_sse_gateway
     help: Id of the partner SSE gateway.
+
+wildfireVerdictChangeRequest:
+  name: wildfire verdict change request
+  collection: networksecurity.organizations.locations.firewallEndpoints.wildfireVerdictChangeRequests
+  request_id_field: wildfireVerdictChangeRequestId
+  attributes:
+  - *organization
+  - *locationDefaultGlobal
+  - *firewallEndpoint
+  - &wildfireVerdictChangeRequest
+    parameter_name: wildfireVerdictChangeRequestsId
+    attribute_name: wildfire_verdict_change_request
+    help: Id of the wildfire verdict change request.
 
 firewallAttachment:
   name: firewall attachment

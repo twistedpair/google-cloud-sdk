@@ -1060,6 +1060,33 @@ class DesigncenterV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Register(self, request, global_params=None):
+      r"""Register deployed application from terraform state file with App Hub.
+
+      Args:
+        request: (DesigncenterProjectsLocationsSpacesApplicationsRegisterRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Register')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Register.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/spaces/{spacesId}/applications/{applicationsId}:register',
+        http_method='POST',
+        method_id='designcenter.projects.locations.spaces.applications.register',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:register',
+        request_field='registerDeployedApplicationRequest',
+        request_type_name='DesigncenterProjectsLocationsSpacesApplicationsRegisterRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsSpacesCatalogsSharesService(base_api.BaseApiService):
     """Service class for the projects_locations_spaces_catalogs_shares resource."""
 
@@ -1963,6 +1990,33 @@ class DesigncenterV1alpha(base_api.BaseApiClient):
         relative_path='v1alpha/{+parent}:registerApphubResources',
         request_field='registerApphubResourcesRequest',
         request_type_name='DesigncenterProjectsLocationsSpacesRegisterApphubResourcesRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def RegisterDeployedResources(self, request, global_params=None):
+      r"""Register deployed resources from terraform state file with App Hub.
+
+      Args:
+        request: (DesigncenterProjectsLocationsSpacesRegisterDeployedResourcesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RegisterDeployedResources')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RegisterDeployedResources.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/spaces/{spacesId}:registerDeployedResources',
+        http_method='POST',
+        method_id='designcenter.projects.locations.spaces.registerDeployedResources',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}:registerDeployedResources',
+        request_field='registerDeployedResourcesRequest',
+        request_type_name='DesigncenterProjectsLocationsSpacesRegisterDeployedResourcesRequest',
         response_type_name='Operation',
         supports_download=False,
     )

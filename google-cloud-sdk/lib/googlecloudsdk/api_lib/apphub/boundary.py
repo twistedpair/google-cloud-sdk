@@ -70,6 +70,6 @@ class BoundaryClient(object):
     return api_lib_utils.WaitForOperation(
         self._poller,
         operation,
-        api_lib_consts.RemoveServiceProject.WAIT_FOR_REMOVE_MESSAGE,
-        api_lib_consts.RemoveServiceProject.REMOVE_TIMELIMIT_SEC,
+        api_lib_consts.UpdateBoundary.WAIT_FOR_UPDATE_MESSAGE,
+        api_lib_consts.UpdateBoundary.UPDATE_TIMELIMIT_SEC,
     )

@@ -41,6 +41,15 @@ def ValidateRegion(region, available_regions=constants.SUPPORTED_REGION):
     )
 
 
+def ValidateGpuPartitionSize(gpu_partition_size):
+  """Validates the gpu partition size."""
+  if gpu_partition_size is not None and not isinstance(gpu_partition_size, str):
+    raise exceptions.InvalidArgumentException(
+        '--gpu-partition-size',
+        'Required string, but found [{}].'.format(gpu_partition_size),
+    )
+
+
 def GetAndValidateKmsKey(args):
   """Parse CMEK resource arg, and check if the arg was partially specified."""
   if hasattr(args.CONCEPTS, 'kms_key'):

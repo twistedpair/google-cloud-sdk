@@ -168,7 +168,6 @@ class PipelineClientV1(base.EventarcClientBase):
       max_retry_delay,
       crypto_key_name,
       labels,
-      error_message_bus_ref,
   ):
     return self._messages.Pipeline(
         name=pipeline_ref.RelativeName(),
@@ -185,11 +184,6 @@ class PipelineClientV1(base.EventarcClientBase):
         ),
         cryptoKeyName=crypto_key_name,
         labels=labels,
-        errorMessageBus=(
-            error_message_bus_ref.RelativeName()
-            if error_message_bus_ref
-            else None
-        ),
     )
 
   def BuildUpdateMask(
@@ -206,8 +200,6 @@ class PipelineClientV1(base.EventarcClientBase):
       crypto_key,
       clear_crypto_key,
       labels,
-      error_message_bus,
-      clear_error_message_bus,
   ):
     """Builds an update mask for updating a pipeline.
 
@@ -227,8 +219,6 @@ class PipelineClientV1(base.EventarcClientBase):
       crypto_key: bool, whether to update the crypto_key.
       clear_crypto_key: bool, whether to clear the crypto_key.
       labels: bool, whether to update the labels.
-      error_message_bus: bool, whether to update the error_message_bus.
-      clear_error_message_bus: bool, whether to clear the error_message_bus.
 
     Returns:
       The update mask as a string.
@@ -261,8 +251,6 @@ class PipelineClientV1(base.EventarcClientBase):
       update_mask.append('cryptoKeyName')
     if labels:
       update_mask.append('labels')
-    if error_message_bus or clear_error_message_bus:
-      update_mask.append('errorMessageBus')
 
     if not update_mask:
       raise NoFieldsSpecifiedError('Must specify at least one field to update.')

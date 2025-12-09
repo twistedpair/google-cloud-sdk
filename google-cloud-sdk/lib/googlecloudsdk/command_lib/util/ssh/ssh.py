@@ -1156,6 +1156,7 @@ def _SignAndWriteCloudRunCertificate(
       public_key,
       project_id,
       region,
+      cloud_run_params['service_account'],
       cloud_run_deployment=(
           f'projects/{project_id}/locations/{region}/services/{deployment_name}'
       ),
@@ -1353,6 +1354,11 @@ def GetOsloginState(
     region = zone[: zone.rindex('-')]
   elif app_engine_params:
     region = app_engine_params['region']
+  elif cloud_run_params:
+    region = cloud_run_params['region']
+  project_name = (
+      cloud_run_params['project_id'] if cloud_run_params else project.name
+  )
 
   if release_track in [
       base.ReleaseTrack.ALPHA,
@@ -1388,9 +1394,9 @@ def GetOsloginState(
       except exceptions.HttpNotFoundError:
         log.status.Print(
             'No OS Login profile found for user [{0}] for project [{1}].'
-            ' Creating POSIX account.'.format(user_email, project.name)
+            ' Creating POSIX account.'.format(user_email, project_name)
         )
-        oslogin.ProvisionPosixAccount(user_email, project.name, region)
+        oslogin.ProvisionPosixAccount(user_email, project_name, region)
         if app_engine_params:
           _SignAndWriteAppEngineCertificate(
               oslogin, public_key, project, region, app_engine_params
@@ -1405,7 +1411,7 @@ def GetOsloginState(
           )
     login_profile = oslogin.GetLoginProfile(
         user_email,
-        cloud_run_params['project_id'] if cloud_run_params else project.name,
+        project_name,
         include_security_keys=oslogin_state.security_keys_enabled,
     )
   # Check to see if public key is already in profile and POSIX information
@@ -1727,17 +1733,6 @@ def _BuildIapTunnelProxyCommandArgs(iap_tunnel_args, env):
   if not iap_tunnel_args:
     return []
 
-  # A relaxed validation of the passed in instance name / IP / hostname.
-  # Mostly so potentially malicious names don't get passed in the resulting
-  # generated command.
-  if iap_tunnel_args.instance:
-    allowed_non_alnum_chars = {'-', '_', '.'}
-    for char in iap_tunnel_args.instance:
-      if not char.isalnum() and char not in allowed_non_alnum_chars:
-        raise BadCharacterError(
-            'Instance name/IP/hostname contains illegal characters.'
-        )
-
   gcloud_command = execution_utils.ArgsForGcloud()
   # Applying _EscapeProxyCommandArg to the first item (the python executable
   # path) doesn't make 100% sense on Windows, because the full unescaping only
@@ -1745,51 +1740,65 @@ def _BuildIapTunnelProxyCommandArgs(iap_tunnel_args, env):
   # correct as long as the python executable path doesn't contain a doublequote
   # or end with a backslash, which should never happen.
   gcloud_command = [_EscapeProxyCommandArg(x, env) for x in gcloud_command]
-  # track, project, zone, instance, verbosity should only contain
-  # characters that don't need escaping, so don't bother escaping them.
   if iap_tunnel_args.track:
-    gcloud_command.append(iap_tunnel_args.track)
-  # Windows CMD only accepts double quotes.
-  port_token, quotation = (
-      ('%port', '\"') if env.suite is Suite.PUTTY else ('%p', '\'')
-  )
+    gcloud_command.append(_EscapeProxyCommandArg(iap_tunnel_args.track, env))
+  port_token = '%port' if env.suite is Suite.PUTTY else '%p'
   if iap_tunnel_args.cloud_run_args:
     gcloud_command.extend([
         'run',
         'start-iap-tunnel',
-        '--project_number='
-        + str(iap_tunnel_args.cloud_run_args['project_number']),
-        '--project_id='
-        + iap_tunnel_args.project,
-        '--workload_type='
-        + iap_tunnel_args.cloud_run_args['workload_type'].value,
-        '--deployment_name='
-        + iap_tunnel_args.cloud_run_args['deployment_name'],
-        '--region=' + iap_tunnel_args.region,
+        _EscapeProxyCommandArg(
+            '--project_number='
+            + str(iap_tunnel_args.cloud_run_args['project_number']),
+            env,
+        ),
+        _EscapeProxyCommandArg('--project_id=' + iap_tunnel_args.project, env),
+        _EscapeProxyCommandArg(
+            '--workload_type='
+            + iap_tunnel_args.cloud_run_args['workload_type'].value,
+            env,
+        ),
+        _EscapeProxyCommandArg(
+            '--deployment_name='
+            + iap_tunnel_args.cloud_run_args['deployment_name'],
+            env,
+        ),
+        _EscapeProxyCommandArg('--region=' + iap_tunnel_args.region, env),
     ])
     if iap_tunnel_args.cloud_run_args['instance_id']:
       gcloud_command.append(
-          '--instance=' + iap_tunnel_args.cloud_run_args['instance_id']
+          _EscapeProxyCommandArg(
+              '--instance=' + iap_tunnel_args.cloud_run_args['instance_id'], env
+          )
       )
     if iap_tunnel_args.cloud_run_args['container_id']:
       gcloud_command.append(
-          '--container=' + iap_tunnel_args.cloud_run_args['container_id']
+          _EscapeProxyCommandArg(
+              '--container=' + iap_tunnel_args.cloud_run_args['container_id'],
+              env,
+          )
       )
   elif iap_tunnel_args.instance:
     gcloud_command.extend([
         'compute',
         'start-iap-tunnel',
-        quotation + iap_tunnel_args.instance + quotation,
-        quotation + port_token + quotation,
+        _EscapeProxyCommandArg(iap_tunnel_args.instance, env),
+        port_token,
         '--listen-on-stdin',
-        '--project=' + iap_tunnel_args.project,
+        _EscapeProxyCommandArg('--project=' + iap_tunnel_args.project, env),
     ])
     if iap_tunnel_args.zone:
-      gcloud_command.append('--zone=' + iap_tunnel_args.zone)
+      gcloud_command.append(
+          _EscapeProxyCommandArg('--zone=' + iap_tunnel_args.zone, env)
+      )
     if iap_tunnel_args.region:
-      gcloud_command.append('--region=' + iap_tunnel_args.region)
+      gcloud_command.append(
+          _EscapeProxyCommandArg('--region=' + iap_tunnel_args.region, env)
+      )
     if iap_tunnel_args.network:
-      gcloud_command.append('--network=' + iap_tunnel_args.network)
+      gcloud_command.append(
+          _EscapeProxyCommandArg('--network=' + iap_tunnel_args.network, env)
+      )
   else:
     raise ValueError('No instance or cloud run args provided.')
 
@@ -1797,7 +1806,9 @@ def _BuildIapTunnelProxyCommandArgs(iap_tunnel_args, env):
     gcloud_command.append(_EscapeProxyCommandArg(arg, env))
   verbosity = log.GetVerbosityName()
   if verbosity:
-    gcloud_command.append('--verbosity=' + verbosity)
+    gcloud_command.append(
+        _EscapeProxyCommandArg('--verbosity=' + verbosity, env)
+    )
 
   if env.suite is Suite.PUTTY:
     return ['-proxycmd', ' '.join(gcloud_command)]

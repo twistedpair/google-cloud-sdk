@@ -604,3 +604,43 @@ def GetChunkSize():
           ' package.'
       ),
   )
+
+
+def GetPlainRepoFlag():
+  """Gets a simple --repository flag."""
+  return base.Argument(
+      '--repository',
+      help=(
+          'The Artifact Registry repository. If not specified, the current'
+          ' artifacts/repository is used.'
+      ),
+  )
+
+
+def GetPlainLocationFlag():
+  """Gets a simple --location flag."""
+  return base.Argument(
+      '--location',
+      help=(
+          'The Artifact Registry repository location. If not specified, the'
+          ' current artifacts/location is used.'
+      ),
+  )
+
+
+def GetSeverityFlag():
+  """Gets the --severity flag for platform logs."""
+  return base.Argument(
+      '--severity',
+      type=lambda x: x.upper(),  # Ensure value is uppercase for enum
+      choices=[
+          'INFO',
+          'ERROR',
+      ],
+      help=(
+          'The minimum severity level of logs to generate. This flag is only '
+          'applicable when using --enable. Values are case-insensitive.'
+          'If omitted when --enable is true, it defaults to logging all '
+          'severities.'
+      ),
+  )

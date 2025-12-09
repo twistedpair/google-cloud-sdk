@@ -171,6 +171,29 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
 
     self._buffer.clear()
 
+  def _half_close_bidi_write_rpc(self, bidi_write_rpc) -> None:
+    """Performs a client-side half-close of the bidi write RPC stream.
+
+    This is needed when `_should_finalize_writes` is false to signal the server
+    that the client is done sending requests. It also processes any remaining
+    server responses. The full RPC stream closure(cancel) is handled by
+    `bidi_write_rpc.close()`.
+
+    Args:
+      bidi_write_rpc: The bidi write RPC object.
+    """
+    if self._should_finalize_writes:
+      return
+    # Signal the server to half-close the stream.
+    bidi_write_rpc.requests_done()
+    while True:
+      try:
+        response = bidi_write_rpc.recv()
+      except StopIteration:
+        break
+      if response.persisted_size == self._uploaded_so_far:
+        self._start_offset = response.persisted_size
+
   def _update_initial_request(self, response):
     """Updates the initial request for the bidi write RPC.
 
@@ -264,12 +287,14 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
           self._send_buffer_to_bidi_write_rpc(bidi_write_rpc)
 
         if finish_write:
+          self._half_close_bidi_write_rpc(bidi_write_rpc)
           break
     except StopIteration as e:
       raise bidi_retry_util.BidiUploadStreamClosedError(
           'The BiDi upload stream was unexpectedly closed.'
       ) from e
     finally:
+      # Cancel the rpc if it is still open.
       bidi_write_rpc.close()
 
   def _get_request_for_creating_append_object(self):

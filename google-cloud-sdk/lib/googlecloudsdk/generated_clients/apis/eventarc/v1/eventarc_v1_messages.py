@@ -1532,9 +1532,9 @@ class EventarcProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -2528,8 +2528,8 @@ class GoogleLongrunningListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -3557,6 +3557,18 @@ class Pubsub(_messages.Message):
   topic = _messages.StringField(2)
 
 
+class RetryPolicy(_messages.Message):
+  r"""The retry policy configuration for the Trigger. Can only be set with
+  Cloud Run destinations.
+
+  Fields:
+    maxAttempts: Optional. The maximum number of delivery attempts for any
+      message. The only valid value is 1.
+  """
+
+  maxAttempts = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class SaslAuthConfig(_messages.Message):
   r"""SASL/Plain or SASL/SCRAM mechanism configuration.
 
@@ -3864,6 +3876,9 @@ class Trigger(_messages.Message):
     name: Required. The resource name of the trigger. Must be unique within
       the location of the project and must be in
       `projects/{project}/locations/{location}/triggers/{trigger}` format.
+    retryPolicy: Optional. The retry policy to use in the Trigger. If unset,
+      event delivery will be retried for up to 24 hours by default:
+      https://cloud.google.com/eventarc/docs/retry-events
     satisfiesPzs: Output only. Whether or not this Trigger satisfies the
       requirements of physical zone separation
     serviceAccount: Optional. The IAM service account email associated with
@@ -3941,11 +3956,12 @@ class Trigger(_messages.Message):
   eventFilters = _messages.MessageField('EventFilter', 7, repeated=True)
   labels = _messages.MessageField('LabelsValue', 8)
   name = _messages.StringField(9)
-  satisfiesPzs = _messages.BooleanField(10)
-  serviceAccount = _messages.StringField(11)
-  transport = _messages.MessageField('Transport', 12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  retryPolicy = _messages.MessageField('RetryPolicy', 10)
+  satisfiesPzs = _messages.BooleanField(11)
+  serviceAccount = _messages.StringField(12)
+  transport = _messages.MessageField('Transport', 13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 encoding.AddCustomJsonFieldMapping(

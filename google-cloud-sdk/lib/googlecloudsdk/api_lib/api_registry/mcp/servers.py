@@ -22,12 +22,41 @@ from googlecloudsdk.api_lib.api_registry import utils
 class McpServersClient(object):
   """Client for MCP Servers API."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or utils.GetClientInstance()
-    self.messages = messages or utils.GetMessagesModule(client)
+  def __init__(self, version, client=None, messages=None):
+    self.client = client or utils.GetClientInstance(version=version)
+    self.messages = messages or utils.GetMessagesModule(
+        version, client=self.client
+    )
     self._service = self.client.projects_locations_mcpServers
 
-  def List(self, request, args):
+  def ListAlpha(self, request, args):
+    """List MCP Servers in the API Registry.
+
+    Args:
+      request: (CloudapiregistryProjectsLocationsMcpServersListRequest) input
+        message
+      args: (arg_parsers.ArgumentParser) command line arguments
+
+    Returns:
+      A list of MCP Servers.
+    """
+
+    filter_str = 'enabled=true'
+    if args.all:
+      filter_str = 'enabled=false'
+
+    list_req = (
+        self.messages.
+        CloudapiregistryProjectsLocationsMcpServersListRequest(
+            parent=request, filter=filter_str))
+
+    return list_pager.YieldFromList(
+        self._service,
+        list_req,
+        field='mcpServers',
+        batch_size_attribute='pageSize')
+
+  def ListBeta(self, request, args):
     """List MCP Servers in the API Registry.
 
     Args:
@@ -42,9 +71,9 @@ class McpServersClient(object):
       A list of MCP Servers.
     """
 
-    filter_str = None
+    filter_str = 'enabled=true'
     if args.all:
-      filter_str = 'available=true'
+      filter_str = 'enabled=false'
 
     list_req = (
         self.messages.

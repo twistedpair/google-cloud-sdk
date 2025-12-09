@@ -258,7 +258,7 @@ class _InMemoryVolume(_VolumeType):
 
   @classmethod
   def optional_fields(cls, release_track):
-    if release_track == base.ReleaseTrack.ALPHA:
+    if release_track != base.ReleaseTrack.GA:
       return {
           'name': (
               'The name of the volume. A name will be generated if the'
@@ -390,7 +390,7 @@ class _NfsVolume(_VolumeType):
 
   @classmethod
   def optional_fields(cls, release_track):
-    if release_track == base.ReleaseTrack.ALPHA:
+    if release_track != base.ReleaseTrack.GA:
       return {
           'name': (
               'The name of the volume. A name will be generated if the'
@@ -514,6 +514,7 @@ class _GcsVolume(_VolumeType):
           + 'Note: You will either need to specify a bucket or set '
           + 'dynamic-mounting to true, but not both.'
       )
+    if release_track != base.ReleaseTrack.GA:
       fields['name'] = (
           'The name of the volume. A name will be generated if the'
           ' `mount-path` flag is specified. A name is required if'
@@ -681,7 +682,7 @@ class CloudSqlInstance(_VolumeType):
 
   @classmethod
   def optional_fields(cls, release_track):
-    if release_track == base.ReleaseTrack.ALPHA:
+    if release_track != base.ReleaseTrack.GA:
       return {
           'name': (
               'The name of the volume. A name will be generated if the'
@@ -729,7 +730,7 @@ def _is_readonly(volume):
 
 def _validate_volume_name_and_type(volume, release_track):
   """Validates the volume name and type."""
-  if release_track == base.ReleaseTrack.ALPHA:
+  if release_track != base.ReleaseTrack.GA:
     if 'type' not in volume:
       raise serverless_exceptions.ConfigurationError(
           'All added volumes must have a type'

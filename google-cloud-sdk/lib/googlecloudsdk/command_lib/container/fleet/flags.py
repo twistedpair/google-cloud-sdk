@@ -39,13 +39,6 @@ from googlecloudsdk.core import resources
 # Follow the naming style in calliope library, use snake_case for properties,
 # CamelCase for function names.
 
-ALL_MEMBERSHIPS_FLAG = base.Argument(
-    '--all-memberships',
-    action='store_const',
-    const=True,
-    help='All memberships in the fleet.',
-)
-
 _BINAUTHZ_GKE_POLICY_REGEX = (
     'projects/([^/]+)/platforms/gke/policies/([a-zA-Z0-9_-]+)'
 )

@@ -276,11 +276,13 @@ class GCSLogTailer(TailerBase):
     self.stop = False
 
   def _StorageUrl(self, bucket, obj):
-    url_pattern = 'https://storage.googleapis.com/{bucket}/{obj}'
+    universe_domain = properties.VALUES.core.universe_domain.Get()
+    url_pattern = 'https://storage.{universe_domain}/{bucket}/{obj}'
     if properties.VALUES.context_aware.use_client_certificate.GetBool():
       # mTLS is enabled.
-      url_pattern = 'https://storage.mtls.googleapis.com/{bucket}/{obj}'
-    return url_pattern.format(bucket=bucket, obj=obj)
+      url_pattern = 'https://storage.mtls.{universe_domain}/{bucket}/{obj}'
+    return url_pattern.format(
+        universe_domain=universe_domain, bucket=bucket, obj=obj)
 
   @classmethod
   def FromBuild(cls, build, out=log.out):

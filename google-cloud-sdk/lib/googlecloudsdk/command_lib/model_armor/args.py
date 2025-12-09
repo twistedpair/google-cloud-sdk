@@ -29,14 +29,16 @@ def AddFullUri(parser, positional=False, help_text=None, **kwargs):
   )
 
 
-def AddFloorSettingEnforcement(
-    parser, positional=False, help_text=None, **kwargs
-):
+def AddFloorSettingEnforcement(parser, positional=False, **kwargs):
   """Enable or disable the floor setting enforcement."""
 
   parser.add_argument(
       _ArgOrFlag('enable-floor-setting-enforcement', positional),
-      help=(help_text),
+      help=(
+          'Enable or disable the floor setting enforcement. Set the value to'
+          ' "TRUE" to enable the floor setting enforcement, "FALSE" to'
+          ' disable it.'
+      ),
       **kwargs
   )
 
@@ -82,23 +84,25 @@ def AddSDPFilterBasicConfigGroup(parser):
       metavar='BASIC_CONFIG_FILTER_ENFORCEMENT',
       help=(
           'The sdp filter settings enforcement. The value can be either'
-          ' "ENABLED" or "DISABLED"'
+          ' `ENABLED` or `DISABLED`.'
       ),
   )
   group.add_argument(
       _ArgOrFlag('advanced-config-inspect-template', False),
       metavar='ADVANCED_CONFIG_INSPECT_TEMPLATE',
       help=(
-          'The sdp filter settings enforcement. The value can be either'
-          ' "enable" or "disable".'
+          'The sdp filter settings enforcement. The value has to be a valid'
+          ' template name. e.g.'
+          ' `projects/{project}/locations/{location}/inspectTemplates/{inspect_template}`'
       ),
   )
   group.add_argument(
       _ArgOrFlag('advanced-config-deidentify-template', False),
       metavar='ADVANCED_CONFIG_DEIDENTIFY_TEMPLATE',
       help=(
-          'The sdp filter settings enforcement. The value can be either'
-          ' "enable" or "disable".'
+          'The sdp filter settings enforcement. The value has to be a valid'
+          ' template name. e.g.'
+          ' `projects/{project}/locations/{location}/deidentifyTemplates/{deidentify_template}`'
       ),
   )
 

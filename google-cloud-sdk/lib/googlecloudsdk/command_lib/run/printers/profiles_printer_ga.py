@@ -62,9 +62,15 @@ def _transform_profiles(profiles):
       'Output Tokens/s',
       'NTPOT(ms)',
       'TTFT(ms)',
+      'ITL(ms)',
       'Model Server',
       'Model Server Version',
       'Model',
+      'Use Case',
+      'Average Input Length',
+      'Average Output Length',
+      'Serving Stack',
+      'Serving Stack Version',
   ]
 
   rows = [header]
@@ -82,9 +88,15 @@ def _transform_profiles(profiles):
         else None,
         p.performanceStats[0].ntpotMilliseconds if p.performanceStats else None,
         p.performanceStats[0].ttftMilliseconds if p.performanceStats else None,
+        p.performanceStats[0].itlMilliseconds if p.performanceStats else None,
         p.modelServerInfo.modelServer,
         p.modelServerInfo.modelServerVersion,
         p.modelServerInfo.model,
+        p.workloadSpec.useCase,
+        p.workloadSpec.averageInputLength,
+        p.workloadSpec.averageOutputLength,
+        p.servingStack.name if p.servingStack else None,
+        p.servingStack.version if p.servingStack else None,
     ]
     rows.append(row)
 

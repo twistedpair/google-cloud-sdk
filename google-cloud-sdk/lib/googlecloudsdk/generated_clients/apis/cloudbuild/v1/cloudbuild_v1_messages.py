@@ -5561,6 +5561,8 @@ class UploadedOCIArtifact(_messages.Message):
     artifactRegistryPackage: Output only. Path to the artifact in Artifact
       Registry.
     fileHashes: Output only. Hash types and values of the OCI Artifact.
+    manifestListArtifact: Output only. True if the artifact is a manifest
+      list. False if the artifact is an image.
     pushTiming: Output only. Stores timing information for pushing the
       specified artifact.
     uri: Output only. URI of the uploaded OCI Artifact.
@@ -5568,8 +5570,9 @@ class UploadedOCIArtifact(_messages.Message):
 
   artifactRegistryPackage = _messages.StringField(1)
   fileHashes = _messages.MessageField('FileHashes', 2)
-  pushTiming = _messages.MessageField('TimeSpan', 3)
-  uri = _messages.StringField(4)
+  manifestListArtifact = _messages.BooleanField(3)
+  pushTiming = _messages.MessageField('TimeSpan', 4)
+  uri = _messages.StringField(5)
 
 
 class UploadedPythonPackage(_messages.Message):

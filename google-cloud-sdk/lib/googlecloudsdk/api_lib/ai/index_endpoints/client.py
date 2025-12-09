@@ -245,6 +245,10 @@ class IndexEndpointsClient(object):
     if args.deployment_group is not None:
       deployed_index.deploymentGroup = args.deployment_group
 
+    if args.deployment_tier:
+      deployed_index.deploymentTier = self.messages.GoogleCloudAiplatformV1beta1DeployedIndex.DeploymentTierValueValuesEnum(
+          args.deployment_tier.upper())
+
     if args.enable_access_logging is not None:
       deployed_index.enableAccessLogging = args.enable_access_logging
 
@@ -302,6 +306,10 @@ class IndexEndpointsClient(object):
 
     if args.deployment_group is not None:
       deployed_index.deploymentGroup = args.deployment_group
+
+    if args.deployment_tier:
+      deployed_index.deploymentTier = self.messages.GoogleCloudAiplatformV1DeployedIndex.DeploymentTierValueValuesEnum(
+          args.deployment_tier.upper())
 
     # JWT Authentication config
     if args.audiences is not None and args.allowed_issuers is not None:

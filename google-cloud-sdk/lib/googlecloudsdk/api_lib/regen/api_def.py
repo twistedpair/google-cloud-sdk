@@ -30,6 +30,8 @@ class APIDef(object):
     enable_mtls: bool, Whether this API version supports mTLS.
     mtls_endpoint_override: str, The mTLS endpoint for this API version. If
       empty, the MTLS_BASE_URL in the API client will be used.
+    regional_endpoints: dict[str, str], The regional endpoints for this API
+      version. Dictionary maps location to endpoint URL.
   """
 
   def __init__(self,
@@ -37,12 +39,14 @@ class APIDef(object):
                gapic=None,
                default_version=False,
                enable_mtls=True,
-               mtls_endpoint_override=''):
+               mtls_endpoint_override='',
+               regional_endpoints=None):
     self.apitools = apitools
     self.gapic = gapic
     self.default_version = default_version
     self.enable_mtls = enable_mtls
     self.mtls_endpoint_override = mtls_endpoint_override
+    self.regional_endpoints = regional_endpoints or {}
 
   def __eq__(self, other):
     return (isinstance(other, self.__class__) and

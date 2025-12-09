@@ -93,7 +93,7 @@ class Configs:
         self.client.projects_locations_workstationClusters_workstationConfigs
     )
 
-  def Create(self, args):
+  def Create(self, args):  # pylint: disable=invalid-name
     """Create a new workstation configuration.
 
     Args:
@@ -167,9 +167,8 @@ class Configs:
           )
       ]
       config.host.gceInstance.accelerators = accelerators
-    if self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA):
-      if args.startup_script_uri:
-        config.host.gceInstance.startupScriptUri = args.startup_script_uri
+    if args.startup_script_uri:
+      config.host.gceInstance.startupScriptUri = args.startup_script_uri
 
     if self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA):
       config.httpOptions = self.messages.HttpOptions()
@@ -193,9 +192,7 @@ class Configs:
                 )
             ]
           elif key == 'reservation-affinity':
-            desired_reservation_affinity = (
-                self.messages.ReservationAffinity()
-            )
+            desired_reservation_affinity = self.messages.ReservationAffinity()
             for key, value in boost_config.get(
                 'reservation-affinity', {}
             ).items():
@@ -230,9 +227,7 @@ class Configs:
             RESERVATION_AFFINITY_MAP.get(key),
             value,
         )
-      config.host.gceInstance.reservationAffinity = (
-          desired_reservation_affinity
-      )
+      config.host.gceInstance.reservationAffinity = desired_reservation_affinity
 
     if args.allowed_ports:
       for port_range in args.allowed_ports:
@@ -245,22 +240,59 @@ class Configs:
     if not args.no_persistent_storage:
       pd = self.messages.PersistentDirectory()
       pd.mountPath = '/home'
-      if args.pd_reclaim_policy == 'retain':
+
+      use_disk_flags = (
+          (args.IsKnownAndSpecified('disk_type'))
+          or (args.IsKnownAndSpecified('disk_size'))
+          or (args.IsKnownAndSpecified('disk_source_snapshot'))
+          or (args.IsKnownAndSpecified('disk_reclaim_policy'))
+      )
+
+      if use_disk_flags:
+        disk_type = (
+            args.disk_type if args.IsSpecified('disk_type') else 'pd-standard'
+        )
+        source_snapshot = (
+            args.disk_source_snapshot
+            if args.IsSpecified('disk_source_snapshot')
+            else None
+        )
+        disk_size = args.disk_size if args.IsSpecified('disk_size') else 200
         reclaim_policy = (
-            self.messages.GceRegionalPersistentDisk.ReclaimPolicyValueValuesEnum.RETAIN
+            args.disk_reclaim_policy
+            if args.IsSpecified('disk_reclaim_policy')
+            else 'delete'
         )
       else:
-        reclaim_policy = (
-            self.messages.GceRegionalPersistentDisk.ReclaimPolicyValueValuesEnum.DELETE
-        )
+        disk_type = args.pd_disk_type
+        disk_size = args.pd_disk_size
+        source_snapshot = args.pd_source_snapshot
+        reclaim_policy = args.pd_reclaim_policy
 
-      pd.gcePd = self.messages.GceRegionalPersistentDisk(
-          sizeGb=0 if args.pd_source_snapshot else args.pd_disk_size,
-          fsType='' if args.pd_source_snapshot else 'ext4',
-          diskType=args.pd_disk_type,
-          reclaimPolicy=reclaim_policy,
-          sourceSnapshot=args.pd_source_snapshot,
-      )
+      # Not all instance types can take Hyperdisks, but this is validated on the
+      # backend.
+      if disk_type == 'hyperdisk-balanced-ha':
+        pd.gceHd = self.messages.GceHyperdiskBalancedHighAvailability(
+            sizeGb=0 if source_snapshot else disk_size,
+            reclaimPolicy=(
+                self.messages.GceHyperdiskBalancedHighAvailability.ReclaimPolicyValueValuesEnum.RETAIN
+                if reclaim_policy == 'retain'
+                else self.messages.GceHyperdiskBalancedHighAvailability.ReclaimPolicyValueValuesEnum.DELETE
+            ),
+            sourceSnapshot=source_snapshot,
+        )
+      else:
+        pd.gcePd = self.messages.GceRegionalPersistentDisk(
+            sizeGb=0 if source_snapshot else disk_size,
+            fsType='' if source_snapshot else 'ext4',
+            diskType=disk_type,
+            reclaimPolicy=(
+                self.messages.GceRegionalPersistentDisk.ReclaimPolicyValueValuesEnum.RETAIN
+                if reclaim_policy == 'retain'
+                else self.messages.GceRegionalPersistentDisk.ReclaimPolicyValueValuesEnum.DELETE
+            ),
+            sourceSnapshot=source_snapshot,
+        )
       config.persistentDirectories.append(pd)
 
     # Ephemeral directory
@@ -358,7 +390,7 @@ class Configs:
 
     return result
 
-  def Update(self, args):
+  def Update(self, args):  # pylint: disable=invalid-name
     """Updates an existing workstation configuration.
 
     Args:
@@ -446,9 +478,7 @@ class Configs:
             RESERVATION_AFFINITY_MAP.get(key),
             value,
         )
-      config.host.gceInstance.reservationAffinity = (
-          desired_reservation_affinity
-      )
+      config.host.gceInstance.reservationAffinity = desired_reservation_affinity
       update_mask.append('host.gce_instance.reservation_affinity')
 
     if args.IsSpecified('service_account'):
@@ -519,10 +549,9 @@ class Configs:
       )
       update_mask.append('host.gce_instance.enable_nested_virtualization')
 
-    if self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA):
-      if args.startup_script_uri:
-        config.host.gceInstance.startupScriptUri = args.startup_script_uri
-        update_mask.append('host.gce_instance.startup_script_uri')
+    if args.startup_script_uri:
+      config.host.gceInstance.startupScriptUri = args.startup_script_uri
+      update_mask.append('host.gce_instance.startup_script_uri')
 
     # Shielded Instance Config
     gce_shielded_instance_config = self.messages.GceShieldedInstanceConfig()
@@ -642,27 +671,91 @@ class Configs:
       config.container.runAsUser = args.container_run_as_user
       update_mask.append('container.run_as_user')
 
-    if args.IsSpecified('pd_disk_type') or args.IsSpecified('pd_disk_size'):
-      config.persistentDirectories = old_config.persistentDirectories
-      if not old_config.persistentDirectories:
-        config.persistentDirectories = [self.messages.PersistentDirectory()]
+    use_disk_type = args.IsKnownAndSpecified(
+        'disk_type'
+    ) or args.IsKnownAndSpecified('pd_disk_type')
+    use_disk_size = args.IsKnownAndSpecified(
+        'disk_size'
+    ) or args.IsKnownAndSpecified('pd_disk_size')
+    use_source_snapshot = args.IsKnownAndSpecified(
+        'disk_source_snapshot'
+    ) or args.IsKnownAndSpecified('pd_source_snapshot')
+    update_disk = use_disk_type or use_disk_size or use_source_snapshot
+    if use_disk_type:
+      disk_type: str = (
+          args.disk_type
+          if args.IsKnownAndSpecified('disk_type')
+          else args.pd_disk_type
+      )
+    else:
+      disk_type: str = extract_disk_type(old_config)
+    if use_disk_size:
+      disk_size: int = (
+          args.disk_size
+          if args.IsKnownAndSpecified('disk_size')
+          else args.pd_disk_size
+      )
+    else:
+      disk_size: int = extract_disk_size(old_config)
+    if use_source_snapshot:
+      source_snapshot: str = (
+          args.disk_source_snapshot
+          if args.IsKnownAndSpecified('disk_source_snapshot')
+          else args.pd_source_snapshot
+      )
+    else:
+      source_snapshot: str = extract_source_snapshot(old_config)
+    if (
+        old_config.persistentDirectories
+        and old_config.persistentDirectories[0].gcePd
+        and disk_type == 'hyperdisk-balanced-ha'
+    ):
+      log.err.Print("Can't update persistent directory from PD to HD")
 
-      config.persistentDirectories[0].gcePd = (
-          self.messages.GceRegionalPersistentDisk(
-              sizeGb=args.pd_disk_size, diskType=args.pd_disk_type
+    if (
+        old_config.persistentDirectories
+        and hasattr(old_config.persistentDirectories[0], 'gceHd')
+        and old_config.persistentDirectories[0].gceHd
+        and disk_type != 'hyperdisk-balanced-ha'
+    ):
+      log.err.Print("Can't update persistent directory from HD to PD")
+
+    if update_disk:
+      update_mask.append('persistent_directories')
+
+    config.persistentDirectories = old_config.persistentDirectories
+    if not old_config.persistentDirectories:
+      config.persistentDirectories = [self.messages.PersistentDirectory()]
+
+    if use_source_snapshot:
+      if disk_type == 'hyperdisk-balanced-ha':
+        config.persistentDirectories[0].gceHd = (
+            self.messages.GceHyperdiskBalancedHighAvailability(
+                sizeGb=0,
+                sourceSnapshot=source_snapshot,
+            )
+        )
+      else:
+        config.persistentDirectories[0].gcePd = (
+            self.messages.GceRegionalPersistentDisk(
+                sizeGb=0,
+                fsType='',
+                sourceSnapshot=source_snapshot,
+                diskType=disk_type,
+            )
+        )
+    elif disk_type == 'hyperdisk-balanced-ha':
+      config.persistentDirectories[0].gceHd = (
+          self.messages.GceHyperdiskBalancedHighAvailability(
+              sizeGb=disk_size,
           )
       )
-      update_mask.append('persistent_directories')
-    elif args.IsSpecified('pd_source_snapshot'):
-      config.persistentDirectories = old_config.persistentDirectories
-      if not old_config.persistentDirectories:
-        config.persistentDirectories = [self.messages.PersistentDirectory()]
+    else:
       config.persistentDirectories[0].gcePd = (
           self.messages.GceRegionalPersistentDisk(
-              sizeGb=0, fsType='', sourceSnapshot=args.pd_source_snapshot
+              sizeGb=disk_size, diskType=disk_type
           )
       )
-      update_mask.append('persistent_directories')
 
     if args.IsSpecified('vm_tags'):
       tags_val = self.messages.GceInstance.VmTagsValue()
@@ -707,5 +800,40 @@ class Configs:
         'Waiting for operation [{}] to complete'.format(op_ref.name),
     )
     log.status.Print('Updated configuration [{}].'.format(config_id))
-
     return result
+
+
+def extract_disk_type(old_config) -> str:
+  if old_config.persistentDirectories and getattr(
+      old_config.persistentDirectories[0], 'gceHd', False
+  ):
+    return 'hyperdisk-balanced-ha'
+  if old_config.persistentDirectories and getattr(
+      old_config.persistentDirectories[0], 'gcePd', False
+  ):
+    return old_config.persistentDirectories[0].gcePd.diskType
+  return ''
+
+
+def extract_disk_size(old_config) -> int:
+  if old_config.persistentDirectories and getattr(
+      old_config.persistentDirectories[0], 'gceHd', False
+  ):
+    return old_config.persistentDirectories[0].gceHd.sizeGb
+  if old_config.persistentDirectories and getattr(
+      old_config.persistentDirectories[0], 'gcePd', False
+  ):
+    return old_config.persistentDirectories[0].gcePd.sizeGb
+  return 0
+
+
+def extract_source_snapshot(old_config) -> str:
+  if old_config.persistentDirectories and getattr(
+      old_config.persistentDirectories[0], 'gceHd', False
+  ):
+    return old_config.persistentDirectories[0].gceHd.sourceSnapshot
+  if old_config.persistentDirectories and getattr(
+      old_config.persistentDirectories[0], 'gcePd', False
+  ):
+    return old_config.persistentDirectories[0].gcePd.sourceSnapshot
+  return ''

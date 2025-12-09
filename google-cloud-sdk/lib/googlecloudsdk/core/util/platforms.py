@@ -477,13 +477,7 @@ class PythonVersion(object):
   # See class docstring for descriptions of what these mean
   MIN_REQUIRED_PY3_VERSION = (3, 6)
   MIN_SUPPORTED_PY3_VERSION = (3, 9)
-  MAX_SUPPORTED_PY3_VERSION = (
-      (3, 14)  # pylint: disable=g-long-ternary
-      if encoding.GetEncodedValue(
-          os.environ, 'ENABLE_MAX_GCLOUD_PYTHON_VERSION_OVERRIDE'
-      )
-      else (3, 13)
-  )
+  MAX_SUPPORTED_PY3_VERSION = (3, 14)
   UPCOMING_SUNSET_PY3_VERSION = (3, 9)
   UPCOMING_PY3_MIN_SUPPORTED_VERSION = (3, 10)
   UPCOMING_PY3_DEPRECATION_DATE = 'January 27th, 2026'

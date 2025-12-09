@@ -3306,26 +3306,36 @@ class _SectionRedis(_Section):
 class _SectionRegional(_Section):
   """Contains the properties for the 'regional' section."""
 
-  REGIONAL_ONLY = 'regional-only'
-  AUTO = 'auto'
-  LEGACY = 'legacy'
+  # User properties.
+  GLOBAL = 'global'
+  REGIONAL = 'regional'
+  REGIONAL_PREFERRED = 'regional-preferred'
+  # Command / group support level annotations.
+  SUPPORTED = 'supported'
+  REQUIRED = 'required'
 
   def __init__(self):
     super(_SectionRegional, self).__init__('regional', hidden=True)
     self.endpoint_mode = self._Add(
         'endpoint_mode',
-        choices=[self.REGIONAL_ONLY, self.AUTO, self.LEGACY],
-        default=self.LEGACY,
+        choices=[self.GLOBAL, self.REGIONAL, self.REGIONAL_PREFERRED],
         help_text="""\
 Determines how regional endpoints are used. The choices are:
-    *   `legacy` - Use global/locational endpoints.
-    *   `regional-only` - Use only regional endpoints.
-    *   `auto` - Allow commands to choose between regional/global endpoints, preferring regional if available.
+    *   `global` - Use only global/locational endpoints.
+    *   `regional` - Use only regional endpoints.
+    *   `regional-preferred` - Allow commands to choose between regional/global endpoints, preferring regional if available.
+If unset, commands will choose between regional/global endpoints, preferring global where possible.
 """
     )
-    self.default_endpoint_location = self._Add(
-        'default_endpoint_location',
-        help_text='Specifies the regional endpoint location to use by default.',
+    self.endpoint_compatibility = self._Add(
+        'endpoint_compatibility',
+        choices=[self.SUPPORTED, self.REQUIRED],
+        hidden=True,
+        help_text=(
+            'Hidden property set by @base.RegionalEndpoints[Supported|Required]'
+            ' annotation that indicates the level of regional endpoint'
+            ' compatibility for the command/group in question.'
+        ),
     )
 
 
@@ -4044,19 +4054,6 @@ class _SectionTransport(_Section):
 
   def __init__(self):
     super(_SectionTransport, self).__init__('transport', hidden=True)
-    self.disable_requests_override = self._AddBool(
-        'disable_requests_override',
-        default=False,
-        hidden=True,
-        help_text='Global switch to turn off using requests as a '
-        'transport. Users can use it to switch back to the old '
-        'mode if requests breaks users.')
-    self.opt_out_requests = self._AddBool(
-        'opt_out_requests',
-        default=False,
-        hidden=True,
-        help_text='A switch to disable requests for a surface or a command '
-        'group.')
 
 
 class _SectionVmware(_Section):

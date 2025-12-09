@@ -150,13 +150,13 @@ class GoogleIamV3alphaAccessPolicy(_messages.Message):
     etag: Optional. The etag for the access policy. If this is provided on
       update, it must match the server's etag.
     name: Identifier. The resource name of the access policy. The following
-      formats are supported:
+      formats are supported: *
       `projects/{project_id}/locations/{location}/accessPolicies/{policy_id}`
-      `projects/{project_number}/locations/{location}/accessPolicies/{policy_i
-      d}`
-      `folders/{folder_id}/locations/{location}/accessPolicies/{policy_id}` `o
-      rganizations/{organization_id}/locations/{location}/accessPolicies/{poli
-      cy_id}`
+      * `projects/{project_number}/locations/{location}/accessPolicies/{policy
+      _id}` *
+      `folders/{folder_id}/locations/{location}/accessPolicies/{policy_id}` *
+      `organizations/{organization_id}/locations/{location}/accessPolicies/{po
+      licy_id}`
     uid: Output only. The globally unique ID of the access policy.
     updateTime: Output only. The time when the access policy was most recently
       updated.
@@ -218,20 +218,20 @@ class GoogleIamV3alphaAccessPolicyRule(_messages.Message):
   Messages:
     ActivationConditionsValue: Optional. The conditions that determine whether
       this rule applies to a request. Conditions are identified by their key,
-      which is the FQDN of the service that they are relevant to, e.g.:
-      "activationConditions": { "iam.googleapis.com": { "cel_condition": } }
-      Each rule is evaluated independently. If this rule does not apply to a
-      request, other rules might still apply. Currently supported keys are: *
-      `eventarc.googleapis.com`
+      which is the FQDN of the service that they are relevant to. For example:
+      ``` "activationConditions": { "iam.googleapis.com": { "cel_condition": }
+      } ``` Each rule is evaluated independently. If this rule does not apply
+      to a request, other rules might still apply. Currently supported keys
+      are as follows: * `eventarc.googleapis.com`
 
   Fields:
     activationConditions: Optional. The conditions that determine whether this
       rule applies to a request. Conditions are identified by their key, which
-      is the FQDN of the service that they are relevant to, e.g.:
+      is the FQDN of the service that they are relevant to. For example: ```
       "activationConditions": { "iam.googleapis.com": { "cel_condition": } }
-      Each rule is evaluated independently. If this rule does not apply to a
-      request, other rules might still apply. Currently supported keys are: *
-      `eventarc.googleapis.com`
+      ``` Each rule is evaluated independently. If this rule does not apply to
+      a request, other rules might still apply. Currently supported keys are
+      as follows: * `eventarc.googleapis.com`
     description: Optional. Customer specified description of the rule. Must be
       less than or equal to 256 characters.
     effect: Required. The effect of the rule.
@@ -248,7 +248,7 @@ class GoogleIamV3alphaAccessPolicyRule(_messages.Message):
       this rule. Each permission uses the format
       `{service_fqdn}/{resource}.{verb}`, where `{service_fqdn}` is the fully
       qualified domain name for the service. Currently supported permissions
-      are: * `eventarc.googleapis.com/messageBuses.publish`.
+      are as follows: * `eventarc.googleapis.com/messageBuses.publish`.
     principals: Required. The identities for which this rule's effect governs
       using one or more permissions on Google Cloud resources. This field can
       contain the following values: * `principal://goog/subject/{email_id}`: A
@@ -302,10 +302,11 @@ class GoogleIamV3alphaAccessPolicyRule(_messages.Message):
   class ActivationConditionsValue(_messages.Message):
     r"""Optional. The conditions that determine whether this rule applies to a
     request. Conditions are identified by their key, which is the FQDN of the
-    service that they are relevant to, e.g.: "activationConditions": {
-    "iam.googleapis.com": { "cel_condition": } } Each rule is evaluated
-    independently. If this rule does not apply to a request, other rules might
-    still apply. Currently supported keys are: * `eventarc.googleapis.com`
+    service that they are relevant to. For example: ```
+    "activationConditions": { "iam.googleapis.com": { "cel_condition": } } ```
+    Each rule is evaluated independently. If this rule does not apply to a
+    request, other rules might still apply. Currently supported keys are as
+    follows: * `eventarc.googleapis.com`
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -613,8 +614,7 @@ class GoogleIamV3alphaPolicyBinding(_messages.Message):
     Values:
       POLICY_KIND_UNSPECIFIED: Unspecified policy kind; Not a valid state
       PRINCIPAL_ACCESS_BOUNDARY: Principal access boundary policy kind
-      ACCESS: Access policy kind. Keep behind visibility label until Access
-        Policy launch.
+      ACCESS: Access policy kind.
     """
     POLICY_KIND_UNSPECIFIED = 0
     PRINCIPAL_ACCESS_BOUNDARY = 1
@@ -684,7 +684,7 @@ class GoogleIamV3alphaPolicyBindingTarget(_messages.Message):
       Identity Pool: `//iam.googleapis.com/projects/PROJECT_NUMBER/locations/L
       OCATION/workloadIdentityPools/WORKLOAD_POOL_ID`
     resource: Immutable. The full resource name that's used for access policy
-      bindings Examples: * Organization:
+      bindings. Examples: * Organization:
       `//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID` *
       Folder: `//cloudresourcemanager.googleapis.com/folders/FOLDER_ID` *
       Project: *
@@ -1086,8 +1086,9 @@ class GoogleIamV3alphaSearchApplicablePoliciesResponseBindingAndPolicy(_messages
     policyInaccessible: Will be set if there was a permission error getting
       the policy (even though the binding was accessible).
     policyNotFound: Will be set if there was not a permission error, but the
-      policy was not found. This would indicate the binding is orphaned. Any
-      orphan binding will eventually be cleaned up - this state is temporary.
+      policy was not found. This would indicate the binding is orphaned. This
+      state is temporary, because any orphan binding will eventually be
+      cleaned up.
   """
 
   binding = _messages.MessageField('GoogleIamV3alphaPolicyBinding', 1)
@@ -1692,13 +1693,13 @@ class IamFoldersLocationsAccessPoliciesPatchRequest(_messages.Message):
     googleIamV3alphaAccessPolicy: A GoogleIamV3alphaAccessPolicy resource to
       be passed as the request body.
     name: Identifier. The resource name of the access policy. The following
-      formats are supported:
+      formats are supported: *
       `projects/{project_id}/locations/{location}/accessPolicies/{policy_id}`
-      `projects/{project_number}/locations/{location}/accessPolicies/{policy_i
-      d}`
-      `folders/{folder_id}/locations/{location}/accessPolicies/{policy_id}` `o
-      rganizations/{organization_id}/locations/{location}/accessPolicies/{poli
-      cy_id}`
+      * `projects/{project_number}/locations/{location}/accessPolicies/{policy
+      _id}` *
+      `folders/{folder_id}/locations/{location}/accessPolicies/{policy_id}` *
+      `organizations/{organization_id}/locations/{location}/accessPolicies/{po
+      licy_id}`
     validateOnly: Optional. If set, validate the request and preview the
       update, but do not actually post it.
   """
@@ -1813,14 +1814,13 @@ class IamFoldersLocationsPolicyBindingsListRequest(_messages.Message):
   Fields:
     filter: Optional. An expression for filtering the results of the request.
       Filter rules are case insensitive. Some eligible fields for filtering
-      are: + `target` + `policy` Some examples of filter queries: *
-      `target:ex*`: The binding target's name starts with "ex". *
+      are the following: + `target` + `policy` Some examples of filter
+      queries: * `target:ex*`: The binding target's name starts with "ex". *
       `target:example`: The binding target's name is `example`. *
       `policy:example`: The binding policy's name is `example`.
     pageSize: Optional. The maximum number of policy bindings to return. The
-      service may return fewer than this value. If unspecified, at most 50
-      policy bindings will be returned. The maximum value is 1000; values
-      above 1000 will be coerced to 1000.
+      service may return fewer than this value. The default value is 50. The
+      maximum value is 1000.
     pageToken: Optional. A page token, received from a previous
       `ListPolicyBindings` call. Provide this to retrieve the subsequent page.
       When paginating, all other parameters provided to `ListPolicyBindings`
@@ -1872,12 +1872,11 @@ class IamFoldersLocationsPolicyBindingsSearchTargetPolicyBindingsRequest(_messag
     filter: Optional. Filtering currently only supports the kind of policies
       to return, and must be in the format "policy_kind={policy_kind}". If
       String is empty, bindings bound to all kinds of policies would be
-      returned. The only supported values are:
-      "policy_kind=PRINCIPAL_ACCESS_BOUNDARY", "policy_kind=ACCESS"
+      returned. The only supported values are the following: *
+      "policy_kind=PRINCIPAL_ACCESS_BOUNDARY", * "policy_kind=ACCESS"
     pageSize: Optional. The maximum number of policy bindings to return. The
-      service may return fewer than this value. If unspecified, at most 50
-      policy bindings will be returned. The maximum value is 1000; values
-      above 1000 will be coerced to 1000.
+      service may return fewer than this value. The default value is 50. The
+      maximum value is 1000.
     pageToken: Optional. A page token, received from a previous
       `SearchTargetPolicyBindingsRequest` call. Provide this to retrieve the
       subsequent page. When paginating, all other parameters provided to
@@ -2004,13 +2003,13 @@ class IamOrganizationsLocationsAccessPoliciesPatchRequest(_messages.Message):
     googleIamV3alphaAccessPolicy: A GoogleIamV3alphaAccessPolicy resource to
       be passed as the request body.
     name: Identifier. The resource name of the access policy. The following
-      formats are supported:
+      formats are supported: *
       `projects/{project_id}/locations/{location}/accessPolicies/{policy_id}`
-      `projects/{project_number}/locations/{location}/accessPolicies/{policy_i
-      d}`
-      `folders/{folder_id}/locations/{location}/accessPolicies/{policy_id}` `o
-      rganizations/{organization_id}/locations/{location}/accessPolicies/{poli
-      cy_id}`
+      * `projects/{project_number}/locations/{location}/accessPolicies/{policy
+      _id}` *
+      `folders/{folder_id}/locations/{location}/accessPolicies/{policy_id}` *
+      `organizations/{organization_id}/locations/{location}/accessPolicies/{po
+      licy_id}`
     validateOnly: Optional. If set, validate the request and preview the
       update, but do not actually post it.
   """
@@ -2126,14 +2125,13 @@ class IamOrganizationsLocationsPolicyBindingsListRequest(_messages.Message):
   Fields:
     filter: Optional. An expression for filtering the results of the request.
       Filter rules are case insensitive. Some eligible fields for filtering
-      are: + `target` + `policy` Some examples of filter queries: *
-      `target:ex*`: The binding target's name starts with "ex". *
+      are the following: + `target` + `policy` Some examples of filter
+      queries: * `target:ex*`: The binding target's name starts with "ex". *
       `target:example`: The binding target's name is `example`. *
       `policy:example`: The binding policy's name is `example`.
     pageSize: Optional. The maximum number of policy bindings to return. The
-      service may return fewer than this value. If unspecified, at most 50
-      policy bindings will be returned. The maximum value is 1000; values
-      above 1000 will be coerced to 1000.
+      service may return fewer than this value. The default value is 50. The
+      maximum value is 1000.
     pageToken: Optional. A page token, received from a previous
       `ListPolicyBindings` call. Provide this to retrieve the subsequent page.
       When paginating, all other parameters provided to `ListPolicyBindings`
@@ -2186,12 +2184,11 @@ class IamOrganizationsLocationsPolicyBindingsSearchTargetPolicyBindingsRequest(_
     filter: Optional. Filtering currently only supports the kind of policies
       to return, and must be in the format "policy_kind={policy_kind}". If
       String is empty, bindings bound to all kinds of policies would be
-      returned. The only supported values are:
-      "policy_kind=PRINCIPAL_ACCESS_BOUNDARY", "policy_kind=ACCESS"
+      returned. The only supported values are the following: *
+      "policy_kind=PRINCIPAL_ACCESS_BOUNDARY", * "policy_kind=ACCESS"
     pageSize: Optional. The maximum number of policy bindings to return. The
-      service may return fewer than this value. If unspecified, at most 50
-      policy bindings will be returned. The maximum value is 1000; values
-      above 1000 will be coerced to 1000.
+      service may return fewer than this value. The default value is 50. The
+      maximum value is 1000.
     pageToken: Optional. A page token, received from a previous
       `SearchTargetPolicyBindingsRequest` call. Provide this to retrieve the
       subsequent page. When paginating, all other parameters provided to
@@ -2450,13 +2447,13 @@ class IamProjectsLocationsAccessPoliciesPatchRequest(_messages.Message):
     googleIamV3alphaAccessPolicy: A GoogleIamV3alphaAccessPolicy resource to
       be passed as the request body.
     name: Identifier. The resource name of the access policy. The following
-      formats are supported:
+      formats are supported: *
       `projects/{project_id}/locations/{location}/accessPolicies/{policy_id}`
-      `projects/{project_number}/locations/{location}/accessPolicies/{policy_i
-      d}`
-      `folders/{folder_id}/locations/{location}/accessPolicies/{policy_id}` `o
-      rganizations/{organization_id}/locations/{location}/accessPolicies/{poli
-      cy_id}`
+      * `projects/{project_number}/locations/{location}/accessPolicies/{policy
+      _id}` *
+      `folders/{folder_id}/locations/{location}/accessPolicies/{policy_id}` *
+      `organizations/{organization_id}/locations/{location}/accessPolicies/{po
+      licy_id}`
     validateOnly: Optional. If set, validate the request and preview the
       update, but do not actually post it.
   """
@@ -2571,14 +2568,13 @@ class IamProjectsLocationsPolicyBindingsListRequest(_messages.Message):
   Fields:
     filter: Optional. An expression for filtering the results of the request.
       Filter rules are case insensitive. Some eligible fields for filtering
-      are: + `target` + `policy` Some examples of filter queries: *
-      `target:ex*`: The binding target's name starts with "ex". *
+      are the following: + `target` + `policy` Some examples of filter
+      queries: * `target:ex*`: The binding target's name starts with "ex". *
       `target:example`: The binding target's name is `example`. *
       `policy:example`: The binding policy's name is `example`.
     pageSize: Optional. The maximum number of policy bindings to return. The
-      service may return fewer than this value. If unspecified, at most 50
-      policy bindings will be returned. The maximum value is 1000; values
-      above 1000 will be coerced to 1000.
+      service may return fewer than this value. The default value is 50. The
+      maximum value is 1000.
     pageToken: Optional. A page token, received from a previous
       `ListPolicyBindings` call. Provide this to retrieve the subsequent page.
       When paginating, all other parameters provided to `ListPolicyBindings`
@@ -2630,12 +2626,11 @@ class IamProjectsLocationsPolicyBindingsSearchTargetPolicyBindingsRequest(_messa
     filter: Optional. Filtering currently only supports the kind of policies
       to return, and must be in the format "policy_kind={policy_kind}". If
       String is empty, bindings bound to all kinds of policies would be
-      returned. The only supported values are:
-      "policy_kind=PRINCIPAL_ACCESS_BOUNDARY", "policy_kind=ACCESS"
+      returned. The only supported values are the following: *
+      "policy_kind=PRINCIPAL_ACCESS_BOUNDARY", * "policy_kind=ACCESS"
     pageSize: Optional. The maximum number of policy bindings to return. The
-      service may return fewer than this value. If unspecified, at most 50
-      policy bindings will be returned. The maximum value is 1000; values
-      above 1000 will be coerced to 1000.
+      service may return fewer than this value. The default value is 50. The
+      maximum value is 1000.
     pageToken: Optional. A page token, received from a previous
       `SearchTargetPolicyBindingsRequest` call. Provide this to retrieve the
       subsequent page. When paginating, all other parameters provided to

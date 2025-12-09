@@ -120,6 +120,23 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class AutoMigrationConfig(_messages.Message):
+  r"""AutoMigrationConfig contains the automigration configuration for a
+  project.
+
+  Fields:
+    autoMigrationEnabled: Optional. Whether the auto migration is enabled for
+      the project.
+    name: Identifier. The name of the AutoMigrationConfig. Format:
+      'projects/{project_id}/locations/{location}/AutoMigrationConfig'.
+    updateTime: Output only. Time the AutoMigrationConfig was last updated.
+  """
+
+  autoMigrationEnabled = _messages.BooleanField(1)
+  name = _messages.StringField(2)
+  updateTime = _messages.StringField(3)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -614,6 +631,17 @@ class ConfigProjectsLocationsDeploymentsUnlockRequest(_messages.Message):
   unlockDeploymentRequest = _messages.MessageField('UnlockDeploymentRequest', 2)
 
 
+class ConfigProjectsLocationsGetAutoMigrationConfigRequest(_messages.Message):
+  r"""A ConfigProjectsLocationsGetAutoMigrationConfigRequest object.
+
+  Fields:
+    name: Required. The name of the AutoMigrationConfig. Format:
+      'projects/{project_id}/locations/{location}/AutoMigrationConfig'.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ConfigProjectsLocationsGetRequest(_messages.Message):
   r"""A ConfigProjectsLocationsGetRequest object.
 
@@ -691,9 +719,9 @@ class ConfigProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -945,6 +973,23 @@ class ConfigProjectsLocationsTerraformVersionsListRequest(_messages.Message):
   parent = _messages.StringField(5, required=True)
 
 
+class ConfigProjectsLocationsUpdateAutoMigrationConfigRequest(_messages.Message):
+  r"""A ConfigProjectsLocationsUpdateAutoMigrationConfigRequest object.
+
+  Fields:
+    autoMigrationConfig: A AutoMigrationConfig resource to be passed as the
+      request body.
+    name: Identifier. The name of the AutoMigrationConfig. Format:
+      'projects/{project_id}/locations/{location}/AutoMigrationConfig'.
+    updateMask: Optional. The update mask applies to the resource. See
+      google.protobuf.FieldMask.
+  """
+
+  autoMigrationConfig = _messages.MessageField('AutoMigrationConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class DeleteStatefileRequest(_messages.Message):
   r"""A request to delete a state file passed to a 'DeleteStatefile' call.
 
@@ -1060,6 +1105,8 @@ class Deployment(_messages.Message):
         due to a permission issue.
       BUCKET_CREATION_FAILED: Cloud Storage bucket creation failed due to an
         issue unrelated to permissions.
+      EXTERNAL_VALUE_SOURCE_IMPORT_FAILED: Failed to import values from an
+        external source.
     """
     ERROR_CODE_UNSPECIFIED = 0
     REVISION_FAILED = 1
@@ -1068,6 +1115,7 @@ class Deployment(_messages.Message):
     DELETE_BUILD_RUN_FAILED = 4
     BUCKET_CREATION_PERMISSION_DENIED = 5
     BUCKET_CREATION_FAILED = 6
+    EXTERNAL_VALUE_SOURCE_IMPORT_FAILED = 7
 
   class LockStateValueValuesEnum(_messages.Enum):
     r"""Output only. Current lock state of the deployment.
@@ -1414,8 +1462,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1934,6 +1982,8 @@ class Preview(_messages.Message):
         access Cloud Build API.
       PREVIEW_BUILD_RUN_FAILED: Preview created a build but build failed and
         logs were generated.
+      EXTERNAL_VALUE_SOURCE_IMPORT_FAILED: Failed to import values from an
+        external source.
     """
     ERROR_CODE_UNSPECIFIED = 0
     CLOUD_BUILD_PERMISSION_DENIED = 1
@@ -1942,6 +1992,7 @@ class Preview(_messages.Message):
     DEPLOYMENT_LOCK_ACQUIRE_FAILED = 4
     PREVIEW_BUILD_API_FAILED = 5
     PREVIEW_BUILD_RUN_FAILED = 6
+    EXTERNAL_VALUE_SOURCE_IMPORT_FAILED = 7
 
   class PreviewModeValueValuesEnum(_messages.Enum):
     r"""Optional. Current mode of preview.
@@ -2507,12 +2558,15 @@ class Revision(_messages.Message):
         updating a deployment was started but failed.
       QUOTA_VALIDATION_FAILED: quota validation failed for one or more
         resources in terraform configuration files.
+      EXTERNAL_VALUE_SOURCE_IMPORT_FAILED: Failed to import values from an
+        external source.
     """
     ERROR_CODE_UNSPECIFIED = 0
     CLOUD_BUILD_PERMISSION_DENIED = 1
     APPLY_BUILD_API_FAILED = 2
     APPLY_BUILD_RUN_FAILED = 3
     QUOTA_VALIDATION_FAILED = 4
+    EXTERNAL_VALUE_SOURCE_IMPORT_FAILED = 5
 
   class QuotaValidationValueValuesEnum(_messages.Enum):
     r"""Optional. Input to control quota checks for resources in terraform

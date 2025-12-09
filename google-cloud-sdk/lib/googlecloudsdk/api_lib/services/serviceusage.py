@@ -953,10 +953,11 @@ def AddContentSecurityProvider(
     ]
 
     if content_security_provider in existing_content_security_providers:
-      raise exceptions.ConfigError(
+      log.warning(
           f'The content security provider {content_security_provider} already'
           ' exists.'
       )
+      return None
 
     update_policy = copy.deepcopy(content_security_policy)
 
@@ -1015,10 +1016,11 @@ def RemoveContentSecurityProvider(
         updated_content_security_providers.append(p)
 
     if not is_present:
-      raise exceptions.ConfigError(
+      log.warning(
           f'The content security provider {content_security_provider} does not'
           ' exist.'
       )
+      return None
 
     mcp_content_security.contentSecurityProviders = (
         updated_content_security_providers
@@ -1117,11 +1119,12 @@ def AddEnableRule(
 
     if not services_to_enabled:
       if skip_dependency:
-        raise exceptions.ConfigError(
+        log.warning(
             'The service(s) '
             + ','.join(services)
-            + ' are already enabled and present in the consumer policy'
+            + ' are already enabled and present in the consumer policy.'
         )
+        return None, []
       else:
         service_list_str = ','.join(services)
         message = f'The service(s) {service_list_str}'
@@ -1134,7 +1137,8 @@ def AddEnableRule(
           message += f' and their dependencies {dependent_list_str}'
 
         message += ' are already enabled and present in the consumer policy'
-        raise exceptions.ConfigError(message)
+        log.warning(message)
+        return None, []
 
     if policy.enableRules:
       for service in list(services_to_enabled):
@@ -1197,9 +1201,8 @@ def AddMcpEnableRule(
     if policy.mcpEnableRules:
       for mcp_service in policy.mcpEnableRules[0].mcpServices:
         if mcp_service.service == _SERVICE_RESOURCE % service:
-          raise exceptions.ConfigError(
-              'The service ' + service + ' is already enabled for MCP.'
-          )
+          log.warning(f'The service {service} is already enabled for MCP.')
+          return None
 
       policy.mcpEnableRules[0].mcpServices.append(
           messages.McpService(service=_SERVICE_RESOURCE % service)
@@ -1287,11 +1290,12 @@ def RemoveEnableRule(
     ]
 
     if not services_to_remove:
-      raise exceptions.ConfigError(
-          'The services '
+      log.warning(
+          'The service(s) '
           + ','.join(services)
           + ' are not enabled in the consumer policy.'
       )
+      return None
 
     proposed_policy = copy.deepcopy(current_policy)
     for enable_rule in proposed_policy.enableRules:
@@ -1417,9 +1421,8 @@ def RemoveMcpEnableRule(
           updated_mcp_policy.mcpEnableRules.append(rule)
 
     if already_disabled:
-      raise exceptions.ConfigError(
-          'The service ' + service + ' is not enabled for MCP.'
-      )
+      log.warning(f'The service {service} is not enabled for MCP.')
+      return None
 
     return UpdateMcpPolicy(updated_mcp_policy, policy_name)
   except (

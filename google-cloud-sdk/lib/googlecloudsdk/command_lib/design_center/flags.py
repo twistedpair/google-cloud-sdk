@@ -322,6 +322,85 @@ def AddRegisterWithApphubFlags(parser):
   base.ASYNC_FLAG.AddToParser(parser)
 
 
+def AddTfStateSourceFlags(parser):
+  """Adds flags for specifying the Terraform state source.
+
+  Args:
+    parser: An argparse.ArgumentParser-like object. It is mocked out in tests.
+  """
+  tfstate_source_group = parser.add_group(mutex=True, required=True)
+  tfstate_source_group.add_argument(
+      '--terraform-state',
+      help=(
+          'The Terraform state (tfstate) content as a raw JSON string.'
+          ' Example: \'{"version":4, "resources": [...]}\''
+      ),
+  )
+  tfstate_source_group.add_argument(
+      '--tfstate-signed-gcs-uri',
+      help=(
+          'A securely signed Cloud Storage URI pointing to the tfstate file.'
+          ' Example: `https://storage.googleapis.com/my-bucket/tfstate.json'
+          '?x-goog-signature=...`'
+      ),
+  )
+
+
+def AddServiceAccountFlag(parser):
+  """Adds the service account flag.
+
+  Args:
+    parser: An argparse.ArgumentParser-like object. It is mocked out in tests.
+  """
+  parser.add_argument(
+      '--service-account',
+      help=(
+          'The email address of the service account to use for this operation.'
+          ' Format: `projects/{PROJECT}/serviceAccounts/{EMAIL_ADDRESS}`'
+      ),
+      required=False,
+  )
+
+
+def AddRegisterDeployedApplicationFlags(parser):
+  """Adds flags for the register deployed application command.
+
+  Args:
+    parser: An argparse.ArgumentParser-like object. It is mocked out in tests.
+  """
+  concept_parsers.ConceptParser.ForResource(
+      'APPLICATION',
+      GetApplicationResourceSpec(),
+      'The application with which the resources will be registered.',
+      required=True).AddToParser(parser)
+  AddTfStateSourceFlags(parser)
+  AddServiceAccountFlag(parser)
+  base.ASYNC_FLAG.AddToParser(parser)
+
+
+def AddRegisterDeployedResourcesFlags(parser):
+  """Adds flags for the register deployed resources command.
+
+  Args:
+    parser: An argparse.ArgumentParser-like object. It is mocked out in tests.
+  """
+  GetSpaceResourceArg(
+      arg_name='space',
+      help_text='The parent space.',
+  ).AddToParser(parser)
+  parser.add_argument(
+      '--apphub-application',
+      help=(
+          'The name of the AppHub Application. Format:'
+          ' `projects/{project}/locations/{location}/applications/{application}`'
+      ),
+      required=True,
+  )
+  AddTfStateSourceFlags(parser)
+  AddServiceAccountFlag(parser)
+  base.ASYNC_FLAG.AddToParser(parser)
+
+
 def AddInferConnectionsFlags(parser):
   """Adds all flags for the infer connections command.
 
@@ -350,6 +429,8 @@ def AddInferConnectionsFlags(parser):
       default=False,
       help='Use Gemini to infer connections.',
   )
+
+
 def GetApplicationTemplateResourceSpec(arg_name='application_template_id'):
   """Constructs and returns the Resource specification for Application Template."""
   return concepts.ResourceSpec(

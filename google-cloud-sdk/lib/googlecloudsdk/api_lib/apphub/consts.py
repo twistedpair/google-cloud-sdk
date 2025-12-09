@@ -132,3 +132,10 @@ class DeleteApplicationService:
 
   DELETE_TIMELIMIT_SEC = 60
 
+
+class UpdateBoundary:
+  """Constants used by the update boundary command."""
+
+  WAIT_FOR_UPDATE_MESSAGE = 'Updating boundary'
+  UPDATE_TIMELIMIT_SEC = 60
+

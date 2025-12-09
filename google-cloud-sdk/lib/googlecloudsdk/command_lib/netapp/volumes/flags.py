@@ -18,6 +18,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import argparse
+import textwrap
+from typing import Any
+
 from googlecloudsdk.api_lib.netapp import util as netapp_api_util
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
@@ -66,7 +70,7 @@ def AddVolumeNetworkArg(parser, required=True):
       'psa-range': str,
   }
 
-  network_help = """\
+  network_help = textwrap.dedent("""\
         Network configuration for a Cloud NetApp Files Volume. Specifying
         `psa-range` is optional.
         *name*::: The name of the Google Compute Engine
@@ -74,7 +78,7 @@ def AddVolumeNetworkArg(parser, required=True):
         the volume is connected.
         *psa-range*::: This field is not implemented. The values provided in
         this field are ignored.
-  """
+  """)
 
   parser.add_argument(
       '--network',
@@ -122,11 +126,12 @@ def AddVolumeShareNameArg(parser, required=False):
   )
 
 
-def AddVolumeExportPolicyArg(parser):
+def AddVolumeExportPolicyArg(parser: argparse.ArgumentParser, messages: Any):
   """Adds the Export Policy (--export-policy) arg to the given parser.
 
   Args:
     parser: argparse parser.
+    messages: The messages module.
   """
   export_policy_arg_spec = {
       'allowed-clients': str,
@@ -156,8 +161,10 @@ def AddVolumeExportPolicyArg(parser):
       'nfsv4': arg_parsers.ArgBoolean(
           truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey
       ),
+      'squash-mode': messages.SimpleExportPolicyRule.SquashModeValueValuesEnum,
+      'anon-uid': int,
   }
-  export_policy_help = """\
+  export_policy_help = textwrap.dedent("""\
         Export Policy of a Cloud NetApp Files Volume.
         This will be a field similar to network
         in which export policy fields can be specified as such:
@@ -168,8 +175,9 @@ def AddVolumeExportPolicyArg(parser):
         kerberos-5i-read-only=KERBEROS_5I_READ_ONLY,
         kerberos-5i-read-write=KERBEROS_5I_READ_WRITE,
         kerberos-5p-read-only=KERBEROS_5P_READ_ONLY,
-        kerberos-5p-read-write=KERBEROS_5P_READ_WRITE`
-  """
+        kerberos-5p-read-write=KERBEROS_5P_READ_WRITE,
+        squash-mode=SQUASH_MODE,anon-uid=ANON_UID`
+  """)
   parser.add_argument(
       '--export-policy',
       type=arg_parsers.ArgDict(spec=export_policy_arg_spec),
@@ -468,18 +476,18 @@ def AddVolumeBackupConfigArg(parser):
           truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey
       ),
   }
-  backup_config_help = """\
-Backup Config contains backup related config on a volume.
+  backup_config_help = textwrap.dedent("""\
+    Backup Config contains backup related config on a volume.
 
-    Backup Config will have the following format
-    `--backup-config=backup-policies=BACKUP_POLICIES,
-    backup-vault=BACKUP_VAULT_NAME,
-    enable-scheduled-backups=ENABLE_SCHEDULED_BACKUPS
+        Backup Config will have the following format
+        `--backup-config=backup-policies=BACKUP_POLICIES,
+        backup-vault=BACKUP_VAULT_NAME,
+        enable-scheduled-backups=ENABLE_SCHEDULED_BACKUPS
 
-backup-policies is a pound-separated (#) list of backup policy names, backup-vault can include
-a single backup-vault resource name, and enable-scheduled-backups is a Boolean value indicating
-whether or not scheduled backups are enabled on the volume.
-  """
+    backup-policies is a pound-separated (#) list of backup policy names, backup-vault can include
+    a single backup-vault resource name, and enable-scheduled-backups is a Boolean value indicating
+    whether or not scheduled backups are enabled on the volume.
+  """)
   parser.add_argument(
       '--backup-config',
       type=arg_parsers.ArgDict(spec=backup_config_arg_spec),
@@ -518,7 +526,7 @@ def AddVolumeBlockDevicesArg(parser, messages):
       'os-type': messages.BlockDevice.OsTypeValueValuesEnum,
       'size-gib': int,
   }
-  block_devices_help = """\
+  block_devices_help = textwrap.dedent("""\
     A block device to be created with the volume.
 
     This flag can be repeated to specify multiple block devices.
@@ -528,7 +536,7 @@ def AddVolumeBlockDevicesArg(parser, messages):
     *host-groups*::: A comma-separated list of host groups that can mount the block volume.
     *os-type*::: The OS type of the volume. Allowed values are `OS_TYPE_UNSPECIFIED`, `LINUX`, `WINDOWS`.
     *size-gib*::: The size of the block device in GiB. Note that this value is ignored during volume creation and is system-managed.
-  """
+  """)
   parser.add_argument(
       '--block-devices',
       type=arg_parsers.ArgDict(
@@ -555,7 +563,7 @@ def AddVolumeTieringPolicyArg(parser, messages, release_track):
         'tier-action': messages.TieringPolicy.TierActionValueValuesEnum,
         'cooling-threshold-days': int,
     }
-  tiering_policy_help = """\
+  tiering_policy_help = textwrap.dedent("""\
       Tiering Policy contains auto tiering policy on a volume.
 
       Tiering Policy will have the following format
@@ -566,7 +574,7 @@ def AddVolumeTieringPolicyArg(parser, messages, release_track):
 cooling-threshold-days is an integer represents time in days to mark the
 volume's data block as cold and make it eligible for tiering,
 can be range from 7-183. Default is 31.
-  """
+  """)
   parser.add_argument(
       '--tiering-policy',
       type=arg_parsers.ArgDict(spec=tiering_policy_arg_spec),
@@ -602,7 +610,7 @@ def AddVolumeHybridReplicationParametersArg(
       ),
   }
 
-  hybrid_replication_parameters_help = """\
+  hybrid_replication_parameters_help = textwrap.dedent("""\
   Hybrid Replication Parameters contains hybrid replication parameters on a volume.
 
       Hybrid Replication Parameters will have the following format
@@ -631,7 +639,7 @@ def AddVolumeHybridReplicationParametersArg(
   is the number of constituent volumes in the large volume, and labels is an
   hashtag-separated(#) key value pair of labels with key and value separated
   by colon(:) for the replication.
-      """
+      """)
   parser.add_argument(
       '--hybrid-replication-parameters',
       type=arg_parsers.ArgDict(spec=hybrid_replication_parameters_arg_spec),
@@ -665,7 +673,7 @@ def AddVolumeCacheParametersArg(parser, hidden=False):
           element_type=arg_parsers.ArgDict(), custom_delim_char='#'
       ),
   }
-  cache_parameters_help = """\
+  cache_parameters_help = textwrap.dedent("""\
   Cache Parameters contains cache parameters of a volume.
 
       Cache Parameters will have the following format
@@ -682,11 +690,44 @@ def AddVolumeCacheParametersArg(parser, hidden=False):
       *peer-ip-addresses*::: Hashtag-separated(#) list of IP addresses
       *enable-global-file-lock*::: If true, enable global file lock
       *cache-config*::: Cache-config as a hashtag-separated(#) list of key-value pairs
-  """
+  """)
   parser.add_argument(
       '--cache-parameters',
       type=arg_parsers.ArgDict(spec=cache_parameters_arg_spec),
       help=cache_parameters_help,
+      hidden=hidden,
+  )
+
+
+def AddVolumeCachePrePopulateArg(parser, hidden=False):
+  """Adds the --cache-pre-populate arg to the arg parser."""
+  cache_pre_populate_arg_spec = {
+      'path-list': arg_parsers.ArgList(
+          min_length=1, element_type=str, custom_delim_char='#'
+      ),
+      'exclude-path-list': arg_parsers.ArgList(
+          min_length=1, element_type=str, custom_delim_char='#'
+      ),
+      'recursion': arg_parsers.ArgBoolean(
+          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey
+      ),
+  }
+  cache_pre_populate_help = textwrap.dedent("""\
+      Cache Pre-populate contains cache pre-populate parameters of a volume.
+
+      Cache Pre-populate will have the following format
+      `--cache-pre-populate=path-list=PATH_LIST1#PATH_LIST2,
+        exclude-path-list=EXCLUDE_PATH_LIST1#EXCLUDE_PATH_LIST2,
+        recursion=RECURSION`
+
+      *path-list*::: Hashtag-separated(#) list of paths to be pre-populated
+      *exclude-path-list*::: Hashtag-separated(#) list of paths to be excluded from pre-population
+      *recursion*::: Boolean value indicating pre-populate recursion.
+  """)
+  parser.add_argument(
+      '--cache-pre-populate',
+      type=arg_parsers.ArgDict(spec=cache_pre_populate_arg_spec),
+      help=cache_pre_populate_help,
       hidden=hidden,
   )
 
@@ -726,7 +767,7 @@ def AddVolumeCreateArgs(parser, release_track):
   flags.AddResourceAsyncFlag(parser)
   AddVolumeProtocolsArg(parser)
   AddVolumeShareNameArg(parser)
-  AddVolumeExportPolicyArg(parser)
+  AddVolumeExportPolicyArg(parser, messages)
   AddVolumeUnixPermissionsArg(parser)
   AddVolumeSmbSettingsArg(parser)
   AddVolumeSourceSnapshotArg(parser)
@@ -750,6 +791,7 @@ def AddVolumeCreateArgs(parser, release_track):
   AddVolumeTieringPolicyArg(parser, messages, release_track)
   AddVolumeHybridReplicationParametersArg(parser, messages, release_track)
   AddVolumeCacheParametersArg(parser)
+  AddVolumeCachePrePopulateArg(parser)
   AddVolumeBlockDevicesArg(parser, messages)
   labels_util.AddCreateLabelsFlags(parser)
 
@@ -775,7 +817,7 @@ def AddVolumeUpdateArgs(parser, release_track):
   flags.AddResourceAsyncFlag(parser)
   AddVolumeProtocolsArg(parser, required=False)
   AddVolumeShareNameArg(parser, required=False)
-  AddVolumeExportPolicyArg(parser)
+  AddVolumeExportPolicyArg(parser, messages)
   AddVolumeUnixPermissionsArg(parser)
   AddVolumeSmbSettingsArg(parser)
   AddVolumeSourceSnapshotArg(parser)
@@ -796,6 +838,7 @@ def AddVolumeUpdateArgs(parser, release_track):
   AddVolumeThroughputMibpsArg(parser)
   AddVolumeTieringPolicyArg(parser, messages, release_track)
   AddVolumeCacheParametersArg(parser)
+  AddVolumeCachePrePopulateArg(parser)
   AddVolumeBlockDevicesArg(parser, messages)
   labels_util.AddUpdateLabelsFlags(parser)
 

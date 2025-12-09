@@ -984,6 +984,11 @@ def PerformanceCaptureConfig(
 
   for key, value in sorted(performance_capture_config.items()):
     if key in bool_keys:
+      if value.lower() not in ['true', 'false']:
+        raise exceptions.InvalidArgumentException(
+            '--performance-capture-config',
+            'Invalid boolean value for key [{0}]: {1}'.format(key, value),
+        )
       setattr(config, bool_keys[key], value.lower() == 'true')
     elif key in int_keys:
       try:

@@ -101,7 +101,7 @@ class IamV3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a policy binding and returns a long-running operation. Callers will need the IAM permissions on both the policy and target. Once the binding is created, the policy is applied to the target.
+      r"""Creates a policy binding and returns a long-running operation. Callers will need the IAM permissions on both the policy and target. After the binding is created, the policy is applied to the target.
 
       Args:
         request: (IamFoldersLocationsPolicyBindingsCreateRequest) input message
@@ -128,7 +128,7 @@ class IamV3(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a policy binding and returns a long-running operation. Callers will need the IAM permissions on both the policy and target. Once the binding is deleted, the policy no longer applies to the target.
+      r"""Deletes a policy binding and returns a long-running operation. Callers will need the IAM permissions on both the policy and target. After the binding is deleted, the policy no longer applies to the target.
 
       Args:
         request: (IamFoldersLocationsPolicyBindingsDeleteRequest) input message
@@ -330,7 +330,7 @@ class IamV3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a policy binding and returns a long-running operation. Callers will need the IAM permissions on both the policy and target. Once the binding is created, the policy is applied to the target.
+      r"""Creates a policy binding and returns a long-running operation. Callers will need the IAM permissions on both the policy and target. After the binding is created, the policy is applied to the target.
 
       Args:
         request: (IamOrganizationsLocationsPolicyBindingsCreateRequest) input message
@@ -357,7 +357,7 @@ class IamV3(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a policy binding and returns a long-running operation. Callers will need the IAM permissions on both the policy and target. Once the binding is deleted, the policy no longer applies to the target.
+      r"""Deletes a policy binding and returns a long-running operation. Callers will need the IAM permissions on both the policy and target. After the binding is deleted, the policy no longer applies to the target.
 
       Args:
         request: (IamOrganizationsLocationsPolicyBindingsDeleteRequest) input message
@@ -731,7 +731,7 @@ class IamV3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a policy binding and returns a long-running operation. Callers will need the IAM permissions on both the policy and target. Once the binding is created, the policy is applied to the target.
+      r"""Creates a policy binding and returns a long-running operation. Callers will need the IAM permissions on both the policy and target. After the binding is created, the policy is applied to the target.
 
       Args:
         request: (IamProjectsLocationsPolicyBindingsCreateRequest) input message
@@ -758,7 +758,7 @@ class IamV3(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a policy binding and returns a long-running operation. Callers will need the IAM permissions on both the policy and target. Once the binding is deleted, the policy no longer applies to the target.
+      r"""Deletes a policy binding and returns a long-running operation. Callers will need the IAM permissions on both the policy and target. After the binding is deleted, the policy no longer applies to the target.
 
       Args:
         request: (IamProjectsLocationsPolicyBindingsDeleteRequest) input message

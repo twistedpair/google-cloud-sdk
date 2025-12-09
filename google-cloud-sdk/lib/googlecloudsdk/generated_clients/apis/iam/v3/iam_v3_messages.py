@@ -667,14 +667,13 @@ class IamFoldersLocationsPolicyBindingsListRequest(_messages.Message):
   Fields:
     filter: Optional. An expression for filtering the results of the request.
       Filter rules are case insensitive. Some eligible fields for filtering
-      are: + `target` + `policy` Some examples of filter queries: *
-      `target:ex*`: The binding target's name starts with "ex". *
+      are the following: + `target` + `policy` Some examples of filter
+      queries: * `target:ex*`: The binding target's name starts with "ex". *
       `target:example`: The binding target's name is `example`. *
       `policy:example`: The binding policy's name is `example`.
     pageSize: Optional. The maximum number of policy bindings to return. The
-      service may return fewer than this value. If unspecified, at most 50
-      policy bindings will be returned. The maximum value is 1000; values
-      above 1000 will be coerced to 1000.
+      service may return fewer than this value. The default value is 50. The
+      maximum value is 1000.
     pageToken: Optional. A page token, received from a previous
       `ListPolicyBindings` call. Provide this to retrieve the subsequent page.
       When paginating, all other parameters provided to `ListPolicyBindings`
@@ -724,9 +723,8 @@ class IamFoldersLocationsPolicyBindingsSearchTargetPolicyBindingsRequest(_messag
 
   Fields:
     pageSize: Optional. The maximum number of policy bindings to return. The
-      service may return fewer than this value. If unspecified, at most 50
-      policy bindings will be returned. The maximum value is 1000; values
-      above 1000 will be coerced to 1000.
+      service may return fewer than this value. The default value is 50. The
+      maximum value is 1000.
     pageToken: Optional. A page token, received from a previous
       `SearchTargetPolicyBindingsRequest` call. Provide this to retrieve the
       subsequent page. When paginating, all other parameters provided to
@@ -835,14 +833,13 @@ class IamOrganizationsLocationsPolicyBindingsListRequest(_messages.Message):
   Fields:
     filter: Optional. An expression for filtering the results of the request.
       Filter rules are case insensitive. Some eligible fields for filtering
-      are: + `target` + `policy` Some examples of filter queries: *
-      `target:ex*`: The binding target's name starts with "ex". *
+      are the following: + `target` + `policy` Some examples of filter
+      queries: * `target:ex*`: The binding target's name starts with "ex". *
       `target:example`: The binding target's name is `example`. *
       `policy:example`: The binding policy's name is `example`.
     pageSize: Optional. The maximum number of policy bindings to return. The
-      service may return fewer than this value. If unspecified, at most 50
-      policy bindings will be returned. The maximum value is 1000; values
-      above 1000 will be coerced to 1000.
+      service may return fewer than this value. The default value is 50. The
+      maximum value is 1000.
     pageToken: Optional. A page token, received from a previous
       `ListPolicyBindings` call. Provide this to retrieve the subsequent page.
       When paginating, all other parameters provided to `ListPolicyBindings`
@@ -893,9 +890,8 @@ class IamOrganizationsLocationsPolicyBindingsSearchTargetPolicyBindingsRequest(_
 
   Fields:
     pageSize: Optional. The maximum number of policy bindings to return. The
-      service may return fewer than this value. If unspecified, at most 50
-      policy bindings will be returned. The maximum value is 1000; values
-      above 1000 will be coerced to 1000.
+      service may return fewer than this value. The default value is 50. The
+      maximum value is 1000.
     pageToken: Optional. A page token, received from a previous
       `SearchTargetPolicyBindingsRequest` call. Provide this to retrieve the
       subsequent page. When paginating, all other parameters provided to
@@ -1136,14 +1132,13 @@ class IamProjectsLocationsPolicyBindingsListRequest(_messages.Message):
   Fields:
     filter: Optional. An expression for filtering the results of the request.
       Filter rules are case insensitive. Some eligible fields for filtering
-      are: + `target` + `policy` Some examples of filter queries: *
-      `target:ex*`: The binding target's name starts with "ex". *
+      are the following: + `target` + `policy` Some examples of filter
+      queries: * `target:ex*`: The binding target's name starts with "ex". *
       `target:example`: The binding target's name is `example`. *
       `policy:example`: The binding policy's name is `example`.
     pageSize: Optional. The maximum number of policy bindings to return. The
-      service may return fewer than this value. If unspecified, at most 50
-      policy bindings will be returned. The maximum value is 1000; values
-      above 1000 will be coerced to 1000.
+      service may return fewer than this value. The default value is 50. The
+      maximum value is 1000.
     pageToken: Optional. A page token, received from a previous
       `ListPolicyBindings` call. Provide this to retrieve the subsequent page.
       When paginating, all other parameters provided to `ListPolicyBindings`
@@ -1193,9 +1188,8 @@ class IamProjectsLocationsPolicyBindingsSearchTargetPolicyBindingsRequest(_messa
 
   Fields:
     pageSize: Optional. The maximum number of policy bindings to return. The
-      service may return fewer than this value. If unspecified, at most 50
-      policy bindings will be returned. The maximum value is 1000; values
-      above 1000 will be coerced to 1000.
+      service may return fewer than this value. The default value is 50. The
+      maximum value is 1000.
     pageToken: Optional. A page token, received from a previous
       `SearchTargetPolicyBindingsRequest` call. Provide this to retrieve the
       subsequent page. When paginating, all other parameters provided to

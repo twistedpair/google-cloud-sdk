@@ -46,6 +46,7 @@ class DataplexV1(base_api.BaseApiClient):
     self.projects_locations_aspectTypes = self.ProjectsLocationsAspectTypesService(self)
     self.projects_locations_changeRequests = self.ProjectsLocationsChangeRequestsService(self)
     self.projects_locations_dataAttributeBindings = self.ProjectsLocationsDataAttributeBindingsService(self)
+    self.projects_locations_dataProducts_dataAssets = self.ProjectsLocationsDataProductsDataAssetsService(self)
     self.projects_locations_dataProducts = self.ProjectsLocationsDataProductsService(self)
     self.projects_locations_dataScans_jobs = self.ProjectsLocationsDataScansJobsService(self)
     self.projects_locations_dataScans = self.ProjectsLocationsDataScansService(self)
@@ -986,6 +987,151 @@ class DataplexV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsDataProductsDataAssetsService(base_api.BaseApiService):
+    """Service class for the projects_locations_dataProducts_dataAssets resource."""
+
+    _NAME = 'projects_locations_dataProducts_dataAssets'
+
+    def __init__(self, client):
+      super(DataplexV1.ProjectsLocationsDataProductsDataAssetsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a Data Asset.
+
+      Args:
+        request: (DataplexProjectsLocationsDataProductsDataAssetsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataProducts/{dataProductsId}/dataAssets',
+        http_method='POST',
+        method_id='dataplex.projects.locations.dataProducts.dataAssets.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['dataAssetId', 'validateOnly'],
+        relative_path='v1/{+parent}/dataAssets',
+        request_field='googleCloudDataplexV1DataAsset',
+        request_type_name='DataplexProjectsLocationsDataProductsDataAssetsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a Data Asset.
+
+      Args:
+        request: (DataplexProjectsLocationsDataProductsDataAssetsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataProducts/{dataProductsId}/dataAssets/{dataAssetsId}',
+        http_method='DELETE',
+        method_id='dataplex.projects.locations.dataProducts.dataAssets.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsDataProductsDataAssetsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a Data Asset.
+
+      Args:
+        request: (DataplexProjectsLocationsDataProductsDataAssetsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1DataAsset) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataProducts/{dataProductsId}/dataAssets/{dataAssetsId}',
+        http_method='GET',
+        method_id='dataplex.projects.locations.dataProducts.dataAssets.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsDataProductsDataAssetsGetRequest',
+        response_type_name='GoogleCloudDataplexV1DataAsset',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Data Assets for a given Data Product.
+
+      Args:
+        request: (DataplexProjectsLocationsDataProductsDataAssetsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1ListDataAssetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataProducts/{dataProductsId}/dataAssets',
+        http_method='GET',
+        method_id='dataplex.projects.locations.dataProducts.dataAssets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/dataAssets',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsDataProductsDataAssetsListRequest',
+        response_type_name='GoogleCloudDataplexV1ListDataAssetsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a Data Asset.
+
+      Args:
+        request: (DataplexProjectsLocationsDataProductsDataAssetsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataProducts/{dataProductsId}/dataAssets/{dataAssetsId}',
+        http_method='PATCH',
+        method_id='dataplex.projects.locations.dataProducts.dataAssets.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudDataplexV1DataAsset',
+        request_type_name='DataplexProjectsLocationsDataProductsDataAssetsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsDataProductsService(base_api.BaseApiService):
     """Service class for the projects_locations_dataProducts resource."""
 
@@ -995,6 +1141,87 @@ class DataplexV1(base_api.BaseApiClient):
       super(DataplexV1.ProjectsLocationsDataProductsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a Data Product.
+
+      Args:
+        request: (DataplexProjectsLocationsDataProductsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataProducts',
+        http_method='POST',
+        method_id='dataplex.projects.locations.dataProducts.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['dataProductId', 'validateOnly'],
+        relative_path='v1/{+parent}/dataProducts',
+        request_field='googleCloudDataplexV1DataProduct',
+        request_type_name='DataplexProjectsLocationsDataProductsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a Data Product. The deletion will fail if the Data Product is not empty (i.e. contains at least one Data Asset).
+
+      Args:
+        request: (DataplexProjectsLocationsDataProductsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataProducts/{dataProductsId}',
+        http_method='DELETE',
+        method_id='dataplex.projects.locations.dataProducts.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsDataProductsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a Data Product.
+
+      Args:
+        request: (DataplexProjectsLocationsDataProductsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1DataProduct) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataProducts/{dataProductsId}',
+        http_method='GET',
+        method_id='dataplex.projects.locations.dataProducts.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsDataProductsGetRequest',
+        response_type_name='GoogleCloudDataplexV1DataProduct',
+        supports_download=False,
+    )
 
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
@@ -1020,6 +1247,60 @@ class DataplexV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataplexProjectsLocationsDataProductsGetIamPolicyRequest',
         response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Data Products for a given project.
+
+      Args:
+        request: (DataplexProjectsLocationsDataProductsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1ListDataProductsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataProducts',
+        http_method='GET',
+        method_id='dataplex.projects.locations.dataProducts.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/dataProducts',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsDataProductsListRequest',
+        response_type_name='GoogleCloudDataplexV1ListDataProductsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a Data Product.
+
+      Args:
+        request: (DataplexProjectsLocationsDataProductsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataProducts/{dataProductsId}',
+        http_method='PATCH',
+        method_id='dataplex.projects.locations.dataProducts.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudDataplexV1DataProduct',
+        request_type_name='DataplexProjectsLocationsDataProductsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

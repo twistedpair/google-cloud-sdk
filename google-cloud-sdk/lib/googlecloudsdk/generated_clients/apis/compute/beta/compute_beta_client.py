@@ -18127,6 +18127,39 @@ You can specify a maximum of 1000 instances with this method per request.
         supports_download=False,
     )
 
+    def AdoptInstances(self, request, global_params=None):
+      r"""Flags the specified instances to be adopted to the managed instance.
+group. Adopting an instance does not change the instance status, but it
+adds the instance to any target pools that are applied by the managed
+instance group. This method increases the targetSize of the managed
+instance group by the number of instances that you adopt. This operation
+is marked as DONE when the action is scheduled even if the instances have
+not been adopted to the group yet. You must separately verify the status
+of the adopting action with the listManagedInstances method.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersAdoptInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AdoptInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AdoptInstances.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagers.adoptInstances',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/adoptInstances',
+        request_field='regionInstanceGroupManagersAdoptInstancesRequest',
+        request_type_name='ComputeRegionInstanceGroupManagersAdoptInstancesRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def ApplyUpdatesToInstances(self, request, global_params=None):
       r"""Apply updates to selected instances the managed instance group.
 

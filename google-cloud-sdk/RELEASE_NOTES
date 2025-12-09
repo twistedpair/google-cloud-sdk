@@ -5,6 +5,197 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 549.0.0 (2025-12-09)
+
+### Google Cloud CLI
+
+* Rebuilt Linux bundled Python for the `gcloud` CLI with pip v25.3 which fixed CVE-2025-8869.
+* Rebuilt Windows bundled Python for the `gcloud` CLI with setuptools v80.9.0 which fixed CVE-2025-47273.
+* Updated Python installation experience on macOS to automatically install required dependencies when using `gcloud` CLI managed Python environment without prompting.
+
+### AI
+
+* Added `--deployment-tier` flag to `gcloud ai index-endpoints deploy-index`
+to support storage optimized indexes.
+*   Added `--gpu-partition-size` flag to `gcloud ai endpoints deploy-model` for multi-instance GPU partitioning.
+
+### API Registry
+
+*   Added `gcloud api-registry mcp servers list` command to alpha and beta which lists the MCP servers that are available for consumption in the target project.
+*   Added `gcloud api-registry mcp enable [SERVICE_NAME]` command to alpha and beta which enables a given MCP server for use in the target project.
+*   Added `gcloud api-registry mcp disable [SERVICE_NAME]` command to alpha and beta which disables a given MCP server in the target project.
+*   Added `gcloud api-registry mcp tools list` command to alpha and beta which lists the MCP tools available from the MCP servers in the target project.
+
+### AlloyDB
+
+* Added support for z3 machine-types in `gcloud alloydb instances create` and `gcloud alloydb instances update`.
+
+### App Hub
+
+*   Promoted `gcloud apphub boundary` commands to the GA release track and unhide them.
+
+### Certificate Authority Service
+
+* Added `--encryption-key` flag to `gcloud privateca pools create` and
+`gcloud privateca pools update`. The flag accepts the full resource name of
+a Cloud KMS key to use for encrypting certificate data at rest.
+The Cloud KMS key must be located in the same region as the CA pool.
+
+### Cloud Alerting
+
+*   Promoted `gcloud monitoring policies` and `gcloud monitoring policies conditions` command groups to beta and GA.
+
+### Cloud Backup DR
+
+*   Updated `gcloud backup-dr backup-plan-associations trigger-backup` to return the long-running operation.
+
+### Cloud Bigtable
+
+* Added support for 'app-profile' in CBT CLI count command.
+
+### Cloud Composer
+
+* Added `extra-large` option to `gcloud composer environments create/update` for newly introduced XL Composer environment size.
+
+### Cloud Datastream
+
+* Added `--rule-sets` argument to `gcloud datastream streams create` and `gcloud
+  datastream streams update` to support configuring customization rules for
+  streams, particularly BigQuery Partitioning and Clustering.
+
+### Cloud Filestore
+
+*   Added `gcloud beta filestore instances resume-replica` command for filestore
+instances. The `resume-replica` verb resumes a standby replica instance from
+paused state.
+
+### Cloud Functions
+
+* Made `gcloud functions deploy` gracefully skip non-existent paths in source
+  directories containing dangling symbolic links, preventing `FileNotFoundError`
+  crashes.
+
+### Cloud Managed Kafka
+
+* Managed Kafka Connectors now default to retrying failures. This can be disabled with --task-retry-disabled.
+* Promoted full flag to beta and GA.
+*   Added deprecation warning for `gcloud managed-kafka
+    connect-clusters` `--additional-subnetwork` flag.
+    *   Managed Kafka Connect clusters can now reach any endpoint accessible
+        from the primary subnet without the need to define additional subnets.
+        Please see
+        <https://cloud.google.com/managed-service-for-apache-kafka/docs/connect-cluster/create-connect-cluster#worker-subnet>
+        for more information.
+*   The `gcloud managed-kafka connect-clusters list` command no longer
+    displays the `NETWORK` column which formerly showed the additional
+    subnetworks (now deprecated).
+
+### Cloud NetApp
+
+* Introduced `--cache-pre-populate` flag to `gcloud netapp volumes create` and `gcloud netapp volumes update` to pre-populate cache volumes.
+* Added `squash-mode` and `anon-uid` options to `--export-policy` flag of `gcloud netapp volumes create|update` commands to configure root squash behavior for NFS export policies.
+* Added `--kms-config` flag to `gcloud netapp backup-vaults create` to support cmek encrypted backups.
+
+### Cloud Resource Manager
+
+*   Added `gcloud resource-manager capabilities` commands. This command can be used to enable or disable capabilities on a CRM Folder.
+
+### Cloud Run
+
+* Promoted `mount-path` parameter for `--add-volumes` flag to `gcloud beta run [services/jobs/worker-pools]` command groups.
+
+### Cloud SQL
+
+*   Added `--entra-id-tenant-id` flag and `--entra-id-application-id` to `gcloud sql instances create` and `patch` in alpha and beta.
+*   Added `--clear-entra-id-config` to `gcloud sql instances patch` alpha and beta.
+
+### Cloud Services
+
+* Promoted `gcloud services mcp enable` command to beta to enable the Model
+Context Protocol (MCP) endpoint for the specified service(s) on the given
+project, folder, or organization.
+* Promoted `gcloud services mcp disable` command to beta to disable the Model
+Context Protocol (MCP) endpoint for the specified service(s) on the given
+project, folder, or organization.
+* Promoted `gcloud services mcp list` command to beta to enumerate the MCP
+endpoints offered, showing them as either enabled or available for the
+given project, folder, or organization.
+
+### Cloud Workstations
+
+* Promoted `--startup-script-uri` flag of `gcloud workstations configs create` and `gcloud workstations configs update` to GA.
+* Fixed bugs and typos in `startup_script_uri` support for `gcloud beta workstations configs create` and `gcloud beta workstations configs update`.
+* Updated `gcloud workstations configs create` to now accept
+ `--disk-type=hyperdisk-balanced-ha` for use with [Hyperdisks](https://docs.cloud.google.com/compute/docs/disks/hyperdisks).
+
+### Compute Engine
+
+* Promoted `gcloud compute url-map` support for regional backend buckets to beta.
+* Updated `gcloud compute routers update` to display a warning message when
+  `--add-advertisement-ranges`, `--remove-advertisement-ranges`, or
+  `--set-advertisement-ranges` are specified, cautioning that custom routes on
+  BGP sessions override custom routes on the router.
+* Promoted `--candidate-cloud-router-ip-address` and
+  `--candidate-customer-router-ip-address` flags for
+  `gcloud compute interconnects attachments dedicated create`,
+  `gcloud compute interconnects attachments partner create`, and
+  `gcloud compute interconnects attachments provider create` to GA to allow
+  users to add custom ranges to the interconnect attachment.
+* Promoted `--candidate-cloud-router-ipv6-address` and
+  `--candidate-customer-router-ipv6-address` flags for
+  `gcloud compute interconnects attachments dedicated create`,
+  `gcloud compute interconnects attachments partner create`,
+  `gcloud compute interconnects attachments provider create`
+  `gcloud compute interconnects attachments dedicated update`,
+  `gcloud compute interconnects attachments partner update`, and
+  `gcloud compute interconnects attachments provider update` to GA
+   to allow users to add custom ranges to the interconnect attachment.
+
+### Developer Connect
+
+* Added gemini-code-assist value to github-config-app.
+* Added support for regional Secret Manager secrets.
+
+### Kubernetes Engine
+
+* Updated default kubectl to 1.33.5.
+* Additional kubectl versions:
+  * kubectl.1.28 (1.28.15)
+  * kubectl.1.29 (1.29.15)
+  * kubectl.1.30 (1.30.14)
+  * kubectl.1.31 (1.31.14)
+  * kubectl.1.32 (1.32.10)
+  * kubectl.1.33 (1.33.6)
+  * kubectl.1.34 (1.34.2)
+* Added a new command `gcloud beta container clusters complete-control-plane-upgrade` for user to complete two-step control plane minor upgrade.
+* Added a new flag `--control-plane-soak-duration` to `gcloud beta container clusters upgrade` to trigger two-step control plane minor upgrade.
+* Added `--use-case`, `--target-input-length`, `--target-output-length`,
+  `--target-itl-milliseconds` to `gcloud container ai profiles list`
+  command.
+* Added `gcloud container ai profiles use-case list` command.
+* Added `use-case` flag to the benchmarks list.
+* Added `target-itl-milliseconds` and `use-case` flag to manifest command.
+* Added `gcloud container ai profiles serving-stacks list` command.
+* Added `gcloud container ai profiles serving-stack-versions list` command.
+* Added arguments `--serving-stack` and `--serving-stack-version` to profile
+commands `gcloud container ai profiles list`, `gcloud container ai benchmarks
+list` and `gcloud container ai profiles manifests create`.
+* Added output of `Serving Stack` and `Serving Stack Version` to profile output
+of commands `gcloud container ai profiles list` `gcloud container ai benchmarks
+list`.
+
+### Looker
+
+* Added `clear-periodic-export-config` and periodic export group flags to `gcloud looker instances update` command to schedule data export.
+
+### Workbench
+
+* Promoted `--enable-managed-euc` flag to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 548.0.0 (2025-11-18)
 
 ### AlloyDB

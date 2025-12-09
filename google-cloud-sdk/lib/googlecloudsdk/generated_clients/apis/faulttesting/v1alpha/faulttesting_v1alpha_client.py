@@ -390,13 +390,13 @@ class FaulttestingV1alpha(base_api.BaseApiClient):
 
     Start.method_config = lambda: base_api.ApiMethodInfo(
         flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/experiments/{experimentsId}:start',
-        http_method='GET',
+        http_method='POST',
         method_id='faulttesting.projects.locations.experiments.start',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
         relative_path='v1alpha/{+name}:start',
-        request_field='',
+        request_field='startExperimentRequest',
         request_type_name='FaulttestingProjectsLocationsExperimentsStartRequest',
         response_type_name='Experiment',
         supports_download=False,

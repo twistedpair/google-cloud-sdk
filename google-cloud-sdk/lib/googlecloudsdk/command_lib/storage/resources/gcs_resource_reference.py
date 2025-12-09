@@ -131,6 +131,8 @@ class GcsBucketResource(resource_reference.BucketResource):
     custom_placement_config (dict|None): Dual Region of a bucket.
     default_acl (dict|None): Default object ACLs for the bucket.
     default_kms_key (str|None): Default KMS key for objects in the bucket.
+    encryption_enforcement_config (dict|None): Encryption enforcement
+      configuration for the bucket.
     location_type (str|None): Region, dual-region, etc.
     per_object_retention (dict|None): Contains object retention settings for
       bucket.
@@ -158,6 +160,7 @@ class GcsBucketResource(resource_reference.BucketResource):
       default_acl=None,
       default_event_based_hold=None,
       default_kms_key=None,
+      encryption_enforcement_config=None,
       default_storage_class=None,
       etag=None,
       ip_filter_config=None,
@@ -210,6 +213,7 @@ class GcsBucketResource(resource_reference.BucketResource):
     self.custom_placement_config = custom_placement_config
     self.default_acl = default_acl
     self.default_kms_key = default_kms_key
+    self.encryption_enforcement_config = encryption_enforcement_config
     self.ip_filter_config = ip_filter_config
     self.location_type = location_type
     self.per_object_retention = per_object_retention
@@ -240,6 +244,30 @@ class GcsBucketResource(resource_reference.BucketResource):
     return (self.retention_policy and
             self.retention_policy.get('isLocked', False))
 
+  @property
+  def gmek_enforcement(self):
+    return (
+        (self.encryption_enforcement_config or {})
+        .get('gmekEnforcement', {})
+        .get('restrictionMode')
+    )
+
+  @property
+  def cmek_enforcement(self):
+    return (
+        (self.encryption_enforcement_config or {})
+        .get('cmekEnforcement', {})
+        .get('restrictionMode')
+    )
+
+  @property
+  def csek_enforcement(self):
+    return (
+        (self.encryption_enforcement_config or {})
+        .get('csekEnforcement', {})
+        .get('restrictionMode')
+    )
+
   def __eq__(self, other):
     return (
         super(GcsBucketResource, self).__eq__(other)
@@ -248,6 +276,8 @@ class GcsBucketResource(resource_reference.BucketResource):
         and self.custom_placement_config == other.custom_placement_config
         and self.default_acl == other.default_acl
         and self.default_kms_key == other.default_kms_key
+        and self.encryption_enforcement_config
+        == other.encryption_enforcement_config
         and self.ip_filter_config == other.ip_filter_config
         and self.location_type == other.location_type
         and self.per_object_retention == other.per_object_retention

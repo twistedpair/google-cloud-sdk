@@ -211,6 +211,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_FIREWALLENDPOINTS = (
+      'projects.locations.firewallEndpoints',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'firewallEndpoints/{firewallEndpointsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_GATEWAYSECURITYPOLICIES = (
       'projects.locations.gatewaySecurityPolicies',
       '{+name}',
@@ -478,26 +489,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_ULLMIRRORINGINFRAS = (
-      'projects.locations.ullMirroringInfras',
-      'projects/{projectsId}/locations/{locationsId}/ullMirroringInfras/'
-      '{ullMirroringInfrasId}',
-      {},
-      ['projectsId', 'locationsId', 'ullMirroringInfrasId'],
-      True
-  )
-  PROJECTS_LOCATIONS_ULLMIRRORINGINFRAS_ULLMIRROREDNETWORKS = (
-      'projects.locations.ullMirroringInfras.ullMirroredNetworks',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'ullMirroringInfras/{ullMirroringInfrasId}/ullMirroredNetworks/'
-              '{ullMirroredNetworksId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_URLLISTS = (
       'projects.locations.urlLists',
       '{+name}',
@@ -507,6 +498,13 @@ class Collections(enum.Enum):
               '{urlListsId}',
       },
       ['name'],
+      True
+  )
+  PROJECTS_NETWORKS = (
+      'projects.networks',
+      'projects/{projectsId}/global/networks/{networksId}',
+      {},
+      ['projectsId', 'networksId'],
       True
   )
 

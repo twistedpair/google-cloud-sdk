@@ -1284,6 +1284,9 @@ class CloudVmCluster(_messages.Message):
       resource on which VM cluster resource is created, in the following
       format: projects/{project}/locations/{region}/cloudExadataInfrastuctures
       /{cloud_extradata_infrastructure}
+    exascaleDbStorageVault: Optional. The name of ExascaleDbStorageVault
+      associated with the VM Cluster. Format: projects/{project}/locations/{lo
+      cation}/exascaleDbStorageVaults/{exascale_db_storage_vault}
     gcpOracleZone: Output only. The GCP Oracle zone where Oracle
       CloudVmCluster is hosted. This will be the same as the gcp_oracle_zone
       of the CloudExadataInfrastructure. Example: us-east4-b-r2.
@@ -1335,14 +1338,15 @@ class CloudVmCluster(_messages.Message):
   createTime = _messages.StringField(4)
   displayName = _messages.StringField(5)
   exadataInfrastructure = _messages.StringField(6)
-  gcpOracleZone = _messages.StringField(7)
-  identityConnector = _messages.MessageField('IdentityConnector', 8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  network = _messages.StringField(11)
-  odbNetwork = _messages.StringField(12)
-  odbSubnet = _messages.StringField(13)
-  properties = _messages.MessageField('CloudVmClusterProperties', 14)
+  exascaleDbStorageVault = _messages.StringField(7)
+  gcpOracleZone = _messages.StringField(8)
+  identityConnector = _messages.MessageField('IdentityConnector', 9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  name = _messages.StringField(11)
+  network = _messages.StringField(12)
+  odbNetwork = _messages.StringField(13)
+  odbSubnet = _messages.StringField(14)
+  properties = _messages.MessageField('CloudVmClusterProperties', 15)
 
 
 class CloudVmClusterProperties(_messages.Message):
@@ -2926,6 +2930,10 @@ class ExascaleDbStorageVault(_messages.Message):
       be 1-255 characters long and can only contain alphanumeric characters.
     entitlementId: Output only. The ID of the subscription entitlement
       associated with the ExascaleDbStorageVault.
+    exadataInfrastructure: Optional. The Exadata Infrastructure resource on
+      which ExascaleDbStorageVault resource is created, in the following
+      format: projects/{project}/locations/{region}/cloudExadataInfrastuctures
+      /{cloud_extradata_infrastructure}
     gcpOracleZone: Optional. The GCP Oracle zone where Oracle
       ExascaleDbStorageVault is hosted. Example: us-east4-b-r2. If not
       specified, the system will pick a zone based on availability.
@@ -2965,10 +2973,11 @@ class ExascaleDbStorageVault(_messages.Message):
   createTime = _messages.StringField(1)
   displayName = _messages.StringField(2)
   entitlementId = _messages.StringField(3)
-  gcpOracleZone = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  properties = _messages.MessageField('ExascaleDbStorageVaultProperties', 7)
+  exadataInfrastructure = _messages.StringField(4)
+  gcpOracleZone = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  properties = _messages.MessageField('ExascaleDbStorageVaultProperties', 8)
 
 
 class ExascaleDbStorageVaultProperties(_messages.Message):
@@ -3468,8 +3477,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -3589,9 +3598,12 @@ class LocationMetadata(_messages.Message):
   Fields:
     gcpOracleZones: Output only. Google Cloud Platform Oracle zones in a
       location.
+    resourceAvailability: Output only. Resource availability for a given
+      location.
   """
 
   gcpOracleZones = _messages.StringField(1, repeated=True)
+  resourceAvailability = _messages.MessageField('ResourceAvailability', 2, repeated=True)
 
 
 class MaintenanceWindow(_messages.Message):
@@ -5516,9 +5528,9 @@ class OracledatabaseProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -5885,6 +5897,37 @@ class RemoveVirtualMachineExadbVmClusterRequest(_messages.Message):
   requestId = _messages.StringField(2)
 
 
+class ResourceAvailability(_messages.Message):
+  r"""Resource availability for a given location.
+
+  Enums:
+    ResourceTypeValueValuesEnum: Resource type.
+
+  Fields:
+    resourceType: Resource type.
+    supportedZones: Supported zones for the resource in the location.
+  """
+
+  class ResourceTypeValueValuesEnum(_messages.Enum):
+    r"""Resource type.
+
+    Values:
+      RESOURCE_TYPE_UNSPECIFIED: The resource type is not specified.
+      RESOURCE_TYPE_BASE_DB: Base Database resource.
+      RESOURCE_TYPE_AUTONOMOUS_DATABASE: Autonomous Database resource.
+      RESOURCE_TYPE_EXADATA: Exadata resource.
+      RESOURCE_TYPE_EXASCALE: Exascale resource.
+    """
+    RESOURCE_TYPE_UNSPECIFIED = 0
+    RESOURCE_TYPE_BASE_DB = 1
+    RESOURCE_TYPE_AUTONOMOUS_DATABASE = 2
+    RESOURCE_TYPE_EXADATA = 3
+    RESOURCE_TYPE_EXASCALE = 4
+
+  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 1)
+  supportedZones = _messages.StringField(2, repeated=True)
+
+
 class RestartAutonomousDatabaseRequest(_messages.Message):
   r"""The request for `AutonomousDatabase.Restart`."""
 
@@ -5942,15 +5985,55 @@ class ScheduledOperationDetails(_messages.Message):
 class SourceConfig(_messages.Message):
   r"""The source configuration for the standby Autonomous Database.
 
+  Enums:
+    CloneTypeValueValuesEnum: Optional. The clone type of the Autonomous
+      Database. This field is only applicable in case of cloning
+    SourceTypeValueValuesEnum: Optional. The source type of the Autonomous
+      Database.
+
   Fields:
     automaticBackupsReplicationEnabled: Optional. This field specifies if the
       replication of automatic backups is enabled when creating a Data Guard.
     autonomousDatabase: Optional. The name of the primary Autonomous Database
       that is used to create a Peer Autonomous Database from a source.
+    cloneType: Optional. The clone type of the Autonomous Database. This field
+      is only applicable in case of cloning
+    sourceType: Optional. The source type of the Autonomous Database.
   """
+
+  class CloneTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The clone type of the Autonomous Database. This field is
+    only applicable in case of cloning
+
+    Values:
+      CLONE_TYPE_UNSPECIFIED: Default unspecified value.
+      FULL: Creates a new database with the source database's data and
+        metadata.
+      METADATA: Creates a new database that includes all the source database
+        schema metadata, but none of the source database data.
+    """
+    CLONE_TYPE_UNSPECIFIED = 0
+    FULL = 1
+    METADATA = 2
+
+  class SourceTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The source type of the Autonomous Database.
+
+    Values:
+      SOURCE_TYPE_UNSPECIFIED: Default unspecified value.
+      CLONE_DATABASE: Clone database from an existing database specified in
+        autonomous_database field.
+      CROSS_REGION_DISASTER_RECOVERY: Create a cross-region disaster recovery
+        peer adb from an existing adb.
+    """
+    SOURCE_TYPE_UNSPECIFIED = 0
+    CLONE_DATABASE = 1
+    CROSS_REGION_DISASTER_RECOVERY = 2
 
   automaticBackupsReplicationEnabled = _messages.BooleanField(1)
   autonomousDatabase = _messages.StringField(2)
+  cloneType = _messages.EnumField('CloneTypeValueValuesEnum', 3)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 4)
 
 
 class StandardQueryParameters(_messages.Message):

@@ -51,7 +51,9 @@ class NetworksecurityV1(base_api.BaseApiClient):
     self.projects_locations_authzPolicies = self.ProjectsLocationsAuthzPoliciesService(self)
     self.projects_locations_backendAuthenticationConfigs = self.ProjectsLocationsBackendAuthenticationConfigsService(self)
     self.projects_locations_clientTlsPolicies = self.ProjectsLocationsClientTlsPoliciesService(self)
+    self.projects_locations_dnsThreatDetectors = self.ProjectsLocationsDnsThreatDetectorsService(self)
     self.projects_locations_firewallEndpointAssociations = self.ProjectsLocationsFirewallEndpointAssociationsService(self)
+    self.projects_locations_firewallEndpoints = self.ProjectsLocationsFirewallEndpointsService(self)
     self.projects_locations_gatewaySecurityPolicies_rules = self.ProjectsLocationsGatewaySecurityPoliciesRulesService(self)
     self.projects_locations_gatewaySecurityPolicies = self.ProjectsLocationsGatewaySecurityPoliciesService(self)
     self.projects_locations_interceptDeploymentGroups = self.ProjectsLocationsInterceptDeploymentGroupsService(self)
@@ -2052,6 +2054,151 @@ class NetworksecurityV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsDnsThreatDetectorsService(base_api.BaseApiService):
+    """Service class for the projects_locations_dnsThreatDetectors resource."""
+
+    _NAME = 'projects_locations_dnsThreatDetectors'
+
+    def __init__(self, client):
+      super(NetworksecurityV1.ProjectsLocationsDnsThreatDetectorsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new DnsThreatDetector in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsDnsThreatDetectorsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DnsThreatDetector) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dnsThreatDetectors',
+        http_method='POST',
+        method_id='networksecurity.projects.locations.dnsThreatDetectors.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['dnsThreatDetectorId'],
+        relative_path='v1/{+parent}/dnsThreatDetectors',
+        request_field='dnsThreatDetector',
+        request_type_name='NetworksecurityProjectsLocationsDnsThreatDetectorsCreateRequest',
+        response_type_name='DnsThreatDetector',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single DnsThreatDetector.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsDnsThreatDetectorsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dnsThreatDetectors/{dnsThreatDetectorsId}',
+        http_method='DELETE',
+        method_id='networksecurity.projects.locations.dnsThreatDetectors.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsDnsThreatDetectorsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the details of a single DnsThreatDetector.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsDnsThreatDetectorsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DnsThreatDetector) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dnsThreatDetectors/{dnsThreatDetectorsId}',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.dnsThreatDetectors.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsDnsThreatDetectorsGetRequest',
+        response_type_name='DnsThreatDetector',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists DnsThreatDetectors in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsDnsThreatDetectorsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDnsThreatDetectorsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dnsThreatDetectors',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.dnsThreatDetectors.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/dnsThreatDetectors',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsDnsThreatDetectorsListRequest',
+        response_type_name='ListDnsThreatDetectorsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a single DnsThreatDetector.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsDnsThreatDetectorsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DnsThreatDetector) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dnsThreatDetectors/{dnsThreatDetectorsId}',
+        http_method='PATCH',
+        method_id='networksecurity.projects.locations.dnsThreatDetectors.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='dnsThreatDetector',
+        request_type_name='NetworksecurityProjectsLocationsDnsThreatDetectorsPatchRequest',
+        response_type_name='DnsThreatDetector',
+        supports_download=False,
+    )
+
   class ProjectsLocationsFirewallEndpointAssociationsService(base_api.BaseApiService):
     """Service class for the projects_locations_firewallEndpointAssociations resource."""
 
@@ -2193,6 +2340,151 @@ class NetworksecurityV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='firewallEndpointAssociation',
         request_type_name='NetworksecurityProjectsLocationsFirewallEndpointAssociationsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsFirewallEndpointsService(base_api.BaseApiService):
+    """Service class for the projects_locations_firewallEndpoints resource."""
+
+    _NAME = 'projects_locations_firewallEndpoints'
+
+    def __init__(self, client):
+      super(NetworksecurityV1.ProjectsLocationsFirewallEndpointsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new FirewallEndpoint in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsFirewallEndpointsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/firewallEndpoints',
+        http_method='POST',
+        method_id='networksecurity.projects.locations.firewallEndpoints.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['firewallEndpointId', 'requestId'],
+        relative_path='v1/{+parent}/firewallEndpoints',
+        request_field='firewallEndpoint',
+        request_type_name='NetworksecurityProjectsLocationsFirewallEndpointsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single Endpoint.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsFirewallEndpointsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/firewallEndpoints/{firewallEndpointsId}',
+        http_method='DELETE',
+        method_id='networksecurity.projects.locations.firewallEndpoints.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsFirewallEndpointsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single Endpoint.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsFirewallEndpointsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FirewallEndpoint) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/firewallEndpoints/{firewallEndpointsId}',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.firewallEndpoints.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsFirewallEndpointsGetRequest',
+        response_type_name='FirewallEndpoint',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists FirewallEndpoints in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsFirewallEndpointsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListFirewallEndpointsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/firewallEndpoints',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.firewallEndpoints.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/firewallEndpoints',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsFirewallEndpointsListRequest',
+        response_type_name='ListFirewallEndpointsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update a single Endpoint.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsFirewallEndpointsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/firewallEndpoints/{firewallEndpointsId}',
+        http_method='PATCH',
+        method_id='networksecurity.projects.locations.firewallEndpoints.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='firewallEndpoint',
+        request_type_name='NetworksecurityProjectsLocationsFirewallEndpointsPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )

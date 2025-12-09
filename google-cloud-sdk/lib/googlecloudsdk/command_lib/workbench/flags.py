@@ -217,11 +217,10 @@ def GetReservationTypeMapper(messages):
   )
 
 
-def AddCreateInstanceFlags(support_managed_euc, parser):
+def AddCreateInstanceFlags(parser):
   """Construct groups and arguments specific to the instance creation.
 
   Args:
-    support_managed_euc: Whether to support managed euc.
     parser: The parser to add the flags to.
   """
   accelerator_choices = [
@@ -566,16 +565,15 @@ def AddCreateInstanceFlags(support_managed_euc, parser):
       ),
   )
 
-  if support_managed_euc:
-    parser.add_argument(
-        '--enable-managed-euc',
-        action='store_true',
-        dest='enable_managed_euc',
-        help=(
-            'If true, the notebook instance will be created with managed end'
-            '  user credentials enabled.'
-        ),
-    )
+  parser.add_argument(
+      '--enable-managed-euc',
+      action='store_true',
+      dest='enable_managed_euc',
+      help=(
+          'If true, the notebook instance will be created with managed end'
+          '  user credentials enabled.'
+      ),
+  )
 
   parser.add_argument(
       '--labels',

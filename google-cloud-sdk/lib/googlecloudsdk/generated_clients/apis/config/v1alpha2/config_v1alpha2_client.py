@@ -1085,6 +1085,33 @@ class ConfigV1alpha2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetAutoMigrationConfig(self, request, global_params=None):
+      r"""Get the AutoMigrationConfig for a given project and location.
+
+      Args:
+        request: (ConfigProjectsLocationsGetAutoMigrationConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AutoMigrationConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetAutoMigrationConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetAutoMigrationConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/autoMigrationConfig',
+        http_method='GET',
+        method_id='config.projects.locations.getAutoMigrationConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha2/{+name}',
+        request_field='',
+        request_type_name='ConfigProjectsLocationsGetAutoMigrationConfigRequest',
+        response_type_name='AutoMigrationConfig',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists information about the supported locations for this service.
 
@@ -1109,6 +1136,33 @@ class ConfigV1alpha2(base_api.BaseApiClient):
         request_field='',
         request_type_name='ConfigProjectsLocationsListRequest',
         response_type_name='ListLocationsResponse',
+        supports_download=False,
+    )
+
+    def UpdateAutoMigrationConfig(self, request, global_params=None):
+      r"""Updates the AutoMigrationConfig for a given project and location.
+
+      Args:
+        request: (ConfigProjectsLocationsUpdateAutoMigrationConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateAutoMigrationConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateAutoMigrationConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/autoMigrationConfig',
+        http_method='PATCH',
+        method_id='config.projects.locations.updateAutoMigrationConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha2/{+name}',
+        request_field='autoMigrationConfig',
+        request_type_name='ConfigProjectsLocationsUpdateAutoMigrationConfigRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

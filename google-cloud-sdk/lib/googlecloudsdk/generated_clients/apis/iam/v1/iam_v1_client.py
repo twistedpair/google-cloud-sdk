@@ -1158,6 +1158,33 @@ class IamV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RevokeSessions(self, request, global_params=None):
+      r"""Revokes all sessions for a given WorkforcePoolSubject.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsSubjectsRevokeSessionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RevokeSessions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RevokeSessions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/subjects/{subjectsId}:revokeSessions',
+        http_method='POST',
+        method_id='iam.locations.workforcePools.subjects.revokeSessions',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:revokeSessions',
+        request_field='revokeWorkforcePoolSubjectSessionsRequest',
+        request_type_name='IamLocationsWorkforcePoolsSubjectsRevokeSessionsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Undelete(self, request, global_params=None):
       r"""Undeletes a WorkforcePoolSubject, as long as it was deleted fewer than 30 days ago.
 

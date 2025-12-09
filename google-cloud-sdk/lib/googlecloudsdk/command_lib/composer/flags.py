@@ -947,7 +947,6 @@ ENVIRONMENT_SIZE_GA = arg_utils.ChoiceEnumMapper(
         'Size of the environment. Unspecified means that the default option'
         ' will be chosen.'
     ),
-    hidden_choices=['extra-large'],
     message_enum=api_util.GetMessagesModule(
         release_track=base.ReleaseTrack.GA
     ).EnvironmentConfig.EnvironmentSizeValueValuesEnum,
@@ -960,7 +959,6 @@ ENVIRONMENT_SIZE_BETA = arg_utils.ChoiceEnumMapper(
         'Size of the environment. Unspecified means that the default option'
         ' will be chosen.'
     ),
-    hidden_choices=['extra-large'],
     message_enum=api_util.GetMessagesModule(
         release_track=base.ReleaseTrack.BETA
     ).EnvironmentConfig.EnvironmentSizeValueValuesEnum,

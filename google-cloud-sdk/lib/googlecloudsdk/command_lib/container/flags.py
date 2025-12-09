@@ -8055,6 +8055,26 @@ def AddEnableLegacyLustrePortFlag(parser, hidden=False):
   )
 
 
+def AddDisableMultiNicLustreFlag(parser, hidden=True):
+  """Adds the --disable-multi-nic-lustre flag to parser.
+
+  Args:
+    parser: A given parser.
+    hidden: Indicates that the flags are hidden.
+  """
+  help_text = """\
+  Disable the Lustre CSI driver to automatically detect
+  and configure all suitable network interfaces on a node for Lustre IO.
+  """
+  parser.add_argument(
+      '--disable-multi-nic-lustre',
+      default=None,
+      hidden=hidden,
+      action='store_true',
+      help=help_text,
+  )
+
+
 def AddEnableLustreMultiRailFlag(parser, for_node_pool=False, hidden=True):
   """Adds Lustre multi-NIC flag to the given parser.
 
@@ -8276,5 +8296,21 @@ Use `--no-enable-slice-controller` to disable.
       default=None,
       hidden=hidden,
       action='store_true',
+      help=help_text,
+  )
+
+
+def AddAutopilotGeneralProfileFlag(parser, hidden=True):
+  """Adds the --autopilot-general-profile flag to parser."""
+  help_text = """\
+  Sets the Autopilot general profile for the cluster; possible values are `none` and `no-performance`.
+  If `none` is used, the cluster will use the Autopilot default configuration.
+  """
+  parser.add_argument(
+      '--autopilot-general-profile',
+      required=False,
+      default=None,
+      hidden=hidden,
+      choices=['none', 'no-performance'],
       help=help_text,
   )

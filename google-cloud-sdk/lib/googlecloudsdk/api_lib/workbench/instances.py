@@ -436,13 +436,12 @@ def GetDisableProxyAccessFromArgs(args):
   return args.disable_proxy_access
 
 
-def CreateInstance(args, messages, support_managed_euc):
+def CreateInstance(args, messages):
   """Creates the Instance message for the create request.
 
   Args:
     args: Argparse object from Command.Run
     messages: Module containing messages definition for the specified API.
-    support_managed_euc: Whether the managed EUC feature is supported.
 
   Returns:
     Instance of the Instance message.
@@ -477,25 +476,22 @@ def CreateInstance(args, messages, support_managed_euc):
       labels=GetLabelsFromArgs(args, messages),
       enableThirdPartyIdentity=GetEnableThirdPartyIdentityFromArgs(args),
       enableManagedEuc=GetEnableManagedEucFromArgs(args)
-      if support_managed_euc
-      else None,
   )
   return instance
 
 
-def CreateInstanceCreateRequest(args, messages, support_managed_euc):
+def CreateInstanceCreateRequest(args, messages):
   """Creates the update mask for update Instance request.
 
   Args:
     args: Argparse object from Command.Run
     messages: Module containing messages definition for the API.
-    support_managed_euc: Whether the managed EUC feature is supported.
 
   Returns:
     Update mask of the Instance message.
   """
   parent = util.GetParentForInstance(args)
-  instance = CreateInstance(args, messages, support_managed_euc)
+  instance = CreateInstance(args, messages)
   return messages.NotebooksProjectsLocationsInstancesCreateRequest(
       parent=parent, instance=instance, instanceId=args.instance)
 

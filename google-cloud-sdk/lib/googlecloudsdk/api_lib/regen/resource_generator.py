@@ -78,6 +78,18 @@ class DiscoveryDoc(object):
   def docs_url(self):
     return self._discovery_doc_dict['documentationLink']
 
+  @property
+  def endpoints(self):
+    endpoints = {}
+    for endpoint in self._discovery_doc_dict.get('endpoints', []):
+      if ((url := endpoint.get('endpointUrl')) and
+          (location := endpoint.get('location'))):
+        # Skip staging endpoints if prod is already available.
+        if location in endpoints and 'staging-' in url:
+          continue
+        endpoints[location] = url
+    return endpoints or None
+
   def GetResourceCollections(self, custom_resources, api_version):
     """Returns all resources collections found in this discovery doc.
 

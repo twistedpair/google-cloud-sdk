@@ -176,6 +176,7 @@ class AddonsConfig(_messages.Message):
     rayOperatorConfig: Optional. Configuration for Ray Operator addon.
     sliceControllerConfig: Optional. Configuration for the slice controller
       add-on.
+    slurmOperatorConfig: Configuration for the Slurm Operator.
     statefulHaConfig: Optional. Configuration for the StatefulHA add-on.
   """
 
@@ -200,7 +201,8 @@ class AddonsConfig(_messages.Message):
   rayConfig = _messages.MessageField('RayConfig', 19)
   rayOperatorConfig = _messages.MessageField('RayOperatorConfig', 20)
   sliceControllerConfig = _messages.MessageField('SliceControllerConfig', 21)
-  statefulHaConfig = _messages.MessageField('StatefulHAConfig', 22)
+  slurmOperatorConfig = _messages.MessageField('SlurmOperatorConfig', 22)
+  statefulHaConfig = _messages.MessageField('StatefulHAConfig', 23)
 
 
 class AdvancedDatapathObservabilityConfig(_messages.Message):
@@ -1489,9 +1491,13 @@ class ClusterAutoscaling(_messages.Message):
   create/delete node pools based on the current needs.
 
   Enums:
+    AutopilotGeneralProfileValueValuesEnum: Autopilot general profile for the
+      cluster, which defines the configuration for the cluster.
     AutoscalingProfileValueValuesEnum: Defines autoscaling behaviour.
 
   Fields:
+    autopilotGeneralProfile: Autopilot general profile for the cluster, which
+      defines the configuration for the cluster.
     autoprovisioningLocations: The list of Google Compute Engine
       [zones](https://cloud.google.com/compute/docs/zones#available) in which
       the NodePool's nodes can be created by NAP.
@@ -1506,6 +1512,17 @@ class ClusterAutoscaling(_messages.Message):
       amount of resources in the cluster.
   """
 
+  class AutopilotGeneralProfileValueValuesEnum(_messages.Enum):
+    r"""Autopilot general profile for the cluster, which defines the
+    configuration for the cluster.
+
+    Values:
+      AUTOPILOT_GENERAL_PROFILE_UNSPECIFIED: Use default configuration.
+      NO_PERFORMANCE: Avoid extra IP consumption.
+    """
+    AUTOPILOT_GENERAL_PROFILE_UNSPECIFIED = 0
+    NO_PERFORMANCE = 1
+
   class AutoscalingProfileValueValuesEnum(_messages.Enum):
     r"""Defines autoscaling behaviour.
 
@@ -1518,12 +1535,13 @@ class ClusterAutoscaling(_messages.Message):
     OPTIMIZE_UTILIZATION = 1
     BALANCED = 2
 
-  autoprovisioningLocations = _messages.StringField(1, repeated=True)
-  autoprovisioningNodePoolDefaults = _messages.MessageField('AutoprovisioningNodePoolDefaults', 2)
-  autoscalingProfile = _messages.EnumField('AutoscalingProfileValueValuesEnum', 3)
-  defaultComputeClassConfig = _messages.MessageField('DefaultComputeClassConfig', 4)
-  enableNodeAutoprovisioning = _messages.BooleanField(5)
-  resourceLimits = _messages.MessageField('ResourceLimit', 6, repeated=True)
+  autopilotGeneralProfile = _messages.EnumField('AutopilotGeneralProfileValueValuesEnum', 1)
+  autoprovisioningLocations = _messages.StringField(2, repeated=True)
+  autoprovisioningNodePoolDefaults = _messages.MessageField('AutoprovisioningNodePoolDefaults', 3)
+  autoscalingProfile = _messages.EnumField('AutoscalingProfileValueValuesEnum', 4)
+  defaultComputeClassConfig = _messages.MessageField('DefaultComputeClassConfig', 5)
+  enableNodeAutoprovisioning = _messages.BooleanField(6)
+  resourceLimits = _messages.MessageField('ResourceLimit', 7, repeated=True)
 
 
 class ClusterNetworkPerformanceConfig(_messages.Message):
@@ -2987,6 +3005,24 @@ class CostManagementConfig(_messages.Message):
   enabled = _messages.BooleanField(1)
 
 
+class CrashLoopBackOffConfig(_messages.Message):
+  r"""Contains config to modify node-level parameters for container restart
+  behavior.
+
+  Fields:
+    maxContainerRestartPeriod: Optional. The maximum duration the backoff
+      delay can accrue to for container restarts, minimum 1 second, maximum
+      300 seconds. If not set, defaults to the internal crashloopbackoff
+      maximum. The string must be a sequence of decimal numbers, each with
+      optional fraction and a unit suffix, such as "300ms". Valid time units
+      are "ns", "us" (or "\xb5s"), "ms", "s", "m", "h". See
+      https://kubernetes.io/docs/concepts/workloads/pods/pod-
+      lifecycle/#configurable-container-restart-delay for more details.
+  """
+
+  maxContainerRestartPeriod = _messages.StringField(1)
+
+
 class CreateClusterRequest(_messages.Message):
   r"""CreateClusterRequest creates a cluster.
 
@@ -3395,6 +3431,27 @@ class DesiredEnterpriseConfig(_messages.Message):
     ENTERPRISE = 2
 
   desiredTier = _messages.EnumField('DesiredTierValueValuesEnum', 1)
+
+
+class DisruptionBudget(_messages.Message):
+  r"""DisruptionBudget defines the upgrade disruption budget for the cluster
+  control plane.
+
+  Fields:
+    lastDisruptionTime: Output only. The last time a disruption was performed
+      on the control plane.
+    lastMinorVersionDisruptionTime: Output only. The last time a minor version
+      upgrade was performed on the control plane.
+    minorVersionDisruptionInterval: The minimum duration between two minor
+      version upgrades of the control plane.
+    patchVersionDisruptionInterval: The minimum duration between two patch
+      version upgrades of the control plane.
+  """
+
+  lastDisruptionTime = _messages.StringField(1)
+  lastMinorVersionDisruptionTime = _messages.StringField(2)
+  minorVersionDisruptionInterval = _messages.StringField(3)
+  patchVersionDisruptionInterval = _messages.StringField(4)
 
 
 class DnsCacheConfig(_messages.Message):
@@ -5167,6 +5224,11 @@ class LustreCsiDriverConfig(_messages.Message):
   r"""Configuration for the Lustre CSI driver.
 
   Fields:
+    disableMultiNic: When set to true, this disables multi-NIC support for the
+      Lustre CSI driver. By default, GKE enables multi-NIC support, which
+      allows the Lustre CSI driver to automatically detect and configure all
+      suitable network interfaces on a node to maximize I/O performance for
+      demanding workloads.
     enableLegacyLustrePort: If set to true, the Lustre CSI driver will install
       Lustre kernel modules using port 6988. This serves as a workaround for a
       port conflict with the gke-metadata-server. This field is required ONLY
@@ -5178,8 +5240,9 @@ class LustreCsiDriverConfig(_messages.Message):
     enabled: Whether the Lustre CSI driver is enabled for this cluster.
   """
 
-  enableLegacyLustrePort = _messages.BooleanField(1)
-  enabled = _messages.BooleanField(2)
+  disableMultiNic = _messages.BooleanField(1)
+  enableLegacyLustrePort = _messages.BooleanField(2)
+  enabled = _messages.BooleanField(3)
 
 
 class MaintenanceExclusionOptions(_messages.Message):
@@ -5238,6 +5301,8 @@ class MaintenancePolicy(_messages.Message):
   cluster.
 
   Fields:
+    disruptionBudget: The upgrade disruption budget for the cluster control
+      plane.
     resourceVersion: A hash identifying the version of this policy, so that
       updates to fields of the policy won't accidentally undo intermediate
       changes (and so that users of the API unaware of some fields won't
@@ -5248,8 +5313,9 @@ class MaintenancePolicy(_messages.Message):
       performed.
   """
 
-  resourceVersion = _messages.StringField(1)
-  window = _messages.MessageField('MaintenanceWindow', 2)
+  disruptionBudget = _messages.MessageField('DisruptionBudget', 1)
+  resourceVersion = _messages.StringField(2)
+  window = _messages.MessageField('MaintenanceWindow', 3)
 
 
 class MaintenanceWindow(_messages.Message):
@@ -6444,6 +6510,8 @@ class NodeKubeletConfig(_messages.Message):
       with certain resource characteristics to be granted increased CPU
       affinity and exclusivity on the node. The default value is 'none' if
       unspecified.
+    crashLoopBackOff: Optional. Contains configuration options to modify node-
+      level parameters for container restart behavior.
     evictionMaxPodGracePeriodSeconds: Optional.
       eviction_max_pod_grace_period_seconds is the maximum allowed grace
       period (in seconds) to use when terminating pods in response to a soft
@@ -6525,21 +6593,22 @@ class NodeKubeletConfig(_messages.Message):
   cpuCfsQuota = _messages.BooleanField(4)
   cpuCfsQuotaPeriod = _messages.StringField(5)
   cpuManagerPolicy = _messages.StringField(6)
-  evictionMaxPodGracePeriodSeconds = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  evictionMinimumReclaim = _messages.MessageField('EvictionMinimumReclaim', 8)
-  evictionSoft = _messages.MessageField('EvictionSignals', 9)
-  evictionSoftGracePeriod = _messages.MessageField('EvictionGracePeriod', 10)
-  imageGcHighThresholdPercent = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  imageGcLowThresholdPercent = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  imageMaximumGcAge = _messages.StringField(13)
-  imageMinimumGcAge = _messages.StringField(14)
-  insecureKubeletReadonlyPortEnabled = _messages.BooleanField(15)
-  maxParallelImagePulls = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  memoryManager = _messages.MessageField('MemoryManager', 17)
-  nodeSwapSizeGib = _messages.IntegerField(18)
-  podPidsLimit = _messages.IntegerField(19)
-  singleProcessOomKill = _messages.BooleanField(20)
-  topologyManager = _messages.MessageField('TopologyManager', 21)
+  crashLoopBackOff = _messages.MessageField('CrashLoopBackOffConfig', 7)
+  evictionMaxPodGracePeriodSeconds = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  evictionMinimumReclaim = _messages.MessageField('EvictionMinimumReclaim', 9)
+  evictionSoft = _messages.MessageField('EvictionSignals', 10)
+  evictionSoftGracePeriod = _messages.MessageField('EvictionGracePeriod', 11)
+  imageGcHighThresholdPercent = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  imageGcLowThresholdPercent = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  imageMaximumGcAge = _messages.StringField(14)
+  imageMinimumGcAge = _messages.StringField(15)
+  insecureKubeletReadonlyPortEnabled = _messages.BooleanField(16)
+  maxParallelImagePulls = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  memoryManager = _messages.MessageField('MemoryManager', 18)
+  nodeSwapSizeGib = _messages.IntegerField(19)
+  podPidsLimit = _messages.IntegerField(20)
+  singleProcessOomKill = _messages.BooleanField(21)
+  topologyManager = _messages.MessageField('TopologyManager', 22)
 
 
 class NodeLabels(_messages.Message):
@@ -6600,6 +6669,9 @@ class NodeNetworkConfig(_messages.Message):
   r"""Parameters for node pool-level network config. Only applicable if
   `ip_allocation_policy.use_ip_aliases` is true.
 
+  Enums:
+    DatapathProviderValueValuesEnum: The datapath provider for this node pool.
+
   Fields:
     acceleratorNetworkProfile: Immutable. The accelerator network profile for
       the node pool. For now the only valid value is "auto". If specified, the
@@ -6618,6 +6690,7 @@ class NodeNetworkConfig(_messages.Message):
       default (`ip_allocation_policy.cluster_ipv4_cidr_block`) is used. Only
       applicable if `ip_allocation_policy.use_ip_aliases` is true. This field
       cannot be changed after the node pool has been created.
+    datapathProvider: The datapath provider for this node pool.
     enableEndpointsliceProxying: If true, kube-proxy will read from
       EndpointSlices instead of Endpoints. This flag only applies to GKE 1.18.
     enablePrivateNodes: Whether nodes have internal IP addresses only. If
@@ -6652,7 +6725,7 @@ class NodeNetworkConfig(_messages.Message):
       false, uses an existing secondary range with this ID. Only applicable if
       `ip_allocation_policy.use_ip_aliases` is true. This field cannot be
       changed after the node pool has been created.
-    subnetwork: Output only. The subnetwork path for the node pool. Format:
+    subnetwork: The subnetwork path for the node pool. Format:
       projects/{project}/regions/{region}/subnetworks/{subnetwork} If the
       cluster is associated with multiple subnetworks, the subnetwork for the
       node pool is picked based on the IP utilization during node pool
@@ -6666,20 +6739,40 @@ class NodeNetworkConfig(_messages.Message):
       notation (e.g. `240.0.0.0/8`) to pick a specific range to use.
   """
 
+  class DatapathProviderValueValuesEnum(_messages.Enum):
+    r"""The datapath provider for this node pool.
+
+    Values:
+      DATAPATH_PROVIDER_UNSPECIFIED: Default value.
+      LEGACY_DATAPATH: Use the IPTables implementation based on kube-proxy.
+      ADVANCED_DATAPATH: Use the eBPF based data plane with additional
+        visibility features.
+      MIGRATE_TO_ADVANCED_DATAPATH: Cluster has some existing nodes but new
+        nodes should use ADVANCED_DATAPATH.
+      MIGRATE_TO_LEGACY_DATAPATH: Cluster has some existing nodes but new
+        nodes should use LEGACY_DATAPATH.
+    """
+    DATAPATH_PROVIDER_UNSPECIFIED = 0
+    LEGACY_DATAPATH = 1
+    ADVANCED_DATAPATH = 2
+    MIGRATE_TO_ADVANCED_DATAPATH = 3
+    MIGRATE_TO_LEGACY_DATAPATH = 4
+
   acceleratorNetworkProfile = _messages.StringField(1)
   additionalNodeNetworkConfigs = _messages.MessageField('AdditionalNodeNetworkConfig', 2, repeated=True)
   additionalPodNetworkConfigs = _messages.MessageField('AdditionalPodNetworkConfig', 3, repeated=True)
   createPodRange = _messages.BooleanField(4)
-  enableEndpointsliceProxying = _messages.BooleanField(5)
-  enablePrivateNodes = _messages.BooleanField(6)
-  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 7)
-  networkTierConfig = _messages.MessageField('NetworkTierConfig', 8)
-  podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 9)
-  podIpv4CidrBlock = _messages.StringField(10)
-  podIpv4RangeUtilization = _messages.FloatField(11)
-  podRange = _messages.StringField(12)
-  subnetwork = _messages.StringField(13)
-  targetPodIpv4Range = _messages.StringField(14)
+  datapathProvider = _messages.EnumField('DatapathProviderValueValuesEnum', 5)
+  enableEndpointsliceProxying = _messages.BooleanField(6)
+  enablePrivateNodes = _messages.BooleanField(7)
+  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 8)
+  networkTierConfig = _messages.MessageField('NetworkTierConfig', 9)
+  podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 10)
+  podIpv4CidrBlock = _messages.StringField(11)
+  podIpv4RangeUtilization = _messages.FloatField(12)
+  podRange = _messages.StringField(13)
+  subnetwork = _messages.StringField(14)
+  targetPodIpv4Range = _messages.StringField(15)
 
 
 class NodeNetworkPolicy(_messages.Message):
@@ -8909,6 +9002,16 @@ class SliceControllerConfig(_messages.Message):
 
   Fields:
     enabled: Whether the Slice Controller is enabled for this cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
+class SlurmOperatorConfig(_messages.Message):
+  r"""Configuration for the Slurm Operator.
+
+  Fields:
+    enabled: Whether the Slurm Operator is enabled in the cluster.
   """
 
   enabled = _messages.BooleanField(1)

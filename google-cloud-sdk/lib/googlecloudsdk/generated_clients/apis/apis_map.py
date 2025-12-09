@@ -30,6 +30,8 @@ class APIDef(object):
     enable_mtls: bool, Whether this API version supports mTLS.
     mtls_endpoint_override: str, The mTLS endpoint for this API version. If
       empty, the MTLS_BASE_URL in the API client will be used.
+    regional_endpoints: dict[str, str], The regional endpoints for this API
+      version. Dictionary maps location to endpoint URL.
   """
 
   def __init__(self,
@@ -37,12 +39,14 @@ class APIDef(object):
                gapic=None,
                default_version=False,
                enable_mtls=True,
-               mtls_endpoint_override=''):
+               mtls_endpoint_override='',
+               regional_endpoints=None):
     self.apitools = apitools
     self.gapic = gapic
     self.default_version = default_version
     self.enable_mtls = enable_mtls
     self.mtls_endpoint_override = mtls_endpoint_override
+    self.regional_endpoints = regional_endpoints or {}
 
   def __eq__(self, other):
     return (isinstance(other, self.__class__) and
@@ -165,7 +169,8 @@ MAP = {
                     messages_modulepath='accessapproval_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'accesscontextmanager': {
         'v1':
@@ -177,7 +182,8 @@ MAP = {
                     messages_modulepath='accesscontextmanager_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -187,7 +193,8 @@ MAP = {
                     messages_modulepath='accesscontextmanager_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'admin': {
         'v1':
@@ -199,7 +206,8 @@ MAP = {
                     messages_modulepath='admin_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override='https://www.mtls.googleapis.com/admin/directory/v1/'),
+                mtls_endpoint_override='https://www.mtls.googleapis.com/admin/directory/v1/',
+                regional_endpoints={}),
     },
     'aiplatform': {
         'v1':
@@ -213,7 +221,8 @@ MAP = {
                     class_path='googlecloudsdk.generated_clients.gapic_wrappers.aiplatform.v1'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://africa-south1-aiplatform.googleapis.com/', 'asia-east1': 'https://asia-east1-aiplatform.googleapis.com/', 'asia-east2': 'https://asia-east2-aiplatform.googleapis.com/', 'asia-northeast1': 'https://asia-northeast1-aiplatform.googleapis.com/', 'asia-northeast2': 'https://asia-northeast2-aiplatform.googleapis.com/', 'asia-northeast3': 'https://asia-northeast3-aiplatform.googleapis.com/', 'asia-south1': 'https://asia-south1-aiplatform.googleapis.com/', 'asia-south2': 'https://asia-south2-aiplatform.googleapis.com/', 'asia-southeast1': 'https://asia-southeast1-aiplatform.googleapis.com/', 'asia-southeast2': 'https://asia-southeast2-aiplatform.googleapis.com/', 'australia-southeast1': 'https://australia-southeast1-aiplatform.googleapis.com/', 'australia-southeast2': 'https://australia-southeast2-aiplatform.googleapis.com/', 'europe-central2': 'https://europe-central2-aiplatform.googleapis.com/', 'europe-north1': 'https://europe-north1-aiplatform.googleapis.com/', 'europe-north2': 'https://europe-north2-aiplatform.googleapis.com/', 'europe-southwest1': 'https://europe-southwest1-aiplatform.googleapis.com/', 'europe-west1': 'https://europe-west1-aiplatform.googleapis.com/', 'europe-west10': 'https://europe-west10-aiplatform.googleapis.com/', 'europe-west15': 'https://europe-west15-aiplatform.googleapis.com/', 'europe-west2': 'https://europe-west2-aiplatform.googleapis.com/', 'europe-west3': 'https://europe-west3-aiplatform.googleapis.com/', 'europe-west4': 'https://europe-west4-aiplatform.googleapis.com/', 'europe-west6': 'https://europe-west6-aiplatform.googleapis.com/', 'europe-west8': 'https://europe-west8-aiplatform.googleapis.com/', 'europe-west9': 'https://europe-west9-aiplatform.googleapis.com/', 'europe-west12': 'https://europe-west12-aiplatform.googleapis.com/', 'me-central1': 'https://me-central1-aiplatform.googleapis.com/', 'me-central2': 'https://me-central2-aiplatform.googleapis.com/', 'me-west1': 'https://me-west1-aiplatform.googleapis.com/', 'northamerica-northeast1': 'https://northamerica-northeast1-aiplatform.googleapis.com/', 'northamerica-northeast2': 'https://northamerica-northeast2-aiplatform.googleapis.com/', 'southamerica-east1': 'https://southamerica-east1-aiplatform.googleapis.com/', 'southamerica-west1': 'https://southamerica-west1-aiplatform.googleapis.com/', 'us-central1': 'https://us-central1-aiplatform.googleapis.com/', 'us-central2': 'https://us-central2-aiplatform.googleapis.com/', 'us-east1': 'https://us-east1-aiplatform.googleapis.com/', 'us-east4': 'https://us-east4-aiplatform.googleapis.com/', 'us-east7': 'https://us-east7-aiplatform.googleapis.com/', 'us-south1': 'https://us-south1-aiplatform.googleapis.com/', 'us-west1': 'https://us-west1-aiplatform.googleapis.com/', 'us-west2': 'https://us-west2-aiplatform.googleapis.com/', 'us-west3': 'https://us-west3-aiplatform.googleapis.com/', 'us-west4': 'https://us-west4-aiplatform.googleapis.com/', 'us-east5': 'https://us-east5-aiplatform.googleapis.com/', 'us': 'https://aiplatform.us.rep.googleapis.com/', 'eu': 'https://aiplatform.eu.rep.googleapis.com/'}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -225,7 +234,8 @@ MAP = {
                     class_path='googlecloudsdk.generated_clients.gapic_wrappers.aiplatform.v1beta1'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://africa-south1-aiplatform.googleapis.com/', 'asia-east1': 'https://asia-east1-aiplatform.googleapis.com/', 'asia-east2': 'https://asia-east2-aiplatform.googleapis.com/', 'asia-northeast1': 'https://asia-northeast1-aiplatform.googleapis.com/', 'asia-northeast2': 'https://asia-northeast2-aiplatform.googleapis.com/', 'asia-northeast3': 'https://asia-northeast3-aiplatform.googleapis.com/', 'asia-south1': 'https://asia-south1-aiplatform.googleapis.com/', 'asia-south2': 'https://asia-south2-aiplatform.googleapis.com/', 'asia-southeast1': 'https://asia-southeast1-aiplatform.googleapis.com/', 'asia-southeast2': 'https://asia-southeast2-aiplatform.googleapis.com/', 'australia-southeast1': 'https://australia-southeast1-aiplatform.googleapis.com/', 'australia-southeast2': 'https://australia-southeast2-aiplatform.googleapis.com/', 'europe-central2': 'https://europe-central2-aiplatform.googleapis.com/', 'europe-north1': 'https://europe-north1-aiplatform.googleapis.com/', 'europe-southwest1': 'https://europe-southwest1-aiplatform.googleapis.com/', 'europe-west1': 'https://europe-west1-aiplatform.googleapis.com/', 'europe-west10': 'https://europe-west10-aiplatform.googleapis.com/', 'europe-west15': 'https://europe-west15-aiplatform.googleapis.com/', 'europe-west2': 'https://europe-west2-aiplatform.googleapis.com/', 'europe-west3': 'https://europe-west3-aiplatform.googleapis.com/', 'europe-west4': 'https://europe-west4-aiplatform.googleapis.com/', 'europe-west6': 'https://europe-west6-aiplatform.googleapis.com/', 'europe-west8': 'https://europe-west8-aiplatform.googleapis.com/', 'europe-west9': 'https://europe-west9-aiplatform.googleapis.com/', 'europe-west12': 'https://europe-west12-aiplatform.googleapis.com/', 'me-central1': 'https://me-central1-aiplatform.googleapis.com/', 'me-central2': 'https://me-central2-aiplatform.googleapis.com/', 'me-west1': 'https://me-west1-aiplatform.googleapis.com/', 'northamerica-northeast1': 'https://northamerica-northeast1-aiplatform.googleapis.com/', 'northamerica-northeast2': 'https://northamerica-northeast2-aiplatform.googleapis.com/', 'southamerica-east1': 'https://southamerica-east1-aiplatform.googleapis.com/', 'southamerica-west1': 'https://southamerica-west1-aiplatform.googleapis.com/', 'us-central1': 'https://us-central1-aiplatform.googleapis.com/', 'us-central2': 'https://us-central2-aiplatform.googleapis.com/', 'us-east1': 'https://us-east1-aiplatform.googleapis.com/', 'us-east4': 'https://us-east4-aiplatform.googleapis.com/', 'us-east7': 'https://us-east7-aiplatform.googleapis.com/', 'us-south1': 'https://us-south1-aiplatform.googleapis.com/', 'us-west1': 'https://us-west1-aiplatform.googleapis.com/', 'us-west2': 'https://us-west2-aiplatform.googleapis.com/', 'us-west3': 'https://us-west3-aiplatform.googleapis.com/', 'us-west4': 'https://us-west4-aiplatform.googleapis.com/', 'us-east5': 'https://us-east5-aiplatform.googleapis.com/', 'us': 'https://aiplatform.us.rep.googleapis.com/', 'eu': 'https://aiplatform.eu.rep.googleapis.com/'}),
     },
     'alloydb': {
         'v1':
@@ -237,7 +247,8 @@ MAP = {
                     messages_modulepath='alloydb_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'northamerica-northeast1': 'https://alloydb.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://alloydb.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://alloydb.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://alloydb.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://alloydb.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://alloydb.us-central1.rep.googleapis.com/', 'us-east1': 'https://alloydb.us-east1.rep.googleapis.com/', 'us-east4': 'https://alloydb.us-east4.rep.googleapis.com/', 'us-east5': 'https://alloydb.us-east5.rep.googleapis.com/', 'us-south1': 'https://alloydb.us-south1.rep.googleapis.com/', 'us-west1': 'https://alloydb.us-west1.rep.googleapis.com/', 'us-west2': 'https://alloydb.us-west2.rep.googleapis.com/', 'us-west3': 'https://alloydb.us-west3.rep.googleapis.com/', 'us-west4': 'https://alloydb.us-west4.rep.googleapis.com/', 'europe-central2': 'https://alloydb.europe-central2.rep.googleapis.com/', 'europe-southwest1': 'https://alloydb.europe-southwest1.rep.googleapis.com/', 'europe-north1': 'https://alloydb.europe-north1.rep.googleapis.com/', 'europe-north2': 'https://alloydb.europe-north2.rep.googleapis.com/', 'europe-west1': 'https://alloydb.europe-west1.rep.googleapis.com/', 'europe-west2': 'https://alloydb.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://alloydb.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://alloydb.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://alloydb.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://alloydb.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://alloydb.europe-west9.rep.googleapis.com/', 'europe-west10': 'https://alloydb.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://alloydb.europe-west12.rep.googleapis.com/', 'asia-east1': 'https://alloydb.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://alloydb.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://alloydb.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://alloydb.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://alloydb.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://alloydb.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://alloydb.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://alloydb.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://alloydb.asia-southeast2.rep.googleapis.com/', 'australia-southeast1': 'https://alloydb.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://alloydb.australia-southeast2.rep.googleapis.com/', 'me-central1': 'https://alloydb.me-central1.rep.googleapis.com/', 'me-central2': 'https://alloydb.me-central2.rep.googleapis.com/', 'me-west1': 'https://alloydb.me-west1.rep.googleapis.com/', 'africa-south1': 'https://alloydb.africa-south1.rep.googleapis.com/'}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -247,7 +258,8 @@ MAP = {
                     messages_modulepath='alloydb_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'northamerica-northeast1': 'https://alloydb.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://alloydb.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://alloydb.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://alloydb.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://alloydb.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://alloydb.us-central1.rep.googleapis.com/', 'us-east1': 'https://alloydb.us-east1.rep.googleapis.com/', 'us-east4': 'https://alloydb.us-east4.rep.googleapis.com/', 'us-east5': 'https://alloydb.us-east5.rep.googleapis.com/', 'us-south1': 'https://alloydb.us-south1.rep.googleapis.com/', 'us-west1': 'https://alloydb.us-west1.rep.googleapis.com/', 'us-west2': 'https://alloydb.us-west2.rep.googleapis.com/', 'us-west3': 'https://alloydb.us-west3.rep.googleapis.com/', 'us-west4': 'https://alloydb.us-west4.rep.googleapis.com/', 'europe-central2': 'https://alloydb.europe-central2.rep.googleapis.com/', 'europe-southwest1': 'https://alloydb.europe-southwest1.rep.googleapis.com/', 'europe-north1': 'https://alloydb.europe-north1.rep.googleapis.com/', 'europe-north2': 'https://alloydb.europe-north2.rep.googleapis.com/', 'europe-west1': 'https://alloydb.europe-west1.rep.googleapis.com/', 'europe-west2': 'https://alloydb.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://alloydb.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://alloydb.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://alloydb.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://alloydb.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://alloydb.europe-west9.rep.googleapis.com/', 'europe-west10': 'https://alloydb.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://alloydb.europe-west12.rep.googleapis.com/', 'asia-east1': 'https://alloydb.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://alloydb.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://alloydb.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://alloydb.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://alloydb.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://alloydb.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://alloydb.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://alloydb.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://alloydb.asia-southeast2.rep.googleapis.com/', 'australia-southeast1': 'https://alloydb.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://alloydb.australia-southeast2.rep.googleapis.com/', 'me-central1': 'https://alloydb.me-central1.rep.googleapis.com/', 'me-central2': 'https://alloydb.me-central2.rep.googleapis.com/', 'me-west1': 'https://alloydb.me-west1.rep.googleapis.com/', 'africa-south1': 'https://alloydb.africa-south1.rep.googleapis.com/'}),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -257,7 +269,8 @@ MAP = {
                     messages_modulepath='alloydb_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'northamerica-northeast1': 'https://alloydb.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://alloydb.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://alloydb.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://alloydb.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://alloydb.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://alloydb.us-central1.rep.googleapis.com/', 'us-east1': 'https://alloydb.us-east1.rep.googleapis.com/', 'us-east4': 'https://alloydb.us-east4.rep.googleapis.com/', 'us-east5': 'https://alloydb.us-east5.rep.googleapis.com/', 'us-south1': 'https://alloydb.us-south1.rep.googleapis.com/', 'us-west1': 'https://alloydb.us-west1.rep.googleapis.com/', 'us-west2': 'https://alloydb.us-west2.rep.googleapis.com/', 'us-west3': 'https://alloydb.us-west3.rep.googleapis.com/', 'us-west4': 'https://alloydb.us-west4.rep.googleapis.com/', 'europe-central2': 'https://alloydb.europe-central2.rep.googleapis.com/', 'europe-southwest1': 'https://alloydb.europe-southwest1.rep.googleapis.com/', 'europe-north1': 'https://alloydb.europe-north1.rep.googleapis.com/', 'europe-north2': 'https://alloydb.europe-north2.rep.googleapis.com/', 'europe-west1': 'https://alloydb.europe-west1.rep.googleapis.com/', 'europe-west2': 'https://alloydb.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://alloydb.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://alloydb.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://alloydb.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://alloydb.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://alloydb.europe-west9.rep.googleapis.com/', 'europe-west10': 'https://alloydb.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://alloydb.europe-west12.rep.googleapis.com/', 'asia-east1': 'https://alloydb.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://alloydb.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://alloydb.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://alloydb.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://alloydb.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://alloydb.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://alloydb.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://alloydb.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://alloydb.asia-southeast2.rep.googleapis.com/', 'australia-southeast1': 'https://alloydb.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://alloydb.australia-southeast2.rep.googleapis.com/', 'me-central1': 'https://alloydb.me-central1.rep.googleapis.com/', 'me-central2': 'https://alloydb.me-central2.rep.googleapis.com/', 'me-west1': 'https://alloydb.me-west1.rep.googleapis.com/', 'africa-south1': 'https://alloydb.africa-south1.rep.googleapis.com/'}),
     },
     'anthosevents': {
         'v1':
@@ -269,7 +282,8 @@ MAP = {
                     messages_modulepath='anthosevents_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -279,7 +293,8 @@ MAP = {
                     messages_modulepath='anthosevents_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -289,7 +304,8 @@ MAP = {
                     messages_modulepath='anthosevents_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'anthospolicycontrollerstatus_pa': {
         'v1alpha':
@@ -301,7 +317,8 @@ MAP = {
                     messages_modulepath='anthospolicycontrollerstatus_pa_v1alpha_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'apigateway': {
         'v1':
@@ -313,7 +330,8 @@ MAP = {
                     messages_modulepath='apigateway_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -323,7 +341,8 @@ MAP = {
                     messages_modulepath='apigateway_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -333,7 +352,8 @@ MAP = {
                     messages_modulepath='apigateway_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'apigee': {
         'v1':
@@ -345,7 +365,8 @@ MAP = {
                     messages_modulepath='apigee_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'us': 'https://apigee.us.rep.googleapis.com/', 'eu': 'https://apigee.eu.rep.googleapis.com/', 'in': 'https://apigee.in.rep.googleapis.com/'}),
         'v2alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -355,7 +376,8 @@ MAP = {
                     messages_modulepath='apigee_v2alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'apihub': {
         'v1':
@@ -367,7 +389,8 @@ MAP = {
                     messages_modulepath='apihub_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'apikeys': {
         'v2':
@@ -379,7 +402,8 @@ MAP = {
                     messages_modulepath='apikeys_v2_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'appengine': {
         'v1':
@@ -391,7 +415,8 @@ MAP = {
                     messages_modulepath='appengine_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -401,7 +426,8 @@ MAP = {
                     messages_modulepath='appengine_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -411,7 +437,8 @@ MAP = {
                     messages_modulepath='appengine_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'apphub': {
         'v1':
@@ -423,7 +450,8 @@ MAP = {
                     messages_modulepath='apphub_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -433,7 +461,8 @@ MAP = {
                     messages_modulepath='apphub_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'artifactregistry': {
         'v1':
@@ -445,7 +474,8 @@ MAP = {
                     messages_modulepath='artifactregistry_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://artifactregistry.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://artifactregistry.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://artifactregistry.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://artifactregistry.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://artifactregistry.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://artifactregistry.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://artifactregistry.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://artifactregistry.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://artifactregistry.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://artifactregistry.asia-southeast2.rep.googleapis.com/', 'australia-southeast1': 'https://artifactregistry.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://artifactregistry.australia-southeast2.rep.googleapis.com/', 'europe-central2': 'https://artifactregistry.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://artifactregistry.europe-north1.rep.googleapis.com/', 'europe-north2': 'https://artifactregistry.europe-north2.rep.googleapis.com/', 'europe-southwest1': 'https://artifactregistry.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://artifactregistry.europe-west1.rep.googleapis.com/', 'europe-west10': 'https://artifactregistry.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://artifactregistry.europe-west12.rep.googleapis.com/', 'europe-west2': 'https://artifactregistry.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://artifactregistry.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://artifactregistry.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://artifactregistry.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://artifactregistry.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://artifactregistry.europe-west9.rep.googleapis.com/', 'me-central1': 'https://artifactregistry.me-central1.rep.googleapis.com/', 'me-west1': 'https://artifactregistry.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://artifactregistry.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://artifactregistry.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://artifactregistry.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://artifactregistry.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://artifactregistry.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://artifactregistry.us-central1.rep.googleapis.com/', 'us-central2': 'https://artifactregistry.us-central2.rep.googleapis.com/', 'us-east1': 'https://artifactregistry.us-east1.rep.googleapis.com/', 'us-east4': 'https://artifactregistry.us-east4.rep.googleapis.com/', 'us-east5': 'https://artifactregistry.us-east5.rep.googleapis.com/', 'us-south1': 'https://artifactregistry.us-south1.rep.googleapis.com/', 'us-west1': 'https://artifactregistry.us-west1.rep.googleapis.com/', 'us-west2': 'https://artifactregistry.us-west2.rep.googleapis.com/', 'us-west3': 'https://artifactregistry.us-west3.rep.googleapis.com/', 'us-west4': 'https://artifactregistry.us-west4.rep.googleapis.com/', 'us-west8': 'https://artifactregistry.us-west8.rep.googleapis.com/', 'me-central2': 'https://artifactregistry.me-central2.rep.googleapis.com/', 'us-east7': 'https://artifactregistry.us-east7.rep.googleapis.com/', 'us': 'https://artifactregistry.us.rep.googleapis.com/', 'eu': 'https://artifactregistry.eu.rep.googleapis.com/'}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -455,7 +485,8 @@ MAP = {
                     messages_modulepath='artifactregistry_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://artifactregistry.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://artifactregistry.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://artifactregistry.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://artifactregistry.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://artifactregistry.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://artifactregistry.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://artifactregistry.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://artifactregistry.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://artifactregistry.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://artifactregistry.asia-southeast2.rep.googleapis.com/', 'australia-southeast1': 'https://artifactregistry.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://artifactregistry.australia-southeast2.rep.googleapis.com/', 'europe-central2': 'https://artifactregistry.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://artifactregistry.europe-north1.rep.googleapis.com/', 'europe-north2': 'https://artifactregistry.europe-north2.rep.googleapis.com/', 'europe-southwest1': 'https://artifactregistry.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://artifactregistry.europe-west1.rep.googleapis.com/', 'europe-west10': 'https://artifactregistry.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://artifactregistry.europe-west12.rep.googleapis.com/', 'europe-west2': 'https://artifactregistry.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://artifactregistry.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://artifactregistry.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://artifactregistry.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://artifactregistry.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://artifactregistry.europe-west9.rep.googleapis.com/', 'me-central1': 'https://artifactregistry.me-central1.rep.googleapis.com/', 'me-west1': 'https://artifactregistry.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://artifactregistry.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://artifactregistry.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://artifactregistry.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://artifactregistry.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://artifactregistry.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://artifactregistry.us-central1.rep.googleapis.com/', 'us-central2': 'https://artifactregistry.us-central2.rep.googleapis.com/', 'us-east1': 'https://artifactregistry.us-east1.rep.googleapis.com/', 'us-east4': 'https://artifactregistry.us-east4.rep.googleapis.com/', 'us-east5': 'https://artifactregistry.us-east5.rep.googleapis.com/', 'us-south1': 'https://artifactregistry.us-south1.rep.googleapis.com/', 'us-west1': 'https://artifactregistry.us-west1.rep.googleapis.com/', 'us-west2': 'https://artifactregistry.us-west2.rep.googleapis.com/', 'us-west3': 'https://artifactregistry.us-west3.rep.googleapis.com/', 'us-west4': 'https://artifactregistry.us-west4.rep.googleapis.com/', 'us-west8': 'https://artifactregistry.us-west8.rep.googleapis.com/', 'me-central2': 'https://artifactregistry.me-central2.rep.googleapis.com/', 'us-east7': 'https://artifactregistry.us-east7.rep.googleapis.com/', 'us': 'https://artifactregistry.us.rep.googleapis.com/', 'eu': 'https://artifactregistry.eu.rep.googleapis.com/'}),
         'v1beta2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -465,7 +496,8 @@ MAP = {
                     messages_modulepath='artifactregistry_v1beta2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://artifactregistry.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://artifactregistry.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://artifactregistry.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://artifactregistry.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://artifactregistry.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://artifactregistry.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://artifactregistry.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://artifactregistry.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://artifactregistry.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://artifactregistry.asia-southeast2.rep.googleapis.com/', 'australia-southeast1': 'https://artifactregistry.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://artifactregistry.australia-southeast2.rep.googleapis.com/', 'europe-central2': 'https://artifactregistry.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://artifactregistry.europe-north1.rep.googleapis.com/', 'europe-north2': 'https://artifactregistry.europe-north2.rep.googleapis.com/', 'europe-southwest1': 'https://artifactregistry.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://artifactregistry.europe-west1.rep.googleapis.com/', 'europe-west10': 'https://artifactregistry.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://artifactregistry.europe-west12.rep.googleapis.com/', 'europe-west2': 'https://artifactregistry.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://artifactregistry.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://artifactregistry.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://artifactregistry.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://artifactregistry.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://artifactregistry.europe-west9.rep.googleapis.com/', 'me-central1': 'https://artifactregistry.me-central1.rep.googleapis.com/', 'me-west1': 'https://artifactregistry.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://artifactregistry.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://artifactregistry.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://artifactregistry.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://artifactregistry.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://artifactregistry.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://artifactregistry.us-central1.rep.googleapis.com/', 'us-central2': 'https://artifactregistry.us-central2.rep.googleapis.com/', 'us-east1': 'https://artifactregistry.us-east1.rep.googleapis.com/', 'us-east4': 'https://artifactregistry.us-east4.rep.googleapis.com/', 'us-east5': 'https://artifactregistry.us-east5.rep.googleapis.com/', 'us-south1': 'https://artifactregistry.us-south1.rep.googleapis.com/', 'us-west1': 'https://artifactregistry.us-west1.rep.googleapis.com/', 'us-west2': 'https://artifactregistry.us-west2.rep.googleapis.com/', 'us-west3': 'https://artifactregistry.us-west3.rep.googleapis.com/', 'us-west4': 'https://artifactregistry.us-west4.rep.googleapis.com/', 'us-west8': 'https://artifactregistry.us-west8.rep.googleapis.com/', 'me-central2': 'https://artifactregistry.me-central2.rep.googleapis.com/', 'us-east7': 'https://artifactregistry.us-east7.rep.googleapis.com/', 'us': 'https://artifactregistry.us.rep.googleapis.com/', 'eu': 'https://artifactregistry.eu.rep.googleapis.com/'}),
     },
     'artifactscanguard': {
         'v1alpha':
@@ -477,7 +509,8 @@ MAP = {
                     messages_modulepath='artifactscanguard_v1alpha_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'assuredworkloads': {
         'v1':
@@ -489,7 +522,8 @@ MAP = {
                     messages_modulepath='assuredworkloads_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -499,7 +533,8 @@ MAP = {
                     messages_modulepath='assuredworkloads_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'auditmanager': {
         'v1':
@@ -511,7 +546,8 @@ MAP = {
                     messages_modulepath='auditmanager_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -521,7 +557,8 @@ MAP = {
                     messages_modulepath='auditmanager_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'authztoolkit': {
         'v1':
@@ -533,7 +570,8 @@ MAP = {
                     messages_modulepath='authztoolkit_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -543,7 +581,8 @@ MAP = {
                     messages_modulepath='authztoolkit_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'backupdr': {
         'v1':
@@ -555,7 +594,8 @@ MAP = {
                     messages_modulepath='backupdr_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'baremetalsolution': {
         'v1':
@@ -567,7 +607,8 @@ MAP = {
                     messages_modulepath='baremetalsolution_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -577,7 +618,8 @@ MAP = {
                     messages_modulepath='baremetalsolution_v2_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'batch': {
         'v1':
@@ -589,7 +631,8 @@ MAP = {
                     messages_modulepath='batch_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -599,7 +642,8 @@ MAP = {
                     messages_modulepath='batch_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -609,7 +653,8 @@ MAP = {
                     messages_modulepath='batch_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'beyondcorp': {
         'v1':
@@ -621,7 +666,8 @@ MAP = {
                     messages_modulepath='beyondcorp_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -631,7 +677,8 @@ MAP = {
                     messages_modulepath='beyondcorp_v1alpha_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'biglake': {
         'v1':
@@ -643,7 +690,8 @@ MAP = {
                     messages_modulepath='biglake_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'bigquery': {
         'v2':
@@ -655,7 +703,8 @@ MAP = {
                     messages_modulepath='bigquery_v2_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override='https://bigquery.mtls.googleapis.com/bigquery/v2/'),
+                mtls_endpoint_override='https://bigquery.mtls.googleapis.com/bigquery/v2/',
+                regional_endpoints={'asia-south1': 'https://bigquery.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://bigquery.asia-south2.rep.googleapis.com/', 'europe-west1': 'https://bigquery.europe-west1.rep.googleapis.com/', 'europe-west2': 'https://bigquery.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://bigquery.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://bigquery.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://bigquery.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://bigquery.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://bigquery.europe-west9.rep.googleapis.com/', 'me-central2': 'https://bigquery.me-central2.rep.googleapis.com/', 'northamerica-northeast1': 'https://bigquery.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://bigquery.northamerica-northeast2.rep.googleapis.com/', 'us-central1': 'https://bigquery.us-central1.rep.googleapis.com/', 'us-central2': 'https://bigquery.us-central2.rep.googleapis.com/', 'us-east1': 'https://bigquery.us-east1.rep.googleapis.com/', 'us-east4': 'https://bigquery.us-east4.rep.googleapis.com/', 'us-east5': 'https://bigquery.us-east5.rep.googleapis.com/', 'us-east7': 'https://bigquery.us-east7.rep.googleapis.com/', 'us-south1': 'https://bigquery.us-south1.rep.googleapis.com/', 'us-west1': 'https://bigquery.us-west1.rep.googleapis.com/', 'us-west2': 'https://bigquery.us-west2.rep.googleapis.com/', 'us-west3': 'https://bigquery.us-west3.rep.googleapis.com/', 'us-west4': 'https://bigquery.us-west4.rep.googleapis.com/', 'us-west8': 'https://bigquery.us-west8.rep.googleapis.com/'}),
     },
     'bigquerydatatransfer': {
         'v1':
@@ -667,7 +716,8 @@ MAP = {
                     messages_modulepath='bigquerydatatransfer_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'asia-south1': 'https://bigquerydatatransfer.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://bigquerydatatransfer.asia-south2.rep.googleapis.com/', 'europe-west1': 'https://bigquerydatatransfer.europe-west1.rep.googleapis.com/', 'europe-west2': 'https://bigquerydatatransfer.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://bigquerydatatransfer.europe-west3.rep.googleapis.com/', 'europe-west6': 'https://bigquerydatatransfer.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://bigquerydatatransfer.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://bigquerydatatransfer.europe-west9.rep.googleapis.com/', 'me-central2': 'https://bigquerydatatransfer.me-central2.rep.googleapis.com/', 'us-central1': 'https://bigquerydatatransfer.us-central1.rep.googleapis.com/', 'us-central2': 'https://bigquerydatatransfer.us-central2.rep.googleapis.com/', 'us-east1': 'https://bigquerydatatransfer.us-east1.rep.googleapis.com/', 'us-east4': 'https://bigquerydatatransfer.us-east4.rep.googleapis.com/', 'us-east5': 'https://bigquerydatatransfer.us-east5.rep.googleapis.com/', 'us-east7': 'https://bigquerydatatransfer.us-east7.rep.googleapis.com/', 'us-south1': 'https://bigquerydatatransfer.us-south1.rep.googleapis.com/', 'us-west1': 'https://bigquerydatatransfer.us-west1.rep.googleapis.com/', 'us-west2': 'https://bigquerydatatransfer.us-west2.rep.googleapis.com/', 'us-west3': 'https://bigquerydatatransfer.us-west3.rep.googleapis.com/', 'us-west4': 'https://bigquerydatatransfer.us-west4.rep.googleapis.com/', 'us-west8': 'https://bigquerydatatransfer.us-west8.rep.googleapis.com/'}),
     },
     'bigquerymigration': {
         'v2':
@@ -679,7 +729,8 @@ MAP = {
                     messages_modulepath='bigquerymigration_v2_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'asia-northeast1': 'https://bigquerymigration.asia-northeast1.rep.googleapis.com/', 'asia-south1': 'https://bigquerymigration.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://bigquerymigration.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://bigquerymigration.asia-southeast1.rep.googleapis.com/', 'australia-southeast1': 'https://bigquerymigration.australia-southeast1.rep.googleapis.com/', 'europe-west1': 'https://bigquerymigration.europe-west1.rep.googleapis.com/', 'europe-west2': 'https://bigquerymigration.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://bigquerymigration.europe-west3.rep.googleapis.com/', 'europe-west6': 'https://bigquerymigration.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://bigquerymigration.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://bigquerymigration.europe-west9.rep.googleapis.com/', 'me-central2': 'https://bigquerymigration.me-central2.rep.googleapis.com/', 'northamerica-northeast1': 'https://bigquerymigration.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://bigquerymigration.northamerica-northeast2.rep.googleapis.com/', 'southamerica-east1': 'https://bigquerymigration.southamerica-east1.rep.googleapis.com/', 'us-central1': 'https://bigquerymigration.us-central1.rep.googleapis.com/', 'us-central2': 'https://bigquerymigration.us-central2.rep.googleapis.com/', 'us-east1': 'https://bigquerymigration.us-east1.rep.googleapis.com/', 'us-east4': 'https://bigquerymigration.us-east4.rep.googleapis.com/', 'us-east5': 'https://bigquerymigration.us-east5.rep.googleapis.com/', 'us-east7': 'https://bigquerymigration.us-east7.rep.googleapis.com/', 'us-south1': 'https://bigquerymigration.us-south1.rep.googleapis.com/', 'us-west1': 'https://bigquerymigration.us-west1.rep.googleapis.com/', 'us-west2': 'https://bigquerymigration.us-west2.rep.googleapis.com/', 'us-west3': 'https://bigquerymigration.us-west3.rep.googleapis.com/', 'us-west4': 'https://bigquerymigration.us-west4.rep.googleapis.com/', 'us-west8': 'https://bigquerymigration.us-west8.rep.googleapis.com/'}),
     },
     'bigtableadmin': {
         'v2':
@@ -691,7 +742,8 @@ MAP = {
                     messages_modulepath='bigtableadmin_v2_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'billingbudgets': {
         'v1':
@@ -703,7 +755,8 @@ MAP = {
                     messages_modulepath='billingbudgets_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -713,7 +766,8 @@ MAP = {
                     messages_modulepath='billingbudgets_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'binaryauthorization': {
         'v1':
@@ -725,7 +779,8 @@ MAP = {
                     messages_modulepath='binaryauthorization_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -735,7 +790,8 @@ MAP = {
                     messages_modulepath='binaryauthorization_v1alpha2_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -745,7 +801,8 @@ MAP = {
                     messages_modulepath='binaryauthorization_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'blockchainnodeengine': {
         'v1':
@@ -757,7 +814,8 @@ MAP = {
                     messages_modulepath='blockchainnodeengine_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'blockchainvalidatormanager': {
         'v1':
@@ -769,7 +827,8 @@ MAP = {
                     messages_modulepath='blockchainvalidatormanager_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -779,7 +838,8 @@ MAP = {
                     messages_modulepath='blockchainvalidatormanager_v1alpha_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'certificatemanager': {
         'v1':
@@ -791,7 +851,8 @@ MAP = {
                     messages_modulepath='certificatemanager_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'cloudaicompanion': {
         'v1':
@@ -803,7 +864,8 @@ MAP = {
                     messages_modulepath='cloudaicompanion_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -813,7 +875,8 @@ MAP = {
                     messages_modulepath='cloudaicompanion_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'cloudapiregistry': {
         'v1alpha':
@@ -823,9 +886,21 @@ MAP = {
                     client_classpath='cloudapiregistry_v1alpha_client.CloudapiregistryV1alpha',
                     base_url='https://cloudapiregistry.googleapis.com/',
                     messages_modulepath='cloudapiregistry_v1alpha_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override='',
+                regional_endpoints={}),
+        'v1beta':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.cloudapiregistry.v1beta',
+                    client_classpath='cloudapiregistry_v1beta_client.CloudapiregistryV1beta',
+                    base_url='https://cloudapiregistry.googleapis.com/',
+                    messages_modulepath='cloudapiregistry_v1beta_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'cloudasset': {
         'v1':
@@ -837,7 +912,8 @@ MAP = {
                     messages_modulepath='cloudasset_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1p1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -847,7 +923,8 @@ MAP = {
                     messages_modulepath='cloudasset_v1p1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1p2beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -857,7 +934,8 @@ MAP = {
                     messages_modulepath='cloudasset_v1p2beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override='https://cloudasset.mtls.googleapis.com/'),
+                mtls_endpoint_override='https://cloudasset.mtls.googleapis.com/',
+                regional_endpoints={}),
         'v1p4alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -867,7 +945,8 @@ MAP = {
                     messages_modulepath='cloudasset_v1p4alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override='https://cloudasset.mtls.googleapis.com/'),
+                mtls_endpoint_override='https://cloudasset.mtls.googleapis.com/',
+                regional_endpoints={}),
         'v1p5beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -877,7 +956,8 @@ MAP = {
                     messages_modulepath='cloudasset_v1p5beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1p7beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -887,7 +967,8 @@ MAP = {
                     messages_modulepath='cloudasset_v1p7beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'cloudbilling': {
         'v1':
@@ -899,7 +980,8 @@ MAP = {
                     messages_modulepath='cloudbilling_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'cloudbuild': {
         'v1':
@@ -911,7 +993,8 @@ MAP = {
                     messages_modulepath='cloudbuild_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://cloudbuild.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://cloudbuild.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://cloudbuild.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://cloudbuild.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://cloudbuild.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://cloudbuild.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://cloudbuild.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://cloudbuild.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://cloudbuild.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://cloudbuild.asia-southeast2.rep.googleapis.com/', 'australia-southeast1': 'https://cloudbuild.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://cloudbuild.australia-southeast2.rep.googleapis.com/', 'europe-central2': 'https://cloudbuild.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://cloudbuild.europe-north1.rep.googleapis.com/', 'europe-north2': 'https://cloudbuild.europe-north2.rep.googleapis.com/', 'europe-southwest1': 'https://cloudbuild.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://cloudbuild.europe-west1.rep.googleapis.com/', 'europe-west10': 'https://cloudbuild.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://cloudbuild.europe-west12.rep.googleapis.com/', 'europe-west2': 'https://cloudbuild.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://cloudbuild.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://cloudbuild.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://cloudbuild.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://cloudbuild.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://cloudbuild.europe-west9.rep.googleapis.com/', 'me-central1': 'https://cloudbuild.me-central1.rep.googleapis.com/', 'me-central2': 'https://cloudbuild.me-central2.rep.googleapis.com/', 'me-west1': 'https://cloudbuild.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://cloudbuild.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://cloudbuild.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://cloudbuild.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://cloudbuild.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://cloudbuild.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://cloudbuild.us-central1.rep.googleapis.com/', 'us-central2': 'https://cloudbuild.us-central2.rep.googleapis.com/', 'us-east1': 'https://cloudbuild.us-east1.rep.googleapis.com/', 'us-east4': 'https://cloudbuild.us-east4.rep.googleapis.com/', 'us-east5': 'https://cloudbuild.us-east5.rep.googleapis.com/', 'us-east7': 'https://cloudbuild.us-east7.rep.googleapis.com/', 'us-south1': 'https://cloudbuild.us-south1.rep.googleapis.com/', 'us-west1': 'https://cloudbuild.us-west1.rep.googleapis.com/', 'us-west2': 'https://cloudbuild.us-west2.rep.googleapis.com/', 'us-west3': 'https://cloudbuild.us-west3.rep.googleapis.com/', 'us-west4': 'https://cloudbuild.us-west4.rep.googleapis.com/', 'us-west8': 'https://cloudbuild.us-west8.rep.googleapis.com/'}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -921,7 +1004,8 @@ MAP = {
                     messages_modulepath='cloudbuild_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -931,7 +1015,8 @@ MAP = {
                     messages_modulepath='cloudbuild_v1alpha2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -941,7 +1026,8 @@ MAP = {
                     messages_modulepath='cloudbuild_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -951,7 +1037,8 @@ MAP = {
                     messages_modulepath='cloudbuild_v2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://cloudbuild.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://cloudbuild.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://cloudbuild.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://cloudbuild.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://cloudbuild.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://cloudbuild.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://cloudbuild.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://cloudbuild.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://cloudbuild.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://cloudbuild.asia-southeast2.rep.googleapis.com/', 'australia-southeast1': 'https://cloudbuild.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://cloudbuild.australia-southeast2.rep.googleapis.com/', 'europe-central2': 'https://cloudbuild.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://cloudbuild.europe-north1.rep.googleapis.com/', 'europe-north2': 'https://cloudbuild.europe-north2.rep.googleapis.com/', 'europe-southwest1': 'https://cloudbuild.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://cloudbuild.europe-west1.rep.googleapis.com/', 'europe-west10': 'https://cloudbuild.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://cloudbuild.europe-west12.rep.googleapis.com/', 'europe-west2': 'https://cloudbuild.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://cloudbuild.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://cloudbuild.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://cloudbuild.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://cloudbuild.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://cloudbuild.europe-west9.rep.googleapis.com/', 'me-central1': 'https://cloudbuild.me-central1.rep.googleapis.com/', 'me-central2': 'https://cloudbuild.me-central2.rep.googleapis.com/', 'me-west1': 'https://cloudbuild.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://cloudbuild.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://cloudbuild.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://cloudbuild.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://cloudbuild.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://cloudbuild.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://cloudbuild.us-central1.rep.googleapis.com/', 'us-central2': 'https://cloudbuild.us-central2.rep.googleapis.com/', 'us-east1': 'https://cloudbuild.us-east1.rep.googleapis.com/', 'us-east4': 'https://cloudbuild.us-east4.rep.googleapis.com/', 'us-east5': 'https://cloudbuild.us-east5.rep.googleapis.com/', 'us-east7': 'https://cloudbuild.us-east7.rep.googleapis.com/', 'us-south1': 'https://cloudbuild.us-south1.rep.googleapis.com/', 'us-west1': 'https://cloudbuild.us-west1.rep.googleapis.com/', 'us-west2': 'https://cloudbuild.us-west2.rep.googleapis.com/', 'us-west3': 'https://cloudbuild.us-west3.rep.googleapis.com/', 'us-west4': 'https://cloudbuild.us-west4.rep.googleapis.com/', 'us-west8': 'https://cloudbuild.us-west8.rep.googleapis.com/'}),
     },
     'cloudcommerceconsumerprocurement': {
         'v1alpha1':
@@ -963,7 +1050,8 @@ MAP = {
                     messages_modulepath='cloudcommerceconsumerprocurement_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'clouddebugger': {
         'v2':
@@ -975,7 +1063,8 @@ MAP = {
                     messages_modulepath='clouddebugger_v2_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'clouddeploy': {
         'v1':
@@ -987,7 +1076,8 @@ MAP = {
                     messages_modulepath='clouddeploy_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'clouderrorreporting': {
         'v1beta1':
@@ -999,7 +1089,8 @@ MAP = {
                     messages_modulepath='clouderrorreporting_v1beta1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'cloudfunctions': {
         'v1':
@@ -1011,7 +1102,8 @@ MAP = {
                     messages_modulepath='cloudfunctions_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1021,7 +1113,8 @@ MAP = {
                     messages_modulepath='cloudfunctions_v2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v2alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1031,7 +1124,8 @@ MAP = {
                     messages_modulepath='cloudfunctions_v2alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v2beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1041,7 +1135,8 @@ MAP = {
                     messages_modulepath='cloudfunctions_v2beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'cloudidentity': {
         'v1':
@@ -1053,7 +1148,8 @@ MAP = {
                     messages_modulepath='cloudidentity_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1063,7 +1159,8 @@ MAP = {
                     messages_modulepath='cloudidentity_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1073,7 +1170,8 @@ MAP = {
                     messages_modulepath='cloudidentity_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'cloudkms': {
         'v1':
@@ -1085,7 +1183,8 @@ MAP = {
                     messages_modulepath='cloudkms_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'europe-west3': 'https://cloudkms.europe-west3.rep.googleapis.com/', 'europe-west8': 'https://cloudkms.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://cloudkms.europe-west9.rep.googleapis.com/', 'me-central2': 'https://cloudkms.me-central2.rep.googleapis.com/', 'us-east1': 'https://cloudkms.us-east1.rep.googleapis.com/', 'us-east4': 'https://cloudkms.us-east4.rep.googleapis.com/', 'us-west2': 'https://cloudkms.us-west2.rep.googleapis.com/', 'us-west1': 'https://cloudkms.us-west1.rep.googleapis.com/', 'us-east7': 'https://cloudkms.us-east7.rep.googleapis.com/', 'us-central1': 'https://cloudkms.us-central1.rep.googleapis.com/', 'us-west3': 'https://cloudkms.us-west3.rep.googleapis.com/', 'us-central2': 'https://cloudkms.us-central2.rep.googleapis.com/', 'us-west4': 'https://cloudkms.us-west4.rep.googleapis.com/', 'us-west8': 'https://cloudkms.us-west8.rep.googleapis.com/', 'us-east5': 'https://cloudkms.us-east5.rep.googleapis.com/', 'us-south1': 'https://cloudkms.us-south1.rep.googleapis.com/', 'us': 'https://cloudkms.us.rep.googleapis.com/', 'in': 'https://cloudkms.in.rep.googleapis.com/'}),
     },
     'cloudlocationfinder': {
         'v1':
@@ -1097,7 +1196,8 @@ MAP = {
                     messages_modulepath='cloudlocationfinder_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1107,7 +1207,8 @@ MAP = {
                     messages_modulepath='cloudlocationfinder_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'cloudnumberregistry': {
         'v1alpha':
@@ -1119,7 +1220,8 @@ MAP = {
                     messages_modulepath='cloudnumberregistry_v1alpha_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'cloudquotas': {
         'v1':
@@ -1131,7 +1233,8 @@ MAP = {
                     messages_modulepath='cloudquotas_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1141,7 +1244,8 @@ MAP = {
                     messages_modulepath='cloudquotas_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1151,7 +1255,8 @@ MAP = {
                     messages_modulepath='cloudquotas_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'cloudresourcemanager': {
         'v1':
@@ -1163,7 +1268,8 @@ MAP = {
                     messages_modulepath='cloudresourcemanager_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1173,7 +1279,8 @@ MAP = {
                     messages_modulepath='cloudresourcemanager_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1183,7 +1290,8 @@ MAP = {
                     messages_modulepath='cloudresourcemanager_v2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override='https://cloudresourcemanager.mtls.googleapis.com/'),
+                mtls_endpoint_override='https://cloudresourcemanager.mtls.googleapis.com/',
+                regional_endpoints={}),
         'v2alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1193,7 +1301,8 @@ MAP = {
                     messages_modulepath='cloudresourcemanager_v2alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v2beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1203,7 +1312,8 @@ MAP = {
                     messages_modulepath='cloudresourcemanager_v2beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override='https://cloudresourcemanager.mtls.googleapis.com/'),
+                mtls_endpoint_override='https://cloudresourcemanager.mtls.googleapis.com/',
+                regional_endpoints={}),
         'v3':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1213,7 +1323,8 @@ MAP = {
                     messages_modulepath='cloudresourcemanager_v3_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'cloudscheduler': {
         'v1':
@@ -1225,7 +1336,8 @@ MAP = {
                     messages_modulepath='cloudscheduler_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override='https://cloudscheduler.mtls.googleapis.com/'),
+                mtls_endpoint_override='https://cloudscheduler.mtls.googleapis.com/',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1235,7 +1347,8 @@ MAP = {
                     messages_modulepath='cloudscheduler_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1245,7 +1358,8 @@ MAP = {
                     messages_modulepath='cloudscheduler_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'cloudsecuritycompliance': {
         'v1':
@@ -1257,7 +1371,8 @@ MAP = {
                     messages_modulepath='cloudsecuritycompliance_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'cloudshell': {
         'v1':
@@ -1269,7 +1384,8 @@ MAP = {
                     messages_modulepath='cloudshell_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1279,7 +1395,8 @@ MAP = {
                     messages_modulepath='cloudshell_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'cloudtasks': {
         'v2':
@@ -1291,7 +1408,8 @@ MAP = {
                     messages_modulepath='cloudtasks_v2_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v2beta2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1301,7 +1419,8 @@ MAP = {
                     messages_modulepath='cloudtasks_v2beta2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v2beta3':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1311,7 +1430,8 @@ MAP = {
                     messages_modulepath='cloudtasks_v2beta3_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'cloudtrace': {
         'v2beta1':
@@ -1323,7 +1443,8 @@ MAP = {
                     messages_modulepath='cloudtrace_v2beta1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'composer': {
         'v1':
@@ -1335,7 +1456,8 @@ MAP = {
                     messages_modulepath='composer_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://composer.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://composer.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://composer.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://composer.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://composer.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://composer.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://composer.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://composer.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://composer.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://composer.asia-southeast2.rep.googleapis.com/', 'asia-southeast3': 'https://composer.asia-southeast3.rep.googleapis.com/', 'australia-southeast1': 'https://composer.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://composer.australia-southeast2.rep.googleapis.com/', 'europe-central2': 'https://composer.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://composer.europe-north1.rep.googleapis.com/', 'europe-north2': 'https://composer.europe-north2.rep.googleapis.com/', 'europe-southwest1': 'https://composer.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://composer.europe-west1.rep.googleapis.com/', 'europe-west10': 'https://composer.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://composer.europe-west12.rep.googleapis.com/', 'europe-west15': 'https://composer.europe-west15.rep.googleapis.com/', 'europe-west2': 'https://composer.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://composer.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://composer.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://composer.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://composer.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://composer.europe-west9.rep.googleapis.com/', 'me-central1': 'https://composer.me-central1.rep.googleapis.com/', 'me-central2': 'https://composer.me-central2.rep.googleapis.com/', 'me-west1': 'https://composer.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://composer.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://composer.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://composer.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://composer.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://composer.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://composer.us-central1.rep.googleapis.com/', 'us-east1': 'https://composer.us-east1.rep.googleapis.com/', 'us-east4': 'https://composer.us-east4.rep.googleapis.com/', 'us-east5': 'https://composer.us-east5.rep.googleapis.com/', 'us-east7': 'https://composer.us-east7.rep.googleapis.com/', 'us-south1': 'https://composer.us-south1.rep.googleapis.com/', 'us-west1': 'https://composer.us-west1.rep.googleapis.com/', 'us-west2': 'https://composer.us-west2.rep.googleapis.com/', 'us-west3': 'https://composer.us-west3.rep.googleapis.com/', 'us-west4': 'https://composer.us-west4.rep.googleapis.com/', 'us-west8': 'https://composer.us-west8.rep.googleapis.com/'}),
         'v1alpha2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1345,7 +1467,8 @@ MAP = {
                     messages_modulepath='composer_v1alpha2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://composer.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://composer.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://composer.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://composer.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://composer.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://composer.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://composer.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://composer.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://composer.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://composer.asia-southeast2.rep.googleapis.com/', 'asia-southeast3': 'https://composer.asia-southeast3.rep.googleapis.com/', 'australia-southeast1': 'https://composer.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://composer.australia-southeast2.rep.googleapis.com/', 'europe-central2': 'https://composer.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://composer.europe-north1.rep.googleapis.com/', 'europe-north2': 'https://composer.europe-north2.rep.googleapis.com/', 'europe-southwest1': 'https://composer.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://composer.europe-west1.rep.googleapis.com/', 'europe-west10': 'https://composer.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://composer.europe-west12.rep.googleapis.com/', 'europe-west15': 'https://composer.europe-west15.rep.googleapis.com/', 'europe-west2': 'https://composer.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://composer.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://composer.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://composer.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://composer.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://composer.europe-west9.rep.googleapis.com/', 'me-central1': 'https://composer.me-central1.rep.googleapis.com/', 'me-central2': 'https://composer.me-central2.rep.googleapis.com/', 'me-west1': 'https://composer.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://composer.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://composer.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://composer.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://composer.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://composer.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://composer.us-central1.rep.googleapis.com/', 'us-east1': 'https://composer.us-east1.rep.googleapis.com/', 'us-east4': 'https://composer.us-east4.rep.googleapis.com/', 'us-east5': 'https://composer.us-east5.rep.googleapis.com/', 'us-east7': 'https://composer.us-east7.rep.googleapis.com/', 'us-south1': 'https://composer.us-south1.rep.googleapis.com/', 'us-west1': 'https://composer.us-west1.rep.googleapis.com/', 'us-west2': 'https://composer.us-west2.rep.googleapis.com/', 'us-west3': 'https://composer.us-west3.rep.googleapis.com/', 'us-west4': 'https://composer.us-west4.rep.googleapis.com/', 'us-west8': 'https://composer.us-west8.rep.googleapis.com/'}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1355,7 +1478,8 @@ MAP = {
                     messages_modulepath='composer_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://composer.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://composer.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://composer.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://composer.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://composer.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://composer.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://composer.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://composer.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://composer.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://composer.asia-southeast2.rep.googleapis.com/', 'asia-southeast3': 'https://composer.asia-southeast3.rep.googleapis.com/', 'australia-southeast1': 'https://composer.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://composer.australia-southeast2.rep.googleapis.com/', 'europe-central2': 'https://composer.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://composer.europe-north1.rep.googleapis.com/', 'europe-north2': 'https://composer.europe-north2.rep.googleapis.com/', 'europe-southwest1': 'https://composer.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://composer.europe-west1.rep.googleapis.com/', 'europe-west10': 'https://composer.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://composer.europe-west12.rep.googleapis.com/', 'europe-west15': 'https://composer.europe-west15.rep.googleapis.com/', 'europe-west2': 'https://composer.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://composer.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://composer.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://composer.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://composer.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://composer.europe-west9.rep.googleapis.com/', 'me-central1': 'https://composer.me-central1.rep.googleapis.com/', 'me-central2': 'https://composer.me-central2.rep.googleapis.com/', 'me-west1': 'https://composer.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://composer.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://composer.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://composer.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://composer.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://composer.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://composer.us-central1.rep.googleapis.com/', 'us-east1': 'https://composer.us-east1.rep.googleapis.com/', 'us-east4': 'https://composer.us-east4.rep.googleapis.com/', 'us-east5': 'https://composer.us-east5.rep.googleapis.com/', 'us-east7': 'https://composer.us-east7.rep.googleapis.com/', 'us-south1': 'https://composer.us-south1.rep.googleapis.com/', 'us-west1': 'https://composer.us-west1.rep.googleapis.com/', 'us-west2': 'https://composer.us-west2.rep.googleapis.com/', 'us-west3': 'https://composer.us-west3.rep.googleapis.com/', 'us-west4': 'https://composer.us-west4.rep.googleapis.com/', 'us-west8': 'https://composer.us-west8.rep.googleapis.com/'}),
     },
     'composerflex': {
         'v1alpha1':
@@ -1367,7 +1491,8 @@ MAP = {
                     messages_modulepath='composerflex_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'compute': {
         'alpha':
@@ -1379,7 +1504,8 @@ MAP = {
                     messages_modulepath='compute_alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1389,7 +1515,8 @@ MAP = {
                     messages_modulepath='compute_beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1399,7 +1526,8 @@ MAP = {
                     messages_modulepath='compute_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'config': {
         'v1':
@@ -1411,7 +1539,8 @@ MAP = {
                     messages_modulepath='config_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1421,7 +1550,8 @@ MAP = {
                     messages_modulepath='config_v1alpha2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'configdelivery': {
         'v1':
@@ -1433,7 +1563,8 @@ MAP = {
                     messages_modulepath='configdelivery_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1443,7 +1574,8 @@ MAP = {
                     messages_modulepath='configdelivery_v1alpha_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1453,7 +1585,8 @@ MAP = {
                     messages_modulepath='configdelivery_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'connectgateway': {
         'v1':
@@ -1465,7 +1598,8 @@ MAP = {
                     messages_modulepath='connectgateway_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1475,7 +1609,8 @@ MAP = {
                     messages_modulepath='connectgateway_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1485,7 +1620,8 @@ MAP = {
                     messages_modulepath='connectgateway_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'connectors': {
         'v1':
@@ -1497,7 +1633,8 @@ MAP = {
                     messages_modulepath='connectors_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'container': {
         'v1':
@@ -1509,7 +1646,8 @@ MAP = {
                     messages_modulepath='container_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1519,7 +1657,8 @@ MAP = {
                     messages_modulepath='container_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1529,7 +1668,8 @@ MAP = {
                     messages_modulepath='container_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'containeranalysis': {
         'v1':
@@ -1541,7 +1681,8 @@ MAP = {
                     messages_modulepath='containeranalysis_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'asia-east1': 'https://containeranalysis.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://containeranalysis.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://containeranalysis.asia-northeast1.rep.googleapis.com/', 'asia-northeast3': 'https://containeranalysis.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://containeranalysis.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://containeranalysis.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://containeranalysis.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://containeranalysis.asia-southeast2.rep.googleapis.com/', 'australia-southeast1': 'https://containeranalysis.australia-southeast1.rep.googleapis.com/', 'europe-central2': 'https://containeranalysis.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://containeranalysis.europe-north1.rep.googleapis.com/', 'europe-southwest1': 'https://containeranalysis.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://containeranalysis.europe-west1.rep.googleapis.com/', 'europe-west2': 'https://containeranalysis.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://containeranalysis.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://containeranalysis.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://containeranalysis.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://containeranalysis.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://containeranalysis.europe-west9.rep.googleapis.com/', 'me-central1': 'https://containeranalysis.me-central1.rep.googleapis.com/', 'me-central2': 'https://containeranalysis.me-central2.rep.googleapis.com/', 'me-west1': 'https://containeranalysis.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://containeranalysis.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://containeranalysis.northamerica-northeast2.rep.googleapis.com/', 'southamerica-east1': 'https://containeranalysis.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://containeranalysis.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://containeranalysis.us-central1.rep.googleapis.com/', 'us-central2': 'https://containeranalysis.us-central2.rep.googleapis.com/', 'us-east1': 'https://containeranalysis.us-east1.rep.googleapis.com/', 'us-east4': 'https://containeranalysis.us-east4.rep.googleapis.com/', 'us-east5': 'https://containeranalysis.us-east5.rep.googleapis.com/', 'us-east7': 'https://containeranalysis.us-east7.rep.googleapis.com/', 'us-south1': 'https://containeranalysis.us-south1.rep.googleapis.com/', 'us-west1': 'https://containeranalysis.us-west1.rep.googleapis.com/', 'us-west2': 'https://containeranalysis.us-west2.rep.googleapis.com/', 'us-west3': 'https://containeranalysis.us-west3.rep.googleapis.com/', 'us-west4': 'https://containeranalysis.us-west4.rep.googleapis.com/', 'africa-south1': 'https://containeranalysis.africa-south1.rep.googleapis.com/', 'asia-northeast2': 'https://containeranalysis.asia-northeast2.rep.googleapis.com/', 'australia-southeast2': 'https://containeranalysis.australia-southeast2.rep.googleapis.com/', 'europe-west10': 'https://containeranalysis.europe-west10.rep.googleapis.com/', 'us': 'https://containeranalysis.us.rep.googleapis.com/', 'eu': 'https://containeranalysis.eu.rep.googleapis.com/'}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1551,7 +1692,8 @@ MAP = {
                     messages_modulepath='containeranalysis_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'asia-east1': 'https://containeranalysis.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://containeranalysis.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://containeranalysis.asia-northeast1.rep.googleapis.com/', 'asia-northeast3': 'https://containeranalysis.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://containeranalysis.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://containeranalysis.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://containeranalysis.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://containeranalysis.asia-southeast2.rep.googleapis.com/', 'australia-southeast1': 'https://containeranalysis.australia-southeast1.rep.googleapis.com/', 'europe-central2': 'https://containeranalysis.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://containeranalysis.europe-north1.rep.googleapis.com/', 'europe-southwest1': 'https://containeranalysis.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://containeranalysis.europe-west1.rep.googleapis.com/', 'europe-west2': 'https://containeranalysis.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://containeranalysis.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://containeranalysis.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://containeranalysis.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://containeranalysis.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://containeranalysis.europe-west9.rep.googleapis.com/', 'me-central1': 'https://containeranalysis.me-central1.rep.googleapis.com/', 'me-central2': 'https://containeranalysis.me-central2.rep.googleapis.com/', 'me-west1': 'https://containeranalysis.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://containeranalysis.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://containeranalysis.northamerica-northeast2.rep.googleapis.com/', 'southamerica-east1': 'https://containeranalysis.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://containeranalysis.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://containeranalysis.us-central1.rep.googleapis.com/', 'us-central2': 'https://containeranalysis.us-central2.rep.googleapis.com/', 'us-east1': 'https://containeranalysis.us-east1.rep.googleapis.com/', 'us-east4': 'https://containeranalysis.us-east4.rep.googleapis.com/', 'us-east5': 'https://containeranalysis.us-east5.rep.googleapis.com/', 'us-east7': 'https://containeranalysis.us-east7.rep.googleapis.com/', 'us-south1': 'https://containeranalysis.us-south1.rep.googleapis.com/', 'us-west1': 'https://containeranalysis.us-west1.rep.googleapis.com/', 'us-west2': 'https://containeranalysis.us-west2.rep.googleapis.com/', 'us-west3': 'https://containeranalysis.us-west3.rep.googleapis.com/', 'us-west4': 'https://containeranalysis.us-west4.rep.googleapis.com/', 'africa-south1': 'https://containeranalysis.africa-south1.rep.googleapis.com/', 'asia-northeast2': 'https://containeranalysis.asia-northeast2.rep.googleapis.com/', 'australia-southeast2': 'https://containeranalysis.australia-southeast2.rep.googleapis.com/', 'europe-west10': 'https://containeranalysis.europe-west10.rep.googleapis.com/', 'us': 'https://containeranalysis.us.rep.googleapis.com/', 'eu': 'https://containeranalysis.eu.rep.googleapis.com/'}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1561,7 +1703,8 @@ MAP = {
                     messages_modulepath='containeranalysis_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'asia-east1': 'https://containeranalysis.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://containeranalysis.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://containeranalysis.asia-northeast1.rep.googleapis.com/', 'asia-northeast3': 'https://containeranalysis.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://containeranalysis.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://containeranalysis.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://containeranalysis.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://containeranalysis.asia-southeast2.rep.googleapis.com/', 'australia-southeast1': 'https://containeranalysis.australia-southeast1.rep.googleapis.com/', 'europe-central2': 'https://containeranalysis.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://containeranalysis.europe-north1.rep.googleapis.com/', 'europe-southwest1': 'https://containeranalysis.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://containeranalysis.europe-west1.rep.googleapis.com/', 'europe-west2': 'https://containeranalysis.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://containeranalysis.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://containeranalysis.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://containeranalysis.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://containeranalysis.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://containeranalysis.europe-west9.rep.googleapis.com/', 'me-central1': 'https://containeranalysis.me-central1.rep.googleapis.com/', 'me-central2': 'https://containeranalysis.me-central2.rep.googleapis.com/', 'me-west1': 'https://containeranalysis.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://containeranalysis.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://containeranalysis.northamerica-northeast2.rep.googleapis.com/', 'southamerica-east1': 'https://containeranalysis.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://containeranalysis.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://containeranalysis.us-central1.rep.googleapis.com/', 'us-central2': 'https://containeranalysis.us-central2.rep.googleapis.com/', 'us-east1': 'https://containeranalysis.us-east1.rep.googleapis.com/', 'us-east4': 'https://containeranalysis.us-east4.rep.googleapis.com/', 'us-east5': 'https://containeranalysis.us-east5.rep.googleapis.com/', 'us-east7': 'https://containeranalysis.us-east7.rep.googleapis.com/', 'us-south1': 'https://containeranalysis.us-south1.rep.googleapis.com/', 'us-west1': 'https://containeranalysis.us-west1.rep.googleapis.com/', 'us-west2': 'https://containeranalysis.us-west2.rep.googleapis.com/', 'us-west3': 'https://containeranalysis.us-west3.rep.googleapis.com/', 'us-west4': 'https://containeranalysis.us-west4.rep.googleapis.com/', 'africa-south1': 'https://containeranalysis.africa-south1.rep.googleapis.com/', 'asia-northeast2': 'https://containeranalysis.asia-northeast2.rep.googleapis.com/', 'australia-southeast2': 'https://containeranalysis.australia-southeast2.rep.googleapis.com/', 'europe-west10': 'https://containeranalysis.europe-west10.rep.googleapis.com/', 'us': 'https://containeranalysis.us.rep.googleapis.com/', 'eu': 'https://containeranalysis.eu.rep.googleapis.com/'}),
     },
     'datacatalog': {
         'v1':
@@ -1573,7 +1716,8 @@ MAP = {
                     messages_modulepath='datacatalog_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha3':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1583,7 +1727,8 @@ MAP = {
                     messages_modulepath='datacatalog_v1alpha3_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1593,7 +1738,8 @@ MAP = {
                     messages_modulepath='datacatalog_v1beta1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'dataflow': {
         'v1b3':
@@ -1605,7 +1751,8 @@ MAP = {
                     messages_modulepath='dataflow_v1b3_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://dataflow.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://dataflow.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://dataflow.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://dataflow.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://dataflow.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://dataflow.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://dataflow.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://dataflow.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://dataflow.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://dataflow.asia-southeast2.rep.googleapis.com/', 'asia-southeast3': 'https://dataflow.asia-southeast3.rep.googleapis.com/', 'australia-southeast1': 'https://dataflow.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://dataflow.australia-southeast2.rep.googleapis.com/', 'europe-central2': 'https://dataflow.europe-central2.rep.googleapis.com/', 'europe-southwest1': 'https://dataflow.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://dataflow.europe-west1.rep.googleapis.com/', 'europe-west10': 'https://dataflow.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://dataflow.europe-west12.rep.googleapis.com/', 'europe-west3': 'https://dataflow.europe-west3.rep.googleapis.com/', 'europe-west6': 'https://dataflow.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://dataflow.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://dataflow.europe-west9.rep.googleapis.com/', 'me-central1': 'https://dataflow.me-central1.rep.googleapis.com/', 'me-central2': 'https://dataflow.me-central2.rep.googleapis.com/', 'me-west1': 'https://dataflow.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://dataflow.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://dataflow.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://dataflow.northamerica-south1.rep.googleapis.com/', 'southamerica-west1': 'https://dataflow.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://dataflow.us-central1.rep.googleapis.com/', 'us-central2': 'https://dataflow.us-central2.rep.googleapis.com/', 'us-east1': 'https://dataflow.us-east1.rep.googleapis.com/', 'us-east4': 'https://dataflow.us-east4.rep.googleapis.com/', 'us-east5': 'https://dataflow.us-east5.rep.googleapis.com/', 'us-east7': 'https://dataflow.us-east7.rep.googleapis.com/', 'us-south1': 'https://dataflow.us-south1.rep.googleapis.com/', 'us-west1': 'https://dataflow.us-west1.rep.googleapis.com/', 'us-west2': 'https://dataflow.us-west2.rep.googleapis.com/', 'us-west3': 'https://dataflow.us-west3.rep.googleapis.com/', 'us-west4': 'https://dataflow.us-west4.rep.googleapis.com/', 'us-west8': 'https://dataflow.us-west8.rep.googleapis.com/'}),
     },
     'dataform': {
         'v1beta1':
@@ -1617,7 +1764,8 @@ MAP = {
                     messages_modulepath='dataform_v1beta1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'datafusion': {
         'v1beta1':
@@ -1629,7 +1777,8 @@ MAP = {
                     messages_modulepath='datafusion_v1beta1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://datafusion.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://datafusion.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://datafusion.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://datafusion.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://datafusion.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://datafusion.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://datafusion.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://datafusion.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://datafusion.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://datafusion.asia-southeast2.rep.googleapis.com/', 'australia-southeast1': 'https://datafusion.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://datafusion.australia-southeast2.rep.googleapis.com/', 'europe-north1': 'https://datafusion.europe-north1.rep.googleapis.com/', 'europe-north2': 'https://datafusion.europe-north2.rep.googleapis.com/', 'europe-southwest1': 'https://datafusion.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://datafusion.europe-west1.rep.googleapis.com/', 'europe-west12': 'https://datafusion.europe-west12.rep.googleapis.com/', 'europe-west2': 'https://datafusion.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://datafusion.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://datafusion.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://datafusion.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://datafusion.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://datafusion.europe-west9.rep.googleapis.com/', 'me-central1': 'https://datafusion.me-central1.rep.googleapis.com/', 'me-central2': 'https://datafusion.me-central2.rep.googleapis.com/', 'me-west1': 'https://datafusion.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://datafusion.northamerica-northeast1.rep.googleapis.com/', 'northamerica-south1': 'https://datafusion.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://datafusion.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://datafusion.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://datafusion.us-central1.rep.googleapis.com/', 'us-east1': 'https://datafusion.us-east1.rep.googleapis.com/', 'us-east4': 'https://datafusion.us-east4.rep.googleapis.com/', 'us-east5': 'https://datafusion.us-east5.rep.googleapis.com/', 'us-east7': 'https://datafusion.us-east7.rep.googleapis.com/', 'us-south1': 'https://datafusion.us-south1.rep.googleapis.com/', 'us-west1': 'https://datafusion.us-west1.rep.googleapis.com/', 'us-west2': 'https://datafusion.us-west2.rep.googleapis.com/'}),
     },
     'datamigration': {
         'v1':
@@ -1641,7 +1790,8 @@ MAP = {
                     messages_modulepath='datamigration_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1651,7 +1801,8 @@ MAP = {
                     messages_modulepath='datamigration_v1alpha2_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'datapipelines': {
         'v1':
@@ -1663,7 +1814,8 @@ MAP = {
                     messages_modulepath='datapipelines_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'dataplex': {
         'v1':
@@ -1675,7 +1827,8 @@ MAP = {
                     messages_modulepath='dataplex_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://dataplex.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://dataplex.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://dataplex.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://dataplex.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://dataplex.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://dataplex.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://dataplex.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://dataplex.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://dataplex.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://dataplex.asia-southeast2.rep.googleapis.com/', 'asia-southeast3': 'https://dataplex.asia-southeast3.rep.googleapis.com/', 'australia-southeast1': 'https://dataplex.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://dataplex.australia-southeast2.rep.googleapis.com/', 'europe-central2': 'https://dataplex.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://dataplex.europe-north1.rep.googleapis.com/', 'europe-north2': 'https://dataplex.europe-north2.rep.googleapis.com/', 'europe-southwest1': 'https://dataplex.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://dataplex.europe-west1.rep.googleapis.com/', 'europe-west10': 'https://dataplex.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://dataplex.europe-west12.rep.googleapis.com/', 'europe-west15': 'https://dataplex.europe-west15.rep.googleapis.com/', 'europe-west2': 'https://dataplex.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://dataplex.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://dataplex.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://dataplex.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://dataplex.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://dataplex.europe-west9.rep.googleapis.com/', 'me-central1': 'https://dataplex.me-central1.rep.googleapis.com/', 'me-central2': 'https://dataplex.me-central2.rep.googleapis.com/', 'me-west1': 'https://dataplex.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://dataplex.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://dataplex.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://dataplex.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://dataplex.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://dataplex.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://dataplex.us-central1.rep.googleapis.com/', 'us-central2': 'https://dataplex.us-central2.rep.googleapis.com/', 'us-east1': 'https://dataplex.us-east1.rep.googleapis.com/', 'us-east4': 'https://dataplex.us-east4.rep.googleapis.com/', 'us-east5': 'https://dataplex.us-east5.rep.googleapis.com/', 'us-east7': 'https://dataplex.us-east7.rep.googleapis.com/', 'us-south1': 'https://dataplex.us-south1.rep.googleapis.com/', 'us-west1': 'https://dataplex.us-west1.rep.googleapis.com/', 'us-west2': 'https://dataplex.us-west2.rep.googleapis.com/', 'us-west3': 'https://dataplex.us-west3.rep.googleapis.com/', 'us-west4': 'https://dataplex.us-west4.rep.googleapis.com/', 'us-west8': 'https://dataplex.us-west8.rep.googleapis.com/', 'us': 'https://dataplex.us.rep.googleapis.com/', 'eu': 'https://dataplex.eu.rep.googleapis.com/'}),
     },
     'dataproc': {
         'v1':
@@ -1687,7 +1840,8 @@ MAP = {
                     messages_modulepath='dataproc_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'europe-west3': 'https://dataproc.europe-west3.rep.googleapis.com/', 'europe-west9': 'https://dataproc.europe-west9.rep.googleapis.com/', 'us-central1': 'https://dataproc.us-central1.rep.googleapis.com/', 'us-central2': 'https://dataproc.us-central2.rep.googleapis.com/', 'us-east1': 'https://dataproc.us-east1.rep.googleapis.com/', 'us-east4': 'https://dataproc.us-east4.rep.googleapis.com/', 'us-east5': 'https://dataproc.us-east5.rep.googleapis.com/', 'us-east7': 'https://dataproc.us-east7.rep.googleapis.com/', 'us-south1': 'https://dataproc.us-south1.rep.googleapis.com/', 'us-west1': 'https://dataproc.us-west1.rep.googleapis.com/', 'us-west2': 'https://dataproc.us-west2.rep.googleapis.com/', 'us-west3': 'https://dataproc.us-west3.rep.googleapis.com/', 'us-west8': 'https://dataproc.us-west8.rep.googleapis.com/', 'europe-west8': 'https://dataproc.europe-west8.rep.googleapis.com/', 'asia-south1': 'https://dataproc.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://dataproc.asia-south2.rep.googleapis.com/', 'me-central2': 'https://dataproc.me-central2.rep.googleapis.com/'}),
     },
     'dataprocgdc': {
         'v1':
@@ -1699,7 +1853,8 @@ MAP = {
                     messages_modulepath='dataprocgdc_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1709,7 +1864,8 @@ MAP = {
                     messages_modulepath='dataprocgdc_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'datastore': {
         'v1':
@@ -1721,7 +1877,8 @@ MAP = {
                     messages_modulepath='datastore_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://batch-datastore.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://batch-datastore.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://batch-datastore.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://batch-datastore.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://batch-datastore.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://batch-datastore.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://batch-datastore.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://batch-datastore.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://batch-datastore.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://batch-datastore.asia-southeast2.rep.googleapis.com/', 'australia-southeast1': 'https://batch-datastore.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://batch-datastore.australia-southeast2.rep.googleapis.com/', 'europe-central2': 'https://batch-datastore.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://batch-datastore.europe-north1.rep.googleapis.com/', 'europe-north2': 'https://batch-datastore.europe-north2.rep.googleapis.com/', 'europe-southwest1': 'https://batch-datastore.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://batch-datastore.europe-west1.rep.googleapis.com/', 'europe-west10': 'https://batch-datastore.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://batch-datastore.europe-west12.rep.googleapis.com/', 'europe-west2': 'https://batch-datastore.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://batch-datastore.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://batch-datastore.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://batch-datastore.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://batch-datastore.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://batch-datastore.europe-west9.rep.googleapis.com/', 'me-central1': 'https://batch-datastore.me-central1.rep.googleapis.com/', 'me-central2': 'https://batch-datastore.me-central2.rep.googleapis.com/', 'me-west1': 'https://batch-datastore.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://batch-datastore.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://batch-datastore.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://batch-datastore.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://batch-datastore.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://batch-datastore.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://batch-datastore.us-central1.rep.googleapis.com/', 'us-east1': 'https://batch-datastore.us-east1.rep.googleapis.com/', 'us-east4': 'https://batch-datastore.us-east4.rep.googleapis.com/', 'us-east5': 'https://batch-datastore.us-east5.rep.googleapis.com/', 'us-south1': 'https://batch-datastore.us-south1.rep.googleapis.com/', 'us-west1': 'https://batch-datastore.us-west1.rep.googleapis.com/', 'us-west2': 'https://batch-datastore.us-west2.rep.googleapis.com/', 'us-west3': 'https://batch-datastore.us-west3.rep.googleapis.com/', 'us-west4': 'https://batch-datastore.us-west4.rep.googleapis.com/', 'us-east7': 'https://batch-datastore.us-east7.rep.googleapis.com/', 'us-west8': 'https://batch-datastore.us-west8.rep.googleapis.com/', 'eu': 'https://batch-datastore.eu.rep.googleapis.com/', 'us': 'https://batch-datastore.us.rep.googleapis.com/'}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1731,7 +1888,8 @@ MAP = {
                     messages_modulepath='datastore_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://batch-datastore.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://batch-datastore.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://batch-datastore.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://batch-datastore.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://batch-datastore.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://batch-datastore.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://batch-datastore.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://batch-datastore.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://batch-datastore.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://batch-datastore.asia-southeast2.rep.googleapis.com/', 'australia-southeast1': 'https://batch-datastore.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://batch-datastore.australia-southeast2.rep.googleapis.com/', 'europe-central2': 'https://batch-datastore.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://batch-datastore.europe-north1.rep.googleapis.com/', 'europe-north2': 'https://batch-datastore.europe-north2.rep.googleapis.com/', 'europe-southwest1': 'https://batch-datastore.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://batch-datastore.europe-west1.rep.googleapis.com/', 'europe-west10': 'https://batch-datastore.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://batch-datastore.europe-west12.rep.googleapis.com/', 'europe-west2': 'https://batch-datastore.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://batch-datastore.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://batch-datastore.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://batch-datastore.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://batch-datastore.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://batch-datastore.europe-west9.rep.googleapis.com/', 'me-central1': 'https://batch-datastore.me-central1.rep.googleapis.com/', 'me-central2': 'https://batch-datastore.me-central2.rep.googleapis.com/', 'me-west1': 'https://batch-datastore.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://batch-datastore.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://batch-datastore.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://batch-datastore.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://batch-datastore.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://batch-datastore.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://batch-datastore.us-central1.rep.googleapis.com/', 'us-east1': 'https://batch-datastore.us-east1.rep.googleapis.com/', 'us-east4': 'https://batch-datastore.us-east4.rep.googleapis.com/', 'us-east5': 'https://batch-datastore.us-east5.rep.googleapis.com/', 'us-south1': 'https://batch-datastore.us-south1.rep.googleapis.com/', 'us-west1': 'https://batch-datastore.us-west1.rep.googleapis.com/', 'us-west2': 'https://batch-datastore.us-west2.rep.googleapis.com/', 'us-west3': 'https://batch-datastore.us-west3.rep.googleapis.com/', 'us-west4': 'https://batch-datastore.us-west4.rep.googleapis.com/', 'us-east7': 'https://batch-datastore.us-east7.rep.googleapis.com/', 'us-west8': 'https://batch-datastore.us-west8.rep.googleapis.com/', 'eu': 'https://batch-datastore.eu.rep.googleapis.com/', 'us': 'https://batch-datastore.us.rep.googleapis.com/'}),
     },
     'datastream': {
         'v1':
@@ -1743,7 +1901,8 @@ MAP = {
                     messages_modulepath='datastream_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1753,7 +1912,8 @@ MAP = {
                     messages_modulepath='datastream_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'deploymentmanager': {
         'alpha':
@@ -1765,7 +1925,8 @@ MAP = {
                     messages_modulepath='deploymentmanager_alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override='https://www.mtls.googleapis.com/deploymentmanager/alpha/'),
+                mtls_endpoint_override='https://www.mtls.googleapis.com/deploymentmanager/alpha/',
+                regional_endpoints={}),
         'v2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1775,7 +1936,8 @@ MAP = {
                     messages_modulepath='deploymentmanager_v2_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override='https://www.mtls.googleapis.com/deploymentmanager/v2/'),
+                mtls_endpoint_override='https://www.mtls.googleapis.com/deploymentmanager/v2/',
+                regional_endpoints={}),
         'v2beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1785,7 +1947,8 @@ MAP = {
                     messages_modulepath='deploymentmanager_v2beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override='https://www.mtls.googleapis.com/deploymentmanager/v2beta/'),
+                mtls_endpoint_override='https://www.mtls.googleapis.com/deploymentmanager/v2beta/',
+                regional_endpoints={}),
     },
     'designcenter': {
         'v1':
@@ -1797,7 +1960,8 @@ MAP = {
                     messages_modulepath='designcenter_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1807,7 +1971,8 @@ MAP = {
                     messages_modulepath='designcenter_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'developerconnect': {
         'v1':
@@ -1819,7 +1984,8 @@ MAP = {
                     messages_modulepath='developerconnect_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'us-central1': 'https://developerconnect.us-central1.rep.googleapis.com/', 'europe-west1': 'https://developerconnect.europe-west1.rep.googleapis.com/', 'asia-east1': 'https://developerconnect.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://developerconnect.asia-east2.rep.googleapis.com/', 'europe-west4': 'https://developerconnect.europe-west4.rep.googleapis.com/', 'us-east4': 'https://developerconnect.us-east4.rep.googleapis.com/', 'us-east5': 'https://developerconnect.us-east5.rep.googleapis.com/', 'asia-southeast1': 'https://developerconnect.asia-southeast1.rep.googleapis.com/', 'us-west1': 'https://developerconnect.us-west1.rep.googleapis.com/', 'us-west2': 'https://developerconnect.us-west2.rep.googleapis.com/'}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1829,7 +1995,8 @@ MAP = {
                     messages_modulepath='developerconnect_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'us-central1': 'https://developerconnect.us-central1.rep.googleapis.com/', 'europe-west1': 'https://developerconnect.europe-west1.rep.googleapis.com/', 'asia-east1': 'https://developerconnect.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://developerconnect.asia-east2.rep.googleapis.com/', 'europe-west4': 'https://developerconnect.europe-west4.rep.googleapis.com/', 'us-east4': 'https://developerconnect.us-east4.rep.googleapis.com/', 'us-east5': 'https://developerconnect.us-east5.rep.googleapis.com/', 'asia-southeast1': 'https://developerconnect.asia-southeast1.rep.googleapis.com/', 'us-west1': 'https://developerconnect.us-west1.rep.googleapis.com/', 'us-west2': 'https://developerconnect.us-west2.rep.googleapis.com/'}),
     },
     'dialogflow': {
         'v2':
@@ -1841,7 +2008,8 @@ MAP = {
                     messages_modulepath='dialogflow_v2_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'discovery': {
         'v1':
@@ -1853,7 +2021,8 @@ MAP = {
                     messages_modulepath='discovery_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override='https://www.mtls.googleapis.com/discovery/v1/'),
+                mtls_endpoint_override='https://www.mtls.googleapis.com/discovery/v1/',
+                regional_endpoints={}),
     },
     'dlp': {
         'v2':
@@ -1865,7 +2034,8 @@ MAP = {
                     messages_modulepath='dlp_v2_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://dlp.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://dlp.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://dlp.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://dlp.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://dlp.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://dlp.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://dlp.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://dlp.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://dlp.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://dlp.asia-southeast2.rep.googleapis.com/', 'australia-southeast1': 'https://dlp.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://dlp.australia-southeast2.rep.googleapis.com/', 'europe-central2': 'https://dlp.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://dlp.europe-north1.rep.googleapis.com/', 'europe-north2': 'https://dlp.europe-north2.rep.googleapis.com/', 'europe-southwest1': 'https://dlp.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://dlp.europe-west1.rep.googleapis.com/', 'europe-west10': 'https://dlp.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://dlp.europe-west12.rep.googleapis.com/', 'europe-west2': 'https://dlp.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://dlp.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://dlp.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://dlp.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://dlp.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://dlp.europe-west9.rep.googleapis.com/', 'me-central1': 'https://dlp.me-central1.rep.googleapis.com/', 'me-central2': 'https://dlp.me-central2.rep.googleapis.com/', 'me-west1': 'https://dlp.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://dlp.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://dlp.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://dlp.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://dlp.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://dlp.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://dlp.us-central1.rep.googleapis.com/', 'us-central2': 'https://dlp.us-central2.rep.googleapis.com/', 'us-east1': 'https://dlp.us-east1.rep.googleapis.com/', 'us-east4': 'https://dlp.us-east4.rep.googleapis.com/', 'us-east5': 'https://dlp.us-east5.rep.googleapis.com/', 'us-south1': 'https://dlp.us-south1.rep.googleapis.com/', 'us-west1': 'https://dlp.us-west1.rep.googleapis.com/', 'us-west2': 'https://dlp.us-west2.rep.googleapis.com/', 'us-west3': 'https://dlp.us-west3.rep.googleapis.com/', 'us-west4': 'https://dlp.us-west4.rep.googleapis.com/', 'us-west8': 'https://dlp.us-west8.rep.googleapis.com/', 'us': 'https://dlp.us.rep.googleapis.com/', 'eu': 'https://dlp.eu.rep.googleapis.com/', 'in': 'https://dlp.in.rep.googleapis.com/'}),
     },
     'dns': {
         'v1':
@@ -1877,7 +2047,8 @@ MAP = {
                     messages_modulepath='dns_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override='https://dns.mtls.googleapis.com/dns/v1/'),
+                mtls_endpoint_override='https://dns.mtls.googleapis.com/dns/v1/',
+                regional_endpoints={}),
         'v1alpha2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1887,7 +2058,8 @@ MAP = {
                     messages_modulepath='dns_v1alpha2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1897,7 +2069,8 @@ MAP = {
                     messages_modulepath='dns_v1beta2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override='https://dns.mtls.googleapis.com/dns/v1beta2/'),
+                mtls_endpoint_override='https://dns.mtls.googleapis.com/dns/v1beta2/',
+                regional_endpoints={}),
         'v2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1907,7 +2080,8 @@ MAP = {
                     messages_modulepath='dns_v2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override='https://dns.mtls.googleapis.com/dns/v2/'),
+                mtls_endpoint_override='https://dns.mtls.googleapis.com/dns/v2/',
+                regional_endpoints={}),
     },
     'documentai': {
         'v1':
@@ -1919,7 +2093,8 @@ MAP = {
                     messages_modulepath='documentai_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'domains': {
         'v1':
@@ -1931,7 +2106,8 @@ MAP = {
                     messages_modulepath='domains_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1941,7 +2117,8 @@ MAP = {
                     messages_modulepath='domains_v1alpha2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1951,7 +2128,8 @@ MAP = {
                     messages_modulepath='domains_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'edgecontainer': {
         'v1':
@@ -1963,7 +2141,8 @@ MAP = {
                     messages_modulepath='edgecontainer_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1973,7 +2152,8 @@ MAP = {
                     messages_modulepath='edgecontainer_v1alpha_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1983,7 +2163,8 @@ MAP = {
                     messages_modulepath='edgecontainer_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'edgenetwork': {
         'v1':
@@ -1995,7 +2176,8 @@ MAP = {
                     messages_modulepath='edgenetwork_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2005,7 +2187,8 @@ MAP = {
                     messages_modulepath='edgenetwork_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'essentialcontacts': {
         'v1':
@@ -2017,7 +2200,8 @@ MAP = {
                     messages_modulepath='essentialcontacts_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2027,7 +2211,8 @@ MAP = {
                     messages_modulepath='essentialcontacts_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2037,7 +2222,8 @@ MAP = {
                     messages_modulepath='essentialcontacts_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'eventarc': {
         'v1':
@@ -2049,7 +2235,8 @@ MAP = {
                     messages_modulepath='eventarc_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'eventarcpublishing': {
         'v1':
@@ -2061,7 +2248,8 @@ MAP = {
                     messages_modulepath='eventarcpublishing_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'eventflow': {
         'v1beta2':
@@ -2073,7 +2261,8 @@ MAP = {
                     messages_modulepath='eventflow_v1beta2_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'faultinjectiontesting': {
         'v1alpha1':
@@ -2085,7 +2274,8 @@ MAP = {
                     messages_modulepath='faultinjectiontesting_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'faulttesting': {
         'v1alpha':
@@ -2097,7 +2287,8 @@ MAP = {
                     messages_modulepath='faulttesting_v1alpha_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'file': {
         'v1':
@@ -2109,7 +2300,8 @@ MAP = {
                     messages_modulepath='file_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2119,7 +2311,8 @@ MAP = {
                     messages_modulepath='file_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1p1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2129,7 +2322,8 @@ MAP = {
                     messages_modulepath='file_v1p1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'firebasedataconnect': {
         'v1alpha':
@@ -2141,7 +2335,8 @@ MAP = {
                     messages_modulepath='firebasedataconnect_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2151,7 +2346,8 @@ MAP = {
                     messages_modulepath='firebasedataconnect_v1beta_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'firestore': {
         'v1':
@@ -2163,7 +2359,8 @@ MAP = {
                     messages_modulepath='firestore_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://batch-firestore.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://batch-firestore.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://batch-firestore.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://batch-firestore.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://batch-firestore.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://batch-firestore.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://batch-firestore.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://batch-firestore.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://batch-firestore.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://batch-firestore.asia-southeast2.rep.googleapis.com/', 'australia-southeast1': 'https://batch-firestore.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://batch-firestore.australia-southeast2.rep.googleapis.com/', 'europe-central2': 'https://batch-firestore.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://batch-firestore.europe-north1.rep.googleapis.com/', 'europe-north2': 'https://batch-firestore.europe-north2.rep.googleapis.com/', 'europe-southwest1': 'https://batch-firestore.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://batch-firestore.europe-west1.rep.googleapis.com/', 'europe-west10': 'https://batch-firestore.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://batch-firestore.europe-west12.rep.googleapis.com/', 'europe-west2': 'https://batch-firestore.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://batch-firestore.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://batch-firestore.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://batch-firestore.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://batch-firestore.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://batch-firestore.europe-west9.rep.googleapis.com/', 'me-central1': 'https://batch-firestore.me-central1.rep.googleapis.com/', 'me-central2': 'https://batch-firestore.me-central2.rep.googleapis.com/', 'me-west1': 'https://batch-firestore.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://batch-firestore.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://batch-firestore.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://batch-firestore.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://batch-firestore.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://batch-firestore.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://batch-firestore.us-central1.rep.googleapis.com/', 'us-east1': 'https://batch-firestore.us-east1.rep.googleapis.com/', 'us-east4': 'https://batch-firestore.us-east4.rep.googleapis.com/', 'us-east5': 'https://batch-firestore.us-east5.rep.googleapis.com/', 'us-south1': 'https://batch-firestore.us-south1.rep.googleapis.com/', 'us-west1': 'https://batch-firestore.us-west1.rep.googleapis.com/', 'us-west2': 'https://batch-firestore.us-west2.rep.googleapis.com/', 'us-west3': 'https://batch-firestore.us-west3.rep.googleapis.com/', 'us-west4': 'https://batch-firestore.us-west4.rep.googleapis.com/', 'us-east7': 'https://batch-firestore.us-east7.rep.googleapis.com/', 'us-west8': 'https://batch-firestore.us-west8.rep.googleapis.com/', 'eu': 'https://batch-firestore.eu.rep.googleapis.com/', 'us': 'https://batch-firestore.us.rep.googleapis.com/'}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2173,7 +2370,8 @@ MAP = {
                     messages_modulepath='firestore_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://batch-firestore.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://batch-firestore.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://batch-firestore.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://batch-firestore.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://batch-firestore.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://batch-firestore.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://batch-firestore.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://batch-firestore.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://batch-firestore.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://batch-firestore.asia-southeast2.rep.googleapis.com/', 'australia-southeast1': 'https://batch-firestore.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://batch-firestore.australia-southeast2.rep.googleapis.com/', 'europe-central2': 'https://batch-firestore.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://batch-firestore.europe-north1.rep.googleapis.com/', 'europe-north2': 'https://batch-firestore.europe-north2.rep.googleapis.com/', 'europe-southwest1': 'https://batch-firestore.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://batch-firestore.europe-west1.rep.googleapis.com/', 'europe-west10': 'https://batch-firestore.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://batch-firestore.europe-west12.rep.googleapis.com/', 'europe-west2': 'https://batch-firestore.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://batch-firestore.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://batch-firestore.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://batch-firestore.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://batch-firestore.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://batch-firestore.europe-west9.rep.googleapis.com/', 'me-central1': 'https://batch-firestore.me-central1.rep.googleapis.com/', 'me-central2': 'https://batch-firestore.me-central2.rep.googleapis.com/', 'me-west1': 'https://batch-firestore.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://batch-firestore.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://batch-firestore.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://batch-firestore.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://batch-firestore.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://batch-firestore.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://batch-firestore.us-central1.rep.googleapis.com/', 'us-east1': 'https://batch-firestore.us-east1.rep.googleapis.com/', 'us-east4': 'https://batch-firestore.us-east4.rep.googleapis.com/', 'us-east5': 'https://batch-firestore.us-east5.rep.googleapis.com/', 'us-south1': 'https://batch-firestore.us-south1.rep.googleapis.com/', 'us-west1': 'https://batch-firestore.us-west1.rep.googleapis.com/', 'us-west2': 'https://batch-firestore.us-west2.rep.googleapis.com/', 'us-west3': 'https://batch-firestore.us-west3.rep.googleapis.com/', 'us-west4': 'https://batch-firestore.us-west4.rep.googleapis.com/', 'us-east7': 'https://batch-firestore.us-east7.rep.googleapis.com/', 'us-west8': 'https://batch-firestore.us-west8.rep.googleapis.com/', 'eu': 'https://batch-firestore.eu.rep.googleapis.com/', 'us': 'https://batch-firestore.us.rep.googleapis.com/'}),
         'v1beta2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2183,9 +2381,21 @@ MAP = {
                     messages_modulepath='firestore_v1beta2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://batch-firestore.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://batch-firestore.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://batch-firestore.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://batch-firestore.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://batch-firestore.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://batch-firestore.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://batch-firestore.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://batch-firestore.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://batch-firestore.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://batch-firestore.asia-southeast2.rep.googleapis.com/', 'australia-southeast1': 'https://batch-firestore.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://batch-firestore.australia-southeast2.rep.googleapis.com/', 'europe-central2': 'https://batch-firestore.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://batch-firestore.europe-north1.rep.googleapis.com/', 'europe-north2': 'https://batch-firestore.europe-north2.rep.googleapis.com/', 'europe-southwest1': 'https://batch-firestore.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://batch-firestore.europe-west1.rep.googleapis.com/', 'europe-west10': 'https://batch-firestore.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://batch-firestore.europe-west12.rep.googleapis.com/', 'europe-west2': 'https://batch-firestore.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://batch-firestore.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://batch-firestore.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://batch-firestore.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://batch-firestore.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://batch-firestore.europe-west9.rep.googleapis.com/', 'me-central1': 'https://batch-firestore.me-central1.rep.googleapis.com/', 'me-central2': 'https://batch-firestore.me-central2.rep.googleapis.com/', 'me-west1': 'https://batch-firestore.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://batch-firestore.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://batch-firestore.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://batch-firestore.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://batch-firestore.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://batch-firestore.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://batch-firestore.us-central1.rep.googleapis.com/', 'us-east1': 'https://batch-firestore.us-east1.rep.googleapis.com/', 'us-east4': 'https://batch-firestore.us-east4.rep.googleapis.com/', 'us-east5': 'https://batch-firestore.us-east5.rep.googleapis.com/', 'us-south1': 'https://batch-firestore.us-south1.rep.googleapis.com/', 'us-west1': 'https://batch-firestore.us-west1.rep.googleapis.com/', 'us-west2': 'https://batch-firestore.us-west2.rep.googleapis.com/', 'us-west3': 'https://batch-firestore.us-west3.rep.googleapis.com/', 'us-west4': 'https://batch-firestore.us-west4.rep.googleapis.com/', 'us-east7': 'https://batch-firestore.us-east7.rep.googleapis.com/', 'us-west8': 'https://batch-firestore.us-west8.rep.googleapis.com/', 'eu': 'https://batch-firestore.eu.rep.googleapis.com/', 'us': 'https://batch-firestore.us.rep.googleapis.com/'}),
     },
     'geminicloudassist': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.geminicloudassist.v1',
+                    client_classpath='geminicloudassist_v1_client.GeminicloudassistV1',
+                    base_url='https://geminicloudassist.googleapis.com/',
+                    messages_modulepath='geminicloudassist_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2193,9 +2403,10 @@ MAP = {
                     client_classpath='geminicloudassist_v1alpha_client.GeminicloudassistV1alpha',
                     base_url='https://geminicloudassist.googleapis.com/',
                     messages_modulepath='geminicloudassist_v1alpha_messages'),
-                default_version=True,
+                default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'genomics': {
         'v1':
@@ -2207,7 +2418,8 @@ MAP = {
                     messages_modulepath='genomics_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2217,7 +2429,8 @@ MAP = {
                     messages_modulepath='genomics_v1alpha2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v2alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2227,7 +2440,8 @@ MAP = {
                     messages_modulepath='genomics_v2alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'gkebackup': {
         'v1':
@@ -2239,7 +2453,8 @@ MAP = {
                     messages_modulepath='gkebackup_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'gkehub': {
         'v1':
@@ -2251,7 +2466,8 @@ MAP = {
                     messages_modulepath='gkehub_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2261,7 +2477,8 @@ MAP = {
                     messages_modulepath='gkehub_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2271,7 +2488,8 @@ MAP = {
                     messages_modulepath='gkehub_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2281,7 +2499,8 @@ MAP = {
                     messages_modulepath='gkehub_v1alpha2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2291,7 +2510,8 @@ MAP = {
                     messages_modulepath='gkehub_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2301,7 +2521,8 @@ MAP = {
                     messages_modulepath='gkehub_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2311,7 +2532,8 @@ MAP = {
                     messages_modulepath='gkehub_v2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v2alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2321,7 +2543,8 @@ MAP = {
                     messages_modulepath='gkehub_v2alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v2beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2331,7 +2554,8 @@ MAP = {
                     messages_modulepath='gkehub_v2beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'gkemulticloud': {
         'v1':
@@ -2343,7 +2567,8 @@ MAP = {
                     messages_modulepath='gkemulticloud_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'gkeonprem': {
         'v1':
@@ -2355,7 +2580,8 @@ MAP = {
                     messages_modulepath='gkeonprem_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'gkerecommender': {
         'v1':
@@ -2367,7 +2593,8 @@ MAP = {
                     messages_modulepath='gkerecommender_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2377,7 +2604,8 @@ MAP = {
                     messages_modulepath='gkerecommender_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'gsuiteaddons': {
         'v1':
@@ -2389,7 +2617,8 @@ MAP = {
                     messages_modulepath='gsuiteaddons_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'healthcare': {
         'v1':
@@ -2401,7 +2630,8 @@ MAP = {
                     messages_modulepath='healthcare_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2411,7 +2641,8 @@ MAP = {
                     messages_modulepath='healthcare_v1alpha2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2421,7 +2652,8 @@ MAP = {
                     messages_modulepath='healthcare_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'hypercomputecluster': {
         'v1alpha':
@@ -2433,7 +2665,8 @@ MAP = {
                     messages_modulepath='hypercomputecluster_v1alpha_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'iam': {
         'v1':
@@ -2445,7 +2678,8 @@ MAP = {
                     messages_modulepath='iam_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2455,7 +2689,8 @@ MAP = {
                     messages_modulepath='iam_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2465,7 +2700,8 @@ MAP = {
                     messages_modulepath='iam_v2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v2alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2475,7 +2711,8 @@ MAP = {
                     messages_modulepath='iam_v2alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v2beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2485,7 +2722,8 @@ MAP = {
                     messages_modulepath='iam_v2beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v3':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2495,7 +2733,8 @@ MAP = {
                     messages_modulepath='iam_v3_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v3alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2505,7 +2744,8 @@ MAP = {
                     messages_modulepath='iam_v3alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v3beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2515,7 +2755,8 @@ MAP = {
                     messages_modulepath='iam_v3beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'iamcredentials': {
         'v1':
@@ -2527,7 +2768,8 @@ MAP = {
                     messages_modulepath='iamcredentials_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'asia-east1': 'https://iamcredentials.asia-east1.rep.googleapis.com/', 'europe-west1': 'https://iamcredentials.europe-west1.rep.googleapis.com/', 'us-central1': 'https://iamcredentials.us-central1.rep.googleapis.com/', 'us-east1': 'https://iamcredentials.us-east1.rep.googleapis.com/', 'us-east7': 'https://iamcredentials.us-east7.rep.googleapis.com/', 'us-west1': 'https://iamcredentials.us-west1.rep.googleapis.com/'}),
     },
     'iap': {
         'v1':
@@ -2539,7 +2781,8 @@ MAP = {
                     messages_modulepath='iap_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2549,7 +2792,8 @@ MAP = {
                     messages_modulepath='iap_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'ids': {
         'v1':
@@ -2561,7 +2805,8 @@ MAP = {
                     messages_modulepath='ids_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'kmsinventory': {
         'v1':
@@ -2573,7 +2818,8 @@ MAP = {
                     messages_modulepath='kmsinventory_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'krmapihosting': {
         'v1':
@@ -2585,7 +2831,8 @@ MAP = {
                     messages_modulepath='krmapihosting_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2595,7 +2842,8 @@ MAP = {
                     messages_modulepath='krmapihosting_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'language': {
         'v1':
@@ -2607,7 +2855,8 @@ MAP = {
                     messages_modulepath='language_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2617,7 +2866,8 @@ MAP = {
                     messages_modulepath='language_v1beta2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override='https://language.mtls.googleapis.com/'),
+                mtls_endpoint_override='https://language.mtls.googleapis.com/',
+                regional_endpoints={}),
     },
     'lifesciences': {
         'v2beta':
@@ -2629,7 +2879,8 @@ MAP = {
                     messages_modulepath='lifesciences_v2beta_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'logging': {
         'v2':
@@ -2643,7 +2894,8 @@ MAP = {
                     class_path='googlecloudsdk.generated_clients.gapic_wrappers.logging.v2'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://logging.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://logging.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://logging.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://logging.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://logging.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://logging.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://logging.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://logging.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://logging.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://logging.asia-southeast2.rep.googleapis.com/', 'asia-southeast3': 'https://logging.asia-southeast3.rep.googleapis.com/', 'australia-southeast1': 'https://logging.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://logging.australia-southeast2.rep.googleapis.com/', 'europe-central2': 'https://logging.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://logging.europe-north1.rep.googleapis.com/', 'europe-north2': 'https://logging.europe-north2.rep.googleapis.com/', 'europe-north3': 'https://logging.europe-north3.rep.googleapis.com/', 'europe-southwest1': 'https://logging.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://logging.europe-west1.rep.googleapis.com/', 'europe-west10': 'https://logging.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://logging.europe-west12.rep.googleapis.com/', 'europe-west15': 'https://logging.europe-west15.rep.googleapis.com/', 'europe-west2': 'https://logging.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://logging.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://logging.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://logging.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://logging.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://logging.europe-west9.rep.googleapis.com/', 'me-central1': 'https://logging.me-central1.rep.googleapis.com/', 'me-central2': 'https://logging.me-central2.rep.googleapis.com/', 'me-west1': 'https://logging.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://logging.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://logging.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://logging.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://logging.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://logging.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://logging.us-central1.rep.googleapis.com/', 'us-central2': 'https://logging.us-central2.rep.googleapis.com/', 'us-east1': 'https://logging.us-east1.rep.googleapis.com/', 'us-east4': 'https://logging.us-east4.rep.googleapis.com/', 'us-east5': 'https://logging.us-east5.rep.googleapis.com/', 'us-east7': 'https://logging.us-east7.rep.googleapis.com/', 'us-south1': 'https://logging.us-south1.rep.googleapis.com/', 'us-west1': 'https://logging.us-west1.rep.googleapis.com/', 'us-west2': 'https://logging.us-west2.rep.googleapis.com/', 'us-west3': 'https://logging.us-west3.rep.googleapis.com/', 'us-west4': 'https://logging.us-west4.rep.googleapis.com/', 'us-west8': 'https://logging.us-west8.rep.googleapis.com/', 'eu': 'https://logging.eu.rep.googleapis.com/', 'in': 'https://logging.in.rep.googleapis.com/', 'us': 'https://logging.us.rep.googleapis.com/'}),
     },
     'looker': {
         'v1':
@@ -2655,7 +2907,8 @@ MAP = {
                     messages_modulepath='looker_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2665,7 +2918,8 @@ MAP = {
                     messages_modulepath='looker_v1alpha2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'lustre': {
         'v1':
@@ -2677,7 +2931,8 @@ MAP = {
                     messages_modulepath='lustre_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2687,7 +2942,8 @@ MAP = {
                     messages_modulepath='lustre_v1alpha_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'managedflink': {
         'v1alpha':
@@ -2699,7 +2955,8 @@ MAP = {
                     messages_modulepath='managedflink_v1alpha_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'managedidentities': {
         'v1':
@@ -2711,7 +2968,8 @@ MAP = {
                     messages_modulepath='managedidentities_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2721,7 +2979,8 @@ MAP = {
                     messages_modulepath='managedidentities_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2731,7 +2990,8 @@ MAP = {
                     messages_modulepath='managedidentities_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'managedkafka': {
         'v1':
@@ -2743,7 +3003,8 @@ MAP = {
                     messages_modulepath='managedkafka_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://managedkafka.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://managedkafka.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://managedkafka.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://managedkafka.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://managedkafka.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://managedkafka.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://managedkafka.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://managedkafka.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://managedkafka.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://managedkafka.asia-southeast2.rep.googleapis.com/', 'australia-southeast1': 'https://managedkafka.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://managedkafka.australia-southeast2.rep.googleapis.com/', 'europe-central2': 'https://managedkafka.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://managedkafka.europe-north1.rep.googleapis.com/', 'europe-north2': 'https://managedkafka.europe-north2.rep.googleapis.com/', 'europe-southwest1': 'https://managedkafka.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://managedkafka.europe-west1.rep.googleapis.com/', 'europe-west2': 'https://managedkafka.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://managedkafka.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://managedkafka.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://managedkafka.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://managedkafka.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://managedkafka.europe-west9.rep.googleapis.com/', 'europe-west10': 'https://managedkafka.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://managedkafka.europe-west12.rep.googleapis.com/', 'me-west1': 'https://managedkafka.me-west1.rep.googleapis.com/', 'me-central1': 'https://managedkafka.me-central1.rep.googleapis.com/', 'me-central2': 'https://managedkafka.me-central2.rep.googleapis.com/', 'northamerica-northeast1': 'https://managedkafka.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://managedkafka.northamerica-northeast2.rep.googleapis.com/', 'southamerica-east1': 'https://managedkafka.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://managedkafka.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://managedkafka.us-central1.rep.googleapis.com/', 'us-east1': 'https://managedkafka.us-east1.rep.googleapis.com/', 'us-east4': 'https://managedkafka.us-east4.rep.googleapis.com/', 'us-east5': 'https://managedkafka.us-east5.rep.googleapis.com/', 'us-east7': 'https://managedkafka.us-east7.rep.googleapis.com/', 'us-south1': 'https://managedkafka.us-south1.rep.googleapis.com/', 'us-west1': 'https://managedkafka.us-west1.rep.googleapis.com/', 'us-west2': 'https://managedkafka.us-west2.rep.googleapis.com/', 'us-west3': 'https://managedkafka.us-west3.rep.googleapis.com/', 'us-west4': 'https://managedkafka.us-west4.rep.googleapis.com/'}),
     },
     'marketplacesolutions': {
         'v1alpha1':
@@ -2755,7 +3016,8 @@ MAP = {
                     messages_modulepath='marketplacesolutions_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'mediaasset': {
         'v1alpha':
@@ -2767,7 +3029,8 @@ MAP = {
                     messages_modulepath='mediaasset_v1alpha_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'memcache': {
         'v1':
@@ -2779,7 +3042,8 @@ MAP = {
                     messages_modulepath='memcache_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2789,7 +3053,8 @@ MAP = {
                     messages_modulepath='memcache_v1beta2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'memorystore': {
         'v1':
@@ -2801,7 +3066,8 @@ MAP = {
                     messages_modulepath='memorystore_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2811,7 +3077,8 @@ MAP = {
                     messages_modulepath='memorystore_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2821,7 +3088,8 @@ MAP = {
                     messages_modulepath='memorystore_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'messagestreams': {
         'v1alpha':
@@ -2833,7 +3101,8 @@ MAP = {
                     messages_modulepath='messagestreams_v1alpha_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'metastore': {
         'v1':
@@ -2845,7 +3114,8 @@ MAP = {
                     messages_modulepath='metastore_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2855,7 +3125,8 @@ MAP = {
                     messages_modulepath='metastore_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2865,7 +3136,8 @@ MAP = {
                     messages_modulepath='metastore_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'microservices': {
         'v1alpha1':
@@ -2877,7 +3149,8 @@ MAP = {
                     messages_modulepath='microservices_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'ml': {
         'v1':
@@ -2889,7 +3162,8 @@ MAP = {
                     messages_modulepath='ml_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'modelarmor': {
         'v1':
@@ -2901,7 +3175,8 @@ MAP = {
                     messages_modulepath='modelarmor_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'us-central1': 'https://modelarmor.us-central1.rep.googleapis.com/', 'us-east1': 'https://modelarmor.us-east1.rep.googleapis.com/', 'us-east7': 'https://modelarmor.us-east7.rep.googleapis.com/', 'us-west1': 'https://modelarmor.us-west1.rep.googleapis.com/', 'europe-west1': 'https://modelarmor.europe-west1.rep.googleapis.com/', 'europe-west4': 'https://modelarmor.europe-west4.rep.googleapis.com/', 'us-east4': 'https://modelarmor.us-east4.rep.googleapis.com/', 'asia-southeast1': 'https://modelarmor.asia-southeast1.rep.googleapis.com/', 'europe-west2': 'https://modelarmor.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://modelarmor.europe-west3.rep.googleapis.com/', 'asia-south1': 'https://modelarmor.asia-south1.rep.googleapis.com/', 'europe-southwest1': 'https://modelarmor.europe-southwest1.rep.googleapis.com/', 'asia-northeast1': 'https://modelarmor.asia-northeast1.rep.googleapis.com/', 'asia-northeast3': 'https://modelarmor.asia-northeast3.rep.googleapis.com/', 'australia-southeast1': 'https://modelarmor.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://modelarmor.australia-southeast2.rep.googleapis.com/', 'northamerica-northeast1': 'https://modelarmor.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://modelarmor.northamerica-northeast2.rep.googleapis.com/', 'europe-west9': 'https://modelarmor.europe-west9.rep.googleapis.com/', 'us': 'https://modelarmor.us.rep.googleapis.com/', 'eu': 'https://modelarmor.eu.rep.googleapis.com/'}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2911,7 +3186,8 @@ MAP = {
                     messages_modulepath='modelarmor_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'us-central1': 'https://modelarmor.us-central1.rep.googleapis.com/', 'us-east1': 'https://modelarmor.us-east1.rep.googleapis.com/', 'us-east7': 'https://modelarmor.us-east7.rep.googleapis.com/', 'us-west1': 'https://modelarmor.us-west1.rep.googleapis.com/', 'europe-west1': 'https://modelarmor.europe-west1.rep.googleapis.com/', 'europe-west4': 'https://modelarmor.europe-west4.rep.googleapis.com/', 'us-east4': 'https://modelarmor.us-east4.rep.googleapis.com/', 'asia-southeast1': 'https://modelarmor.asia-southeast1.rep.googleapis.com/', 'europe-west2': 'https://modelarmor.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://modelarmor.europe-west3.rep.googleapis.com/', 'asia-south1': 'https://modelarmor.asia-south1.rep.googleapis.com/', 'europe-southwest1': 'https://modelarmor.europe-southwest1.rep.googleapis.com/', 'asia-northeast1': 'https://modelarmor.asia-northeast1.rep.googleapis.com/', 'asia-northeast3': 'https://modelarmor.asia-northeast3.rep.googleapis.com/', 'australia-southeast1': 'https://modelarmor.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://modelarmor.australia-southeast2.rep.googleapis.com/', 'northamerica-northeast1': 'https://modelarmor.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://modelarmor.northamerica-northeast2.rep.googleapis.com/', 'europe-west9': 'https://modelarmor.europe-west9.rep.googleapis.com/', 'us': 'https://modelarmor.us.rep.googleapis.com/', 'eu': 'https://modelarmor.eu.rep.googleapis.com/'}),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2921,7 +3197,8 @@ MAP = {
                     messages_modulepath='modelarmor_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'us-central1': 'https://modelarmor.us-central1.rep.googleapis.com/', 'us-east1': 'https://modelarmor.us-east1.rep.googleapis.com/', 'us-east7': 'https://modelarmor.us-east7.rep.googleapis.com/', 'us-west1': 'https://modelarmor.us-west1.rep.googleapis.com/', 'europe-west1': 'https://modelarmor.europe-west1.rep.googleapis.com/', 'europe-west4': 'https://modelarmor.europe-west4.rep.googleapis.com/', 'us-east4': 'https://modelarmor.us-east4.rep.googleapis.com/', 'asia-southeast1': 'https://modelarmor.asia-southeast1.rep.googleapis.com/', 'europe-west2': 'https://modelarmor.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://modelarmor.europe-west3.rep.googleapis.com/', 'asia-south1': 'https://modelarmor.asia-south1.rep.googleapis.com/', 'europe-southwest1': 'https://modelarmor.europe-southwest1.rep.googleapis.com/', 'asia-northeast1': 'https://modelarmor.asia-northeast1.rep.googleapis.com/', 'asia-northeast3': 'https://modelarmor.asia-northeast3.rep.googleapis.com/', 'australia-southeast1': 'https://modelarmor.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://modelarmor.australia-southeast2.rep.googleapis.com/', 'northamerica-northeast1': 'https://modelarmor.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://modelarmor.northamerica-northeast2.rep.googleapis.com/', 'europe-west9': 'https://modelarmor.europe-west9.rep.googleapis.com/', 'us': 'https://modelarmor.us.rep.googleapis.com/', 'eu': 'https://modelarmor.eu.rep.googleapis.com/'}),
     },
     'monitoring': {
         'v1':
@@ -2933,7 +3210,8 @@ MAP = {
                     messages_modulepath='monitoring_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v3':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2943,7 +3221,8 @@ MAP = {
                     messages_modulepath='monitoring_v3_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override='https://monitoring.mtls.googleapis.com/'),
+                mtls_endpoint_override='https://monitoring.mtls.googleapis.com/',
+                regional_endpoints={}),
     },
     'netapp': {
         'v1':
@@ -2955,7 +3234,8 @@ MAP = {
                     messages_modulepath='netapp_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://netapp.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://netapp.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://netapp.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://netapp.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://netapp.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://netapp.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://netapp.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://netapp.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://netapp.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://netapp.asia-southeast2.rep.googleapis.com/', 'australia-southeast1': 'https://netapp.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://netapp.australia-southeast2.rep.googleapis.com/', 'europe-central2': 'https://netapp.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://netapp.europe-north1.rep.googleapis.com/', 'europe-southwest1': 'https://netapp.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://netapp.europe-west1.rep.googleapis.com/', 'europe-west10': 'https://netapp.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://netapp.europe-west12.rep.googleapis.com/', 'europe-west2': 'https://netapp.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://netapp.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://netapp.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://netapp.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://netapp.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://netapp.europe-west9.rep.googleapis.com/', 'me-central1': 'https://netapp.me-central1.rep.googleapis.com/', 'me-central2': 'https://netapp.me-central2.rep.googleapis.com/', 'me-west1': 'https://netapp.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://netapp.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://netapp.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://netapp.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://netapp.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://netapp.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://netapp.us-central1.rep.googleapis.com/', 'us-east1': 'https://netapp.us-east1.rep.googleapis.com/', 'us-east4': 'https://netapp.us-east4.rep.googleapis.com/', 'us-east5': 'https://netapp.us-east5.rep.googleapis.com/', 'us-east7': 'https://netapp.us-east7.rep.googleapis.com/', 'us-south1': 'https://netapp.us-south1.rep.googleapis.com/', 'us-west1': 'https://netapp.us-west1.rep.googleapis.com/', 'us-west2': 'https://netapp.us-west2.rep.googleapis.com/', 'us-west3': 'https://netapp.us-west3.rep.googleapis.com/', 'us-west4': 'https://netapp.us-west4.rep.googleapis.com/'}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2965,7 +3245,8 @@ MAP = {
                     messages_modulepath='netapp_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://netapp.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://netapp.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://netapp.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://netapp.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://netapp.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://netapp.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://netapp.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://netapp.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://netapp.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://netapp.asia-southeast2.rep.googleapis.com/', 'australia-southeast1': 'https://netapp.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://netapp.australia-southeast2.rep.googleapis.com/', 'europe-central2': 'https://netapp.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://netapp.europe-north1.rep.googleapis.com/', 'europe-southwest1': 'https://netapp.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://netapp.europe-west1.rep.googleapis.com/', 'europe-west10': 'https://netapp.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://netapp.europe-west12.rep.googleapis.com/', 'europe-west2': 'https://netapp.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://netapp.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://netapp.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://netapp.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://netapp.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://netapp.europe-west9.rep.googleapis.com/', 'me-central1': 'https://netapp.me-central1.rep.googleapis.com/', 'me-central2': 'https://netapp.me-central2.rep.googleapis.com/', 'me-west1': 'https://netapp.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://netapp.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://netapp.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://netapp.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://netapp.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://netapp.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://netapp.us-central1.rep.googleapis.com/', 'us-east1': 'https://netapp.us-east1.rep.googleapis.com/', 'us-east4': 'https://netapp.us-east4.rep.googleapis.com/', 'us-east5': 'https://netapp.us-east5.rep.googleapis.com/', 'us-east7': 'https://netapp.us-east7.rep.googleapis.com/', 'us-south1': 'https://netapp.us-south1.rep.googleapis.com/', 'us-west1': 'https://netapp.us-west1.rep.googleapis.com/', 'us-west2': 'https://netapp.us-west2.rep.googleapis.com/', 'us-west3': 'https://netapp.us-west3.rep.googleapis.com/', 'us-west4': 'https://netapp.us-west4.rep.googleapis.com/'}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2975,7 +3256,8 @@ MAP = {
                     messages_modulepath='netapp_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://netapp.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://netapp.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://netapp.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://netapp.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://netapp.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://netapp.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://netapp.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://netapp.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://netapp.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://netapp.asia-southeast2.rep.googleapis.com/', 'australia-southeast1': 'https://netapp.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://netapp.australia-southeast2.rep.googleapis.com/', 'europe-central2': 'https://netapp.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://netapp.europe-north1.rep.googleapis.com/', 'europe-southwest1': 'https://netapp.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://netapp.europe-west1.rep.googleapis.com/', 'europe-west10': 'https://netapp.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://netapp.europe-west12.rep.googleapis.com/', 'europe-west2': 'https://netapp.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://netapp.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://netapp.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://netapp.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://netapp.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://netapp.europe-west9.rep.googleapis.com/', 'me-central1': 'https://netapp.me-central1.rep.googleapis.com/', 'me-central2': 'https://netapp.me-central2.rep.googleapis.com/', 'me-west1': 'https://netapp.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://netapp.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://netapp.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://netapp.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://netapp.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://netapp.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://netapp.us-central1.rep.googleapis.com/', 'us-east1': 'https://netapp.us-east1.rep.googleapis.com/', 'us-east4': 'https://netapp.us-east4.rep.googleapis.com/', 'us-east5': 'https://netapp.us-east5.rep.googleapis.com/', 'us-east7': 'https://netapp.us-east7.rep.googleapis.com/', 'us-south1': 'https://netapp.us-south1.rep.googleapis.com/', 'us-west1': 'https://netapp.us-west1.rep.googleapis.com/', 'us-west2': 'https://netapp.us-west2.rep.googleapis.com/', 'us-west3': 'https://netapp.us-west3.rep.googleapis.com/', 'us-west4': 'https://netapp.us-west4.rep.googleapis.com/'}),
     },
     'networkconnectivity': {
         'v1':
@@ -2987,7 +3269,8 @@ MAP = {
                     messages_modulepath='networkconnectivity_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2997,7 +3280,8 @@ MAP = {
                     messages_modulepath='networkconnectivity_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3007,7 +3291,8 @@ MAP = {
                     messages_modulepath='networkconnectivity_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'networkmanagement': {
         'v1':
@@ -3019,7 +3304,8 @@ MAP = {
                     messages_modulepath='networkmanagement_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3029,7 +3315,8 @@ MAP = {
                     messages_modulepath='networkmanagement_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3039,7 +3326,8 @@ MAP = {
                     messages_modulepath='networkmanagement_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'networksecurity': {
         'v1':
@@ -3051,7 +3339,8 @@ MAP = {
                     messages_modulepath='networksecurity_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3061,7 +3350,8 @@ MAP = {
                     messages_modulepath='networksecurity_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3071,7 +3361,8 @@ MAP = {
                     messages_modulepath='networksecurity_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'networkservices': {
         'v1':
@@ -3083,7 +3374,8 @@ MAP = {
                     messages_modulepath='networkservices_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3093,7 +3385,8 @@ MAP = {
                     messages_modulepath='networkservices_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3103,7 +3396,8 @@ MAP = {
                     messages_modulepath='networkservices_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'notebooks': {
         'v1':
@@ -3115,7 +3409,8 @@ MAP = {
                     messages_modulepath='notebooks_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3125,7 +3420,8 @@ MAP = {
                     messages_modulepath='notebooks_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3135,7 +3431,8 @@ MAP = {
                     messages_modulepath='notebooks_v2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'observability': {
         'v1':
@@ -3147,7 +3444,8 @@ MAP = {
                     messages_modulepath='observability_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'ondemandscanning': {
         'v1':
@@ -3159,7 +3457,8 @@ MAP = {
                     messages_modulepath='ondemandscanning_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3169,7 +3468,8 @@ MAP = {
                     messages_modulepath='ondemandscanning_v1beta1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'oracledatabase': {
         'v1':
@@ -3181,7 +3481,8 @@ MAP = {
                     messages_modulepath='oracledatabase_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3191,7 +3492,8 @@ MAP = {
                     messages_modulepath='oracledatabase_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'orglifecycle': {
         'v1':
@@ -3203,7 +3505,8 @@ MAP = {
                     messages_modulepath='orglifecycle_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'orgpolicy': {
         'v2':
@@ -3215,7 +3518,8 @@ MAP = {
                     messages_modulepath='orgpolicy_v2_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'osconfig': {
         'v1':
@@ -3227,7 +3531,8 @@ MAP = {
                     messages_modulepath='osconfig_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3237,7 +3542,8 @@ MAP = {
                     messages_modulepath='osconfig_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3247,7 +3553,8 @@ MAP = {
                     messages_modulepath='osconfig_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3257,7 +3564,8 @@ MAP = {
                     messages_modulepath='osconfig_v2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v2alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3267,7 +3575,8 @@ MAP = {
                     messages_modulepath='osconfig_v2alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v2beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3277,7 +3586,8 @@ MAP = {
                     messages_modulepath='osconfig_v2beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'oslogin': {
         'v1':
@@ -3289,7 +3599,8 @@ MAP = {
                     messages_modulepath='oslogin_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3299,7 +3610,8 @@ MAP = {
                     messages_modulepath='oslogin_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3309,7 +3621,8 @@ MAP = {
                     messages_modulepath='oslogin_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'parallelstore': {
         'v1':
@@ -3321,7 +3634,8 @@ MAP = {
                     messages_modulepath='parallelstore_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3331,7 +3645,8 @@ MAP = {
                     messages_modulepath='parallelstore_v1alpha_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3341,7 +3656,8 @@ MAP = {
                     messages_modulepath='parallelstore_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'parametermanager': {
         'v1':
@@ -3353,7 +3669,8 @@ MAP = {
                     messages_modulepath='parametermanager_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'us-central1': 'https://parametermanager.us-central1.rep.googleapis.com/', 'europe-west1': 'https://parametermanager.europe-west1.rep.googleapis.com/', 'europe-west4': 'https://parametermanager.europe-west4.rep.googleapis.com/', 'us-east4': 'https://parametermanager.us-east4.rep.googleapis.com/', 'europe-west2': 'https://parametermanager.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://parametermanager.europe-west3.rep.googleapis.com/', 'us-east7': 'https://parametermanager.us-east7.rep.googleapis.com/', 'us-central2': 'https://parametermanager.us-central2.rep.googleapis.com/', 'us-east1': 'https://parametermanager.us-east1.rep.googleapis.com/', 'us-east5': 'https://parametermanager.us-east5.rep.googleapis.com/', 'us-south1': 'https://parametermanager.us-south1.rep.googleapis.com/', 'us-west1': 'https://parametermanager.us-west1.rep.googleapis.com/', 'us-west2': 'https://parametermanager.us-west2.rep.googleapis.com/', 'us-west3': 'https://parametermanager.us-west3.rep.googleapis.com/', 'us-west4': 'https://parametermanager.us-west4.rep.googleapis.com/', 'asia-northeast1': 'https://parametermanager.asia-northeast1.rep.googleapis.com/', 'australia-southeast1': 'https://parametermanager.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://parametermanager.australia-southeast2.rep.googleapis.com/', 'europe-west6': 'https://parametermanager.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://parametermanager.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://parametermanager.europe-west9.rep.googleapis.com/', 'me-central2': 'https://parametermanager.me-central2.rep.googleapis.com/', 'me-west1': 'https://parametermanager.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://parametermanager.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://parametermanager.northamerica-northeast2.rep.googleapis.com/', 'europe-west12': 'https://parametermanager.europe-west12.rep.googleapis.com/', 'africa-south1': 'https://parametermanager.africa-south1.rep.googleapis.com/', 'asia-southeast1': 'https://parametermanager.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://parametermanager.asia-southeast2.rep.googleapis.com/', 'me-central1': 'https://parametermanager.me-central1.rep.googleapis.com/', 'southamerica-east1': 'https://parametermanager.southamerica-east1.rep.googleapis.com/', 'asia-south1': 'https://parametermanager.asia-south1.rep.googleapis.com/', 'europe-west10': 'https://parametermanager.europe-west10.rep.googleapis.com/', 'europe-north1': 'https://parametermanager.europe-north1.rep.googleapis.com/', 'europe-central2': 'https://parametermanager.europe-central2.rep.googleapis.com/', 'europe-southwest1': 'https://parametermanager.europe-southwest1.rep.googleapis.com/', 'asia-south2': 'https://parametermanager.asia-south2.rep.googleapis.com/', 'asia-east1': 'https://parametermanager.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://parametermanager.asia-east2.rep.googleapis.com/', 'asia-northeast2': 'https://parametermanager.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://parametermanager.asia-northeast3.rep.googleapis.com/', 'northamerica-south1': 'https://parametermanager.northamerica-south1.rep.googleapis.com/', 'southamerica-west1': 'https://parametermanager.southamerica-west1.rep.googleapis.com/', 'europe-north2': 'https://parametermanager.europe-north2.rep.googleapis.com/', 'europe-west15': 'https://parametermanager.europe-west15.rep.googleapis.com/', 'us': 'https://parametermanager.us.rep.googleapis.com/', 'eu': 'https://parametermanager.eu.rep.googleapis.com/'}),
     },
     'policyanalyzer': {
         'v1':
@@ -3365,7 +3682,8 @@ MAP = {
                     messages_modulepath='policyanalyzer_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3375,7 +3693,8 @@ MAP = {
                     messages_modulepath='policyanalyzer_v1beta1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'policysimulator': {
         'v1':
@@ -3387,7 +3706,8 @@ MAP = {
                     messages_modulepath='policysimulator_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3397,7 +3717,8 @@ MAP = {
                     messages_modulepath='policysimulator_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3407,7 +3728,8 @@ MAP = {
                     messages_modulepath='policysimulator_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'policytroubleshooter': {
         'v1':
@@ -3419,7 +3741,8 @@ MAP = {
                     messages_modulepath='policytroubleshooter_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3429,7 +3752,8 @@ MAP = {
                     messages_modulepath='policytroubleshooter_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v2alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3439,7 +3763,8 @@ MAP = {
                     messages_modulepath='policytroubleshooter_v2alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v3':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3449,7 +3774,8 @@ MAP = {
                     messages_modulepath='policytroubleshooter_v3_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v3alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3459,7 +3785,8 @@ MAP = {
                     messages_modulepath='policytroubleshooter_v3alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v3beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3469,7 +3796,8 @@ MAP = {
                     messages_modulepath='policytroubleshooter_v3beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'privateca': {
         'v1':
@@ -3481,7 +3809,8 @@ MAP = {
                     messages_modulepath='privateca_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'privilegedaccessmanager': {
         'v1':
@@ -3493,7 +3822,8 @@ MAP = {
                     messages_modulepath='privilegedaccessmanager_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3503,7 +3833,8 @@ MAP = {
                     messages_modulepath='privilegedaccessmanager_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3513,7 +3844,8 @@ MAP = {
                     messages_modulepath='privilegedaccessmanager_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'publicca': {
         'v1':
@@ -3525,7 +3857,8 @@ MAP = {
                     messages_modulepath='publicca_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3535,7 +3868,8 @@ MAP = {
                     messages_modulepath='publicca_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3545,7 +3879,8 @@ MAP = {
                     messages_modulepath='publicca_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'pubsub': {
         'v1':
@@ -3557,7 +3892,8 @@ MAP = {
                     messages_modulepath='pubsub_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://pubsub.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://pubsub.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://pubsub.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://pubsub.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://pubsub.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://pubsub.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://pubsub.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://pubsub.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://pubsub.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://pubsub.asia-southeast2.rep.googleapis.com/', 'asia-southeast3': 'https://pubsub.asia-southeast3.rep.googleapis.com/', 'australia-southeast1': 'https://pubsub.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://pubsub.australia-southeast2.rep.googleapis.com/', 'europe-west2': 'https://pubsub.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://pubsub.europe-west3.rep.googleapis.com/', 'europe-west6': 'https://pubsub.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://pubsub.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://pubsub.europe-west9.rep.googleapis.com/', 'me-central1': 'https://pubsub.me-central1.rep.googleapis.com/', 'me-central2': 'https://pubsub.me-central2.rep.googleapis.com/', 'me-west1': 'https://pubsub.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://pubsub.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://pubsub.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://pubsub.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://pubsub.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://pubsub.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://pubsub.us-central1.rep.googleapis.com/', 'us-central2': 'https://pubsub.us-central2.rep.googleapis.com/', 'us-east1': 'https://pubsub.us-east1.rep.googleapis.com/', 'us-east4': 'https://pubsub.us-east4.rep.googleapis.com/', 'us-east5': 'https://pubsub.us-east5.rep.googleapis.com/', 'us-south1': 'https://pubsub.us-south1.rep.googleapis.com/', 'us-west1': 'https://pubsub.us-west1.rep.googleapis.com/', 'us-west2': 'https://pubsub.us-west2.rep.googleapis.com/', 'us-west3': 'https://pubsub.us-west3.rep.googleapis.com/', 'us-west4': 'https://pubsub.us-west4.rep.googleapis.com/'}),
     },
     'pubsublite': {
         'v1':
@@ -3569,7 +3905,8 @@ MAP = {
                     messages_modulepath='pubsublite_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'recaptchaenterprise': {
         'v1':
@@ -3581,7 +3918,8 @@ MAP = {
                     messages_modulepath='recaptchaenterprise_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'recommender': {
         'v1':
@@ -3593,7 +3931,8 @@ MAP = {
                     messages_modulepath='recommender_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3603,7 +3942,8 @@ MAP = {
                     messages_modulepath='recommender_v1alpha2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3613,7 +3953,8 @@ MAP = {
                     messages_modulepath='recommender_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'redis': {
         'v1':
@@ -3625,7 +3966,8 @@ MAP = {
                     messages_modulepath='redis_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3635,7 +3977,8 @@ MAP = {
                     messages_modulepath='redis_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3645,7 +3988,8 @@ MAP = {
                     messages_modulepath='redis_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'remotebuildexecution': {
         'v1alpha':
@@ -3657,7 +4001,8 @@ MAP = {
                     messages_modulepath='remotebuildexecution_v1alpha_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'run': {
         'v1':
@@ -3669,7 +4014,8 @@ MAP = {
                     messages_modulepath='run_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://run.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://run.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://run.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://run.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://run.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://run.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://run.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://run.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://run.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://run.asia-southeast2.rep.googleapis.com/', 'australia-southeast1': 'https://run.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://run.australia-southeast2.rep.googleapis.com/', 'europe-central2': 'https://run.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://run.europe-north1.rep.googleapis.com/', 'europe-north2': 'https://run.europe-north2.rep.googleapis.com/', 'europe-southwest1': 'https://run.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://run.europe-west1.rep.googleapis.com/', 'europe-west10': 'https://run.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://run.europe-west12.rep.googleapis.com/', 'europe-west15': 'https://run.europe-west15.rep.googleapis.com/', 'europe-west2': 'https://run.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://run.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://run.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://run.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://run.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://run.europe-west9.rep.googleapis.com/', 'me-central1': 'https://run.me-central1.rep.googleapis.com/', 'me-central2': 'https://run.me-central2.rep.googleapis.com/', 'me-west1': 'https://run.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://run.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://run.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://run.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://run.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://run.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://run.us-central1.rep.googleapis.com/', 'us-central2': 'https://run.us-central2.rep.googleapis.com/', 'us-east1': 'https://run.us-east1.rep.googleapis.com/', 'us-east4': 'https://run.us-east4.rep.googleapis.com/', 'us-east5': 'https://run.us-east5.rep.googleapis.com/', 'us-east7': 'https://run.us-east7.rep.googleapis.com/', 'us-south1': 'https://run.us-south1.rep.googleapis.com/', 'us-west1': 'https://run.us-west1.rep.googleapis.com/', 'us-west2': 'https://run.us-west2.rep.googleapis.com/', 'us-west3': 'https://run.us-west3.rep.googleapis.com/', 'us-west4': 'https://run.us-west4.rep.googleapis.com/', 'us-west8': 'https://run.us-west8.rep.googleapis.com/'}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3679,7 +4025,8 @@ MAP = {
                     messages_modulepath='run_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3691,7 +4038,8 @@ MAP = {
                     class_path='googlecloudsdk.generated_clients.gapic_wrappers.run.v2'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://run.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://run.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://run.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://run.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://run.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://run.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://run.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://run.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://run.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://run.asia-southeast2.rep.googleapis.com/', 'australia-southeast1': 'https://run.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://run.australia-southeast2.rep.googleapis.com/', 'europe-central2': 'https://run.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://run.europe-north1.rep.googleapis.com/', 'europe-north2': 'https://run.europe-north2.rep.googleapis.com/', 'europe-southwest1': 'https://run.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://run.europe-west1.rep.googleapis.com/', 'europe-west10': 'https://run.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://run.europe-west12.rep.googleapis.com/', 'europe-west15': 'https://run.europe-west15.rep.googleapis.com/', 'europe-west2': 'https://run.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://run.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://run.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://run.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://run.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://run.europe-west9.rep.googleapis.com/', 'me-central1': 'https://run.me-central1.rep.googleapis.com/', 'me-central2': 'https://run.me-central2.rep.googleapis.com/', 'me-west1': 'https://run.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://run.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://run.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://run.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://run.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://run.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://run.us-central1.rep.googleapis.com/', 'us-central2': 'https://run.us-central2.rep.googleapis.com/', 'us-east1': 'https://run.us-east1.rep.googleapis.com/', 'us-east4': 'https://run.us-east4.rep.googleapis.com/', 'us-east5': 'https://run.us-east5.rep.googleapis.com/', 'us-east7': 'https://run.us-east7.rep.googleapis.com/', 'us-south1': 'https://run.us-south1.rep.googleapis.com/', 'us-west1': 'https://run.us-west1.rep.googleapis.com/', 'us-west2': 'https://run.us-west2.rep.googleapis.com/', 'us-west3': 'https://run.us-west3.rep.googleapis.com/', 'us-west4': 'https://run.us-west4.rep.googleapis.com/', 'us-west8': 'https://run.us-west8.rep.googleapis.com/'}),
     },
     'runapps': {
         'v1alpha1':
@@ -3703,7 +4051,8 @@ MAP = {
                     messages_modulepath='runapps_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'runtimeconfig': {
         'v1beta1':
@@ -3715,7 +4064,8 @@ MAP = {
                     messages_modulepath='runtimeconfig_v1beta1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'saasservicemgmt': {
         'v1alpha1':
@@ -3727,7 +4077,8 @@ MAP = {
                     messages_modulepath='saasservicemgmt_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3737,7 +4088,8 @@ MAP = {
                     messages_modulepath='saasservicemgmt_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'sasportal': {
         'v1alpha1':
@@ -3749,7 +4101,8 @@ MAP = {
                     messages_modulepath='sasportal_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'sddc': {
         'v1alpha1':
@@ -3761,7 +4114,8 @@ MAP = {
                     messages_modulepath='sddc_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'seclm': {
         'v1':
@@ -3773,7 +4127,8 @@ MAP = {
                     messages_modulepath='seclm_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3783,7 +4138,8 @@ MAP = {
                     messages_modulepath='seclm_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'secretmanager': {
         'v1':
@@ -3795,7 +4151,8 @@ MAP = {
                     messages_modulepath='secretmanager_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'me-central2': 'https://secretmanager.me-central2.rep.googleapis.com/', 'africa-south1': 'https://secretmanager.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://secretmanager.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://secretmanager.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://secretmanager.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://secretmanager.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://secretmanager.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://secretmanager.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://secretmanager.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://secretmanager.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://secretmanager.asia-southeast2.rep.googleapis.com/', 'asia-southeast3': 'https://secretmanager.asia-southeast3.rep.googleapis.com/', 'australia-southeast1': 'https://secretmanager.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://secretmanager.australia-southeast2.rep.googleapis.com/', 'europe-central2': 'https://secretmanager.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://secretmanager.europe-north1.rep.googleapis.com/', 'europe-north2': 'https://secretmanager.europe-north2.rep.googleapis.com/', 'europe-southwest1': 'https://secretmanager.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://secretmanager.europe-west1.rep.googleapis.com/', 'europe-west10': 'https://secretmanager.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://secretmanager.europe-west12.rep.googleapis.com/', 'europe-west15': 'https://secretmanager.europe-west15.rep.googleapis.com/', 'europe-west2': 'https://secretmanager.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://secretmanager.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://secretmanager.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://secretmanager.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://secretmanager.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://secretmanager.europe-west9.rep.googleapis.com/', 'me-central1': 'https://secretmanager.me-central1.rep.googleapis.com/', 'me-west1': 'https://secretmanager.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://secretmanager.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://secretmanager.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://secretmanager.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://secretmanager.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://secretmanager.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://secretmanager.us-central1.rep.googleapis.com/', 'us-central2': 'https://secretmanager.us-central2.rep.googleapis.com/', 'us-east1': 'https://secretmanager.us-east1.rep.googleapis.com/', 'us-east4': 'https://secretmanager.us-east4.rep.googleapis.com/', 'us-east5': 'https://secretmanager.us-east5.rep.googleapis.com/', 'us-east7': 'https://secretmanager.us-east7.rep.googleapis.com/', 'us-south1': 'https://secretmanager.us-south1.rep.googleapis.com/', 'us-west1': 'https://secretmanager.us-west1.rep.googleapis.com/', 'us-west2': 'https://secretmanager.us-west2.rep.googleapis.com/', 'us-west3': 'https://secretmanager.us-west3.rep.googleapis.com/', 'us-west4': 'https://secretmanager.us-west4.rep.googleapis.com/', 'us': 'https://secretmanager.us.rep.googleapis.com/', 'eu': 'https://secretmanager.eu.rep.googleapis.com/'}),
         'v1beta2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3805,7 +4162,8 @@ MAP = {
                     messages_modulepath='secretmanager_v1beta2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'me-central2': 'https://secretmanager.me-central2.rep.googleapis.com/', 'africa-south1': 'https://secretmanager.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://secretmanager.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://secretmanager.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://secretmanager.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://secretmanager.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://secretmanager.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://secretmanager.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://secretmanager.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://secretmanager.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://secretmanager.asia-southeast2.rep.googleapis.com/', 'asia-southeast3': 'https://secretmanager.asia-southeast3.rep.googleapis.com/', 'australia-southeast1': 'https://secretmanager.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://secretmanager.australia-southeast2.rep.googleapis.com/', 'europe-central2': 'https://secretmanager.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://secretmanager.europe-north1.rep.googleapis.com/', 'europe-north2': 'https://secretmanager.europe-north2.rep.googleapis.com/', 'europe-southwest1': 'https://secretmanager.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://secretmanager.europe-west1.rep.googleapis.com/', 'europe-west10': 'https://secretmanager.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://secretmanager.europe-west12.rep.googleapis.com/', 'europe-west15': 'https://secretmanager.europe-west15.rep.googleapis.com/', 'europe-west2': 'https://secretmanager.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://secretmanager.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://secretmanager.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://secretmanager.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://secretmanager.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://secretmanager.europe-west9.rep.googleapis.com/', 'me-central1': 'https://secretmanager.me-central1.rep.googleapis.com/', 'me-west1': 'https://secretmanager.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://secretmanager.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://secretmanager.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://secretmanager.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://secretmanager.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://secretmanager.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://secretmanager.us-central1.rep.googleapis.com/', 'us-central2': 'https://secretmanager.us-central2.rep.googleapis.com/', 'us-east1': 'https://secretmanager.us-east1.rep.googleapis.com/', 'us-east4': 'https://secretmanager.us-east4.rep.googleapis.com/', 'us-east5': 'https://secretmanager.us-east5.rep.googleapis.com/', 'us-east7': 'https://secretmanager.us-east7.rep.googleapis.com/', 'us-south1': 'https://secretmanager.us-south1.rep.googleapis.com/', 'us-west1': 'https://secretmanager.us-west1.rep.googleapis.com/', 'us-west2': 'https://secretmanager.us-west2.rep.googleapis.com/', 'us-west3': 'https://secretmanager.us-west3.rep.googleapis.com/', 'us-west4': 'https://secretmanager.us-west4.rep.googleapis.com/', 'us': 'https://secretmanager.us.rep.googleapis.com/', 'eu': 'https://secretmanager.eu.rep.googleapis.com/'}),
     },
     'securesourcemanager': {
         'v1':
@@ -3817,7 +4175,8 @@ MAP = {
                     messages_modulepath='securesourcemanager_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'asia-east1': 'https://securesourcemanager.asia-east1.rep.googleapis.com/', 'asia-northeast1': 'https://securesourcemanager.asia-northeast1.rep.googleapis.com/', 'asia-northeast3': 'https://securesourcemanager.asia-northeast3.rep.googleapis.com/', 'australia-southeast1': 'https://securesourcemanager.australia-southeast1.rep.googleapis.com/', 'europe-west2': 'https://securesourcemanager.europe-west2.rep.googleapis.com/', 'europe-west4': 'https://securesourcemanager.europe-west4.rep.googleapis.com/', 'me-central2': 'https://securesourcemanager.me-central2.rep.googleapis.com/', 'me-west1': 'https://securesourcemanager.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://securesourcemanager.northamerica-northeast1.rep.googleapis.com/', 'us-central1': 'https://securesourcemanager.us-central1.rep.googleapis.com/', 'us-east1': 'https://securesourcemanager.us-east1.rep.googleapis.com/'}),
     },
     'securitycenter': {
         'v1':
@@ -3829,7 +4188,8 @@ MAP = {
                     messages_modulepath='securitycenter_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'me-central2': 'https://securitycenter.me-central2.rep.googleapis.com/', 'us': 'https://securitycenter.us.rep.googleapis.com/', 'eu': 'https://securitycenter.eu.rep.googleapis.com/'}),
         'v1beta2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3839,7 +4199,8 @@ MAP = {
                     messages_modulepath='securitycenter_v1beta2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'me-central2': 'https://securitycenter.me-central2.rep.googleapis.com/', 'us': 'https://securitycenter.us.rep.googleapis.com/', 'eu': 'https://securitycenter.eu.rep.googleapis.com/'}),
         'v2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3849,7 +4210,8 @@ MAP = {
                     messages_modulepath='securitycenter_v2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'me-central2': 'https://securitycenter.me-central2.rep.googleapis.com/', 'us': 'https://securitycenter.us.rep.googleapis.com/', 'eu': 'https://securitycenter.eu.rep.googleapis.com/'}),
     },
     'securitycentermanagement': {
         'v1':
@@ -3861,7 +4223,8 @@ MAP = {
                     messages_modulepath='securitycentermanagement_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'securityposture': {
         'v1':
@@ -3873,7 +4236,8 @@ MAP = {
                     messages_modulepath='securityposture_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3883,7 +4247,8 @@ MAP = {
                     messages_modulepath='securityposture_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'serviceconsumermanagement': {
         'v1beta1':
@@ -3895,7 +4260,8 @@ MAP = {
                     messages_modulepath='serviceconsumermanagement_v1beta1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'servicedirectory': {
         'v1':
@@ -3907,7 +4273,8 @@ MAP = {
                     messages_modulepath='servicedirectory_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3917,7 +4284,8 @@ MAP = {
                     messages_modulepath='servicedirectory_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'servicemanagement': {
         'v1':
@@ -3929,7 +4297,8 @@ MAP = {
                     messages_modulepath='servicemanagement_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'servicenetworking': {
         'v1':
@@ -3941,7 +4310,8 @@ MAP = {
                     messages_modulepath='servicenetworking_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3951,7 +4321,8 @@ MAP = {
                     messages_modulepath='servicenetworking_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override='https://servicenetworking.mtls.googleapis.com/'),
+                mtls_endpoint_override='https://servicenetworking.mtls.googleapis.com/',
+                regional_endpoints={}),
     },
     'serviceusage': {
         'v1':
@@ -3963,7 +4334,8 @@ MAP = {
                     messages_modulepath='serviceusage_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3973,7 +4345,8 @@ MAP = {
                     messages_modulepath='serviceusage_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override='https://serviceusage.mtls.googleapis.com/'),
+                mtls_endpoint_override='https://serviceusage.mtls.googleapis.com/',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3983,7 +4356,8 @@ MAP = {
                     messages_modulepath='serviceusage_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v2alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3993,7 +4367,8 @@ MAP = {
                     messages_modulepath='serviceusage_v2alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v2beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -4003,7 +4378,8 @@ MAP = {
                     messages_modulepath='serviceusage_v2beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'source': {
         'v1':
@@ -4015,7 +4391,8 @@ MAP = {
                     messages_modulepath='source_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override='https://source.mtls.googleapis.com/'),
+                mtls_endpoint_override='https://source.mtls.googleapis.com/',
+                regional_endpoints={}),
     },
     'sourcerepo': {
         'v1':
@@ -4027,7 +4404,8 @@ MAP = {
                     messages_modulepath='sourcerepo_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'spanner': {
         'v1':
@@ -4041,7 +4419,8 @@ MAP = {
                     class_path='googlecloudsdk.generated_clients.gapic_wrappers.spanner.v1'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'europe-west8': 'https://spanner.europe-west8.rep.googleapis.com/', 'me-central2': 'https://spanner.me-central2.rep.googleapis.com/', 'us-central1': 'https://spanner.us-central1.rep.googleapis.com/', 'us-central2': 'https://spanner.us-central2.rep.googleapis.com/', 'us-east1': 'https://spanner.us-east1.rep.googleapis.com/', 'us-east4': 'https://spanner.us-east4.rep.googleapis.com/', 'us-east5': 'https://spanner.us-east5.rep.googleapis.com/', 'us-south1': 'https://spanner.us-south1.rep.googleapis.com/', 'us-west1': 'https://spanner.us-west1.rep.googleapis.com/', 'us-west2': 'https://spanner.us-west2.rep.googleapis.com/', 'us-west3': 'https://spanner.us-west3.rep.googleapis.com/', 'us-west4': 'https://spanner.us-west4.rep.googleapis.com/', 'us-west8': 'https://spanner.us-west8.rep.googleapis.com/', 'us-east7': 'https://spanner.us-east7.rep.googleapis.com/'}),
     },
     'speech': {
         'v1':
@@ -4053,7 +4432,8 @@ MAP = {
                     messages_modulepath='speech_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'us-central1': 'https://speech.us-central1.rep.googleapis.com/', 'us-west1': 'https://speech.us-west1.rep.googleapis.com/', 'me-west1': 'https://speech.me-west1.rep.googleapis.com/', 'europe-west1': 'https://speech.europe-west1.rep.googleapis.com/', 'europe-west2': 'https://speech.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://speech.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://speech.europe-west4.rep.googleapis.com/'}),
         'v1p1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -4063,7 +4443,8 @@ MAP = {
                     messages_modulepath='speech_v1p1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'us-central1': 'https://speech.us-central1.rep.googleapis.com/', 'us-west1': 'https://speech.us-west1.rep.googleapis.com/', 'me-west1': 'https://speech.me-west1.rep.googleapis.com/', 'europe-west1': 'https://speech.europe-west1.rep.googleapis.com/', 'europe-west2': 'https://speech.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://speech.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://speech.europe-west4.rep.googleapis.com/'}),
         'v2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -4073,7 +4454,8 @@ MAP = {
                     messages_modulepath='speech_v2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'us-central1': 'https://speech.us-central1.rep.googleapis.com/', 'us-west1': 'https://speech.us-west1.rep.googleapis.com/', 'me-west1': 'https://speech.me-west1.rep.googleapis.com/', 'europe-west1': 'https://speech.europe-west1.rep.googleapis.com/', 'europe-west2': 'https://speech.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://speech.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://speech.europe-west4.rep.googleapis.com/'}),
     },
     'sqladmin': {
         'v1beta4':
@@ -4085,7 +4467,8 @@ MAP = {
                     messages_modulepath='sqladmin_v1beta4_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'storage': {
         'v1':
@@ -4097,7 +4480,8 @@ MAP = {
                     messages_modulepath='storage_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://storage.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://storage.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://storage.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://storage.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://storage.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://storage.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://storage.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://storage.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://storage.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://storage.asia-southeast2.rep.googleapis.com/', 'australia-southeast1': 'https://storage.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://storage.australia-southeast2.rep.googleapis.com/', 'eu': 'https://storage.eu.rep.googleapis.com/', 'europe-central2': 'https://storage.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://storage.europe-north1.rep.googleapis.com/', 'europe-southwest1': 'https://storage.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://storage.europe-west1.rep.googleapis.com/', 'europe-west2': 'https://storage.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://storage.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://storage.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://storage.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://storage.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://storage.europe-west9.rep.googleapis.com/', 'europe-west10': 'https://storage.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://storage.europe-west12.rep.googleapis.com/', 'me-central2': 'https://storage.me-central2.rep.googleapis.com/', 'me-west1': 'https://storage.me-west1.rep.googleapis.com/', 'us': 'https://storage.us.rep.googleapis.com/', 'us-central1': 'https://storage.us-central1.rep.googleapis.com/', 'us-east1': 'https://storage.us-east1.rep.googleapis.com/', 'us-east4': 'https://storage.us-east4.rep.googleapis.com/', 'us-east5': 'https://storage.us-east5.rep.googleapis.com/', 'us-south1': 'https://storage.us-south1.rep.googleapis.com/', 'us-west1': 'https://storage.us-west1.rep.googleapis.com/', 'us-west2': 'https://storage.us-west2.rep.googleapis.com/', 'us-west3': 'https://storage.us-west3.rep.googleapis.com/', 'us-west4': 'https://storage.us-west4.rep.googleapis.com/', 'northamerica-northeast2': 'https://storage.northamerica-northeast2.rep.googleapis.com/', 'southamerica-east1': 'https://storage.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://storage.southamerica-west1.rep.googleapis.com/', 'me-central1': 'https://storage.me-central1.rep.googleapis.com/', 'northamerica-northeast1': 'https://storage.northamerica-northeast1.rep.googleapis.com/', 'europe-north2': 'https://storage.europe-north2.rep.googleapis.com/', 'us-west8': 'https://storage.us-west8.rep.googleapis.com/', 'northamerica-south1': 'https://storage.northamerica-south1.rep.googleapis.com/'}),
         'v2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -4109,7 +4493,8 @@ MAP = {
                     class_path='googlecloudsdk.generated_clients.gapic_wrappers.storage.v2'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={'africa-south1': 'https://storage.africa-south1.rep.googleapis.com/', 'asia-east1': 'https://storage.asia-east1.rep.googleapis.com/', 'asia-east2': 'https://storage.asia-east2.rep.googleapis.com/', 'asia-northeast1': 'https://storage.asia-northeast1.rep.googleapis.com/', 'asia-northeast2': 'https://storage.asia-northeast2.rep.googleapis.com/', 'asia-northeast3': 'https://storage.asia-northeast3.rep.googleapis.com/', 'asia-south1': 'https://storage.asia-south1.rep.googleapis.com/', 'asia-south2': 'https://storage.asia-south2.rep.googleapis.com/', 'asia-southeast1': 'https://storage.asia-southeast1.rep.googleapis.com/', 'asia-southeast2': 'https://storage.asia-southeast2.rep.googleapis.com/', 'australia-southeast1': 'https://storage.australia-southeast1.rep.googleapis.com/', 'australia-southeast2': 'https://storage.australia-southeast2.rep.googleapis.com/', 'europe-central2': 'https://storage.europe-central2.rep.googleapis.com/', 'europe-north1': 'https://storage.europe-north1.rep.googleapis.com/', 'europe-north2': 'https://storage.europe-north2.rep.googleapis.com/', 'europe-southwest1': 'https://storage.europe-southwest1.rep.googleapis.com/', 'europe-west1': 'https://storage.europe-west1.rep.googleapis.com/', 'europe-west10': 'https://storage.europe-west10.rep.googleapis.com/', 'europe-west12': 'https://storage.europe-west12.rep.googleapis.com/', 'europe-west2': 'https://storage.europe-west2.rep.googleapis.com/', 'europe-west3': 'https://storage.europe-west3.rep.googleapis.com/', 'europe-west4': 'https://storage.europe-west4.rep.googleapis.com/', 'europe-west6': 'https://storage.europe-west6.rep.googleapis.com/', 'europe-west8': 'https://storage.europe-west8.rep.googleapis.com/', 'europe-west9': 'https://storage.europe-west9.rep.googleapis.com/', 'me-central1': 'https://storage.me-central1.rep.googleapis.com/', 'me-central2': 'https://storage.me-central2.rep.googleapis.com/', 'me-west1': 'https://storage.me-west1.rep.googleapis.com/', 'northamerica-northeast1': 'https://storage.northamerica-northeast1.rep.googleapis.com/', 'northamerica-northeast2': 'https://storage.northamerica-northeast2.rep.googleapis.com/', 'northamerica-south1': 'https://storage.northamerica-south1.rep.googleapis.com/', 'southamerica-east1': 'https://storage.southamerica-east1.rep.googleapis.com/', 'southamerica-west1': 'https://storage.southamerica-west1.rep.googleapis.com/', 'us-central1': 'https://storage.us-central1.rep.googleapis.com/', 'us-central2': 'https://storage.us-central2.rep.googleapis.com/', 'us-east1': 'https://storage.us-east1.rep.googleapis.com/', 'us-east4': 'https://storage.us-east4.rep.googleapis.com/', 'us-east5': 'https://storage.us-east5.rep.googleapis.com/', 'us-east7': 'https://storage.us-east7.rep.googleapis.com/', 'us-south1': 'https://storage.us-south1.rep.googleapis.com/', 'us-west1': 'https://storage.us-west1.rep.googleapis.com/', 'us-west2': 'https://storage.us-west2.rep.googleapis.com/', 'us-west3': 'https://storage.us-west3.rep.googleapis.com/', 'us-west4': 'https://storage.us-west4.rep.googleapis.com/', 'us-west8': 'https://storage.us-west8.rep.googleapis.com/', 'eu': 'https://storage.eu.rep.googleapis.com/', 'us': 'https://storage.us.rep.googleapis.com/'}),
     },
     'storagebatchoperations': {
         'v1':
@@ -4121,7 +4506,8 @@ MAP = {
                     messages_modulepath='storagebatchoperations_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'storageinsights': {
         'v1':
@@ -4133,7 +4519,8 @@ MAP = {
                     messages_modulepath='storageinsights_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'storagetransfer': {
         'v1':
@@ -4145,7 +4532,8 @@ MAP = {
                     messages_modulepath='storagetransfer_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'stream': {
         'v1':
@@ -4157,7 +4545,8 @@ MAP = {
                     messages_modulepath='stream_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -4167,7 +4556,8 @@ MAP = {
                     messages_modulepath='stream_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'telcoautomation': {
         'v1':
@@ -4179,7 +4569,8 @@ MAP = {
                     messages_modulepath='telcoautomation_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -4189,7 +4580,8 @@ MAP = {
                     messages_modulepath='telcoautomation_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'testing': {
         'v1':
@@ -4201,7 +4593,8 @@ MAP = {
                     messages_modulepath='testing_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'toolresults': {
         'v1beta3':
@@ -4213,7 +4606,8 @@ MAP = {
                     messages_modulepath='toolresults_v1beta3_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'tpu': {
         'v1':
@@ -4225,7 +4619,8 @@ MAP = {
                     messages_modulepath='tpu_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -4235,7 +4630,8 @@ MAP = {
                     messages_modulepath='tpu_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v2':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -4245,7 +4641,8 @@ MAP = {
                     messages_modulepath='tpu_v2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v2alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -4255,7 +4652,8 @@ MAP = {
                     messages_modulepath='tpu_v2alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'transcoder': {
         'v1':
@@ -4267,7 +4665,8 @@ MAP = {
                     messages_modulepath='transcoder_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'transferappliance': {
         'v1alpha1':
@@ -4279,7 +4678,8 @@ MAP = {
                     messages_modulepath='transferappliance_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'translate': {
         'v3':
@@ -4291,7 +4691,8 @@ MAP = {
                     messages_modulepath='translate_v3_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v3beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -4301,7 +4702,8 @@ MAP = {
                     messages_modulepath='translate_v3beta1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'videointelligence': {
         'v1':
@@ -4313,7 +4715,8 @@ MAP = {
                     messages_modulepath='videointelligence_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'vision': {
         'v1':
@@ -4325,7 +4728,8 @@ MAP = {
                     messages_modulepath='vision_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'vmmigration': {
         'v1':
@@ -4337,7 +4741,8 @@ MAP = {
                     messages_modulepath='vmmigration_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -4347,7 +4752,8 @@ MAP = {
                     messages_modulepath='vmmigration_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'vmwareengine': {
         'v1':
@@ -4359,7 +4765,8 @@ MAP = {
                     messages_modulepath='vmwareengine_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'vpcaccess': {
         'v1':
@@ -4371,7 +4778,8 @@ MAP = {
                     messages_modulepath='vpcaccess_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -4381,7 +4789,8 @@ MAP = {
                     messages_modulepath='vpcaccess_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -4391,7 +4800,8 @@ MAP = {
                     messages_modulepath='vpcaccess_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'websecurityscanner': {
         'v1':
@@ -4403,7 +4813,8 @@ MAP = {
                     messages_modulepath='websecurityscanner_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -4413,7 +4824,8 @@ MAP = {
                     messages_modulepath='websecurityscanner_v1beta_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'workflowexecutions': {
         'v1':
@@ -4425,7 +4837,8 @@ MAP = {
                     messages_modulepath='workflowexecutions_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -4435,7 +4848,8 @@ MAP = {
                     messages_modulepath='workflowexecutions_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -4445,7 +4859,8 @@ MAP = {
                     messages_modulepath='workflowexecutions_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'workflows': {
         'v1':
@@ -4457,7 +4872,8 @@ MAP = {
                     messages_modulepath='workflows_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -4467,7 +4883,8 @@ MAP = {
                     messages_modulepath='workflows_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -4477,7 +4894,8 @@ MAP = {
                     messages_modulepath='workflows_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
     'workstations': {
         'v1':
@@ -4489,7 +4907,8 @@ MAP = {
                     messages_modulepath='workstations_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -4499,6 +4918,7 @@ MAP = {
                     messages_modulepath='workstations_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
+                mtls_endpoint_override='',
+                regional_endpoints={}),
     },
 }

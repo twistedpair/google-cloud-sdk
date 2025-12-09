@@ -34,7 +34,7 @@ class BlockchainValidatorConfig(_messages.Message):
       produced). If this node is offline or deleted, the validator will be
       offline.
     blockchainType: Required. Immutable. The blockchain type of the validator.
-    createTime: Output only. [Output only] Create time stamp
+    createTime: Output only. [Output only] Create timestamp
     ethereumProtocolDetails: Optional. Ethereum-specific configuration for a
       blockchain validator.
     existingSeedPhraseReference: Optional. An existing seed phrase, read from
@@ -52,7 +52,7 @@ class BlockchainValidatorConfig(_messages.Message):
       service to use for signing attestations and blocks.
     seedPhraseReference: Optional. A new seed phrase, optionally written to
       Secret Manager.
-    updateTime: Output only. [Output only] Update time stamp
+    updateTime: Output only. [Output only] Update timestamp
     validationWorkEnabled: Required. True if the blockchain node requests and
       signs attestations and blocks on behalf of this validator, false if not.
       This does NOT define whether the blockchain expects work to occur, only
@@ -277,6 +277,9 @@ class BlockchainvalidatormanagerProjectsLocationsListRequest(_messages.Message):
   r"""A BlockchainvalidatormanagerProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -287,10 +290,11 @@ class BlockchainvalidatormanagerProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class BlockchainvalidatormanagerProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -338,12 +342,20 @@ class BlockchainvalidatormanagerProjectsLocationsOperationsListRequest(_messages
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -375,6 +387,11 @@ class EthereumDetails(_messages.Message):
   r"""Blockchain validator configuration unique to Ethereum blockchains.
 
   Fields:
+    depositGwei: Immutable. The number of Gwei (Ethereum currency unit)
+      initially deposited for the validator. This is set when the deposit is
+      made and cannot be changed.
+    eth1WithdrawalAddress: Optional. Immutable. The Ethereum wallet address to
+      which withdrawals are sent. Once set this cannot be changed.
     gasLimit: Optional. Immutable. Optionally requested (not enforced) maximum
       gas per block. This is sent to the block builder service, however
       whether it is followed depends on the service. This field is only read
@@ -387,8 +404,8 @@ class EthereumDetails(_messages.Message):
       how this is used. If not set, the validator client's default is used. If
       no blockchain node is specified, this has no effect as no validator
       client is run.
-    suggestedFeeRecipient: Immutable. The Ethereum address to which fee
-      rewards should be sent. This can only be set when creating the
+    suggestedFeeRecipient: Required. Immutable. The Ethereum address to which
+      fee rewards should be sent. This can only be set when creating the
       validator. If no blockchain node is specified for the validator, this
       has no effect as no validator client is run. See also
       https://lighthouse-book.sigmaprime.io/suggested-fee-recipient.html for
@@ -397,10 +414,12 @@ class EthereumDetails(_messages.Message):
       block building services (MEV).
   """
 
-  gasLimit = _messages.IntegerField(1)
-  graffiti = _messages.StringField(2)
-  suggestedFeeRecipient = _messages.StringField(3)
-  useBlockBuilderProposals = _messages.BooleanField(4)
+  depositGwei = _messages.IntegerField(1)
+  eth1WithdrawalAddress = _messages.StringField(2)
+  gasLimit = _messages.IntegerField(3)
+  graffiti = _messages.StringField(4)
+  suggestedFeeRecipient = _messages.StringField(5)
+  useBlockBuilderProposals = _messages.BooleanField(6)
 
 
 class ExistingSeedPhraseReference(_messages.Message):
@@ -408,8 +427,10 @@ class ExistingSeedPhraseReference(_messages.Message):
   the voting key.
 
   Fields:
-    depositTxData: Output only. Immutable. The deposit transaction data
-      corresponding to the derived key.
+    depositTxData: Output only. The deposit transaction data corresponding to
+      the derived key. This is the serialized form of the function call to
+      https://eth2book.info/capella/part2/deposits-
+      withdrawals/contract/#deposit along with its parameters.
     derivationIndex: Optional. Immutable. The index to derive the voting key
       at, used as part of a derivation path. The derivation path is built from
       this as "m/12381/3600//0/0" See also
@@ -459,10 +480,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -690,6 +716,7 @@ class RemoteWeb3Signer(_messages.Message):
 
   Fields:
     timeoutDuration: Optional. Timeout for requests to the Web3Signer service.
+      If not set, a default timeout of 12 seconds is used.
     votingPublicKey: Required. Immutable. The public key of the validator, as
       a hexadecimal string prefixed with "0x". This is used as the identifier
       for the key when sending requests to the Web3Signer service.
@@ -707,8 +734,10 @@ class SeedPhraseReference(_messages.Message):
   Manager secret to backup the seed phrase to.
 
   Fields:
-    depositTxData: Output only. Immutable. The deposit transaction data
-      corresponding to the derived key.
+    depositTxData: Output only. The deposit transaction data corresponding to
+      the derived key. This is the serialized form of the function call to
+      https://eth2book.info/capella/part2/deposits-
+      withdrawals/contract/#deposit along with its parameters.
     derivationIndex: Output only. Immutable. The index to derive the voting
       key at, used as part of a derivation path. The derivation path is built
       from this as "m/12381/3600//0/0" See also

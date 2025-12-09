@@ -178,35 +178,58 @@ def GetApplicationResourceArg(
   )
 
 
+def _DefaultToGlobalLocationAttributeConfigForBoundary(help_text=None):
+  """Create basic attributes that fallthrough location to global in resource argument.
+
+  Args:
+    help_text: If set, overrides default help text
+
+  Returns:
+    Resource argument parameter config
+  """
+  return concepts.ResourceParameterAttributeConfig(
+      name='location',
+      fallthroughs=[
+          deps.Fallthrough(
+              function=apphub_utils.DefaultToGlobal,
+              hint='Boundaries only support global location',
+          )
+      ],
+      help_text=help_text if help_text else ('Location of the Boundary'),
+  )
+
+
 def GetBoundaryResourceSpec():
   """Constructs and returns the Resource specification for a Boundary."""
   return concepts.ResourceSpec(
       'apphub.projects.locations',
-      resource_name='boundary',
-      api_version='v1alpha',  # Force the use of the v1alpha API client
+      resource_name='location',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      locationsId=LocationAttributeConfig(),
+      locationsId=_DefaultToGlobalLocationAttributeConfigForBoundary(),
   )
 
 
-def GetBoundaryResourceArg(verb):
+def GetBoundaryResourceArg(
+    arg_name='location', help_text='', positional=False
+):
   """Constructs and returns the Boundary Resource Argument."""
+  help_text = help_text if help_text else 'Location of the Boundary.'
   return concept_parsers.ConceptParser.ForResource(
-      '--location',  # The flag that identifies the resource
+      '{}{}'.format('' if positional else '--', arg_name),
       GetBoundaryResourceSpec(),
-      'The location of the App Hub boundary to {}.'.format(verb),
-      required=True,
+      group_help=help_text,
+      required=False,
   )
 
 
 def AddDescribeBoundaryFlags(parser):
   """Adds the resource argument for the boundary describe command."""
-  GetBoundaryResourceArg('describe').AddToParser(parser)
+  GetBoundaryResourceArg().AddToParser(parser)
 
 
 def AddUpdateBoundaryFlags(parser):
   """Adds the arguments for the boundary update command."""
-  GetBoundaryResourceArg('update').AddToParser(parser)
+  GetBoundaryResourceArg().AddToParser(parser)
   base.ASYNC_FLAG.AddToParser(parser)
 
   update_group = parser.add_argument_group('Update Boundary Options')

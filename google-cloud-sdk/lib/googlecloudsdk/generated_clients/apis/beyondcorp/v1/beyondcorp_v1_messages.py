@@ -1450,8 +1450,8 @@ class BeyondcorpProjectsLocationsSecurityGatewaysGetRequest(_messages.Message):
   r"""A BeyondcorpProjectsLocationsSecurityGatewaysGetRequest object.
 
   Fields:
-    name: Required. The resource name of the PartnerTenant using the form:
-      `projects/{project_id}/locations/{location_id}/securityGateway/{security_ga
+    name: Required. The resource name of the PartnerTenant using the form: `pr
+      ojects/{project_id}/locations/{location_id}/securityGateway/{security_ga
       teway_id}`
   """
 
@@ -2593,12 +2593,12 @@ class GoogleCloudBeyondcorpApplicationsV1alphaApplicationOperationMetadata(_mess
   Fields:
     createTime: Output only. The time the operation was created.
     endTime: Output only. The time the operation finished running.
+    interface: interface specifies the network interface of the gateway to
+      connect to.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have been
       cancelled successfully have Operation.error value with a
       google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
-    statusMessage: Output only. Human-readable status of the operation, if
-      any.
     target: Output only. Server-defined resource path for the target of the
       operation.
     verb: Output only. Name of the verb executed by the operation.
@@ -2606,8 +2606,8 @@ class GoogleCloudBeyondcorpApplicationsV1alphaApplicationOperationMetadata(_mess
 
   createTime = _messages.StringField(1)
   endTime = _messages.StringField(2)
-  requestedCancellation = _messages.BooleanField(3)
-  statusMessage = _messages.StringField(4)
+  interface = _messages.StringField(3)
+  requestedCancellation = _messages.BooleanField(4)
   target = _messages.StringField(5)
   verb = _messages.StringField(6)
 
@@ -2780,14 +2780,16 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1Application(_messages.Message):
     createTime: Output only. Timestamp when the resource was created.
     displayName: Optional. An arbitrary user-provided name for the application
       resource. Cannot exceed 64 characters.
-    endpointMatchers: Required. Endpoint matchers associated with an
-      application. A combination of hostname and ports as endpoint matchers is
-      used to match the application. Match conditions for OR logic. An array
-      of match conditions to allow for multiple matching criteria. The rule is
-      considered a match if one of the conditions is met. The conditions
-      should be the following combination: (Hostname & Ports) EXAMPLES:
-      Hostname and Ports - ("*.example.com", "443"), ("example.com" and "22"),
-      ("example.com" and "22,33") etc
+    endpointMatchers: Optional. An array of conditions to match the
+      application's network endpoint. Each element in the array is an
+      EndpointMatcher object, which defines a specific combination of a
+      hostname pattern and one or more ports. The application is considered
+      matched if at least one of the EndpointMatcher conditions in this array
+      is met (the conditions are combined using OR logic). Each
+      EndpointMatcher must contain a hostname pattern, such as "example.com",
+      and one or more port numbers specified as a string, such as "443".
+      Hostname and port number examples: "*.example.com", "443" "example.com"
+      and "22" "example.com" and "22,33"
     name: Identifier. Name of the resource.
     schema: Optional. Type of the external application.
     updateTime: Output only. Timestamp when the resource was last modified.
@@ -2863,17 +2865,17 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1ContextualHeaders(_messages.Message
       headers.
 
   Fields:
-    deviceInfo: Optional. Device info configuration.
-    groupInfo: Optional. Group info configuration.
+    deviceInfo: Optional. The device information configuration.
+    groupInfo: Optional. Group details.
     outputType: Optional. Default output type for all enabled headers.
-    userInfo: Optional. User info configuration.
+    userInfo: Optional. User details.
   """
 
   class OutputTypeValueValuesEnum(_messages.Enum):
     r"""Optional. Default output type for all enabled headers.
 
     Values:
-      OUTPUT_TYPE_UNSPECIFIED: Unspecified output type.
+      OUTPUT_TYPE_UNSPECIFIED: The unspecified output type.
       PROTOBUF: Protobuf output type.
       JSON: JSON output type.
       NONE: Explicitly disable header output.
@@ -2890,21 +2892,21 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1ContextualHeaders(_messages.Message
 
 
 class GoogleCloudBeyondcorpSecuritygatewaysV1ContextualHeadersDelegatedDeviceInfo(_messages.Message):
-  r"""Delegated device info configuration.
+  r"""The delegated device information configuration.
 
   Enums:
-    OutputTypeValueValuesEnum: Optional. The output type of the delegated
-      device info.
+    OutputTypeValueValuesEnum: Optional. The output type details for the
+      delegated device.
 
   Fields:
-    outputType: Optional. The output type of the delegated device info.
+    outputType: Optional. The output type details for the delegated device.
   """
 
   class OutputTypeValueValuesEnum(_messages.Enum):
-    r"""Optional. The output type of the delegated device info.
+    r"""Optional. The output type details for the delegated device.
 
     Values:
-      OUTPUT_TYPE_UNSPECIFIED: Unspecified output type.
+      OUTPUT_TYPE_UNSPECIFIED: The unspecified output type.
       PROTOBUF: Protobuf output type.
       JSON: JSON output type.
       NONE: Explicitly disable header output.
@@ -2918,21 +2920,21 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1ContextualHeadersDelegatedDeviceInf
 
 
 class GoogleCloudBeyondcorpSecuritygatewaysV1ContextualHeadersDelegatedGroupInfo(_messages.Message):
-  r"""Delegated group info configuration.
+  r"""The delegated group configuration details.
 
   Enums:
     OutputTypeValueValuesEnum: Optional. The output type of the delegated
-      group info.
+      group information.
 
   Fields:
-    outputType: Optional. The output type of the delegated group info.
+    outputType: Optional. The output type of the delegated group information.
   """
 
   class OutputTypeValueValuesEnum(_messages.Enum):
-    r"""Optional. The output type of the delegated group info.
+    r"""Optional. The output type of the delegated group information.
 
     Values:
-      OUTPUT_TYPE_UNSPECIFIED: Unspecified output type.
+      OUTPUT_TYPE_UNSPECIFIED: The unspecified output type.
       PROTOBUF: Protobuf output type.
       JSON: JSON output type.
       NONE: Explicitly disable header output.
@@ -2946,21 +2948,20 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1ContextualHeadersDelegatedGroupInfo
 
 
 class GoogleCloudBeyondcorpSecuritygatewaysV1ContextualHeadersDelegatedUserInfo(_messages.Message):
-  r"""Delegated user info configuration.
+  r"""The configuration information for the delegated user.
 
   Enums:
-    OutputTypeValueValuesEnum: Optional. The output type of the delegated user
-      info.
+    OutputTypeValueValuesEnum: Optional. The delegated user's information.
 
   Fields:
-    outputType: Optional. The output type of the delegated user info.
+    outputType: Optional. The delegated user's information.
   """
 
   class OutputTypeValueValuesEnum(_messages.Enum):
-    r"""Optional. The output type of the delegated user info.
+    r"""Optional. The delegated user's information.
 
     Values:
-      OUTPUT_TYPE_UNSPECIFIED: Unspecified output type.
+      OUTPUT_TYPE_UNSPECIFIED: The unspecified output type.
       PROTOBUF: Protobuf output type.
       JSON: JSON output type.
       NONE: Explicitly disable header output.
@@ -3002,7 +3003,7 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1EndpointMatcher(_messages.Message):
 
   Fields:
     hostname: Required. Hostname of the application.
-    ports: Required. Ports of the application.
+    ports: Required. The ports of the application.
   """
 
   hostname = _messages.StringField(1)
@@ -3064,30 +3065,29 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1ProxyProtocolConfig(_messages.Messa
   r"""The configuration for the proxy.
 
   Enums:
-    GatewayIdentityValueValuesEnum: Optional. Gateway identity configuration.
+    GatewayIdentityValueValuesEnum: Optional. The security gateway identity
+      configuration.
 
   Messages:
     MetadataHeadersValue: Optional. Custom resource specific headers along
-      with the values. The names should conform to RFC 9110: > Field names
-      SHOULD constrain themselves to alphanumeric characters, "-", and ".",
-      and SHOULD begin with a letter. Field values SHOULD contain only ASCII
-      printable characters and tab.
+      with the values. The names should conform to RFC 9110: >Field names can
+      contain alphanumeric characters, hyphens, and periods, can contain only
+      ASCII-printable characters and tabs, and must start with a letter.
 
   Fields:
     allowedClientHeaders: Optional. List of the allowed client header names.
     clientIp: Optional. Client IP configuration. The client IP address is
       included if true.
     contextualHeaders: Optional. Configuration for the contextual headers.
-    gatewayIdentity: Optional. Gateway identity configuration.
+    gatewayIdentity: Optional. The security gateway identity configuration.
     metadataHeaders: Optional. Custom resource specific headers along with the
-      values. The names should conform to RFC 9110: > Field names SHOULD
-      constrain themselves to alphanumeric characters, "-", and ".", and
-      SHOULD begin with a letter. Field values SHOULD contain only ASCII
-      printable characters and tab.
+      values. The names should conform to RFC 9110: >Field names can contain
+      alphanumeric characters, hyphens, and periods, can contain only ASCII-
+      printable characters and tabs, and must start with a letter.
   """
 
   class GatewayIdentityValueValuesEnum(_messages.Enum):
-    r"""Optional. Gateway identity configuration.
+    r"""Optional. The security gateway identity configuration.
 
     Values:
       GATEWAY_IDENTITY_UNSPECIFIED: Unspecified gateway identity.
@@ -3101,10 +3101,9 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1ProxyProtocolConfig(_messages.Messa
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataHeadersValue(_messages.Message):
     r"""Optional. Custom resource specific headers along with the values. The
-    names should conform to RFC 9110: > Field names SHOULD constrain
-    themselves to alphanumeric characters, "-", and ".", and SHOULD begin with
-    a letter. Field values SHOULD contain only ASCII printable characters and
-    tab.
+    names should conform to RFC 9110: >Field names can contain alphanumeric
+    characters, hyphens, and periods, can contain only ASCII-printable
+    characters and tabs, and must start with a letter.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataHeadersValue
@@ -3272,7 +3271,7 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1ServiceDiscoveryApiGatewayOperation
   r"""API operation descriptor.
 
   Fields:
-    path: Required. Contains uri path fragment where HTTP request is sent.
+    path: Required. Contains the URI path fragment where HTTP request is sent.
   """
 
   path = _messages.StringField(1)
@@ -3479,17 +3478,46 @@ class GoogleIamV1Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
-      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
-      identifier) representing a user that has been recently deleted. For
-      example, `alice@example.com?uid=123456789012345678901`. If the user is
-      recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. * `principal://iam.googleapis.com/locatio
+      ns/global/workforcePools/{pool_id}/subject/{subject_attribute_value}`: A
+      single identity in a workforce identity pool. * `principalSet://iam.goog
+      leapis.com/locations/global/workforcePools/{pool_id}/group/{group_id}`:
+      All workforce identities in a group. * `principalSet://iam.googleapis.co
+      m/locations/global/workforcePools/{pool_id}/attribute.{attribute_name}/{
+      attribute_value}`: All workforce identities with a specific attribute
+      value. * `principalSet://iam.googleapis.com/locations/global/workforcePo
+      ols/{pool_id}/*`: All identities in a workforce identity pool. * `princi
+      pal://iam.googleapis.com/projects/{project_number}/locations/global/work
+      loadIdentityPools/{pool_id}/subject/{subject_attribute_value}`: A single
+      identity in a workload identity pool. * `principalSet://iam.googleapis.c
+      om/projects/{project_number}/locations/global/workloadIdentityPools/{poo
+      l_id}/group/{group_id}`: A workload identity pool group. * `principalSet
+      ://iam.googleapis.com/projects/{project_number}/locations/global/workloa
+      dIdentityPools/{pool_id}/attribute.{attribute_name}/{attribute_value}`:
+      All identities in a workload identity pool with a certain attribute. * `
+      principalSet://iam.googleapis.com/projects/{project_number}/locations/gl
+      obal/workloadIdentityPools/{pool_id}/*`: All identities in a workload
+      identity pool. * `deleted:user:{emailid}?uid={uniqueid}`: An email
+      address (plus unique identifier) representing a user that has been
+      recently deleted. For example,
+      `alice@example.com?uid=123456789012345678901`. If the user is recovered,
+      this value reverts to `user:{emailid}` and the recovered user retains
+      the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
       (plus unique identifier) representing a service account that has been
       recently deleted. For example, `my-other-
@@ -3501,9 +3529,11 @@ class GoogleIamV1Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding. * `deleted:principal://iam.google
+      apis.com/locations/global/workforcePools/{pool_id}/subject/{subject_attr
+      ibute_value}`: Deleted single identity in a workforce identity pool. For
+      example, `deleted:principal://iam.googleapis.com/locations/global/workfo
+      rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """

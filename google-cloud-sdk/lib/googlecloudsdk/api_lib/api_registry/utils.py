@@ -19,16 +19,15 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import properties
 
 _CLOUD_API_REGISTRY_API = 'cloudapiregistry'
-_CLOUD_API_REGISTRY_API_VERSION = 'v1alpha'
 
 
-def GetClientInstance(no_http=False):
+def GetClientInstance(version, no_http=False):
   return apis.GetClientInstance(
-      _CLOUD_API_REGISTRY_API, _CLOUD_API_REGISTRY_API_VERSION, no_http=no_http)
+      _CLOUD_API_REGISTRY_API, version, no_http=no_http)
 
 
-def GetMessagesModule(client=None):
-  client = client or GetClientInstance()
+def GetMessagesModule(version, client=None):
+  client = client or GetClientInstance(version=version)
   return client.MESSAGES_MODULE
 
 

@@ -16,6 +16,8 @@
 
 import argparse
 import enum
+import json
+import subprocess
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.compute import iap_tunnel
 from googlecloudsdk.command_lib.compute import ssh_utils
@@ -104,6 +106,41 @@ class Ssh:
     self.iap_tunnel_url_override = getattr(
         args, "iap_tunnel_url_override", None
     )
+    self.service_account = self._GetServiceAccountFromWorkload()
+
+  def _GetServiceAccountFromWorkload(self):
+    """Retrieves the service account from the Cloud Run workload."""
+    command = ["gcloud"]
+
+    if self.workload_type == self.WorkloadType.SERVICE:
+      command.extend(["run", "services", "describe"])
+    elif self.workload_type == self.WorkloadType.WORKER_POOL:
+      command.extend(["beta", "run", "worker-pools", "describe"])
+    elif self.workload_type == self.WorkloadType.JOB:
+      command.extend(["run", "jobs", "describe"])
+    else:
+      raise ValueError(f"Unsupported workload type: {self.workload_type}")
+
+    command.extend([
+        self.deployment_name,
+        "--region",
+        self.region,
+        "--project",
+        self.project,
+        "--format",
+        "json",
+    ])
+    try:
+      output = subprocess.check_output(command, stderr=subprocess.PIPE)
+      service_data = json.loads(output)
+      return (
+          service_data.get("spec", {})
+          .get("template", {})
+          .get("spec", {})
+          .get("serviceAccountName")
+      )
+    except subprocess.CalledProcessError as e:
+      raise ValueError(f"Failed to get service account: {e}")
 
   def HostKeyAlias(self):
     """Returns the host key alias for the SSH connection."""
@@ -132,6 +169,7 @@ class Ssh:
             "deployment_name": self.deployment_name,
             "project_id": self.project,
             "region": self.region,
+            "service_account": self.service_account,
         },
     )
     cert_file = ssh.CertFileFromCloudRunDeployment(

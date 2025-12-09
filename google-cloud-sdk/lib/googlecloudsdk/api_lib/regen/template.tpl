@@ -33,7 +33,8 @@ MAP = {
                 % endif
                 default_version=${api_def.default_version},
                 enable_mtls=${api_def.enable_mtls},
-                mtls_endpoint_override='${api_def.mtls_endpoint_override}'),
+                mtls_endpoint_override='${api_def.mtls_endpoint_override}',
+                regional_endpoints=${api_def.regional_endpoints}),
       % endfor
     },
 % endfor

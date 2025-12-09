@@ -332,6 +332,24 @@ def AddAutoscalingSettingsFlagsToParser(parser):
   )
 
 
+def AddDatastoreArgToParser(parser, positional=False):
+  """Sets up an argument for the datastore resource."""
+  name = '--datastore'
+  if positional:
+    name = 'datastore'
+  datastore_data = yaml_data.ResourceYAMLData.FromPath(
+      'vmware.datastore'
+  )
+  resource_spec = concepts.ResourceSpec.FromYaml(datastore_data.GetData())
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name=name,
+      concept_spec=resource_spec,
+      required=True,
+      group_help='datastore.',
+  )
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
 def AddUpgradeArgToParser(
     parser: argparse.ArgumentParser,
 ) -> None:

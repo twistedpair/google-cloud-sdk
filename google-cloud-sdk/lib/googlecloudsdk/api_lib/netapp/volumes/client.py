@@ -147,6 +147,7 @@ class VolumesClient(object):
       hybrid_replication_parameters=None,
       throughput_mibps=None,
       cache_parameters=None,
+      cache_pre_populate=None,
       labels=None,
       block_devices=None,
   ):
@@ -176,6 +177,7 @@ class VolumesClient(object):
         hybrid_replication_parameters=hybrid_replication_parameters,
         throughput_mibps=throughput_mibps,
         cache_parameters=cache_parameters,
+        cache_pre_populate=cache_pre_populate,
         labels=labels,
         block_devices=block_devices,
     )
@@ -265,6 +267,7 @@ class VolumesClient(object):
       multiple_endpoints=None,
       tiering_policy=None,
       cache_parameters=None,
+      cache_pre_populate=None,
       throughput_mibps=None,
       block_devices=None,
   ):
@@ -293,6 +296,7 @@ class VolumesClient(object):
         multiple_endpoints=multiple_endpoints,
         tiering_policy=tiering_policy,
         cache_parameters=cache_parameters,
+        cache_pre_populate=cache_pre_populate,
         throughput_mibps=throughput_mibps,
         block_devices=block_devices,
     )
@@ -401,30 +405,39 @@ class VolumesAdapter(object):
     for policy in export_policy:
       simple_export_policy_rule = self.messages.SimpleExportPolicyRule()
       for key, val in policy.items():
+        # Support for structural pattern matching with `match` was introduced in
+        # Python 3.10, but gcloud still supports older Python versions (e.g.
+        # 3.9). Using an `if` statement instead for the time being.
         if key == 'allowed-clients':
           simple_export_policy_rule.allowedClients = val
-        if key == 'access-type':
-          simple_export_policy_rule.accessType = self.messages.SimpleExportPolicyRule.AccessTypeValueValuesEnum.lookup_by_name(
-              val
+        elif key == 'access-type':
+          simple_export_policy_rule.accessType = (
+              self.messages.SimpleExportPolicyRule.AccessTypeValueValuesEnum.lookup_by_name(
+                  val
+              )
           )
-        if key == 'has-root-access':
+        elif key == 'has-root-access':
           simple_export_policy_rule.hasRootAccess = val
-        if key == 'kerberos-5-read-only':
+        elif key == 'kerberos-5-read-only':
           simple_export_policy_rule.kerberos5ReadOnly = val
-        if key == 'kerberos-5-read-write':
+        elif key == 'kerberos-5-read-write':
           simple_export_policy_rule.kerberos5ReadWrite = val
-        if key == 'kerberos-5i-read-only':
+        elif key == 'kerberos-5i-read-only':
           simple_export_policy_rule.kerberos5iReadOnly = val
-        if key == 'kerberos-5i-read-write':
+        elif key == 'kerberos-5i-read-write':
           simple_export_policy_rule.kerberos5iReadWrite = val
-        if key == 'kerberos-5p-read-only':
+        elif key == 'kerberos-5p-read-only':
           simple_export_policy_rule.kerberos5pReadOnly = val
-        if key == 'kerberos-5p-read-write':
+        elif key == 'kerberos-5p-read-write':
           simple_export_policy_rule.kerberos5pReadWrite = val
-        if key == 'nfsv3':
+        elif key == 'nfsv3':
           simple_export_policy_rule.nfsv3 = val
-        if key == 'nfsv4':
+        elif key == 'nfsv4':
           simple_export_policy_rule.nfsv4 = val
+        elif key == 'squash-mode':
+          simple_export_policy_rule.squashMode = val
+        elif key == 'anon-uid':
+          simple_export_policy_rule.anonUid = val
       export_policy_config.rules.append(simple_export_policy_rule)
     volume.exportPolicy = export_policy_config
 
@@ -538,6 +551,7 @@ class VolumesAdapter(object):
       hybrid_replication_parameters=None,
       throughput_mibps=None,
       cache_parameters=None,
+      cache_pre_populate=None,
       labels=None,
       block_devices=None,
   ):
@@ -569,6 +583,7 @@ class VolumesAdapter(object):
         volume.
       throughput_mibps: throughput of the Volume (in MiB/s).
       cache_parameters: the cache parameters for the volume.
+      cache_pre_populate: the cache pre-populate parameters for the volume.
       labels: the parsed labels value.
       block_devices: the block devices for the volume.
 
@@ -618,6 +633,8 @@ class VolumesAdapter(object):
       self.ParseBlockDevices(volume, block_devices)
     if cache_parameters is not None:
       self.ParseCacheParameters(volume, cache_parameters)
+    if cache_pre_populate is not None:
+      self.ParseCachePrePopulate(volume, cache_pre_populate)
     return volume
 
   def ParseUpdatedVolumeConfig(
@@ -646,6 +663,7 @@ class VolumesAdapter(object):
       multiple_endpoints=None,
       tiering_policy=None,
       cache_parameters=None,
+      cache_pre_populate=None,
       throughput_mibps=None,
       block_devices=None,
   ):
@@ -694,6 +712,8 @@ class VolumesAdapter(object):
       self.ParseTieringPolicy(volume_config, tiering_policy)
     if cache_parameters is not None:
       self.ParseCacheParameters(volume_config, cache_parameters)
+    if cache_pre_populate is not None:
+      self.ParseCachePrePopulate(volume_config, cache_pre_populate)
     if throughput_mibps is not None:
       volume_config.throughputMibps = throughput_mibps
     if block_devices is not None:
@@ -844,22 +864,42 @@ class VolumesAdapter(object):
     )
     cache_config_message = self.messages.CacheConfig()
     for config in cache_parameters.get('cache-config', []):
-      # TODO: b/433897931 - Add atime-scrub-enabled and atime-scrub-days
-      # back for AGA
-      # if 'atime-scrub-enabled' in config:
-      #   cache_config_message.atimeScrubEnabled = (
-      #       config['atime-scrub-enabled'].lower() == 'true'
-      #   )
-      # if 'atime-scrub-minutes' in config:
-      #   cache_config_message.atimeScrubMinutes = int(
-      #       config['atime-scrub-minutes']
-      #   )
       if 'cifs-change-notify-enabled' in config:
         cache_config_message.cifsChangeNotifyEnabled = (
             config['cifs-change-notify-enabled'].lower() == 'true'
         )
+      if 'write-back-enabled' in config:
+        cache_config_message.writebackEnabled = (
+            config['write-back-enabled'].lower() == 'true'
+        )
     cache_parameters_message.cacheConfig = cache_config_message
     volume.cacheParameters = cache_parameters_message
+
+  def ParseCachePrePopulate(self, volume, cache_pre_populate):
+    """Parses Cache Pre-populate for Volume into a config.
+
+    Args:
+      volume: The Cloud NetApp Volume message object.
+      cache_pre_populate: The cache pre-populate params message object.
+
+    Returns:
+      Volume message populated with Cache Pre-populate Parameters
+    """
+    cache_pre_populate_message = self.messages.CachePrePopulate()
+    for path in cache_pre_populate.get('path-list', []):
+      cache_pre_populate_message.pathList.append(path)
+    for path in cache_pre_populate.get('exclude-path-list', []):
+      cache_pre_populate_message.excludePathList.append(path)
+    cache_pre_populate_message.recursion = cache_pre_populate.get(
+        'recursion'
+    )
+    if volume.cacheParameters is None:
+      volume.cacheParameters = self.messages.CacheParameters()
+    if volume.cacheParameters.cacheConfig is None:
+      volume.cacheParameters.cacheConfig = self.messages.CacheConfig()
+    volume.cacheParameters.cacheConfig.cachePrePopulate = (
+        cache_pre_populate_message
+    )
 
 
 class BetaVolumesAdapter(VolumesAdapter):

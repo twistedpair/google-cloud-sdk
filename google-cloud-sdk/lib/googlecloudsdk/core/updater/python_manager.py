@@ -89,12 +89,6 @@ def _IsHomebrewInstalled():
   return os.path.isdir(HOMEBREW_BIN) and 'homebrew' in config.GcloudPath()
 
 
-def _PromptPythonUpdate(python_install_path):
-  return (
-      f'(Recommended) Python {PYTHON_VERSION} installation detected in '
-      f'{python_install_path}, install required modules (Y/n)?')
-
-
 def _PromptPythonInstall():
   if _IsHomebrewInstalled():
     return f'Homebrew install Python {PYTHON_VERSION}?'
@@ -164,20 +158,14 @@ def PromptAndInstallPythonOnMac():
     python_to_use = f'{MACOS_PYTHON_INSTALL_PATH}bin/python3'
   already_installed = os.path.isfile(python_to_use)
 
-  # Prompt for user permission
-  if already_installed:
-    prompt = _PromptPythonUpdate(python_to_use)
-  else:
-    prompt = _PromptPythonInstall()
-  if not console_io.PromptContinue(prompt_string=prompt, default=True):
-    return
-
-  # Install python if needed
+  # Prompt for user permission to install python if not already installed
+  install_errors = None
   if not already_installed:
+    prompt = _PromptPythonInstall()
+    if not console_io.PromptContinue(prompt_string=prompt, default=True):
+      return
     install_errors = (_BrewInstallPython()
                       if homebrew_installed else _MacInstallPython())
-  else:
-    install_errors = None
 
   # Update python dependencies
   if not install_errors:
@@ -205,7 +193,7 @@ def PromptAndInstallXcodeCommandLineTools():
 
   prompt = (
       'Xcode Command Line Tools is required to install Python. Continue to'
-      ' install (Y/n)?'
+      ' install'
   )
   setup_xcode = console_io.PromptContinue(prompt_string=prompt, default=True)
 

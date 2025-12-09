@@ -274,6 +274,10 @@ class ApplicationTemplate(_messages.Message):
     iacFormat: Output only. The IaC format of the application template.
     latestRevision: Output only. The latest application template revision.
     name: Identifier. Application template name.
+    rootInputVariables: Optional. Root level input variables of the
+      application template.
+    rootOutputVariables: Optional. Root level output variables of the
+      application template.
     serializedApplicationTemplate: Output only. The serialized application
       template.
     updateTime: Output only. Application template update timestamp.
@@ -320,8 +324,10 @@ class ApplicationTemplate(_messages.Message):
   iacFormat = _messages.EnumField('IacFormatValueValuesEnum', 7)
   latestRevision = _messages.StringField(8)
   name = _messages.StringField(9)
-  serializedApplicationTemplate = _messages.MessageField('SerializedApplicationTemplate', 10)
-  updateTime = _messages.StringField(11)
+  rootInputVariables = _messages.MessageField('ComponentVariable', 10, repeated=True)
+  rootOutputVariables = _messages.MessageField('ComponentVariable', 11, repeated=True)
+  serializedApplicationTemplate = _messages.MessageField('SerializedApplicationTemplate', 12)
+  updateTime = _messages.StringField(13)
 
 
 class ApplicationTemplateRevision(_messages.Message):
@@ -898,6 +904,19 @@ class ComponentParameters(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
+class ComponentVariable(_messages.Message):
+  r"""The details of an input/output variable: the variable and the component
+  Uri. name.
+
+  Fields:
+    componentUri: Required. Component to which this variable belongs.
+    variable: Required. Name of the variable.
+  """
+
+  componentUri = _messages.StringField(1)
+  variable = _messages.StringField(2)
+
+
 class Connection(_messages.Message):
   r"""Connection resource.
 
@@ -1120,6 +1139,8 @@ class DeploymentError(_messages.Message):
         due to a permission issue.
       BUCKET_CREATION_FAILED: Cloud Storage bucket creation failed due to an
         issue unrelated to permissions.
+      EXTERNAL_VALUE_SOURCE_IMPORT_FAILED: Failed to import values from an
+        external source.
     """
     ERROR_CODE_UNSPECIFIED = 0
     REVISION_FAILED = 1
@@ -1128,6 +1149,7 @@ class DeploymentError(_messages.Message):
     DELETE_BUILD_RUN_FAILED = 4
     BUCKET_CREATION_PERMISSION_DENIED = 5
     BUCKET_CREATION_FAILED = 6
+    EXTERNAL_VALUE_SOURCE_IMPORT_FAILED = 7
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Output only. The error type based on the deployment error code.
@@ -3791,6 +3813,10 @@ class SerializedApplicationTemplate(_messages.Message):
     hasGlobalResource: Output only. Whether the application template is
       compatible with regional scope.
     iacFormat: Optional. The IaC format of the application template.
+    rootInputVariables: Output only. Root level input variables of the
+      application template.
+    rootOutputVariables: Output only. Root level output variables of the
+      application template.
     uri: Optional. The application template URI.
   """
 
@@ -3833,7 +3859,9 @@ class SerializedApplicationTemplate(_messages.Message):
   displayName = _messages.StringField(6)
   hasGlobalResource = _messages.BooleanField(7)
   iacFormat = _messages.EnumField('IacFormatValueValuesEnum', 8)
-  uri = _messages.StringField(9)
+  rootInputVariables = _messages.MessageField('ComponentVariable', 9, repeated=True)
+  rootOutputVariables = _messages.MessageField('ComponentVariable', 10, repeated=True)
+  uri = _messages.StringField(11)
 
 
 class SerializedComponent(_messages.Message):

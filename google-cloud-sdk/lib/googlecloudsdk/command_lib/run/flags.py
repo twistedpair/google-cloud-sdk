@@ -729,7 +729,7 @@ def AddCloudSQLFlags(parser):
 def AddVolumesFlags(parser, release_track):
   """Add flags for adding and removing volumes."""
   group = parser.add_group()
-  if release_track == base.ReleaseTrack.ALPHA:
+  if release_track != base.ReleaseTrack.GA:
     group.add_argument(
         '--add-volume',
         type=arg_parsers.ArgDict(required_keys=['type']),
@@ -3168,7 +3168,7 @@ def _ValidateAndMaybeGenerateVolumeNames(args, release_track):
     release_track: The current release track (e.g., base.ReleaseTrack.ALPHA).
   """
   uses_containers_flag = FlagIsExplicitlySet(args, 'containers')
-  if release_track == base.ReleaseTrack.ALPHA:
+  if release_track != base.ReleaseTrack.GA:
     for volume in args.add_volume:
       # If mount-path is specified, the user is attempting to use the volumes
       # shortcut.
@@ -3200,7 +3200,7 @@ def _MaybeAddVolumeMountChange(args, changes, release_track):
     changes: A list of configuration changes to append to.
     release_track: The current release track (e.g., base.ReleaseTrack.ALPHA).
   """
-  if release_track == base.ReleaseTrack.ALPHA:
+  if release_track != base.ReleaseTrack.GA:
     new_volume_mounts = []
     for volume in args.add_volume:
       if 'mount-path' in volume and 'name' in volume:
@@ -4680,10 +4680,12 @@ def NoBuildArg():
       '--no-build',
       action='store_true',
       default=False,
-      hidden=True,
       help=(
           'When set, the cloud build step will be skipped and the provided'
-          ' will be extracted directly on the base image.'
+          ' source code will be extracted directly on the base image. Your'
+          ' source code must contain all the dependencies for your application.'
+          ' See https://cloud.google.com/run/docs/deploying-source-code for'
+          ' more details.'
       ),
   )
 
@@ -4691,13 +4693,14 @@ def NoBuildArg():
 def SourceAndImageFlags(
     image='us-docker.pkg.dev/cloudrun/container/hello:latest',
     mutex=True,
+    no_build_enabled=False,
     release_track=base.ReleaseTrack.GA,
 ):
   """Returns a group of flags for deploy source, an image or source code."""
   group = base.ArgumentGroup(mutex=mutex)
   group.AddArgument(ImageArg(required=False, image=image, mutex=mutex))
   group.AddArgument(SourceArg())
-  if release_track != base.ReleaseTrack.GA:
+  if no_build_enabled and release_track != base.ReleaseTrack.GA:
     group.AddArgument(NoBuildArg())
   return group
 

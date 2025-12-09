@@ -15,11 +15,14 @@
 """Tools for converting metadata fields to GCS formats."""
 
 from __future__ import absolute_import
+from __future__ import annotations
 from __future__ import division
 from __future__ import unicode_literals
 
 import json
 import sys
+import types
+from typing import Any, Callable, Optional
 
 from apitools.base.protorpclite import protojson
 from apitools.base.py import encoding
@@ -32,6 +35,31 @@ from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import files
+
+
+ModuleType = types.ModuleType
+_messages = apis.GetMessagesModule('storage', 'v1')
+_encryption_msg_for_configs = _messages.Bucket.EncryptionValue()
+
+
+# Maps keys from the --encryption-enforcement-file JSON to API message fields.
+_ENCRYPTION_ENFORCEMENT_API_KEY_BY_JSON_KEY_MAP = {
+    'gmekEnforcement': 'googleManagedEncryptionEnforcementConfig',
+    'cmekEnforcement': 'customerManagedEncryptionEnforcementConfig',
+    'csekEnforcement': 'customerSuppliedEncryptionEnforcementConfig',
+}
+_ENCRYPTION_ENFORCEMENT_API_FIELD_BY_JSON_KEY_MAP = {
+    'gmekEnforcement': (
+        _encryption_msg_for_configs.GoogleManagedEncryptionEnforcementConfigValue
+    ),
+    'cmekEnforcement': (
+        _encryption_msg_for_configs.CustomerManagedEncryptionEnforcementConfigValue
+    ),
+    'csekEnforcement': (
+        _encryption_msg_for_configs.CustomerSuppliedEncryptionEnforcementConfigValue
+    ),
+}
 
 
 def get_bucket_or_object_acl_class(is_bucket=False):
@@ -57,8 +85,8 @@ def process_autoclass(enabled_boolean=None, terminal_storage_class=None):
   """Converts Autoclass boolean to Apitools object."""
   messages = apis.GetMessagesModule('storage', 'v1')
   return messages.Bucket.AutoclassValue(
-      enabled=enabled_boolean,
-      terminalStorageClass=terminal_storage_class)
+      enabled=enabled_boolean, terminalStorageClass=terminal_storage_class
+  )
 
 
 def process_cors(file_path):
@@ -73,7 +101,8 @@ def process_cors(file_path):
   messages = apis.GetMessagesModule('storage', 'v1')
   for cors_dict in cors_dict_list:
     cors_messages.append(
-        encoding.DictToMessage(cors_dict, messages.Bucket.CorsValueListEntry))
+        encoding.DictToMessage(cors_dict, messages.Bucket.CorsValueListEntry)
+    )
   return cors_messages
 
 
@@ -84,7 +113,80 @@ def process_default_encryption_key(default_encryption_key):
 
   messages = apis.GetMessagesModule('storage', 'v1')
   return messages.Bucket.EncryptionValue(
-      defaultKmsKeyName=default_encryption_key)
+      defaultKmsKeyName=default_encryption_key
+  )
+
+
+def process_encryption_enforcement_config(
+    file_path: str,
+    get_messages_module: Callable[
+        [str, str], ModuleType
+    ] = apis.GetMessagesModule,
+    read_yaml_json_file: Callable[[str], dict[str, Any]] = (
+        metadata_util.cached_read_yaml_json_file
+    ),
+) -> Optional[_messages.Bucket.EncryptionValue]:
+  """Converts encryption enforcement file's contents to Apitools object.
+
+  Args:
+    file_path: Path to the encryption enforcement JSON/YAML file.
+    get_messages_module: Callable for getting the API messages module.
+    read_yaml_json_file: Callable for reading YAML/JSON files.
+
+  Returns:
+    Apitools Bucket.EncryptionValue object or None if no changes are present.
+
+  Raises:
+    errors.Error: If the file format is invalid.
+    errors.InvalidUrlError: If the structure within the file is invalid.
+  """
+  if not file_path:
+    return None
+
+  try:
+    enforcement_dict = read_yaml_json_file(file_path)
+  except (errors.InvalidUrlError, files.MissingFileError, AttributeError) as e:
+    raise errors.Error(
+        f'Invalid format for file {file_path} provided for the'
+        f' --encryption-enforcement-file flag.\nError: {e}'
+    ) from e
+
+  messages = get_messages_module('storage', 'v1')
+  encryption_msg = messages.Bucket.EncryptionValue()
+  has_changes = False
+
+  for (
+      json_key,
+      msg_attr,
+  ) in _ENCRYPTION_ENFORCEMENT_API_KEY_BY_JSON_KEY_MAP.items():
+    if json_key not in enforcement_dict:
+      continue
+
+    has_changes = True
+    config_data = enforcement_dict[json_key]
+    if config_data is None:
+      # Setting to None effectively clears it in the PATCH request
+      setattr(encryption_msg, msg_attr, None)
+    elif isinstance(config_data, dict) and 'restrictionMode' in config_data:
+      config_class = _ENCRYPTION_ENFORCEMENT_API_FIELD_BY_JSON_KEY_MAP[json_key]
+      try:
+        restriction_mode_enum = config_class.RestrictionModeValueValuesEnum(
+            config_data['restrictionMode']
+        )
+        # restrictionMode is the only input field
+        enforcement_config = config_class(restrictionMode=restriction_mode_enum)
+        setattr(encryption_msg, msg_attr, enforcement_config)
+      except (TypeError, messages_util.DecodeError) as e:
+        raise errors.InvalidUrlError(
+            f'Invalid format in encryption enforcement file for {json_key}: {e}'
+        ) from e
+    else:
+      raise errors.InvalidUrlError(
+          f'Invalid structure for {json_key} in encryption enforcement file.'
+          ' Expected an object with "restrictionMode" or null.'
+      )
+
+  return encryption_msg if has_changes else None
 
 
 def process_default_storage_class(default_storage_class):
@@ -120,9 +222,11 @@ def process_iam_file(file_path, custom_etag=None):
   return policy_object
 
 
-def process_bucket_iam_configuration(existing_iam_metadata,
-                                     public_access_prevention_boolean,
-                                     uniform_bucket_level_access_boolean):
+def process_bucket_iam_configuration(
+    existing_iam_metadata,
+    public_access_prevention_boolean,
+    uniform_bucket_level_access_boolean,
+):
   """Converts user flags to Apitools IamConfigurationValue."""
   messages = apis.GetMessagesModule('storage', 'v1')
   if existing_iam_metadata:
@@ -140,7 +244,9 @@ def process_bucket_iam_configuration(existing_iam_metadata,
   if uniform_bucket_level_access_boolean is not None:
     iam_metadata.uniformBucketLevelAccess = (
         messages.Bucket.IamConfigurationValue.UniformBucketLevelAccessValue(
-            enabled=uniform_bucket_level_access_boolean))
+            enabled=uniform_bucket_level_access_boolean
+        )
+    )
 
   return iam_metadata
 
@@ -150,9 +256,7 @@ def process_ip_filter(file_path):
   messages = apis.GetMessagesModule('storage', 'v1')
 
   if file_path == user_request_args_factory.CLEAR:
-    return messages.Bucket.IpFilterValue(
-        mode='Disabled'
-        )
+    return messages.Bucket.IpFilterValue(mode='Disabled')
   ip_filter_dict = metadata_util.cached_read_yaml_json_file(file_path)
   ip_filter = ip_filter_dict.get('ip_filter_config', ip_filter_dict)
   try:
@@ -318,8 +422,10 @@ def process_versioning(versioning):
 
 def process_website(web_error_page, web_main_page_suffix):
   """Converts website strings to Apitools objects."""
-  if (web_error_page == user_request_args_factory.CLEAR and
-      web_main_page_suffix == user_request_args_factory.CLEAR):
+  if (
+      web_error_page == user_request_args_factory.CLEAR
+      and web_main_page_suffix == user_request_args_factory.CLEAR
+  ):
     return None
 
   messages = apis.GetMessagesModule('storage', 'v1')

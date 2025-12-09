@@ -24,12 +24,14 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis_util
 from googlecloudsdk.api_lib.util import resource as resource_util
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import transport
 from googlecloudsdk.generated_clients.apis import apis_map
 import six
 from six.moves.urllib.parse import urljoin
 from six.moves.urllib.parse import urlparse
+from six.moves.urllib.parse import urlunparse
 
 
 def _GetApiNameAndAlias(api_name):
@@ -142,7 +144,8 @@ def _GetClientInstance(api_name,
                        no_http=False,
                        http_client=None,
                        check_response_func=None,
-                       http_timeout_sec=None):
+                       http_timeout_sec=None,
+                       region=None):
   """Returns an instance of the API client specified in the args.
 
   Args:
@@ -153,6 +156,7 @@ def _GetClientInstance(api_name,
       no_http=True.
     check_response_func: error handling callback to give to apitools.
     http_timeout_sec: int, seconds of http timeout to set, defaults if None.
+    region: str, Region (or multi-region) for regionalized endpoints (REP).
 
   Returns:
     base_api.BaseApiClient, An instance of the specified API client.
@@ -172,7 +176,7 @@ def _GetClientInstance(api_name,
 
   client_class = _GetClientClass(api_name, api_version)
   client_instance = client_class(
-      url=_GetEffectiveApiEndpoint(api_name, api_version, client_class),
+      url=_GetEffectiveApiEndpoint(api_name, api_version, client_class, region),
       get_credentials=False,
       http=http_client)
   if check_response_func is not None:
@@ -286,6 +290,70 @@ def UniversifyAddress(address):
   return address
 
 
+def _GetRegionalizedEndpoint(domain, region):
+  """Returns regionalized domain.
+
+  Regional endpoints (REPs) have the following format:
+    {service}.{region}.rep.googleapis.com
+
+  Args:
+    domain: Domain for the API in form {service}.googleapis.com.
+    region: REP region (or multi-region).
+
+  Returns:
+    str, Regionalized domain.
+  """
+  if region is None:
+    raise ValueError('Region must be provided.')
+  if domain.count('.') > 2:
+    raise ValueError(
+        'Base URLs should have form {service}.googleapis.com;'
+        f' received: [{domain}].')
+  service, base_domain = domain.split('.', 1)
+  return f'{service}.{region}.rep.{base_domain}'
+
+
+class UnsupportedEndpointModeError(exceptions.Error):
+  """Error when regional/endpoint_mode property is unsupported by a command."""
+
+
+def _ShouldUseRegionalEndpoints():
+  """Returns whether or not regional endpoint should be used.
+
+  Depending on the user-specified regional/endpoint_mode setting and the
+  developer-specified command annotation, this function calculates whether or
+  not to use regional endpoints. In case of an invalid combination, an error
+  will be raised.
+
+  Returns:
+    bool, Whether to use regional endpoints.
+  Raises:
+    UnsupportedEndpointModeError: If the command does not support the given
+      endpoint mode.
+  """
+  mode = properties.VALUES.regional.endpoint_mode.Get()
+  compatibility = properties.VALUES.regional.endpoint_compatibility.Get()
+  if mode == properties.VALUES.regional.REGIONAL and compatibility is None:
+    raise UnsupportedEndpointModeError(
+        f'The regional/endpoint_mode property is currently set to [{mode}], but'
+        ' this command does not support regional endpoints.')
+  if (
+      mode == properties.VALUES.regional.GLOBAL and
+      compatibility == properties.VALUES.regional.REQUIRED
+  ):
+    raise UnsupportedEndpointModeError(
+        f'The regional/endpoint_mode property is currently set to [{mode}], but'
+        ' this command only supports regional endpoints.')
+  return (
+      compatibility == properties.VALUES.regional.REQUIRED
+      or mode == properties.VALUES.regional.REGIONAL
+      or (
+          mode == properties.VALUES.regional.REGIONAL_PREFERRED
+          and compatibility == properties.VALUES.regional.SUPPORTED
+      )
+  )
+
+
 def _GetMtlsEndpoint(api_name, api_version, client_class=None):
   """Returns mtls endpoint."""
   api_def = GetApiDef(api_name, api_version)
@@ -355,7 +423,8 @@ def _GetBaseUrlFromApi(api_name, api_version):
   return UniversifyAddress(client_base_url)
 
 
-def _GetEffectiveApiEndpoint(api_name, api_version, client_class=None):
+def _GetEffectiveApiEndpoint(
+    api_name, api_version, client_class=None, region=None):
   """Returns effective endpoint for given api."""
   try:
     endpoint_override = properties.VALUES.api_endpoint_overrides.Property(
@@ -375,6 +444,12 @@ def _GetEffectiveApiEndpoint(api_name, api_version, client_class=None):
     address = UniversifyAddress(
         _GetMtlsEndpoint(api_name, api_version, client_class)
     )
+  # Note that regionalized endpoints are incompatible with mTLS / non-Google
+  # universe domains.
+  elif _ShouldUseRegionalEndpoints():
+    url_base = urlparse(client_base_url)
+    regionalized_domain = _GetRegionalizedEndpoint(url_base.netloc, region)
+    address = urlunparse(url_base._replace(netloc=regionalized_domain))
   else:
     address = client_base_url
 

@@ -96,8 +96,20 @@ def ParseTimeOfDayMainWindowV1(time_of_day):
 
 
 def ParseTimeOfDayPeriodicExportStartTimeV1Alpha(time_of_day):
-  """Convert input to TimeOfDay type for Deny Main Period v1."""
+  """Convert input to TimeOfDay type for Periodic Export Start Time v1alpha2."""
   messages = GetMessagesModuleForVersion('v1alpha2')
+  arg = '--periodic-export-start-time'
+  error_message = (
+      "'--periodic-export-start-time' must be used in a valid 24-hr UTC Time"
+      ' format.'
+  )
+  CheckTimeOfDayField(time_of_day, error_message, arg)
+  return ParseTimeOfDay(time_of_day, messages)
+
+
+def ParseTimeOfDayPeriodicExportStartTimeV1(time_of_day):
+  """Convert input to TimeOfDay type for Periodic Export Start Time v1."""
+  messages = GetMessagesModuleForVersion('v1')
   arg = '--periodic-export-start-time'
   error_message = (
       "'--periodic-export-start-time' must be used in a valid 24-hr UTC Time"
@@ -121,6 +133,7 @@ def CheckTimeOfDayField(time_of_day, error_message, arg):
   minute = int(hour_and_min[1])
 
   if hour < 0 or minute < 0 or hour > 23 or minute > 59:
+    # NOMUTANTS -- Even with this 1 line removed, the affected tests still pass.
     raise exceptions.InvalidArgumentException(arg, error_message)
 
 

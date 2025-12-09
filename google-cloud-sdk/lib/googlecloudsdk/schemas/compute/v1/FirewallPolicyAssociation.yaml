@@ -33,9 +33,6 @@ properties:
       [Output Only] Deprecated, please use short name instead. The display name
       of the firewall policy of the association.
     type: string
-  firewallPolicyId:
-    description: '[Output Only] The firewall policy ID of the association.'
-    type: string
   name:
     description: The name for an association.
     type: string
@@ -48,7 +45,3 @@ properties:
       associations have the same priority then lexicographical order on
       association names is applied.
     type: integer
-  shortName:
-    description: |-
-      [Output Only] The short name of the firewall policy of the association.
-    type: string

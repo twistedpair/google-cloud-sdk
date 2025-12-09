@@ -274,6 +274,10 @@ class ApplicationTemplate(_messages.Message):
     iacFormat: Output only. The IaC format of the application template.
     latestRevision: Output only. The latest application template revision.
     name: Identifier. Application template name.
+    rootInputVariables: Optional. Root level input variables of the
+      application template.
+    rootOutputVariables: Optional. Root level output variables of the
+      application template.
     serializedApplicationTemplate: Output only. The serialized application
       template.
     updateTime: Output only. Application template update timestamp.
@@ -320,8 +324,10 @@ class ApplicationTemplate(_messages.Message):
   iacFormat = _messages.EnumField('IacFormatValueValuesEnum', 7)
   latestRevision = _messages.StringField(8)
   name = _messages.StringField(9)
-  serializedApplicationTemplate = _messages.MessageField('SerializedApplicationTemplate', 10)
-  updateTime = _messages.StringField(11)
+  rootInputVariables = _messages.MessageField('ComponentVariable', 10, repeated=True)
+  rootOutputVariables = _messages.MessageField('ComponentVariable', 11, repeated=True)
+  serializedApplicationTemplate = _messages.MessageField('SerializedApplicationTemplate', 12)
+  updateTime = _messages.StringField(13)
 
 
 class ApplicationTemplateRevision(_messages.Message):
@@ -898,6 +904,19 @@ class ComponentParameters(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
+class ComponentVariable(_messages.Message):
+  r"""The details of an input/output variable: the variable and the component
+  Uri. name.
+
+  Fields:
+    componentUri: Required. Component to which this variable belongs.
+    variable: Required. Name of the variable.
+  """
+
+  componentUri = _messages.StringField(1)
+  variable = _messages.StringField(2)
+
+
 class Connection(_messages.Message):
   r"""Connection resource.
 
@@ -1136,6 +1155,8 @@ class DeploymentError(_messages.Message):
         due to a permission issue.
       BUCKET_CREATION_FAILED: Cloud Storage bucket creation failed due to an
         issue unrelated to permissions.
+      EXTERNAL_VALUE_SOURCE_IMPORT_FAILED: Failed to import values from an
+        external source.
     """
     ERROR_CODE_UNSPECIFIED = 0
     REVISION_FAILED = 1
@@ -1144,6 +1165,7 @@ class DeploymentError(_messages.Message):
     DELETE_BUILD_RUN_FAILED = 4
     BUCKET_CREATION_PERMISSION_DENIED = 5
     BUCKET_CREATION_FAILED = 6
+    EXTERNAL_VALUE_SOURCE_IMPORT_FAILED = 7
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Output only. The error type based on the deployment error code.
@@ -1858,6 +1880,20 @@ class DesigncenterProjectsLocationsSpacesApplicationsPreviewRequest(_messages.Me
   previewApplicationRequest = _messages.MessageField('PreviewApplicationRequest', 2)
 
 
+class DesigncenterProjectsLocationsSpacesApplicationsRegisterRequest(_messages.Message):
+  r"""A DesigncenterProjectsLocationsSpacesApplicationsRegisterRequest object.
+
+  Fields:
+    name: Required. The name of the application. Format: projects/{project}/lo
+      cations/{location}/spaces/{space}/applications/{application}
+    registerDeployedApplicationRequest: A RegisterDeployedApplicationRequest
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  registerDeployedApplicationRequest = _messages.MessageField('RegisterDeployedApplicationRequest', 2)
+
+
 class DesigncenterProjectsLocationsSpacesCatalogsCreateRequest(_messages.Message):
   r"""A DesigncenterProjectsLocationsSpacesCatalogsCreateRequest object.
 
@@ -2302,6 +2338,21 @@ class DesigncenterProjectsLocationsSpacesRegisterApphubResourcesRequest(_message
 
   parent = _messages.StringField(1, required=True)
   registerApphubResourcesRequest = _messages.MessageField('RegisterApphubResourcesRequest', 2)
+
+
+class DesigncenterProjectsLocationsSpacesRegisterDeployedResourcesRequest(_messages.Message):
+  r"""A DesigncenterProjectsLocationsSpacesRegisterDeployedResourcesRequest
+  object.
+
+  Fields:
+    parent: Required. The parent space. Format:
+      projects/{project}/locations/{location}/spaces/{space}
+    registerDeployedResourcesRequest: A RegisterDeployedResourcesRequest
+      resource to be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  registerDeployedResourcesRequest = _messages.MessageField('RegisterDeployedResourcesRequest', 2)
 
 
 class DesigncenterProjectsLocationsSpacesSetIamPolicyRequest(_messages.Message):
@@ -3785,6 +3836,55 @@ class RegisterApphubResourcesRequest(_messages.Message):
   deployedResources = _messages.MessageField('DeployedResource', 3, repeated=True)
 
 
+class RegisterDeployedApplicationRequest(_messages.Message):
+  r"""Request message for RegisterDeployedApplication method.
+
+  Fields:
+    serviceAccount: Optional. The optional Service Account (SA) to use for
+      calling AppHub APIs during registration. If not provided, the End-User
+      Credentials (EUC) will be used. If provided, the EUC must have the
+      'serviceAccountTokenCreator' role on the SA, and the SA must have the
+      necessary permissions for AppHub registration.
+    terraformState: The Terraform state (tfstate) content as a raw string. For
+      large state files exceeding 10MB, use the 'tfstate_signed_gcs_uri' field
+      instead.
+    tfstateSignedGcsUri: A securely signed Cloud Storage URI pointing to the
+      tfstate file. The URI must be signed to grant the service temporary read
+      access to the state file. ADC imposes a limit on the maximum size of the
+      state file accessed via this URI.
+  """
+
+  serviceAccount = _messages.StringField(1)
+  terraformState = _messages.StringField(2)
+  tfstateSignedGcsUri = _messages.StringField(3)
+
+
+class RegisterDeployedResourcesRequest(_messages.Message):
+  r"""Request message for RegisterDeployedResources method.
+
+  Fields:
+    apphubApplication: Required. The name of the AppHub Application. Format:
+      projects/{project}/locations/{location}/applications/{application}
+    serviceAccount: Optional. The optional Service Account (SA) to use for
+      calling AppHub APIs during registration. If not provided, the End-User
+      Credentials (EUC) will be used. If provided, the EUC must have the
+      'serviceAccountTokenCreator' role on the SA, and the SA must have the
+      necessary permissions for AppHub registration.
+    terraformState: The Terraform state (tfstate) content as a raw string. For
+      large state files exceeding 10MB, use the 'tfstate_signed_gcs_uri' field
+      instead.
+    tfstateSignedGcsUri: A securely signed Cloud Storage URI pointing to the
+      tfstate file. The URI must be signed to grant the service temporary read
+      access to the state file. ADC imposes a limit on the maximum size of the
+      state file accessed via this URI.
+  """
+
+  apphubApplication = _messages.StringField(1)
+  serviceAccount = _messages.StringField(2)
+  terraformState = _messages.StringField(3)
+  tfstateSignedGcsUri = _messages.StringField(4)
+
+
 class Resource(_messages.Message):
   r"""Status of the Resourcess in the deployment.
 
@@ -3869,6 +3969,10 @@ class SerializedApplicationTemplate(_messages.Message):
     hasGlobalResource: Output only. Whether the application template is
       compatible with regional scope.
     iacFormat: Optional. The IaC format of the application template.
+    rootInputVariables: Output only. Root level input variables of the
+      application template.
+    rootOutputVariables: Output only. Root level output variables of the
+      application template.
     uri: Optional. The application template URI.
   """
 
@@ -3911,7 +4015,9 @@ class SerializedApplicationTemplate(_messages.Message):
   displayName = _messages.StringField(6)
   hasGlobalResource = _messages.BooleanField(7)
   iacFormat = _messages.EnumField('IacFormatValueValuesEnum', 8)
-  uri = _messages.StringField(9)
+  rootInputVariables = _messages.MessageField('ComponentVariable', 9, repeated=True)
+  rootOutputVariables = _messages.MessageField('ComponentVariable', 10, repeated=True)
+  uri = _messages.StringField(11)
 
 
 class SerializedComponent(_messages.Message):

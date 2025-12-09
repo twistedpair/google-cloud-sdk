@@ -142,6 +142,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.regions = self.RegionsService(self)
     self.reliabilityRisks = self.ReliabilityRisksService(self)
     self.reservationBlocks = self.ReservationBlocksService(self)
+    self.reservationSlots = self.ReservationSlotsService(self)
     self.reservationSubBlocks = self.ReservationSubBlocksService(self)
     self.reservations = self.ReservationsService(self)
     self.resourcePolicies = self.ResourcePoliciesService(self)
@@ -24734,6 +24735,70 @@ behaviour for this method.
         request_field='reservationsBlocksPerformMaintenanceRequest',
         request_type_name='ComputeReservationBlocksPerformMaintenanceRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ReservationSlotsService(base_api.BaseApiService):
+    """Service class for the reservationSlots resource."""
+
+    _NAME = 'reservationSlots'
+
+    def __init__(self, client):
+      super(ComputeAlpha.ReservationSlotsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves information about the specified reservation slot.
+
+      Args:
+        request: (ComputeReservationSlotsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ReservationSlotsGetResponse) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{project}/zones/{zone}/reservations/{reservationsId}/reservationBlocks/{reservationBlocksId}/reservationSubBlocks/{reservationSubBlocksId}/reservationSlots/{reservationSlot}',
+        http_method='GET',
+        method_id='compute.reservationSlots.get',
+        ordered_params=['project', 'zone', 'parentName', 'reservationSlot'],
+        path_params=['parentName', 'project', 'reservationSlot', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/{+parentName}/reservationSlots/{reservationSlot}',
+        request_field='',
+        request_type_name='ComputeReservationSlotsGetRequest',
+        response_type_name='ReservationSlotsGetResponse',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of reservation slots under a single reservation.
+
+      Args:
+        request: (ComputeReservationSlotsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ReservationSlotsListResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{project}/zones/{zone}/reservations/{reservationsId}/reservationBlocks/{reservationBlocksId}/reservationSubBlocks/{reservationSubBlocksId}/reservationSlots',
+        http_method='GET',
+        method_id='compute.reservationSlots.list',
+        ordered_params=['project', 'zone', 'parentName'],
+        path_params=['parentName', 'project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/zones/{zone}/{+parentName}/reservationSlots',
+        request_field='',
+        request_type_name='ComputeReservationSlotsListRequest',
+        response_type_name='ReservationSlotsListResponse',
         supports_download=False,
     )
 

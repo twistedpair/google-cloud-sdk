@@ -14,8 +14,9 @@
 # limitations under the License.
 """Build config for Run Compose."""
 
+from __future__ import annotations
 import os
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
@@ -39,11 +40,11 @@ class BuildConfig:
   """Represents the build configuration for a service."""
 
   def __init__(
-      self, context: Optional[str] = None, dockerfile: Optional[str] = None
+      self, context: str | None = None, dockerfile: str | None = None
   ):
     self.context = context
     self.dockerfile = dockerfile
-    self.image_id: Optional[str] = None
+    self.image_id: str | None = None
 
   @classmethod
   def from_dict(cls, data: Dict[str, Any]) -> 'BuildConfig':
@@ -302,9 +303,6 @@ def _build_from_source(
       repo=repo, project_name=project_name, container=container, tag='latest'
   )
 
-  # Write the cloudbuild.yaml file to the service source directory.
-  config_path = _write_cloudbuild_config(source_path, image_tag)
-
   # Get the Cloud Build API message module
   messages = cloudbuild_util.GetMessagesModule()
 
@@ -314,29 +312,31 @@ def _build_from_source(
       f"Creating build config for image '{image_tag}' from source"
       f" '{source_path}'"
   )
-  build_config = submit_util.CreateBuildConfig(
-      tag=None,
-      no_cache=False,
-      messages=messages,
-      substitutions=None,
-      arg_config=config_path,
+  build_config = messages.Build(
+      steps=[
+          messages.BuildStep(
+              id=f'Build Docker Image: {image_tag}',
+              name='gcr.io/cloud-builders/docker',
+              args=['buildx', 'build', '--load', '-t', image_tag, '.'],
+          )
+      ],
+      images=[image_tag],
+      timeout='3600s',
+  )
+
+  build_config = submit_util.SetSource(
+      build_config,
+      messages,
       is_specified_source=True,
       no_source=False,
       source=source_path,
       gcs_source_staging_dir=None,
-      ignore_file=None,
-      arg_gcs_log_dir=None,
-      arg_machine_type=None,
-      arg_disk_size=None,
-      arg_worker_pool=None,
       arg_dir=None,
       arg_revision=None,
       arg_git_source_dir=None,
       arg_git_source_revision=None,
-      arg_service_account=None,
-      buildpack=None,
+      ignore_file=None,
       hide_logs=True,
-      # skip_set_source defaults to False, so SetSource is called internally
   )
 
   log.debug('Submitting build to Google Cloud Build')

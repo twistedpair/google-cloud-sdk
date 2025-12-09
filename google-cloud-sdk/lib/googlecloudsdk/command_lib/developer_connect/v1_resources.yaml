@@ -66,21 +66,6 @@ projects_locations_insights_configs:
     attribute_name: insights_config
     help: The insightsConfig id of the {resource} resource.
   disable_auto_completers: true
-projects_secrets_versions:
-  name: secretVersion
-  plural_name: versions
-  collection: developerconnect.projects.secrets.versions
-  attributes:
-  - *project
-  - &secret
-    parameter_name: secretsId
-    attribute_name: secret
-    help: The secret id of the {resource} resource.
-  - &secretVersion
-    parameter_name: versionsId
-    attribute_name: secret_version
-    help: The secretVersion id of the {resource} resource.
-  disable_auto_completers: true
 projects_locations_connections_git_repository_links:
   name: gitRepositoryLink
   plural_name: gitRepositoryLinks
@@ -97,7 +82,8 @@ projects_locations_connections_git_repository_links:
 projects_locations_insights_configs_deployment_events:
   name: deploymentEvent
   plural_name: deploymentEvents
-  collection: developerconnect.projects.locations.insightsConfigs.deploymentEvents
+  collection:
+    developerconnect.projects.locations.insightsConfigs.deploymentEvents
   attributes:
   - *project
   - *location
@@ -139,3 +125,30 @@ projects_locations_namespaces_services:
     attribute_name: service
     help: The service id of the {resource} resource.
   disable_auto_completers: true
+projects_locations_or_projects_secrets_versions:
+  name: secretVersion
+  plural_name: versions
+  resources:
+  - name: secretVersion
+    plural_name: versions
+    collection: developerconnect.projects.locations.secrets.versions
+    attributes:
+    - *project
+    - *location
+    - &secret
+      parameter_name: secretsId
+      attribute_name: secret
+      help: The secret id of the {resource} resource.
+    - &secretVersion
+      parameter_name: versionsId
+      attribute_name: secret_version
+      help: The secretVersion id of the {resource} resource.
+    disable_auto_completers: true
+  - name: secretVersion
+    plural_name: versions
+    collection: developerconnect.projects.secrets.versions
+    attributes:
+    - *project
+    - *secret
+    - *secretVersion
+    disable_auto_completers: true

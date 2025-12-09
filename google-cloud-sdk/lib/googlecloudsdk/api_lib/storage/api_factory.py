@@ -20,6 +20,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import functools
 import threading
 
 from googlecloudsdk.api_lib.storage import errors as cloud_api_errors
@@ -32,6 +33,7 @@ from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
+
 _INVALID_PROVIDER_PREFIX_MESSAGE = (
     'Invalid provider. Valid provider prefixes: {}'.format(
         ', '.join(
@@ -39,20 +41,34 @@ _INVALID_PROVIDER_PREFIX_MESSAGE = (
         )
     )
 )
+_GCS_ZONAL_BUCKET_LOCATION_TYPE = 'zone'
 
 # Module variable for holding one API instance per thread per (provider + bucket
 # type).
 _cloud_api_thread_local_storage = None
 
 
-def _is_gcs_zonal_bucket(provider, bucket_name: str) -> bool:
-  """Returns true if the given bucket is a GCS zonal bucket."""
+@functools.lru_cache(maxsize=128)
+def _get_is_zonal_bucket_cached(
+    *, provider: storage_url.ProviderPrefix, bucket_name: str
+) -> bool:
   if not bucket_name or provider != storage_url.ProviderPrefix.GCS:
     return False
   api_client = gcs_json_client.JsonClient()
+  return (
+      api_client.get_storage_layout(bucket_name).locationType
+      == _GCS_ZONAL_BUCKET_LOCATION_TYPE
+  )
+
+
+def _is_gcs_zonal_bucket(
+    *, provider: storage_url.ProviderPrefix, bucket_name: str
+) -> bool:
+  """Returns true if the given bucket is a GCS zonal bucket."""
   try:
-    storage_layout = api_client.get_storage_layout(bucket_name)
-    return storage_layout.locationType == 'zone'
+    return _get_is_zonal_bucket_cached(
+        provider=provider, bucket_name=bucket_name
+    )
   except cloud_api_errors.CloudApiError as e:
     status_code = getattr(e, 'status_code', None)
     if status_code in (401, 403, 404):
@@ -141,7 +157,9 @@ def get_api(provider, bucket_name=None):
   # zonal bucket client(gRPC Bidi Streaming) can be shared across multiple
   # zonal buckets. Hence, We only use whether a bucket is zonal or not to
   # determine the thread local storage key.
-  is_zonal_bucket = _is_gcs_zonal_bucket(provider, bucket_name)
+  is_zonal_bucket = _is_gcs_zonal_bucket(
+      provider=provider, bucket_name=bucket_name
+  )
 
   if properties.VALUES.storage.use_threading_local.GetBool():
     if not _cloud_api_thread_local_storage:
@@ -183,6 +201,7 @@ def get_capabilities(provider, bucket_name=None):
     Error: If provider is not a cloud scheme in storage_url.ProviderPrefix.
   """
   api_class = _get_api_class(
-      provider, _is_gcs_zonal_bucket(provider, bucket_name)
+      provider,
+      _is_gcs_zonal_bucket(provider=provider, bucket_name=bucket_name),
   )
   return api_class.capabilities

@@ -579,6 +579,17 @@ class ApphubProjectsLocationsExtendedMetadataSchemasListRequest(_messages.Messag
   parent = _messages.StringField(3, required=True)
 
 
+class ApphubProjectsLocationsGetBoundaryRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsGetBoundaryRequest object.
+
+  Fields:
+    name: Required. The name of the boundary to retrieve. Format:
+      projects/{project}/locations/{location}/boundary
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ApphubProjectsLocationsGetRequest(_messages.Message):
   r"""A ApphubProjectsLocationsGetRequest object.
 
@@ -668,9 +679,9 @@ class ApphubProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -769,6 +780,37 @@ class ApphubProjectsLocationsServiceProjectAttachmentsListRequest(_messages.Mess
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class ApphubProjectsLocationsUpdateBoundaryRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsUpdateBoundaryRequest object.
+
+  Fields:
+    boundary: A Boundary resource to be passed as the request body.
+    name: Identifier. The resource name of the boundary. Format:
+      "projects/{project}/locations/{location}/boundary"
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the Boundary resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields will be overwritten.
+  """
+
+  boundary = _messages.MessageField('Boundary', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class Application(_messages.Message):
@@ -991,6 +1033,45 @@ class Binding(_messages.Message):
   condition = _messages.MessageField('Expr', 1)
   members = _messages.StringField(2, repeated=True)
   role = _messages.StringField(3)
+
+
+class Boundary(_messages.Message):
+  r"""Application management boundary.
+
+  Enums:
+    TypeValueValuesEnum: Output only. Boundary type.
+
+  Fields:
+    createTime: Output only. Create time.
+    crmNode: Optional. The resource name of the CRM node being attached to the
+      boundary. Format: `projects/{project-number}` or `projects/{project-id}`
+    name: Identifier. The resource name of the boundary. Format:
+      "projects/{project}/locations/{location}/boundary"
+    type: Output only. Boundary type.
+    updateTime: Output only. Update time.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Boundary type.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified type.
+      AUTOMATIC: The Boundary automatically includes all descendants of the
+        CRM node.
+      MANUAL: The list of projects within the Boundary is managed by the user.
+      MANAGED_AUTOMATIC: The Boundary automatically includes all descendants
+        of the CRM node, which is set via App Management folder capability.
+    """
+    TYPE_UNSPECIFIED = 0
+    AUTOMATIC = 1
+    MANUAL = 2
+    MANAGED_AUTOMATIC = 3
+
+  createTime = _messages.StringField(1)
+  crmNode = _messages.StringField(2)
+  name = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+  updateTime = _messages.StringField(5)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -1247,6 +1328,19 @@ class FunctionalType(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 1)
 
 
+class Identity(_messages.Message):
+  r"""The identity associated with a service or workload.
+
+  Fields:
+    principal: Output only. Principal of the identity. Supported formats: *
+      `sa://my-sa@xxxx.iam.gserviceaccount.com` for GCP Service Account * `pri
+      ncipal://POOL_ID.global.PROJECT_NUMBER.workload.id.goog/ns/NAMESPACE_ID/
+      sa/MANAGED_IDENTITY_ID` for Managed Workload Identity
+  """
+
+  principal = _messages.StringField(1)
+
+
 class ListApplicationsResponse(_messages.Message):
   r"""Response for ListApplications.
 
@@ -1327,8 +1421,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1912,6 +2006,7 @@ class ServiceProperties(_messages.Message):
     functionalType: Output only. The type of the service.
     gcpProject: Output only. The service project identifier that the
       underlying cloud resource resides in.
+    identity: Output only. The identity associated with the service.
     location: Output only. The location that the underlying resource resides
       in, for example, us-west1.
     registrationType: Output only. The registration type of the service.
@@ -1951,9 +2046,10 @@ class ServiceProperties(_messages.Message):
   extendedMetadata = _messages.MessageField('ExtendedMetadataValue', 1)
   functionalType = _messages.MessageField('FunctionalType', 2)
   gcpProject = _messages.StringField(3)
-  location = _messages.StringField(4)
-  registrationType = _messages.MessageField('RegistrationType', 5)
-  zone = _messages.StringField(6)
+  identity = _messages.MessageField('Identity', 4)
+  location = _messages.StringField(5)
+  registrationType = _messages.MessageField('RegistrationType', 6)
+  zone = _messages.StringField(7)
 
 
 class ServiceReference(_messages.Message):
@@ -2202,6 +2298,7 @@ class WorkloadProperties(_messages.Message):
     functionalType: Output only. The type of the workload.
     gcpProject: Output only. The service project identifier that the
       underlying cloud resource resides in. Empty for non-cloud resources.
+    identity: Output only. The identity associated with the workload.
     location: Output only. The location that the underlying compute resource
       resides in (for example, us-west1).
     zone: Output only. The location that the underlying compute resource
@@ -2240,8 +2337,9 @@ class WorkloadProperties(_messages.Message):
   extendedMetadata = _messages.MessageField('ExtendedMetadataValue', 1)
   functionalType = _messages.MessageField('FunctionalType', 2)
   gcpProject = _messages.StringField(3)
-  location = _messages.StringField(4)
-  zone = _messages.StringField(5)
+  identity = _messages.MessageField('Identity', 4)
+  location = _messages.StringField(5)
+  zone = _messages.StringField(6)
 
 
 class WorkloadReference(_messages.Message):

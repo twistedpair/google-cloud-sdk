@@ -20,6 +20,7 @@ from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk import core
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -393,6 +394,10 @@ def ConnectorCreateReadConfigAndTaskRestartPolicy(_, args, request):
     task_restart_policy_dict["minimum_backoff"] = (
         str(args.task_restart_min_backoff.total_seconds) + "s"
     )
+  if args.task_retry_disabled:
+    task_restart_policy_dict["task_retry_disabled"] = (
+        str(args.task_retry_disabled)
+    )
   if task_restart_policy_dict:
     request.connector.taskRestartPolicy = encoding.DictToMessage(
         task_restart_policy_dict,
@@ -429,6 +434,10 @@ def ConnectorUpdateReadConfigAndTaskRestartPolicy(_, args, request):
   if args.task_restart_min_backoff:
     task_restart_policy_dict["minimum_backoff"] = (
         str(args.task_restart_min_backoff.total_seconds) + "s"
+    )
+  if args.task_retry_disabled:
+    task_restart_policy_dict["task_retry_disabled"] = (
+        str(args.task_retry_disabled)
     )
   if task_restart_policy_dict:
     request.connector.taskRestartPolicy = encoding.DictToMessage(
@@ -634,6 +643,17 @@ def DeleteSubjectConfig(subject, schema_registry_resource, context):
             e, error_format="Subject {} not found.".format(subject)
         )
 
+
+AdditionalSubnetDeprecationBeforeAppendAction = actions.DeprecationAction(
+    flag_name="--additional-subnet",
+    warn="The --additional-subnet flag is deprecated and will be removed in a "
+    "future version. Managed Kafka Connect clusters can now reach any endpoint "
+    "accessible from the primary subnet without the need to define additional "
+    "subnets. Please see "
+    "https://cloud.google.com/managed-service-for-apache-kafka/docs/connect-cluster/create-connect-cluster#worker-subnet "
+    "for more information.",
+    removed=False,
+    action="append")
 
 HTTP_ERROR_FORMAT = (
     "ResponseError: code={status_code}, message={status_message}"

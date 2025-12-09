@@ -199,3 +199,16 @@ upgrade:
     attribute_name: upgrade
     help: Resource ID of the upgrade
   disable_auto_completers: false
+
+datastore:
+  name: datastore
+  plural_name: datastores
+  collection: vmwareengine.projects.locations.datastores
+  attributes:
+  - *project
+  - *location
+  - &datastore
+    parameter_name: datastoresId
+    attribute_name: datastore
+    help: The datastore id of the {resource} resource.
+  disable_auto_completers: false

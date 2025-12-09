@@ -27,6 +27,7 @@ from googlecloudsdk.api_lib.util import apis_util
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import regional
 from googlecloudsdk.generated_clients.apis import apis_map
 
 import six
@@ -261,6 +262,7 @@ def GetClientInstance(
     no_http=False,
     http_timeout_sec=None,
     skip_activation_prompt=False,
+    location=None,
 ):
   """Returns an instance of the API client specified in the args.
 
@@ -270,6 +272,8 @@ def GetClientInstance(
     no_http: bool, True to not create an http object for this client.
     http_timeout_sec: int, seconds for http timeout, default if None.
     skip_activation_prompt: bool, if true, do not prompt for service activation.
+    location: str, Region, multi-region, or zone to use for regionalized
+      endpoints (REP).
 
   Returns:
     base_api.BaseApiClient, An instance of the specified API client.
@@ -282,6 +286,7 @@ def GetClientInstance(
       None,
       CheckResponse(skip_activation_prompt),
       http_timeout_sec=http_timeout_sec,
+      region=regional.LocationToRegion(location) if location else None,
   )
 
 

@@ -100,8 +100,7 @@ projects_locations_spaces_catalogs:
 projects_locations_spaces_application_templates_components:
   name: component
   plural_name: components
-  collection:
-    designcenter.projects.locations.spaces.applicationTemplates.components
+  collection: designcenter.projects.locations.spaces.applicationTemplates.components
   attributes:
   - *project
   - *location
@@ -111,12 +110,11 @@ projects_locations_spaces_application_templates_components:
     parameter_name: componentsId
     attribute_name: component
     help: The component id of the {resource} resource.
-  disable_auto_completers: true
+  disable_auto_completers: false
 projects_locations_spaces_application_templates_revisions:
   name: revision
   plural_name: revisions
-  collection:
-    designcenter.projects.locations.spaces.applicationTemplates.revisions
+  collection: designcenter.projects.locations.spaces.applicationTemplates.revisions
   attributes:
   - *project
   - *location
@@ -172,8 +170,7 @@ projects_locations_spaces_shared_templates_revisions:
 projects_locations_spaces_application_templates_components_connections:
   name: connection
   plural_name: connections
-  collection:
-    designcenter.projects.locations.spaces.applicationTemplates.components.connections
+  collection: designcenter.projects.locations.spaces.applicationTemplates.components.connections
   attributes:
   - *project
   - *location
@@ -185,8 +182,7 @@ projects_locations_spaces_application_templates_components_connections:
 projects_locations_spaces_catalogs_templates_revisions:
   name: revision
   plural_name: revisions
-  collection:
-    designcenter.projects.locations.spaces.catalogs.templates.revisions
+  collection: designcenter.projects.locations.spaces.catalogs.templates.revisions
   attributes:
   - *project
   - *location

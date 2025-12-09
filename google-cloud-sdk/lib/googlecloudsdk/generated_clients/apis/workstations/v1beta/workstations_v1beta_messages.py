@@ -419,10 +419,11 @@ class GceConfidentialInstanceConfig(_messages.Message):
 
 
 class GceHyperdiskBalancedHighAvailability(_messages.Message):
-  r"""A Persistent Directory backed by a Compute Engine Hyperdisk Balanced
-  High Availability Disk. This is a high-availability block storage solution
-  that offers a balance between performance and cost for most general-purpose
-  workloads.
+  r"""A Persistent Directory backed by a Compute Engine [Hyperdisk Balanced
+  High Availability Disk](https://cloud.google.com/compute/docs/disks/hd-
+  types/hyperdisk-balanced-ha). This is a high-availability block storage
+  solution that offers a balance between performance and cost for most
+  general-purpose workloads.
 
   Enums:
     ReclaimPolicyValueValuesEnum: Optional. Whether the persistent disk should
@@ -473,6 +474,8 @@ class GceInstance(_messages.Message):
   r"""A runtime using a Compute Engine instance.
 
   Messages:
+    InstanceMetadataValue: Optional. Custom metadata to apply to Compute
+      Engine instances.
     VmTagsValue: Optional. Resource manager tags to be bound to this instance.
       Tag keys and values have the same definition as [resource manager
       tags](https://cloud.google.com/resource-manager/docs/tags/tags-
@@ -521,6 +524,8 @@ class GceInstance(_messages.Message):
       **Machine Type**: nested virtualization can only be enabled on
       workstation configurations that specify a machine_type in the N1 or N2
       machine series.
+    instanceMetadata: Optional. Custom metadata to apply to Compute Engine
+      instances.
     machineType: Optional. The type of machine to use for VM instances-for
       example, `"e2-standard-4"`. For more information about machine types
       that Cloud Workstations supports, see the list of [available machine
@@ -566,7 +571,7 @@ class GceInstance(_messages.Message):
       instance options.
     startupScriptUri: Optional. Link to the startup script stored in Cloud
       Storage. This script will be run on the host workstation VM when the VM
-      is created. The uri must be of the form gs://{bucket-name}/{object-
+      is created. The URI must be of the form gs://{bucket-name}/{object-
       name}. If specifying a startup script, the service account must have
       [Permission to access the bucket and script file in Cloud
       Storage](https://cloud.google.com/storage/docs/access-control/iam-
@@ -584,6 +589,32 @@ class GceInstance(_messages.Message):
       overview). Keys must be in the format `tagKeys/{tag_key_id}`, and values
       are in the format `tagValues/456`.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InstanceMetadataValue(_messages.Message):
+    r"""Optional. Custom metadata to apply to Compute Engine instances.
+
+    Messages:
+      AdditionalProperty: An additional property for a InstanceMetadataValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        InstanceMetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InstanceMetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class VmTagsValue(_messages.Message):
@@ -620,16 +651,17 @@ class GceInstance(_messages.Message):
   disablePublicIpAddresses = _messages.BooleanField(5)
   disableSsh = _messages.BooleanField(6)
   enableNestedVirtualization = _messages.BooleanField(7)
-  machineType = _messages.StringField(8)
-  poolSize = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  pooledInstances = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 11)
-  serviceAccount = _messages.StringField(12)
-  serviceAccountScopes = _messages.StringField(13, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('GceShieldedInstanceConfig', 14)
-  startupScriptUri = _messages.StringField(15)
-  tags = _messages.StringField(16, repeated=True)
-  vmTags = _messages.MessageField('VmTagsValue', 17)
+  instanceMetadata = _messages.MessageField('InstanceMetadataValue', 8)
+  machineType = _messages.StringField(9)
+  poolSize = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  pooledInstances = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 12)
+  serviceAccount = _messages.StringField(13)
+  serviceAccountScopes = _messages.StringField(14, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('GceShieldedInstanceConfig', 15)
+  startupScriptUri = _messages.StringField(16)
+  tags = _messages.StringField(17, repeated=True)
+  vmTags = _messages.MessageField('VmTagsValue', 18)
 
 
 class GceInstanceHost(_messages.Message):
@@ -838,8 +870,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -2061,9 +2093,9 @@ class WorkstationsProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """

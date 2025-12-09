@@ -165,6 +165,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_DNSTHREATDETECTORS = (
+      'projects.locations.dnsThreatDetectors',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'dnsThreatDetectors/{dnsThreatDetectorsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_FIREWALLENDPOINTASSOCIATIONS = (
       'projects.locations.firewallEndpointAssociations',
       '{+name}',
@@ -172,6 +183,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/'
               'firewallEndpointAssociations/{firewallEndpointAssociationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_FIREWALLENDPOINTS = (
+      'projects.locations.firewallEndpoints',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'firewallEndpoints/{firewallEndpointsId}',
       },
       ['name'],
       True
@@ -331,6 +353,13 @@ class Collections(enum.Enum):
               '{urlListsId}',
       },
       ['name'],
+      True
+  )
+  PROJECTS_NETWORKS = (
+      'projects.networks',
+      'projects/{projectsId}/global/networks/{networksId}',
+      {},
+      ['projectsId', 'networksId'],
       True
   )
 

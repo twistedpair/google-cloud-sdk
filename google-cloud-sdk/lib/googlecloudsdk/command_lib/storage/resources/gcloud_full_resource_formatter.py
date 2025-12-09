@@ -70,6 +70,15 @@ _BUCKET_DISPLAY_TITLES_AND_DEFAULTS = base.BucketDisplayTitlesAndDefaults(
     default_kms_key=base.FieldDisplayTitleAndDefault(
         title='Default KMS Key', default=shim_format_util.NONE_STRING
     ),
+    gmek_enforcement=base.FieldDisplayTitleAndDefault(
+        title='GMEK Enforcement', default=None
+    ),
+    cmek_enforcement=base.FieldDisplayTitleAndDefault(
+        title='CMEK Enforcement', default=None
+    ),
+    csek_enforcement=base.FieldDisplayTitleAndDefault(
+        title='CSEK Enforcement', default=None
+    ),
     creation_time=base.FieldDisplayTitleAndDefault(
         title='Time Created', default=None
     ),

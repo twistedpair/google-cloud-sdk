@@ -1455,6 +1455,24 @@ class IamLocationsWorkforcePoolsSubjectsOperationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class IamLocationsWorkforcePoolsSubjectsRevokeSessionsRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsSubjectsRevokeSessionsRequest object.
+
+  Fields:
+    name: Required. The resource name of the WorkforcePoolSubject. Special
+      characters, like `/` and `:`, must be escaped, because all URLs need to
+      conform to the "When to Escape and Unescape" section of
+      [RFC3986](https://www.ietf.org/rfc/rfc2396.txt). Format: `locations/{loc
+      ation}/workforcePools/{workforce_pool_id}/subjects/{subject_id}`
+    revokeWorkforcePoolSubjectSessionsRequest: A
+      RevokeWorkforcePoolSubjectSessionsRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  revokeWorkforcePoolSubjectSessionsRequest = _messages.MessageField('RevokeWorkforcePoolSubjectSessionsRequest', 2)
+
+
 class IamLocationsWorkforcePoolsSubjectsUndeleteRequest(_messages.Message):
   r"""A IamLocationsWorkforcePoolsSubjectsUndeleteRequest object.
 
@@ -4995,6 +5013,10 @@ class RemoveAttestationRuleRequest(_messages.Message):
   """
 
   attestationRule = _messages.MessageField('AttestationRule', 1)
+
+
+class RevokeWorkforcePoolSubjectSessionsRequest(_messages.Message):
+  r"""Request message for RevokeWorkforcePoolSubjectSessions."""
 
 
 class Role(_messages.Message):

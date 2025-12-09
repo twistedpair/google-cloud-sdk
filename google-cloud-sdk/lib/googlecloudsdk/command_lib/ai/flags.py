@@ -560,17 +560,16 @@ The number of nodes per replica for multihost GPU deployments. Required for
 multihost GPU deployments.
 """,
     ).AddToParser(parser)
-    base.Argument(
-        '--gpu-partition-size',
-        type=str,
-        hidden=True,
-        help="""\
+
+  base.Argument(
+      '--gpu-partition-size',
+      type=str,
+      help="""\
 The partition size of the GPU accelerator. This can be used to partition a
 single GPU into multiple smaller GPU instances.
 See https://cloud.google.com/kubernetes-engine/docs/how-to/gpus-multi#multi-instance_gpu_partitions for more details.
 """,
-    ).AddToParser(parser)
-
+  ).AddToParser(parser)
   base.Argument(
       '--accelerator',
       type=arg_parsers.ArgDict(
@@ -672,6 +671,19 @@ def AddReservedIpRangesArgs(parser, resource_type):
           'List of reserved IP ranges {} will be deployed to.'.format(
               resource_type
           )
+      ),
+  ).AddToParser(parser)
+
+
+def AddDeploymentTierArgs(parser, resource_type):
+  """Add arguments for the deployment tier."""
+  base.ChoiceArgument(
+      '--deployment-tier',
+      metavar='DEPLOYMENT_TIER',
+      choices=['storage'],
+      help_str=(
+          'The deployment tier that the {} is deployed to. If not specified, a'
+          ' system-chosen default tier is used.'.format(resource_type)
       ),
   ).AddToParser(parser)
 

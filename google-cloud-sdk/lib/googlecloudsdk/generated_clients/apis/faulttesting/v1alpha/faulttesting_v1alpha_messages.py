@@ -131,8 +131,8 @@ class Experiment(_messages.Message):
       to create this experiment from. Required. Format projects/{project_id}/l
       ocations/{location}/experimentTemplates/{experimentTemplateId}. The
       server will read the named template and use its contents to fill
-      template_display_name, template_description, template_tags,
-      template_duration, and effective_action.
+      template_display_name, template_description, template_duration, and
+      effective_action.
     name: Identifier. The resource name of the Experiment, of the form:
       projects/{project_id}/locations/{location}/experiments/{experiment_id}.
     startTime: Output only. Time the experiment started running.
@@ -149,8 +149,6 @@ class Experiment(_messages.Message):
       length is 1000.
     templateDuration: Output only. The intended duration of the Experiment.
       Min duration 1 minute, max 10 days.
-    templateTags: Output only. The tags of the ExperimentTemplate this
-      experiment was created from. Min length 0, max combined length 1000.
   """
 
   class EndReasonValueValuesEnum(_messages.Enum):
@@ -205,7 +203,6 @@ class Experiment(_messages.Message):
   templateDescription = _messages.StringField(13)
   templateDisplayName = _messages.StringField(14)
   templateDuration = _messages.StringField(15)
-  templateTags = _messages.StringField(16, repeated=True)
 
 
 class ExperimentTemplate(_messages.Message):
@@ -223,8 +220,6 @@ class ExperimentTemplate(_messages.Message):
     name: Identifier. The resource name of this experiment template. Format: p
       rojects/{project}/locations/{location}/experimentTemplates/{experiment_t
       emplate_id}
-    tags: Optional. Optional user-provided tags. Min length 0, max combined
-      length 1000.
     updateTime: Output only. The time the template was last updated.
   """
 
@@ -234,8 +229,7 @@ class ExperimentTemplate(_messages.Message):
   displayName = _messages.StringField(4)
   duration = _messages.StringField(5)
   name = _messages.StringField(6)
-  tags = _messages.StringField(7, repeated=True)
-  updateTime = _messages.StringField(8)
+  updateTime = _messages.StringField(7)
 
 
 class FaulttestingProjectsLocationsExperimentTemplatesCreateRequest(_messages.Message):
@@ -435,9 +429,12 @@ class FaulttestingProjectsLocationsExperimentsStartRequest(_messages.Message):
   Fields:
     name: Required. The resource name of the experiment to start. Format:
       projects/{project}/locations/{location}/experiments/{experiment}
+    startExperimentRequest: A StartExperimentRequest resource to be passed as
+      the request body.
   """
 
   name = _messages.StringField(1, required=True)
+  startExperimentRequest = _messages.MessageField('StartExperimentRequest', 2)
 
 
 class FaulttestingProjectsLocationsExperimentsStopRequest(_messages.Message):
@@ -1141,6 +1138,10 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class StartExperimentRequest(_messages.Message):
+  r"""Request message for FaultTesting.StartExperiment."""
 
 
 class Status(_messages.Message):

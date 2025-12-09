@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import json
+import logging as std_logging
+import pickle
 import warnings
 from typing import Callable, Dict, Optional, Sequence, Tuple, Union
 
@@ -21,13 +24,83 @@ from google.api_core import gapic_v1
 import google.auth                         # type: ignore
 from google.auth import credentials as ga_credentials  # type: ignore
 from google.auth.transport.grpc import SslCredentials  # type: ignore
+from cloudsdk.google.protobuf.json_format import MessageToJson
+import cloudsdk.google.protobuf.message
 
 import grpc  # type: ignore
+import proto  # type: ignore
 
 from google.api import httpbody_pb2  # type: ignore
 from google.longrunning import operations_pb2 # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types import prediction_service
 from .base import PredictionServiceTransport, DEFAULT_CLIENT_INFO
+
+try:
+    from google.api_core import client_logging  # type: ignore
+    CLIENT_LOGGING_SUPPORTED = True  # pragma: NO COVER
+except ImportError:  # pragma: NO COVER
+    CLIENT_LOGGING_SUPPORTED = False
+
+_LOGGER = std_logging.getLogger(__name__)
+
+
+class _LoggingClientInterceptor(grpc.UnaryUnaryClientInterceptor):  # pragma: NO COVER
+    def intercept_unary_unary(self, continuation, client_call_details, request):
+        logging_enabled = CLIENT_LOGGING_SUPPORTED and _LOGGER.isEnabledFor(std_logging.DEBUG)
+        if logging_enabled:  # pragma: NO COVER
+            request_metadata = client_call_details.metadata
+            if isinstance(request, proto.Message):
+                request_payload = type(request).to_json(request)
+            elif isinstance(request, cloudsdk.google.protobuf.message.Message):
+                request_payload = MessageToJson(request)
+            else:
+                request_payload = f"{type(request).__name__}: {pickle.dumps(request)}"
+
+            request_metadata = {
+                key: value.decode("utf-8") if isinstance(value, bytes) else value
+                for key, value in request_metadata
+            }
+            grpc_request = {
+                "payload": request_payload,
+                "requestMethod": "grpc",
+                "metadata": dict(request_metadata),
+            }
+            _LOGGER.debug(
+                f"Sending request for {client_call_details.method}",
+                extra = {
+                    "serviceName": "google.cloud.aiplatform.v1.PredictionService",
+                    "rpcName": str(client_call_details.method),
+                    "request": grpc_request,
+                    "metadata": grpc_request["metadata"],
+                },
+            )
+        response = continuation(client_call_details, request)
+        if logging_enabled:  # pragma: NO COVER
+            response_metadata = response.trailing_metadata()
+            # Convert gRPC metadata `<class 'grpc.aio._metadata.Metadata'>` to list of tuples
+            metadata = dict([(k, str(v)) for k, v in response_metadata]) if response_metadata else None
+            result = response.result()
+            if isinstance(result, proto.Message):
+                response_payload = type(result).to_json(result)
+            elif isinstance(result, cloudsdk.google.protobuf.message.Message):
+                response_payload = MessageToJson(result)
+            else:
+                response_payload = f"{type(result).__name__}: {pickle.dumps(result)}"
+            grpc_response = {
+                "payload": response_payload,
+                "metadata": metadata,
+                "status": "OK",
+            }
+            _LOGGER.debug(
+                f"Received response for {client_call_details.method}.",
+                extra = {
+                    "serviceName": "google.cloud.aiplatform.v1.PredictionService",
+                    "rpcName": client_call_details.method,
+                    "response": grpc_response,
+                    "metadata": grpc_response["metadata"],
+                },
+            )
+        return response
 
 
 class PredictionServiceGrpcTransport(PredictionServiceTransport):
@@ -70,9 +143,10 @@ class PredictionServiceGrpcTransport(PredictionServiceTransport):
                 are specified, the client will attempt to ascertain the
                 credentials from the environment.
                 This argument is ignored if a ``channel`` instance is provided.
-            credentials_file (Optional[str]): A file with credentials that can
+            credentials_file (Optional[str]): Deprecated. A file with credentials that can
                 be loaded with :func:`google.auth.load_credentials_from_file`.
                 This argument is ignored if a ``channel`` instance is provided.
+                This argument will be removed in the next major version of this library.
             scopes (Optional(Sequence[str])): A list of scopes. This argument is
                 ignored if a ``channel`` instance is provided.
             channel (Optional[Union[grpc.Channel, Callable[..., grpc.Channel]]]):
@@ -121,7 +195,8 @@ class PredictionServiceGrpcTransport(PredictionServiceTransport):
 
         if isinstance(channel, grpc.Channel):
             # Ignore credentials if a channel was passed.
-            credentials = False
+            credentials = None
+            self._ignore_credentials = True
             # If a channel was explicitly provided, set it.
             self._grpc_channel = channel
             self._ssl_channel_credentials = None
@@ -178,7 +253,10 @@ class PredictionServiceGrpcTransport(PredictionServiceTransport):
                 ],
             )
 
-        # Wrap messages. This must be done after self._grpc_channel exists
+        self._interceptor = _LoggingClientInterceptor()
+        self._logged_channel =  grpc.intercept_channel(self._grpc_channel, self._interceptor)
+
+        # Wrap messages. This must be done after self._logged_channel exists
         self._prep_wrapped_messages(client_info)
 
     @classmethod
@@ -197,9 +275,10 @@ class PredictionServiceGrpcTransport(PredictionServiceTransport):
                 credentials identify this application to the service. If
                 none are specified, the client will attempt to ascertain
                 the credentials from the environment.
-            credentials_file (Optional[str]): A file with credentials that can
+            credentials_file (Optional[str]): Deprecated. A file with credentials that can
                 be loaded with :func:`google.auth.load_credentials_from_file`.
-                This argument is mutually exclusive with credentials.
+                This argument is mutually exclusive with credentials.  This argument will be
+                removed in the next major version of this library.
             scopes (Optional[Sequence[str]]): A optional list of scopes needed for this
                 service. These are only used when credentials are not specified and
                 are passed to :func:`google.auth.default`.
@@ -251,7 +330,7 @@ class PredictionServiceGrpcTransport(PredictionServiceTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'predict' not in self._stubs:
-            self._stubs['predict'] = self.grpc_channel.unary_unary(
+            self._stubs['predict'] = self._logged_channel.unary_unary(
                 '/google.cloud.aiplatform.v1.PredictionService/Predict',
                 request_serializer=prediction_service.PredictRequest.serialize,
                 response_deserializer=prediction_service.PredictResponse.deserialize,
@@ -268,13 +347,13 @@ class PredictionServiceGrpcTransport(PredictionServiceTransport):
 
         The response includes the following HTTP headers:
 
-        -  ``X-Vertex-AI-Endpoint-Id``: ID of the
-           [Endpoint][google.cloud.aiplatform.v1.Endpoint] that served
-           this prediction.
+        - ``X-Vertex-AI-Endpoint-Id``: ID of the
+          [Endpoint][google.cloud.aiplatform.v1.Endpoint] that served
+          this prediction.
 
-        -  ``X-Vertex-AI-Deployed-Model-Id``: ID of the Endpoint's
-           [DeployedModel][google.cloud.aiplatform.v1.DeployedModel]
-           that served this prediction.
+        - ``X-Vertex-AI-Deployed-Model-Id``: ID of the Endpoint's
+          [DeployedModel][google.cloud.aiplatform.v1.DeployedModel] that
+          served this prediction.
 
         Returns:
             Callable[[~.RawPredictRequest],
@@ -287,7 +366,7 @@ class PredictionServiceGrpcTransport(PredictionServiceTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'raw_predict' not in self._stubs:
-            self._stubs['raw_predict'] = self.grpc_channel.unary_unary(
+            self._stubs['raw_predict'] = self._logged_channel.unary_unary(
                 '/google.cloud.aiplatform.v1.PredictionService/RawPredict',
                 request_serializer=prediction_service.RawPredictRequest.serialize,
                 response_deserializer=httpbody_pb2.HttpBody.FromString,
@@ -314,7 +393,7 @@ class PredictionServiceGrpcTransport(PredictionServiceTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'stream_raw_predict' not in self._stubs:
-            self._stubs['stream_raw_predict'] = self.grpc_channel.unary_stream(
+            self._stubs['stream_raw_predict'] = self._logged_channel.unary_stream(
                 '/google.cloud.aiplatform.v1.PredictionService/StreamRawPredict',
                 request_serializer=prediction_service.StreamRawPredictRequest.serialize,
                 response_deserializer=httpbody_pb2.HttpBody.FromString,
@@ -342,7 +421,7 @@ class PredictionServiceGrpcTransport(PredictionServiceTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'direct_predict' not in self._stubs:
-            self._stubs['direct_predict'] = self.grpc_channel.unary_unary(
+            self._stubs['direct_predict'] = self._logged_channel.unary_unary(
                 '/google.cloud.aiplatform.v1.PredictionService/DirectPredict',
                 request_serializer=prediction_service.DirectPredictRequest.serialize,
                 response_deserializer=prediction_service.DirectPredictResponse.deserialize,
@@ -369,7 +448,7 @@ class PredictionServiceGrpcTransport(PredictionServiceTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'direct_raw_predict' not in self._stubs:
-            self._stubs['direct_raw_predict'] = self.grpc_channel.unary_unary(
+            self._stubs['direct_raw_predict'] = self._logged_channel.unary_unary(
                 '/google.cloud.aiplatform.v1.PredictionService/DirectRawPredict',
                 request_serializer=prediction_service.DirectRawPredictRequest.serialize,
                 response_deserializer=prediction_service.DirectRawPredictResponse.deserialize,
@@ -397,7 +476,7 @@ class PredictionServiceGrpcTransport(PredictionServiceTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'stream_direct_predict' not in self._stubs:
-            self._stubs['stream_direct_predict'] = self.grpc_channel.stream_stream(
+            self._stubs['stream_direct_predict'] = self._logged_channel.stream_stream(
                 '/google.cloud.aiplatform.v1.PredictionService/StreamDirectPredict',
                 request_serializer=prediction_service.StreamDirectPredictRequest.serialize,
                 response_deserializer=prediction_service.StreamDirectPredictResponse.deserialize,
@@ -424,7 +503,7 @@ class PredictionServiceGrpcTransport(PredictionServiceTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'stream_direct_raw_predict' not in self._stubs:
-            self._stubs['stream_direct_raw_predict'] = self.grpc_channel.stream_stream(
+            self._stubs['stream_direct_raw_predict'] = self._logged_channel.stream_stream(
                 '/google.cloud.aiplatform.v1.PredictionService/StreamDirectRawPredict',
                 request_serializer=prediction_service.StreamDirectRawPredictRequest.serialize,
                 response_deserializer=prediction_service.StreamDirectRawPredictResponse.deserialize,
@@ -451,7 +530,7 @@ class PredictionServiceGrpcTransport(PredictionServiceTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'streaming_predict' not in self._stubs:
-            self._stubs['streaming_predict'] = self.grpc_channel.stream_stream(
+            self._stubs['streaming_predict'] = self._logged_channel.stream_stream(
                 '/google.cloud.aiplatform.v1.PredictionService/StreamingPredict',
                 request_serializer=prediction_service.StreamingPredictRequest.serialize,
                 response_deserializer=prediction_service.StreamingPredictResponse.deserialize,
@@ -478,7 +557,7 @@ class PredictionServiceGrpcTransport(PredictionServiceTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'server_streaming_predict' not in self._stubs:
-            self._stubs['server_streaming_predict'] = self.grpc_channel.unary_stream(
+            self._stubs['server_streaming_predict'] = self._logged_channel.unary_stream(
                 '/google.cloud.aiplatform.v1.PredictionService/ServerStreamingPredict',
                 request_serializer=prediction_service.StreamingPredictRequest.serialize,
                 response_deserializer=prediction_service.StreamingPredictResponse.deserialize,
@@ -505,7 +584,7 @@ class PredictionServiceGrpcTransport(PredictionServiceTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'streaming_raw_predict' not in self._stubs:
-            self._stubs['streaming_raw_predict'] = self.grpc_channel.stream_stream(
+            self._stubs['streaming_raw_predict'] = self._logged_channel.stream_stream(
                 '/google.cloud.aiplatform.v1.PredictionService/StreamingRawPredict',
                 request_serializer=prediction_service.StreamingRawPredictRequest.serialize,
                 response_deserializer=prediction_service.StreamingRawPredictResponse.deserialize,
@@ -529,7 +608,7 @@ class PredictionServiceGrpcTransport(PredictionServiceTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'predict_long_running' not in self._stubs:
-            self._stubs['predict_long_running'] = self.grpc_channel.unary_unary(
+            self._stubs['predict_long_running'] = self._logged_channel.unary_unary(
                 '/google.cloud.aiplatform.v1.PredictionService/PredictLongRunning',
                 request_serializer=prediction_service.PredictLongRunningRequest.serialize,
                 response_deserializer=operations_pb2.Operation.FromString,
@@ -555,12 +634,42 @@ class PredictionServiceGrpcTransport(PredictionServiceTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'fetch_predict_operation' not in self._stubs:
-            self._stubs['fetch_predict_operation'] = self.grpc_channel.unary_unary(
+            self._stubs['fetch_predict_operation'] = self._logged_channel.unary_unary(
                 '/google.cloud.aiplatform.v1.PredictionService/FetchPredictOperation',
                 request_serializer=prediction_service.FetchPredictOperationRequest.serialize,
                 response_deserializer=operations_pb2.Operation.FromString,
             )
         return self._stubs['fetch_predict_operation']
+
+    @property
+    def invoke(self) -> Callable[
+            [prediction_service.InvokeRequest],
+            httpbody_pb2.HttpBody]:
+        r"""Return a callable for the invoke method over gRPC.
+
+        Forwards arbitrary HTTP requests for both streaming and
+        non-streaming cases. To use this method,
+        [invoke_route_prefix][Model.container_spec.invoke_route_prefix]
+        must be set to allow the paths that will be specified in the
+        request.
+
+        Returns:
+            Callable[[~.InvokeRequest],
+                    ~.HttpBody]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'invoke' not in self._stubs:
+            self._stubs['invoke'] = self._logged_channel.unary_stream(
+                '/google.cloud.aiplatform.v1.PredictionService/Invoke',
+                request_serializer=prediction_service.InvokeRequest.serialize,
+                response_deserializer=httpbody_pb2.HttpBody.FromString,
+            )
+        return self._stubs['invoke']
 
     @property
     def explain(self) -> Callable[
@@ -591,7 +700,7 @@ class PredictionServiceGrpcTransport(PredictionServiceTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'explain' not in self._stubs:
-            self._stubs['explain'] = self.grpc_channel.unary_unary(
+            self._stubs['explain'] = self._logged_channel.unary_unary(
                 '/google.cloud.aiplatform.v1.PredictionService/Explain',
                 request_serializer=prediction_service.ExplainRequest.serialize,
                 response_deserializer=prediction_service.ExplainResponse.deserialize,
@@ -617,7 +726,7 @@ class PredictionServiceGrpcTransport(PredictionServiceTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'generate_content' not in self._stubs:
-            self._stubs['generate_content'] = self.grpc_channel.unary_unary(
+            self._stubs['generate_content'] = self._logged_channel.unary_unary(
                 '/google.cloud.aiplatform.v1.PredictionService/GenerateContent',
                 request_serializer=prediction_service.GenerateContentRequest.serialize,
                 response_deserializer=prediction_service.GenerateContentResponse.deserialize,
@@ -644,7 +753,7 @@ class PredictionServiceGrpcTransport(PredictionServiceTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'stream_generate_content' not in self._stubs:
-            self._stubs['stream_generate_content'] = self.grpc_channel.unary_stream(
+            self._stubs['stream_generate_content'] = self._logged_channel.unary_stream(
                 '/google.cloud.aiplatform.v1.PredictionService/StreamGenerateContent',
                 request_serializer=prediction_service.GenerateContentRequest.serialize,
                 response_deserializer=prediction_service.GenerateContentResponse.deserialize,
@@ -671,15 +780,41 @@ class PredictionServiceGrpcTransport(PredictionServiceTransport):
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
         if 'chat_completions' not in self._stubs:
-            self._stubs['chat_completions'] = self.grpc_channel.unary_stream(
+            self._stubs['chat_completions'] = self._logged_channel.unary_stream(
                 '/google.cloud.aiplatform.v1.PredictionService/ChatCompletions',
                 request_serializer=prediction_service.ChatCompletionsRequest.serialize,
                 response_deserializer=httpbody_pb2.HttpBody.FromString,
             )
         return self._stubs['chat_completions']
 
+    @property
+    def embed_content(self) -> Callable[
+            [prediction_service.EmbedContentRequest],
+            prediction_service.EmbedContentResponse]:
+        r"""Return a callable for the embed content method over gRPC.
+
+        Embed content with multimodal inputs.
+
+        Returns:
+            Callable[[~.EmbedContentRequest],
+                    ~.EmbedContentResponse]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'embed_content' not in self._stubs:
+            self._stubs['embed_content'] = self._logged_channel.unary_unary(
+                '/google.cloud.aiplatform.v1.PredictionService/EmbedContent',
+                request_serializer=prediction_service.EmbedContentRequest.serialize,
+                response_deserializer=prediction_service.EmbedContentResponse.deserialize,
+            )
+        return self._stubs['embed_content']
+
     def close(self):
-        self.grpc_channel.close()
+        self._logged_channel.close()
 
     @property
     def kind(self) -> str:

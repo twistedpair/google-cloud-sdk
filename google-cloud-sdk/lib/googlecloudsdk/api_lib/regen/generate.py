@@ -15,10 +15,12 @@
 """Utility wrappers around apitools generator."""
 
 from __future__ import absolute_import
+from __future__ import annotations
 from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+import dataclasses
 import logging
 import os
 
@@ -143,14 +145,12 @@ def _MakeGapicClientDef(root_package, api_name, api_version):
       class_path=class_path)
 
 
-def _MakeApiMap(package_map, apis_config):
+def _MakeApiMap(apis_config_map):
   """Combines package_map and api_config maps into ApiDef map.
 
   Args:
-    package_map: {api_name->api_version->root_package},
-                 package where each generated api resides.
-    apis_config: {api_name->api_version->{discovery,default,version,...}},
-                 description of each api.
+    apis_config_map: {api_name->api_version->ApiConfig},
+                     description of each api.
   Returns:
     {api_name->api_version->ApiDef()}.
 
@@ -160,54 +160,97 @@ def _MakeApiMap(package_map, apis_config):
   """
   # Validate that each API has exactly one default version configured.
   default_versions_map = {}
-  for api_name, api_version_config in apis_config.items():
+  for api_name, api_version_config in apis_config_map.items():
     for api_version, api_config in api_version_config.items():
-      if api_config.get('default') or len(api_version_config) == 1:
+      if api_config.default or len(api_version_config) == 1:
         if api_name in default_versions_map:
           raise NoDefaultApiError(
               'Multiple default client versions found for [{}]!'
               .format(api_name))
         default_versions_map[api_name] = api_version
   apis_without_default = (
-      set(apis_config.keys()).difference(default_versions_map.keys()))
+      set(apis_config_map.keys()).difference(default_versions_map.keys()))
   if apis_without_default:
     raise NoDefaultApiError('No default client versions found for [{0}]!'
                             .format(', '.join(sorted(apis_without_default))))
 
   apis_map = collections.defaultdict(dict)
-  for api_name, api_version_config in apis_config.items():
+  for api_name, api_version_config in apis_config_map.items():
     for api_version, api_config in api_version_config.items():
-      if package_map.get(api_name, {}).get(api_version, None) is None:
-        continue
-      root_package = package_map[api_name][api_version]
-      if api_config.get('discovery_doc'):
+      if doc_data := api_config.discovery_doc:
         apitools_client = _MakeApitoolsClientDef(
-            root_package, api_name, api_version
+            api_config.root_package, api_name, api_version
         )
+        discovery_doc = resource_generator.DiscoveryDoc.FromJson(doc_data)
+        regional_endpoints = discovery_doc.endpoints
       else:
         apitools_client = None
-      if api_config.get('gcloud_gapic_library'):
-        gapic_client = _MakeGapicClientDef(root_package, api_name, api_version)
+        regional_endpoints = None
+      if api_config.gcloud_gapic_library:
+        gapic_client = _MakeGapicClientDef(
+            api_config.root_package, api_name, api_version)
       else:
         gapic_client = None
       default = (api_version == default_versions_map[api_name])
-      enable_mtls = api_config.get('enable_mtls', True)
-      mtls_endpoint_override = api_config.get('mtls_endpoint_override', '')
+      enable_mtls = api_config.enable_mtls
+      mtls_endpoint_override = api_config.mtls_endpoint_override or ''
       apis_map[api_name][api_version] = api_def.APIDef(
           apitools_client,
           gapic_client,
-          default, enable_mtls, mtls_endpoint_override)
+          default, enable_mtls, mtls_endpoint_override, regional_endpoints)
   return apis_map
 
 
-def GenerateApiMap(output_file, package_map, api_config):
+@dataclasses.dataclass(frozen=True)
+class ApiConfig:
+  """Configuration for an API.
+
+  root_package: dot notation of where client is generated
+  discovery_doc: full path to where discovery doc is located
+  gcloud_gapic_library: build target of gcloud gapic library
+  enable_mtls: whether to enable mtls
+  mtls_endpoint_override: mtls endpoint override
+  default: whether this is the default version of the API
+  """
+  root_package: str
+  discovery_doc: str | None
+  gcloud_gapic_library: str | None
+  enable_mtls: bool
+  mtls_endpoint_override: str | None
+  default: bool
+
+  @classmethod
+  def FromData(cls, data, root_dir, discovery_doc_dir):
+    """Creates an ApiConfig from regen config data.
+
+    Args:
+      data: yaml data from regen config
+      root_dir: where the api clients are generated
+      discovery_doc_dir: where the discovery docs are generated
+    """
+    if ((doc_name := data.get('discovery_doc')) and
+        discovery_doc_dir is not None):
+      discovery_doc = os.path.join(discovery_doc_dir, doc_name)
+    else:
+      discovery_doc = None
+
+    return cls(
+        root_package=root_dir.replace('/', '.'),
+        discovery_doc=discovery_doc,
+        gcloud_gapic_library=data.get('gcloud_gapic_library'),
+        enable_mtls=data.get('enable_mtls', True),
+        mtls_endpoint_override=data.get('mtls_endpoint_override'),
+        default=data.get('default', False),
+    )
+
+
+def GenerateApiMap(output_file, apis_config_map):
   """Create an apis_map.py file for the given packages and api_config.
 
   Args:
       output_file: Path of the output apis map file.
-      package_map: {api_name->api_version->root_package}, packages where the
-        generated APIs reside.
-      api_config: regeneration config for all apis.
+      apis_config_map: {api_name->api_version->ApiConfig}, regeneration
+        config for all apis.
   """
 
   api_def_filename, _ = os.path.splitext(api_def.__file__)
@@ -218,7 +261,7 @@ def GenerateApiMap(output_file, package_map, api_config):
   )
   logging.debug('Generating api map at %s', output_file)
 
-  api_map = _MakeApiMap(package_map, api_config)
+  api_map = _MakeApiMap(apis_config_map)
   logging.debug('Creating following api map %s', api_map)
   with files.FileWriter(output_file) as apis_map_file:
     ctx = runtime.Context(

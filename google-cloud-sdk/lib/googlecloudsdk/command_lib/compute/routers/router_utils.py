@@ -155,6 +155,15 @@ def HasIncrementalAdvertisementFlags(args):
           args.add_advertisement_ranges or args.remove_advertisement_ranges)
 
 
+def HasUpdateAdvertisementRangesFlags(args):
+  """Returns whether update-style flags are specified in arguments."""
+  return (
+      args.add_advertisement_ranges
+      or args.remove_advertisement_ranges
+      or args.set_advertisement_ranges
+  )
+
+
 def ParseAdvertisements(messages, resource_class, args):
   """Parses and validates a completed advertisement configuration from flags.
 

@@ -5,7 +5,6 @@ description: A gcloud export/import command YAML validation schema.
 type: object
 required:
 - extensionChains
-- forwardingRules
 - loadBalancingScheme
 - name
 additionalProperties: false

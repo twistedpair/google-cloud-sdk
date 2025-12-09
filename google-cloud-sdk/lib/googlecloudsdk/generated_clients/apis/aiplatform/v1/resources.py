@@ -24,6 +24,16 @@ DOCS_URL = 'https://cloud.google.com/vertex-ai/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  OPERATIONS = (
+      'operations',
+      '{+name}',
+      {
+          '':
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       'projects/{projectsId}/locations/{locationsId}',

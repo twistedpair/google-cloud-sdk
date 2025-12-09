@@ -7648,6 +7648,26 @@ class WasmPlugin(_messages.Message):
   Fields:
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A human-readable description of the resource.
+    kmsKeyName: Optional. The name of the customer managed Cloud KMS key to be
+      used to encrypt the `WasmPlugin` image (provided by image_uri) and
+      configuration (provided by plugin_config_data or plugin_config_uri) that
+      are stored by the `Service Extensions` product at rest. Format: "project
+      s/{project}/locations/{location}/keyRings/{keyring}/cryptoKeys/{key}" By
+      default, Google Cloud automatically encrypts all data at rest using
+      Google-owned and Google-managed encryption keys. If you need ownership
+      and control of the keys that protect your data at rest, you can specify
+      a customer-managed encryption key (CMEK) to encrypt your `WasmPlugin`
+      data. For more information, see [Using customer-managed encryption
+      keys](https://cloud.google.com/kms/docs/cmek).
+    kmsKeyVersion: Output only. The name of the specific CryptoKeyVersion used
+      to encrypt the `WasmPlugin` data, if the kms_key_name field is set.
+      Format: "projects/{project}/locations/{location}/keyRings/{keyring}/cryp
+      toKeys/{key}/cryptoKeyVersions/{version}" This is a read-only field.
+      `WasmPlugin` data is automatically encrypted using the most recent
+      `CryptoKeyVersion` of the `CryptoKey` provided in the `kms_key_name`
+      field. See [Cloud KMS
+      resources](https://cloud.google.com/kms/docs/resource-hierarchy) for
+      more information.
     labels: Optional. Set of labels associated with the `WasmPlugin` resource.
       The format must comply with [the following
       requirements](/compute/docs/labeling-resources#requirements).
@@ -7741,13 +7761,15 @@ class WasmPlugin(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  logConfig = _messages.MessageField('WasmPluginLogConfig', 4)
-  mainVersionId = _messages.StringField(5)
-  name = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
-  usedBy = _messages.MessageField('WasmPluginUsedBy', 8, repeated=True)
-  versions = _messages.MessageField('VersionsValue', 9)
+  kmsKeyName = _messages.StringField(3)
+  kmsKeyVersion = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  logConfig = _messages.MessageField('WasmPluginLogConfig', 6)
+  mainVersionId = _messages.StringField(7)
+  name = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+  usedBy = _messages.MessageField('WasmPluginUsedBy', 10, repeated=True)
+  versions = _messages.MessageField('VersionsValue', 11)
 
 
 class WasmPluginLogConfig(_messages.Message):

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -422,6 +422,10 @@ class RagCorpus(proto.Message):
             Only applicable to RagManagedDb option for
             Vector DB. This field can only be set at corpus
             creation time, and cannot be updated or deleted.
+        satisfies_pzs (bool):
+            Output only. Reserved for future use.
+        satisfies_pzi (bool):
+            Output only. Reserved for future use.
     """
 
     vector_db_config: 'RagVectorDbConfig' = proto.Field(
@@ -467,6 +471,14 @@ class RagCorpus(proto.Message):
         proto.MESSAGE,
         number=12,
         message=gca_encryption_spec.EncryptionSpec,
+    )
+    satisfies_pzs: bool = proto.Field(
+        proto.BOOL,
+        number=19,
+    )
+    satisfies_pzi: bool = proto.Field(
+        proto.BOOL,
+        number=20,
     )
 
 
@@ -739,8 +751,8 @@ class RagFileParsingConfig(proto.Message):
                 ``additional_config.parse_as_scanned_pdf`` field must be
                 false. Format:
 
-                -  ``projects/{project_id}/locations/{location}/processors/{processor_id}``
-                -  ``projects/{project_id}/locations/{location}/processors/{processor_id}/processorVersions/{processor_version_id}``
+                - ``projects/{project_id}/locations/{location}/processors/{processor_id}``
+                - ``projects/{project_id}/locations/{location}/processors/{processor_id}/processorVersions/{processor_version_id}``
             max_parsing_requests_per_min (int):
                 The maximum number of requests the job is
                 allowed to make to the Document AI processor per
@@ -767,7 +779,7 @@ class RagFileParsingConfig(proto.Message):
             model_name (str):
                 The name of a LLM model used for parsing. Format:
 
-                -  ``projects/{project_id}/locations/{location}/publishers/{publisher}/models/{model}``
+                - ``projects/{project_id}/locations/{location}/publishers/{publisher}/models/{model}``
             max_parsing_requests_per_min (int):
                 The maximum number of requests the job is
                 allowed to make to the LLM model per minute.
@@ -840,8 +852,8 @@ class ImportRagFilesConfig(proto.Message):
             files as well as entire Google Cloud Storage directories.
             Sample formats:
 
-            -  ``gs://bucket_name/my_directory/object_name/my_file.txt``
-            -  ``gs://bucket_name/my_directory``
+            - ``gs://bucket_name/my_directory/object_name/my_file.txt``
+            - ``gs://bucket_name/my_directory``
 
             This field is a member of `oneof`_ ``import_source``.
         google_drive_source (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.GoogleDriveSource):
@@ -1009,6 +1021,8 @@ class RagManagedDbConfig(proto.Message):
     Attributes:
         scaled (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.RagManagedDbConfig.Scaled):
             Sets the RagManagedDb to the Scaled tier.
+            This is the default tier if not explicitly
+            chosen.
 
             This field is a member of `oneof`_ ``tier``.
         basic (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.RagManagedDbConfig.Basic):
@@ -1033,10 +1047,10 @@ class RagManagedDbConfig(proto.Message):
         r"""Basic tier is a cost-effective and low compute tier suitable for the
         following cases:
 
-        -  Experimenting with RagManagedDb.
-        -  Small data size.
-        -  Latency insensitive workload.
-        -  Only using RAG Engine with external vector DBs.
+        - Experimenting with RagManagedDb.
+        - Small data size.
+        - Latency insensitive workload.
+        - Only using RAG Engine with external vector DBs.
 
         NOTE: This is the default tier if not explicitly chosen.
 

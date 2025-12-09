@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.container.fleet import gkehub_api_util
 from googlecloudsdk.api_lib.container.fleet.connectgateway import util as connectgateway_api_util
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.core import exceptions
@@ -28,7 +29,9 @@ class RegionalGatewayEndpoint:
   """Context manager for connecting to a particular regional Connect Gateway endpoint.
 
   This uses the provided region to temporarily override
-  `api_endpoint_overrides/connectgateway` to a regional endpoint.
+  `api_endpoint_overrides/connectgateway` to a regional endpoint. If the
+  `gkehub` endpoint is overridden, the `connectgateway` endpoint will use the
+  same environment.
 
   This context manager is a no-op if the `connectgateway` endpoint is already
   overridden.
@@ -63,10 +66,26 @@ class RegionalGatewayEndpoint:
     self._original_endpoint: str = ''
 
   def __enter__(self):
-    subdomain_endpoint = core_apis.GetEffectiveApiEndpoint(
-        self.API_NAME, self.API_VERSION
-    )
+    try:
+      hub_override = properties.VALUES.api_endpoint_overrides.Property(
+          gkehub_api_util.GKEHUB_API_NAME
+      ).Get()
+      hub_version = gkehub_api_util.GKEHUB_GA_API_VERSION
+    except properties.NoSuchPropertyError:
+      hub_override = None
+      hub_version = None
 
+    if hub_override:
+      subdomain_endpoint = core_apis.GetEffectiveApiEndpoint(
+          gkehub_api_util.GKEHUB_API_NAME, hub_version
+      )
+    else:
+      subdomain_endpoint = core_apis.GetEffectiveApiEndpoint(
+          self.API_NAME, self.API_VERSION
+      )
+
+    if hub_override:
+      subdomain_endpoint = hub_override.replace('gkehub', 'connectgateway')
     if self.region == 'global' or self.region in subdomain_endpoint:
       self.endpoint = subdomain_endpoint
     else:

@@ -660,7 +660,26 @@ def AddCPUCount(parser, required):
       '--cpu-count',
       required=required,
       type=int,
-      choices=[1, 2, 4, 8, 16, 32, 48, 64, 72, 96, 128],
+      choices=[
+          1,
+          2,
+          4,
+          8,
+          14,
+          16,
+          22,
+          32,
+          44,
+          48,
+          64,
+          72,
+          88,
+          96,
+          128,
+          144,
+          192,
+          288,
+      ],
       help=(
           'Whole number value indicating how many vCPUs the machine should'
           ' contain. If the instance does not have a machine-type, the vCPU'
@@ -737,6 +756,11 @@ def AddMachineType(parser, required=False):
       'z3-highmem-22-standardlssd',
       'z3-highmem-44-standardlssd',
       'z3-highmem-88-standardlssd',
+      'z3-highmem-8-highlssd',
+      'z3-highmem-16-highlssd',
+      'z3-highmem-22-highlssd',
+      'z3-highmem-32-highlssd',
+      'z3-highmem-44-highlssd',
   ]
   parser.add_argument(
       '--machine-type',

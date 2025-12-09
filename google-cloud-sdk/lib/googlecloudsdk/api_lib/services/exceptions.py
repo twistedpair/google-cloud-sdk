@@ -220,3 +220,25 @@ class ConfigError(Error):
   def __init__(self, message=None, **kwargs):
     message = message or 'Config Error.'
     super(ConfigError, self).__init__(message, **kwargs)
+
+
+class InvalidGroupNameError(Error):
+  """Raised when the group name is invalid."""
+
+  def __init__(self, group_name, **kwargs):
+    error_message = (
+        'Invalid group name format: {}. It should be '
+        'services/<service_name>/groups/<group_name>'.format(group_name)
+    )
+    super(InvalidGroupNameError, self).__init__(error_message, **kwargs)
+
+
+class EmptyMembersError(Error):
+  """Raised when the members list is empty."""
+
+  def __init__(self, group_name, **kwargs):
+    error_message = (
+        f'Group {group_name} is not found or access to its members is denied.'
+    )
+
+    super(EmptyMembersError, self).__init__(error_message, **kwargs)

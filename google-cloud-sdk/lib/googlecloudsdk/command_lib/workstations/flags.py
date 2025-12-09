@@ -575,7 +575,11 @@ def AddPdDiskType(parser):
   Type of the persistent directory."""
   parser.add_argument(
       '--pd-disk-type',
-      choices=['pd-standard', 'pd-balanced', 'pd-ssd'],
+      choices=[
+          'pd-standard',
+          'pd-balanced',
+          'pd-ssd',
+      ],
       default='pd-standard',
       help=help_text,
   )
@@ -593,12 +597,34 @@ def AddNoPersistentStorageOrPd(parser):
       help=help_text,
   )
 
-  help_text = """\
-  Persistent directory configuration."""
-  pd_group = top_level_mutex_group.add_group(mutex=False, help=help_text)
+  pd_group = top_level_mutex_group.add_group()
   AddPdDiskType(pd_group)
-  AddPdDiskSizeOrSnapshot(pd_group)
   AddPdReclaimPolicy(pd_group)
+  AddPdDiskSizeOrSnapshot(pd_group)
+
+
+def AddNoPersistentStorageOrPdOrDisk(parser):
+  """Adds a --no-persistent-storage or group of persistent directory flags to the given parser."""
+  top_level_mutex_group = parser.add_mutually_exclusive_group()
+
+  help_text = """\
+  If set, workstations under this configuration will not have a persistent directory."""
+  top_level_mutex_group.add_argument(
+      '--no-persistent-storage',
+      action='store_true',
+      help=help_text,
+  )
+
+  disk_group = top_level_mutex_group.add_group()
+  AddDiskTypeFlag(disk_group)
+  AddDiskReclaimPolicyFlag(disk_group)
+  disk_size_snapshot_group = disk_group.add_mutually_exclusive_group()
+  AddDiskSizeFlag(disk_size_snapshot_group)
+  AddDiskSnapshotFlag(disk_size_snapshot_group)
+  pd_group = top_level_mutex_group.add_group()
+  AddPdDiskType(pd_group)
+  AddPdReclaimPolicy(pd_group)
+  AddPdDiskSizeOrSnapshot(pd_group)
 
 
 def AddPdDiskSizeOrSnapshot(parser):
@@ -628,7 +654,11 @@ def AddPdDiskTypeArg():
   Type of the persistent directory."""
   return base.Argument(
       '--pd-disk-type',
-      choices=['pd-standard', 'pd-balanced', 'pd-ssd'],
+      choices=[
+          'pd-standard',
+          'pd-balanced',
+          'pd-ssd',
+      ],
       default='pd-standard',
       help=help_text,
   )
@@ -658,17 +688,30 @@ def AddPdSourceSnapshotArg():
 
 def AddPersistentDirectories(parser, use_default=True):
   """Adds a --pd-disk-size, --pd-disk-type, and --pd-source-snapshot flag to the given parser."""
+  group = parser.add_mutually_exclusive_group()
+  # OPTION 1: "--pd-source-snapshot"
+  AddPdSourceSnapshotArg().AddToParser(group)
+  # OPTION 2: "--pd-disk-type" and "--pd-disk-size"
+  pd_type_size_group = group.add_group(mutex=False)
+  AddPdDiskTypeArg().AddToParser(pd_type_size_group)
+  AddPdDiskSizeArg(use_default).AddToParser(pd_type_size_group)
 
-  persistent_directory_group = parser.add_mutually_exclusive_group()
-  AddPdSourceSnapshotArg().AddToParser(persistent_directory_group)
 
-  help_text = """\
-  --pd-source-snapshot cannot be specified when --pd-disk-size or --pd-disk-type is specified."""
-  type_size_group = persistent_directory_group.add_group(
-      mutex=False, help=help_text
-  )
-  AddPdDiskTypeArg().AddToParser(type_size_group)
-  AddPdDiskSizeArg(use_default).AddToParser(type_size_group)
+def AddPersistentDirectoriesOrHyperdisks(parser, use_default=True):
+  """Adds a --pd-disk-size, --pd-disk-type, and --pd-source-snapshot flag to the given parser."""
+  group = parser.add_mutually_exclusive_group()
+  # OPTION 1: "--pd-source-snapshot"
+  AddPdSourceSnapshotArg().AddToParser(group)
+  # OPTION 2: "--pd-disk-type" and "--pd-disk-size"
+  pd_type_size_group = group.add_group(mutex=False)
+  AddPdDiskTypeArg().AddToParser(pd_type_size_group)
+  AddPdDiskSizeArg(use_default).AddToParser(pd_type_size_group)
+  # OPTION 3: "--disk-type" and "--disk-size"
+  disk_type_size_group = group.add_group(mutex=False)
+  AddDiskTypeFlag(disk_type_size_group)
+  AddDiskSizeFlag(disk_type_size_group)
+  # OPTION 4: "--disk-source-snapshot"
+  AddDiskSnapshotFlag(group)
 
 
 def AddPdReclaimPolicy(parser):
@@ -685,6 +728,63 @@ def AddPdReclaimPolicy(parser):
           ),
       },
       default='delete',
+      help=help_text,
+  )
+
+
+def AddDiskTypeFlag(parser):
+  """Adds a --disk-type flag to the given parser."""
+  help_text = """\
+  Type of the persistent directory."""
+  parser.add_argument(
+      '--disk-type',
+      choices=[
+          'pd-standard',
+          'pd-balanced',
+          'pd-ssd',
+          'hyperdisk-balanced-ha',
+      ],
+      help=help_text,
+  )
+
+
+def AddDiskReclaimPolicyFlag(parser):
+  """Adds a --disk-reclaim-policy flag to the given parser."""
+  help_text = """\
+  What should happen to the disk after the Workstation is deleted."""
+  parser.add_argument(
+      '--disk-reclaim-policy',
+      choices={
+          'delete': 'The persistent disk will be deleted with the Workstation.',
+          'retain': (
+              'The persistent disk will be remain after the workstation is'
+              ' deleted and the administrator must manually delete the disk.'
+          ),
+      },
+      default='delete',
+      help=help_text,
+  )
+
+
+def AddDiskSizeFlag(parser):
+  """Adds a --disk-size flag to the given parser."""
+  help_text = """\
+  Size of the persistent directory in GB."""
+  parser.add_argument(
+      '--disk-size',
+      choices=[10, 50, 100, 200, 500, 1000],
+      type=int,
+      help=help_text,
+  )
+
+
+def AddDiskSnapshotFlag(parser):
+  """Adds a --disk-source-snapshot flag to the given parser."""
+  help_text = """\
+  Name of the snapshot to use as the source for the home disk."""
+  parser.add_argument(
+      '--disk-source-snapshot',
+      default='',
       help=help_text,
   )
 

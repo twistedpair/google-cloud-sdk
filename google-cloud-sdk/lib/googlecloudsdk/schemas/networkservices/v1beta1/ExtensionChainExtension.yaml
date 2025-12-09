@@ -4,7 +4,6 @@ title: networkservices v1beta1 ExtensionChainExtension export schema
 description: A gcloud export/import command YAML validation schema.
 type: object
 required:
-- name
 - service
 additionalProperties: false
 properties:
@@ -32,8 +31,8 @@ properties:
     description: |-
       When set to `TRUE`, the response from an extension service is allowed to
       set the `com.google.envoy.dynamic_forwarding` namespace in the dynamic
-      metadata. This field is not supported for plugin extensions. Setting it
-      results in a validation error.
+      metadata. This field is not supported for plugin extensions or
+      AuthzExtensions. Setting it results in a validation error.
     type: boolean
   authority:
     description: |-
@@ -65,18 +64,24 @@ properties:
     description: |-
       The metadata provided here is included as part of the
       `metadata_context` (of type `google.protobuf.Struct`) in the
-      `ProcessingRequest` message sent to the extension server. The metadata
-      is available under the namespace `com.google....`. For example:
+      `ProcessingRequest` message sent to the extension server. For
+      `AuthzExtension` resources, the metadata is available under the
+      namespace `com.google.authz_extension.`. For other types of
+      extensions, the metadata is available under the namespace
+      `com.google....`. For example:
       `com.google.lb_traffic_extension.lbtrafficextension1.chain1.ext1`. The
       following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name. This field is subject to following
-      limitations: * The total size of the metadata must be less than 1KiB.
-      * The total number of keys in the metadata must be less than 20. * The
-      length of each key must be less than 64 characters. * The length of
-      each value must be less than 1024 characters. * All values must be
-      strings. This field is not supported for plugin extensions. Setting it
-      results in a validation error.
+      qualified resource name. This field must not be set for plugin
+      extensions. Setting it results in a validation error. You can set
+      metadata at either the resource level or the extension level. The
+      extension level metadata is recommended because you can pass a
+      different set of metadata through each extension to the backend. This
+      field is subject to following limitations: * The total size of the
+      metadata must be less than 1KiB. * The total number of keys in the
+      metadata must be less than 16. * The length of each key must be less
+      than 64 characters. * The length of each value must be less than 1024
+      characters. * All values must be strings.
     type: object
   name:
     description: |-
@@ -84,8 +89,55 @@ properties:
       request logs. The name must conform with RFC-1034, is restricted to
       lower-cased letters, numbers and hyphens, and can have a maximum
       length of 63 characters. Additionally, the first character must be a
-      letter and the last a letter or a number.
+      letter and the last a letter or a number. This field is required
+      except for AuthzExtension.
     type: string
+  observabilityMode:
+    description: |-
+      When set to `TRUE`, enables `observability_mode` on the `ext_proc`
+      filter. This makes `ext_proc` calls asynchronous. Envoy doesn't check
+      for the response from `ext_proc` calls. For more information about the
+      filter, see: https://www.envoyprox y.io/docs/envoy/v1.32.3/api-
+      v3/extensions/filters/http/ext_proc/v3/ext_proc.proto#extensions-
+      filters-http-ext-proc-v3-externalprocessor This field is helpful when
+      you want to try out the extension in async log-only mode. Supported by
+      regional `LbTrafficExtension` and `LbRouteExtension` resources. Only
+      `STREAMED` (default) body processing mode is supported.
+    type: boolean
+  requestBodySendMode:
+    description: |-
+      Configures the send mode for request body processing. The field can
+      only be set if `supported_events` includes `REQUEST_BODY`. If
+      `supported_events` includes `REQUEST_BODY`, but
+      `request_body_send_mode` is unset, the default value `STREAMED` is
+      used. When this field is set to `FULL_DUPLEX_STREAMED`,
+      `supported_events` must include both `REQUEST_BODY` and
+      `REQUEST_TRAILERS`. This field can be set only for
+      `LbTrafficExtension` and `LbRouteExtension` resources, and only when
+      the `service` field of the extension points to a `BackendService`.
+      Only `FULL_DUPLEX_STREAMED` mode is supported for `LbRouteExtension`
+      resources.
+    type: string
+    enum:
+    - BODY_SEND_MODE_FULL_DUPLEX_STREAMED
+    - BODY_SEND_MODE_STREAMED
+    - BODY_SEND_MODE_UNSPECIFIED
+  responseBodySendMode:
+    description: |-
+      Configures the send mode for response processing. If unspecified, the
+      default value `STREAMED` is used. The field can only be set if
+      `supported_events` includes `RESPONSE_BODY`. If `supported_events`
+      includes `RESPONSE_BODY`, but `response_body_send_mode` is unset, the
+      default value `STREAMED` is used. When this field is set to
+      `FULL_DUPLEX_STREAMED`, `supported_events` must include both
+      `RESPONSE_BODY` and `RESPONSE_TRAILERS`. This field can be set only
+      for `LbTrafficExtension` resources, and only when the `service` field
+      of the extension points to a `BackendService`.
+    type: string
+    enum:
+    - BODY_SEND_MODE_FULL_DUPLEX_STREAMED
+    - BODY_SEND_MODE_STREAMED
+    - BODY_SEND_MODE_UNSPECIFIED
   service:
     description: |-
       The reference to the service that runs the extension. To configure a
@@ -103,16 +155,20 @@ properties:
       `projects/{project}/locations/{location}/wasmPlugins/{plugin}` or
       `//net workservices.googleapis.com/projects/{project}/locations/{locat
       ion}/wasm Plugins/{wasmPlugin}`. Plugin extensions are currently
-      supported for the `LbTrafficExtension` and the `LbRouteExtension`
-      resources.
+      supported for the `LbTrafficExtension`, the `LbRouteExtension`, and
+      the `LbEdgeExtension` resources.
     type: string
   supportedEvents:
     description: |-
       A set of events during request or response processing for which this
-      extension is called. This field is required for the
-      `LbTrafficExtension` resource. It is optional for the
-      `LbRouteExtension` resource. If unspecified `REQUEST_HEADERS` event is
-      assumed as supported.
+      extension is called. For the `LbTrafficExtension` resource, this field
+      is required. For the `LbRouteExtension` resource, this field is
+      optional. If unspecified, `REQUEST_HEADERS` event is assumed as
+      supported. For the `LbEdgeExtension` resource, this field is required
+      and must only contain `REQUEST_HEADERS` event. For the
+      `AuthzExtension` resource, this field is optional. `REQUEST_HEADERS`
+      is the only supported event. If unspecified, `REQUEST_HEADERS` event
+      is assumed as supported.
     type: array
     items:
       type: string
@@ -127,7 +183,7 @@ properties:
   timeout:
     description: |-
       Specifies the timeout for each individual message on the stream.
-      The timeout must be between `10`-`1000` milliseconds. Required for
-      callout extensions. This field is not supported for plugin
+      The timeout must be between `10`-`10000` milliseconds. Required
+      for callout extensions. This field is not supported for plugin
       extensions. Setting it results in a validation error.
     type: string

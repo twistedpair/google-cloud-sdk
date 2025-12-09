@@ -857,6 +857,15 @@ class CloneContext(_messages.Message):
       the source instance. Clone all databases if empty.
     destinationInstanceName: Name of the Cloud SQL instance to be created as a
       clone.
+    destinationNetwork: Optional. The fully qualified URI of the VPC network
+      to which the cloned instance will be connected via Private Services
+      Access for private IP. for example:`projects/my-network-
+      project/global/networks/my-network`. This field is required only for
+      cross-project cloning.
+    destinationProject: Optional. The project ID of the destination project
+      where the cloned instance will be created. To perform a cross-project
+      clone, this field is required. If not specified, the clone is created in
+      the same project as the source instance.
     kind: This is always `sql#cloneContext`.
     pitrTimestampMs: Reserved for future use.
     pointInTime: Timestamp, if specified, identifies the time to which the
@@ -877,12 +886,14 @@ class CloneContext(_messages.Message):
   binLogCoordinates = _messages.MessageField('BinLogCoordinates', 2)
   databaseNames = _messages.StringField(3, repeated=True)
   destinationInstanceName = _messages.StringField(4)
-  kind = _messages.StringField(5)
-  pitrTimestampMs = _messages.IntegerField(6)
-  pointInTime = _messages.StringField(7)
-  preferredSecondaryZone = _messages.StringField(8)
-  preferredZone = _messages.StringField(9)
-  sourceInstanceDeletionTime = _messages.StringField(10)
+  destinationNetwork = _messages.StringField(5)
+  destinationProject = _messages.StringField(6)
+  kind = _messages.StringField(7)
+  pitrTimestampMs = _messages.IntegerField(8)
+  pointInTime = _messages.StringField(9)
+  preferredSecondaryZone = _messages.StringField(10)
+  preferredZone = _messages.StringField(11)
+  sourceInstanceDeletionTime = _messages.StringField(12)
 
 
 class Column(_messages.Message):
@@ -4179,6 +4190,9 @@ class PointInTimeRestoreContext(_messages.Message):
       the source instance is deleted. If this instance is deleted, then you
       must set the timestamp.
     targetInstance: Target instance name.
+    targetInstanceClearSettingsFieldNames: Optional. Specifies the instance
+      settings that will be cleared from the source instance. This field is
+      only applicable for cross project PITRs.
     targetInstanceSettings: Optional. Specifies the instance settings that
       will be overridden from the source instance. This field is only
       applicable for cross project PITRs.
@@ -4193,7 +4207,8 @@ class PointInTimeRestoreContext(_messages.Message):
   privateNetwork = _messages.StringField(7)
   sourceInstanceDeletionTime = _messages.StringField(8)
   targetInstance = _messages.StringField(9)
-  targetInstanceSettings = _messages.MessageField('DatabaseInstance', 10)
+  targetInstanceClearSettingsFieldNames = _messages.StringField(10, repeated=True)
+  targetInstanceSettings = _messages.MessageField('DatabaseInstance', 11)
 
 
 class PoolNodeConfig(_messages.Message):
@@ -4844,7 +4859,8 @@ class Settings(_messages.Message):
       specifies when the instance can be restarted for maintenance purposes.
     passwordValidationPolicy: The local user password validation policy of the
       instance.
-    performanceCaptureConfig: Optional. Configuration for Performance Capture.
+    performanceCaptureConfig: Optional. Configuration for Performance Capture,
+      provides diagnostic metrics during high load situations.
     pricingPlan: The pricing plan for this instance. This can be either
       `PER_USE` or `PACKAGE`. Only `PER_USE` is supported for Second
       Generation instances.

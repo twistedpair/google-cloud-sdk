@@ -4,7 +4,6 @@ title: networkservices v1 ExtensionChainExtension export schema
 description: A gcloud export/import command YAML validation schema.
 type: object
 required:
-- name
 - service
 additionalProperties: false
 properties:
@@ -58,8 +57,11 @@ properties:
     description: |-
       The metadata provided here is included as part of the
       `metadata_context` (of type `google.protobuf.Struct`) in the
-      `ProcessingRequest` message sent to the extension server. The metadata
-      is available under the namespace `com.google....`. For example:
+      `ProcessingRequest` message sent to the extension server. For
+      `AuthzExtension` resources, the metadata is available under the
+      namespace `com.google.authz_extension.`. For other types of
+      extensions, the metadata is available under the namespace
+      `com.google....`. For example:
       `com.google.lb_traffic_extension.lbtrafficextension1.chain1.ext1`. The
       following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
@@ -80,8 +82,21 @@ properties:
       request logs. The name must conform with RFC-1034, is restricted to
       lower-cased letters, numbers and hyphens, and can have a maximum
       length of 63 characters. Additionally, the first character must be a
-      letter and the last a letter or a number.
+      letter and the last a letter or a number. This field is required
+      except for AuthzExtension.
     type: string
+  observabilityMode:
+    description: |-
+      When set to `TRUE`, enables `observability_mode` on the `ext_proc`
+      filter. This makes `ext_proc` calls asynchronous. Envoy doesn't check
+      for the response from `ext_proc` calls. For more information about the
+      filter, see: https://www.envoyprox y.io/docs/envoy/v1.32.3/api-
+      v3/extensions/filters/http/ext_proc/v3/ext_proc.proto#extensions-
+      filters-http-ext-proc-v3-externalprocessor This field is helpful when
+      you want to try out the extension in async log-only mode. Supported by
+      regional `LbTrafficExtension` and `LbRouteExtension` resources. Only
+      `STREAMED` (default) body processing mode is supported.
+    type: boolean
   requestBodySendMode:
     description: |-
       Configures the send mode for request body processing. The field can
@@ -143,7 +158,10 @@ properties:
       is required. For the `LbRouteExtension` resource, this field is
       optional. If unspecified, `REQUEST_HEADERS` event is assumed as
       supported. For the `LbEdgeExtension` resource, this field is required
-      and must only contain `REQUEST_HEADERS` event.
+      and must only contain `REQUEST_HEADERS` event. For the
+      `AuthzExtension` resource, this field is optional. `REQUEST_HEADERS`
+      is the only supported event. If unspecified, `REQUEST_HEADERS` event
+      is assumed as supported.
     type: array
     items:
       type: string

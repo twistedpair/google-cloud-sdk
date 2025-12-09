@@ -1009,6 +1009,33 @@ class CloudnumberregistryV1alpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def CheckAdminScopeAvailability(self, request, global_params=None):
+      r"""Checks the availability of IPAM admin scopes in a given project and location.
+
+      Args:
+        request: (CloudnumberregistryProjectsLocationsCheckAdminScopeAvailabilityRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CheckAvailabilityIpamAdminScopesResponse) The response message.
+      """
+      config = self.GetMethodConfig('CheckAdminScopeAvailability')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CheckAdminScopeAvailability.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}:checkAdminScopeAvailability',
+        http_method='GET',
+        method_id='cloudnumberregistry.projects.locations.checkAdminScopeAvailability',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['scopes'],
+        relative_path='v1alpha/{+parent}:checkAdminScopeAvailability',
+        request_field='',
+        request_type_name='CloudnumberregistryProjectsLocationsCheckAdminScopeAvailabilityRequest',
+        response_type_name='CheckAvailabilityIpamAdminScopesResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets information about a location.
 

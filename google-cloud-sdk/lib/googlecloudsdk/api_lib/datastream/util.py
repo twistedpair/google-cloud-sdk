@@ -73,8 +73,23 @@ RDBMS_FIELD_NAME_BY_RELEASE_TRACK = {
 }
 
 
+def ParseJsonAndValidateSchema(parsed_json, schema_name, message_type):
+  """Parses a config message from a parsed JSON and validates its schema."""
+  schema_path = export_util.GetSchemaPath(
+      _DEFAULT_API_NAME, _DEFAULT_API_VERSION, schema_name, for_help=False
+  )
+
+  message = CreateMessageWithCamelCaseConversion(
+      message_type=message_type,
+      parsed_yaml=parsed_json,
+      schema_path=schema_path,
+  )
+
+  return message
+
+
 def ParseMessageAndValidateSchema(config_file_path, schema_name, message_type):
-  """Parses a config message and validates it's schema."""
+  """Parses a config message from a file and validates its schema."""
   schema_path = export_util.GetSchemaPath(
       _DEFAULT_API_NAME, _DEFAULT_API_VERSION, schema_name, for_help=False
   )

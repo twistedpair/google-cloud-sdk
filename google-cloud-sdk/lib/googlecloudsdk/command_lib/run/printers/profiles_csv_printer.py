@@ -66,9 +66,15 @@ def _transform_profiles(profiles):
       "Output Tokens/s",
       "NTPOT (ms)",
       "TTFT (ms)",
+      "ITL (ms)",
       "QPS",
       "Cost/M Input Tokens",
       "Cost/M Output Tokens",
+      "Use Case",
+      "Average Input Length",
+      "Average Output Length",
+      "Serving Stack",
+      "Serving Stack Version",
   ]
   csv_data.append(header)
   for profile in profiles:
@@ -86,9 +92,15 @@ def _transform_profiles(profiles):
             stats.outputTokensPerSecond,
             stats.ntpotMilliseconds,
             stats.ttftMilliseconds,
+            getattr(stats, "itlMilliseconds", ""),
             stats.queriesPerSecond,
             input_token_cost,
             output_token_cost,
+            profile.workloadSpec.useCase,
+            profile.workloadSpec.averageInputLength,
+            profile.workloadSpec.averageOutputLength,
+            profile.servingStack.name if profile.servingStack else None,
+            profile.servingStack.version if profile.servingStack else None,
         ]
         csv_data.append(row)
   return csv_data

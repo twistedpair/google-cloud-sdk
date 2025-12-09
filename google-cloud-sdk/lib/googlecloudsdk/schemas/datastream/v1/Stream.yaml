@@ -52,6 +52,11 @@ properties:
   labels:
     description: Labels.
     $ref: LabelsValue.yaml
+  ruleSets:
+    description: Rule sets to apply to the stream.
+    type: array
+    items:
+      $ref: RuleSet.yaml
   sourceConfig:
     description: Source connection profile configuration.
     $ref: SourceConfig.yaml

@@ -135,7 +135,7 @@ def AddBackupRetentionPolicyArg(parser):
       )
 
 
-def AddKmsConfigArg(parser):
+def AddKmsConfigArg(parser, hidden=False):
   """Adds the --kms-config flag to the parser."""
   help_text = """\
   The resource name of the KMS Config to use for encrypting backups within this backup vault.
@@ -146,7 +146,7 @@ def AddKmsConfigArg(parser):
       flags.GetKmsConfigResourceSpec(),
       help_text,
       required=False,
-      hidden=True,
+      hidden=hidden,
       flag_name_overrides={'location': ''},
   )
   concept_parsers.ConceptParser([kms_config_presentation_spec]).AddToParser(

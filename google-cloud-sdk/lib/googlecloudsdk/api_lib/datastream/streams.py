@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import json
 from googlecloudsdk.api_lib.datastream import exceptions as ds_exceptions
 from googlecloudsdk.api_lib.datastream import util
 from googlecloudsdk.calliope import base
@@ -279,6 +280,23 @@ class StreamsClient:
           'Cannot parse YAML: missing file format.')
     return gcs_dest_config_msg
 
+  def _ParseRuleSets(self, rule_sets_file):
+    """Parses a list of RuleSets from a JSON file."""
+    data = util.console_io.ReadFromFileOrStdin(rule_sets_file, binary=False)
+    try:
+      parsed_rule_sets = json.loads(data)
+    except json.JSONDecodeError as e:
+      raise ds_exceptions.ParseError('Cannot parse JSON:[{0}]'.format(e))
+
+    rule_sets_list = []
+    for rule_set in parsed_rule_sets:
+      rule_sets_list.append(
+          util.ParseJsonAndValidateSchema(
+              rule_set, 'RuleSet', self._messages.RuleSet
+          )
+      )
+    return rule_sets_list
+
   def _ParseBigqueryDestinationConfig(self, config_file):
     """Parses a BigQueryDestinationConfig into the BigQueryDestinationConfig message."""
     return util.ParseMessageAndValidateSchema(
@@ -354,6 +372,9 @@ class StreamsClient:
     elif args.backfill_all:
       backfill_all_strategy = self._GetBackfillAllStrategy(release_track, args)
       stream_obj.backfillAll = backfill_all_strategy
+
+    if args.rule_sets:
+      stream_obj.ruleSets = self._ParseRuleSets(args.rule_sets)
 
     return stream_obj
 

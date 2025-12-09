@@ -124,6 +124,16 @@ class BasicEncryption(_messages.Message):
 
 
 
+class BigQueryClustering(_messages.Message):
+  r"""BigQuery clustering configuration.
+
+  Fields:
+    columns: Column names to set as clustering columns.
+  """
+
+  columns = _messages.StringField(1, repeated=True)
+
+
 class BigQueryDestinationConfig(_messages.Message):
   r"""BigQuery destination configuration
 
@@ -146,6 +156,23 @@ class BigQueryDestinationConfig(_messages.Message):
   merge = _messages.MessageField('Merge', 4)
   singleTargetDataset = _messages.MessageField('SingleTargetDataset', 5)
   sourceHierarchyDatasets = _messages.MessageField('SourceHierarchyDatasets', 6)
+
+
+class BigQueryPartitioning(_messages.Message):
+  r"""BigQuery partitioning configuration.
+
+  Fields:
+    ingestionTimePartition: Ingestion time partitioning.
+    integerRangePartition: Integer range partitioning.
+    requirePartitionFilter: If true, queries over the table require a
+      partition filter.
+    timeUnitPartition: Time unit column partitioning.
+  """
+
+  ingestionTimePartition = _messages.MessageField('IngestionTimePartition', 1)
+  integerRangePartition = _messages.MessageField('IntegerRangePartition', 2)
+  requirePartitionFilter = _messages.BooleanField(3)
+  timeUnitPartition = _messages.MessageField('TimeUnitPartition', 4)
 
 
 class BigQueryProfile(_messages.Message):
@@ -302,6 +329,18 @@ class ConnectionProfile(_messages.Message):
   sqlServerProfile = _messages.MessageField('SqlServerProfile', 16)
   staticServiceIpConnectivity = _messages.MessageField('StaticServiceIpConnectivity', 17)
   updateTime = _messages.StringField(18)
+
+
+class CustomizationRule(_messages.Message):
+  r"""A customization rule to apply to a set of objects.
+
+  Fields:
+    bigqueryClustering: BigQuery clustering rule.
+    bigqueryPartitioning: BigQuery partitioning rule.
+  """
+
+  bigqueryClustering = _messages.MessageField('BigQueryClustering', 1)
+  bigqueryPartitioning = _messages.MessageField('BigQueryPartitioning', 2)
 
 
 class DatasetTemplate(_messages.Message):
@@ -1209,6 +1248,54 @@ class HostAddress(_messages.Message):
   port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class IngestionTimePartition(_messages.Message):
+  r"""Ingestion time partitioning. see
+  https://cloud.google.com/bigquery/docs/partitioned-tables#ingestion_time
+
+  Enums:
+    PartitioningTimeGranularityValueValuesEnum: Partition granularity
+
+  Fields:
+    partitioningTimeGranularity: Partition granularity
+  """
+
+  class PartitioningTimeGranularityValueValuesEnum(_messages.Enum):
+    r"""Partition granularity
+
+    Values:
+      PARTITIONING_TIME_GRANULARITY_UNSPECIFIED: Unspecified partitioing
+        interval.
+      PARTITIONING_TIME_GRANULARITY_HOUR: Hourly partitioning.
+      PARTITIONING_TIME_GRANULARITY_DAY: Daily partitioning.
+      PARTITIONING_TIME_GRANULARITY_MONTH: Monthly partitioning.
+      PARTITIONING_TIME_GRANULARITY_YEAR: Yearly partitioning.
+    """
+    PARTITIONING_TIME_GRANULARITY_UNSPECIFIED = 0
+    PARTITIONING_TIME_GRANULARITY_HOUR = 1
+    PARTITIONING_TIME_GRANULARITY_DAY = 2
+    PARTITIONING_TIME_GRANULARITY_MONTH = 3
+    PARTITIONING_TIME_GRANULARITY_YEAR = 4
+
+  partitioningTimeGranularity = _messages.EnumField('PartitioningTimeGranularityValueValuesEnum', 1)
+
+
+class IntegerRangePartition(_messages.Message):
+  r"""Integer range partitioning. see
+  https://cloud.google.com/bigquery/docs/partitioned-tables#integer_range
+
+  Fields:
+    column: The partitioning column.
+    end: The ending value for range partitioning (exclusive).
+    interval: The interval of each range within the partition.
+    start: The starting value for range partitioning (inclusive).
+  """
+
+  column = _messages.StringField(1)
+  end = _messages.IntegerField(2)
+  interval = _messages.IntegerField(3)
+  start = _messages.IntegerField(4)
+
+
 class JsonFileFormat(_messages.Message):
   r"""JSON file format configuration.
 
@@ -1838,6 +1925,16 @@ class Oauth2ClientCredentials(_messages.Message):
   clientId = _messages.StringField(1)
   clientSecret = _messages.StringField(2)
   secretManagerStoredClientSecret = _messages.StringField(3)
+
+
+class ObjectFilter(_messages.Message):
+  r"""Object filter to apply the rules to.
+
+  Fields:
+    sourceObjectIdentifier: Specific source object identifier.
+  """
+
+  sourceObjectIdentifier = _messages.MessageField('SourceObjectIdentifier', 1)
 
 
 class Operation(_messages.Message):
@@ -2526,6 +2623,18 @@ class Route(_messages.Message):
   updateTime = _messages.StringField(7)
 
 
+class RuleSet(_messages.Message):
+  r"""A set of rules to apply to a set of objects.
+
+  Fields:
+    customizationRules: List of customization rules to apply.
+    objectFilter: Object filter to apply the customization rules to.
+  """
+
+  customizationRules = _messages.MessageField('CustomizationRule', 1, repeated=True)
+  objectFilter = _messages.MessageField('ObjectFilter', 2)
+
+
 class RunStreamRequest(_messages.Message):
   r"""Request message for running a stream.
 
@@ -3110,6 +3219,7 @@ class Stream(_messages.Message):
     lastRecoveryTime: Output only. If the stream was recovered, the time of
       the last recovery. Note: This field is currently experimental.
     name: Output only. Identifier. The stream's name.
+    ruleSets: Optional. Rule sets to apply to the stream.
     satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: Output only. Reserved for future use.
     sourceConfig: Required. Source connection profile configuration.
@@ -3179,11 +3289,12 @@ class Stream(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 8)
   lastRecoveryTime = _messages.StringField(9)
   name = _messages.StringField(10)
-  satisfiesPzi = _messages.BooleanField(11)
-  satisfiesPzs = _messages.BooleanField(12)
-  sourceConfig = _messages.MessageField('SourceConfig', 13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  updateTime = _messages.StringField(15)
+  ruleSets = _messages.MessageField('RuleSet', 11, repeated=True)
+  satisfiesPzi = _messages.BooleanField(12)
+  satisfiesPzs = _messages.BooleanField(13)
+  sourceConfig = _messages.MessageField('SourceConfig', 14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  updateTime = _messages.StringField(16)
 
 
 class StreamLargeObjects(_messages.Message):
@@ -3197,6 +3308,9 @@ class StreamObject(_messages.Message):
     backfillJob: The latest backfill job that was initiated for the stream
       object.
     createTime: Output only. The creation time of the object.
+    customizationRules: Output only. The customization rules for the object.
+      These rules are derived from the parent Stream's `rule_sets` and
+      represent the intended configuration for the object.
     displayName: Required. Display name.
     errors: Output only. Active errors on the object.
     name: Output only. Identifier. The object resource's name.
@@ -3206,11 +3320,46 @@ class StreamObject(_messages.Message):
 
   backfillJob = _messages.MessageField('BackfillJob', 1)
   createTime = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  errors = _messages.MessageField('Error', 4, repeated=True)
-  name = _messages.StringField(5)
-  sourceObject = _messages.MessageField('SourceObjectIdentifier', 6)
-  updateTime = _messages.StringField(7)
+  customizationRules = _messages.MessageField('CustomizationRule', 3, repeated=True)
+  displayName = _messages.StringField(4)
+  errors = _messages.MessageField('Error', 5, repeated=True)
+  name = _messages.StringField(6)
+  sourceObject = _messages.MessageField('SourceObjectIdentifier', 7)
+  updateTime = _messages.StringField(8)
+
+
+class TimeUnitPartition(_messages.Message):
+  r"""Time unit column partitioning. see
+  https://cloud.google.com/bigquery/docs/partitioned-
+  tables#date_timestamp_partitioned_tables
+
+  Enums:
+    PartitioningTimeGranularityValueValuesEnum: Partition granularity.
+
+  Fields:
+    column: The partitioning column.
+    partitioningTimeGranularity: Partition granularity.
+  """
+
+  class PartitioningTimeGranularityValueValuesEnum(_messages.Enum):
+    r"""Partition granularity.
+
+    Values:
+      PARTITIONING_TIME_GRANULARITY_UNSPECIFIED: Unspecified partitioing
+        interval.
+      PARTITIONING_TIME_GRANULARITY_HOUR: Hourly partitioning.
+      PARTITIONING_TIME_GRANULARITY_DAY: Daily partitioning.
+      PARTITIONING_TIME_GRANULARITY_MONTH: Monthly partitioning.
+      PARTITIONING_TIME_GRANULARITY_YEAR: Yearly partitioning.
+    """
+    PARTITIONING_TIME_GRANULARITY_UNSPECIFIED = 0
+    PARTITIONING_TIME_GRANULARITY_HOUR = 1
+    PARTITIONING_TIME_GRANULARITY_DAY = 2
+    PARTITIONING_TIME_GRANULARITY_MONTH = 3
+    PARTITIONING_TIME_GRANULARITY_YEAR = 4
+
+  column = _messages.StringField(1)
+  partitioningTimeGranularity = _messages.EnumField('PartitioningTimeGranularityValueValuesEnum', 2)
 
 
 class UserCredentials(_messages.Message):

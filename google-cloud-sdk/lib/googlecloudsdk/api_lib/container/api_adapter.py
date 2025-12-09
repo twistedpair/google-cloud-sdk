@@ -344,6 +344,10 @@ CONTROL_PLANE_EGRESS_NOT_SUPPORTED = """\
 Control plane egress '{mode}' is not supported.
 """
 
+AUTOPILOT_GENERAL_PROFILE_NOT_SUPPORTED = """\
+Invalid value for --autopilot-general-profile: '{profile}' (must be one of {choices}).
+"""
+
 NO_SUCH_RESOURCE_POLICY_ERROR_MSG = """\
 Resource policy '{policy_name}' not found in project '{project}' region '{region}'."""
 
@@ -887,6 +891,7 @@ class CreateClusterOptions(object):
       enable_auto_ipam=None,
       enable_k8s_tokens_via_dns=None,
       enable_legacy_lustre_port=None,
+      disable_multi_nic_lustre=None,
       enable_default_compute_class=None,
       enable_k8s_certs_via_dns=None,
       boot_disk_provisioned_iops=None,
@@ -898,6 +903,7 @@ class CreateClusterOptions(object):
       enable_kernel_module_signature_enforcement=None,
       enable_lustre_multi_nic=None,
       enable_slice_controller=None,
+      autopilot_general_profile=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -1195,6 +1201,7 @@ class CreateClusterOptions(object):
     self.enable_auto_ipam = enable_auto_ipam
     self.enable_k8s_tokens_via_dns = enable_k8s_tokens_via_dns
     self.enable_legacy_lustre_port = enable_legacy_lustre_port
+    self.disable_multi_nic_lustre = disable_multi_nic_lustre
     self.enable_default_compute_class = enable_default_compute_class
     self.enable_k8s_certs_via_dns = enable_k8s_certs_via_dns
     self.boot_disk_provisioned_iops = boot_disk_provisioned_iops
@@ -1205,6 +1212,7 @@ class CreateClusterOptions(object):
     self.autopilot_privileged_admission = autopilot_privileged_admission
     self.enable_lustre_multi_nic = enable_lustre_multi_nic
     self.enable_slice_controller = enable_slice_controller
+    self.autopilot_general_profile = autopilot_general_profile
 
 
 class UpdateClusterOptions(object):
@@ -1389,6 +1397,7 @@ class UpdateClusterOptions(object):
       disable_auto_ipam=None,
       enable_k8s_tokens_via_dns=None,
       enable_legacy_lustre_port=None,
+      disable_multi_nic_lustre=None,
       enable_default_compute_class=None,
       enable_k8s_certs_via_dns=None,
       boot_disk_provisioned_iops=None,
@@ -1399,6 +1408,7 @@ class UpdateClusterOptions(object):
       enable_pod_snapshots=None,
       autopilot_privileged_admission=None,
       enable_slice_controller=None,
+      autopilot_general_profile=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1626,6 +1636,7 @@ class UpdateClusterOptions(object):
     self.disable_auto_ipam = disable_auto_ipam
     self.enable_k8s_tokens_via_dns = enable_k8s_tokens_via_dns
     self.enable_legacy_lustre_port = enable_legacy_lustre_port
+    self.disable_multi_nic_lustre = disable_multi_nic_lustre
     self.enable_default_compute_class = enable_default_compute_class
     self.enable_k8s_certs_via_dns = enable_k8s_certs_via_dns
     self.boot_disk_provisioned_iops = boot_disk_provisioned_iops
@@ -1636,6 +1647,7 @@ class UpdateClusterOptions(object):
     self.enable_pod_snapshots = enable_pod_snapshots
     self.autopilot_privileged_admission = autopilot_privileged_admission
     self.enable_slice_controller = enable_slice_controller
+    self.autopilot_general_profile = autopilot_general_profile
 
 
 class SetMasterAuthOptions(object):
@@ -2600,6 +2612,11 @@ class APIAdapter(object):
             options.enable_legacy_lustre_port
         )
 
+      if options.disable_multi_nic_lustre is not None:
+        addons.lustreCsiDriverConfig.disableMultiNic = (
+            options.disable_multi_nic_lustre
+        )
+
       cluster.addonsConfig = addons
 
     if options.enable_pod_snapshots is not None:
@@ -2872,6 +2889,17 @@ class APIAdapter(object):
           options, self.messages
       )
 
+    if options.autopilot_general_profile:
+      autopilot_general_profile_enum = _GetAutopilotGeneralProfileEnum(
+          options, self.messages
+      )
+      if autopilot_general_profile_enum:
+        if cluster.autoscaling is None:
+          cluster.autoscaling = self.messages.ClusterAutoscaling()
+        cluster.autoscaling.autopilotGeneralProfile = (
+            autopilot_general_profile_enum
+        )
+
     if options.autopilot:
       cluster.autopilot = self.messages.Autopilot()
       cluster.autopilot.enabled = options.autopilot
@@ -3131,16 +3159,18 @@ class APIAdapter(object):
         cluster.fleet = self.messages.Fleet()
       cluster.fleet.project = cluster_ref.projectId
       if options.membership_type is not None:
-        cluster.fleet = _GetFleetMembershipType(options,
-                                                self.messages, cluster.fleet)
+        cluster.fleet = _GetFleetMembershipType(
+            options, self.messages, cluster.fleet
+        )
 
     if options.fleet_project:
       if cluster.fleet is None:
         cluster.fleet = self.messages.Fleet()
       cluster.fleet.project = options.fleet_project
       if options.membership_type is not None:
-        cluster.fleet = _GetFleetMembershipType(options,
-                                                self.messages, cluster.fleet)
+        cluster.fleet = _GetFleetMembershipType(
+            options, self.messages, cluster.fleet
+        )
 
     if options.logging_variant is not None:
       if cluster.nodePoolDefaults is None:
@@ -3402,7 +3432,8 @@ class APIAdapter(object):
         cluster.autopilot.privilegedAdmissionConfig = self.messages.PrivilegedAdmissionConfig(
             # Permit either the flag array value or, if the array is empty,
             # set to the actual empty value of [""] (allow nothing).
-            allowlistPaths=options.autopilot_privileged_admission or ['']
+            allowlistPaths=options.autopilot_privileged_admission
+            or ['']
         )
     if options.cluster_ca is not None:
       if cluster.userManagedKeysConfig is None:
@@ -3478,12 +3509,16 @@ class APIAdapter(object):
     if options.network_tier is not None:
       if cluster.ipAllocationPolicy is None:
         cluster.ipAllocationPolicy = self.messages.IPAllocationPolicy()
-      cluster.ipAllocationPolicy.networkTierConfig = _GetNetworkTierConfig(options, self.messages)
+      cluster.ipAllocationPolicy.networkTierConfig = _GetNetworkTierConfig(
+          options, self.messages
+      )
 
     if options.control_plane_egress_mode is not None:
       if cluster.controlPlaneEgress is None:
         cluster.controlPlaneEgress = self.messages.ControlPlaneEgress()
-      cluster.controlPlaneEgress = _GetControlPlaneEgress(options, self.messages)
+      cluster.controlPlaneEgress = _GetControlPlaneEgress(
+          options, self.messages
+      )
 
     if options.enable_kernel_module_signature_enforcement is not None:
       if options.autopilot:
@@ -4779,10 +4814,8 @@ class APIAdapter(object):
             )
         )
       if options.disable_addons.get(LUSTRECSIDRIVER) is not None:
-        addons.lustreCsiDriverConfig = (
-            self.messages.LustreCsiDriverConfig(
-                enabled=not options.disable_addons.get(LUSTRECSIDRIVER)
-            )
+        addons.lustreCsiDriverConfig = self.messages.LustreCsiDriverConfig(
+            enabled=not options.disable_addons.get(LUSTRECSIDRIVER)
         )
       if options.disable_addons.get(BACKUPRESTORE) is not None:
         addons.gkeBackupAgentConfig = self.messages.GkeBackupAgentConfig(
@@ -4797,6 +4830,7 @@ class APIAdapter(object):
         options.enable_ray_cluster_logging is not None
         or options.enable_ray_cluster_monitoring is not None
         or options.enable_legacy_lustre_port is not None
+        or options.disable_multi_nic_lustre is not None
     ):
       addons = self._AddonsConfig(options, self.messages)
 
@@ -4817,6 +4851,11 @@ class APIAdapter(object):
       if options.enable_legacy_lustre_port is not None:
         addons.lustreCsiDriverConfig.enableLegacyLustrePort = (
             options.enable_legacy_lustre_port
+        )
+
+      if options.disable_multi_nic_lustre is not None:
+        addons.lustreCsiDriverConfig.disableMultiNic = (
+            options.disable_multi_nic_lustre
         )
 
       update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
@@ -4909,12 +4948,15 @@ class APIAdapter(object):
           options, self.messages
       )
       update = self.messages.ClusterUpdate(
-          desiredManagedOpentelemetryConfig=managed_otel_config)
+          desiredManagedOpentelemetryConfig=managed_otel_config
+      )
 
     if options.enable_pod_snapshots is not None:
       addons = self.messages.AddonsConfig(
           podSnapshotConfig=self.messages.PodSnapshotConfig(
-              enabled=options.enable_pod_snapshots))
+              enabled=options.enable_pod_snapshots
+          )
+      )
       update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
 
     if options.enable_slice_controller is not None:
@@ -5181,7 +5223,9 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredFleet=self.messages.Fleet(
               project=cluster_ref.projectId,
-              membershipType=membership_types.get(options.membership_type, None)
+              membershipType=membership_types.get(
+                  options.membership_type, None
+              ),
           )
       )
 
@@ -5189,16 +5233,19 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredFleet=self.messages.Fleet(
               project=options.fleet_project,
-              membershipType=membership_types.get(options.membership_type, None)
+              membershipType=membership_types.get(
+                  options.membership_type, None
+              ),
           )
       )
 
     if options.unset_membership_type:
       fleet_project = options.fleet_project or cluster_ref.projectId
       update = self.messages.ClusterUpdate(
-          desiredFleet=self.messages.Fleet
-          (membershipType=self.messages.Fleet.MembershipTypeValueValuesEnum.MEMBERSHIP_TYPE_UNSPECIFIED,
-           project=fleet_project),
+          desiredFleet=self.messages.Fleet(
+              membershipType=self.messages.Fleet.MembershipTypeValueValuesEnum.MEMBERSHIP_TYPE_UNSPECIFIED,
+              project=fleet_project,
+          ),
       )
 
     if options.enable_k8s_beta_apis is not None:
@@ -5622,7 +5669,7 @@ class APIAdapter(object):
           subnetwork = SubnetworkNameToPath(
               subnet_to_undrain['subnetwork'],
               cluster_ref.projectId,
-              cluster_ref.zone
+              cluster_ref.zone,
           )
           if subnetwork not in desired_ip_ranges:
             raise util.Error(
@@ -5729,9 +5776,7 @@ class APIAdapter(object):
       )
     if options.network_tier is not None:
       update = self.messages.ClusterUpdate(
-          desiredNetworkTierConfig=_GetNetworkTierConfig(
-              options, self.messages
-          )
+          desiredNetworkTierConfig=_GetNetworkTierConfig(options, self.messages)
       )
 
     if options.control_plane_egress_mode is not None:
@@ -5745,9 +5790,18 @@ class APIAdapter(object):
       }
       config = self.messages.DesiredControlPlaneEgress()
       config.mode = modes[options.control_plane_egress_mode]
-      update = self.messages.ClusterUpdate(
-          desiredControlPlaneEgress=config
+      update = self.messages.ClusterUpdate(desiredControlPlaneEgress=config)
+
+    if options.autopilot_general_profile:
+      autopilot_general_profile_enum = _GetAutopilotGeneralProfileEnum(
+          options, self.messages
       )
+      if autopilot_general_profile_enum:
+        update = self.messages.ClusterUpdate(
+            desiredClusterAutoscaling=self.messages.ClusterAutoscaling(
+                autopilotGeneralProfile=autopilot_general_profile_enum
+            )
+        )
 
     return update
 
@@ -5938,8 +5992,8 @@ class APIAdapter(object):
           self.messages.HighScaleCheckpointingConfig(enabled=True)
       )
     if enable_lustre_csi_driver:
-      addons.lustreCsiDriverConfig = (
-          self.messages.LustreCsiDriverConfig(enabled=True)
+      addons.lustreCsiDriverConfig = self.messages.LustreCsiDriverConfig(
+          enabled=True
       )
     if enable_pod_snapshots is not None:
       addons.podSnapshotConfig = self.messages.PodSnapshotConfig(
@@ -7579,10 +7633,9 @@ class APIAdapter(object):
               window_name
           )
       )
-    if (
-        window_end is not None
-        and window_until_end_of_support
-    ) or (window_end is None and not window_until_end_of_support):
+    if (window_end is not None and window_until_end_of_support) or (
+        window_end is None and not window_until_end_of_support
+    ):
       raise util.Error(
           'Maintenance exclusion must contain exactly one of:'
           ' --add-maintenance-exclusion-end,'
@@ -7618,11 +7671,13 @@ class APIAdapter(object):
       if window.maintenanceExclusionOptions is None:
         window.maintenanceExclusionOptions = self.messages.MaintenanceExclusionOptions(
             endTimeBehavior=(
-                self.messages.MaintenanceExclusionOptions.EndTimeBehaviorValueValuesEnum.UNTIL_END_OF_SUPPORT)  # pylint: disable=line-too-long
+                self.messages.MaintenanceExclusionOptions.EndTimeBehaviorValueValuesEnum.UNTIL_END_OF_SUPPORT
+            )  # pylint: disable=line-too-long
         )
       else:
         window.maintenanceExclusionOptions.endTimeBehavior = (
-            self.messages.MaintenanceExclusionOptions.EndTimeBehaviorValueValuesEnum.UNTIL_END_OF_SUPPORT)  # pylint: disable=line-too-long
+            self.messages.MaintenanceExclusionOptions.EndTimeBehaviorValueValuesEnum.UNTIL_END_OF_SUPPORT
+        )  # pylint: disable=line-too-long
 
     exclusions.additionalProperties.append(
         exclusions.AdditionalProperty(key=window_name, value=window)
@@ -8038,8 +8093,60 @@ class APIAdapter(object):
     Returns:
       Modifies LustreCsiDriverConfig and returns the operation for update.
     """
+    cluster = self.GetCluster(cluster_ref)
+    disable_multi_nic = None
+    if (
+        cluster.addonsConfig
+        and cluster.addonsConfig.lustreCsiDriverConfig
+        and cluster.addonsConfig.lustreCsiDriverConfig.disableMultiNic
+    ):
+      disable_multi_nic = (
+          cluster.addonsConfig.lustreCsiDriverConfig.disableMultiNic
+      )
+
     lustre_csi_driver_config = self.messages.LustreCsiDriverConfig(
         enabled=True,
+        enableLegacyLustrePort=enable_legacy_lustre_port,
+        disableMultiNic=disable_multi_nic,
+    )
+    addons_config = self.messages.AddonsConfig(
+        lustreCsiDriverConfig=lustre_csi_driver_config
+    )
+    update = self.messages.ClusterUpdate(desiredAddonsConfig=addons_config)
+    op = self.client.projects_locations_clusters.Update(
+        self.messages.UpdateClusterRequest(
+            name=ProjectLocationCluster(
+                cluster_ref.projectId, cluster_ref.zone, cluster_ref.clusterId
+            ),
+            update=update,
+        )
+    )
+    return self.ParseOperation(op.name, cluster_ref.zone)
+
+  def ModifyMultiNicLustreDisabled(self, cluster_ref, disable_multi_nic_lustre):
+    """Disables multi-nic when using the Lustre Csi Driver add on.
+
+    Args:
+      cluster_ref: The cluster to update.
+      disable_multi_nic_lustre: Whether to disable multi-nic.
+
+    Returns:
+      Modifies LustreCsiDriverConfig and returns the operation for update.
+    """
+    cluster = self.GetCluster(cluster_ref)
+    enable_legacy_lustre_port = None
+    if (
+        cluster.addonsConfig
+        and cluster.addonsConfig.lustreCsiDriverConfig
+        and cluster.addonsConfig.lustreCsiDriverConfig.enableLegacyLustrePort
+    ):
+      enable_legacy_lustre_port = (
+          cluster.addonsConfig.lustreCsiDriverConfig.enableLegacyLustrePort
+      )
+
+    lustre_csi_driver_config = self.messages.LustreCsiDriverConfig(
+        enabled=True,
+        disableMultiNic=disable_multi_nic_lustre,
         enableLegacyLustrePort=enable_legacy_lustre_port,
     )
     addons_config = self.messages.AddonsConfig(
@@ -8056,24 +8163,18 @@ class APIAdapter(object):
     )
     return self.ParseOperation(op.name, cluster_ref.zone)
 
-  def ModifyControlPlaneEgress(
-      self, cluster_ref, control_plane_egress_mode
-  ):
+  def ModifyControlPlaneEgress(self, cluster_ref, control_plane_egress_mode):
     """Updates the control plane egress config on the cluster."""
     update = self.messages.ClusterUpdate()
     available_modes = {
-        'NONE': (
-            self.messages.ControlPlaneEgress.ModeValueValuesEnum.NONE
-        ),
+        'NONE': self.messages.ControlPlaneEgress.ModeValueValuesEnum.NONE,
         'VIA_CONTROL_PLANE': (
             self.messages.ControlPlaneEgress.ModeValueValuesEnum.VIA_CONTROL_PLANE
         ),
     }
     if control_plane_egress_mode is not None:
-      update.desiredControlPlaneEgress = (
-          self.messages.ControlPlaneEgress(
-              mode=available_modes[control_plane_egress_mode]
-          )
+      update.desiredControlPlaneEgress = self.messages.ControlPlaneEgress(
+          mode=available_modes[control_plane_egress_mode]
       )
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
@@ -8089,7 +8190,7 @@ class APIAdapter(object):
     """Gets the DesiredControlPlaneEndpointsConfig from options."""
     cp_endpoints_config = self.messages.ControlPlaneEndpointsConfig()
     # update dnsEndpointConfig sub-section
-    if(
+    if (
         options.enable_dns_access is not None
         or options.enable_k8s_tokens_via_dns is not None
         or options.enable_k8s_certs_via_dns is not None
@@ -8646,6 +8747,7 @@ class V1Beta1Adapter(V1Adapter):
         options.enable_ray_cluster_logging is not None
         or options.enable_ray_cluster_monitoring is not None
         or options.enable_legacy_lustre_port is not None
+        or options.disable_multi_nic_lustre is not None
     ):
       addons = self._AddonsConfig(options, self.messages)
 
@@ -8666,6 +8768,11 @@ class V1Beta1Adapter(V1Adapter):
       if options.enable_legacy_lustre_port is not None:
         addons.lustreCsiDriverConfig.enableLegacyLustrePort = (
             options.enable_legacy_lustre_port
+        )
+
+      if options.disable_multi_nic_lustre is not None:
+        addons.lustreCsiDriverConfig.disableMultiNic = (
+            options.disable_multi_nic_lustre
         )
 
       update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
@@ -8782,7 +8889,8 @@ class V1Beta1Adapter(V1Adapter):
           options, self.messages
       )
       update = self.messages.ClusterUpdate(
-          desiredManagedOpentelemetryConfig=managed_otel_config)
+          desiredManagedOpentelemetryConfig=managed_otel_config
+      )
 
     if (
         options.security_profile is not None
@@ -9061,7 +9169,7 @@ class V1Beta1Adapter(V1Adapter):
       update = self.messages.ClusterUpdate(
           desiredFleet=self.messages.Fleet(
               membershipType=self.messages.Fleet.MembershipTypeValueValuesEnum.MEMBERSHIP_TYPE_UNSPECIFIED,
-              project=fleet_project
+              project=fleet_project,
           ),
       )
 
@@ -9486,7 +9594,7 @@ class V1Beta1Adapter(V1Adapter):
           subnetwork = SubnetworkNameToPath(
               subnet_to_undrain['subnetwork'],
               cluster_ref.projectId,
-              cluster_ref.zone
+              cluster_ref.zone,
           )
           if subnetwork not in desired_ip_ranges:
             raise util.Error(
@@ -9596,6 +9704,17 @@ class V1Beta1Adapter(V1Adapter):
       update = self.messages.ClusterUpdate(
           desiredNetworkTierConfig=_GetNetworkTierConfig(options, self.messages)
       )
+
+    if options.autopilot_general_profile:
+      autopilot_general_profile_enum = _GetAutopilotGeneralProfileEnum(
+          options, self.messages
+      )
+      if autopilot_general_profile_enum:
+        update = self.messages.ClusterUpdate(
+            desiredClusterAutoscaling=self.messages.ClusterAutoscaling(
+                autopilotGeneralProfile=autopilot_general_profile_enum
+            )
+        )
     return update
 
   def UpdateCluster(self, cluster_ref, options):
@@ -11311,14 +11430,13 @@ def _GetHostMaintenancePolicy(options, messages, op_type):
       raise util.Error(
           OPPORTUNISTIC_MAINTENANCE_FIELD_NOT_SUPPORTED.format(
               field='node-idle-time',
-              value=options.opportunistic_maintenance['node-idle-time']
+              value=options.opportunistic_maintenance['node-idle-time'],
           )
       )
     if not re.search(r's$', options.opportunistic_maintenance['window']):
       raise util.Error(
           OPPORTUNISTIC_MAINTENANCE_FIELD_NOT_SUPPORTED.format(
-              field='window',
-              value=options.opportunistic_maintenance['window']
+              field='window', value=options.opportunistic_maintenance['window']
           )
       )
     parsed_opportunistic_maintenance = (
@@ -11342,9 +11460,7 @@ def _GetManagedOpenTelemetryConfig(options, messages):
   """Gets the ManagedOpenTelemetryConfig from create and update options."""
   scope = None
   otel_scope = options.managed_otel_scope
-  scope_value_enum = (
-      messages.ManagedOpenTelemetryConfig.ScopeValueValuesEnum
-  )
+  scope_value_enum = messages.ManagedOpenTelemetryConfig.ScopeValueValuesEnum
   if otel_scope == 'NONE':
     scope = scope_value_enum.NONE
   elif otel_scope == 'COLLECTION_AND_INSTRUMENTATION_COMPONENTS':
@@ -11811,18 +11927,14 @@ def _GetFleetMembershipType(options, messages, fleet):
   """Configures the Fleet MembershipType from options and fleet."""
   if options.membership_type is not None:
     types = {
-        'LIGHTWEIGHT': (
-            messages.Fleet.MembershipTypeValueValuesEnum.LIGHTWEIGHT
-        ),
+        'LIGHTWEIGHT': messages.Fleet.MembershipTypeValueValuesEnum.LIGHTWEIGHT,
         'MEMBERSHIP_TYPE_UNSPECIFIED': (
             messages.Fleet.MembershipTypeValueValuesEnum.MEMBERSHIP_TYPE_UNSPECIFIED
         ),
     }
     if options.membership_type not in types:
       raise util.Error(
-          MEMBERSHIP_TYPE_NOT_SUPPORTED.format(
-              type=options.membership_type
-          )
+          MEMBERSHIP_TYPE_NOT_SUPPORTED.format(type=options.membership_type)
       )
     fleet.membershipType = types[options.membership_type]
   return fleet
@@ -11921,9 +12033,7 @@ def _GetControlPlaneEgress(options, messages):
   control_plane_egress = messages.ControlPlaneEgress()
   if options.control_plane_egress_mode is not None:
     control_plane_egress_modes = {
-        'NONE': (
-            messages.ControlPlaneEgress.ModeValueValuesEnum.NONE
-        ),
+        'NONE': messages.ControlPlaneEgress.ModeValueValuesEnum.NONE,
         'VIA_CONTROL_PLANE': (
             messages.ControlPlaneEgress.ModeValueValuesEnum.VIA_CONTROL_PLANE
         ),
@@ -11938,3 +12048,39 @@ def _GetControlPlaneEgress(options, messages):
         options.control_plane_egress_mode
     ]
   return control_plane_egress
+
+
+def _GetAutopilotGeneralProfileEnum(options, messages):
+  """Converts the user-provided autopilot-general-profile to the API enum.
+
+  Args:
+    options: Either CreateClusterOptions or UpdateClusterOptions.
+    messages: The API messages module.
+
+  Returns:
+    The ClusterAutoscaling.AutopilotGeneralProfileValueValuesEnum value or None.
+  Raises:
+    util.Error: if an invalid profile is provided.
+  """
+  if options.autopilot_general_profile is None:
+    return None
+
+  profile_map = {
+      'none': (
+          messages.ClusterAutoscaling.AutopilotGeneralProfileValueValuesEnum.AUTOPILOT_GENERAL_PROFILE_UNSPECIFIED
+      ),
+      'no-performance': (
+          messages.ClusterAutoscaling.AutopilotGeneralProfileValueValuesEnum.NO_PERFORMANCE
+      ),
+  }
+  user_input = options.autopilot_general_profile.lower()
+  if user_input in profile_map:
+    return profile_map[user_input]
+  else:
+    # This case should be prevented by the YAML's enum validation,
+    # but serves as a safeguard.
+    raise util.Error(
+        AUTOPILOT_GENERAL_PROFILE_NOT_SUPPORTED.format(
+            profile=user_input, choices=list(profile_map.keys())
+        )
+    )

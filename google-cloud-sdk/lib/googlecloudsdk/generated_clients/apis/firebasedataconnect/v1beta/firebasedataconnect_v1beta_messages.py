@@ -123,10 +123,12 @@ class Datasource(_messages.Message):
   r"""A data source that backs Firebase Data Connect services.
 
   Fields:
+    httpGraphql: HTTP GraphQL server webhook configurations.
     postgresql: PostgreSQL configurations.
   """
 
-  postgresql = _messages.MessageField('PostgreSql', 1)
+  httpGraphql = _messages.MessageField('HttpGraphql', 1)
+  postgresql = _messages.MessageField('PostgreSql', 2)
 
 
 class Empty(_messages.Message):
@@ -394,9 +396,9 @@ class FirebasedataconnectProjectsLocationsOperationsListRequest(_messages.Messag
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -1269,6 +1271,18 @@ class GraphqlResponse(_messages.Message):
   errors = _messages.MessageField('GraphqlError', 2, repeated=True)
 
 
+class HttpGraphql(_messages.Message):
+  r"""Settings for HTTP GraphQL server webhook.
+
+  Fields:
+    timeout: Optional. Timeout duration for the HTTP request.
+    uri: Required. The endpoint of the HTTP GraphQL server.
+  """
+
+  timeout = _messages.StringField(1)
+  uri = _messages.StringField(2)
+
+
 class ImpersonateRequest(_messages.Message):
   r"""The Impersonate request to Firebase Data Connect.
 
@@ -1406,8 +1420,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)

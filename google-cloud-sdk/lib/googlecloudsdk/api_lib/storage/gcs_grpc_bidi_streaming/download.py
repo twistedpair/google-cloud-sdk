@@ -133,56 +133,51 @@ def _process_data_from_bidi_read_object_rpc(
           bidi_read_object_request
       )
   )
-  bidi_read_object_rpc.requests_done()
-
   processed_bytes = start_byte
   destination_pipe_is_broken = False
   received_read_handle = read_handle
+  try:
+    bidi_read_object_rpc.requests_done()
 
-  while bidi_read_object_rpc.is_active:
+    while bidi_read_object_rpc.is_active:
+      try:
+        bidi_read_object_response = bidi_read_object_rpc.recv()
+        if (
+            bidi_read_object_response
+            and bidi_read_object_response.read_handle
+            and bidi_read_object_response.read_handle.handle
+        ):
+          received_read_handle = bidi_read_object_response.read_handle
+      except (StopIteration, EOFError):
+        break
+      else:
+        # This block executes only if the try block completes without an
+        # exception.
+        for object_range_data in bidi_read_object_response.object_data_ranges:
+          data = object_range_data.checksummed_data.content
+          if data:
+            try:
+              download_stream.write(data)
+            except BrokenPipeError:
+              if download_strategy == cloud_api.DownloadStrategy.ONE_SHOT:
+                log.info('Writing to download stream raised broken pipe error.')
+                destination_pipe_is_broken = True
+                break
+              raise
 
-    try:
-      bidi_read_object_response = bidi_read_object_rpc.recv()
-      if (
-          bidi_read_object_response
-          and bidi_read_object_response.read_handle
-          and bidi_read_object_response.read_handle.handle
-      ):
-        received_read_handle = bidi_read_object_response.read_handle
-    except (StopIteration, EOFError):
-      bidi_read_object_rpc.close()
-      break
-    except AttributeError:
-      # If StopIteration is passed to should_recover, it raises
-      # AttributeError because StopIteration has no 'code' attribute.
-      # This happens when the stream ends.
-      # TODO: b/445674163 - Handle this in ShouldRecover.
-      bidi_read_object_rpc.close()
-      break
+            if digesters:
+              for hash_object in digesters.values():
+                hash_object.update(data)
 
-    for object_range_data in bidi_read_object_response.object_data_ranges:
-      data = object_range_data.checksummed_data.content
-      if data:
-        try:
-          download_stream.write(data)
-        except BrokenPipeError:
-          if download_strategy == cloud_api.DownloadStrategy.ONE_SHOT:
-            log.info('Writing to download stream raised broken pipe error.')
-            destination_pipe_is_broken = True
-            break
-          raise
+            processed_bytes += len(data)
+            if progress_callback:
+              progress_callback(processed_bytes)
 
-        if digesters:
-          for hash_object in digesters.values():
-            hash_object.update(data)
-
-        processed_bytes += len(data)
-        if progress_callback:
-          progress_callback(processed_bytes)
-
-    if destination_pipe_is_broken:
-      break
-
+        if destination_pipe_is_broken:
+          break
+  finally:
+    # Ensures the stream is closed even if an exception is raised.
+    bidi_read_object_rpc.close()
   return processed_bytes, destination_pipe_is_broken, received_read_handle
 
 

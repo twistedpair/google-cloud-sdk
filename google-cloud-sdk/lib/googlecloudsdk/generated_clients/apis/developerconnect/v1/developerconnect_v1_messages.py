@@ -225,8 +225,10 @@ class BitbucketCloudConfig(_messages.Message):
       credentials.
     webhookSecretSecretVersion: Required. Immutable. SecretManager resource
       containing the webhook secret used to verify webhook events, formatted
-      as `projects/*/secrets/*/versions/*`. This is used to validate and
-      create webhooks.
+      as `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*` (if regional secrets are
+      supported in that location). This is used to validate and create
+      webhooks.
     workspace: Required. The Bitbucket Cloud Workspace ID to be connected to
       Google Cloud Platform.
   """
@@ -260,7 +262,9 @@ class BitbucketDataCenterConfig(_messages.Message):
       requests to Bitbucket Data Center.
     webhookSecretSecretVersion: Required. Immutable. SecretManager resource
       containing the webhook secret used to verify webhook events, formatted
-      as `projects/*/secrets/*/versions/*`. This is used to validate webhooks.
+      as `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*` (if regional secrets are
+      supported in that location). This is used to validate webhooks.
   """
 
   authorizerCredential = _messages.MessageField('UserCredential', 1)
@@ -317,6 +321,8 @@ class Connection(_messages.Message):
       `projects/{project}/locations/{location}/connections/{connection_id}`.
     reconciling: Output only. Set to true when the connection is being set up
       or updated in the background.
+    secureSourceManagerInstanceConfig: Configuration for connections to an
+      instance of Secure Source Manager.
     uid: Output only. A system-assigned unique identifier for the Connection.
     updateTime: Output only. [Output only] Update timestamp
   """
@@ -388,8 +394,9 @@ class Connection(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 16)
   name = _messages.StringField(17)
   reconciling = _messages.BooleanField(18)
-  uid = _messages.StringField(19)
-  updateTime = _messages.StringField(20)
+  secureSourceManagerInstanceConfig = _messages.MessageField('SecureSourceManagerInstanceConfig', 19)
+  uid = _messages.StringField(20)
+  updateTime = _messages.StringField(21)
 
 
 class CryptoKeyConfig(_messages.Message):
@@ -1376,9 +1383,9 @@ class DeveloperconnectProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -1605,7 +1612,9 @@ class GitHubEnterpriseConfig(_messages.Message):
       the installation associated with this GitHubEnterpriseConfig.
     privateKeySecretVersion: Optional. SecretManager resource containing the
       private key of the GitHub App, formatted as
-      `projects/*/secrets/*/versions/*`.
+      `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*` (if regional secrets are
+      supported in that location).
     serverVersion: Output only. GitHub Enterprise version installed at the
       host_uri.
     serviceDirectoryConfig: Optional. Configuration for using Service
@@ -1617,7 +1626,9 @@ class GitHubEnterpriseConfig(_messages.Message):
       Enterprise.
     webhookSecretSecretVersion: Optional. SecretManager resource containing
       the webhook secret of the GitHub App, formatted as
-      `projects/*/secrets/*/versions/*`.
+      `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*` (if regional secrets are
+      supported in that location).
   """
 
   appId = _messages.IntegerField(1)
@@ -1646,7 +1657,9 @@ class GitLabConfig(_messages.Message):
       which Projects Developer Connect has access to.
     webhookSecretSecretVersion: Required. Immutable. SecretManager resource
       containing the webhook secret of a GitLab project, formatted as
-      `projects/*/secrets/*/versions/*`. This is used to validate webhooks.
+      `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*` (if regional secrets are
+      supported in that location). This is used to validate webhooks.
   """
 
   authorizerCredential = _messages.MessageField('UserCredential', 1)
@@ -1679,7 +1692,9 @@ class GitLabEnterpriseConfig(_messages.Message):
       for requests to GitLab Enterprise instance.
     webhookSecretSecretVersion: Required. Immutable. SecretManager resource
       containing the webhook secret of a GitLab project, formatted as
-      `projects/*/secrets/*/versions/*`. This is used to validate webhooks.
+      `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*` (if regional secrets are
+      supported in that location). This is used to validate webhooks.
   """
 
   authorizerCredential = _messages.MessageField('UserCredential', 1)
@@ -2181,8 +2196,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -2292,7 +2307,9 @@ class OAuthCredential(_messages.Message):
   Fields:
     oauthTokenSecretVersion: Required. A SecretManager resource containing the
       OAuth token that authorizes the connection. Format:
-      `projects/*/secrets/*/versions/*`.
+      `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*` (if regional secrets are
+      supported in that location).
     username: Output only. The username associated with this token.
   """
 
@@ -2585,6 +2602,17 @@ class RuntimeConfig(_messages.Message):
   uri = _messages.StringField(6)
 
 
+class SecureSourceManagerInstanceConfig(_messages.Message):
+  r"""Configuration for connections to SSM instance
+
+  Fields:
+    instance: Required. Immutable. SSM instance resource, formatted as
+      `projects/*/locations/*/instances/*`
+  """
+
+  instance = _messages.StringField(1)
+
+
 class ServiceDirectoryConfig(_messages.Message):
   r"""ServiceDirectoryConfig represents Service Directory configuration for a
   connection.
@@ -2786,7 +2814,9 @@ class UserCredential(_messages.Message):
   Fields:
     userTokenSecretVersion: Required. A SecretManager resource containing the
       user token that authorizes the Developer Connect connection. Format:
-      `projects/*/secrets/*/versions/*`.
+      `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*` (if regional secrets are
+      supported in that location).
     username: Output only. The username associated with this token.
   """
 

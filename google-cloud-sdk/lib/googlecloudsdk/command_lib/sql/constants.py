@@ -32,10 +32,6 @@ TARGET_INSTANCE_OVERRIDE_FLAGS = (
     'backup',
     'backup_location',
     'backup_start_time',
-    'clear_active_directory',
-    'clear_active_directory_dns_servers',
-    'clear_disk_encryption',
-    'clear_network',
     'collation',
     'connector_enforcement',
     'cpu',
@@ -85,6 +81,19 @@ TARGET_INSTANCE_OVERRIDE_FLAGS = (
     'tier',
     'time_zone',
     'timeout',
+    # go/keep-sorted end
+)
+
+# A list of flags that can be cleared when creating a new Cloud SQL instance via
+# a backup restore or PITR operation. This is to allow users to remove certain
+# overrides that might be inherited from the source instance, such as a private
+# network.
+TARGET_INSTANCE_CLEAR_FLAGS = (
+    # go/keep-sorted start
+    'clear_active_directory',
+    'clear_active_directory_dns_servers',
+    'clear_disk_encryption',
+    'clear_network',
     # go/keep-sorted end
 )
 

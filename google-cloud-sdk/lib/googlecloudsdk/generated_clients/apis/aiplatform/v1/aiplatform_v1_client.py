@@ -40,6 +40,7 @@ class AiplatformV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.media = self.MediaService(self)
+    self.operations = self.OperationsService(self)
     self.projects_locations_batchPredictionJobs = self.ProjectsLocationsBatchPredictionJobsService(self)
     self.projects_locations_cachedContents = self.ProjectsLocationsCachedContentsService(self)
     self.projects_locations_customJobs = self.ProjectsLocationsCustomJobsService(self)
@@ -146,6 +147,150 @@ class AiplatformV1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1UploadRagFileRequest',
         request_type_name='AiplatformMediaUploadRequest',
         response_type_name='GoogleCloudAiplatformV1UploadRagFileResponse',
+        supports_download=False,
+    )
+
+  class OperationsService(base_api.BaseApiService):
+    """Service class for the operations resource."""
+
+    _NAME = 'operations'
+
+    def __init__(self, client):
+      super(AiplatformV1.OperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of `1`, corresponding to `Code.CANCELLED`.
+
+      Args:
+        request: (AiplatformOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='aiplatform.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:cancel',
+        request_field='',
+        request_type_name='AiplatformOperationsCancelRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
+
+      Args:
+        request: (AiplatformOperationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='aiplatform.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AiplatformOperationsDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (AiplatformOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/operations/{operationsId}',
+        http_method='GET',
+        method_id='aiplatform.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AiplatformOperationsGetRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
+
+      Args:
+        request: (AiplatformOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='aiplatform.operations.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=['filter', 'name', 'pageSize', 'pageToken', 'returnPartialSuccess'],
+        relative_path='v1/operations',
+        request_field='',
+        request_type_name='AiplatformOperationsListRequest',
+        response_type_name='GoogleLongrunningListOperationsResponse',
+        supports_download=False,
+    )
+
+    def Wait(self, request, global_params=None):
+      r"""Waits until the specified long-running operation is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP/RPC timeout, the HTTP/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done.
+
+      Args:
+        request: (AiplatformOperationsWaitRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Wait')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Wait.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/operations/{operationsId}:wait',
+        http_method='POST',
+        method_id='aiplatform.operations.wait',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['timeout'],
+        relative_path='v1/{+name}:wait',
+        request_field='',
+        request_type_name='AiplatformOperationsWaitRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -1339,60 +1484,6 @@ class AiplatformV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def ComputeTokens(self, request, global_params=None):
-      r"""Return a list of tokens based on the input text.
-
-      Args:
-        request: (AiplatformProjectsLocationsEndpointsComputeTokensRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudAiplatformV1ComputeTokensResponse) The response message.
-      """
-      config = self.GetMethodConfig('ComputeTokens')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ComputeTokens.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:computeTokens',
-        http_method='POST',
-        method_id='aiplatform.projects.locations.endpoints.computeTokens',
-        ordered_params=['endpoint'],
-        path_params=['endpoint'],
-        query_params=[],
-        relative_path='v1/{+endpoint}:computeTokens',
-        request_field='googleCloudAiplatformV1ComputeTokensRequest',
-        request_type_name='AiplatformProjectsLocationsEndpointsComputeTokensRequest',
-        response_type_name='GoogleCloudAiplatformV1ComputeTokensResponse',
-        supports_download=False,
-    )
-
-    def CountTokens(self, request, global_params=None):
-      r"""Perform a token counting.
-
-      Args:
-        request: (AiplatformProjectsLocationsEndpointsCountTokensRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudAiplatformV1CountTokensResponse) The response message.
-      """
-      config = self.GetMethodConfig('CountTokens')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    CountTokens.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:countTokens',
-        http_method='POST',
-        method_id='aiplatform.projects.locations.endpoints.countTokens',
-        ordered_params=['endpoint'],
-        path_params=['endpoint'],
-        query_params=[],
-        relative_path='v1/{+endpoint}:countTokens',
-        request_field='googleCloudAiplatformV1CountTokensRequest',
-        request_type_name='AiplatformProjectsLocationsEndpointsCountTokensRequest',
-        response_type_name='GoogleCloudAiplatformV1CountTokensResponse',
-        supports_download=False,
-    )
-
     def Create(self, request, global_params=None):
       r"""Creates an Endpoint.
 
@@ -1552,33 +1643,6 @@ class AiplatformV1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1ExplainRequest',
         request_type_name='AiplatformProjectsLocationsEndpointsExplainRequest',
         response_type_name='GoogleCloudAiplatformV1ExplainResponse',
-        supports_download=False,
-    )
-
-    def GenerateContent(self, request, global_params=None):
-      r"""Generate content with multimodal inputs.
-
-      Args:
-        request: (AiplatformProjectsLocationsEndpointsGenerateContentRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudAiplatformV1GenerateContentResponse) The response message.
-      """
-      config = self.GetMethodConfig('GenerateContent')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GenerateContent.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:generateContent',
-        http_method='POST',
-        method_id='aiplatform.projects.locations.endpoints.generateContent',
-        ordered_params=['model'],
-        path_params=['model'],
-        query_params=[],
-        relative_path='v1/{+model}:generateContent',
-        request_field='googleCloudAiplatformV1GenerateContentRequest',
-        request_type_name='AiplatformProjectsLocationsEndpointsGenerateContentRequest',
-        response_type_name='GoogleCloudAiplatformV1GenerateContentResponse',
         supports_download=False,
     )
 
@@ -1795,33 +1859,6 @@ class AiplatformV1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1StreamingPredictRequest',
         request_type_name='AiplatformProjectsLocationsEndpointsServerStreamingPredictRequest',
         response_type_name='GoogleCloudAiplatformV1StreamingPredictResponse',
-        supports_download=False,
-    )
-
-    def StreamGenerateContent(self, request, global_params=None):
-      r"""Generate content with multimodal inputs with streaming support.
-
-      Args:
-        request: (AiplatformProjectsLocationsEndpointsStreamGenerateContentRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudAiplatformV1GenerateContentResponse) The response message.
-      """
-      config = self.GetMethodConfig('StreamGenerateContent')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    StreamGenerateContent.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:streamGenerateContent',
-        http_method='POST',
-        method_id='aiplatform.projects.locations.endpoints.streamGenerateContent',
-        ordered_params=['model'],
-        path_params=['model'],
-        query_params=[],
-        relative_path='v1/{+model}:streamGenerateContent',
-        request_field='googleCloudAiplatformV1GenerateContentRequest',
-        request_type_name='AiplatformProjectsLocationsEndpointsStreamGenerateContentRequest',
-        response_type_name='GoogleCloudAiplatformV1GenerateContentResponse',
         supports_download=False,
     )
 
@@ -2429,6 +2466,33 @@ class AiplatformV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsDeleteRequest',
         response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def DirectWrite(self, request, global_params=None):
+      r"""Bidirectional streaming RPC to directly write to feature values in a feature view. Requests may not have a one-to-one mapping to responses and responses may be returned out-of-order to reduce latency.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsDirectWriteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1FeatureViewDirectWriteResponse) The response message.
+      """
+      config = self.GetMethodConfig('DirectWrite')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DirectWrite.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/featureOnlineStores/{featureOnlineStoresId}/featureViews/{featureViewsId}:directWrite',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.featureOnlineStores.featureViews.directWrite',
+        ordered_params=['featureView'],
+        path_params=['featureView'],
+        query_params=[],
+        relative_path='v1/{+featureView}:directWrite',
+        request_field='googleCloudAiplatformV1FeatureViewDirectWriteRequest',
+        request_type_name='AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsDirectWriteRequest',
+        response_type_name='GoogleCloudAiplatformV1FeatureViewDirectWriteResponse',
         supports_download=False,
     )
 
@@ -6974,7 +7038,7 @@ class AiplatformV1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1/{+name}/operations',
         request_field='',
         request_type_name='AiplatformProjectsLocationsOperationsListRequest',
@@ -7390,87 +7454,6 @@ class AiplatformV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def ComputeTokens(self, request, global_params=None):
-      r"""Return a list of tokens based on the input text.
-
-      Args:
-        request: (AiplatformProjectsLocationsPublishersModelsComputeTokensRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudAiplatformV1ComputeTokensResponse) The response message.
-      """
-      config = self.GetMethodConfig('ComputeTokens')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ComputeTokens.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/publishers/{publishersId}/models/{modelsId}:computeTokens',
-        http_method='POST',
-        method_id='aiplatform.projects.locations.publishers.models.computeTokens',
-        ordered_params=['endpoint'],
-        path_params=['endpoint'],
-        query_params=[],
-        relative_path='v1/{+endpoint}:computeTokens',
-        request_field='googleCloudAiplatformV1ComputeTokensRequest',
-        request_type_name='AiplatformProjectsLocationsPublishersModelsComputeTokensRequest',
-        response_type_name='GoogleCloudAiplatformV1ComputeTokensResponse',
-        supports_download=False,
-    )
-
-    def CountTokens(self, request, global_params=None):
-      r"""Perform a token counting.
-
-      Args:
-        request: (AiplatformProjectsLocationsPublishersModelsCountTokensRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudAiplatformV1CountTokensResponse) The response message.
-      """
-      config = self.GetMethodConfig('CountTokens')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    CountTokens.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/publishers/{publishersId}/models/{modelsId}:countTokens',
-        http_method='POST',
-        method_id='aiplatform.projects.locations.publishers.models.countTokens',
-        ordered_params=['endpoint'],
-        path_params=['endpoint'],
-        query_params=[],
-        relative_path='v1/{+endpoint}:countTokens',
-        request_field='googleCloudAiplatformV1CountTokensRequest',
-        request_type_name='AiplatformProjectsLocationsPublishersModelsCountTokensRequest',
-        response_type_name='GoogleCloudAiplatformV1CountTokensResponse',
-        supports_download=False,
-    )
-
-    def GenerateContent(self, request, global_params=None):
-      r"""Generate content with multimodal inputs.
-
-      Args:
-        request: (AiplatformProjectsLocationsPublishersModelsGenerateContentRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudAiplatformV1GenerateContentResponse) The response message.
-      """
-      config = self.GetMethodConfig('GenerateContent')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GenerateContent.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/publishers/{publishersId}/models/{modelsId}:generateContent',
-        http_method='POST',
-        method_id='aiplatform.projects.locations.publishers.models.generateContent',
-        ordered_params=['model'],
-        path_params=['model'],
-        query_params=[],
-        relative_path='v1/{+model}:generateContent',
-        request_field='googleCloudAiplatformV1GenerateContentRequest',
-        request_type_name='AiplatformProjectsLocationsPublishersModelsGenerateContentRequest',
-        response_type_name='GoogleCloudAiplatformV1GenerateContentResponse',
-        supports_download=False,
-    )
-
     def Predict(self, request, global_params=None):
       r"""Perform an online prediction.
 
@@ -7579,33 +7562,6 @@ class AiplatformV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def StreamGenerateContent(self, request, global_params=None):
-      r"""Generate content with multimodal inputs with streaming support.
-
-      Args:
-        request: (AiplatformProjectsLocationsPublishersModelsStreamGenerateContentRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudAiplatformV1GenerateContentResponse) The response message.
-      """
-      config = self.GetMethodConfig('StreamGenerateContent')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    StreamGenerateContent.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/publishers/{publishersId}/models/{modelsId}:streamGenerateContent',
-        http_method='POST',
-        method_id='aiplatform.projects.locations.publishers.models.streamGenerateContent',
-        ordered_params=['model'],
-        path_params=['model'],
-        query_params=[],
-        relative_path='v1/{+model}:streamGenerateContent',
-        request_field='googleCloudAiplatformV1GenerateContentRequest',
-        request_type_name='AiplatformProjectsLocationsPublishersModelsStreamGenerateContentRequest',
-        response_type_name='GoogleCloudAiplatformV1GenerateContentResponse',
-        supports_download=False,
-    )
-
     def StreamRawPredict(self, request, global_params=None):
       r"""Perform a streaming online prediction with an arbitrary HTTP payload.
 
@@ -7672,7 +7628,7 @@ class AiplatformV1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.ragCorpora.ragFiles.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['forceDelete'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='AiplatformProjectsLocationsRagCorporaRagFilesDeleteRequest',

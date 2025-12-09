@@ -26,15 +26,12 @@ from tests.lib import parameterized
 from tests.lib import sdk_test_base
 
 
-class McpTestBase(
+class McpTestBaseForEnableDisableTests(
     sdk_test_base.WithFakeAuth,
     parameterized.TestCase,
     cli_test_base.CliTestBase,
 ):
-  """Base class for MCP command tests."""
-
-  def PreSetUp(self):
-    self.track = calliope_base.ReleaseTrack.ALPHA
+  """Base class for MCP enable and disable command tests."""
 
   def SetUp(self):
     self.project = 'test-gcp-project-12345'
@@ -112,3 +109,17 @@ class McpTestBase(
         response=service_state if not exception else None,
         exception=exception,
     )
+
+
+class McpAlphaForEnableDisableTests(McpTestBaseForEnableDisableTests):
+  """Base class for MCP enable and disable command tests in alpha track."""
+
+  def PreSetUp(self):
+    self.track = calliope_base.ReleaseTrack.ALPHA
+
+
+class McpBetaForEnableDisableTests(McpTestBaseForEnableDisableTests):
+  """Base class for MCP enable and disable command tests in beta track."""
+
+  def PreSetUp(self):
+    self.track = calliope_base.ReleaseTrack.BETA

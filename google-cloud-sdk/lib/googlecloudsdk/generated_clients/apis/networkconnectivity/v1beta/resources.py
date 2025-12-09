@@ -176,6 +176,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_TRANSPORTS = (
+      'projects.locations.transports',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/transports/'
+              '{transportsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_TRANSPORTS_REMOTEPROFILES = (
+      'projects.locations.transports.remoteProfiles',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'remoteTransportProfiles/{remoteProfilesId}',
+      },
+      ['name'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

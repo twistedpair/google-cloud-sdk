@@ -123,6 +123,14 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SECRETS_VERSIONS = (
+      'projects.locations.secrets.versions',
+      'projects/{projectsId}/locations/{locationsId}/secrets/{secretsId}/'
+      'versions/{versionsId}',
+      {},
+      ['projectsId', 'locationsId', 'secretsId', 'versionsId'],
+      True
+  )
   PROJECTS_SECRETS = (
       'projects.secrets',
       'projects/{projectsId}/secrets/{secretsId}',

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -35,9 +35,11 @@ from .types.content import GenerationConfig
 from .types.content import GroundingChunk
 from .types.content import GroundingMetadata
 from .types.content import GroundingSupport
+from .types.content import ImageConfig
 from .types.content import LogprobsResult
 from .types.content import ModalityTokenCount
 from .types.content import ModelArmorConfig
+from .types.content import MultiSpeakerVoiceConfig
 from .types.content import Part
 from .types.content import PrebuiltVoiceConfig
 from .types.content import ProactivityConfig
@@ -46,6 +48,7 @@ from .types.content import SafetyRating
 from .types.content import SafetySetting
 from .types.content import SearchEntryPoint
 from .types.content import Segment
+from .types.content import SpeakerVoiceConfig
 from .types.content import SpeechConfig
 from .types.content import UrlContextMetadata
 from .types.content import UrlMetadata
@@ -96,12 +99,15 @@ from .types.prediction_service import DirectPredictRequest
 from .types.prediction_service import DirectPredictResponse
 from .types.prediction_service import DirectRawPredictRequest
 from .types.prediction_service import DirectRawPredictResponse
+from .types.prediction_service import EmbedContentRequest
+from .types.prediction_service import EmbedContentResponse
 from .types.prediction_service import ExplainRequest
 from .types.prediction_service import ExplainResponse
 from .types.prediction_service import FetchPredictOperationRequest
 from .types.prediction_service import GenerateContentRequest
 from .types.prediction_service import GenerateContentResponse
 from .types.prediction_service import GenerateVideoResponse
+from .types.prediction_service import InvokeRequest
 from .types.prediction_service import PredictLongRunningRequest
 from .types.prediction_service import PredictRequest
 from .types.prediction_service import PredictResponse
@@ -124,6 +130,9 @@ from .types.tool import FunctionCall
 from .types.tool import FunctionCallingConfig
 from .types.tool import FunctionDeclaration
 from .types.tool import FunctionResponse
+from .types.tool import FunctionResponseBlob
+from .types.tool import FunctionResponseFileData
+from .types.tool import FunctionResponsePart
 from .types.tool import GoogleMaps
 from .types.tool import GoogleSearchRetrieval
 from .types.tool import RagRetrievalConfig
@@ -139,6 +148,7 @@ from .types.types import DoubleArray
 from .types.types import Int64Array
 from .types.types import StringArray
 from .types.types import Tensor
+from .types.usage_metadata import UsageMetadata
 from .types.vertex_rag_data import CorpusStatus
 from .types.vertex_rag_data import FileStatus
 from .types.vertex_rag_data import ImportRagFilesConfig
@@ -186,6 +196,8 @@ __all__ = (
 'DirectUploadSource',
 'DoubleArray',
 'DynamicRetrievalConfig',
+'EmbedContentRequest',
+'EmbedContentResponse',
 'EncryptionSpec',
 'EnterpriseWebSearch',
 'Examples',
@@ -209,6 +221,9 @@ __all__ = (
 'FunctionCallingConfig',
 'FunctionDeclaration',
 'FunctionResponse',
+'FunctionResponseBlob',
+'FunctionResponseFileData',
+'FunctionResponsePart',
 'GcsDestination',
 'GcsSource',
 'GenerateContentRequest',
@@ -223,15 +238,18 @@ __all__ = (
 'GroundingSupport',
 'HarmCategory',
 'HttpElementLocation',
+'ImageConfig',
 'ImportRagFilesConfig',
 'Int64Array',
 'IntegratedGradientsAttribution',
+'InvokeRequest',
 'JiraSource',
 'LogprobsResult',
 'Modality',
 'ModalityTokenCount',
 'ModelArmorConfig',
 'ModelExplanation',
+'MultiSpeakerVoiceConfig',
 'Neighbor',
 'Part',
 'PrebuiltVoiceConfig',
@@ -265,6 +283,7 @@ __all__ = (
 'SharePointSources',
 'SlackSource',
 'SmoothGradConfig',
+'SpeakerVoiceConfig',
 'SpeechConfig',
 'StreamDirectPredictRequest',
 'StreamDirectPredictResponse',
@@ -285,6 +304,7 @@ __all__ = (
 'UrlContext',
 'UrlContextMetadata',
 'UrlMetadata',
+'UsageMetadata',
 'VertexAISearch',
 'VertexAiSearchConfig',
 'VertexRagStore',

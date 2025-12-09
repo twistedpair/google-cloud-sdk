@@ -25,6 +25,11 @@
                 "direct_raw_predict"
               ]
             },
+            "EmbedContent": {
+              "methods": [
+                "embed_content"
+              ]
+            },
             "Explain": {
               "methods": [
                 "explain"
@@ -38,6 +43,11 @@
             "GenerateContent": {
               "methods": [
                 "generate_content"
+              ]
+            },
+            "Invoke": {
+              "methods": [
+                "invoke"
               ]
             },
             "Predict": {
@@ -110,6 +120,11 @@
                 "direct_raw_predict"
               ]
             },
+            "EmbedContent": {
+              "methods": [
+                "embed_content"
+              ]
+            },
             "Explain": {
               "methods": [
                 "explain"
@@ -123,6 +138,11 @@
             "GenerateContent": {
               "methods": [
                 "generate_content"
+              ]
+            },
+            "Invoke": {
+              "methods": [
+                "invoke"
               ]
             },
             "Predict": {
@@ -195,6 +215,11 @@
                 "direct_raw_predict"
               ]
             },
+            "EmbedContent": {
+              "methods": [
+                "embed_content"
+              ]
+            },
             "Explain": {
               "methods": [
                 "explain"
@@ -208,6 +233,11 @@
             "GenerateContent": {
               "methods": [
                 "generate_content"
+              ]
+            },
+            "Invoke": {
+              "methods": [
+                "invoke"
               ]
             },
             "Predict": {

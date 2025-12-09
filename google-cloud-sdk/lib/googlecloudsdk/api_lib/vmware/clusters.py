@@ -113,3 +113,64 @@ class ClustersClient(util.VmwareClientBase):
         name=resource.RelativeName(), cluster=cluster, updateMask=update_mask
     )
     return self.service.Patch(request)
+
+  def MountDatastore(
+      self,
+      cluster_ref,
+      datastore,
+      subnet,
+      mtu,
+      connection_count,
+      access_mode,
+      nfs_version,
+      ignore_colocation,
+  ):
+    """Mounts a datastore to a cluster."""
+    datastore_network = self.messages.DatastoreNetwork(
+        subnet=cluster_ref.Parent().RelativeName() + '/subnets/' + subnet
+    )
+    if mtu is not None:
+      datastore_network.mtu = mtu
+    if connection_count is not None:
+      datastore_network.connectionCount = connection_count
+
+    datastore_mount_config = self.messages.DatastoreMountConfig(
+        datastore=datastore,
+        datastoreNetwork=datastore_network,
+    )
+    if access_mode:
+      datastore_mount_config.accessMode = (
+          self.messages.DatastoreMountConfig.AccessModeValueValuesEnum(
+              access_mode
+          )
+      )
+    if nfs_version:
+      if nfs_version == 'NFS_V4':
+        nfs_version_enum_str = 'NFS_V41'
+      else:
+        nfs_version_enum_str = nfs_version
+      datastore_mount_config.nfsVersion = (
+          self.messages.DatastoreMountConfig.NfsVersionValueValuesEnum(
+              nfs_version_enum_str
+          )
+      )
+    mount_datastore_request = self.messages.MountDatastoreRequest(
+        datastoreMountConfig=datastore_mount_config,
+        ignoreColocation=ignore_colocation,
+    )
+    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsClustersMountDatastoreRequest(
+        name=cluster_ref.RelativeName(),
+        mountDatastoreRequest=mount_datastore_request,
+    )
+    return self.service.MountDatastore(request)
+
+  def UnmountDatastore(self, cluster_ref, datastore):
+    """Unmounts a datastore from a cluster."""
+    unmount_datastore_request = self.messages.UnmountDatastoreRequest(
+        datastore=datastore
+    )
+    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsClustersUnmountDatastoreRequest(
+        name=cluster_ref.RelativeName(),
+        unmountDatastoreRequest=unmount_datastore_request,
+    )
+    return self.service.UnmountDatastore(request)

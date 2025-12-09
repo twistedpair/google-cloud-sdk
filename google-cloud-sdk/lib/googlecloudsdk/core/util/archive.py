@@ -24,6 +24,7 @@ import shutil
 import tempfile
 import time
 import zipfile
+from googlecloudsdk.core import log
 import googlecloudsdk.core.util.files as files
 import six
 
@@ -98,19 +99,25 @@ def AddToArchive(zip_file, src_dir, rel_path, is_file):
       a directory)
   """
   full_path = os.path.join(src_dir, rel_path)
-  mtime = os.path.getmtime(full_path)
-  if time.gmtime(mtime)[0] < 1980:
-    # ZIP files can't contain entries for which the mtime is older than 1980. So
-    # we're going to create a temporary copy of the file or directory (which
-    # will have a fresh mtime) and add it instead.
-    if is_file:
-      temp_file_handle, temp_file_path = tempfile.mkstemp()
-      os.close(temp_file_handle)
-      shutil.copyfile(full_path, temp_file_path)
-      zip_file.write(temp_file_path, rel_path)
-      os.remove(temp_file_path)
+
+  try:
+    mtime = os.path.getmtime(full_path)
+    if time.gmtime(mtime)[0] < 1980:
+      # ZIP files can't contain entries for which the mtime is older than 1980.
+      # We will create a temporary copy of the file or directory (which
+      # will have a fresh mtime) and add it instead.
+      if is_file:
+        temp_file_handle, temp_file_path = tempfile.mkstemp()
+        os.close(temp_file_handle)
+        shutil.copyfile(full_path, temp_file_path)
+        zip_file.write(temp_file_path, rel_path)
+        os.remove(temp_file_path)
+      else:
+        with files.TemporaryDirectory() as temp_dir:
+          zip_file.write(temp_dir, rel_path)
     else:
-      with files.TemporaryDirectory() as temp_dir:
-        zip_file.write(temp_dir, rel_path)
-  else:
-    zip_file.write(full_path, rel_path)
+      zip_file.write(full_path, rel_path)
+
+  except FileNotFoundError:
+    log.warning('Skipping non-existent path: %s', full_path)
+    return

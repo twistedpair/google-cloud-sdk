@@ -52,6 +52,11 @@ CONTEXT_VALUE_LITERAL = 'value'
 CONTEXT_CREATE_TIME_LITERAL = 'createTime'
 CONTEXT_UPDATE_TIME_LITERAL = 'updateTime'
 
+_ENCRYPTION_ENFORCEMENT_FIELDS = (
+    'googleManagedEncryptionEnforcementConfig',
+    'customerManagedEncryptionEnforcementConfig',
+    'customerSuppliedEncryptionEnforcementConfig',
+)
 _NO_TRANSFORM = 'no-transform'
 
 
@@ -167,6 +172,37 @@ def get_apitools_metadata_from_url(cloud_url):
         generation=generation)
 
 
+def _get_encryption_enforcement_config(encryption):
+  """Extracts and converts encryption enforcement config from bucket metadata's encryption field.
+
+  Args:
+    encryption (messages.Bucket.Encryption): The bucket metadata's encryption.
+
+  Returns:
+    dict or None: The encryption enforcement config as a dictionary, or None.
+  """
+  encryption_enforcement = None
+  if encryption and (
+      encryption.googleManagedEncryptionEnforcementConfig
+      or encryption.customerManagedEncryptionEnforcementConfig
+      or encryption.customerSuppliedEncryptionEnforcementConfig
+  ):
+    encryption_enforcement = {}
+    if encryption.googleManagedEncryptionEnforcementConfig:
+      encryption_enforcement['gmekEnforcement'] = _message_to_dict(
+          encryption.googleManagedEncryptionEnforcementConfig
+      )
+    if encryption.customerManagedEncryptionEnforcementConfig:
+      encryption_enforcement['cmekEnforcement'] = _message_to_dict(
+          encryption.customerManagedEncryptionEnforcementConfig
+      )
+    if encryption.customerSuppliedEncryptionEnforcementConfig:
+      encryption_enforcement['csekEnforcement'] = _message_to_dict(
+          encryption.customerSuppliedEncryptionEnforcementConfig
+      )
+  return encryption_enforcement
+
+
 def get_bucket_resource_from_metadata(metadata):
   """Helper method to generate a BucketResource instance from GCS metadata.
 
@@ -177,7 +213,8 @@ def get_bucket_resource_from_metadata(metadata):
     BucketResource with properties populated by metadata.
   """
   url = storage_url.CloudUrl(
-      scheme=storage_url.ProviderPrefix.GCS, bucket_name=metadata.name)
+      scheme=storage_url.ProviderPrefix.GCS, bucket_name=metadata.name
+  )
 
   if metadata.autoclass and metadata.autoclass.enabled:
     autoclass_enabled_time = metadata.autoclass.toggleTime
@@ -186,7 +223,9 @@ def get_bucket_resource_from_metadata(metadata):
 
   uniform_bucket_level_access = getattr(
       getattr(metadata.iamConfiguration, 'uniformBucketLevelAccess', None),
-      'enabled', None)
+      'enabled',
+      None,
+  )
 
   return gcs_resource_reference.GcsBucketResource(
       url,
@@ -199,6 +238,9 @@ def get_bucket_resource_from_metadata(metadata):
       default_acl=_message_to_dict(metadata.defaultObjectAcl),
       default_event_based_hold=metadata.defaultEventBasedHold or None,
       default_kms_key=getattr(metadata.encryption, 'defaultKmsKeyName', None),
+      encryption_enforcement_config=_get_encryption_enforcement_config(
+          metadata.encryption
+      ),
       default_storage_class=metadata.storageClass,
       etag=metadata.etag,
       labels=_message_to_dict(metadata.labels),
@@ -623,6 +665,32 @@ def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
     bucket_metadata.encryption = (
         metadata_field_converters.process_default_encryption_key(
             resource_args.default_encryption_key))
+  if resource_args.encryption_enforcement_file_path is not None:
+    encryption_enforcement_updates = (
+        metadata_field_converters.process_encryption_enforcement_config(
+            resource_args.encryption_enforcement_file_path
+        )
+    )
+    if encryption_enforcement_updates:
+      if bucket_metadata.encryption is None:
+        bucket_metadata.encryption = encryption_enforcement_updates
+      else:
+        # Merge fields from encryption_updates into existing
+        # bucket_metadata.encryption
+        # Note: Default KMS key is handled separately.
+        for field in _ENCRYPTION_ENFORCEMENT_FIELDS:
+          try:
+            # Check if the field was present in the message.
+            updated_value = encryption_enforcement_updates.get_assigned_value(
+                field
+            )
+          except KeyError:
+            # Field was not present in encryption_enforcement_updates, do not
+            # update.
+            pass
+          else:
+            # If no KeyError, the field was present, so we update it.
+            setattr(bucket_metadata.encryption, field, updated_value)
   if resource_args.default_event_based_hold is not None:
     bucket_metadata.defaultEventBasedHold = (
         resource_args.default_event_based_hold)

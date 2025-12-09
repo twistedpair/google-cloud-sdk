@@ -590,7 +590,7 @@ def _ValidateAndMaybeGenerateVolumeNames(args, release_track):
     release_track: The current release track (e.g., base.ReleaseTrack.ALPHA).
   """
   uses_containers_flag = flags.FlagIsExplicitlySet(args, 'containers')
-  if release_track == base.ReleaseTrack.ALPHA:
+  if release_track != base.ReleaseTrack.GA:
     for volume in args.add_volume:
       # If mount-path is specified, the user is attempting to use the volumes
       # shortcut.
@@ -622,7 +622,7 @@ def _MaybeAddVolumeMountChange(args, changes, release_track):
     changes: A list of configuration changes to append to.
     release_track: The current release track (e.g., base.ReleaseTrack.ALPHA).
   """
-  if release_track == base.ReleaseTrack.ALPHA:
+  if release_track != base.ReleaseTrack.GA:
     new_volume_mounts = []
     for volume in args.add_volume:
       if 'mount-path' in volume and 'name' in volume:

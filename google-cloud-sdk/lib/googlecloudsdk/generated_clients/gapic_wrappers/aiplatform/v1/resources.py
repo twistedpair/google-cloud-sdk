@@ -99,6 +99,28 @@ class Collections(enum.Enum):
       ['projectsId', 'locationsId', 'modelsId', 'operationsId'],
       True
   )
+  PROJECTS_LOCATIONS_RAGCORPORA = (
+      'projects.locations.ragCorpora',
+      'projects/{project}/locations/{location}/ragCorpora/{rag_corpus}',
+      {},
+      ['project', 'location', 'rag_corpus'],
+      True
+  )
+  PROJECTS_LOCATIONS_RAGCORPORA_RAGFILES = (
+      'projects.locations.ragCorpora.ragFiles',
+      'projects/{project}/locations/{location}/ragCorpora/{rag_corpus}/'
+      'ragFiles/{rag_file}',
+      {},
+      ['project', 'location', 'rag_corpus', 'rag_file'],
+      True
+  )
+  PROJECTS_LOCATIONS_RAGENGINECONFIG = (
+      'projects.locations.ragEngineConfig',
+      'projects/{project}/locations/{location}/ragEngineConfig',
+      {},
+      ['project', 'location'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

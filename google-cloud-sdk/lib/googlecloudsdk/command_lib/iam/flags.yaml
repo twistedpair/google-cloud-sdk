@@ -553,24 +553,6 @@ workforce_pool:
       information, refer to Obtain short-lived tokens for workforce identity federation at
       https://cloud.google.com/iam/docs/workforce-obtaining-short-lived-credentials
 
-workforce_pool_installed_app:
-  application_name:
-    api_field: workforcePoolInstalledApp.appMetadata.name
-    arg_name: application-name
-    required: true
-    help_text: |-
-      The full resource name of the application to be installed.
-  display_name:
-    api_field: workforcePoolInstalledApp.displayName
-    arg_name: display-name
-    help_text: |-
-      A display name for the workforce pool installed app. Cannot exceed 32 characters in length.
-  description:
-    api_field: workforcePoolInstalledApp.description
-    arg_name: description
-    help_text: |-
-      A description for the workforce pool installed app. Cannot exceed 256 characters in length.
-
 workforce_pool_provider_scim_tenant:
   display_name:
     api_field: workforcePoolProviderScimTenant.displayName

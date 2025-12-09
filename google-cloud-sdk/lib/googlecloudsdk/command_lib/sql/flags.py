@@ -26,8 +26,9 @@ def AddFlagName(parser):
   )
 """
 
+import dataclasses
 import sys
-
+from typing import Any
 from googlecloudsdk.api_lib.compute import utils as compute_utils
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import apis
@@ -92,6 +93,18 @@ class _MajorVersionMatchList(list):
     return any(
         database_version.startswith(major_version) for major_version in self
     )
+
+
+@dataclasses.dataclass(frozen=True)
+class EntraIdCertForPrint:
+  """Holds Entra ID certificate details for printing.
+
+  Attrs:
+    ssl_cert: The Entra ID certificate.
+    status: The status of the certificate.
+  """
+  ssl_cert: Any
+  status: Any
 
 
 # The class for printing a server certificate.
@@ -2497,6 +2510,14 @@ SERVER_CERTS_FORMAT = """
   )
 """
 
+ENTRAID_CERTS_FORMAT = """
+  table(
+    ssl_cert.sha1Fingerprint,
+    ssl_cert.expirationTime.yesno(no="-"):label=EXPIRATION,
+    status
+  )
+"""
+
 TIERS_FORMAT = """
   table(
     tier,
@@ -3617,7 +3638,7 @@ def AddSqlServerEntraId(parser, hidden=False):
   )
 
 
-def AddClearEntraIdConfig(parser, hidden=True):
+def AddClearEntraIdConfig(parser, hidden=False):
   parser.add_argument(
       '--clear-entra-id-config',
       action='store_true',
@@ -3636,10 +3657,11 @@ def AddPerformanceCaptureConfig(parser, hidden=True):
       help=(
           'A comma-separated list of performance capture settings to add to the'
           ' MySQL instance. The input should be in a format of key=value.'
-          ' Available keys are: enabled, probing-interval-seconds,'
-          ' probe-threshold, running-threads-threshold,'
-          ' seconds-behind-source-threshold, '
-          ' and transaction-duration-threshold. Example:'
+          ' Available case-sensitive keys are: enabled (boolean),'
+          ' probing-interval-seconds (integer), probe-threshold (integer),'
+          ' running-threads-threshold (integer),'
+          ' seconds-behind-source-threshold (integer), '
+          ' and transaction-duration-threshold (integer). Example:'
           ' --performance-capture-config enabled=true,probe-threshold=5'
       ),
       hidden=hidden,
@@ -3839,3 +3861,29 @@ def AddServerCertificateRotationMode(parser):
       help=help_text,
       hidden=True,
   )
+
+
+def GetInstanceClearOverrides(args: parser_extensions.Namespace) -> list[str]:
+  """Returns a list of source instance settings that should be cleared when creating the new target instance.
+
+  Args:
+    args: argparse.Namespace, The arguments that this command was invoked with.
+
+  Returns:
+    An array with the database instance fields that should be cleared.
+  """
+  cleared_fields = []
+
+  if args.IsKnownAndSpecified('clear_network'):
+    cleared_fields.append('settings.ip_configuration.private_network')
+
+  if args.clear_active_directory_dns_servers:
+    cleared_fields.append('settings.active_directory_config.dns_servers')
+
+  if args.IsKnownAndSpecified('clear_disk_encryption'):
+    cleared_fields.append('disk_encryption_config')
+
+  if args.clear_active_directory:
+    cleared_fields.append('settings.active_directory_config')
+
+  return cleared_fields

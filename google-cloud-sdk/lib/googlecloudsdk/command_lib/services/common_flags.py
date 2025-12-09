@@ -70,7 +70,8 @@ def get_operation_namespace(op_name):
 def consumer_service_flag(suffix='to act on', flag_name='service'):
   return base.Argument(
       flag_name,
-      nargs='*',
+      # This makes the argument required (at least one)
+      nargs='+',
       completer=ConsumerServiceCompleter,
       help='The name of the service(s) {0}.'.format(suffix))
 
@@ -87,7 +88,8 @@ def available_service_flag(suffix='to act on', flag_name='service'):
   #       code to timeout, this flag will not enable tab completion.
   return base.Argument(
       flag_name,
-      nargs='*',
+      # This makes the argument required (at least one)
+      nargs='+',
       help='The name of the service(s) {0}.'.format(suffix))
 
 
@@ -156,6 +158,7 @@ def skip_mcp_endpoint_check_flag(parser):
           ' If true, the system will bypass the check for MCP endpoint while'
           ' enabling a service.'
       ),
+      hidden=True,
   ).AddToParser(parser)
 
 

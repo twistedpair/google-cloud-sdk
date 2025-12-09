@@ -28,12 +28,3 @@ properties:
   name:
     description: Name of the secure tag, created with TagManager's TagValue API.
     type: string
-  state:
-    description: |-
-      [Output Only] State of the secure tag, either `EFFECTIVE` or
-      `INEFFECTIVE`. A secure tag is `INEFFECTIVE` when it is deleted or its
-      network is deleted.
-    type: string
-    enum:
-    - EFFECTIVE
-    - INEFFECTIVE

@@ -15,6 +15,7 @@
 """Generic flags that apply to multiple commands."""
 
 import enum
+import textwrap
 
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.calliope import actions
@@ -56,7 +57,7 @@ For more information about supported configurations, see
 [Cloud Storage bucket IP filtering configurations](https://cloud.google.com/storage/docs/create-ip-filter#ip-filtering-configurations)
 """
 
-_ENCRYPTION_ENFORCEMENT_HELP_TEXT = """
+_ENCRYPTION_ENFORCEMENT_HELP_TEXT = textwrap.dedent("""\
 Sets the encryption enforcement configuration for the bucket from a JSON file.
 This configuration determines restrictions on the types of encryption (GMEK,
 CMEK, CSEK) allowed for new objects created in the bucket.
@@ -84,14 +85,16 @@ Example JSON file content, to enforce only CMEK for new objects:
     }
   }
 
-Omitted keys will not be sent in the API request. To clear a specific
-enforcement setting during an update, set its value to null.
-For example, to clear the "gmekEnforcement" setting:
-
+Omitted keys will not be sent in the API request. To clear restrictions for a
+specific encryption-type during an update, set its "restrictionMode" to
+"NotRestricted".
+For example, to clear any restrictions on GMEK:
   {
-    "gmekEnforcement": null
+    "gmekEnforcement": {
+      "restrictionMode": "NotRestricted"
+    }
   }
-"""
+""")
 
 _CUSTOM_CONTEXT_FILE_HELP_TEXT = """
 Path to a local JSON or YAML file containing custom contexts one wants to set on

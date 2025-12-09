@@ -169,6 +169,58 @@ _MONGODB_EXCLUDED_OBJECTS_HELP_TEXT = """\
 """
 
 
+def AddRuleSetsFlag(parser):
+  """Adds a --rule-sets flag to the given parser."""
+  help_text = """Path to a JSON file containing a list of rule sets
+  to be applied to the stream.
+
+  The JSON file is formatted as follows, with camelCase field naming:
+
+  ```
+  [
+    {
+      "objectFilter": {
+        "sourceObjectIdentifier": {
+          "oracleIdentifier": {
+            "schema": "schema1",
+            "table": "table1"
+          }
+        }
+      },
+      "customizationRules": [
+        {
+          "bigqueryClustering": {
+            "columns": ["COL_A"]
+          }
+        }
+      ]
+    },
+    {
+      "objectFilter": {
+        "sourceObjectIdentifier": {
+          "oracleIdentifier": {
+            "schema": "schema2",
+            "table": "table2"
+          }
+        }
+      },
+      "customizationRules": [
+        {
+          "bigqueryPartitioning": {
+            "timeUnitPartition": {
+              "column": "TIME_COL",
+              "partitioningTimeGranularity": "PARTITIONING_TIME_GRANULARITY_DAY"
+            }
+          }
+        }
+      ]
+    }
+  ]
+  ```
+"""
+  parser.add_argument('--rule-sets', help=help_text)
+
+
 def AddDisplayNameFlag(parser, required=True):
   """Adds a --display-name flag to the given parser."""
   help_text = """Friendly name for the stream."""

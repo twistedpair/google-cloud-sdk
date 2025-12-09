@@ -491,6 +491,17 @@ SHOW_EXEC_ERROR_FLAG = Argument(
     ),
 )
 
+# Regional endpoint flags.
+REGIONAL_ENDPOINT_FLAGS = 'REGIONAL ENDPOINT'
+
+# This flag is intended only for commands that don't deal with location-specific
+# resources and thus don't have e.g. a natural --location flag.
+ENDPOINT_LOCATION = Argument(
+    '--endpoint-location',
+    category=REGIONAL_ENDPOINT_FLAGS,
+    help='Regional endpoint location to use for requests.',
+)
+
 
 class _Common(six.with_metaclass(abc.ABCMeta, object)):
   """Base class for Command and Group."""
@@ -956,14 +967,15 @@ def NonDefaultUniverseOnly(cmd_class):
   return cmd_class
 
 
-def _RegionalEndpointMode(mode):
-  """Returns decorator that sets regional endpoint mode on commands/groups.
+def _RegionalEndpointCompatibility(compatibility):
+  """Returns decorator that sets regional endpoint compatibility.
 
   Args:
-    mode: Value of properties.VALUES.regional.endpoint_mode to set.
+    compatibility: Value of properties.VALUES.regional.endpoint_compatibility to
+      set.
   Returns:
     Decorator function that modifies the Filter/Run method to set the given
-    endpoint mode for the group/command in question.
+    compatibility for the group/command in question.
   """
 
   def DecorateCommand(cmd_class):
@@ -975,15 +987,12 @@ def _RegionalEndpointMode(mode):
     Returns:
       The decorated class.
     """
-    # Respect the user property, if explicitly set.
-    if properties.VALUES.regional.endpoint_mode.IsExplicitlySet():
-      return cmd_class
-
     def RunDecorator(run_func):
       @wraps(run_func)
       def WrappedRun(*args, **kw):
         properties.VALUES.SetInvocationValue(
-            properties.VALUES.regional.endpoint_mode, mode, None)
+            properties.VALUES.regional.endpoint_compatibility, compatibility,
+            None)
         return run_func(*args, **kw)
       return WrappedRun
 
@@ -997,13 +1006,15 @@ def _RegionalEndpointMode(mode):
   return DecorateCommand
 
 
-def RegionalEndpointsOnly(cmd_class):
-  decorator = _RegionalEndpointMode(properties.VALUES.regional.REGIONAL_ONLY)
+def RegionalEndpointsSupported(cmd_class):
+  decorator = _RegionalEndpointCompatibility(
+      properties.VALUES.regional.SUPPORTED)
   return decorator(cmd_class)
 
 
-def RegionalEndpointsPreferred(cmd_class):
-  decorator = _RegionalEndpointMode(properties.VALUES.regional.AUTO)
+def RegionalEndpointsRequired(cmd_class):
+  decorator = _RegionalEndpointCompatibility(
+      properties.VALUES.regional.REQUIRED)
   return decorator(cmd_class)
 
 
@@ -1320,15 +1331,6 @@ def UserProjectQuotaWithFallbackEnabled():
   )
 
 
-def OptOutRequests():
-  """Opts the command group out of using requests to make HTTP requests.
-
-  Call this function in the Filter method of the command group
-  to disable requests.
-  """
-  properties.VALUES.transport.opt_out_requests.Set(True)
-
-
 def UseRequests():
   """Returns True if using requests to make HTTP requests.
 
@@ -1339,8 +1341,6 @@ def UseRequests():
 
   return (
       UseGoogleAuth()
-      and not properties.VALUES.transport.opt_out_requests.GetBool()
-      and not properties.VALUES.transport.disable_requests_override.GetBool()
   )
 
 

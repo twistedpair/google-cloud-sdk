@@ -748,6 +748,7 @@ class EndpointsClient(object):
       service_account=None,
       traffic_split=None,
       deployed_model_id=None,
+      gpu_partition_size=None,
   ):
     """Deploys a model to an existing endpoint using v1 API.
 
@@ -781,6 +782,8 @@ class EndpointsClient(object):
         runs as.
       traffic_split: dict or None, the new traffic split of the endpoint.
       deployed_model_id: str or None, id of the deployed model.
+      gpu_partition_size: str or None, the partition size of the GPU
+        accelerator.
 
     Returns:
       A long-running operation for DeployModel.
@@ -807,6 +810,8 @@ class EndpointsClient(object):
         machine_spec.reservationAffinity = flags.ParseReservationAffinityFlag(
             reservation_affinity, constants.GA_VERSION
         )
+      if gpu_partition_size is not None:
+        machine_spec.gpuPartitionSize = gpu_partition_size
 
       dedicated = self.messages.GoogleCloudAiplatformV1DedicatedResources(
           machineSpec=machine_spec, spot=spot

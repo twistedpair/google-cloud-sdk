@@ -29,6 +29,16 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class CheckAvailabilityIpamAdminScopesResponse(_messages.Message):
+  r"""Message for response to checking the availability of IpamAdminScopes
+
+  Fields:
+    scopeAvailabilities: The details of the requested scopes.
+  """
+
+  scopeAvailabilities = _messages.MessageField('IpamAdminScopeAvailability', 1, repeated=True)
+
+
 class CleanupIpamAdminScopeRequest(_messages.Message):
   r"""Message for cleaning up a IpamAdminScope
 
@@ -47,6 +57,19 @@ class CleanupIpamAdminScopeRequest(_messages.Message):
   """
 
   requestId = _messages.StringField(1)
+
+
+class CloudnumberregistryProjectsLocationsCheckAdminScopeAvailabilityRequest(_messages.Message):
+  r"""A CloudnumberregistryProjectsLocationsCheckAdminScopeAvailabilityRequest
+  object.
+
+  Fields:
+    parent: Required. Parent value for the IpamAdminScopes.
+    scopes: Required. The scopes of the IpamAdminScopes to look for.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  scopes = _messages.StringField(2, repeated=True)
 
 
 class CloudnumberregistryProjectsLocationsCustomRangesCreateRequest(_messages.Message):
@@ -490,9 +513,9 @@ class CloudnumberregistryProjectsLocationsOperationsListRequest(_messages.Messag
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -833,6 +856,8 @@ class DiscoveredRange(_messages.Message):
 
   Fields:
     attributes: Optional. The attributes of the DiscoveredRange.
+    childCidrOverlapAllowed: Output only. If true, allow child ranges of this
+      range to overlap with each other.
     createTime: Output only. [Output only] Create time stamp
     description: Optional. Description of the DiscoveredRange.
     discoveryMetadata: Output only. Owner metadata for this DiscoveredRange. A
@@ -877,17 +902,18 @@ class DiscoveredRange(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   attributes = _messages.MessageField('Attribute', 1, repeated=True)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  discoveryMetadata = _messages.MessageField('DiscoveryMetadata', 4)
-  ipv4CidrRange = _messages.StringField(5)
-  ipv6CidrRange = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  parentRange = _messages.StringField(9)
-  realm = _messages.StringField(10)
-  registryBook = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  childCidrOverlapAllowed = _messages.BooleanField(2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  discoveryMetadata = _messages.MessageField('DiscoveryMetadata', 5)
+  ipv4CidrRange = _messages.StringField(6)
+  ipv6CidrRange = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  parentRange = _messages.StringField(10)
+  realm = _messages.StringField(11)
+  registryBook = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class DiscoveryMetadata(_messages.Message):
@@ -1070,6 +1096,35 @@ class IpamAdminScope(_messages.Message):
   updateTime = _messages.StringField(7)
 
 
+class IpamAdminScopeAvailability(_messages.Message):
+  r"""Message for the availability of an IpamAdminScope
+
+  Enums:
+    AvailabilityValueValuesEnum: The availability of the scope.
+
+  Fields:
+    adminProject: The admin project of the IpamAdminScope if it exists.
+    availability: The availability of the scope.
+    scope: The scope of the IpamAdminScope.
+  """
+
+  class AvailabilityValueValuesEnum(_messages.Enum):
+    r"""The availability of the scope.
+
+    Values:
+      AVAILABILITY_UNSPECIFIED: Unspecified availability.
+      AVAILABLE: The scope is available.
+      UNAVAILABLE: The scope is not available.
+    """
+    AVAILABILITY_UNSPECIFIED = 0
+    AVAILABLE = 1
+    UNAVAILABLE = 2
+
+  adminProject = _messages.IntegerField(1)
+  availability = _messages.EnumField('AvailabilityValueValuesEnum', 2)
+  scope = _messages.StringField(3)
+
+
 class ListCustomRangesResponse(_messages.Message):
   r"""Message for response to listing CustomRanges
 
@@ -1137,8 +1192,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)

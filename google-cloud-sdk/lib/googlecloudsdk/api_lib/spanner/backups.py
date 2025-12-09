@@ -22,9 +22,8 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import exceptions as c_exceptions
 from googlecloudsdk.command_lib.spanner.resource_args import CloudKmsKeyName
 from googlecloudsdk.core import exceptions as core_exceptions
-from googlecloudsdk.core.credentials import http
+from googlecloudsdk.core.credentials import requests
 from googlecloudsdk.core.util import times
-import six
 from six.moves import http_client as httplib
 from six.moves import urllib
 
@@ -104,19 +103,20 @@ def CreateBackup(
   # field(http://shortn/_gHieB9ir83). Thus, this workaround is necessary and
   # will be here to stay since `apitools` is not under active development and
   # gcloud will continue to support `apitools` http://shortn/_BJJCZbnCFp.
-  # Workaround since gcloud cannot handle HttpBody properly (b/31403673).
-  response_encoding = None if six.PY2 else 'utf-8'
   # Make an http request directly instead of using the apitools client which
   # does not support '.' characters in query parameters (b/31244944).
-  response, response_body = http.Http(
-      response_encoding=response_encoding).request(
-          uri=url, method='POST', body=client.SerializeMessage(backup))
-
-  if int(response.get('status')) != httplib.OK:
-    raise HttpRequestFailedError('HTTP request failed. Response: ' +
-                                 response_body)
+  http_client = requests.GetSession()
+  # Workaround since gcloud cannot handle HttpBody properly (b/31403673).
+  http_client.encoding = 'utf-8'
+  response = http_client.request(
+      'POST', url, data=client.SerializeMessage(backup)
+  )
+  if int(response.status_code) != httplib.OK:
+    raise HttpRequestFailedError(
+        'HTTP request failed. Response: ' + response.text
+    )
   message_type = getattr(msgs, 'Operation')
-  return client.DeserializeMessage(message_type, response_body)
+  return client.DeserializeMessage(message_type, response.content)
 
 
 def CopyBackup(source_backup_ref,

@@ -102,23 +102,37 @@ projects_locations_release_channel_settings:
     attribute_name: release_channel_setting
     help: The releaseChannelSetting id of the {resource} resource.
   disable_auto_completers: true
-projects_locations_code_repository_indexes_repository_groups:
-  name: repositoryGroup
-  plural_name: repositoryGroups
-  collection: cloudaicompanion.projects.locations.codeRepositoryIndexes.repositoryGroups
-  attributes:
-  - *project
-  - *location
-  - *codeRepositoryIndex
-  - &repositoryGroup
-    parameter_name: repositoryGroupsId
-    attribute_name: repository_group
-    help: The repositoryGroup id of the {resource} resource.
-  disable_auto_completers: false
-? projects_locations_code_tools_settings_or_data_sharing_with_google_settings_or_gemini_gcp_enablement_settings_or_logging_settings_or_release_channel_settings_setting_bindings
+? projects_locations_behavior_settings_or_chat_history_settings_or_code_tools_settings_or_data_control_settings_or_data_sharing_with_google_settings_or_gemini_code_assist_settings_or_gemini_gcp_enablement_settings_or_logging_settings_or_release_channel_settings_or_security_settings_setting_bindings
 : name: settingBinding
   plural_name: settingBindings
   resources:
+  - name: settingBinding
+    plural_name: settingBindings
+    collection: cloudaicompanion.projects.locations.behaviorSettings.settingBindings
+    attributes:
+    - *project
+    - *location
+    - &behaviorSetting
+      parameter_name: behaviorSettingsId
+      attribute_name: behavior_setting
+      help: The behaviorSetting id of the {resource} resource.
+    - &settingBinding
+      parameter_name: settingBindingsId
+      attribute_name: setting_binding
+      help: The settingBinding id of the {resource} resource.
+    disable_auto_completers: true
+  - name: settingBinding
+    plural_name: settingBindings
+    collection: cloudaicompanion.projects.locations.chatHistorySettings.settingBindings
+    attributes:
+    - *project
+    - *location
+    - &chatHistorySetting
+      parameter_name: chatHistorySettingsId
+      attribute_name: chat_history_setting
+      help: The chatHistorySetting id of the {resource} resource.
+    - *settingBinding
+    disable_auto_completers: true
   - name: settingBinding
     plural_name: settingBindings
     collection: cloudaicompanion.projects.locations.codeToolsSettings.settingBindings
@@ -126,10 +140,19 @@ projects_locations_code_repository_indexes_repository_groups:
     - *project
     - *location
     - *codeToolsSetting
-    - &settingBinding
-      parameter_name: settingBindingsId
-      attribute_name: setting_binding
-      help: The settingBinding id of the {resource} resource.
+    - *settingBinding
+    disable_auto_completers: true
+  - name: settingBinding
+    plural_name: settingBindings
+    collection: cloudaicompanion.projects.locations.dataControlSettings.settingBindings
+    attributes:
+    - *project
+    - *location
+    - &dataControlSetting
+      parameter_name: dataControlSettingsId
+      attribute_name: data_control_setting
+      help: The dataControlSetting id of the {resource} resource.
+    - *settingBinding
     disable_auto_completers: true
   - name: settingBinding
     plural_name: settingBindings
@@ -138,6 +161,18 @@ projects_locations_code_repository_indexes_repository_groups:
     - *project
     - *location
     - *dataSharingWithGoogleSetting
+    - *settingBinding
+    disable_auto_completers: true
+  - name: settingBinding
+    plural_name: settingBindings
+    collection: cloudaicompanion.projects.locations.geminiCodeAssistSettings.settingBindings
+    attributes:
+    - *project
+    - *location
+    - &geminiCodeAssistSetting
+      parameter_name: geminiCodeAssistSettingsId
+      attribute_name: gemini_code_assist_setting
+      help: The geminiCodeAssistSetting id of the {resource} resource.
     - *settingBinding
     disable_auto_completers: true
   - name: settingBinding
@@ -167,6 +202,31 @@ projects_locations_code_repository_indexes_repository_groups:
     - *releaseChannelSetting
     - *settingBinding
     disable_auto_completers: true
+  - name: settingBinding
+    plural_name: settingBindings
+    collection: cloudaicompanion.projects.locations.securitySettings.settingBindings
+    attributes:
+    - *project
+    - *location
+    - &securitySetting
+      parameter_name: securitySettingsId
+      attribute_name: security_setting
+      help: The securitySetting id of the {resource} resource.
+    - *settingBinding
+    disable_auto_completers: true
+projects_locations_code_repository_indexes_repository_groups:
+  name: repositoryGroup
+  plural_name: repositoryGroups
+  collection: cloudaicompanion.projects.locations.codeRepositoryIndexes.repositoryGroups
+  attributes:
+  - *project
+  - *location
+  - *codeRepositoryIndex
+  - &repositoryGroup
+    parameter_name: repositoryGroupsId
+    attribute_name: repository_group
+    help: The repositoryGroup id of the {resource} resource.
+  disable_auto_completers: false
 projects_locations_code_tools_settings_setting_bindings:
   name: settingBinding
   plural_name: settingBindings

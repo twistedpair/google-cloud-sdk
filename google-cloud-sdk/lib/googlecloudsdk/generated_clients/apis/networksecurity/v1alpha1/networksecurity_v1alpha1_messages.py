@@ -1099,9 +1099,9 @@ class Destination(_messages.Message):
 
 class DnsThreatDetector(_messages.Message):
   r"""A DNS threat detector sends DNS query logs to a _provider_ that then
-  analyzes the logs to identify malicious activity in the DNS queries. By
-  default, all VPC networks in your projects are included. You can exclude
-  specific networks by supplying `excluded_networks`.
+  analyzes the logs to identify threat events in the DNS queries. By default,
+  all VPC networks in your projects are included. You can exclude specific
+  networks by supplying `excluded_networks`.
 
   Enums:
     ProviderValueValuesEnum: Required. The provider used for DNS threat
@@ -3110,8 +3110,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -3272,21 +3272,6 @@ class ListTlsInspectionPoliciesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   tlsInspectionPolicies = _messages.MessageField('TlsInspectionPolicy', 2, repeated=True)
-  unreachable = _messages.StringField(3, repeated=True)
-
-
-class ListUllMirroredNetworksResponse(_messages.Message):
-  r"""Message for response to listing UllMirroredNetworks
-
-  Fields:
-    nextPageToken: A token identifying a page of results the server should
-      return.
-    ullMirroredNetworks: The list of UllMirroredNetwork
-    unreachable: Locations that could not be reached.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  ullMirroredNetworks = _messages.MessageField('UllMirroredNetwork', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -4624,9 +4609,9 @@ class NetworksecurityOrganizationsLocationsOperationsListRequest(_messages.Messa
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -5950,6 +5935,117 @@ class NetworksecurityProjectsLocationsFirewallEndpointAssociationsPatchRequest(_
   updateMask = _messages.StringField(4)
 
 
+class NetworksecurityProjectsLocationsFirewallEndpointsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsFirewallEndpointsCreateRequest object.
+
+  Fields:
+    firewallEndpoint: A FirewallEndpoint resource to be passed as the request
+      body.
+    firewallEndpointId: Required. Id of the requesting object. If auto-
+      generating Id server-side, remove this field and firewall_endpoint_id
+      from the method_signature of Create RPC.
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallEndpoint = _messages.MessageField('FirewallEndpoint', 1)
+  firewallEndpointId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsFirewallEndpointsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsFirewallEndpointsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsFirewallEndpointsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsFirewallEndpointsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsFirewallEndpointsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsFirewallEndpointsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. Parent value for ListEndpointsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworksecurityProjectsLocationsFirewallEndpointsPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsFirewallEndpointsPatchRequest object.
+
+  Fields:
+    firewallEndpoint: A FirewallEndpoint resource to be passed as the request
+      body.
+    name: Immutable. Identifier. Name of resource.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the Endpoint resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields will be overwritten.
+  """
+
+  firewallEndpoint = _messages.MessageField('FirewallEndpoint', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
 class NetworksecurityProjectsLocationsGatewaySecurityPoliciesCreateRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsGatewaySecurityPoliciesCreateRequest
   object.
@@ -7178,9 +7274,9 @@ class NetworksecurityProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -8333,91 +8429,6 @@ class NetworksecurityProjectsLocationsUllMirroringEnginesPatchRequest(_messages.
   name = _messages.StringField(1, required=True)
   ullMirroringEngine = _messages.MessageField('UllMirroringEngine', 2)
   updateMask = _messages.StringField(3)
-
-
-class NetworksecurityProjectsLocationsUllMirroringInfrasUllMirroredNetworksCreateRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsUllMirroringInfrasUllMirroredNetworksC
-  reateRequest object.
-
-  Fields:
-    parent: Required. Value for parent.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    ullMirroredNetwork: A UllMirroredNetwork resource to be passed as the
-      request body.
-    ullMirroredNetworkId: Required. Id of the requesting object If auto-
-      generating Id server-side, remove this field and ull_mirrored_network_id
-      from the method_signature of Create RPC
-  """
-
-  parent = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  ullMirroredNetwork = _messages.MessageField('UllMirroredNetwork', 3)
-  ullMirroredNetworkId = _messages.StringField(4)
-
-
-class NetworksecurityProjectsLocationsUllMirroringInfrasUllMirroredNetworksDeleteRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsUllMirroringInfrasUllMirroredNetworksD
-  eleteRequest object.
-
-  Fields:
-    name: Required. Name of the resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class NetworksecurityProjectsLocationsUllMirroringInfrasUllMirroredNetworksGetRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsUllMirroringInfrasUllMirroredNetworksG
-  etRequest object.
-
-  Fields:
-    name: Required. Name of the resource
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class NetworksecurityProjectsLocationsUllMirroringInfrasUllMirroredNetworksListRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsUllMirroringInfrasUllMirroredNetworksL
-  istRequest object.
-
-  Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent value for ListUllMirroredNetworksRequest
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
 
 
 class NetworksecurityProjectsLocationsUrlListsCreateRequest(_messages.Message):
@@ -10033,74 +10044,6 @@ class TlsInspectionPolicy(_messages.Message):
   tlsFeatureProfile = _messages.EnumField('TlsFeatureProfileValueValuesEnum', 8)
   trustConfig = _messages.StringField(9)
   updateTime = _messages.StringField(10)
-
-
-class UllMirroredNetwork(_messages.Message):
-  r"""Message describing UllMirroredNetwork object
-
-  Enums:
-    StateValueValuesEnum: Output only. Current state of the mirrored network.
-
-  Messages:
-    LabelsValue: Optional. Labels as key value pairs
-
-  Fields:
-    createTime: Output only. [Output only] Create time stamp
-    labels: Optional. Labels as key value pairs
-    name: Immutable. Identifier. The name of the UllMirroredNetwork.
-    network: Required. Immutable. The mirrored network name. e.g.
-      "projects/my-project/global/networks/my-network".
-    reconciling: Output only. Whether reconciling is in progress, recommended
-      per https://google.aip.dev/128.
-    state: Output only. Current state of the mirrored network.
-    updateTime: Output only. [Output only] Update time stamp
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. Current state of the mirrored network.
-
-    Values:
-      STATE_UNSPECIFIED: Not set.
-      ACTIVE: Ready.
-      CREATING: Being created.
-      DELETING: Being deleted.
-    """
-    STATE_UNSPECIFIED = 0
-    ACTIVE = 1
-    CREATING = 2
-    DELETING = 3
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  network = _messages.StringField(4)
-  reconciling = _messages.BooleanField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
 
 
 class UllMirroringCollector(_messages.Message):
