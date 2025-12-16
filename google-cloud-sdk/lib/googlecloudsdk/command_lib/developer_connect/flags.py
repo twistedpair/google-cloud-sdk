@@ -79,7 +79,6 @@ Format examples:
 `--target-projects=123567890,my-project`
 `--target-projects=projects/1234567890,projects/my-project`
  """,
-      hidden=True,
   )
 
 

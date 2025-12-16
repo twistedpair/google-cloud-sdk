@@ -1333,37 +1333,8 @@ def UserProjectQuotaWithFallbackEnabled():
 
 def UseRequests():
   """Returns True if using requests to make HTTP requests.
-
-  transport/disable_requests_override is a global switch to turn off requests in
-  case support is buggy. transport/opt_out_requests is an internal property
-  to opt surfaces out of requests.
   """
-
-  return (
-      UseGoogleAuth()
-  )
-
-
-def OptOutGoogleAuth():
-  """Opt-out the command group to use google auth for authentication.
-
-  Call this function in the Filter method of the command group
-  to opt-out google-auth.
-  """
-  properties.VALUES.auth.opt_out_google_auth.Set(True)
-
-
-def UseGoogleAuth():
-  """Returns True if using google-auth to authenticate the http request.
-
-  auth/disable_load_google_auth is a global switch to turn off google-auth in
-  case google-auth is crashing. auth/opt_out_google_auth is an internal property
-  to opt-out a surface.
-  """
-  return not (
-      properties.VALUES.auth.opt_out_google_auth.GetBool()
-      or properties.VALUES.auth.disable_load_google_auth.GetBool()
-  )
+  return True
 
 
 def LogCommand(prog, args):

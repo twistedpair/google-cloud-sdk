@@ -5878,6 +5878,21 @@ class NodeKubeletConfig(_messages.Message):
       https://kubernetes.io/docs/concepts/policy/pid-limiting/#pod-pid-limits
       Controls the maximum number of processes allowed to run in a pod. The
       value must be greater than or equal to 1024 and less than 4194304.
+    shutdownGracePeriodCriticalPodsSeconds: Optional.
+      shutdown_grace_period_critical_pods_seconds is the maximum allowed grace
+      period (in seconds) used to terminate critical pods during a node
+      shutdown. This value should be <= shutdown_grace_period_seconds, and is
+      only valid if shutdown_grace_period_seconds is set.
+      https://kubernetes.io/docs/concepts/cluster-administration/node-
+      shutdown/ Range: [0, 120].
+    shutdownGracePeriodSeconds: Optional. shutdown_grace_period_seconds is the
+      maximum allowed grace period (in seconds) the total duration that the
+      node should delay the shutdown during a graceful shutdown. This is the
+      total grace period for pod termination for both regular and critical
+      pods. https://kubernetes.io/docs/concepts/cluster-administration/node-
+      shutdown/ If set to 0, node will not enable the graceful node shutdown
+      functionality. This field is only valid for Spot VMs. Allowed values: 0,
+      30, 120.
     singleProcessOomKill: Optional. Defines whether to enable single process
       OOM killer. If true, will prevent the memory.oom.group flag from being
       set for container cgroups in cgroups v2. This causes processes in the
@@ -5907,8 +5922,10 @@ class NodeKubeletConfig(_messages.Message):
   memoryManager = _messages.MessageField('MemoryManager', 18)
   nodeSwapSizeGib = _messages.IntegerField(19)
   podPidsLimit = _messages.IntegerField(20)
-  singleProcessOomKill = _messages.BooleanField(21)
-  topologyManager = _messages.MessageField('TopologyManager', 22)
+  shutdownGracePeriodCriticalPodsSeconds = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  shutdownGracePeriodSeconds = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  singleProcessOomKill = _messages.BooleanField(23)
+  topologyManager = _messages.MessageField('TopologyManager', 24)
 
 
 class NodeLabels(_messages.Message):

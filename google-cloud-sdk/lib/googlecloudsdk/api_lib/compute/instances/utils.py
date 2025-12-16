@@ -35,6 +35,7 @@ def CreateNetworkInterfaceMessage(
     project,
     location,
     scope,
+    *,
     nic_type=None,
     no_address=None,
     address=None,
@@ -62,6 +63,7 @@ def CreateNetworkInterfaceMessage(
     vlan=None,
     igmp_query=None,
     enable_vpc_scoped_dns=None,
+    service_class_id=None,
 ):
   """Returns a new NetworkInterface message."""
   # TODO(b/30460572): instance reference should have zone name, not zone URI.
@@ -105,6 +107,9 @@ def CreateNetworkInterfaceMessage(
 
   if enable_vpc_scoped_dns:
     network_interface.enableVpcScopedDns = enable_vpc_scoped_dns
+
+  if service_class_id:
+    network_interface.serviceClassId = service_class_id
 
   if private_network_ip is not None:
     # Try interpreting the address as IP address.

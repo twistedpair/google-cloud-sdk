@@ -1637,9 +1637,9 @@ class FirestoreProjectsDatabasesOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -2512,7 +2512,7 @@ class GoogleFirestoreAdminV1EnableUserCredsRequest(_messages.Message):
 
 class GoogleFirestoreAdminV1EncryptionConfig(_messages.Message):
   r"""Encryption configuration for a new database being created from another
-  source. The source could be a Backup .
+  source. The source could be a Backup or a PitrSnapshot.
 
   Fields:
     customerManagedEncryption: Use Customer Managed Encryption Keys (CMEK) for
@@ -2588,8 +2588,9 @@ class GoogleFirestoreAdminV1ExportDocumentsRequest(_messages.Message):
   r"""The request for FirestoreAdmin.ExportDocuments.
 
   Fields:
-    collectionIds: Which collection IDs to export. Unspecified means all
-      collections. Each collection ID in this list must be unique.
+    collectionIds: IDs of the collection groups to export. Unspecified means
+      all collection groups. Each collection group in this list must be
+      unique.
     namespaceIds: An empty list represents all namespaces. This is the
       preferred usage for databases that don't use namespaces. An empty string
       element represents the default namespace. This should be used if the
@@ -2790,9 +2791,9 @@ class GoogleFirestoreAdminV1ImportDocumentsRequest(_messages.Message):
   r"""The request for FirestoreAdmin.ImportDocuments.
 
   Fields:
-    collectionIds: Which collection IDs to import. Unspecified means all
-      collections included in the import. Each collection ID in this list must
-      be unique.
+    collectionIds: IDs of the collection groups to import. Unspecified means
+      all collection groups that were included in the export. Each collection
+      group in this list must be unique.
     inputUriPrefix: Location of the exported files. This must match the
       output_uri_prefix of an ExportDocumentsResponse from an export that has
       completed successfully. See:
@@ -3583,8 +3584,8 @@ class GoogleLongrunningListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)

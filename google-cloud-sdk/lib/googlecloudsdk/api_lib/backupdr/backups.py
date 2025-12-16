@@ -71,6 +71,7 @@ class ComputeRestoreConfig(util.RestrictedDict):
         "ResourcePolicies",
         "KeyRevocationActionType",
         "InstanceKmsKey",
+        "ClearOverridesFieldMask",
     ]
     super(ComputeRestoreConfig, self).__init__(supported_flags, *args, **kwargs)
 
@@ -419,6 +420,12 @@ class BackupsClient(util.BackupDrClientBase):
               kmsKeyName=restore_config["InstanceKmsKey"],
           )
       )
+
+     # ClearOverridesFieldMask
+    if "ClearOverridesFieldMask" in restore_config:
+      restore_request.clearOverridesFieldMask = restore_config[
+          "ClearOverridesFieldMask"
+      ]
 
     request = self.messages.BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsRestoreRequest(
         name=resource.RelativeName(), restoreBackupRequest=restore_request

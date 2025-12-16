@@ -3978,11 +3978,9 @@ class GoogleIamV3PolicyBinding(_messages.Message):
     Values:
       POLICY_KIND_UNSPECIFIED: Unspecified policy kind; Not a valid state
       PRINCIPAL_ACCESS_BOUNDARY: Principal access boundary policy kind
-      ACCESS: Access policy kind. Keep behind visibility label until Access
-        Policy launch.
+      ACCESS: Access policy kind.
       TRUST_BOUNDARY: <no description>
-      REGIONAL_ACCESS_BOUNDARY: Regional access boundary policy kind. Keep
-        behind visibility label until Regional Access Boundary launch.
+      REGIONAL_ACCESS_BOUNDARY: Regional access boundary policy kind.
     """
     POLICY_KIND_UNSPECIFIED = 0
     PRINCIPAL_ACCESS_BOUNDARY = 1
@@ -4054,7 +4052,7 @@ class GoogleIamV3PolicyBindingTarget(_messages.Message):
       Identity Pool: `//iam.googleapis.com/projects/PROJECT_NUMBER/locations/L
       OCATION/workloadIdentityPools/WORKLOAD_POOL_ID`
     resource: Immutable. The full resource name that's used for access policy
-      bindings Examples: * Organization:
+      bindings. Examples: * Organization:
       `//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID` *
       Folder: `//cloudresourcemanager.googleapis.com/folders/FOLDER_ID` *
       Project: *
@@ -4667,7 +4665,12 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigVpcAccessibleSer
   r"""Specifies how APIs are allowed to communicate within the Service
   Perimeter.
 
+  Enums:
+    ServicePatternsEnforcementScopesValueListEntryValuesEnum:
+
   Fields:
+    allowedServicePatterns: Specifies which Google services are allowed to be
+      accessed from VPC networks in the service perimeter.
     allowedServices: The list of APIs usable within the Service Perimeter.
       Must be empty unless 'enable_restriction' is True. You can specify a
       list of individual services, as well as include the 'RESTRICTED-
@@ -4675,10 +4678,66 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigVpcAccessibleSer
       protected by the perimeter.
     enableRestriction: Whether to restrict API calls within the Service
       Perimeter to the list of APIs specified in 'allowed_services'.
+    servicePatternsEnforcementScopes: Defines the enforcement scopes of
+      service patterns.
   """
 
-  allowedServices = _messages.StringField(1, repeated=True)
-  enableRestriction = _messages.BooleanField(2)
+  class ServicePatternsEnforcementScopesValueListEntryValuesEnum(_messages.Enum):
+    r"""ServicePatternsEnforcementScopesValueListEntryValuesEnum enum type.
+
+    Values:
+      SERVICE_PATTERNS_ENFORCEMENT_SCOPE_UNSPECIFIED: Default value. This can
+        not be used.
+      GOOGLE_APIS_VIA_PRIVATE_PATH: Enables VPC Accessible Services
+        enforcement for all APIs (including unsupported APIs) for Private
+        Google Access configured with Private VIP and Private Service Connect
+        Endpoint for Global Google APIs that uses 'all-apis' bundle.
+    """
+    SERVICE_PATTERNS_ENFORCEMENT_SCOPE_UNSPECIFIED = 0
+    GOOGLE_APIS_VIA_PRIVATE_PATH = 1
+
+  allowedServicePatterns = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigVpcAccessibleServicesServicePattern', 1, repeated=True)
+  allowedServices = _messages.StringField(2, repeated=True)
+  enableRestriction = _messages.BooleanField(3)
+  servicePatternsEnforcementScopes = _messages.EnumField('ServicePatternsEnforcementScopesValueListEntryValuesEnum', 4, repeated=True)
+
+
+class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigVpcAccessibleServicesServicePattern(_messages.Message):
+  r"""Service patterns used to allow access.
+
+  Fields:
+    modifiers: Modifiers to apply to the requests that match the URL pattern.
+    pattern: URL pattern to allow. Only patterns of ".googleapis.com/*",
+      "www.googleapis.com//*" and "*.appspot.com/* forms are supported, where
+      should be alphanumerical name.
+    service: Supported service to allow.
+  """
+
+  modifiers = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigVpcAccessibleServicesServicePatternModifier', 1, repeated=True)
+  pattern = _messages.StringField(2)
+  service = _messages.StringField(3)
+
+
+class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigVpcAccessibleServicesServicePatternModifier(_messages.Message):
+  r"""Modifier to apply to the API requests.
+
+  Fields:
+    addRequestHeader: Adds additional HTTP request headers.
+  """
+
+  addRequestHeader = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigVpcAccessibleServicesServicePatternModifierAddRequestHeader', 1)
+
+
+class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigVpcAccessibleServicesServicePatternModifierAddRequestHeader(_messages.Message):
+  r"""Adds a request header to the API.
+
+  Fields:
+    key: HTTP header key.
+    value: HTTP header value.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 class GoogleIdentityAccesscontextmanagerV1SupportedService(_messages.Message):

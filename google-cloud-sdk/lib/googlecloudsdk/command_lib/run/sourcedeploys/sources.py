@@ -21,7 +21,9 @@ from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.command_lib.builds import staging_bucket_util
+from googlecloudsdk.command_lib.run.sourcedeploys import region_name_util
 from googlecloudsdk.command_lib.run.sourcedeploys import types
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -29,6 +31,11 @@ from googlecloudsdk.core.util import times
 
 
 _GCS_PREFIX = 'gs://'
+_MAX_BUCKET_NAME_LENGTH = 63
+
+
+class BucketNameError(core_exceptions.Error):
+  """Error for bucket name generation."""
 
 
 class ArchiveType(enum.Enum):
@@ -205,10 +212,39 @@ def _GetDefaultBucketName(region: str) -> str:
       .replace('google', 'elgoog')
   )
   return (
-      f'run-sources-{safe_project}-{region}'
+      _GetBucketName(safe_project, region)
       if region is not None
       else f'run-sources-{safe_project}'
   )
+
+
+def _GetBucketName(safe_project, region):
+  """Generates a regional bucket name, shortening the region if necessary.
+
+  Args:
+    safe_project: The project ID, with characters unsafe for bucket names
+      replaced.
+    region: The Cloud Run region.
+
+  Returns:
+    A valid GCS bucket name.
+
+  Raises:
+    BucketNameError: If the region is too long and cannot be shortened.
+  """
+  bucket_name_base = f'run-sources-{safe_project}-{region}'
+  if len(bucket_name_base) <= _MAX_BUCKET_NAME_LENGTH:
+    return bucket_name_base
+
+  try:
+    short_region = region_name_util.ShortenGcpRegion(region)
+  except region_name_util.UnknownRegionError as e:
+    raise BucketNameError(
+        f'Could not generate bucket name for region [{region}] because it is'
+        ' too long and the region is not a known region to shorten.'
+    ) from e
+
+  return f'run-sources-{safe_project}-{short_region}'
 
 
 def _GetRandomBucketName() -> str:

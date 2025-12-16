@@ -1678,7 +1678,7 @@ class ArtifactregistryV1(base_api.BaseApiClient):
     )
 
     def ExportArtifact(self, request, global_params=None):
-      r"""Exports an artifact.
+      r"""Exports an artifact to a Cloud Storage bucket.
 
       Args:
         request: (ArtifactregistryProjectsLocationsRepositoriesExportArtifactRequest) input message

@@ -321,6 +321,7 @@ def GetGapicClientInstance(
     attempt_direct_path=False,
     redact_request_body_reason=None,
     custom_interceptors=None,
+    location=None,
 ):
   """Returns an instance of the GAPIC API client specified in the args.
 
@@ -336,6 +337,8 @@ def GetGapicClientInstance(
       redacted if --log-http is used. If None, the body is not redacted.
     custom_interceptors: list[grpc interceptor], a list of custom
       interceptors to add to the channel.
+    location: str, Region, multi-region, or zone for regionalized endpoints
+      (REP).
 
   Raises:
     GapicRestUnsupportedError: If transport is REST.
@@ -359,6 +362,7 @@ def GetGapicClientInstance(
       attempt_direct_path=attempt_direct_path,
       redact_request_body_reason=redact_request_body_reason,
       custom_interceptors=custom_interceptors,
+      region=regional.LocationToRegion(location) if location else None,
   )
 
 

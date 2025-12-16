@@ -1044,7 +1044,7 @@ class Boundary(_messages.Message):
   Fields:
     createTime: Output only. Create time.
     crmNode: Optional. The resource name of the CRM node being attached to the
-      boundary. Format: `projects/{project-number}` or `projects/{project-id}`
+      boundary. Format: `projects/{project-number}`
     name: Identifier. The resource name of the boundary. Format:
       "projects/{project}/locations/{location}/boundary"
     type: Output only. Boundary type.
@@ -1332,10 +1332,10 @@ class Identity(_messages.Message):
   r"""The identity associated with a service or workload.
 
   Fields:
-    principal: Output only. Principal of the identity. Supported formats: *
-      `sa://my-sa@xxxx.iam.gserviceaccount.com` for GCP Service Account * `pri
-      ncipal://POOL_ID.global.PROJECT_NUMBER.workload.id.goog/ns/NAMESPACE_ID/
-      sa/MANAGED_IDENTITY_ID` for Managed Workload Identity
+    principal: Output only. The principal of the identity. Supported formats:
+      * `sa://my-sa@PROJECT_ID.iam.gserviceaccount.com` for GCP Service
+      Account * `principal://POOL_ID.global.PROJECT_NUMBER.workload.id.goog/ns
+      /NAMESPACE_ID/sa/MANAGED_IDENTITY_ID` for Managed Workload Identity
   """
 
   principal = _messages.StringField(1)

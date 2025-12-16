@@ -1089,7 +1089,7 @@ class Boundary(_messages.Message):
   Fields:
     createTime: Output only. Create time.
     crmNode: Optional. The resource name of the CRM node being attached to the
-      boundary. Format: `projects/{project-number}` or `projects/{project-id}`
+      boundary. Format: `projects/{project-number}`
     name: Identifier. The resource name of the boundary. Format:
       "projects/{project}/locations/{location}/boundary"
     type: Output only. Boundary type.
@@ -1424,6 +1424,19 @@ class FunctionalType(_messages.Message):
     MCP_SERVER = 2
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
+
+
+class Identity(_messages.Message):
+  r"""The identity associated with a service or workload.
+
+  Fields:
+    principal: Output only. The principal of the identity. Supported formats:
+      * `sa://my-sa@PROJECT_ID.iam.gserviceaccount.com` for GCP Service
+      Account * `principal://POOL_ID.global.PROJECT_NUMBER.workload.id.goog/ns
+      /NAMESPACE_ID/sa/MANAGED_IDENTITY_ID` for Managed Workload Identity
+  """
+
+  principal = _messages.StringField(1)
 
 
 class ListApplicationsResponse(_messages.Message):
@@ -2058,6 +2071,7 @@ class ServiceProperties(_messages.Message):
     functionalType: Output only. The type of the service.
     gcpProject: Output only. The service project identifier that the
       underlying cloud resource resides in.
+    identity: Output only. The identity associated with the service.
     location: Output only. The location that the underlying resource resides
       in, for example, us-west1.
     registrationType: Output only. The registration type of the service.
@@ -2097,9 +2111,10 @@ class ServiceProperties(_messages.Message):
   extendedMetadata = _messages.MessageField('ExtendedMetadataValue', 1)
   functionalType = _messages.MessageField('FunctionalType', 2)
   gcpProject = _messages.StringField(3)
-  location = _messages.StringField(4)
-  registrationType = _messages.MessageField('RegistrationType', 5)
-  zone = _messages.StringField(6)
+  identity = _messages.MessageField('Identity', 4)
+  location = _messages.StringField(5)
+  registrationType = _messages.MessageField('RegistrationType', 6)
+  zone = _messages.StringField(7)
 
 
 class ServiceReference(_messages.Message):
@@ -2352,6 +2367,7 @@ class WorkloadProperties(_messages.Message):
     functionalType: Output only. The type of the workload.
     gcpProject: Output only. The service project identifier that the
       underlying cloud resource resides in. Empty for non-cloud resources.
+    identity: Output only. The identity associated with the workload.
     location: Output only. The location that the underlying compute resource
       resides in (for example, us-west1).
     zone: Output only. The location that the underlying compute resource
@@ -2390,8 +2406,9 @@ class WorkloadProperties(_messages.Message):
   extendedMetadata = _messages.MessageField('ExtendedMetadataValue', 1)
   functionalType = _messages.MessageField('FunctionalType', 2)
   gcpProject = _messages.StringField(3)
-  location = _messages.StringField(4)
-  zone = _messages.StringField(5)
+  identity = _messages.MessageField('Identity', 4)
+  location = _messages.StringField(5)
+  zone = _messages.StringField(6)
 
 
 class WorkloadReference(_messages.Message):

@@ -575,7 +575,10 @@ class GceInstance(_messages.Message):
       name}. If specifying a startup script, the service account must have
       [Permission to access the bucket and script file in Cloud
       Storage](https://cloud.google.com/storage/docs/access-control/iam-
-      permissions). Otherwise, the script must be publicly accessible.
+      permissions). Otherwise, the script must be publicly accessible. Note
+      that the service regularly updates the OS version used, and it is the
+      responsibility of the user to ensure the script stays compatible with
+      the OS version.
     tags: Optional. Network tags to add to the Compute Engine VMs backing the
       workstations. This option applies [network
       tags](https://cloud.google.com/vpc/docs/add-remove-network-tags) to VMs

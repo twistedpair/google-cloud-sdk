@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from typing import cast
+
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
@@ -57,6 +59,36 @@ def EkmConnectionAttributeConfig(kms_prefix=True):
   name = 'kms-ekmconnection' if kms_prefix else 'ekmconnection'
   return concepts.ResourceParameterAttributeConfig(
       name=name, help_text='The KMS ekm connection of the {resource}.'
+  )
+
+
+def SingleTenantHsmInstanceAttributeConfig(kms_prefix=True):
+  name = (
+      'kms-single_tenant_hsm_instance'
+      if kms_prefix
+      else 'single_tenant_hsm_instance'
+  )
+  return concepts.ResourceParameterAttributeConfig(
+      name=name,
+      help_text='The KMS single tenant HSM instance of the {resource}.',
+  )
+
+
+def SingleTenantHsmInstanceProposalAttributeConfig(kms_prefix=True):
+  name = 'kms-proposal' if kms_prefix else 'proposal'
+  return concepts.ResourceParameterAttributeConfig(
+      name=name,
+      help_text=(
+          'The KMS single tenant HSM instance proposal of the {resource}.'
+      ),
+  )
+
+
+def OperationAttributeConfig(kms_prefix=True):
+  name = 'kms-operation' if kms_prefix else 'operation'
+  return concepts.ResourceParameterAttributeConfig(
+      name=name,
+      help_text='The KMS operation of the {resource}.',
   )
 
 
@@ -139,6 +171,54 @@ def GetKmsEkmConnectionResourceSpec(kms_prefix=True, region_fallthrough=False):
       'cloudkms.projects.locations.ekmConnections',
       resource_name='ekmconnection',
       ekmConnectionsId=EkmConnectionAttributeConfig(kms_prefix),
+      locationsId=LocationAttributeConfig(
+          kms_prefix=kms_prefix, region_fallthrough=region_fallthrough
+      ),
+      projectsId=ProjectAttributeConfig(kms_prefix),
+      disable_auto_completers=False,
+  )
+
+
+def GetKmsSingleTenantHsmInstanceResourceSpec(
+    kms_prefix=True, region_fallthrough=False
+):
+  return concepts.ResourceSpec(
+      'cloudkms.projects.locations.singleTenantHsmInstances',
+      resource_name='singleTenantHsmInstance',
+      singleTenantHsmInstancesId=SingleTenantHsmInstanceAttributeConfig(
+          kms_prefix
+      ),
+      locationsId=LocationAttributeConfig(
+          kms_prefix=kms_prefix, region_fallthrough=region_fallthrough
+      ),
+      projectsId=ProjectAttributeConfig(kms_prefix),
+      disable_auto_completers=False,
+  )
+
+
+def GetKmsSingleTenantHsmInstanceProposalResourceSpec(
+    kms_prefix=True, region_fallthrough=False
+):
+  return concepts.ResourceSpec(
+      'cloudkms.projects.locations.singleTenantHsmInstances.proposals',
+      resource_name='singleTenantHsmInstanceProposal',
+      proposalsId=SingleTenantHsmInstanceProposalAttributeConfig(kms_prefix),
+      singleTenantHsmInstancesId=SingleTenantHsmInstanceAttributeConfig(
+          kms_prefix
+      ),
+      locationsId=LocationAttributeConfig(
+          kms_prefix=kms_prefix, region_fallthrough=region_fallthrough
+      ),
+      projectsId=ProjectAttributeConfig(kms_prefix),
+      disable_auto_completers=False,
+  )
+
+
+def GetKmsOperationResourceSpec(kms_prefix=True, region_fallthrough=False):
+  return concepts.ResourceSpec(
+      'cloudkms.projects.locations.operations',
+      resource_name='operation',
+      operationsId=OperationAttributeConfig(kms_prefix),
       locationsId=LocationAttributeConfig(
           kms_prefix=kms_prefix, region_fallthrough=region_fallthrough
       ),
@@ -291,6 +371,35 @@ def AddKmsEkmConnectionResourceArgForKMS(parser, required, name):
       name,
       GetKmsEkmConnectionResourceSpec(kms_prefix=False),
       'The KMS ekm connection resource.',
+      required=required,
+  ).AddToParser(parser)
+
+
+def AddKmsSingleTenantHsmInstanceResourceArgForKMS(parser, required, name):
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetKmsSingleTenantHsmInstanceResourceSpec(kms_prefix=False),
+      'The KMS single tenant HSM instance resource.',
+      required=required,
+  ).AddToParser(parser)
+
+
+def AddKmsSingleTenantHsmInstanceProposalResourceArgForKMS(
+    parser, required, name
+):
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetKmsSingleTenantHsmInstanceProposalResourceSpec(kms_prefix=False),
+      'The KMS single tenant HSM instance proposal resource.',
+      required=required,
+  ).AddToParser(parser)
+
+
+def AddKmsOperationResourceArgForKMS(parser, required, name):
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetKmsOperationResourceSpec(kms_prefix=False),
+      'The KMS operation resource.',
       required=required,
   ).AddToParser(parser)
 

@@ -148,6 +148,8 @@ class AiModel(_messages.Message):
       central1".
     name: The name of the AI model, for example, "gemini:1.0.0".
     publisher: The publisher of the model, for example, "google" or "nvidia".
+    usageCategory: The purpose of the model, for example, "Inteference" or
+      "Training".
   """
 
   class DeploymentPlatformValueValuesEnum(_messages.Enum):
@@ -173,6 +175,7 @@ class AiModel(_messages.Message):
   location = _messages.StringField(5)
   name = _messages.StringField(6)
   publisher = _messages.StringField(7)
+  usageCategory = _messages.StringField(8)
 
 
 class Allowed(_messages.Message):
@@ -2224,12 +2227,14 @@ class Framework(_messages.Message):
       ASSURED_WORKLOADS: Assured Workloads framework
       DATA_SECURITY: Data Security framework
       GOOGLE_BEST_PRACTICES: Google Best Practices framework
+      CUSTOM_FRAMEWORK: A user-created framework
     """
     FRAMEWORK_CATEGORY_UNSPECIFIED = 0
     SECURITY_BENCHMARKS = 1
     ASSURED_WORKLOADS = 2
     DATA_SECURITY = 3
     GOOGLE_BEST_PRACTICES = 4
+    CUSTOM_FRAMEWORK = 5
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Type of the framework associated with the finding, to specify whether
@@ -2652,6 +2657,7 @@ class GoogleCloudSecuritycenterV1Resource(_messages.Message):
       resides in.
 
   Fields:
+    application: The App Hub application this resource belongs to.
     awsMetadata: The AWS metadata associated with the finding.
     azureMetadata: The Azure metadata associated with the finding.
     cloudProvider: Indicates which cloud provider the resource resides in.
@@ -2698,22 +2704,123 @@ class GoogleCloudSecuritycenterV1Resource(_messages.Message):
     AMAZON_WEB_SERVICES = 2
     MICROSOFT_AZURE = 3
 
-  awsMetadata = _messages.MessageField('AwsMetadata', 1)
-  azureMetadata = _messages.MessageField('AzureMetadata', 2)
-  cloudProvider = _messages.EnumField('CloudProviderValueValuesEnum', 3)
-  displayName = _messages.StringField(4)
-  folders = _messages.MessageField('Folder', 5, repeated=True)
-  location = _messages.StringField(6)
-  name = _messages.StringField(7)
-  organization = _messages.StringField(8)
-  parent = _messages.StringField(9)
-  parentDisplayName = _messages.StringField(10)
-  project = _messages.StringField(11)
-  projectDisplayName = _messages.StringField(12)
-  resourcePath = _messages.MessageField('ResourcePath', 13)
-  resourcePathString = _messages.StringField(14)
-  service = _messages.StringField(15)
-  type = _messages.StringField(16)
+  application = _messages.MessageField('GoogleCloudSecuritycenterV1ResourceApplication', 1)
+  awsMetadata = _messages.MessageField('AwsMetadata', 2)
+  azureMetadata = _messages.MessageField('AzureMetadata', 3)
+  cloudProvider = _messages.EnumField('CloudProviderValueValuesEnum', 4)
+  displayName = _messages.StringField(5)
+  folders = _messages.MessageField('Folder', 6, repeated=True)
+  location = _messages.StringField(7)
+  name = _messages.StringField(8)
+  organization = _messages.StringField(9)
+  parent = _messages.StringField(10)
+  parentDisplayName = _messages.StringField(11)
+  project = _messages.StringField(12)
+  projectDisplayName = _messages.StringField(13)
+  resourcePath = _messages.MessageField('ResourcePath', 14)
+  resourcePathString = _messages.StringField(15)
+  service = _messages.StringField(16)
+  type = _messages.StringField(17)
+
+
+class GoogleCloudSecuritycenterV1ResourceApplication(_messages.Message):
+  r"""The App Hub Application associated with the finding's resource.
+
+  Fields:
+    attributes: Consumer provided attributes for the application
+    name: The resource name of an Application. Format: `projects/{host-
+      project-id}/locations/{location}/applications/{application-id}`
+  """
+
+  attributes = _messages.MessageField('GoogleCloudSecuritycenterV1ResourceApplicationAttributes', 1)
+  name = _messages.StringField(2)
+
+
+class GoogleCloudSecuritycenterV1ResourceApplicationAttributes(_messages.Message):
+  r"""Consumer provided attributes for the application
+
+  Fields:
+    businessOwners: Business team that ensures user needs are met and value is
+      delivered
+    criticality: User-defined criticality information.
+    developerOwners: Developer team that owns development and coding.
+    environment: User-defined environment information.
+    operatorOwners: Operator team that ensures runtime and operations.
+  """
+
+  businessOwners = _messages.MessageField('GoogleCloudSecuritycenterV1ResourceApplicationAttributesContactInfo', 1, repeated=True)
+  criticality = _messages.MessageField('GoogleCloudSecuritycenterV1ResourceApplicationAttributesCriticality', 2)
+  developerOwners = _messages.MessageField('GoogleCloudSecuritycenterV1ResourceApplicationAttributesContactInfo', 3, repeated=True)
+  environment = _messages.MessageField('GoogleCloudSecuritycenterV1ResourceApplicationAttributesEnvironment', 4)
+  operatorOwners = _messages.MessageField('GoogleCloudSecuritycenterV1ResourceApplicationAttributesContactInfo', 5, repeated=True)
+
+
+class GoogleCloudSecuritycenterV1ResourceApplicationAttributesContactInfo(_messages.Message):
+  r"""Contact information of stakeholders.
+
+  Fields:
+    email: Email address of the contacts.
+  """
+
+  email = _messages.StringField(1)
+
+
+class GoogleCloudSecuritycenterV1ResourceApplicationAttributesCriticality(_messages.Message):
+  r"""Criticality of the Application, Service, or Workload
+
+  Enums:
+    TypeValueValuesEnum: Criticality Type.
+
+  Fields:
+    type: Criticality Type.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Criticality Type.
+
+    Values:
+      CRITICALITY_TYPE_UNSPECIFIED: Unspecified type.
+      MISSION_CRITICAL: Mission critical service, application or workload.
+      HIGH: High impact.
+      MEDIUM: Medium impact.
+      LOW: Low impact.
+    """
+    CRITICALITY_TYPE_UNSPECIFIED = 0
+    MISSION_CRITICAL = 1
+    HIGH = 2
+    MEDIUM = 3
+    LOW = 4
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
+
+
+class GoogleCloudSecuritycenterV1ResourceApplicationAttributesEnvironment(_messages.Message):
+  r"""Environment of the Application, Service, or Workload
+
+  Enums:
+    TypeValueValuesEnum: Environment Type.
+
+  Fields:
+    type: Environment Type.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Environment Type.
+
+    Values:
+      ENVIRONMENT_TYPE_UNSPECIFIED: Unspecified type.
+      PRODUCTION: Production environment.
+      STAGING: Staging environment.
+      TEST: Test environment.
+      DEVELOPMENT: Development environment.
+    """
+    ENVIRONMENT_TYPE_UNSPECIFIED = 0
+    PRODUCTION = 1
+    STAGING = 2
+    TEST = 3
+    DEVELOPMENT = 4
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
 
 
 class GoogleCloudSecuritycenterV1ResourceSelector(_messages.Message):
@@ -3471,6 +3578,8 @@ class GoogleCloudSecuritycenterV2AiModel(_messages.Message):
       central1".
     name: The name of the AI model, for example, "gemini:1.0.0".
     publisher: The publisher of the model, for example, "google" or "nvidia".
+    usageCategory: The purpose of the model, for example, "Inteference" or
+      "Training".
   """
 
   class DeploymentPlatformValueValuesEnum(_messages.Enum):
@@ -3496,6 +3605,7 @@ class GoogleCloudSecuritycenterV2AiModel(_messages.Message):
   location = _messages.StringField(5)
   name = _messages.StringField(6)
   publisher = _messages.StringField(7)
+  usageCategory = _messages.StringField(8)
 
 
 class GoogleCloudSecuritycenterV2Allowed(_messages.Message):
@@ -5364,12 +5474,14 @@ class GoogleCloudSecuritycenterV2Framework(_messages.Message):
       ASSURED_WORKLOADS: Assured Workloads framework
       DATA_SECURITY: Data Security framework
       GOOGLE_BEST_PRACTICES: Google Best Practices framework
+      CUSTOM_FRAMEWORK: A user-created framework
     """
     FRAMEWORK_CATEGORY_UNSPECIFIED = 0
     SECURITY_BENCHMARKS = 1
     ASSURED_WORKLOADS = 2
     DATA_SECURITY = 3
     GOOGLE_BEST_PRACTICES = 4
+    CUSTOM_FRAMEWORK = 5
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Type of the framework associated with the finding, to specify whether
@@ -7223,6 +7335,7 @@ class GoogleCloudSecuritycenterV2Resource(_messages.Message):
       is from.
 
   Fields:
+    application: The App Hub application this resource belongs to.
     awsMetadata: The AWS metadata associated with the finding.
     azureMetadata: The Azure metadata associated with the finding.
     cloudProvider: Indicates which cloud provider the finding is from.
@@ -7260,17 +7373,118 @@ class GoogleCloudSecuritycenterV2Resource(_messages.Message):
     AMAZON_WEB_SERVICES = 2
     MICROSOFT_AZURE = 3
 
-  awsMetadata = _messages.MessageField('GoogleCloudSecuritycenterV2AwsMetadata', 1)
-  azureMetadata = _messages.MessageField('GoogleCloudSecuritycenterV2AzureMetadata', 2)
-  cloudProvider = _messages.EnumField('CloudProviderValueValuesEnum', 3)
-  displayName = _messages.StringField(4)
-  gcpMetadata = _messages.MessageField('GcpMetadata', 5)
-  location = _messages.StringField(6)
-  name = _messages.StringField(7)
-  resourcePath = _messages.MessageField('GoogleCloudSecuritycenterV2ResourcePath', 8)
-  resourcePathString = _messages.StringField(9)
-  service = _messages.StringField(10)
-  type = _messages.StringField(11)
+  application = _messages.MessageField('GoogleCloudSecuritycenterV2ResourceApplication', 1)
+  awsMetadata = _messages.MessageField('GoogleCloudSecuritycenterV2AwsMetadata', 2)
+  azureMetadata = _messages.MessageField('GoogleCloudSecuritycenterV2AzureMetadata', 3)
+  cloudProvider = _messages.EnumField('CloudProviderValueValuesEnum', 4)
+  displayName = _messages.StringField(5)
+  gcpMetadata = _messages.MessageField('GcpMetadata', 6)
+  location = _messages.StringField(7)
+  name = _messages.StringField(8)
+  resourcePath = _messages.MessageField('GoogleCloudSecuritycenterV2ResourcePath', 9)
+  resourcePathString = _messages.StringField(10)
+  service = _messages.StringField(11)
+  type = _messages.StringField(12)
+
+
+class GoogleCloudSecuritycenterV2ResourceApplication(_messages.Message):
+  r"""The App Hub Application associated with the finding's resource.
+
+  Fields:
+    attributes: Consumer provided attributes for the application
+    name: The resource name of an Application. Format: `projects/{host-
+      project-id}/locations/{location}/applications/{application-id}`
+  """
+
+  attributes = _messages.MessageField('GoogleCloudSecuritycenterV2ResourceApplicationAttributes', 1)
+  name = _messages.StringField(2)
+
+
+class GoogleCloudSecuritycenterV2ResourceApplicationAttributes(_messages.Message):
+  r"""Consumer provided attributes for the application
+
+  Fields:
+    businessOwners: Business team that ensures user needs are met and value is
+      delivered
+    criticality: User-defined criticality information.
+    developerOwners: Developer team that owns development and coding.
+    environment: User-defined environment information.
+    operatorOwners: Operator team that ensures runtime and operations.
+  """
+
+  businessOwners = _messages.MessageField('GoogleCloudSecuritycenterV2ResourceApplicationAttributesContactInfo', 1, repeated=True)
+  criticality = _messages.MessageField('GoogleCloudSecuritycenterV2ResourceApplicationAttributesCriticality', 2)
+  developerOwners = _messages.MessageField('GoogleCloudSecuritycenterV2ResourceApplicationAttributesContactInfo', 3, repeated=True)
+  environment = _messages.MessageField('GoogleCloudSecuritycenterV2ResourceApplicationAttributesEnvironment', 4)
+  operatorOwners = _messages.MessageField('GoogleCloudSecuritycenterV2ResourceApplicationAttributesContactInfo', 5, repeated=True)
+
+
+class GoogleCloudSecuritycenterV2ResourceApplicationAttributesContactInfo(_messages.Message):
+  r"""Contact information of stakeholders.
+
+  Fields:
+    email: Email address of the contacts.
+  """
+
+  email = _messages.StringField(1)
+
+
+class GoogleCloudSecuritycenterV2ResourceApplicationAttributesCriticality(_messages.Message):
+  r"""Criticality of the Application, Service, or Workload
+
+  Enums:
+    TypeValueValuesEnum: Criticality Type.
+
+  Fields:
+    type: Criticality Type.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Criticality Type.
+
+    Values:
+      CRITICALITY_TYPE_UNSPECIFIED: Unspecified type.
+      MISSION_CRITICAL: Mission critical service, application or workload.
+      HIGH: High impact.
+      MEDIUM: Medium impact.
+      LOW: Low impact.
+    """
+    CRITICALITY_TYPE_UNSPECIFIED = 0
+    MISSION_CRITICAL = 1
+    HIGH = 2
+    MEDIUM = 3
+    LOW = 4
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
+
+
+class GoogleCloudSecuritycenterV2ResourceApplicationAttributesEnvironment(_messages.Message):
+  r"""Environment of the Application, Service, or Workload
+
+  Enums:
+    TypeValueValuesEnum: Environment Type.
+
+  Fields:
+    type: Environment Type.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Environment Type.
+
+    Values:
+      ENVIRONMENT_TYPE_UNSPECIFIED: Unspecified type.
+      PRODUCTION: Production environment.
+      STAGING: Staging environment.
+      TEST: Test environment.
+      DEVELOPMENT: Development environment.
+    """
+    ENVIRONMENT_TYPE_UNSPECIFIED = 0
+    PRODUCTION = 1
+    STAGING = 2
+    TEST = 3
+    DEVELOPMENT = 4
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
 
 
 class GoogleCloudSecuritycenterV2ResourcePath(_messages.Message):

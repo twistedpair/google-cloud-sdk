@@ -303,9 +303,9 @@ class AuditmanagerOrganizationsLocationsOperationsListRequest(_messages.Message)
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -538,9 +538,9 @@ class AuditmanagerProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -903,8 +903,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1149,6 +1149,7 @@ class ReportGenerationProgress(_messages.Message):
       executation for report generation.
 
   Fields:
+    auditReport: Output only. The name of the audit report.
     destinationGcsBucket: Output only. The Cloud Storage bucket where the
       audit report will be uploaded once the evaluation process is completed.
     evaluationPercentComplete: Shows the progress of the CESS service
@@ -1203,12 +1204,13 @@ class ReportGenerationProgress(_messages.Message):
     OPERATION_STATE_DONE = 7
     OPERATION_STATE_FAILED = 8
 
-  destinationGcsBucket = _messages.StringField(1)
-  evaluationPercentComplete = _messages.FloatField(2)
-  failureReason = _messages.StringField(3)
-  reportGenerationPercentComplete = _messages.FloatField(4)
-  reportUploadingPercentComplete = _messages.FloatField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
+  auditReport = _messages.StringField(1)
+  destinationGcsBucket = _messages.StringField(2)
+  evaluationPercentComplete = _messages.FloatField(3)
+  failureReason = _messages.StringField(4)
+  reportGenerationPercentComplete = _messages.FloatField(5)
+  reportUploadingPercentComplete = _messages.FloatField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
 
 
 class ReportSummary(_messages.Message):

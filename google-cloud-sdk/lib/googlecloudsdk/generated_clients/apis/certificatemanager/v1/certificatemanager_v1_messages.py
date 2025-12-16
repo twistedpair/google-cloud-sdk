@@ -139,6 +139,8 @@ class Certificate(_messages.Message):
     labels: Optional. Set of labels associated with a Certificate.
     managed: If set, contains configuration and state of a managed
       certificate.
+    managedIdentity: If set, contains configuration and state of a managed
+      identity certificate.
     name: Identifier. A user-defined name of the certificate. Certificate
       names must be unique globally and match pattern
       `projects/*/locations/*/certificates/*`.
@@ -233,14 +235,15 @@ class Certificate(_messages.Message):
   expireTime = _messages.StringField(3)
   labels = _messages.MessageField('LabelsValue', 4)
   managed = _messages.MessageField('ManagedCertificate', 5)
-  name = _messages.StringField(6)
-  pemCertificate = _messages.StringField(7)
-  sanDnsnames = _messages.StringField(8, repeated=True)
-  scope = _messages.EnumField('ScopeValueValuesEnum', 9)
-  selfManaged = _messages.MessageField('SelfManagedCertificate', 10)
-  tags = _messages.MessageField('TagsValue', 11)
-  updateTime = _messages.StringField(12)
-  usedBy = _messages.MessageField('UsedBy', 13, repeated=True)
+  managedIdentity = _messages.MessageField('ManagedIdentityCertificate', 6)
+  name = _messages.StringField(7)
+  pemCertificate = _messages.StringField(8)
+  sanDnsnames = _messages.StringField(9, repeated=True)
+  scope = _messages.EnumField('ScopeValueValuesEnum', 10)
+  selfManaged = _messages.MessageField('SelfManagedCertificate', 11)
+  tags = _messages.MessageField('TagsValue', 12)
+  updateTime = _messages.StringField(13)
+  usedBy = _messages.MessageField('UsedBy', 14, repeated=True)
 
 
 class CertificateAuthorityConfig(_messages.Message):
@@ -1083,9 +1086,9 @@ class CertificatemanagerProjectsLocationsOperationsListRequest(_messages.Message
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -1493,8 +1496,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1654,6 +1657,48 @@ class ManagedCertificate(_messages.Message):
   issuanceConfig = _messages.StringField(4)
   provisioningIssue = _messages.MessageField('ProvisioningIssue', 5)
   state = _messages.EnumField('StateValueValuesEnum', 6)
+
+
+class ManagedIdentityCertificate(_messages.Message):
+  r"""Configuration and state of a Managed Identity Certificate. Certificate
+  Manager provisions and renews Managed Identity Certificates automatically,
+  for as long as it's authorized to do so.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the managed certificate
+      resource.
+
+  Fields:
+    identity: Required. Immutable. SPIFFE ID of the Managed Identity used for
+      this certificate.
+    provisioningIssue: Output only. Information about issues with provisioning
+      a managed certificate.
+    state: Output only. State of the managed certificate resource.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the managed certificate resource.
+
+    Values:
+      STATE_UNSPECIFIED: State is unspecified.
+      PROVISIONING: Certificate Manager attempts to provision or renew the
+        certificate. If the process takes longer than expected, consult the
+        `provisioning_issue` field.
+      FAILED: Multiple certificate provisioning attempts failed and
+        Certificate Manager gave up. To try again, delete and create a new
+        managed Certificate resource. For details see the `provisioning_issue`
+        field.
+      ACTIVE: The certificate management is working, and a certificate has
+        been provisioned.
+    """
+    STATE_UNSPECIFIED = 0
+    PROVISIONING = 1
+    FAILED = 2
+    ACTIVE = 3
+
+  identity = _messages.StringField(1)
+  provisioningIssue = _messages.MessageField('ProvisioningIssue', 2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class Operation(_messages.Message):
@@ -2007,6 +2052,8 @@ class TrustConfig(_messages.Message):
 
   Messages:
     LabelsValue: Optional. Set of labels associated with a TrustConfig.
+    SpiffeTrustStoresValue: Optional. Defines a mapping from a trust domain to
+      a TrustStore. This is used for SPIFFE certificate validation.
     TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
       to this resource. For example: "123/environment": "production",
       "123/costCenter": "marketing"
@@ -2026,6 +2073,8 @@ class TrustConfig(_messages.Message):
     name: Identifier. A user-defined name of the trust config. TrustConfig
       names must be unique globally and match pattern
       `projects/*/locations/*/trustConfigs/*`.
+    spiffeTrustStores: Optional. Defines a mapping from a trust domain to a
+      TrustStore. This is used for SPIFFE certificate validation.
     tags: Optional. Input only. Immutable. Tag keys/values directly bound to
       this resource. For example: "123/environment": "production",
       "123/costCenter": "marketing"
@@ -2061,6 +2110,33 @@ class TrustConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class SpiffeTrustStoresValue(_messages.Message):
+    r"""Optional. Defines a mapping from a trust domain to a TrustStore. This
+    is used for SPIFFE certificate validation.
+
+    Messages:
+      AdditionalProperty: An additional property for a SpiffeTrustStoresValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        SpiffeTrustStoresValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SpiffeTrustStoresValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A TrustStore attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('TrustStore', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class TagsValue(_messages.Message):
     r"""Optional. Input only. Immutable. Tag keys/values directly bound to
     this resource. For example: "123/environment": "production",
@@ -2092,9 +2168,10 @@ class TrustConfig(_messages.Message):
   etag = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
-  tags = _messages.MessageField('TagsValue', 7)
-  trustStores = _messages.MessageField('TrustStore', 8, repeated=True)
-  updateTime = _messages.StringField(9)
+  spiffeTrustStores = _messages.MessageField('SpiffeTrustStoresValue', 7)
+  tags = _messages.MessageField('TagsValue', 8)
+  trustStores = _messages.MessageField('TrustStore', 9, repeated=True)
+  updateTime = _messages.StringField(10)
 
 
 class TrustStore(_messages.Message):

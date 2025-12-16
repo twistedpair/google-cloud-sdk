@@ -38,6 +38,7 @@ __protobuf__ = proto.module(
         'FileData',
         'VideoMetadata',
         'PrebuiltVoiceConfig',
+        'ReplicatedVoiceConfig',
         'VoiceConfig',
         'SpeakerVoiceConfig',
         'MultiSpeakerVoiceConfig',
@@ -245,7 +246,49 @@ class Part(proto.Message):
         thought_signature (bytes):
             Optional. An opaque signature for the thought
             so it can be reused in subsequent requests.
+        media_resolution (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.Part.MediaResolution):
+            per part media resolution.
+            Media resolution for the input media.
     """
+
+    class MediaResolution(proto.Message):
+        r"""per part media resolution.
+        Media resolution for the input media.
+
+
+        .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+        Attributes:
+            level (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.Part.MediaResolution.Level):
+                The tokenization quality used for given
+                media.
+
+                This field is a member of `oneof`_ ``value``.
+        """
+        class Level(proto.Enum):
+            r"""The media resolution level.
+
+            Values:
+                MEDIA_RESOLUTION_UNSPECIFIED (0):
+                    Media resolution has not been set.
+                MEDIA_RESOLUTION_LOW (1):
+                    Media resolution set to low.
+                MEDIA_RESOLUTION_MEDIUM (2):
+                    Media resolution set to medium.
+                MEDIA_RESOLUTION_HIGH (3):
+                    Media resolution set to high.
+            """
+            MEDIA_RESOLUTION_UNSPECIFIED = 0
+            MEDIA_RESOLUTION_LOW = 1
+            MEDIA_RESOLUTION_MEDIUM = 2
+            MEDIA_RESOLUTION_HIGH = 3
+
+        level: 'Part.MediaResolution.Level' = proto.Field(
+            proto.ENUM,
+            number=1,
+            oneof='value',
+            enum='Part.MediaResolution.Level',
+        )
 
     text: str = proto.Field(
         proto.STRING,
@@ -301,6 +344,11 @@ class Part(proto.Message):
     thought_signature: bytes = proto.Field(
         proto.BYTES,
         number=11,
+    )
+    media_resolution: MediaResolution = proto.Field(
+        proto.MESSAGE,
+        number=12,
+        message=MediaResolution,
     )
 
 
@@ -430,14 +478,49 @@ class PrebuiltVoiceConfig(proto.Message):
     )
 
 
+class ReplicatedVoiceConfig(proto.Message):
+    r"""The configuration for the replicated voice to use.
+
+    Attributes:
+        mime_type (str):
+            Optional. The mimetype of the voice sample. The only
+            currently supported value is ``audio/wav``. This represents
+            16-bit signed little-endian wav data, with a 24kHz sampling
+            rate. ``mime_type`` will default to ``audio/wav`` if not
+            set.
+        voice_sample_audio (bytes):
+            Optional. The sample of the custom voice.
+    """
+
+    mime_type: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    voice_sample_audio: bytes = proto.Field(
+        proto.BYTES,
+        number=2,
+    )
+
+
 class VoiceConfig(proto.Message):
     r"""Configuration for a voice.
+
+    This message has `oneof`_ fields (mutually exclusive fields).
+    For each oneof, at most one member field can be set at the same time.
+    Setting any member of the oneof automatically clears all other
+    members.
 
     .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
 
     Attributes:
         prebuilt_voice_config (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.PrebuiltVoiceConfig):
             The configuration for a prebuilt voice.
+
+            This field is a member of `oneof`_ ``voice_config``.
+        replicated_voice_config (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.ReplicatedVoiceConfig):
+            Optional. The configuration for a replicated
+            voice. This enables users to replicate a voice
+            from an audio sample.
 
             This field is a member of `oneof`_ ``voice_config``.
     """
@@ -447,6 +530,12 @@ class VoiceConfig(proto.Message):
         number=1,
         oneof='voice_config',
         message='PrebuiltVoiceConfig',
+    )
+    replicated_voice_config: 'ReplicatedVoiceConfig' = proto.Field(
+        proto.MESSAGE,
+        number=3,
+        oneof='voice_config',
+        message='ReplicatedVoiceConfig',
     )
 
 
@@ -583,6 +672,12 @@ class ImageConfig(proto.Message):
             generate people.
 
             This field is a member of `oneof`_ ``_person_generation``.
+        image_size (str):
+            Optional. Specifies the size of generated images. Supported
+            values are ``1K``, ``2K``, ``4K``. If not specified, the
+            model will use default value ``1K``.
+
+            This field is a member of `oneof`_ ``_image_size``.
     """
     class PersonGeneration(proto.Enum):
         r"""Enum for controlling the generation of people in images.
@@ -652,6 +747,11 @@ class ImageConfig(proto.Message):
         number=3,
         optional=True,
         enum=PersonGeneration,
+    )
+    image_size: str = proto.Field(
+        proto.STRING,
+        number=4,
+        optional=True,
     )
 
 
@@ -1027,7 +1127,26 @@ class GenerationConfig(proto.Message):
                 quality and latency.
 
                 This field is a member of `oneof`_ ``_thinking_budget``.
+            thinking_level (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GenerationConfig.ThinkingConfig.ThinkingLevel):
+                Optional. The number of thoughts tokens that
+                the model should generate.
+
+                This field is a member of `oneof`_ ``_thinking_level``.
         """
+        class ThinkingLevel(proto.Enum):
+            r"""The thinking level for the model.
+
+            Values:
+                THINKING_LEVEL_UNSPECIFIED (0):
+                    Unspecified thinking level.
+                LOW (1):
+                    Low thinking level.
+                HIGH (3):
+                    High thinking level.
+            """
+            THINKING_LEVEL_UNSPECIFIED = 0
+            LOW = 1
+            HIGH = 3
 
         include_thoughts: bool = proto.Field(
             proto.BOOL,
@@ -1038,6 +1157,12 @@ class GenerationConfig(proto.Message):
             proto.INT32,
             number=3,
             optional=True,
+        )
+        thinking_level: 'GenerationConfig.ThinkingConfig.ThinkingLevel' = proto.Field(
+            proto.ENUM,
+            number=4,
+            optional=True,
+            enum='GenerationConfig.ThinkingConfig.ThinkingLevel',
         )
 
     class ModelConfig(proto.Message):

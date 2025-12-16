@@ -917,6 +917,7 @@ class IntelligenceConfig(_messages.Message):
         Storage Intelligence usage. You can specify the buckets to include in
         the trial period by using filters. At the end of the trial period, the
         `IntelligenceConfig` resource is upgraded to `STANDARD` edition.
+      ESSENTIALS: The `IntelligenceConfig` resource is of ESSENTIALS edition.
     """
     EDITION_CONFIG_UNSPECIFIED = 0
     INHERIT = 1
@@ -924,6 +925,7 @@ class IntelligenceConfig(_messages.Message):
     STANDARD = 3
     EVALUATE = 4
     TRIAL = 5
+    ESSENTIALS = 6
 
   editionConfig = _messages.EnumField('EditionConfigValueValuesEnum', 1)
   effectiveIntelligenceConfig = _messages.MessageField('EffectiveIntelligenceConfig', 2)

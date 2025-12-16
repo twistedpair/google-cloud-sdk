@@ -342,9 +342,6 @@ class RequestOptions(proto.Message):
             a ``transaction_tag`` is limited to 50 characters. Values
             that exceed this limit are truncated. Any leading underscore
             (\_) characters are removed from the string.
-        client_context (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.RequestOptions.ClientContext):
-            Optional. Optional context that may be needed
-            for some requests.
     """
     class Priority(proto.Enum):
         r"""The relative priority for requests. Note that priority isn't
@@ -383,12 +380,6 @@ class RequestOptions(proto.Message):
         PRIORITY_MEDIUM = 2
         PRIORITY_HIGH = 3
 
-    class ClientContext(proto.Message):
-        r"""Container for various pieces of client-owned context attached
-        to a request.
-
-        """
-
     priority: Priority = proto.Field(
         proto.ENUM,
         number=1,
@@ -401,11 +392,6 @@ class RequestOptions(proto.Message):
     transaction_tag: str = proto.Field(
         proto.STRING,
         number=3,
-    )
-    client_context: ClientContext = proto.Field(
-        proto.MESSAGE,
-        number=4,
-        message=ClientContext,
     )
 
 

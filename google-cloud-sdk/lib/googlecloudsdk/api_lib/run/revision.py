@@ -34,9 +34,11 @@ BASE_IMAGES_ANNOTATION = 'run.googleapis.com/base-images'
 # gcloud-disable-gdu-domain
 IDENTITY_ANNOTATION = 'run.googleapis.com/identity'
 # gcloud-disable-gdu-domain
-ENABLE_WORKLOAD_CERTIFICATE_ANNOTATION = (
-    'run.googleapis.com/enable-workload-certificate'
+IDENTITY_CERTIFICATE_ENABLED_ANNOTATION = (
+    'run.googleapis.com/identity-certificate-enabled'
 )
+# gcloud-disable-gdu-domain
+IDENTITY_TYPE_ANNOTATION = 'run.googleapis.com/identity-type'
 # gcloud-disable-gdu-domain
 MESH_DATAPLANE_ANNOTATION = 'run.googleapis.com/mesh-dataplane'
 # gcloud-disable-gdu-domain

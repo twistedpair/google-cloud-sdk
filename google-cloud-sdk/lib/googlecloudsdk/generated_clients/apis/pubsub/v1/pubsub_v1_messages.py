@@ -659,10 +659,10 @@ class CreateSnapshotRequest(_messages.Message):
   Fields:
     labels: Optional. See [Creating and managing
       labels](https://cloud.google.com/pubsub/docs/labels).
-    subscription: Required. The subscription whose backlog the snapshot
-      retains. Specifically, the created snapshot is guaranteed to retain: (a)
-      The existing backlog on the subscription. More precisely, this is
-      defined as the messages in the subscription's backlog that are
+    subscription: Required. Identifier. The subscription whose backlog the
+      snapshot retains. Specifically, the created snapshot is guaranteed to
+      retain: (a) The existing backlog on the subscription. More precisely,
+      this is defined as the messages in the subscription's backlog that are
       unacknowledged upon the successful completion of the `CreateSnapshot`
       request; as well as: (b) Any messages published to the subscription's
       topic following the successful completion of the CreateSnapshot request.
@@ -1699,11 +1699,11 @@ class PubsubProjectsSnapshotsCreateRequest(_messages.Message):
   Fields:
     createSnapshotRequest: A CreateSnapshotRequest resource to be passed as
       the request body.
-    name: Required. User-provided name for this snapshot. If the name is not
-      provided in the request, the server will assign a random name for this
-      snapshot on the same project as the subscription. Note that for REST API
-      requests, you must specify a name. See the [resource name
-      rules](https://cloud.google.com/pubsub/docs/pubsub-
+    name: Required. Identifier. User-provided name for this snapshot. If the
+      name is not provided in the request, the server will assign a random
+      name for this snapshot on the same project as the subscription. Note
+      that for REST API requests, you must specify a name. See the [resource
+      name rules](https://cloud.google.com/pubsub/docs/pubsub-
       basics#resource_names). Format is `projects/{project}/snapshots/{snap}`.
   """
 
@@ -1715,8 +1715,8 @@ class PubsubProjectsSnapshotsDeleteRequest(_messages.Message):
   r"""A PubsubProjectsSnapshotsDeleteRequest object.
 
   Fields:
-    snapshot: Required. The name of the snapshot to delete. Format is
-      `projects/{project}/snapshots/{snap}`.
+    snapshot: Required. Identifier. The name of the snapshot to delete. Format
+      is `projects/{project}/snapshots/{snap}`.
   """
 
   snapshot = _messages.StringField(1, required=True)
@@ -1752,7 +1752,7 @@ class PubsubProjectsSnapshotsGetRequest(_messages.Message):
   r"""A PubsubProjectsSnapshotsGetRequest object.
 
   Fields:
-    snapshot: Required. The name of the snapshot to get. Format is
+    snapshot: Required. Identifier. The name of the snapshot to get. Format is
       `projects/{project}/snapshots/{snap}`.
   """
 
@@ -1768,8 +1768,8 @@ class PubsubProjectsSnapshotsListRequest(_messages.Message):
       `ListSnapshotsResponse`; indicates that this is a continuation of a
       prior `ListSnapshots` call, and that the system should return the next
       page of data.
-    project: Required. The name of the project in which to list snapshots.
-      Format is `projects/{project-id}`.
+    project: Required. Identifier. The name of the project in which to list
+      snapshots. Format is `projects/{project-id}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1840,7 +1840,7 @@ class PubsubProjectsSubscriptionsDeleteRequest(_messages.Message):
   r"""A PubsubProjectsSubscriptionsDeleteRequest object.
 
   Fields:
-    subscription: Required. The subscription to delete. Format is
+    subscription: Required. Identifier. The subscription to delete. Format is
       `projects/{project}/subscriptions/{sub}`.
   """
 
@@ -1888,8 +1888,8 @@ class PubsubProjectsSubscriptionsGetRequest(_messages.Message):
   r"""A PubsubProjectsSubscriptionsGetRequest object.
 
   Fields:
-    subscription: Required. The name of the subscription to get. Format is
-      `projects/{project}/subscriptions/{sub}`.
+    subscription: Required. Identifier. The name of the subscription to get.
+      Format is `projects/{project}/subscriptions/{sub}`.
   """
 
   subscription = _messages.StringField(1, required=True)
@@ -1904,8 +1904,8 @@ class PubsubProjectsSubscriptionsListRequest(_messages.Message):
       `ListSubscriptionsResponse`; indicates that this is a continuation of a
       prior `ListSubscriptions` call, and that the system should return the
       next page of data.
-    project: Required. The name of the project in which to list subscriptions.
-      Format is `projects/{project-id}`.
+    project: Required. Identifier. The name of the project in which to list
+      subscriptions. Format is `projects/{project-id}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1945,12 +1945,13 @@ class PubsubProjectsSubscriptionsPatchRequest(_messages.Message):
   r"""A PubsubProjectsSubscriptionsPatchRequest object.
 
   Fields:
-    name: Required. The name of the subscription. It must have the format
-      `"projects/{project}/subscriptions/{subscription}"`. `{subscription}`
-      must start with a letter, and contain only letters (`[A-Za-z]`), numbers
-      (`[0-9]`), dashes (`-`), underscores (`_`), periods (`.`), tildes (`~`),
-      plus (`+`) or percent signs (`%`). It must be between 3 and 255
-      characters in length, and it must not start with `"goog"`.
+    name: Required. Identifier. The name of the subscription. It must have the
+      format `"projects/{project}/subscriptions/{subscription}"`.
+      `{subscription}` must start with a letter, and contain only letters
+      (`[A-Za-z]`), numbers (`[0-9]`), dashes (`-`), underscores (`_`),
+      periods (`.`), tildes (`~`), plus (`+`) or percent signs (`%`). It must
+      be between 3 and 255 characters in length, and it must not start with
+      `"goog"`.
     updateSubscriptionRequest: A UpdateSubscriptionRequest resource to be
       passed as the request body.
   """
@@ -2034,7 +2035,7 @@ class PubsubProjectsTopicsDeleteRequest(_messages.Message):
   r"""A PubsubProjectsTopicsDeleteRequest object.
 
   Fields:
-    topic: Required. Name of the topic to delete. Format is
+    topic: Required. Identifier. Name of the topic to delete. Format is
       `projects/{project}/topics/{topic}`.
   """
 
@@ -2071,7 +2072,7 @@ class PubsubProjectsTopicsGetRequest(_messages.Message):
   r"""A PubsubProjectsTopicsGetRequest object.
 
   Fields:
-    topic: Required. The name of the topic to get. Format is
+    topic: Required. Identifier. The name of the topic to get. Format is
       `projects/{project}/topics/{topic}`.
   """
 
@@ -2086,8 +2087,8 @@ class PubsubProjectsTopicsListRequest(_messages.Message):
     pageToken: Optional. The value returned by the last `ListTopicsResponse`;
       indicates that this is a continuation of a prior `ListTopics` call, and
       that the system should return the next page of data.
-    project: Required. The name of the project in which to list topics. Format
-      is `projects/{project-id}`.
+    project: Required. Identifier. The name of the project in which to list
+      topics. Format is `projects/{project-id}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2099,7 +2100,7 @@ class PubsubProjectsTopicsPatchRequest(_messages.Message):
   r"""A PubsubProjectsTopicsPatchRequest object.
 
   Fields:
-    name: Required. The name of the topic. It must have the format
+    name: Required. Identifier. The name of the topic. It must have the format
       `"projects/{project}/topics/{topic}"`. `{topic}` must start with a
       letter, and contain only letters (`[A-Za-z]`), numbers (`[0-9]`), dashes
       (`-`), underscores (`_`), periods (`.`), tildes (`~`), plus (`+`) or
@@ -2119,8 +2120,8 @@ class PubsubProjectsTopicsPublishRequest(_messages.Message):
   Fields:
     publishRequest: A PublishRequest resource to be passed as the request
       body.
-    topic: Required. The messages in the request will be published on this
-      topic. Format is `projects/{project}/topics/{topic}`.
+    topic: Required. Identifier. The messages in the request will be published
+      on this topic. Format is `projects/{project}/topics/{topic}`.
   """
 
   publishRequest = _messages.MessageField('PublishRequest', 1)
@@ -2922,12 +2923,13 @@ class Subscription(_messages.Message):
     messageTransforms: Optional. Transforms to be applied to messages before
       they are delivered to subscribers. Transforms are applied in the order
       specified.
-    name: Required. The name of the subscription. It must have the format
-      `"projects/{project}/subscriptions/{subscription}"`. `{subscription}`
-      must start with a letter, and contain only letters (`[A-Za-z]`), numbers
-      (`[0-9]`), dashes (`-`), underscores (`_`), periods (`.`), tildes (`~`),
-      plus (`+`) or percent signs (`%`). It must be between 3 and 255
-      characters in length, and it must not start with `"goog"`.
+    name: Required. Identifier. The name of the subscription. It must have the
+      format `"projects/{project}/subscriptions/{subscription}"`.
+      `{subscription}` must start with a letter, and contain only letters
+      (`[A-Za-z]`), numbers (`[0-9]`), dashes (`-`), underscores (`_`),
+      periods (`.`), tildes (`~`), plus (`+`) or percent signs (`%`). It must
+      be between 3 and 255 characters in length, and it must not start with
+      `"goog"`.
     pubsubExportConfig: Optional. If delivery to Pub/Sub is used with this
       subscription, this field is used to configure it.
     pubsubliteExportConfig: Optional. If delivery to Pub/Sub Lite is used with
@@ -2951,10 +2953,10 @@ class Subscription(_messages.Message):
     tags: Optional. Input only. Immutable. Tag keys/values directly bound to
       this resource. For example: "123/environment": "production",
       "123/costCenter": "marketing"
-    topic: Required. The name of the topic from which this subscription is
-      receiving messages. Format is `projects/{project}/topics/{topic}`. The
-      value of this field will be `_deleted-topic_` if the topic has been
-      deleted.
+    topic: Required. Identifier. The name of the topic from which this
+      subscription is receiving messages. Format is
+      `projects/{project}/topics/{topic}`. The value of this field will be
+      `_deleted-topic_` if the topic has been deleted.
     topicMessageRetentionDuration: Output only. Indicates the minimum duration
       for which a message is retained after it is published to the
       subscription's topic. If this field is set, messages published to the
@@ -3167,7 +3169,7 @@ class Topic(_messages.Message):
       stored. If not present, then no constraints are in effect.
     messageTransforms: Optional. Transforms to be applied to messages
       published to the topic. Transforms are applied in the order specified.
-    name: Required. The name of the topic. It must have the format
+    name: Required. Identifier. The name of the topic. It must have the format
       `"projects/{project}/topics/{topic}"`. `{topic}` must start with a
       letter, and contain only letters (`[A-Za-z]`), numbers (`[0-9]`), dashes
       (`-`), underscores (`_`), periods (`.`), tildes (`~`), plus (`+`) or

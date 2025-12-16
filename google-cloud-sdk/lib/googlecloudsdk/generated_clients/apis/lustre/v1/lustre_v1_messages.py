@@ -173,7 +173,7 @@ class Instance(_messages.Message):
   Fields:
     accessRulesOptions: Optional. The access rules options for the instance.
     capacityGib: Required. The storage capacity of the instance in gibibytes
-      (GiB). Allowed values are from `18000` to `7632000`, depending on the
+      (GiB). Allowed values are from `9000` to `7632000`, depending on the
       `perUnitStorageThroughput`. See [Performance tiers and maximum storage
       capacities](https://cloud.google.com/managed-lustre/docs/create-
       instance#performance-tiers) for specific minimums, maximums, and step

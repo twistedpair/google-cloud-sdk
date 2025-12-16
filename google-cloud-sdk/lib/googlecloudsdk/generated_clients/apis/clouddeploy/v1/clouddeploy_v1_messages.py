@@ -1007,8 +1007,10 @@ class CloudRunMetadata(_messages.Message):
       `projects/{project}/locations/{location}/jobs/{job_name}`.
     previousRevision: Output only. The previous Cloud Run Revision name
       associated with a `Rollout`. Only set when a canary deployment strategy
-      is configured. Format is projects/{project}/locations/{location}/service
-      s/{service}/revisions/{revision}.
+      is configured. Format for service is projects/{project}/locations/{locat
+      ion}/services/{service}/revisions/{revision}. Format for worker pool is
+      projects/{project}/locations/{location}/workerPools/{workerpool}/revisio
+      ns/{revision}.
     revision: Output only. The Cloud Run Revision id associated with a
       `Rollout`.
     service: Output only. The name of the Cloud Run Service that is associated
@@ -2275,9 +2277,9 @@ class ClouddeployProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -4330,8 +4332,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -5196,8 +5198,8 @@ class Release(_messages.Message):
     targetSnapshots: Output only. Snapshot of the targets taken at release
       creation time.
     toolVersions: Optional. The tool versions to use for this release and all
-      subsequent operations involving this release. If unset, then it will
-      freeze the tool versions at the time of release creation.
+      subsequent operations involving this release. If unset, tool versions
+      are frozen when the release is created.
     uid: Output only. Unique identifier of the `Release`.
   """
 
@@ -5388,7 +5390,7 @@ class ReleaseCondition(_messages.Message):
     helmVersionSupportedCondition: Output only. Details around the support
       state of the release's Helm version.
     kptVersionSupportedCondition: Output only. Details around the support
-      state of the release's Kpt version.
+      state of the release's kpt version.
     kubectlVersionSupportedCondition: Output only. Details around the support
       state of the release's Kubectl version.
     kustomizeVersionSupportedCondition: Output only. Details around the
@@ -7365,35 +7367,35 @@ class TimedPromoteReleaseRule(_messages.Message):
 
 class ToolVersionSupportedCondition(_messages.Message):
   r"""ToolVersionSupportedCondition contains information about when support
-  for the release's version of a Tool ends.
+  for the release's version of a tool ends.
 
   Enums:
-    ToolVersionSupportStateValueValuesEnum: Output only. The Tool support
-      state for this release's version of the Tool.
+    ToolVersionSupportStateValueValuesEnum: Output only. The tool support
+      state for this release's version of the tool.
 
   Fields:
     maintenanceModeTime: Output only. The time at which this release's version
-      of the Tool will enter maintenance mode.
+      of the tool will enter maintenance mode.
     status: Output only. True if the version of Tool used by this release is
       supported.
     supportExpirationTime: Output only. The time at which this release's
-      version of the Tool will no longer be supported.
-    toolVersionSupportState: Output only. The Tool support state for this
-      release's version of the Tool.
+      version of the tool will no longer be supported.
+    toolVersionSupportState: Output only. The tool support state for this
+      release's version of the tool.
   """
 
   class ToolVersionSupportStateValueValuesEnum(_messages.Enum):
-    r"""Output only. The Tool support state for this release's version of the
-    Tool.
+    r"""Output only. The tool support state for this release's version of the
+    tool.
 
     Values:
       TOOL_VERSION_SUPPORT_STATE_UNSPECIFIED: Default value. This value is
         unused.
-      TOOL_VERSION_SUPPORT_STATE_SUPPORTED: This Tool version is currently
+      TOOL_VERSION_SUPPORT_STATE_SUPPORTED: This tool version is currently
         supported.
-      TOOL_VERSION_SUPPORT_STATE_MAINTENANCE_MODE: This Tool version is in
+      TOOL_VERSION_SUPPORT_STATE_MAINTENANCE_MODE: This tool version is in
         maintenance mode.
-      TOOL_VERSION_SUPPORT_STATE_UNSUPPORTED: This Tool version is no longer
+      TOOL_VERSION_SUPPORT_STATE_UNSUPPORTED: This tool version is no longer
         supported.
     """
     TOOL_VERSION_SUPPORT_STATE_UNSPECIFIED = 0
@@ -7411,13 +7413,13 @@ class ToolVersions(_messages.Message):
   r"""Details of ToolVersions for the release.
 
   Fields:
-    docker: Optional. The docker version to use for Cloud Deploy operations.
-    helm: Optional. The helm version to use for Cloud Deploy operations.
+    docker: Optional. The Docker version to use for Cloud Deploy operations.
+    helm: Optional. The Helm version to use for Cloud Deploy operations.
     kpt: Optional. The kpt version to use for Cloud Deploy operations.
-    kubectl: Optional. The kubectl version to use for Cloud Deploy operations.
-    kustomize: Optional. The kustomize version to use for Cloud Deploy
+    kubectl: Optional. The Kubectl version to use for Cloud Deploy operations.
+    kustomize: Optional. The Kustomize version to use for Cloud Deploy
       operations.
-    skaffold: Optional. The skaffold version to use for Cloud Deploy
+    skaffold: Optional. The Skaffold version to use for Cloud Deploy
       operations.
   """
 

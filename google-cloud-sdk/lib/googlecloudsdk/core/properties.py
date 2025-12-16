@@ -1477,6 +1477,8 @@ class _SectionApiEndpointOverrides(_Section):
     self.transfer = self._Add('transfer', command='gcloud transfer')
     self.transferappliance = self._Add(
         'transferappliance', command='gcloud transfer appliances')
+    self.vectorsearch = self._Add(
+        'vectorsearch', command='gcloud vectorsearch', hidden=True)
     self.vision = self._Add('vision', command='gcloud ml vision')
     self.vmmigration = self._Add('vmmigration', command='gcloud migration vms')
     self.vmwareengine = self._Add('vmwareengine', command='gcloud vmware')
@@ -1765,20 +1767,6 @@ class _SectionAuth(_Section):
         help_text='Disable code verifier in 3LO auth flow. See '
         'https://tools.ietf.org/html/rfc7636 for more information '
         'about code verifier.')
-    self.disable_load_google_auth = self._AddBool(
-        'disable_load_google_auth',
-        default=False,
-        hidden=True,
-        help_text='Global switch to turn off loading credentials as '
-        'google-auth. Users can use it to switch back to the old '
-        'mode if google-auth breaks users.')
-    self.opt_out_google_auth = self._AddBool(
-        'opt_out_google_auth',
-        default=False,
-        hidden=True,
-        help_text='A switch to disable google-auth for a surface or a command '
-        'group, in case there are some edge cases or google-auth '
-        'does not work for some surface.')
     self.token_introspection_endpoint = self._Add(
         'token_introspection_endpoint',
         hidden=True,

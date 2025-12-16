@@ -182,8 +182,8 @@ def GetHttpErrorMessage(error):
   Returns:
     A human readable string representation of the error.
   """
-  status = error.response.status
-  code = error.response.reason
+  status = error.response.get('status', '')
+  code = error.response.get('reason', '')
   message = ''
   try:
     data = json.loads(error.content)

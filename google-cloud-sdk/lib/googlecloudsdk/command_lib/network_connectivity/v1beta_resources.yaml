@@ -67,3 +67,26 @@ projects_locations_multicloud_data_transfer_configs_destinations:
     attribute_name: destination
     help: The destination id of the {resource} resource.
   disable_auto_completers: false
+
+transport:
+  name: transport
+  collection: networkconnectivity.projects.locations.transports
+  request_id_field: transportId
+  attributes:
+  - *project
+  - &transport
+    parameter_name: transportsId
+    attribute_name: transport
+    help: Id of the transport.
+
+remote_transport_profile:
+  name: remoteProfile
+  collection: networkconnectivity.projects.locations.transports.remoteProfiles
+  request_id_field: remoteProfileId
+  attributes:
+  - *project
+  - *transport
+  - &remoteProfile
+    parameter_name: remoteProfilesId
+    attribute_name: remote_profile
+    help: Id of the remote transport profile.

@@ -3323,9 +3323,6 @@ class Pipeline(_messages.Message):
     destinations: Required. List of destinations to which messages will be
       forwarded. Currently, exactly one destination is supported per Pipeline.
     displayName: Optional. Display name of resource.
-    errorMessageBus: Optional. Resource name of the message bus to publish
-      error messages to. It matches the form
-      projects/{project}/locations/{location}/messageBuses/{messageBus}.
     etag: Output only. This checksum is computed by the server based on the
       value of other fields, and might be sent only on create requests to
       ensure that the client has an up-to-date value before proceeding.
@@ -3416,17 +3413,16 @@ class Pipeline(_messages.Message):
   cryptoKeyName = _messages.StringField(3)
   destinations = _messages.MessageField('GoogleCloudEventarcV1PipelineDestination', 4, repeated=True)
   displayName = _messages.StringField(5)
-  errorMessageBus = _messages.StringField(6)
-  etag = _messages.StringField(7)
-  inputPayloadFormat = _messages.MessageField('GoogleCloudEventarcV1PipelineMessagePayloadFormat', 8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  loggingConfig = _messages.MessageField('LoggingConfig', 10)
-  mediations = _messages.MessageField('GoogleCloudEventarcV1PipelineMediation', 11, repeated=True)
-  name = _messages.StringField(12)
-  retryPolicy = _messages.MessageField('GoogleCloudEventarcV1PipelineRetryPolicy', 13)
-  satisfiesPzs = _messages.BooleanField(14)
-  uid = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
+  etag = _messages.StringField(6)
+  inputPayloadFormat = _messages.MessageField('GoogleCloudEventarcV1PipelineMessagePayloadFormat', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  loggingConfig = _messages.MessageField('LoggingConfig', 9)
+  mediations = _messages.MessageField('GoogleCloudEventarcV1PipelineMediation', 10, repeated=True)
+  name = _messages.StringField(11)
+  retryPolicy = _messages.MessageField('GoogleCloudEventarcV1PipelineRetryPolicy', 12)
+  satisfiesPzs = _messages.BooleanField(13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class Policy(_messages.Message):

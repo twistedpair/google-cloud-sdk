@@ -15,6 +15,7 @@
 """Flags for the compute global vm extension policies commands."""
 
 import functools
+import textwrap
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
@@ -27,7 +28,7 @@ def AddPolicyDescription(parser):
   """Adds the Description flag."""
   parser.add_argument(
       '--description',
-      help='An optional textual description for the this extension policy.',
+      help='An optional text description for the extension policy.',
   )
 
 
@@ -53,14 +54,16 @@ def AddPolicyPriority(parser):
       '--priority',
       type=functools.partial(ValidatePriority, min_val=0, max_val=65535),
       default=1000,
-      help="""
+      help=textwrap.dedent("""\
       The priority of the policy. Lower the number, higher the priority.
-      When two policies tries to apply the same extension, the one with the higher priority takes precedence.
-      If the priority is the same, the one with the more recent update timestamp takes precedence.
-      When a policy is deleted, the extension would remain installed on the VM if a lower priority policy still applies.
+      When two policies try to apply the same extension to a VM, the policy with
+      higher priority takes precedence. If the priorities are the same, the
+      policy with the more recent update timestamp takes precedence. If a policy
+      is deleted, the extension remains installed on the VM if a lower-priority
+      policy still applies.
 
       Range from 0 to 65535. Default is 1000.
-      """,
+      """),
   )
 
 
@@ -70,7 +73,7 @@ def AddPolicyInclusionLabels(parser):
       '--inclusion-labels',
       action='append',
       default=[],
-      help="""
+      help=textwrap.dedent("""\
       A list of inclusion labels to select the target VMs.
 
       The expected format for a single selector is "key1=value1,key2=value2".
@@ -85,7 +88,7 @@ def AddPolicyInclusionLabels(parser):
       - VM3: env=prod
 
       If not specified, ALL VMs in the project/folder will be selected.
-      """,
+      """),
   )
 
 
@@ -111,7 +114,7 @@ def AddExtensionVersion(parser):
       metavar='KEY=VALUE',
       action=arg_parsers.StoreOnceAction,
       required=False,
-      help="""
+      help=textwrap.dedent("""\
       A comma separated key:value list where the key is the extension name and the value is the
       desired version for the given extension. The extension name must be one of the extensions
       specified in the --extensions flag. If no version is specified for an
@@ -122,7 +125,8 @@ def AddExtensionVersion(parser):
       Raises:
         ArgumentTypeError: If the extension name is not specified in the
         --extensions flag.
-      """)
+      """),
+  )
 
 
 def AddExtensionConfigs(parser):
@@ -134,7 +138,7 @@ def AddExtensionConfigs(parser):
       metavar='KEY=VALUE',
       action=arg_parsers.StoreOnceAction,
       required=False,
-      help="""
+      help=textwrap.dedent("""\
       A comma separated key:value list where the key is the extension name and the value is the
       desired config for the given extension. The extension name must be one of the extensions
       specified in the --extensions flag.
@@ -144,7 +148,8 @@ def AddExtensionConfigs(parser):
       Raises:
         ArgumentTypeError: If the extension name is not specified in the
         --extensions flag.
-      """)
+      """),
+  )
 
 
 def AddExtensionConfigsFromFile(parser):
@@ -156,14 +161,15 @@ def AddExtensionConfigsFromFile(parser):
       metavar='KEY=FILE_PATH',
       action=arg_parsers.StoreOnceAction,
       required=False,
-      help="""
+      help=textwrap.dedent("""\
       Same as --config except that the value for the entry will be read from a
       local file. The extension name must be one of the extensions specified in
       the --extensions flag.
 
       It is an error to specify the same extension in both --config and
       --config-from-file.
-      """)
+      """),
+  )
 
 
 def AddRolloutPredefinedPlan(parser):
@@ -172,19 +178,19 @@ def AddRolloutPredefinedPlan(parser):
       '--rollout-predefined-plan',
       choices=[
           'fast_rollout',
-          'rollout_plan_unspecified',
           'slow_rollout'
       ],
       default=None,
       action=arg_parsers.StoreOnceAction,
       required=False,
-      help="""
+      help=textwrap.dedent("""\
       Provide the name of a predefined rollout plan from
       [fast_rollout, slow_rollout] to be used for the rollout.
 
       One of either --rollout-predefined-plan or --rollout-custom-plan must be specified,
       but not both.
-      """)
+      """),
+  )
 
 
 def AddRolloutCustomPlan(parser):
@@ -194,12 +200,13 @@ def AddRolloutCustomPlan(parser):
       default='',
       action=arg_parsers.StoreOnceAction,
       required=False,
-      help="""
+      help=textwrap.dedent("""\
       Provide the name of a custom rollout plan to be used for the rollout.
 
       One of either --rollout-predefined-plan or --rollout-custom-plan must be specified,
       but not both.
-      """)
+      """),
+  )
 
 
 def AddRolloutConflictBehavior(parser):
@@ -209,16 +216,20 @@ def AddRolloutConflictBehavior(parser):
       default='',
       action=arg_parsers.StoreOnceAction,
       required=False,
-      help="""
-      Specifies the behavior of the Rollout if a conflict is detected in a
-      project during a Rollout. Default behavior is to keep the local value
-      if conflict happens. Specifying 'overwrite' will overwrite the local value
-      if conflict happens.
+      help=textwrap.dedent("""\
+      Specifies the behavior of a rollout if a conflict is detected between
+      a zonal policy and a global policy. See gcloud compute
+      zone-vm-extension-policies for more details on zonal policies.
 
-      The default value for --rollout-conflict-behavior is ''. If you set this
-      flag to overwrite and would like to go back to the default value,
-      use the update command and omit the --rollout-conflict-behavior flag.
-      """)
+      The possible values are:
+      * `""`: The zonal policy value is used in case of a conflict. This is the default behavior.
+      * `overwrite`: The global policy overwrites the zonal policy.
+
+      If you set `--rollout-conflict-behavior` to `overwrite` and want to revert to the default behavior,
+      use the update command and omit the `--rollout-conflict-behavior`
+      flag.
+      """),
+  )
 
 
 def AddRolloutRetryUUID(parser):
@@ -228,10 +239,11 @@ def AddRolloutRetryUUID(parser):
       default='',
       action=arg_parsers.StoreOnceAction,
       required=False,
-      help="""
+      help=textwrap.dedent("""\
       The UUID of the rollout retry action. Only set it if this is a retry
       for an existing resource.
-      """)
+      """),
+  )
 
 
 def MakeGlobalVmExtensionPolicyArg():
@@ -252,14 +264,13 @@ def AddExtensionPolicyArgs(parser):
   AddExtensionVersion(parser)
   AddExtensionConfigs(parser)
   AddExtensionConfigsFromFile(parser)
-  AddRolloutInputArgs(parser)
+  AddRolloutPlanArgs(parser)
 
 
-def AddRolloutInputArgs(parser):
+def AddRolloutPlanArgs(parser):
   """Adds the flags for a rollout plan."""
   AddRolloutPredefinedPlan(parser)
   AddRolloutCustomPlan(parser)
-  AddRolloutConflictBehavior(parser)
 
 
 def ParseExtensionConfigs(extensions, configs, config_from_file=None):
@@ -373,7 +384,7 @@ def BuildRolloutOperationInput(args, messages):
   return messages.GlobalVmExtensionPolicyRolloutOperationRolloutInput(
       predefinedRolloutPlan=rollout_predefined_plan,
       name=args.rollout_custom_plan or None,
-      conflictBehavior=args.rollout_conflict_behavior or None,
+      conflictBehavior=getattr(args, 'rollout_conflict_behavior', None) or None,
   )
 
 

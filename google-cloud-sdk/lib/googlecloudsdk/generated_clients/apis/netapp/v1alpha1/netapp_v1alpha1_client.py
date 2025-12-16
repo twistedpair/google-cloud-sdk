@@ -726,7 +726,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Returns a list of host groups in a location. Use '-' as location to list host groups across all locations.
+      r"""Returns a list of host groups in a `location`. Use `-` as location to list host groups across all locations.
 
       Args:
         request: (NetappProjectsLocationsHostGroupsListRequest) input message

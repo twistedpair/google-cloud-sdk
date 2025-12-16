@@ -3270,7 +3270,9 @@ class GooglePrivacyDlpV2Action(_messages.Message):
       Contacts](https://cloud.google.com/resource-manager/docs/managing-
       notification-contacts).
     pubSub: Publish a notification to a Pub/Sub topic.
-    publishFindingsToCloudDataCatalog: Publish findings to Cloud Datahub.
+    publishFindingsToCloudDataCatalog: Deprecated because Data Catalog is
+      being turned down. Use publish_findings_to_dataplex_catalog to publish
+      findings to Dataplex Universal Catalog.
     publishFindingsToDataplexCatalog: Publish findings as an aspect to
       Dataplex Universal Catalog.
     publishSummaryToCscc: Publish summary to Cloud Security Command Center
@@ -5267,7 +5269,7 @@ class GooglePrivacyDlpV2DataSourceType(_messages.Message):
   r"""Message used to identify the type of resource being profiled.
 
   Fields:
-    dataSource: An identifying string to the type of resource being profiled.
+    dataSource: A string that identifies the type of resource being profiled.
       Current values: * google/bigquery/table * google/project *
       google/sql/table * google/gcs/bucket
   """
@@ -11557,8 +11559,7 @@ class GooglePrivacyDlpV2VertexDatasetRegexes(_messages.Message):
 
 
 class GooglePrivacyDlpV2VertexDatasetResourceReference(_messages.Message):
-  r"""Identifies a single Vertex AI resource. Currently only datasets are
-  supported.
+  r"""Identifies a single Vertex AI resource. Only datasets are supported.
 
   Fields:
     datasetResourceName: Required. The name of the Vertex AI resource. If set

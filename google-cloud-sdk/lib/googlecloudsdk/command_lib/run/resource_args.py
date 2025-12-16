@@ -166,6 +166,12 @@ class JobPromptFallthrough(ResourcePromptFallthrough):
     super(JobPromptFallthrough, self).__init__('job')
 
 
+class InstancePromptFallthrough(ResourcePromptFallthrough):
+
+  def __init__(self):
+    super(InstancePromptFallthrough, self).__init__('instance')
+
+
 class ExecutionPromptFallthrough(ResourcePromptFallthrough):
 
   def __init__(self):
@@ -294,6 +300,18 @@ def JobAttributeConfig(prompt=False):
   return concepts.ResourceParameterAttributeConfig(
       name='jobs',
       help_text='Job for the {resource}.',
+      fallthroughs=fallthroughs,
+  )
+
+
+def InstanceAttributeConfig(prompt=False):
+  if prompt:
+    fallthroughs = [InstancePromptFallthrough()]
+  else:
+    fallthroughs = []
+  return concepts.ResourceParameterAttributeConfig(
+      name='instances',
+      help_text='Instance for the {resource}.',
       fallthroughs=fallthroughs,
   )
 
@@ -584,6 +602,16 @@ def GetJobResourceSpec(prompt=False):
       namespacesId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       jobsId=JobAttributeConfig(prompt=prompt),
       resource_name='Job',
+      api_version='v1',
+  )
+
+
+def GetInstanceResourceSpec(prompt=False):
+  return concepts.ResourceSpec(
+      'run.namespaces.instances',
+      namespacesId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      instancesId=InstanceAttributeConfig(prompt=prompt),
+      resource_name='Instance',
       api_version='v1',
   )
 

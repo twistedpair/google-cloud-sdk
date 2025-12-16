@@ -987,9 +987,11 @@ def CreateNetworkInterfaceMessages(
     project,
     location,
     scope,
+    *,
     network_interface_json=None,
     support_internal_ipv6_reservation=False,
     support_enable_vpc_scoped_dns=False,
+    support_service_class_id=False,
 ):
   """Create network interface messages.
 
@@ -1007,6 +1009,8 @@ def CreateNetworkInterfaceMessages(
     support_internal_ipv6_reservation: The flag indicates whether internal IPv6
       reservation is supported.
     support_enable_vpc_scoped_dns: The flag indicates whether VPC scoped DNS is
+      supported.
+    support_service_class_id: The flag indicates whether service class id is
       supported.
 
   Returns:
@@ -1029,6 +1033,11 @@ def CreateNetworkInterfaceMessages(
       enable_vpc_scoped_dns = None
       if support_enable_vpc_scoped_dns:
         enable_vpc_scoped_dns = 'enable-vpc-scoped-dns' in interface
+      service_class_id = (
+          interface.get('service-class-id', None)
+          if support_service_class_id
+          else None
+      )
 
       result.append(
           instances_utils.CreateNetworkInterfaceMessage(
@@ -1053,6 +1062,7 @@ def CreateNetworkInterfaceMessages(
               queue_count=interface.get('queue-count', None),
               network_attachment=interface.get('network-attachment', None),
               enable_vpc_scoped_dns=enable_vpc_scoped_dns,
+              service_class_id=service_class_id,
               internal_ipv6_address=internal_ipv6_address,
               internal_ipv6_prefix_length=internal_ipv6_prefix_length,
               external_ipv6_address=interface.get(
@@ -1088,10 +1098,12 @@ def GetNetworkInterfacesWithValidation(
     location,
     scope,
     skip_defaults,
+    *,
     support_public_dns=False,
     support_ipv6_assignment=False,
     support_internal_ipv6_reservation=False,
     support_enable_vpc_scoped_dns=False,
+    support_service_class_id=False,
 ):
   """Validates and retrieves the network interface message."""
   network_interface_from_file = getattr(args, 'network_interface_from_file',
@@ -1112,6 +1124,7 @@ def GetNetworkInterfacesWithValidation(
         scope=scope,
         support_internal_ipv6_reservation=support_internal_ipv6_reservation,
         support_enable_vpc_scoped_dns=support_enable_vpc_scoped_dns,
+        support_service_class_id=support_service_class_id,
     )
   else:
     instances_flags.ValidatePublicPtrFlags(args)

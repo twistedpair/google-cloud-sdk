@@ -40,7 +40,6 @@ class IamV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.iamPolicies = self.IamPoliciesService(self)
-    self.locations_workforcePools_installedApps = self.LocationsWorkforcePoolsInstalledAppsService(self)
     self.locations_workforcePools_operations = self.LocationsWorkforcePoolsOperationsService(self)
     self.locations_workforcePools_providers_keys_operations = self.LocationsWorkforcePoolsProvidersKeysOperationsService(self)
     self.locations_workforcePools_providers_keys = self.LocationsWorkforcePoolsProvidersKeysService(self)
@@ -137,178 +136,6 @@ class IamV1(base_api.BaseApiClient):
         request_field='<request>',
         request_type_name='QueryAuditableServicesRequest',
         response_type_name='QueryAuditableServicesResponse',
-        supports_download=False,
-    )
-
-  class LocationsWorkforcePoolsInstalledAppsService(base_api.BaseApiService):
-    """Service class for the locations_workforcePools_installedApps resource."""
-
-    _NAME = 'locations_workforcePools_installedApps'
-
-    def __init__(self, client):
-      super(IamV1.LocationsWorkforcePoolsInstalledAppsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a new WorkforcePoolInstalledApp in a WorkforcePool. You cannot reuse the name of a deleted workforce pool installed app until 30 days after deletion.
-
-      Args:
-        request: (IamLocationsWorkforcePoolsInstalledAppsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (WorkforcePoolInstalledApp) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/installedApps',
-        http_method='POST',
-        method_id='iam.locations.workforcePools.installedApps.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['workforcePoolInstalledAppId'],
-        relative_path='v1/{+parent}/installedApps',
-        request_field='workforcePoolInstalledApp',
-        request_type_name='IamLocationsWorkforcePoolsInstalledAppsCreateRequest',
-        response_type_name='WorkforcePoolInstalledApp',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a WorkforcePoolInstalledApp. You can undelete a workforce pool installed app for 30 days. After 30 days, deletion is permanent. You cannot update deleted workforce pool installed apps. However, you can view and list them.
-
-      Args:
-        request: (IamLocationsWorkforcePoolsInstalledAppsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (WorkforcePoolInstalledApp) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/installedApps/{installedAppsId}',
-        http_method='DELETE',
-        method_id='iam.locations.workforcePools.installedApps.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['validateOnly'],
-        relative_path='v1/{+name}',
-        request_field='',
-        request_type_name='IamLocationsWorkforcePoolsInstalledAppsDeleteRequest',
-        response_type_name='WorkforcePoolInstalledApp',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets an individual WorkforcePoolInstalledApp.
-
-      Args:
-        request: (IamLocationsWorkforcePoolsInstalledAppsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (WorkforcePoolInstalledApp) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/installedApps/{installedAppsId}',
-        http_method='GET',
-        method_id='iam.locations.workforcePools.installedApps.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}',
-        request_field='',
-        request_type_name='IamLocationsWorkforcePoolsInstalledAppsGetRequest',
-        response_type_name='WorkforcePoolInstalledApp',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists all non-deleted WorkforcePoolInstalledApps in a WorkforcePool. If `show_deleted` is set to `true`, then deleted installed apps are also listed.
-
-      Args:
-        request: (IamLocationsWorkforcePoolsInstalledAppsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListWorkforcePoolInstalledAppsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/installedApps',
-        http_method='GET',
-        method_id='iam.locations.workforcePools.installedApps.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['pageSize', 'pageToken', 'showDeleted'],
-        relative_path='v1/{+parent}/installedApps',
-        request_field='',
-        request_type_name='IamLocationsWorkforcePoolsInstalledAppsListRequest',
-        response_type_name='ListWorkforcePoolInstalledAppsResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates an existing WorkforcePoolInstalledApp.
-
-      Args:
-        request: (IamLocationsWorkforcePoolsInstalledAppsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (WorkforcePoolInstalledApp) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/installedApps/{installedAppsId}',
-        http_method='PATCH',
-        method_id='iam.locations.workforcePools.installedApps.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['updateMask'],
-        relative_path='v1/{+name}',
-        request_field='workforcePoolInstalledApp',
-        request_type_name='IamLocationsWorkforcePoolsInstalledAppsPatchRequest',
-        response_type_name='WorkforcePoolInstalledApp',
-        supports_download=False,
-    )
-
-    def Undelete(self, request, global_params=None):
-      r"""Undeletes a WorkforcePoolInstalledApp, as long as it was deleted fewer than 30 days ago.
-
-      Args:
-        request: (IamLocationsWorkforcePoolsInstalledAppsUndeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (WorkforcePoolInstalledApp) The response message.
-      """
-      config = self.GetMethodConfig('Undelete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Undelete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/installedApps/{installedAppsId}:undelete',
-        http_method='POST',
-        method_id='iam.locations.workforcePools.installedApps.undelete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}:undelete',
-        request_field='undeleteWorkforcePoolInstalledAppRequest',
-        request_type_name='IamLocationsWorkforcePoolsInstalledAppsUndeleteRequest',
-        response_type_name='WorkforcePoolInstalledApp',
         supports_download=False,
     )
 
@@ -579,7 +406,7 @@ class IamV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Agentspace only. Creates a new WorkforcePoolProviderScimToken in a WorkforcePoolProviderScimTenant. You cannot reuse the name of a deleted SCIM token until 30 days after deletion.
+      r"""Gemini Enterprise only. Creates a new WorkforcePoolProviderScimToken in a WorkforcePoolProviderScimTenant. You cannot reuse the name of a deleted SCIM token until 30 days after deletion.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersScimTenantsTokensCreateRequest) input message
@@ -606,7 +433,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Agentspace only. Deletes a WorkforcePoolProviderScimToken. You can undelete a SCIM token for 30 days. After 30 days, the SCIM token is permanently deleted. You cannot update deleted SCIM tokens, however, you can view and list them.
+      r"""Gemini Enterprise only. Deletes a WorkforcePoolProviderScimToken. You can undelete a SCIM token for 30 days. After 30 days, the SCIM token is permanently deleted. You cannot update deleted SCIM tokens, however, you can view and list them.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersScimTenantsTokensDeleteRequest) input message
@@ -633,7 +460,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Agentspace only. Gets an individual WorkforcePoolProviderScimToken.
+      r"""Gemini Enterprise only. Gets an individual WorkforcePoolProviderScimToken.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersScimTenantsTokensGetRequest) input message
@@ -660,7 +487,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Agentspace only. Lists all non-deleted WorkforcePoolProviderScimTokenss in a WorkforcePoolProviderScimTenant. If `show_deleted` is set to `true`, then deleted SCIM tokens are also listed.
+      r"""Gemini Enterprise only. Lists all non-deleted WorkforcePoolProviderScimTokenss in a WorkforcePoolProviderScimTenant. If `show_deleted` is set to `true`, then deleted SCIM tokens are also listed.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersScimTenantsTokensListRequest) input message
@@ -687,7 +514,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Agentspace only. Updates an existing WorkforcePoolProviderScimToken.
+      r"""Gemini Enterprise only. Updates an existing WorkforcePoolProviderScimToken.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersScimTenantsTokensPatchRequest) input message
@@ -714,7 +541,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Undelete(self, request, global_params=None):
-      r"""Agentspace only. Undeletes a WorkforcePoolProviderScimToken,that was deleted fewer than 30 days ago.
+      r"""Gemini Enterprise only. Undeletes a WorkforcePoolProviderScimToken,that was deleted fewer than 30 days ago.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersScimTenantsTokensUndeleteRequest) input message
@@ -751,7 +578,7 @@ class IamV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Agentspace only. Creates a new WorkforcePoolProviderScimTenant in a WorkforcePoolProvider. You cannot reuse the name of a deleted SCIM tenant until 30 days after deletion.
+      r"""Gemini Enterprise only. Creates a new WorkforcePoolProviderScimTenant in a WorkforcePoolProvider. You cannot reuse the name of a deleted SCIM tenant until 30 days after deletion.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersScimTenantsCreateRequest) input message
@@ -778,7 +605,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Agentspace only. Deletes a WorkforcePoolProviderScimTenant. You can undelete a SCIM tenant for 30 days. After 30 days, deletion is permanent. You cannot update deleted SCIM tenants. However, you can view and list them.
+      r"""Gemini Enterprise only. Deletes a WorkforcePoolProviderScimTenant. You can undelete a SCIM tenant for 30 days. After 30 days, deletion is permanent. You cannot update deleted SCIM tenants. However, you can view and list them.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersScimTenantsDeleteRequest) input message
@@ -805,7 +632,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Agentspace only. Gets an individual WorkforcePoolProviderScimTenant.
+      r"""Gemini Enterprise only. Gets an individual WorkforcePoolProviderScimTenant.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersScimTenantsGetRequest) input message
@@ -832,7 +659,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Agentspace only. Lists all non-deleted WorkforcePoolProviderScimTenants in a WorkforcePoolProvider. If `show_deleted` is set to `true`, then deleted SCIM tenants are also listed.
+      r"""Gemini Enterprise only. Lists all non-deleted WorkforcePoolProviderScimTenants in a WorkforcePoolProvider. If `show_deleted` is set to `true`, then deleted SCIM tenants are also listed.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersScimTenantsListRequest) input message
@@ -859,7 +686,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Agentspace only. Updates an existing WorkforcePoolProviderScimTenant.
+      r"""Gemini Enterprise only. Updates an existing WorkforcePoolProviderScimTenant.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersScimTenantsPatchRequest) input message
@@ -886,7 +713,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Undelete(self, request, global_params=None):
-      r"""Agentspace only. Undeletes a WorkforcePoolProviderScimTenant, that was deleted fewer than 30 days ago.
+      r"""Gemini Enterprise only. Undeletes a WorkforcePoolProviderScimTenant, that was deleted fewer than 30 days ago.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersScimTenantsUndeleteRequest) input message

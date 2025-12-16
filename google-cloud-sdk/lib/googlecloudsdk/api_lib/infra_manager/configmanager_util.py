@@ -22,6 +22,7 @@ from apitools.base.py import encoding
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import progress_tracker
 
@@ -509,3 +510,71 @@ def WaitForCreatePreviewOperation(
       wait_ceiling_ms=_WAIT_CEILING_MS,
   )
   return result
+
+
+def GetLocation(args):
+  """Gets location resource from either argument flag or attribute.
+
+  Args:
+    args: The command-line arguments.
+
+  Returns:
+    The location string.
+  """
+  return args.location or properties.VALUES.inframanager.location.GetOrFail()
+
+
+def GetProject(args):
+  """Gets project resource from either argument flag or attribute.
+
+  Args:
+    args: The command-line arguments.
+
+  Returns:
+    The project string.
+  """
+  return args.project or properties.VALUES.core.project.GetOrFail()
+
+
+def GetAutoMigrationConfigName(project, location):
+  """Returns the name of the auto migration config."""
+  return f'projects/{project}/locations/{location}/autoMigrationConfig'
+
+
+def SetDisableAutoMigrationInRequest(ref, args, req):
+  """Sets fields in AutoMigrationConfig request to disable the config."""
+  del ref  # Unused.
+  messages = GetMessagesModule()
+  project = GetProject(args)
+  location = GetLocation(args)
+  config_name = GetAutoMigrationConfigName(project, location)
+  req.name = config_name
+  req.autoMigrationConfig = messages.AutoMigrationConfig(
+      name=config_name, autoMigrationEnabled=False
+  )
+  req.updateMask = 'auto_migration_enabled'
+  return req
+
+
+def SetGetAutoMigrationInRequest(ref, args, req):
+  """Sets fields in AutoMigrationConfig request to get the config."""
+  del ref  # Unused.
+  project = GetProject(args)
+  location = GetLocation(args)
+  req.name = GetAutoMigrationConfigName(project, location)
+  return req
+
+
+def SetEnableAutoMigrationInRequest(ref, args, req):
+  """Sets fields in AutoMigrationConfig request to enable the config."""
+  del ref  # Unused.
+  messages = GetMessagesModule()
+  project = GetProject(args)
+  location = GetLocation(args)
+  config_name = GetAutoMigrationConfigName(project, location)
+  req.name = config_name
+  req.autoMigrationConfig = messages.AutoMigrationConfig(
+      name=config_name, autoMigrationEnabled=True
+  )
+  req.updateMask = 'auto_migration_enabled'
+  return req

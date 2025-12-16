@@ -1510,7 +1510,23 @@ def AddInputPayloadFormatArgs(parser):
   )
 
 
-def AddRetryPolicyArgs(parser):
+def AddTriggerRetryPolicyArgs(parser):
+  """Adds arguments for the trigger's retry policy."""
+  retry_policy_group = parser.add_group(help="""
+The retry policy configuration for the trigger.
+Can only be set for Cloud Run destinations.
+""")
+  retry_policy_group.add_argument(
+      '--max-retry-attempts',
+      type=int,
+      help=(
+          'The maximum number of delivery attempts. '
+          'The only valid value is 1.'
+      ),
+  )
+
+
+def AddPipelineRetryPolicyArgs(parser):
   """Adds arguments for the pipeline's retry policy."""
   retry_policy_group = parser.add_group(help="""
 The retry policy configuration for the pipeline.
@@ -1522,8 +1538,8 @@ If the max-retry-delay and min-retry-delay are set to the same value, then the d
       '--max-retry-attempts',
       type=int,
       help=(
-          'The maximum number of retry attempts. If not set, the default value'
-          ' is 5.'
+          'The maximum number of delivery attempts. If not set, the default'
+          ' value is 5.'
       ),
   )
   retry_policy_group.add_argument(

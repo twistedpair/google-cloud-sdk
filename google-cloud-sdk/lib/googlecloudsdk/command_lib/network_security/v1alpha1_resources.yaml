@@ -66,3 +66,14 @@ projects_locations_mirroring_endpoints:
     attribute_name: mirroring_endpoint
     help: The mirroringEndpoint id of the {resource} resource.
   disable_auto_completers: false
+projects_none_networks:
+  name: network
+  plural_name: networks
+  collection: networksecurity.projects.networks
+  attributes:
+  - *project
+  - &network
+    parameter_name: networksId
+    attribute_name: network
+    help: The network id of the {resource} resource.
+  disable_auto_completers: true

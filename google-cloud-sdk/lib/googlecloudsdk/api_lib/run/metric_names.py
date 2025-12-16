@@ -114,6 +114,12 @@ CANCEL_EXECUTION = _SERVERLESS_PREFIX + 'cancel_execution'
 # Time to run a job
 RUN_JOB = _SERVERLESS_PREFIX + 'run_job'
 
+# Time to get an instance
+GET_INSTANCE = _SERVERLESS_PREFIX + 'get_instance'
+
+# Time to list instances
+LIST_INSTANCES = _SERVERLESS_PREFIX + 'list_instances'
+
 # Time to wait for an operation
 WAIT_OPERATION = _SERVERLESS_PREFIX + 'wait_operation'
 

@@ -489,6 +489,11 @@ class ComposeObjectRequest(proto.Message):
             Optional. The checksums of the complete
             object. This is validated against the combined
             checksums of the component objects.
+        delete_source_objects (bool):
+            Whether the source objects should be deleted
+            in the compose request.
+
+            This field is a member of `oneof`_ ``_delete_source_objects``.
     """
 
     class SourceObject(proto.Message):
@@ -579,6 +584,11 @@ class ComposeObjectRequest(proto.Message):
         proto.MESSAGE,
         number=10,
         message='ObjectChecksums',
+    )
+    delete_source_objects: bool = proto.Field(
+        proto.BOOL,
+        number=11,
+        optional=True,
     )
 
 

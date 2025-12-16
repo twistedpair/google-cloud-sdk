@@ -55,9 +55,9 @@ class AiplatformAgentsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -124,9 +124,9 @@ class AiplatformAppsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -252,9 +252,9 @@ class AiplatformCustomJobsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -321,9 +321,9 @@ class AiplatformDataLabelingJobsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -390,9 +390,9 @@ class AiplatformDatasetsAnnotationSpecsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -473,9 +473,9 @@ class AiplatformDatasetsDataItemsAnnotationsOperationsListRequest(_messages.Mess
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -542,9 +542,9 @@ class AiplatformDatasetsDataItemsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -759,9 +759,9 @@ class AiplatformDatasetsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -846,9 +846,9 @@ class AiplatformDatasetsSavedQueriesOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -915,9 +915,9 @@ class AiplatformDeploymentResourcePoolsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -984,9 +984,9 @@ class AiplatformEdgeDevicesOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -1135,9 +1135,9 @@ class AiplatformEndpointsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -1246,9 +1246,9 @@ class AiplatformEvaluationItemsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -1305,9 +1305,9 @@ class AiplatformEvaluationRunsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -1364,9 +1364,9 @@ class AiplatformEvaluationSetsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -1423,9 +1423,9 @@ class AiplatformEvaluationTasksOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -1492,9 +1492,9 @@ class AiplatformExampleStoresOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -1561,9 +1561,9 @@ class AiplatformExtensionControllersOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -1630,9 +1630,9 @@ class AiplatformExtensionsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -1689,9 +1689,9 @@ class AiplatformFeatureGroupsFeatureMonitorsOperationsListRequest(_messages.Mess
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -1748,9 +1748,9 @@ class AiplatformFeatureGroupsFeaturesOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -1807,9 +1807,9 @@ class AiplatformFeatureGroupsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -1867,9 +1867,9 @@ class AiplatformFeatureOnlineStoresFeatureViewsOperationsListRequest(_messages.M
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -1926,9 +1926,9 @@ class AiplatformFeatureOnlineStoresOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -1998,9 +1998,9 @@ class AiplatformFeaturestoresEntityTypesFeaturesOperationsListRequest(_messages.
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -2068,9 +2068,9 @@ class AiplatformFeaturestoresEntityTypesOperationsListRequest(_messages.Message)
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -2137,9 +2137,9 @@ class AiplatformFeaturestoresOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -2206,9 +2206,9 @@ class AiplatformHyperparameterTuningJobsOperationsListRequest(_messages.Message)
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -2275,9 +2275,9 @@ class AiplatformIndexEndpointsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -2344,9 +2344,9 @@ class AiplatformIndexesOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -2429,9 +2429,9 @@ class AiplatformMetadataStoresArtifactsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -2498,9 +2498,9 @@ class AiplatformMetadataStoresContextsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -2567,9 +2567,9 @@ class AiplatformMetadataStoresExecutionsOperationsListRequest(_messages.Message)
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -2636,9 +2636,9 @@ class AiplatformMetadataStoresOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -2705,9 +2705,9 @@ class AiplatformMigratableResourcesOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -2774,9 +2774,9 @@ class AiplatformModelDeploymentMonitoringJobsOperationsListRequest(_messages.Mes
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -2843,9 +2843,9 @@ class AiplatformModelMonitorsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -2912,9 +2912,9 @@ class AiplatformModelsEvaluationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -2981,9 +2981,9 @@ class AiplatformModelsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -3050,9 +3050,9 @@ class AiplatformNotebookExecutionJobsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -3119,9 +3119,9 @@ class AiplatformNotebookRuntimeTemplatesOperationsListRequest(_messages.Message)
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -3188,9 +3188,9 @@ class AiplatformNotebookRuntimesOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -3257,9 +3257,9 @@ class AiplatformOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -3326,9 +3326,9 @@ class AiplatformPersistentResourcesOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -3395,9 +3395,9 @@ class AiplatformPipelineJobsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -3512,9 +3512,9 @@ class AiplatformProjectsLocationsAgentsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -3581,9 +3581,9 @@ class AiplatformProjectsLocationsAppsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -3925,9 +3925,9 @@ class AiplatformProjectsLocationsCustomJobsOperationsListRequest(_messages.Messa
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -4085,9 +4085,9 @@ class AiplatformProjectsLocationsDataLabelingJobsOperationsListRequest(_messages
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -4176,9 +4176,9 @@ class AiplatformProjectsLocationsDatasetsAnnotationSpecsOperationsListRequest(_m
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -4323,9 +4323,9 @@ class AiplatformProjectsLocationsDatasetsDataItemsAnnotationsOperationsListReque
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -4420,9 +4420,9 @@ class AiplatformProjectsLocationsDatasetsDataItemsOperationsListRequest(_message
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -4671,9 +4671,9 @@ class AiplatformProjectsLocationsDatasetsOperationsListRequest(_messages.Message
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -4797,9 +4797,9 @@ class AiplatformProjectsLocationsDatasetsSavedQueriesOperationsListRequest(_mess
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -5065,9 +5065,9 @@ class AiplatformProjectsLocationsDeploymentResourcePoolsOperationsListRequest(_m
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -5176,9 +5176,9 @@ class AiplatformProjectsLocationsEdgeDevicesOperationsListRequest(_messages.Mess
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -5590,9 +5590,9 @@ class AiplatformProjectsLocationsEndpointsOperationsListRequest(_messages.Messag
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -5802,36 +5802,6 @@ class AiplatformProjectsLocationsEndpointsUpdateRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
-class AiplatformProjectsLocationsEvaluateDatasetRequest(_messages.Message):
-  r"""A AiplatformProjectsLocationsEvaluateDatasetRequest object.
-
-  Fields:
-    googleCloudAiplatformV1beta1EvaluateDatasetRequest: A
-      GoogleCloudAiplatformV1beta1EvaluateDatasetRequest resource to be passed
-      as the request body.
-    location: Required. The resource name of the Location to evaluate the
-      dataset. Format: `projects/{project}/locations/{location}`
-  """
-
-  googleCloudAiplatformV1beta1EvaluateDatasetRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1EvaluateDatasetRequest', 1)
-  location = _messages.StringField(2, required=True)
-
-
-class AiplatformProjectsLocationsEvaluateInstancesRequest(_messages.Message):
-  r"""A AiplatformProjectsLocationsEvaluateInstancesRequest object.
-
-  Fields:
-    googleCloudAiplatformV1beta1EvaluateInstancesRequest: A
-      GoogleCloudAiplatformV1beta1EvaluateInstancesRequest resource to be
-      passed as the request body.
-    location: Required. The resource name of the Location to evaluate the
-      instances. Format: `projects/{project}/locations/{location}`
-  """
-
-  googleCloudAiplatformV1beta1EvaluateInstancesRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1EvaluateInstancesRequest', 1)
-  location = _messages.StringField(2, required=True)
-
-
 class AiplatformProjectsLocationsEvaluationItemsCreateRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsEvaluationItemsCreateRequest object.
 
@@ -5928,9 +5898,9 @@ class AiplatformProjectsLocationsEvaluationItemsOperationsListRequest(_messages.
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -6069,9 +6039,9 @@ class AiplatformProjectsLocationsEvaluationRunsOperationsListRequest(_messages.M
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -6193,9 +6163,9 @@ class AiplatformProjectsLocationsEvaluationSetsOperationsListRequest(_messages.M
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -6273,9 +6243,9 @@ class AiplatformProjectsLocationsEvaluationTasksOperationsListRequest(_messages.
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -6431,9 +6401,9 @@ class AiplatformProjectsLocationsExampleStoresOperationsListRequest(_messages.Me
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -6571,9 +6541,9 @@ class AiplatformProjectsLocationsExtensionControllersOperationsListRequest(_mess
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -6717,9 +6687,9 @@ class AiplatformProjectsLocationsExtensionsOperationsListRequest(_messages.Messa
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -7002,9 +6972,9 @@ class AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsOperationsListReque
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -7224,9 +7194,9 @@ class AiplatformProjectsLocationsFeatureGroupsFeaturesOperationsListRequest(_mes
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -7387,9 +7357,9 @@ class AiplatformProjectsLocationsFeatureGroupsOperationsListRequest(_messages.Me
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -7767,9 +7737,9 @@ class AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsOperationsListRe
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -8019,9 +7989,9 @@ class AiplatformProjectsLocationsFeatureOnlineStoresOperationsListRequest(_messa
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -8419,9 +8389,9 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesOperationsListR
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -8628,9 +8598,9 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesOperationsListRequest(_
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -8899,9 +8869,9 @@ class AiplatformProjectsLocationsFeaturestoresOperationsListRequest(_messages.Me
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -9042,21 +9012,6 @@ class AiplatformProjectsLocationsFeaturestoresTestIamPermissionsRequest(_message
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
   resource = _messages.StringField(2, required=True)
-
-
-class AiplatformProjectsLocationsGenerateInstanceRubricsRequest(_messages.Message):
-  r"""A AiplatformProjectsLocationsGenerateInstanceRubricsRequest object.
-
-  Fields:
-    googleCloudAiplatformV1beta1GenerateInstanceRubricsRequest: A
-      GoogleCloudAiplatformV1beta1GenerateInstanceRubricsRequest resource to
-      be passed as the request body.
-    location: Required. The resource name of the Location to generate rubrics
-      from. Format: `projects/{project}/locations/{location}`
-  """
-
-  googleCloudAiplatformV1beta1GenerateInstanceRubricsRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1GenerateInstanceRubricsRequest', 1)
-  location = _messages.StringField(2, required=True)
 
 
 class AiplatformProjectsLocationsGenerateSyntheticDataRequest(_messages.Message):
@@ -9233,9 +9188,9 @@ class AiplatformProjectsLocationsHyperparameterTuningJobsOperationsListRequest(_
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -9426,9 +9381,9 @@ class AiplatformProjectsLocationsIndexEndpointsOperationsListRequest(_messages.M
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -9617,9 +9572,9 @@ class AiplatformProjectsLocationsIndexesOperationsListRequest(_messages.Message)
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -9868,9 +9823,9 @@ class AiplatformProjectsLocationsMetadataStoresArtifactsOperationsListRequest(_m
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -10158,9 +10113,9 @@ class AiplatformProjectsLocationsMetadataStoresContextsOperationsListRequest(_me
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -10465,9 +10420,9 @@ class AiplatformProjectsLocationsMetadataStoresExecutionsOperationsListRequest(_
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -10684,9 +10639,9 @@ class AiplatformProjectsLocationsMetadataStoresOperationsListRequest(_messages.M
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -10773,9 +10728,9 @@ class AiplatformProjectsLocationsMigratableResourcesOperationsListRequest(_messa
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -10936,9 +10891,9 @@ class AiplatformProjectsLocationsModelDeploymentMonitoringJobsOperationsListRequ
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -11229,9 +11184,9 @@ class AiplatformProjectsLocationsModelMonitorsOperationsListRequest(_messages.Me
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -11440,9 +11395,9 @@ class AiplatformProjectsLocationsModelsEvaluationsOperationsListRequest(_message
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -11715,9 +11670,9 @@ class AiplatformProjectsLocationsModelsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -12109,9 +12064,9 @@ class AiplatformProjectsLocationsNotebookExecutionJobsOperationsListRequest(_mes
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -12317,9 +12272,9 @@ class AiplatformProjectsLocationsNotebookRuntimeTemplatesOperationsListRequest(_
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -12359,8 +12314,12 @@ class AiplatformProjectsLocationsNotebookRuntimeTemplatesPatchRequest(_messages.
     name: The resource name of the NotebookRuntimeTemplate.
     updateMask: Required. The update mask applies to the resource. For the
       `FieldMask` definition, see google.protobuf.FieldMask. Input format:
-      `{paths: "${updated_filed}"}` Updatable fields: *
-      `encryption_spec.kms_key_name`
+      `{paths: "${updated_field}"}` Updatable fields: *
+      `encryption_spec.kms_key_name` * `display_name` *
+      `software_config.post_startup_script_config.post_startup_script` *
+      `software_config.post_startup_script_config.post_startup_script_url` * `
+      software_config.post_startup_script_config.post_startup_script_behavior`
+      * `software_config.env` * `software_config.colab_image.release_name`
   """
 
   googleCloudAiplatformV1beta1NotebookRuntimeTemplate = _messages.MessageField('GoogleCloudAiplatformV1beta1NotebookRuntimeTemplate', 1)
@@ -12560,9 +12519,9 @@ class AiplatformProjectsLocationsNotebookRuntimesOperationsListRequest(_messages
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -12696,9 +12655,9 @@ class AiplatformProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -12831,9 +12790,9 @@ class AiplatformProjectsLocationsPersistentResourcesOperationsListRequest(_messa
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -13075,9 +13034,9 @@ class AiplatformProjectsLocationsPipelineJobsOperationsListRequest(_messages.Mes
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -13471,9 +13430,9 @@ class AiplatformProjectsLocationsRagCorporaOperationsListRequest(_messages.Messa
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -13605,9 +13564,9 @@ class AiplatformProjectsLocationsRagCorporaRagFilesOperationsListRequest(_messag
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -13678,9 +13637,9 @@ class AiplatformProjectsLocationsRagEngineConfigOperationsListRequest(_messages.
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -13972,9 +13931,9 @@ class AiplatformProjectsLocationsReasoningEnginesMemoriesOperationsListRequest(_
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -14152,9 +14111,9 @@ class AiplatformProjectsLocationsReasoningEnginesOperationsListRequest(_messages
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -14348,9 +14307,9 @@ class AiplatformProjectsLocationsReasoningEnginesSandboxEnvironmentsOperationsLi
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -14524,9 +14483,9 @@ class AiplatformProjectsLocationsReasoningEnginesSessionsOperationsListRequest(_
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -14745,9 +14704,9 @@ class AiplatformProjectsLocationsSchedulesOperationsListRequest(_messages.Messag
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -14930,9 +14889,9 @@ class AiplatformProjectsLocationsSolversOperationsListRequest(_messages.Message)
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -15050,9 +15009,9 @@ class AiplatformProjectsLocationsSpecialistPoolsOperationsListRequest(_messages.
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -15204,9 +15163,9 @@ class AiplatformProjectsLocationsStudiesOperationsListRequest(_messages.Message)
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -15391,9 +15350,9 @@ class AiplatformProjectsLocationsStudiesTrialsOperationsListRequest(_messages.Me
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -15638,9 +15597,9 @@ class AiplatformProjectsLocationsTensorboardsExperimentsOperationsListRequest(_m
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -15834,9 +15793,9 @@ class AiplatformProjectsLocationsTensorboardsExperimentsRunsOperationsListReques
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -16031,9 +15990,9 @@ class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesOperations
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -16217,9 +16176,9 @@ class AiplatformProjectsLocationsTensorboardsOperationsListRequest(_messages.Mes
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -16421,9 +16380,9 @@ class AiplatformProjectsLocationsTrainingPipelinesOperationsListRequest(_message
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -16873,9 +16832,9 @@ class AiplatformRagCorporaOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -16942,9 +16901,9 @@ class AiplatformRagCorporaRagFilesOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -17011,9 +16970,9 @@ class AiplatformRagEngineConfigOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -17285,9 +17244,9 @@ class AiplatformReasoningEnginesMemoriesOperationsListRequest(_messages.Message)
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -17452,9 +17411,9 @@ class AiplatformReasoningEnginesOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -17637,9 +17596,9 @@ class AiplatformReasoningEnginesSandboxEnvironmentsOperationsListRequest(_messag
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -17802,9 +17761,9 @@ class AiplatformReasoningEnginesSessionsOperationsListRequest(_messages.Message)
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -17905,9 +17864,9 @@ class AiplatformSchedulesOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -17964,9 +17923,9 @@ class AiplatformSolversOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -18018,9 +17977,9 @@ class AiplatformSpecialistPoolsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -18087,9 +18046,9 @@ class AiplatformStudiesOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -18156,9 +18115,9 @@ class AiplatformStudiesTrialsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -18225,9 +18184,9 @@ class AiplatformTensorboardsExperimentsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -18294,9 +18253,9 @@ class AiplatformTensorboardsExperimentsRunsOperationsListRequest(_messages.Messa
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -18367,9 +18326,9 @@ class AiplatformTensorboardsExperimentsRunsTimeSeriesOperationsListRequest(_mess
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -18437,9 +18396,9 @@ class AiplatformTensorboardsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -18506,9 +18465,9 @@ class AiplatformTrainingPipelinesOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -20220,9 +20179,9 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJob(_messages.Message):
     model: The name of the Model resource that produces the predictions via
       this job, must share the same ancestor Location. Starting this job has
       no impact on any existing deployments of the Model and their resources.
-      Exactly one of model and unmanaged_container_model must be set. The
-      model resource name may contain version id or version alias to specify
-      the version. Example:
+      Exactly one of model, unmanaged_container_model, or endpoint must be
+      set. The model resource name may contain version id or version alias to
+      specify the version. Example:
       `projects/{project}/locations/{location}/models/{model}@2` or
       `projects/{project}/locations/{location}/models/{model}@golden` if no
       version is specified, the default version will be deployed. The model
@@ -20268,7 +20227,7 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJob(_messages.Message):
     state: Output only. The detailed state of the job.
     unmanagedContainerModel: Contains model information necessary to perform
       batch prediction without requiring uploading to model registry. Exactly
-      one of model and unmanaged_container_model must be set.
+      one of model, unmanaged_container_model, or endpoint must be set.
     updateTime: Output only. Time when the BatchPredictionJob was most
       recently updated.
   """
@@ -23999,6 +23958,7 @@ class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
       Model.explanation_spec is not populated, all fields of the
       explanation_spec will be used for the explanation configuration.
     fasterDeploymentConfig: Configuration for faster model deployment.
+    fullFineTunedResources: Optional. Resources for a full fine tuned model.
     gdcConnectedModel: GDC pretrained / Gemini model name. The model name is a
       plain model name, e.g. gemini-1.5-flash-002.
     gdcGgsModel: Reserved for future use.
@@ -24071,18 +24031,19 @@ class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
   enableContainerLogging = _messages.BooleanField(9)
   explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationSpec', 10)
   fasterDeploymentConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1FasterDeploymentConfig', 11)
-  gdcConnectedModel = _messages.StringField(12)
-  gdcGgsModel = _messages.StringField(13)
-  id = _messages.StringField(14)
-  model = _messages.StringField(15)
-  modelVersionId = _messages.StringField(16)
-  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1beta1PrivateEndpoints', 17)
-  rolloutOptions = _messages.MessageField('GoogleCloudAiplatformV1beta1RolloutOptions', 18)
-  serviceAccount = _messages.StringField(19)
-  sharedResources = _messages.StringField(20)
-  speculativeDecodingSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1SpeculativeDecodingSpec', 21)
-  status = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployedModelStatus', 22)
-  systemLabels = _messages.MessageField('SystemLabelsValue', 23)
+  fullFineTunedResources = _messages.MessageField('GoogleCloudAiplatformV1beta1FullFineTunedResources', 12)
+  gdcConnectedModel = _messages.StringField(13)
+  gdcGgsModel = _messages.StringField(14)
+  id = _messages.StringField(15)
+  model = _messages.StringField(16)
+  modelVersionId = _messages.StringField(17)
+  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1beta1PrivateEndpoints', 18)
+  rolloutOptions = _messages.MessageField('GoogleCloudAiplatformV1beta1RolloutOptions', 19)
+  serviceAccount = _messages.StringField(20)
+  sharedResources = _messages.StringField(21)
+  speculativeDecodingSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1SpeculativeDecodingSpec', 22)
+  status = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployedModelStatus', 23)
+  systemLabels = _messages.MessageField('SystemLabelsValue', 24)
 
 
 class GoogleCloudAiplatformV1beta1DeployedModelRef(_messages.Message):
@@ -24267,7 +24228,8 @@ class GoogleCloudAiplatformV1beta1DiskSpec(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1DistillationDataStats(_messages.Message):
-  r"""Statistics computed for datasets used for distillation.
+  r"""Statistics for distillation prompt dataset. These statistics do not
+  include the responses sampled from the teacher model.
 
   Fields:
     trainingDatasetStats: Output only. Statistics computed for the training
@@ -24952,14 +24914,17 @@ class GoogleCloudAiplatformV1beta1EvaluateDatasetRequest(_messages.Message):
       only publisher Gemini models are supported. Format: `projects/{PROJECT}/
       locations/{LOCATION}/publishers/google/models/{MODEL}.`
     dataset: Required. The dataset used for evaluation.
+    location: Required. The resource name of the Location to evaluate the
+      dataset. Format: `projects/{project}/locations/{location}`
     metrics: Required. The metrics used for evaluation.
     outputConfig: Required. Config for evaluation output.
   """
 
   autoraterConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1AutoraterConfig', 1)
   dataset = _messages.MessageField('GoogleCloudAiplatformV1beta1EvaluationDataset', 2)
-  metrics = _messages.MessageField('GoogleCloudAiplatformV1beta1Metric', 3, repeated=True)
-  outputConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1OutputConfig', 4)
+  location = _messages.StringField(3)
+  metrics = _messages.MessageField('GoogleCloudAiplatformV1beta1Metric', 4, repeated=True)
+  outputConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1OutputConfig', 5)
 
 
 class GoogleCloudAiplatformV1beta1EvaluateDatasetResponse(_messages.Message):
@@ -25011,6 +24976,8 @@ class GoogleCloudAiplatformV1beta1EvaluateInstancesRequest(_messages.Message):
     fulfillmentInput: Input for fulfillment metric.
     groundednessInput: Input for groundedness metric.
     instance: The instance to be evaluated.
+    location: Required. The resource name of the Location to evaluate the
+      instances. Format: `projects/{project}/locations/{location}`
     metrics: The metrics used for evaluation. Currently, we only support
       evaluating a single metric. If multiple metrics are provided, only the
       first one will be evaluated.
@@ -25059,32 +25026,33 @@ class GoogleCloudAiplatformV1beta1EvaluateInstancesRequest(_messages.Message):
   fulfillmentInput = _messages.MessageField('GoogleCloudAiplatformV1beta1FulfillmentInput', 7)
   groundednessInput = _messages.MessageField('GoogleCloudAiplatformV1beta1GroundednessInput', 8)
   instance = _messages.MessageField('GoogleCloudAiplatformV1beta1EvaluationInstance', 9)
-  metrics = _messages.MessageField('GoogleCloudAiplatformV1beta1Metric', 10, repeated=True)
-  metricxInput = _messages.MessageField('GoogleCloudAiplatformV1beta1MetricxInput', 11)
-  pairwiseMetricInput = _messages.MessageField('GoogleCloudAiplatformV1beta1PairwiseMetricInput', 12)
-  pairwiseQuestionAnsweringQualityInput = _messages.MessageField('GoogleCloudAiplatformV1beta1PairwiseQuestionAnsweringQualityInput', 13)
-  pairwiseSummarizationQualityInput = _messages.MessageField('GoogleCloudAiplatformV1beta1PairwiseSummarizationQualityInput', 14)
-  pointwiseMetricInput = _messages.MessageField('GoogleCloudAiplatformV1beta1PointwiseMetricInput', 15)
-  questionAnsweringCorrectnessInput = _messages.MessageField('GoogleCloudAiplatformV1beta1QuestionAnsweringCorrectnessInput', 16)
-  questionAnsweringHelpfulnessInput = _messages.MessageField('GoogleCloudAiplatformV1beta1QuestionAnsweringHelpfulnessInput', 17)
-  questionAnsweringQualityInput = _messages.MessageField('GoogleCloudAiplatformV1beta1QuestionAnsweringQualityInput', 18)
-  questionAnsweringRelevanceInput = _messages.MessageField('GoogleCloudAiplatformV1beta1QuestionAnsweringRelevanceInput', 19)
-  rougeInput = _messages.MessageField('GoogleCloudAiplatformV1beta1RougeInput', 20)
-  rubricBasedInstructionFollowingInput = _messages.MessageField('GoogleCloudAiplatformV1beta1RubricBasedInstructionFollowingInput', 21)
-  safetyInput = _messages.MessageField('GoogleCloudAiplatformV1beta1SafetyInput', 22)
-  summarizationHelpfulnessInput = _messages.MessageField('GoogleCloudAiplatformV1beta1SummarizationHelpfulnessInput', 23)
-  summarizationQualityInput = _messages.MessageField('GoogleCloudAiplatformV1beta1SummarizationQualityInput', 24)
-  summarizationVerbosityInput = _messages.MessageField('GoogleCloudAiplatformV1beta1SummarizationVerbosityInput', 25)
-  toolCallValidInput = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolCallValidInput', 26)
-  toolNameMatchInput = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolNameMatchInput', 27)
-  toolParameterKeyMatchInput = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolParameterKeyMatchInput', 28)
-  toolParameterKvMatchInput = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolParameterKVMatchInput', 29)
-  trajectoryAnyOrderMatchInput = _messages.MessageField('GoogleCloudAiplatformV1beta1TrajectoryAnyOrderMatchInput', 30)
-  trajectoryExactMatchInput = _messages.MessageField('GoogleCloudAiplatformV1beta1TrajectoryExactMatchInput', 31)
-  trajectoryInOrderMatchInput = _messages.MessageField('GoogleCloudAiplatformV1beta1TrajectoryInOrderMatchInput', 32)
-  trajectoryPrecisionInput = _messages.MessageField('GoogleCloudAiplatformV1beta1TrajectoryPrecisionInput', 33)
-  trajectoryRecallInput = _messages.MessageField('GoogleCloudAiplatformV1beta1TrajectoryRecallInput', 34)
-  trajectorySingleToolUseInput = _messages.MessageField('GoogleCloudAiplatformV1beta1TrajectorySingleToolUseInput', 35)
+  location = _messages.StringField(10)
+  metrics = _messages.MessageField('GoogleCloudAiplatformV1beta1Metric', 11, repeated=True)
+  metricxInput = _messages.MessageField('GoogleCloudAiplatformV1beta1MetricxInput', 12)
+  pairwiseMetricInput = _messages.MessageField('GoogleCloudAiplatformV1beta1PairwiseMetricInput', 13)
+  pairwiseQuestionAnsweringQualityInput = _messages.MessageField('GoogleCloudAiplatformV1beta1PairwiseQuestionAnsweringQualityInput', 14)
+  pairwiseSummarizationQualityInput = _messages.MessageField('GoogleCloudAiplatformV1beta1PairwiseSummarizationQualityInput', 15)
+  pointwiseMetricInput = _messages.MessageField('GoogleCloudAiplatformV1beta1PointwiseMetricInput', 16)
+  questionAnsweringCorrectnessInput = _messages.MessageField('GoogleCloudAiplatformV1beta1QuestionAnsweringCorrectnessInput', 17)
+  questionAnsweringHelpfulnessInput = _messages.MessageField('GoogleCloudAiplatformV1beta1QuestionAnsweringHelpfulnessInput', 18)
+  questionAnsweringQualityInput = _messages.MessageField('GoogleCloudAiplatformV1beta1QuestionAnsweringQualityInput', 19)
+  questionAnsweringRelevanceInput = _messages.MessageField('GoogleCloudAiplatformV1beta1QuestionAnsweringRelevanceInput', 20)
+  rougeInput = _messages.MessageField('GoogleCloudAiplatformV1beta1RougeInput', 21)
+  rubricBasedInstructionFollowingInput = _messages.MessageField('GoogleCloudAiplatformV1beta1RubricBasedInstructionFollowingInput', 22)
+  safetyInput = _messages.MessageField('GoogleCloudAiplatformV1beta1SafetyInput', 23)
+  summarizationHelpfulnessInput = _messages.MessageField('GoogleCloudAiplatformV1beta1SummarizationHelpfulnessInput', 24)
+  summarizationQualityInput = _messages.MessageField('GoogleCloudAiplatformV1beta1SummarizationQualityInput', 25)
+  summarizationVerbosityInput = _messages.MessageField('GoogleCloudAiplatformV1beta1SummarizationVerbosityInput', 26)
+  toolCallValidInput = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolCallValidInput', 27)
+  toolNameMatchInput = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolNameMatchInput', 28)
+  toolParameterKeyMatchInput = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolParameterKeyMatchInput', 29)
+  toolParameterKvMatchInput = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolParameterKVMatchInput', 30)
+  trajectoryAnyOrderMatchInput = _messages.MessageField('GoogleCloudAiplatformV1beta1TrajectoryAnyOrderMatchInput', 31)
+  trajectoryExactMatchInput = _messages.MessageField('GoogleCloudAiplatformV1beta1TrajectoryExactMatchInput', 32)
+  trajectoryInOrderMatchInput = _messages.MessageField('GoogleCloudAiplatformV1beta1TrajectoryInOrderMatchInput', 33)
+  trajectoryPrecisionInput = _messages.MessageField('GoogleCloudAiplatformV1beta1TrajectoryPrecisionInput', 34)
+  trajectoryRecallInput = _messages.MessageField('GoogleCloudAiplatformV1beta1TrajectoryRecallInput', 35)
+  trajectorySingleToolUseInput = _messages.MessageField('GoogleCloudAiplatformV1beta1TrajectorySingleToolUseInput', 36)
 
 
 class GoogleCloudAiplatformV1beta1EvaluateInstancesResponse(_messages.Message):
@@ -28890,11 +28858,15 @@ class GoogleCloudAiplatformV1beta1FeatureOnlineStoreBigtable(_messages.Message):
       only.
     enableDirectBigtableAccess: Optional. It true, enable direct access to the
       Bigtable instance.
+    zone: Optional. The zone where the underlying Bigtable cluster for the
+      primary Bigtable instance will be provisioned. Only the zone must be
+      provided. For example, only "us-central1-a" should be provided.
   """
 
   autoScaling = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureOnlineStoreBigtableAutoScaling', 1)
   bigtableMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureOnlineStoreBigtableBigtableMetadata', 2)
   enableDirectBigtableAccess = _messages.BooleanField(3)
+  zone = _messages.StringField(4)
 
 
 class GoogleCloudAiplatformV1beta1FeatureOnlineStoreBigtableAutoScaling(_messages.Message):
@@ -30538,6 +30510,40 @@ class GoogleCloudAiplatformV1beta1FulfillmentSpec(_messages.Message):
   version = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudAiplatformV1beta1FullFineTunedResources(_messages.Message):
+  r"""Resources for an fft model.
+
+  Enums:
+    DeploymentTypeValueValuesEnum: Required. The kind of deployment.
+
+  Fields:
+    deploymentType: Required. The kind of deployment.
+    modelInferenceUnitCount: Optional. The number of model inference units to
+      use for this deployment. This can only be specified for
+      DEPLOYMENT_TYPE_PROD. The following table lists the number of model
+      inference units for different model types: * Gemini 2.5 Flash *
+      Foundation FMIU: 25 * Expansion FMIU: 4 * Gemini 2.5 Pro * Foundation
+      FMIU: 32 * Expansion FMIU: 16 * Veo 3.0 (undistilled) * Foundation FMIU:
+      63 * Expansion FMIU: 7 * Veo 3.0 (distilled) * Foundation FMIU: 30 *
+      Expansion FMIU: 10
+  """
+
+  class DeploymentTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The kind of deployment.
+
+    Values:
+      DEPLOYMENT_TYPE_UNSPECIFIED: Unspecified deployment type.
+      DEPLOYMENT_TYPE_EVAL: Eval deployment type.
+      DEPLOYMENT_TYPE_PROD: Prod deployment type.
+    """
+    DEPLOYMENT_TYPE_UNSPECIFIED = 0
+    DEPLOYMENT_TYPE_EVAL = 1
+    DEPLOYMENT_TYPE_PROD = 2
+
+  deploymentType = _messages.EnumField('DeploymentTypeValueValuesEnum', 1)
+  modelInferenceUnitCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class GoogleCloudAiplatformV1beta1FullFineTuningSpec(_messages.Message):
   r"""Tuning Spec for Full Fine Tuning.
 
@@ -30573,6 +30579,12 @@ class GoogleCloudAiplatformV1beta1FunctionCall(_messages.Message):
       `id`.
     name: Optional. The name of the function to call. Matches
       [FunctionDeclaration.name].
+    partialArgs: Optional. The partial argument value of the function call. If
+      provided, represents the arguments/fields that are streamed
+      incrementally.
+    willContinue: Optional. Whether this is the last part of the FunctionCall.
+      If true, another partial message for the current FunctionCall is
+      expected to follow.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -30603,6 +30615,8 @@ class GoogleCloudAiplatformV1beta1FunctionCall(_messages.Message):
   args = _messages.MessageField('ArgsValue', 1)
   id = _messages.StringField(2)
   name = _messages.StringField(3)
+  partialArgs = _messages.MessageField('GoogleCloudAiplatformV1beta1PartialArg', 4, repeated=True)
+  willContinue = _messages.BooleanField(5)
 
 
 class GoogleCloudAiplatformV1beta1FunctionCallingConfig(_messages.Message):
@@ -30617,6 +30631,10 @@ class GoogleCloudAiplatformV1beta1FunctionCallingConfig(_messages.Message):
       With mode set to ANY, model will predict a function call from the set of
       function names provided.
     mode: Optional. Function calling mode.
+    streamFunctionCallArguments: Optional. When set to true, arguments of a
+      single function call will be streamed out in multiple
+      parts/contents/responses. Partial parameter results will be returned in
+      the [FunctionCall.partial_args] field.
   """
 
   class ModeValueValuesEnum(_messages.Enum):
@@ -30648,6 +30666,7 @@ class GoogleCloudAiplatformV1beta1FunctionCallingConfig(_messages.Message):
 
   allowedFunctionNames = _messages.StringField(1, repeated=True)
   mode = _messages.EnumField('ModeValueValuesEnum', 2)
+  streamFunctionCallArguments = _messages.BooleanField(3)
 
 
 class GoogleCloudAiplatformV1beta1FunctionDeclaration(_messages.Message):
@@ -30661,8 +30680,8 @@ class GoogleCloudAiplatformV1beta1FunctionDeclaration(_messages.Message):
     description: Optional. Description and purpose of the function. Model uses
       it to decide how and whether to call the function.
     name: Required. The name of the function to call. Must start with a letter
-      or an underscore. Must be a-z, A-Z, 0-9, or contain underscores, dots
-      and dashes, with a maximum length of 64.
+      or an underscore. Must be a-z, A-Z, 0-9, or contain underscores, dots,
+      colons and dashes, with a maximum length of 64.
     parameters: Optional. Describes the parameters to this function in JSON
       Schema Object format. Reflects the Open API 3.03 Parameter Object.
       string Key: the name of the parameter. Parameter names are case
@@ -31325,6 +31344,8 @@ class GoogleCloudAiplatformV1beta1GenerateInstanceRubricsRequest(_messages.Messa
     contents: Required. The prompt to generate rubrics from. For single-turn
       queries, this is a single instance. For multi-turn queries, this is a
       repeated field that contains conversation history + latest request.
+    location: Required. The resource name of the Location to generate rubrics
+      from. Format: `projects/{project}/locations/{location}`
     predefinedRubricGenerationSpec: Optional. Specification for using the
       rubric generation configs of a pre-defined metric, e.g.
       "generic_quality_v1" and "instruction_following_v1". Some of the configs
@@ -31337,8 +31358,9 @@ class GoogleCloudAiplatformV1beta1GenerateInstanceRubricsRequest(_messages.Messa
 
   agentConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1EvaluationInstanceAgentConfig', 1)
   contents = _messages.MessageField('GoogleCloudAiplatformV1beta1Content', 2, repeated=True)
-  predefinedRubricGenerationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1PredefinedMetricSpec', 3)
-  rubricGenerationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1RubricGenerationSpec', 4)
+  location = _messages.StringField(3)
+  predefinedRubricGenerationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1PredefinedMetricSpec', 4)
+  rubricGenerationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1RubricGenerationSpec', 5)
 
 
 class GoogleCloudAiplatformV1beta1GenerateInstanceRubricsResponse(_messages.Message):
@@ -31850,6 +31872,10 @@ class GoogleCloudAiplatformV1beta1GenerationConfigThinkingConfig(_messages.Messa
   This allows the model to reason about the task, plan its approach, and
   execute the plan to generate a high-quality response.
 
+  Enums:
+    ThinkingLevelValueValuesEnum: Optional. The number of thoughts tokens that
+      the model should generate.
+
   Fields:
     includeThoughts: Optional. If true, the model will include its thoughts in
       the response. "Thoughts" are the intermediate steps the model takes to
@@ -31860,10 +31886,26 @@ class GoogleCloudAiplatformV1beta1GenerationConfigThinkingConfig(_messages.Messa
       process. The model will make a best effort to stay within this budget.
       This can be used to control the trade-off between response quality and
       latency.
+    thinkingLevel: Optional. The number of thoughts tokens that the model
+      should generate.
   """
+
+  class ThinkingLevelValueValuesEnum(_messages.Enum):
+    r"""Optional. The number of thoughts tokens that the model should
+    generate.
+
+    Values:
+      THINKING_LEVEL_UNSPECIFIED: Unspecified thinking level.
+      LOW: Low thinking level.
+      HIGH: High thinking level.
+    """
+    THINKING_LEVEL_UNSPECIFIED = 0
+    LOW = 1
+    HIGH = 2
 
   includeThoughts = _messages.BooleanField(1)
   thinkingBudget = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  thinkingLevel = _messages.EnumField('ThinkingLevelValueValuesEnum', 3)
 
 
 class GoogleCloudAiplatformV1beta1GenericOperationMetadata(_messages.Message):
@@ -32367,6 +32409,9 @@ class GoogleCloudAiplatformV1beta1ImageConfig(_messages.Message):
       "4:3" "4:5", "5:4" "9:16", "16:9" "21:9"
     imageOutputOptions: Optional. The image output format for generated
       images.
+    imageSize: Optional. Specifies the size of generated images. Supported
+      values are `1K`, `2K`, `4K`. If not specified, the model will use
+      default value `1K`.
     personGeneration: Optional. Controls whether the model can generate
       people.
   """
@@ -32390,7 +32435,8 @@ class GoogleCloudAiplatformV1beta1ImageConfig(_messages.Message):
 
   aspectRatio = _messages.StringField(1)
   imageOutputOptions = _messages.MessageField('GoogleCloudAiplatformV1beta1ImageConfigImageOutputOptions', 2)
-  personGeneration = _messages.EnumField('PersonGenerationValueValuesEnum', 3)
+  imageSize = _messages.StringField(3)
+  personGeneration = _messages.EnumField('PersonGenerationValueValuesEnum', 4)
 
 
 class GoogleCloudAiplatformV1beta1ImageConfigImageOutputOptions(_messages.Message):
@@ -34644,7 +34690,22 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
       may be attached to the machine as per accelerator_count.
 
   Fields:
-    acceleratorCount: The number of accelerators to attach to the machine.
+    acceleratorCount: The number of accelerators to attach to the machine. For
+      accelerator optimized machine types
+      (https://cloud.google.com/compute/docs/accelerator-optimized-machines),
+      One may set the accelerator_count from 1 to N for machine with N GPUs.
+      If accelerator_count is less than or equal to N / 2, Vertex will co-
+      schedule the replicas of the model into the same VM to save cost. For
+      example, if the machine type is a3-highgpu-8g, which has 8 H100 GPUs,
+      one can set accelerator_count to 1 to 8. If accelerator_count is 1, 2,
+      3, or 4, Vertex will co-schedule 8, 4, 2, or 2 replicas of the model
+      into the same VM to save cost. When co-scheduling, CPU, memory and
+      storage on the VM will be distributed to replicas on the VM. For
+      example, one can expect a co-scheduled replica requesting 2 GPUs out of
+      a 8-GPU VM will receive 25% of the CPU, memory and storage of the VM.
+      Note that the feature is not compatible with multihost_gpu_node_count.
+      When multihost_gpu_node_count is set, the co-scheduling will not be
+      enabled.
     acceleratorType: Immutable. The type of accelerator(s) that may be
       attached to the machine as per accelerator_count.
     gpuPartitionSize: Optional. Immutable. The Nvidia GPU partition size. When
@@ -34664,6 +34725,10 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
       compute#machine-types). For DeployedModel this field is optional, and
       the default value is `n1-standard-2`. For BatchPredictionJob or as part
       of WorkerPoolSpec this field is required.
+    minGpuDriverVersion: Optional. Immutable. The minimum GPU driver version
+      that this machine requires. For example, "535.104.06". If not specified,
+      the default GPU driver version will be used by the underlying
+      infrastructure.
     multihostGpuNodeCount: Optional. Immutable. The number of nodes per
       replica for multihost GPU deployments.
     reservationAffinity: Optional. Immutable. Configuration controlling how
@@ -34723,9 +34788,10 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
   gpuPartitionSize = _messages.StringField(3)
   machineType = _messages.StringField(4)
-  multihostGpuNodeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  reservationAffinity = _messages.MessageField('GoogleCloudAiplatformV1beta1ReservationAffinity', 6)
-  tpuTopology = _messages.StringField(7)
+  minGpuDriverVersion = _messages.StringField(5)
+  multihostGpuNodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  reservationAffinity = _messages.MessageField('GoogleCloudAiplatformV1beta1ReservationAffinity', 7)
+  tpuTopology = _messages.StringField(8)
 
 
 class GoogleCloudAiplatformV1beta1ManualBatchTuningParameters(_messages.Message):
@@ -39390,26 +39456,34 @@ class GoogleCloudAiplatformV1beta1OptimizePromptRequest(_messages.Message):
   r"""Request message for GenAiTuningService.OptimizePrompt.
 
   Enums:
-    OptimizationTargetValueValuesEnum: Optional. The target model to optimize
-      the prompt for.
+    OptimizationTargetValueValuesEnum: Optional. The optimization strategy for
+      prompt optimization.
 
   Fields:
     content: Required. The content to optimize.
-    optimizationTarget: Optional. The target model to optimize the prompt for.
+    optimizationTarget: Optional. The optimization strategy for prompt
+      optimization.
   """
 
   class OptimizationTargetValueValuesEnum(_messages.Enum):
-    r"""Optional. The target model to optimize the prompt for.
+    r"""Optional. The optimization strategy for prompt optimization.
 
     Values:
       OPTIMIZATION_TARGET_UNSPECIFIED: Unspecified optimization target.
         Default to OPTIMIZATION_TARGET_GENERAL.
-      OPTIMIZATION_TARGET_GENERAL: Optimize the prompt for quality.
+      OPTIMIZATION_TARGET_GENERAL: Optimize the prompt for quality using zero-
+        shot.
       OPTIMIZATION_TARGET_GEMINI_NANO: Optimize the prompt for Gemini Nano.
+      OPTIMIZATION_TARGET_FEW_SHOT_RUBRICS: Optimize the prompt using few-shot
+        rubrics.
+      OPTIMIZATION_TARGET_FEW_SHOT_TARGET_RESPONSE: Optimize the prompt using
+        few-shot target response.
     """
     OPTIMIZATION_TARGET_UNSPECIFIED = 0
     OPTIMIZATION_TARGET_GENERAL = 1
     OPTIMIZATION_TARGET_GEMINI_NANO = 2
+    OPTIMIZATION_TARGET_FEW_SHOT_RUBRICS = 3
+    OPTIMIZATION_TARGET_FEW_SHOT_TARGET_RESPONSE = 4
 
   content = _messages.MessageField('GoogleCloudAiplatformV1beta1Content', 1)
   optimizationTarget = _messages.EnumField('OptimizationTargetValueValuesEnum', 2)
@@ -39792,6 +39866,8 @@ class GoogleCloudAiplatformV1beta1Part(_messages.Message):
       provide the model with the result of a function call that it predicted.
     inlineData: Optional. The inline data content of the part. This can be
       used to include images, audio, or video in a request.
+    mediaResolution: per part media resolution. Media resolution for the input
+      media.
     text: Optional. The text content of the part.
     thought: Optional. Indicates whether the `part` represents the model's
       thought process or reasoning.
@@ -39807,10 +39883,72 @@ class GoogleCloudAiplatformV1beta1Part(_messages.Message):
   functionCall = _messages.MessageField('GoogleCloudAiplatformV1beta1FunctionCall', 4)
   functionResponse = _messages.MessageField('GoogleCloudAiplatformV1beta1FunctionResponse', 5)
   inlineData = _messages.MessageField('GoogleCloudAiplatformV1beta1Blob', 6)
-  text = _messages.StringField(7)
-  thought = _messages.BooleanField(8)
-  thoughtSignature = _messages.BytesField(9)
-  videoMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1VideoMetadata', 10)
+  mediaResolution = _messages.MessageField('GoogleCloudAiplatformV1beta1PartMediaResolution', 7)
+  text = _messages.StringField(8)
+  thought = _messages.BooleanField(9)
+  thoughtSignature = _messages.BytesField(10)
+  videoMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1VideoMetadata', 11)
+
+
+class GoogleCloudAiplatformV1beta1PartMediaResolution(_messages.Message):
+  r"""per part media resolution. Media resolution for the input media.
+
+  Enums:
+    LevelValueValuesEnum: The tokenization quality used for given media.
+
+  Fields:
+    level: The tokenization quality used for given media.
+  """
+
+  class LevelValueValuesEnum(_messages.Enum):
+    r"""The tokenization quality used for given media.
+
+    Values:
+      MEDIA_RESOLUTION_UNSPECIFIED: Media resolution has not been set.
+      MEDIA_RESOLUTION_LOW: Media resolution set to low.
+      MEDIA_RESOLUTION_MEDIUM: Media resolution set to medium.
+      MEDIA_RESOLUTION_HIGH: Media resolution set to high.
+    """
+    MEDIA_RESOLUTION_UNSPECIFIED = 0
+    MEDIA_RESOLUTION_LOW = 1
+    MEDIA_RESOLUTION_MEDIUM = 2
+    MEDIA_RESOLUTION_HIGH = 3
+
+  level = _messages.EnumField('LevelValueValuesEnum', 1)
+
+
+class GoogleCloudAiplatformV1beta1PartialArg(_messages.Message):
+  r"""Partial argument value of the function call.
+
+  Enums:
+    NullValueValueValuesEnum: Optional. Represents a null value.
+
+  Fields:
+    boolValue: Optional. Represents a boolean value.
+    jsonPath: Required. A JSON Path (RFC 9535) to the argument being streamed.
+      https://datatracker.ietf.org/doc/html/rfc9535. e.g. "$.foo.bar[0].data".
+    nullValue: Optional. Represents a null value.
+    numberValue: Optional. Represents a double value.
+    stringValue: Optional. Represents a string value.
+    willContinue: Optional. Whether this is not the last part of the same
+      json_path. If true, another PartialArg message for the current json_path
+      is expected to follow.
+  """
+
+  class NullValueValueValuesEnum(_messages.Enum):
+    r"""Optional. Represents a null value.
+
+    Values:
+      NULL_VALUE: Null value.
+    """
+    NULL_VALUE = 0
+
+  boolValue = _messages.BooleanField(1)
+  jsonPath = _messages.StringField(2)
+  nullValue = _messages.EnumField('NullValueValueValuesEnum', 3)
+  numberValue = _messages.FloatField(4)
+  stringValue = _messages.StringField(5)
+  willContinue = _messages.BooleanField(6)
 
 
 class GoogleCloudAiplatformV1beta1PartnerModelTuningSpec(_messages.Message):
@@ -43107,6 +43245,8 @@ class GoogleCloudAiplatformV1beta1RagVectorDbConfig(_messages.Message):
     ragEmbeddingModelConfig: Optional. Immutable. The embedding model config
       of the Vector DB.
     ragManagedDb: The config for the RAG-managed Vector DB.
+    ragManagedVertexVectorSearch: The config for the RAG-managed Vertex Vector
+      Search 2.0.
     vertexFeatureStore: The config for the Vertex Feature Store.
     vertexVectorSearch: The config for the Vertex Vector Search.
     weaviate: The config for the Weaviate.
@@ -43116,9 +43256,10 @@ class GoogleCloudAiplatformV1beta1RagVectorDbConfig(_messages.Message):
   pinecone = _messages.MessageField('GoogleCloudAiplatformV1beta1RagVectorDbConfigPinecone', 2)
   ragEmbeddingModelConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1RagEmbeddingModelConfig', 3)
   ragManagedDb = _messages.MessageField('GoogleCloudAiplatformV1beta1RagVectorDbConfigRagManagedDb', 4)
-  vertexFeatureStore = _messages.MessageField('GoogleCloudAiplatformV1beta1RagVectorDbConfigVertexFeatureStore', 5)
-  vertexVectorSearch = _messages.MessageField('GoogleCloudAiplatformV1beta1RagVectorDbConfigVertexVectorSearch', 6)
-  weaviate = _messages.MessageField('GoogleCloudAiplatformV1beta1RagVectorDbConfigWeaviate', 7)
+  ragManagedVertexVectorSearch = _messages.MessageField('GoogleCloudAiplatformV1beta1RagVectorDbConfigRagManagedVertexVectorSearch', 5)
+  vertexFeatureStore = _messages.MessageField('GoogleCloudAiplatformV1beta1RagVectorDbConfigVertexFeatureStore', 6)
+  vertexVectorSearch = _messages.MessageField('GoogleCloudAiplatformV1beta1RagVectorDbConfigVertexVectorSearch', 7)
+  weaviate = _messages.MessageField('GoogleCloudAiplatformV1beta1RagVectorDbConfigWeaviate', 8)
 
 
 class GoogleCloudAiplatformV1beta1RagVectorDbConfigPinecone(_messages.Message):
@@ -43168,6 +43309,19 @@ class GoogleCloudAiplatformV1beta1RagVectorDbConfigRagManagedDbANN(_messages.Mes
 
 class GoogleCloudAiplatformV1beta1RagVectorDbConfigRagManagedDbKNN(_messages.Message):
   r"""Config for KNN search."""
+
+
+class GoogleCloudAiplatformV1beta1RagVectorDbConfigRagManagedVertexVectorSearch(_messages.Message):
+  r"""The config for the RAG-managed Vertex Vector Search 2.0.
+
+  Fields:
+    collectionName: Output only. The resource name of the Vector Search 2.0
+      Collection that RAG Created for the corpus. Only populated after the
+      corpus is successfully created. Format:
+      `projects/{project}/locations/{location}/collections/{collection_id}`
+  """
+
+  collectionName = _messages.StringField(1)
 
 
 class GoogleCloudAiplatformV1beta1RagVectorDbConfigVertexFeatureStore(_messages.Message):
@@ -43961,20 +44115,55 @@ class GoogleCloudAiplatformV1beta1ReasoningEngineSpecSourceCodeSpec(_messages.Me
   r"""Specification for deploying from source code.
 
   Fields:
+    developerConnectSource: Source code is in a Git repository managed by
+      Developer Connect.
     inlineSource: Source code is provided directly in the request.
     pythonSpec: Configuration for a Python application.
   """
 
-  inlineSource = _messages.MessageField('GoogleCloudAiplatformV1beta1ReasoningEngineSpecSourceCodeSpecInlineSource', 1)
-  pythonSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ReasoningEngineSpecSourceCodeSpecPythonSpec', 2)
+  developerConnectSource = _messages.MessageField('GoogleCloudAiplatformV1beta1ReasoningEngineSpecSourceCodeSpecDeveloperConnectSource', 1)
+  inlineSource = _messages.MessageField('GoogleCloudAiplatformV1beta1ReasoningEngineSpecSourceCodeSpecInlineSource', 2)
+  pythonSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ReasoningEngineSpecSourceCodeSpecPythonSpec', 3)
+
+
+class GoogleCloudAiplatformV1beta1ReasoningEngineSpecSourceCodeSpecDeveloperConnectConfig(_messages.Message):
+  r"""Specifies the configuration for fetching source code from a Git
+  repository that is managed by Developer Connect. This includes the
+  repository, revision, and directory to use.
+
+  Fields:
+    dir: Required. Directory, relative to the source root, in which to run the
+      build.
+    gitRepositoryLink: Required. The Developer Connect Git repository link,
+      formatted as `projects/*/locations/*/connections/*/gitRepositoryLink/*`.
+    revision: Required. The revision to fetch from the Git repository such as
+      a branch, a tag, a commit SHA, or any Git ref.
+  """
+
+  dir = _messages.StringField(1)
+  gitRepositoryLink = _messages.StringField(2)
+  revision = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1beta1ReasoningEngineSpecSourceCodeSpecDeveloperConnectSource(_messages.Message):
+  r"""Specifies source code to be fetched from a Git repository managed
+  through the Developer Connect service.
+
+  Fields:
+    config: Required. The Developer Connect configuration that defines the
+      specific repository, revision, and directory to use as the source code
+      root.
+  """
+
+  config = _messages.MessageField('GoogleCloudAiplatformV1beta1ReasoningEngineSpecSourceCodeSpecDeveloperConnectConfig', 1)
 
 
 class GoogleCloudAiplatformV1beta1ReasoningEngineSpecSourceCodeSpecInlineSource(_messages.Message):
   r"""Specifies source code provided as a byte stream.
 
   Fields:
-    sourceArchive: Required. Input only. The application source code archive,
-      provided as a compressed tarball (.tar.gz) file.
+    sourceArchive: Required. Input only. The application source code archive.
+      It must be a compressed tarball (.tar.gz) file.
   """
 
   sourceArchive = _messages.BytesField(1)
@@ -44176,6 +44365,21 @@ class GoogleCloudAiplatformV1beta1RemoveExamplesResponse(_messages.Message):
   """
 
   exampleIds = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1ReplicatedVoiceConfig(_messages.Message):
+  r"""The configuration for the replicated voice to use.
+
+  Fields:
+    mimeType: Optional. The mimetype of the voice sample. The only currently
+      supported value is `audio/wav`. This represents 16-bit signed little-
+      endian wav data, with a 24kHz sampling rate. `mime_type` will default to
+      `audio/wav` if not set.
+    voiceSampleAudio: Optional. The sample of the custom voice.
+  """
+
+  mimeType = _messages.StringField(1)
+  voiceSampleAudio = _messages.BytesField(2)
 
 
 class GoogleCloudAiplatformV1beta1ReportExecutionEventRequest(_messages.Message):
@@ -47711,6 +47915,41 @@ class GoogleCloudAiplatformV1beta1SchemaPromptInstanceVariableValue(_messages.Me
   partList = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaPromptSpecPartList', 1)
 
 
+class GoogleCloudAiplatformV1beta1SchemaPromptSpecAppBuilderData(_messages.Message):
+  r"""Defines data for an application builder.
+
+  Fields:
+    codeRepositoryState: Serialized state of the code repository. This string
+      will typically contain a JSON representation of the UI's
+      CodeRepositoryService state (files, folders, content, and any metadata).
+      The UI is responsible for serialization and deserialization.
+    linkedResources: Linked resources attached to the application by the user.
+  """
+
+  codeRepositoryState = _messages.StringField(1)
+  linkedResources = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaPromptSpecAppBuilderDataLinkedResource', 2, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPromptSpecAppBuilderDataLinkedResource(_messages.Message):
+  r"""A linked resource attached to the application by the user.
+
+  Fields:
+    displayName: A user-friendly name for the data source shown in the UI.
+    name: The unique resource name of the data source. The format is
+      determined by the 'type' field. For type "SAVED_PROMPT":
+      projects/{project}/locations/{location}/datasets/{dataset} For type
+      "AI_AGENT": projects/{project}/locations/{location}/agents/{agent}
+    type: The type of the linked resource. e.g., "SAVED_PROMPT", "AI_AGENT"
+      This string corresponds to the name of the LinkedResourceType enum
+      member. See: google3/cloud/console/web/ai/platform/llm/prompts/build/ser
+      vices/specs_repository_service/linked_resources/linked_resource.ts
+  """
+
+  displayName = _messages.StringField(1)
+  name = _messages.StringField(2)
+  type = _messages.StringField(3)
+
+
 class GoogleCloudAiplatformV1beta1SchemaPromptSpecMultimodalPrompt(_messages.Message):
   r"""Prompt variation that embeds preambles to prompt string.
 
@@ -47790,6 +48029,7 @@ class GoogleCloudAiplatformV1beta1SchemaPromptSpecStructuredPrompt(_messages.Mes
   r"""Prompt variation that stores preambles in separate fields.
 
   Fields:
+    appBuilderData: Data for app builder use case.
     context: Preamble: The context of the prompt.
     examples: Preamble: A set of examples for expected model response.
     infillPrefix: Preamble: For infill prompt, the prefix before expected
@@ -47804,14 +48044,15 @@ class GoogleCloudAiplatformV1beta1SchemaPromptSpecStructuredPrompt(_messages.Mes
     promptMessage: The prompt message.
   """
 
-  context = _messages.MessageField('GoogleCloudAiplatformV1beta1Content', 1)
-  examples = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaPromptSpecPartList', 2, repeated=True)
-  infillPrefix = _messages.StringField(3)
-  infillSuffix = _messages.StringField(4)
-  inputPrefixes = _messages.StringField(5, repeated=True)
-  outputPrefixes = _messages.StringField(6, repeated=True)
-  predictionInputs = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaPromptSpecPartList', 7, repeated=True)
-  promptMessage = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaPromptSpecPromptMessage', 8)
+  appBuilderData = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaPromptSpecAppBuilderData', 1)
+  context = _messages.MessageField('GoogleCloudAiplatformV1beta1Content', 2)
+  examples = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaPromptSpecPartList', 3, repeated=True)
+  infillPrefix = _messages.StringField(4)
+  infillSuffix = _messages.StringField(5)
+  inputPrefixes = _messages.StringField(6, repeated=True)
+  outputPrefixes = _messages.StringField(7, repeated=True)
+  predictionInputs = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaPromptSpecPartList', 8, repeated=True)
+  promptMessage = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaPromptSpecPromptMessage', 9)
 
 
 class GoogleCloudAiplatformV1beta1SchemaPromptSpecTranslationExample(_messages.Message):
@@ -50670,7 +50911,7 @@ class GoogleCloudAiplatformV1beta1ServerlessRayJobSpec(_messages.Message):
       this field.
     args: Optional. The arguments to pass to the Ray job script.
     mainPythonFileUri: Required. The URI of the main Python file to use as the
-      Ray job. Must be a .py file.
+      Ray job. Must be a valid Cloud Storage python file.
     pscInterfaceConfig: Optional. The PSC interface config for the
       ServerlessRayJob. If unspecified, the ServerlessRayJob will not use PSC
       interface.
@@ -50838,7 +51079,7 @@ class GoogleCloudAiplatformV1beta1Session(_messages.Message):
     displayName: Optional. The display name of the session.
     expireTime: Optional. Timestamp of when this session is considered
       expired. This is *always* provided on output, regardless of what was
-      sent on input.
+      sent on input. The minimum value is 24 hours from the time of creation.
     labels: The labels with user-defined metadata to organize your Sessions.
       Label keys and values can be no longer than 64 characters (Unicode
       codepoints), can only contain lowercase letters, numeric characters,
@@ -50849,7 +51090,8 @@ class GoogleCloudAiplatformV1beta1Session(_messages.Message):
       {session}'.
     sessionState: Optional. Session specific memory which stores key
       conversation points.
-    ttl: Optional. Input only. The TTL for this session.
+    ttl: Optional. Input only. The TTL for this session. The minimum value is
+      24 hours.
     updateTime: Output only. Timestamp when the session was updated.
     userId: Required. Immutable. String id provided by the user
   """
@@ -54403,7 +54645,9 @@ class GoogleCloudAiplatformV1beta1TuningDataStats(_messages.Message):
   r"""The tuning data statistic values for TuningJob.
 
   Fields:
-    distillationDataStats: Output only. Statistics for distillation.
+    distillationDataStats: Output only. Statistics for distillation prompt
+      dataset. These statistics do not include the responses sampled from the
+      teacher model.
     preferenceOptimizationDataStats: Output only. Statistics for preference
       optimization.
     supervisedTuningDataStats: The SFT Tuning data stats.
@@ -55404,9 +55648,12 @@ class GoogleCloudAiplatformV1beta1VoiceConfig(_messages.Message):
 
   Fields:
     prebuiltVoiceConfig: The configuration for a prebuilt voice.
+    replicatedVoiceConfig: Optional. The configuration for a replicated voice.
+      This enables users to replicate a voice from an audio sample.
   """
 
   prebuiltVoiceConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1PrebuiltVoiceConfig', 1)
+  replicatedVoiceConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1ReplicatedVoiceConfig', 2)
 
 
 class GoogleCloudAiplatformV1beta1WorkerPoolSpec(_messages.Message):
@@ -55902,8 +56149,8 @@ class GoogleLongrunningListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)

@@ -399,13 +399,12 @@ class WorkerPool(proto.Message):
             instance splits. See comments in ``reconciling`` for
             additional information on reconciliation process in Cloud
             Run.
+        threat_detection_enabled (bool):
+            Output only. Indicates whether Cloud Run
+            Threat Detection monitoring is enabled for the
+            parent project of this worker pool.
         custom_audiences (MutableSequence[str]):
-            One or more custom audiences that you want
-            this worker pool to support. Specify each custom
-            audience as the full URL in a string. The custom
-            audiences are encoded in the token and used to
-            authenticate requests. For more information, see
-            https://cloud.google.com/run/docs/configuring/custom-audiences.
+            Not supported, and ignored by Cloud Run.
         satisfies_pzs (bool):
             Output only. Reserved for future use.
         reconciling (bool):
@@ -556,6 +555,10 @@ class WorkerPool(proto.Message):
         proto.MESSAGE,
         number=27,
         message=instance_split.InstanceSplitStatus,
+    )
+    threat_detection_enabled: bool = proto.Field(
+        proto.BOOL,
+        number=28,
     )
     custom_audiences: MutableSequence[str] = proto.RepeatedField(
         proto.STRING,

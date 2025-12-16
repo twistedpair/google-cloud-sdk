@@ -178,6 +178,8 @@ class Artifacts(_messages.Message):
       Registry upon successful completion of all build steps. The build
       service account credentials will be used to perform the upload. If any
       objects fail to be pushed, the build is marked FAILURE.
+    volumes: Optional. List of volumes to mount into the artifacts upload
+      process.
   """
 
   goModules = _messages.MessageField('GoModule', 1, repeated=True)
@@ -187,6 +189,7 @@ class Artifacts(_messages.Message):
   objects = _messages.MessageField('ArtifactObjects', 5)
   oci = _messages.MessageField('Oci', 6, repeated=True)
   pythonPackages = _messages.MessageField('PythonPackage', 7, repeated=True)
+  volumes = _messages.MessageField('Volume', 8, repeated=True)
 
 
 class Autoscale(_messages.Message):

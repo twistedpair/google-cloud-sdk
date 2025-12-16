@@ -1363,6 +1363,8 @@ class DropInfo(_messages.Message):
       NO_MATCHING_NAT64_GATEWAY: Packet with destination IP address within the
         reserved NAT64 range is dropped due to no matching NAT gateway in the
         subnet.
+      NO_CONFIGURED_PRIVATE_NAT64_RULE: Packet is dropped due to matching a
+        Private NAT64 gateway with no rules for source IPv6 addresses.
       LOAD_BALANCER_BACKEND_IP_VERSION_MISMATCH: Packet is dropped due to
         being sent to a backend of a passthrough load balancer that doesn't
         use the same IP version as the frontend.
@@ -1485,15 +1487,16 @@ class DropInfo(_messages.Message):
     UNSUPPORTED_ROUTE_MATCHED_FOR_NAT64_DESTINATION = 95
     TRAFFIC_FROM_HYBRID_ENDPOINT_TO_INTERNET_DISALLOWED = 96
     NO_MATCHING_NAT64_GATEWAY = 97
-    LOAD_BALANCER_BACKEND_IP_VERSION_MISMATCH = 98
-    NO_KNOWN_ROUTE_FROM_NCC_NETWORK_TO_DESTINATION = 99
-    CLOUD_NAT_PROTOCOL_UNSUPPORTED = 100
-    L2_INTERCONNECT_UNSUPPORTED_PROTOCOL = 101
-    L2_INTERCONNECT_UNSUPPORTED_PORT = 102
-    L2_INTERCONNECT_DESTINATION_IP_MISMATCH = 103
-    NCC_ROUTE_WITHIN_HYBRID_SUBNET_UNSUPPORTED = 104
-    HYBRID_SUBNET_REGION_MISMATCH = 105
-    HYBRID_SUBNET_NO_ROUTE = 106
+    NO_CONFIGURED_PRIVATE_NAT64_RULE = 98
+    LOAD_BALANCER_BACKEND_IP_VERSION_MISMATCH = 99
+    NO_KNOWN_ROUTE_FROM_NCC_NETWORK_TO_DESTINATION = 100
+    CLOUD_NAT_PROTOCOL_UNSUPPORTED = 101
+    L2_INTERCONNECT_UNSUPPORTED_PROTOCOL = 102
+    L2_INTERCONNECT_UNSUPPORTED_PORT = 103
+    L2_INTERCONNECT_DESTINATION_IP_MISMATCH = 104
+    NCC_ROUTE_WITHIN_HYBRID_SUBNET_UNSUPPORTED = 105
+    HYBRID_SUBNET_REGION_MISMATCH = 106
+    HYBRID_SUBNET_NO_ROUTE = 107
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   destinationGeolocationCode = _messages.StringField(2)
@@ -2820,9 +2823,13 @@ class NatInfo(_messages.Message):
   r"""For display only. Metadata associated with NAT.
 
   Enums:
+    CloudNatGatewayTypeValueValuesEnum: Type of Cloud NAT gateway. Only valid
+      when `type` is CLOUD_NAT.
     TypeValueValuesEnum: Type of NAT.
 
   Fields:
+    cloudNatGatewayType: Type of Cloud NAT gateway. Only valid when `type` is
+      CLOUD_NAT.
     natGatewayName: The name of Cloud NAT Gateway. Only valid when type is
       CLOUD_NAT.
     networkUri: URI of the network where NAT translation takes place.
@@ -2842,6 +2849,24 @@ class NatInfo(_messages.Message):
     routerUri: Uri of the Cloud Router. Only valid when type is CLOUD_NAT.
     type: Type of NAT.
   """
+
+  class CloudNatGatewayTypeValueValuesEnum(_messages.Enum):
+    r"""Type of Cloud NAT gateway. Only valid when `type` is CLOUD_NAT.
+
+    Values:
+      CLOUD_NAT_GATEWAY_TYPE_UNSPECIFIED: Type is unspecified.
+      PUBLIC_NAT44: Public NAT gateway.
+      PUBLIC_NAT64: Public NAT64 gateway.
+      PRIVATE_NAT_NCC: Private NAT gateway for NCC.
+      PRIVATE_NAT_HYBRID: Private NAT gateway for hybrid connectivity.
+      PRIVATE_NAT64: Private NAT64 gateway.
+    """
+    CLOUD_NAT_GATEWAY_TYPE_UNSPECIFIED = 0
+    PUBLIC_NAT44 = 1
+    PUBLIC_NAT64 = 2
+    PRIVATE_NAT_NCC = 3
+    PRIVATE_NAT_HYBRID = 4
+    PRIVATE_NAT64 = 5
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Type of NAT.
@@ -2863,19 +2888,20 @@ class NatInfo(_messages.Message):
     PRIVATE_SERVICE_CONNECT = 4
     GKE_POD_IP_MASQUERADING = 5
 
-  natGatewayName = _messages.StringField(1)
-  networkUri = _messages.StringField(2)
-  newDestinationIp = _messages.StringField(3)
-  newDestinationPort = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  newSourceIp = _messages.StringField(5)
-  newSourcePort = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  oldDestinationIp = _messages.StringField(7)
-  oldDestinationPort = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  oldSourceIp = _messages.StringField(9)
-  oldSourcePort = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  protocol = _messages.StringField(11)
-  routerUri = _messages.StringField(12)
-  type = _messages.EnumField('TypeValueValuesEnum', 13)
+  cloudNatGatewayType = _messages.EnumField('CloudNatGatewayTypeValueValuesEnum', 1)
+  natGatewayName = _messages.StringField(2)
+  networkUri = _messages.StringField(3)
+  newDestinationIp = _messages.StringField(4)
+  newDestinationPort = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  newSourceIp = _messages.StringField(6)
+  newSourcePort = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  oldDestinationIp = _messages.StringField(8)
+  oldDestinationPort = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  oldSourceIp = _messages.StringField(10)
+  oldSourcePort = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  protocol = _messages.StringField(12)
+  routerUri = _messages.StringField(13)
+  type = _messages.EnumField('TypeValueValuesEnum', 14)
 
 
 class NetworkInfo(_messages.Message):
@@ -3371,6 +3397,21 @@ class NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPoin
   timeZone_id = _messages.StringField(13)
   timeZone_version = _messages.StringField(14)
   useDhcp = _messages.BooleanField(15)
+
+
+class NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPointsDownloadRecreateInstallScriptRequest(_messages.Message):
+  r"""A NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoring
+  PointsDownloadRecreateInstallScriptRequest object.
+
+  Fields:
+    hostname: Optional. The hostname of the MonitoringPoint, e.g. "test-vm"
+    name: Required. Resource name of the MonitoringPoint. Format: projects/{pr
+      oject}/locations/{location}/networkMonitoringProviders/{network_monitori
+      ng_provider}/monitoringPoints/{monitoring_point}
+  """
+
+  hostname = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPointsGetRequest(_messages.Message):

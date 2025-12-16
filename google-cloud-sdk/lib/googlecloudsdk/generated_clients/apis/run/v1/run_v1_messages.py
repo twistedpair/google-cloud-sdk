@@ -752,6 +752,8 @@ class ExecutionSpec(_messages.Message):
     PriorityTierValueValuesEnum: Optional. The priority tier of the execution.
 
   Fields:
+    delayExecution: Optional. If true, the system will start the execution
+      within the next 12 hours depending on available capacity.
     parallelism: Optional. Specifies the maximum desired number of tasks the
       execution should run at given time. When the job is run, if this field
       is 0 or unset, the maximum possible value will be used for that
@@ -781,10 +783,11 @@ class ExecutionSpec(_messages.Message):
     STANDARD = 1
     FLEX = 2
 
-  parallelism = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  priorityTier = _messages.EnumField('PriorityTierValueValuesEnum', 2)
-  taskCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  template = _messages.MessageField('TaskTemplateSpec', 4)
+  delayExecution = _messages.BooleanField(1)
+  parallelism = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  priorityTier = _messages.EnumField('PriorityTierValueValuesEnum', 3)
+  taskCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  template = _messages.MessageField('TaskTemplateSpec', 5)
 
 
 class ExecutionStatus(_messages.Message):
@@ -1960,6 +1963,11 @@ class GoogleDevtoolsCloudbuildV1MavenArtifact(_messages.Message):
   Fields:
     artifactId: Maven `artifactId` value used when uploading the artifact to
       Artifact Registry.
+    deployFolder: Optional. Path to a folder containing the files to upload to
+      Artifact Registry. This can be either an absolute path, e.g.
+      `/workspace/my-app/target/`, or a relative path from /workspace, e.g.
+      `my-app/target/`. This field is mutually exclusive with the `path`
+      field.
     groupId: Maven `groupId` value used when uploading the artifact to
       Artifact Registry.
     path: Optional. Path to an artifact in the build's workspace to be
@@ -1975,10 +1983,11 @@ class GoogleDevtoolsCloudbuildV1MavenArtifact(_messages.Message):
   """
 
   artifactId = _messages.StringField(1)
-  groupId = _messages.StringField(2)
-  path = _messages.StringField(3)
-  repository = _messages.StringField(4)
-  version = _messages.StringField(5)
+  deployFolder = _messages.StringField(2)
+  groupId = _messages.StringField(3)
+  path = _messages.StringField(4)
+  repository = _messages.StringField(5)
+  version = _messages.StringField(6)
 
 
 class GoogleDevtoolsCloudbuildV1NpmPackage(_messages.Message):
@@ -2526,8 +2535,8 @@ class GoogleLongrunningListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -2739,6 +2748,82 @@ class HTTPHeader(_messages.Message):
   value = _messages.StringField(2)
 
 
+class Instance(_messages.Message):
+  r"""Instance represents the configuration of a single Instance, which
+  references a container image which is run to completion.
+
+  Fields:
+    apiVersion: Optional. APIVersion defines the versioned schema of this
+      representation of an object. Servers should convert recognized schemas
+      to the latest internal value, and may reject unrecognized values.
+    kind: Optional. Kind is a string value representing the REST resource this
+      object represents. Servers may infer this from the endpoint the client
+      submits requests to. Cannot be updated. In CamelCase.
+    metadata: Optional. Standard object's metadata.
+    spec: Optional. Specification of the desired behavior of a Instance.
+    status: Output only. Current status of a Instance.
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  metadata = _messages.MessageField('ObjectMeta', 3)
+  spec = _messages.MessageField('InstanceSpec', 4)
+  status = _messages.MessageField('InstanceStatus', 5)
+
+
+class InstanceSpec(_messages.Message):
+  r"""InstanceSpec describes how the Instance will look.
+
+  Messages:
+    NodeSelectorValue: Optional. The Node Selector configuration. Map of
+      selector key to a value which matches a node.
+
+  Fields:
+    containers: Optional. List of containers belonging to the Instance. We
+      disallow a number of fields on this Container.
+    nodeSelector: Optional. The Node Selector configuration. Map of selector
+      key to a value which matches a node.
+    serviceAccountName: Optional. Email address of the IAM service account
+      associated with the Instance. The service account represents the
+      identity of the running container, and determines what permissions the
+      Instance has. If not provided, the Instance will use the project's
+      default service account.
+    volumes: Optional. List of volumes that can be mounted by containers
+      belonging to the Instance.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class NodeSelectorValue(_messages.Message):
+    r"""Optional. The Node Selector configuration. Map of selector key to a
+    value which matches a node.
+
+    Messages:
+      AdditionalProperty: An additional property for a NodeSelectorValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type NodeSelectorValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a NodeSelectorValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  containers = _messages.MessageField('Container', 1, repeated=True)
+  nodeSelector = _messages.MessageField('NodeSelectorValue', 2)
+  serviceAccountName = _messages.StringField(3)
+  volumes = _messages.MessageField('Volume', 4, repeated=True)
+
+
 class InstanceSplit(_messages.Message):
   r"""Holds a single instance split entry for the Worker. Allocations can be
   done to a specific Revision name, or pointing to the latest Ready Revision.
@@ -2755,6 +2840,25 @@ class InstanceSplit(_messages.Message):
   latestRevision = _messages.BooleanField(1)
   percent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   revisionName = _messages.StringField(3)
+
+
+class InstanceStatus(_messages.Message):
+  r"""InstanceStatus represents the current state of a Instance.
+
+  Fields:
+    conditions: Output only. Conditions communicate information about
+      ongoing/complete reconciliation processes that bring the "spec" inline
+      with the observed state of the world. Instance-specific conditions
+      include: * `Ready`: `True` when the Instance is ready to be executed.
+    logUri: Optional. URI where logs for this execution can be found in Cloud
+      Console.
+    observedGeneration: Output only. The 'generation' of the Instance that was
+      last processed by the controller.
+  """
+
+  conditions = _messages.MessageField('GoogleCloudRunV1Condition', 1, repeated=True)
+  logUri = _messages.StringField(2)
+  observedGeneration = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class Job(_messages.Message):
@@ -2914,6 +3018,24 @@ class ListExecutionsResponse(_messages.Message):
 
   apiVersion = _messages.StringField(1)
   items = _messages.MessageField('Execution', 2, repeated=True)
+  kind = _messages.StringField(3)
+  metadata = _messages.MessageField('ListMeta', 4)
+  unreachable = _messages.StringField(5, repeated=True)
+
+
+class ListInstancesResponse(_messages.Message):
+  r"""ListInstancesResponse is a list of Instances resources.
+
+  Fields:
+    apiVersion: The API version for this call such as "run.googleapis.com/v1".
+    items: List of Instances.
+    kind: The kind of this resource, in this case "InstancesList".
+    metadata: Metadata associated with this Instances list.
+    unreachable: Locations that could not be reached.
+  """
+
+  apiVersion = _messages.StringField(1)
+  items = _messages.MessageField('Instance', 2, repeated=True)
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
   unreachable = _messages.StringField(5, repeated=True)
@@ -3215,9 +3337,12 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/gpu-zonal-redundancy-disabled`: Revision. *
       `run.googleapis.com/health-check-disabled`: Revision. *
       `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
-      stage`: Service, Job. * `run.googleapis.com/minScale`: Service *
+      stage`: Service, Job. * `run.googleapis.com/minScale`: Service. *
+      `run.googleapis.com/maxScale`: Service. *
+      `run.googleapis.com/manualInstanceCount`: Service. *
       `run.googleapis.com/network-interfaces`: Revision, Execution. *
-      `run.googleapis.com/post-key-revocation-action-type`: Revision. *
+      `run.googleapis.com/post-key-revocation-action-type`: Revision.
+      `run.googleapis.com/scalingMode`: Service. *
       `run.googleapis.com/secrets`: Revision, Execution. *
       `run.googleapis.com/secure-session-agent`: Revision. *
       `run.googleapis.com/sessionAffinity`: Revision. *
@@ -3263,9 +3388,12 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/gpu-zonal-redundancy-disabled`: Revision. *
       `run.googleapis.com/health-check-disabled`: Revision. *
       `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
-      stage`: Service, Job. * `run.googleapis.com/minScale`: Service *
+      stage`: Service, Job. * `run.googleapis.com/minScale`: Service. *
+      `run.googleapis.com/maxScale`: Service. *
+      `run.googleapis.com/manualInstanceCount`: Service. *
       `run.googleapis.com/network-interfaces`: Revision, Execution. *
-      `run.googleapis.com/post-key-revocation-action-type`: Revision. *
+      `run.googleapis.com/post-key-revocation-action-type`: Revision.
+      `run.googleapis.com/scalingMode`: Service. *
       `run.googleapis.com/secrets`: Revision, Execution. *
       `run.googleapis.com/secure-session-agent`: Revision. *
       `run.googleapis.com/sessionAffinity`: Revision. *
@@ -3338,9 +3466,11 @@ class ObjectMeta(_messages.Message):
     zonal-redundancy-disabled`: Revision. * `run.googleapis.com/health-check-
     disabled`: Revision. * `run.googleapis.com/ingress`: Service. *
     `run.googleapis.com/launch-stage`: Service, Job. *
-    `run.googleapis.com/minScale`: Service * `run.googleapis.com/network-
-    interfaces`: Revision, Execution. * `run.googleapis.com/post-key-
-    revocation-action-type`: Revision. * `run.googleapis.com/secrets`:
+    `run.googleapis.com/minScale`: Service. * `run.googleapis.com/maxScale`:
+    Service. * `run.googleapis.com/manualInstanceCount`: Service. *
+    `run.googleapis.com/network-interfaces`: Revision, Execution. *
+    `run.googleapis.com/post-key-revocation-action-type`: Revision.
+    `run.googleapis.com/scalingMode`: Service. * `run.googleapis.com/secrets`:
     Revision, Execution. * `run.googleapis.com/secure-session-agent`:
     Revision. * `run.googleapis.com/sessionAffinity`: Revision. *
     `run.googleapis.com/startup-cpu-boost`: Revision. *
@@ -3420,6 +3550,8 @@ class Overrides(_messages.Message):
 
   Fields:
     containerOverrides: Per container override specification.
+    delayExecution: Optional. If true, the system will start the execution
+      within the next 12 hours depending on available capacity.
     priorityTier: Optional. The priority tier of the execution.
     taskCount: The desired number of tasks the execution should run. Will
       replace existing task_count value.
@@ -3444,9 +3576,10 @@ class Overrides(_messages.Message):
     FLEX = 2
 
   containerOverrides = _messages.MessageField('ContainerOverride', 1, repeated=True)
-  priorityTier = _messages.EnumField('PriorityTierValueValuesEnum', 2)
-  taskCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  timeoutSeconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  delayExecution = _messages.BooleanField(2)
+  priorityTier = _messages.EnumField('PriorityTierValueValuesEnum', 3)
+  taskCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  timeoutSeconds = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class OwnerReference(_messages.Message):
@@ -4175,6 +4308,122 @@ class RunNamespacesExecutionsListRequest(_messages.Message):
   parent = _messages.StringField(6, required=True)
   resourceVersion = _messages.StringField(7)
   watch = _messages.BooleanField(8)
+
+
+class RunNamespacesInstancesCreateRequest(_messages.Message):
+  r"""A RunNamespacesInstancesCreateRequest object.
+
+  Fields:
+    instance: A Instance resource to be passed as the request body.
+    parent: Required. The namespace in which the Instance should be created.
+      Replace {namespace} with the project ID or number. It takes the form
+      namespaces/{namespace}. For example: namespaces/PROJECT_ID
+    region: Optional. The region in which this resource should be created when
+      it's not provided in the parent field, or in the request header.
+  """
+
+  instance = _messages.MessageField('Instance', 1)
+  parent = _messages.StringField(2, required=True)
+  region = _messages.StringField(3)
+
+
+class RunNamespacesInstancesDeleteRequest(_messages.Message):
+  r"""A RunNamespacesInstancesDeleteRequest object.
+
+  Fields:
+    apiVersion: Optional. Cloud Run currently ignores this parameter.
+    kind: Optional. Cloud Run currently ignores this parameter.
+    name: Required. The name of the Instance to delete. Replace {namespace}
+      with the project ID or number. It takes the form namespaces/{namespace}.
+      For example: namespaces/PROJECT_ID
+    propagationPolicy: Optional. Specifies the propagation policy of delete.
+      Cloud Run currently ignores this setting, and deletes in the background.
+      Please see kubernetes.io/docs/concepts/workloads/controllers/garbage-
+      collection/ for more information.
+    region: Optional. The region in which this resource should be deleted when
+      it's not provided in the parent field, or in the request header.
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  propagationPolicy = _messages.StringField(4)
+  region = _messages.StringField(5)
+
+
+class RunNamespacesInstancesGetRequest(_messages.Message):
+  r"""A RunNamespacesInstancesGetRequest object.
+
+  Fields:
+    name: Required. The name of the Instance to retrieve. It takes the form
+      namespaces/{namespace}/instances/{Instance_name} and the `endpoint` must
+      be regional. Replace {namespace} with the project ID or number.
+    region: Optional. The region in which this resource should be retrieved
+      when it's not provided in the parent field, or in the request header.
+  """
+
+  name = _messages.StringField(1, required=True)
+  region = _messages.StringField(2)
+
+
+class RunNamespacesInstancesListRequest(_messages.Message):
+  r"""A RunNamespacesInstancesListRequest object.
+
+  Fields:
+    continue_: Optional. Optional encoded string to continue paging.
+    fieldSelector: Optional. Not supported by Cloud Run.
+    includeUninitialized: Optional. Not supported by Cloud Run.
+    labelSelector: Optional. Allows to filter resources based on a label.
+      Supported operations are =, !=, exists, in, and notIn.
+    limit: Optional. The maximum number of records that should be returned.
+    parent: Required. The namespace from which the Instances should be listed.
+      Replace {namespace} with the project ID or number. It takes the form
+      namespaces/{namespace}. For example: namespaces/PROJECT_ID
+    region: Optional. The region in which this resource should be listed when
+      it's not provided in the parent field, or in the request header.
+    resourceVersion: Optional. Not supported by Cloud Run.
+    watch: Optional. Not supported by Cloud Run.
+  """
+
+  continue_ = _messages.StringField(1)
+  fieldSelector = _messages.StringField(2)
+  includeUninitialized = _messages.BooleanField(3)
+  labelSelector = _messages.StringField(4)
+  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  parent = _messages.StringField(6, required=True)
+  region = _messages.StringField(7)
+  resourceVersion = _messages.StringField(8)
+  watch = _messages.BooleanField(9)
+
+
+class RunNamespacesInstancesStartRequest(_messages.Message):
+  r"""A RunNamespacesInstancesStartRequest object.
+
+  Fields:
+    name: Required. The name of the Instance to run. Replace {namespace} with
+      the project ID or number. It takes the form namespaces/{namespace}. For
+      example: namespaces/PROJECT_ID
+    startInstanceRequest: A StartInstanceRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  startInstanceRequest = _messages.MessageField('StartInstanceRequest', 2)
+
+
+class RunNamespacesInstancesStopRequest(_messages.Message):
+  r"""A RunNamespacesInstancesStopRequest object.
+
+  Fields:
+    name: Required. The name of the Instance to run. Replace {namespace} with
+      the project ID or number. It takes the form namespaces/{namespace}. For
+      example: namespaces/PROJECT_ID
+    stopInstanceRequest: A StopInstanceRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  stopInstanceRequest = _messages.MessageField('StopInstanceRequest', 2)
 
 
 class RunNamespacesJobsCreateRequest(_messages.Message):
@@ -4922,9 +5171,9 @@ class RunProjectsLocationsOperationsListRequest(_messages.Message):
       by a previous list call.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -5571,6 +5820,17 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class StartInstanceRequest(_messages.Message):
+  r"""Request message for starting a stopped Instance.
+
+  Fields:
+    region: Optional. The region in which this resource should be run from
+      when it's not provided in the parent field, or in the request header.
+  """
+
+  region = _messages.StringField(1)
+
+
 class Status(_messages.Message):
   r"""Status is a return value for calls that don't return other objects.
 
@@ -5650,6 +5910,17 @@ class StatusDetails(_messages.Message):
   name = _messages.StringField(4)
   retryAfterSeconds = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   uid = _messages.StringField(6)
+
+
+class StopInstanceRequest(_messages.Message):
+  r"""Request message for stopping a running Instance.
+
+  Fields:
+    region: Optional. The region in which this resource should be run from
+      when it's not provided in the parent field, or in the request header.
+  """
+
+  region = _messages.StringField(1)
 
 
 class TCPSocketAction(_messages.Message):
@@ -6003,6 +6274,8 @@ encoding.AddCustomJsonFieldMapping(
     RunNamespacesDomainmappingsListRequest, 'continue_', 'continue')
 encoding.AddCustomJsonFieldMapping(
     RunNamespacesExecutionsListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    RunNamespacesInstancesListRequest, 'continue_', 'continue')
 encoding.AddCustomJsonFieldMapping(
     RunNamespacesJobsListRequest, 'continue_', 'continue')
 encoding.AddCustomJsonFieldMapping(

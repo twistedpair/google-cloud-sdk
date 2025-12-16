@@ -15,6 +15,24 @@ from apitools.base.py import extra_types
 package = 'spanner'
 
 
+class Ack(_messages.Message):
+  r"""Arguments to ack operations.
+
+  Fields:
+    ignoreNotFound: By default, an attempt to ack a message that does not
+      exist will fail with a `NOT_FOUND` error. With `ignore_not_found` set to
+      true, the ack will succeed even if the message does not exist. This is
+      useful for unconditionally acking a message, even if it is missing or
+      has already been acked.
+    key: Required. The primary key of the message to be acked.
+    queue: Required. The queue where the message to be acked is stored.
+  """
+
+  ignoreNotFound = _messages.BooleanField(1)
+  key = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
+  queue = _messages.StringField(3)
+
+
 class AdaptMessageRequest(_messages.Message):
   r"""Message sent by the client to the adapter.
 
@@ -760,13 +778,6 @@ class ChildLink(_messages.Message):
   childIndex = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   type = _messages.StringField(2)
   variable = _messages.StringField(3)
-
-
-class ClientContext(_messages.Message):
-  r"""Container for various pieces of client-owned context attached to a
-  request.
-  """
-
 
 
 class ColumnMetadata(_messages.Message):
@@ -3427,8 +3438,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -3767,6 +3778,7 @@ class Mutation(_messages.Message):
   applied to a Cloud Spanner database by sending them in a Commit call.
 
   Fields:
+    ack: Ack a message from a queue.
     delete: Delete rows from a table. Succeeds whether or not the named rows
       were present.
     insert: Insert new rows in a table. If any of the rows already exist, the
@@ -3784,15 +3796,18 @@ class Mutation(_messages.Message):
       `ON DELETE CASCADE` annotation, then replacing a parent row also deletes
       the child rows. Otherwise, you must delete the child rows before you
       replace the parent row.
+    send: Send a message to a queue.
     update: Update existing rows in a table. If any of the rows does not
       already exist, the transaction fails with error `NOT_FOUND`.
   """
 
-  delete = _messages.MessageField('Delete', 1)
-  insert = _messages.MessageField('Write', 2)
-  insertOrUpdate = _messages.MessageField('Write', 3)
-  replace = _messages.MessageField('Write', 4)
-  update = _messages.MessageField('Write', 5)
+  ack = _messages.MessageField('Ack', 1)
+  delete = _messages.MessageField('Delete', 2)
+  insert = _messages.MessageField('Write', 3)
+  insertOrUpdate = _messages.MessageField('Write', 4)
+  replace = _messages.MessageField('Write', 5)
+  send = _messages.MessageField('Send', 6)
+  update = _messages.MessageField('Write', 7)
 
 
 class MutationGroup(_messages.Message):
@@ -5023,8 +5038,6 @@ class RequestOptions(_messages.Message):
     PriorityValueValuesEnum: Priority for the request.
 
   Fields:
-    clientContext: Optional. Optional context that may be needed for some
-      requests.
     priority: Priority for the request.
     requestTag: A per-request tag which can be applied to queries or reads,
       used for statistics collection. Both `request_tag` and `transaction_tag`
@@ -5061,10 +5074,9 @@ class RequestOptions(_messages.Message):
     PRIORITY_MEDIUM = 2
     PRIORITY_HIGH = 3
 
-  clientContext = _messages.MessageField('ClientContext', 1)
-  priority = _messages.EnumField('PriorityValueValuesEnum', 2)
-  requestTag = _messages.StringField(3)
-  transactionTag = _messages.StringField(4)
+  priority = _messages.EnumField('PriorityValueValuesEnum', 1)
+  requestTag = _messages.StringField(2)
+  transactionTag = _messages.StringField(3)
 
 
 class RestoreDatabaseEncryptionConfig(_messages.Message):
@@ -5417,6 +5429,25 @@ class ScanData(_messages.Message):
   startTime = _messages.StringField(3)
 
 
+class Send(_messages.Message):
+  r"""Arguments to send operations.
+
+  Fields:
+    deliverTime: The time at which Spanner will begin attempting to deliver
+      the message. If `deliver_time` is not set, Spanner will deliver the
+      message immediately. If `deliver_time` is in the past, Spanner will
+      replace it with a value closer to the current time.
+    key: Required. The primary key of the message to be sent.
+    payload: The payload of the message.
+    queue: Required. The queue to which the message will be sent.
+  """
+
+  deliverTime = _messages.StringField(1)
+  key = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
+  payload = _messages.MessageField('extra_types.JsonValue', 3)
+  queue = _messages.StringField(4)
+
+
 class Session(_messages.Message):
   r"""A session in the Cloud Spanner API.
 
@@ -5721,9 +5752,9 @@ class SpannerProjectsInstanceConfigsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -5819,9 +5850,9 @@ class SpannerProjectsInstanceConfigsSsdCachesOperationsListRequest(_messages.Mes
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -6117,9 +6148,9 @@ class SpannerProjectsInstancesBackupsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -6589,9 +6620,9 @@ class SpannerProjectsInstancesDatabasesOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -7125,9 +7156,9 @@ class SpannerProjectsInstancesInstancePartitionsOperationsListRequest(_messages.
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -7243,9 +7274,9 @@ class SpannerProjectsInstancesOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """

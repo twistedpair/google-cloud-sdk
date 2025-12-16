@@ -15,6 +15,7 @@
 """Flags for the compute zone vm extension policies commands."""
 
 import functools
+import textwrap
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
@@ -27,7 +28,7 @@ def AddPolicyDescription(parser):
   """Adds the Description flag."""
   parser.add_argument(
       '--description',
-      help='An optional textual description for the this extension policy.',
+      help='An optional text description for the extension policy.',
   )
 
 
@@ -66,14 +67,16 @@ def AddPolicyPriority(parser):
       '--priority',
       type=functools.partial(ValidatePriority, min_val=0, max_val=65535),
       default=1000,
-      help="""
+      help=textwrap.dedent("""\
       The priority of the policy. Lower the number, higher the priority.
-      When two policies tries to apply the same extension, the one with the higher priority takes precedence.
-      If the priority is the same, the one with the more recent update timestamp takes precedence.
-      When a policy is deleted, the extension would remain installed on the VM if a lower priority policy still applies.
+      When two policies try to apply the same extension to a VM, the policy with
+      higher priority takes precedence. If the priorities are the same, the
+      policy with the more recent update timestamp takes precedence. If a policy
+      is deleted, the extension remains installed on the VM if a lower-priority
+      policy still applies.
 
       Range from 0 to 65535. Default is 1000.
-      """,
+      """),
   )
 
 
@@ -86,7 +89,7 @@ def AddExtensionVersion(parser):
       metavar='KEY=VALUE',
       action=arg_parsers.StoreOnceAction,
       required=False,
-      help="""
+      help=textwrap.dedent("""\
       A comma separated key:value list where the key is the extension name and the value is the
       desired version for the given extension. The extension name must be one of the extensions
       specified in the --extensions flag. If no version is specified for an
@@ -97,7 +100,8 @@ def AddExtensionVersion(parser):
       Raises:
         ArgumentTypeError: If the extension name is not specified in the
         --extensions flag.
-      """)
+      """),
+  )
 
 
 def AddExtensionConfigs(parser):
@@ -109,7 +113,7 @@ def AddExtensionConfigs(parser):
       metavar='KEY=VALUE',
       action=arg_parsers.StoreOnceAction,
       required=False,
-      help="""
+      help=textwrap.dedent("""\
       A comma separated key:value list where the key is the extension name and the value is the
       desired config for the given extension. The extension name must be one of the extensions
       specified in the --extensions flag.
@@ -119,7 +123,8 @@ def AddExtensionConfigs(parser):
       Raises:
         ArgumentTypeError: If the extension name is not specified in the
         --extensions flag.
-      """)
+      """),
+  )
 
 
 def AddExtensionConfigsFromFile(parser):
@@ -131,14 +136,15 @@ def AddExtensionConfigsFromFile(parser):
       metavar='KEY=FILE_PATH',
       action=arg_parsers.StoreOnceAction,
       required=False,
-      help="""
+      help=textwrap.dedent("""\
       Same as --config except that the value for the entry will be read from a
       local file. The extension name must be one of the extensions specified in
       the --extensions flag.
 
       It is an error to specify the same extension in both --config and
       --config-from-file.
-      """)
+      """),
+  )
 
 
 def AddPolicyInclusionLabels(parser):
@@ -147,7 +153,7 @@ def AddPolicyInclusionLabels(parser):
       '--inclusion-labels',
       action='append',
       default=[],
-      help="""
+      help=textwrap.dedent("""\
       A list of inclusion labels to select the target VMs.
 
       The expected format for a single selector is "key1=value1,key2=value2".
@@ -162,7 +168,7 @@ def AddPolicyInclusionLabels(parser):
       - VM3: env=prod
 
       If not specified, ALL VMs in the zone will be selected.
-      """,
+      """),
   )
 
 

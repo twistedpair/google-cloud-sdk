@@ -1549,6 +1549,7 @@ def AddAddressArgs(
     support_ipv6_only=False,
     support_igmp_query=False,
     support_enable_vpc_scoped_dns=False,
+    support_service_class_id=False,
 ):
   """Adds address arguments for instances and instance-templates.
 
@@ -1569,6 +1570,8 @@ def AddAddressArgs(
       interfaces is supported.
     support_enable_vpc_scoped_dns: indicates whether setting enable vpc scoped
       dns on network interfaces is supported.
+    support_service_class_id: indicates whether setting service class id on
+      network interfaces is supported.
   """
   addresses = parser.add_mutually_exclusive_group()
   AddNoAddressArg(addresses)
@@ -1784,6 +1787,15 @@ def AddAddressArgs(
     network_interface_help_texts.append("""
       *enable-vpc-scoped-dns*::: If specified with network_attachment, DNS
       resolution will be enabled over this interface.
+      """)
+
+  if support_service_class_id:
+    multiple_network_interface_cards_spec['service-class-id'] = str
+    network_interface_help_texts.append("""
+      *service-class-id*::: The regional Service Class ID for the producer
+      service associated with this network interface. Can only be used with
+      network_attachment. It is not possible to use on its own;
+      however, network_attachment can be used without service_class_id.
       """)
 
   if support_vlan_nic:

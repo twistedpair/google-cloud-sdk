@@ -43,6 +43,7 @@ from .types.content import MultiSpeakerVoiceConfig
 from .types.content import Part
 from .types.content import PrebuiltVoiceConfig
 from .types.content import ProactivityConfig
+from .types.content import ReplicatedVoiceConfig
 from .types.content import RetrievalMetadata
 from .types.content import SafetyRating
 from .types.content import SafetySetting
@@ -137,6 +138,7 @@ from .types.tool import FunctionResponseFileData
 from .types.tool import FunctionResponsePart
 from .types.tool import GoogleMaps
 from .types.tool import GoogleSearchRetrieval
+from .types.tool import PartialArg
 from .types.tool import RagRetrievalConfig
 from .types.tool import Retrieval
 from .types.tool import RetrievalConfig
@@ -256,6 +258,7 @@ __all__ = (
 'MultiSpeakerVoiceConfig',
 'Neighbor',
 'Part',
+'PartialArg',
 'PrebuiltVoiceConfig',
 'PredictLongRunningMetadata',
 'PredictLongRunningRequest',
@@ -278,6 +281,7 @@ __all__ = (
 'RagRetrievalConfig',
 'RagVectorDbConfig',
 'RawPredictRequest',
+'ReplicatedVoiceConfig',
 'Retrieval',
 'RetrievalConfig',
 'RetrievalMetadata',

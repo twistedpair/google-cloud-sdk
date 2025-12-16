@@ -236,28 +236,33 @@ class ApihubProjectsLocationsApisListRequest(_messages.Message):
       the resource name. For example, `id(name) = \"api-1\"` is equivalent to
       `name = \"projects/test-project-id/locations/test-location-
       id/apis/api-1\"` provided the parent is `projects/test-project-
-      id/locations/test-location-id`. Expressions are combined with either
-      `AND` logic operator or `OR` logical operator but not both of them
-      together i.e. only one of the `AND` or `OR` operator can be used
-      throughout the filter string and both the operators cannot be used
-      together. No other logical operators are supported. At most three filter
-      fields are allowed in the filter string and if provided more than that
-      then `INVALID_ARGUMENT` error is returned by the API. Here are a few
-      examples: * `owner.email = \"apihub@google.com\"` - - The owner team
-      email is _apihub@google.com_. * `owner.email = \"apihub@google.com\" AND
-      create_time < \"2021-08-15T14:50:00Z\" AND create_time >
-      \"2021-08-10T12:00:00Z\"` - The owner team email is _apihub@google.com_
-      and the api was created before _2021-08-15 14:50:00 UTC_ and after
-      _2021-08-10 12:00:00 UTC_. * `owner.email = \"apihub@google.com\" OR
-      team.enum_values.values.id: apihub-team-id` - The filter string
-      specifies the APIs where the owner team email is _apihub@google.com_ or
-      the id of the allowed value associated with the team attribute is
-      _apihub-team-id_. * `owner.email = \"apihub@google.com\" OR
-      team.enum_values.values.display_name: ApiHub Team` - The filter string
-      specifies the APIs where the owner team email is _apihub@google.com_ or
-      the display name of the allowed value associated with the team attribute
-      is `ApiHub Team`. * `owner.email = \"apihub@google.com\" AND
-      attributes.projects/test-project-id/locations/test-location-id/
+      id/locations/test-location-id`. Another supported filter function is
+      `plugins(source_metadata)`. This function filters for resources that are
+      associated with a specific plugin. For example,
+      `plugins(source_metadata) : "projects/test-project-id/locations/test-
+      location-id/plugins/test-plugin-id"` will return resources sourced from
+      the given plugin. Expressions are combined with either `AND` logic
+      operator or `OR` logical operator but not both of them together i.e.
+      only one of the `AND` or `OR` operator can be used throughout the filter
+      string and both the operators cannot be used together. No other logical
+      operators are supported. At most three filter fields are allowed in the
+      filter string and if provided more than that then `INVALID_ARGUMENT`
+      error is returned by the API. Here are a few examples: * `owner.email =
+      \"apihub@google.com\"` - - The owner team email is _apihub@google.com_.
+      * `owner.email = \"apihub@google.com\" AND create_time <
+      \"2021-08-15T14:50:00Z\" AND create_time > \"2021-08-10T12:00:00Z\"` -
+      The owner team email is _apihub@google.com_ and the api was created
+      before _2021-08-15 14:50:00 UTC_ and after _2021-08-10 12:00:00 UTC_. *
+      `owner.email = \"apihub@google.com\" OR team.enum_values.values.id:
+      apihub-team-id` - The filter string specifies the APIs where the owner
+      team email is _apihub@google.com_ or the id of the allowed value
+      associated with the team attribute is _apihub-team-id_. * `owner.email =
+      \"apihub@google.com\" OR team.enum_values.values.display_name: ApiHub
+      Team` - The filter string specifies the APIs where the owner team email
+      is _apihub@google.com_ or the display name of the allowed value
+      associated with the team attribute is `ApiHub Team`. * `owner.email =
+      \"apihub@google.com\" AND attributes.projects/test-project-
+      id/locations/test-location-id/
       attributes/17650f90-4a29-4971-b3c0-d5532da3764b.enum_values.values.id:
       test_enum_id AND attributes.projects/test-project-id/locations/test-
       location-id/
@@ -653,6 +658,37 @@ class ApihubProjectsLocationsApisVersionsSpecsDeleteRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class ApihubProjectsLocationsApisVersionsSpecsFetchAdditionalSpecContentRequest(_messages.Message):
+  r"""A
+  ApihubProjectsLocationsApisVersionsSpecsFetchAdditionalSpecContentRequest
+  object.
+
+  Enums:
+    SpecContentTypeValueValuesEnum: Optional. The type of the spec contents to
+      be retrieved.
+
+  Fields:
+    name: Required. The name of the spec whose contents need to be retrieved.
+      Format: `projects/{project}/locations/{location}/apis/{api}/versions/{ve
+      rsion}/specs/{spec}`
+    specContentType: Optional. The type of the spec contents to be retrieved.
+  """
+
+  class SpecContentTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The type of the spec contents to be retrieved.
+
+    Values:
+      SPEC_CONTENT_TYPE_UNSPECIFIED: Unspecified spec content type. Defaults
+        to spec content uploaded by the user.
+      BOOSTED_SPEC_CONTENT: The spec content type for boosted spec.
+    """
+    SPEC_CONTENT_TYPE_UNSPECIFIED = 0
+    BOOSTED_SPEC_CONTENT = 1
+
+  name = _messages.StringField(1, required=True)
+  specContentType = _messages.EnumField('SpecContentTypeValueValuesEnum', 2)
 
 
 class ApihubProjectsLocationsApisVersionsSpecsGetContentsRequest(_messages.Message):
@@ -1608,9 +1644,9 @@ class ApihubProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -1812,21 +1848,22 @@ class ApihubProjectsLocationsPluginsInstancesListRequest(_messages.Message):
       operator must be one of: `<`, `>` or `=`. Filters are not case
       sensitive. The following fields in the `PluginInstances` are eligible
       for filtering: * `state` - The state of the Plugin Instance. Allowed
-      comparison operators: `=`. A filter function is also supported in the
-      filter string. The filter function is `id(name)`. The `id(name)`
-      function returns the id of the resource name. For example, `id(name) =
-      \"plugin-instance-1\"` is equivalent to `name = \"projects/test-project-
-      id/locations/test-location-id/plugins/plugin-1/instances/plugin-
-      instance-1\"` provided the parent is `projects/test-project-
-      id/locations/test-location-id/plugins/plugin-1`. Expressions are
-      combined with either `AND` logic operator or `OR` logical operator but
-      not both of them together i.e. only one of the `AND` or `OR` operator
-      can be used throughout the filter string and both the operators cannot
-      be used together. No other logical operators are supported. At most
-      three filter fields are allowed in the filter string and if provided
-      more than that then `INVALID_ARGUMENT` error is returned by the API.
-      Here are a few examples: * `state = ENABLED` - The plugin instance is in
-      enabled state.
+      comparison operators: `=`. * `source_project_id` - The source project id
+      of the Plugin Instance. Allowed comparison operators: `=`. A filter
+      function is also supported in the filter string. The filter function is
+      `id(name)`. The `id(name)` function returns the id of the resource name.
+      For example, `id(name) = \"plugin-instance-1\"` is equivalent to `name =
+      \"projects/test-project-id/locations/test-location-
+      id/plugins/plugin-1/instances/plugin-instance-1\"` provided the parent
+      is `projects/test-project-id/locations/test-location-
+      id/plugins/plugin-1`. Expressions are combined with either `AND` logic
+      operator or `OR` logical operator but not both of them together i.e.
+      only one of the `AND` or `OR` operator can be used throughout the filter
+      string and both the operators cannot be used together. No other logical
+      operators are supported. At most three filter fields are allowed in the
+      filter string and if provided more than that then `INVALID_ARGUMENT`
+      error is returned by the API. Here are a few examples: * `state =
+      ENABLED` - The plugin instance is in enabled state.
     pageSize: Optional. The maximum number of hub plugins to return. The
       service may return fewer than this value. If unspecified, at most 50 hub
       plugins will be returned. The maximum value is 1000; values above 1000
@@ -2083,6 +2120,69 @@ class GoogleCloudApihubV1ActionExecutionDetail(_messages.Message):
   """
 
   actionId = _messages.StringField(1)
+
+
+class GoogleCloudApihubV1AdditionalSpecContent(_messages.Message):
+  r"""The additional spec content for the spec. This contains the metadata and
+  the last update time for the additional spec content.
+
+  Enums:
+    SpecContentTypeValueValuesEnum: Required. The type of the spec content.
+
+  Messages:
+    LabelsValue: Optional. The labels of the spec content e.g. specboost addon
+      version.
+
+  Fields:
+    createTime: Output only. The time at which the spec content was created.
+    labels: Optional. The labels of the spec content e.g. specboost addon
+      version.
+    specContentType: Required. The type of the spec content.
+    specContents: Optional. The additional spec contents.
+    updateTime: Output only. The time at which the spec content was last
+      updated.
+  """
+
+  class SpecContentTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of the spec content.
+
+    Values:
+      SPEC_CONTENT_TYPE_UNSPECIFIED: Unspecified spec content type. Defaults
+        to spec content uploaded by the user.
+      BOOSTED_SPEC_CONTENT: The spec content type for boosted spec.
+    """
+    SPEC_CONTENT_TYPE_UNSPECIFIED = 0
+    BOOSTED_SPEC_CONTENT = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels of the spec content e.g. specboost addon version.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  specContentType = _messages.EnumField('SpecContentTypeValueValuesEnum', 3)
+  specContents = _messages.MessageField('GoogleCloudApihubV1SpecContents', 4)
+  updateTime = _messages.StringField(5)
 
 
 class GoogleCloudApihubV1Addon(_messages.Message):
@@ -3889,6 +3989,16 @@ class GoogleCloudApihubV1ExternalApi(_messages.Message):
   updateTime = _messages.StringField(9)
 
 
+class GoogleCloudApihubV1FetchAdditionalSpecContentResponse(_messages.Message):
+  r"""The FetchAdditionalSpecContent method's response.
+
+  Fields:
+    additionalSpecContent: The additional spec content.
+  """
+
+  additionalSpecContent = _messages.MessageField('GoogleCloudApihubV1AdditionalSpecContent', 1)
+
+
 class GoogleCloudApihubV1GatewayPluginAddonConfig(_messages.Message):
   r"""Configuration for gateway plugin addons. This is used to specify the
   list of gateway plugin configs for which the addon is enabled.
@@ -4254,6 +4364,9 @@ class GoogleCloudApihubV1LastExecution(_messages.Message):
       during the last execution.
     result: Output only. The result of the last execution of the plugin
       instance.
+    resultMetadata: Output only. The result metadata of the last execution of
+      the plugin instance. This will be a string representation of a JSON
+      object and will be available on successful execution.
     startTime: Output only. The last execution start time of the plugin
       instance.
   """
@@ -4273,7 +4386,8 @@ class GoogleCloudApihubV1LastExecution(_messages.Message):
   endTime = _messages.StringField(1)
   errorMessage = _messages.StringField(2)
   result = _messages.EnumField('ResultValueValuesEnum', 3)
-  startTime = _messages.StringField(4)
+  resultMetadata = _messages.StringField(4)
+  startTime = _messages.StringField(5)
 
 
 class GoogleCloudApihubV1LintResponse(_messages.Message):
@@ -5547,6 +5661,8 @@ class GoogleCloudApihubV1Spec(_messages.Message):
       value is the attribute values associated with the resource.
 
   Fields:
+    additionalSpecContents: Output only. The additional spec contents for the
+      spec.
     attributes: Optional. The list of user defined attributes associated with
       the spec. The key is the attribute name. It will be of the format:
       `projects/{project}/locations/{location}/attributes/{attribute}`. The
@@ -5618,19 +5734,20 @@ class GoogleCloudApihubV1Spec(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  attributes = _messages.MessageField('AttributesValue', 1)
-  contents = _messages.MessageField('GoogleCloudApihubV1SpecContents', 2)
-  createTime = _messages.StringField(3)
-  details = _messages.MessageField('GoogleCloudApihubV1SpecDetails', 4)
-  displayName = _messages.StringField(5)
-  documentation = _messages.MessageField('GoogleCloudApihubV1Documentation', 6)
-  lintResponse = _messages.MessageField('GoogleCloudApihubV1LintResponse', 7)
-  name = _messages.StringField(8)
-  parsingMode = _messages.EnumField('ParsingModeValueValuesEnum', 9)
-  sourceMetadata = _messages.MessageField('GoogleCloudApihubV1SourceMetadata', 10, repeated=True)
-  sourceUri = _messages.StringField(11)
-  specType = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 12)
-  updateTime = _messages.StringField(13)
+  additionalSpecContents = _messages.MessageField('GoogleCloudApihubV1AdditionalSpecContent', 1, repeated=True)
+  attributes = _messages.MessageField('AttributesValue', 2)
+  contents = _messages.MessageField('GoogleCloudApihubV1SpecContents', 3)
+  createTime = _messages.StringField(4)
+  details = _messages.MessageField('GoogleCloudApihubV1SpecDetails', 5)
+  displayName = _messages.StringField(6)
+  documentation = _messages.MessageField('GoogleCloudApihubV1Documentation', 7)
+  lintResponse = _messages.MessageField('GoogleCloudApihubV1LintResponse', 8)
+  name = _messages.StringField(9)
+  parsingMode = _messages.EnumField('ParsingModeValueValuesEnum', 10)
+  sourceMetadata = _messages.MessageField('GoogleCloudApihubV1SourceMetadata', 11, repeated=True)
+  sourceUri = _messages.StringField(12)
+  specType = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 13)
+  updateTime = _messages.StringField(14)
 
 
 class GoogleCloudApihubV1SpecContents(_messages.Message):
@@ -6052,8 +6169,8 @@ class GoogleLongrunningListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)

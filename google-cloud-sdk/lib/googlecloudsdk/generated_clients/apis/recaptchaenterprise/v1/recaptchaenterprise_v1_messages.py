@@ -414,6 +414,61 @@ class GoogleCloudRecaptchaenterpriseV1ChallengeMetrics(_messages.Message):
   passedCount = _messages.IntegerField(4)
 
 
+class GoogleCloudRecaptchaenterpriseV1ChallengeRule(_messages.Message):
+  r"""A rule to configure the behavior of reCAPTCHA for conditionally
+  presenting a challenge.
+
+  Fields:
+    challenge: Optional. Present a challenge to the user.
+    condition: Optional. A CEL condition that must be met for this rule to
+      apply. Examples: * `score < 0.5` * `user_ip == "123.456.789.000"` *
+      `user_agent.contains("Chrome")` * `score < 0.5 && user_ip ==
+      "123.456.789.000"`
+    noChallenge: Optional. Do not present a challenge to the user.
+  """
+
+  challenge = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1ChallengeRuleChallengeOutcome', 1)
+  condition = _messages.StringField(2)
+  noChallenge = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1ChallengeRuleNoChallengeOutcome', 3)
+
+
+class GoogleCloudRecaptchaenterpriseV1ChallengeRuleChallengeOutcome(_messages.Message):
+  r"""An outcome that indicates that a challenge of a specified difficulty
+  should be presented to the user.
+
+  Enums:
+    DifficultyValueValuesEnum: Optional. The difficulty of the challenge to
+      present to the user. If not specified, the
+      `challenge_security_preference` of the key is used, or `BALANCE` if not
+      set.
+
+  Fields:
+    difficulty: Optional. The difficulty of the challenge to present to the
+      user. If not specified, the `challenge_security_preference` of the key
+      is used, or `BALANCE` if not set.
+  """
+
+  class DifficultyValueValuesEnum(_messages.Enum):
+    r"""Optional. The difficulty of the challenge to present to the user. If
+    not specified, the `challenge_security_preference` of the key is used, or
+    `BALANCE` if not set.
+
+    Values:
+      CHALLENGE_SECURITY_PREFERENCE_UNSPECIFIED: Default type that indicates
+        this enum hasn't been specified.
+      USABILITY: Key tends to show fewer and easier challenges.
+      BALANCE: Key tends to show balanced (in amount and difficulty)
+        challenges.
+      SECURITY: Key tends to show more and harder challenges.
+    """
+    CHALLENGE_SECURITY_PREFERENCE_UNSPECIFIED = 0
+    USABILITY = 1
+    BALANCE = 2
+    SECURITY = 3
+
+  difficulty = _messages.EnumField('DifficultyValueValuesEnum', 1)
+
+
 class GoogleCloudRecaptchaenterpriseV1ChallengeRuleGroup(_messages.Message):
   r"""A collection of challenge rules that applies to one or more actions.
 
@@ -423,9 +478,20 @@ class GoogleCloudRecaptchaenterpriseV1ChallengeRuleGroup(_messages.Message):
       slashes, and underscores. If "*" is provided, the rule group applies to
       all actions. If multiple actions are provided, the rule group is applied
       to all of them. This field is required.
+    challengeRules: Required. A list of rules that configure how reCAPTCHA
+      presents a challenge. reCAPTCHA evaluates these rules in order and
+      applies the first one that matches.
   """
 
   actions = _messages.StringField(1, repeated=True)
+  challengeRules = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1ChallengeRule', 2, repeated=True)
+
+
+class GoogleCloudRecaptchaenterpriseV1ChallengeRuleNoChallengeOutcome(_messages.Message):
+  r"""An outcome that indicates that no challenge should be presented to the
+  user.
+  """
+
 
 
 class GoogleCloudRecaptchaenterpriseV1EndpointVerificationInfo(_messages.Message):
@@ -1044,10 +1110,10 @@ class GoogleCloudRecaptchaenterpriseV1MigrateKeyRequest(_messages.Message):
     skipBillingCheck: Optional. If true, skips the billing check. A reCAPTCHA
       Enterprise key or migrated key behaves differently than a reCAPTCHA
       (non-Enterprise version) key when you reach a quota limit (see
-      https://cloud.google.com/recaptcha/quotas#quota_limit). To avoid any
-      disruption of your usage, we check that a billing account is present. If
-      your usage of reCAPTCHA is under the free quota, you can safely skip the
-      billing check and proceed with the migration. See
+      https://docs.cloud.google.com/recaptcha/quotas#quota_limit). To avoid
+      any disruption of your usage, we check that a billing account is
+      present. If your usage of reCAPTCHA is under the free quota, you can
+      safely skip the billing check and proceed with the migration. See
       https://cloud.google.com/recaptcha/docs/billing-information.
   """
 

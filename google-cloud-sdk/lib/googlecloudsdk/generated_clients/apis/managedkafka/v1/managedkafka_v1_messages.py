@@ -117,10 +117,13 @@ class BrokerCapacityConfig(_messages.Message):
 
   Fields:
     diskSizeGb: Optional. The disk to provision for each broker in Gigabytes.
-      Minimum: 100 GB.
+      Minimum: 100 GB. Deprecated: use `disk_size_gib` instead.
+    diskSizeGib: Optional. The disk to provision for each broker in Gibibytes.
+      Minimum: 100 GiB.
   """
 
   diskSizeGb = _messages.IntegerField(1)
+  diskSizeGib = _messages.IntegerField(2)
 
 
 class BrokerDetails(_messages.Message):
@@ -271,11 +274,13 @@ class Cluster(_messages.Message):
       CREATING: The cluster is being created.
       ACTIVE: The cluster is active.
       DELETING: The cluster is being deleted.
+      UPDATING: The cluster is being updated.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
+    UPDATING = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class BrokerConfigOverridesValue(_messages.Message):
@@ -824,11 +829,14 @@ class EffectiveCapacityConfig(_messages.Message):
   Fields:
     brokerCount: Output only. The number of brokers in the cluster.
     brokerDiskSizeGb: Output only. The disk assigned to each broker in
-      Gigabytes.
+      Gigabytes. Deprecated: use `broker_disk_size_gib` instead.
+    brokerDiskSizeGib: Output only. The disk assigned to each broker in
+      Gibibytes.
   """
 
   brokerCount = _messages.IntegerField(1)
   brokerDiskSizeGb = _messages.IntegerField(2)
+  brokerDiskSizeGib = _messages.IntegerField(3)
 
 
 class Empty(_messages.Message):
@@ -1015,8 +1023,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1333,8 +1341,9 @@ class ManagedkafkaProjectsLocationsClustersConsumerGroupsListRequest(_messages.M
   r"""A ManagedkafkaProjectsLocationsClustersConsumerGroupsListRequest object.
 
   Enums:
-    ViewValueValuesEnum: Optional. Specifies which parts of the ConsumerGroup
-      resource should be returned in the response.
+    ViewValueValuesEnum: Optional. Specifies the view (BASIC or FULL) of the
+      ConsumerGroup resource to be returned in the response. Defaults to FULL
+      view.
 
   Fields:
     filter: Optional. Filter expression for the result. Only supports
@@ -1349,13 +1358,13 @@ class ManagedkafkaProjectsLocationsClustersConsumerGroupsListRequest(_messages.M
     parent: Required. The parent cluster whose consumer groups are to be
       listed. Structured like
       `projects/{project}/locations/{location}/clusters/{cluster}`.
-    view: Optional. Specifies which parts of the ConsumerGroup resource should
-      be returned in the response.
+    view: Optional. Specifies the view (BASIC or FULL) of the ConsumerGroup
+      resource to be returned in the response. Defaults to FULL view.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    r"""Optional. Specifies which parts of the ConsumerGroup resource should
-    be returned in the response.
+    r"""Optional. Specifies the view (BASIC or FULL) of the ConsumerGroup
+    resource to be returned in the response. Defaults to FULL view.
 
     Values:
       CONSUMER_GROUP_VIEW_UNSPECIFIED: The default / unset value. The API will
@@ -1977,9 +1986,9 @@ class ManagedkafkaProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """

@@ -151,6 +151,7 @@ def AddCreateDiskArg(parser, required=True):
       'name': str,
       'replica-zones': arg_parsers.ArgList(str, custom_delim_char=' '),
       'device-name': str,
+      'kms-key': str,
   }
   parser.add_argument(
       '--create-disk',
@@ -754,4 +755,18 @@ def AddInstanceKmsKeyArg(parser, required=False):
       type=str,
       required=required,
       help=helptext,
+  )
+
+
+def AddClearEncryptionKeyArg(parser):
+  """Clear encryption key override for the disk."""
+  helptext = """\
+      The restored disk reverts to GMEK (CMEK is disabled).
+      """
+  parser.add_argument(
+      '--clear-encryption-key',
+      action='store_true',
+      required=False,
+      help=helptext,
+      hidden=True,
   )

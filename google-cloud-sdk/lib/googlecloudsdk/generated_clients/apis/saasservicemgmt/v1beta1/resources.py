@@ -95,17 +95,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_REPLICATIONSINTERNAL = (
-      'projects.locations.replicationsInternal',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'replicationsInternal/{replicationsInternalId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_ROLLOUTKINDS = (
       'projects.locations.rolloutKinds',
       '{+name}',

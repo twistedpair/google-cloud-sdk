@@ -52,7 +52,7 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
     self.projects_locations_regionalEndpoints = self.ProjectsLocationsRegionalEndpointsService(self)
     self.projects_locations_spokes_gatewayAdvertisedRoutes = self.ProjectsLocationsSpokesGatewayAdvertisedRoutesService(self)
     self.projects_locations_spokes = self.ProjectsLocationsSpokesService(self)
-    self.projects_locations_transports_remoteProfiles = self.ProjectsLocationsTransportsRemoteProfilesService(self)
+    self.projects_locations_transports_remoteTransportProfiles = self.ProjectsLocationsTransportsRemoteTransportProfilesService(self)
     self.projects_locations_transports = self.ProjectsLocationsTransportsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -1969,13 +1969,13 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationsTransportsRemoteProfilesService(base_api.BaseApiService):
-    """Service class for the projects_locations_transports_remoteProfiles resource."""
+  class ProjectsLocationsTransportsRemoteTransportProfilesService(base_api.BaseApiService):
+    """Service class for the projects_locations_transports_remoteTransportProfiles resource."""
 
-    _NAME = 'projects_locations_transports_remoteProfiles'
+    _NAME = 'projects_locations_transports_remoteTransportProfiles'
 
     def __init__(self, client):
-      super(NetworkconnectivityV1beta.ProjectsLocationsTransportsRemoteProfilesService, self).__init__(client)
+      super(NetworkconnectivityV1beta.ProjectsLocationsTransportsRemoteTransportProfilesService, self).__init__(client)
       self._upload_configs = {
           }
 
@@ -2066,7 +2066,7 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
         path_params=['parent'],
         query_params=['requestId', 'transportId'],
         relative_path='v1beta/{+parent}/transports',
-        request_field='transportsV1BetaCreateTransportRequest',
+        request_field='transportsV1BetaTransport',
         request_type_name='NetworkconnectivityProjectsLocationsTransportsCreateRequest',
         response_type_name='GoogleLongrunningOperation',
         supports_download=False,

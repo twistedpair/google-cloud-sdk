@@ -174,6 +174,10 @@ class ListServicesResponse(proto.Message):
         next_page_token (str):
             A token indicating there are more items than page_size. Use
             it in the next ListServices request to continue.
+        unreachable (MutableSequence[str]):
+            Output only. For global requests, returns the
+            list of regions that could not be reached within
+            the deadline.
     """
 
     @property
@@ -188,6 +192,10 @@ class ListServicesResponse(proto.Message):
     next_page_token: str = proto.Field(
         proto.STRING,
         number=2,
+    )
+    unreachable: MutableSequence[str] = proto.RepeatedField(
+        proto.STRING,
+        number=3,
     )
 
 

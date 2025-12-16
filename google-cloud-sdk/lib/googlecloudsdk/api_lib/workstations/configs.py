@@ -170,6 +170,25 @@ class Configs:
     if args.startup_script_uri:
       config.host.gceInstance.startupScriptUri = args.startup_script_uri
 
+    if (
+        self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
+        and args.instance_metadata
+    ):
+      instance_metadata_value_message = (
+          self.messages.GceInstance.InstanceMetadataValue
+      )
+      additional_property_message = (
+          self.messages.GceInstance.InstanceMetadataValue.AdditionalProperty
+      )
+      config.host.gceInstance.instanceMetadata = (
+          instance_metadata_value_message(
+              additionalProperties=[
+                  additional_property_message(key=key, value=value)
+                  for key, value in args.instance_metadata.items()
+              ]
+          )
+      )
+
     if self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA):
       config.httpOptions = self.messages.HttpOptions()
       if args.allow_unauthenticated_cors_preflight_requests:
@@ -552,6 +571,26 @@ class Configs:
     if args.startup_script_uri:
       config.host.gceInstance.startupScriptUri = args.startup_script_uri
       update_mask.append('host.gce_instance.startup_script_uri')
+
+    if (
+        self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
+        and args.instance_metadata
+    ):
+      instance_metadata_value_message = (
+          self.messages.GceInstance.InstanceMetadataValue
+      )
+      additional_property_message = (
+          self.messages.GceInstance.InstanceMetadataValue.AdditionalProperty
+      )
+      config.host.gceInstance.instanceMetadata = (
+          instance_metadata_value_message(
+              additionalProperties=[
+                  additional_property_message(key=key, value=value)
+                  for key, value in args.instance_metadata.items()
+              ]
+          )
+      )
+      update_mask.append('host.gce_instance.instance_metadata')
 
     # Shielded Instance Config
     gce_shielded_instance_config = self.messages.GceShieldedInstanceConfig()

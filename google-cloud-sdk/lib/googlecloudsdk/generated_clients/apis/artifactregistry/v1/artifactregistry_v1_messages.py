@@ -1381,6 +1381,22 @@ class BatchDeleteVersionsRequest(_messages.Message):
   validateOnly = _messages.BooleanField(2)
 
 
+class Behavior(_messages.Message):
+  r"""Specifies optional settings to modify the behavior of the CopyRepository
+  operation.
+
+  Fields:
+    continueOnSkippedVersion: Optional. Indicates that the repo copy operation
+      should continue even if a version is skipped due to a non-transient
+      error that should not fail the entire copy operation (e.g. a version
+      missing an underlying file). The operation metadata and response will
+      contain a list of skipped version errors that can be inspected for
+      details on the failure(s).
+  """
+
+  continueOnSkippedVersion = _messages.BooleanField(1)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -1577,56 +1593,79 @@ class CopyRepositoryMetadata(_messages.Message):
     destinationRepository: Repository being copied to. Format:
       projects/{project}/locations/{location}/repositories/{repository}
     packagesCopiedCount: The total number of packages successfully copied.
+    skippedVersionErrorCount: Indicates the total number of skipped version
+      errors encountered during the repo copy.
+    skippedVersionErrorSamples: Lists up to the first 100 skipped version
+      errors encountered during the repo copy. The number of entries are
+      capped at 100 to avoid excessive response size. You may compare the
+      length of this list with the value of `skipped_version_error_count` to
+      determine if the list was truncated.
     sourceRepository: Repository being copied from. Format:
       projects/{project}/locations/{location}/repositories/{repository}
     totalPackagesCount: The total number of packages in the repository.
     totalVersionsCount: The total number of versions in the repository. You
       can use this field to calculate the progress of the repository copy:
-      Progress % = (versions_copied_count / total_versions_count) * 100
+      Progress % = ((`versions_copied_count` + `skipped_version_error_count`)
+      / `total_versions_count`) * 100
     versionsCopiedCount: The total number of versions successfully copied.
   """
 
   copyStartTime = _messages.StringField(1)
   destinationRepository = _messages.StringField(2)
   packagesCopiedCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  sourceRepository = _messages.StringField(4)
-  totalPackagesCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  totalVersionsCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  versionsCopiedCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  skippedVersionErrorCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  skippedVersionErrorSamples = _messages.MessageField('SkippedVersionError', 5, repeated=True)
+  sourceRepository = _messages.StringField(6)
+  totalPackagesCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  totalVersionsCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  versionsCopiedCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
 
 
 class CopyRepositoryRequest(_messages.Message):
   r"""The request for copying from another repository.
 
   Fields:
+    behavior: Optional. Contains opt-in behaviors for the repository copy
+      operation.
     sourceRepository: Required. Repository to copy from. Format:
       projects/{project}/locations/{location}/repositories/{repository}
   """
 
-  sourceRepository = _messages.StringField(1)
+  behavior = _messages.MessageField('Behavior', 1)
+  sourceRepository = _messages.StringField(2)
 
 
 class CopyRepositoryResponse(_messages.Message):
   r"""The response for copying from another repository.
 
   Fields:
+    copyCompleteTime: Represents the time that the copy operation successfully
+      completed.
     copyStartTime: The time that the request was received, and the time we
       will copy from. Artifacts pushed after this time will not be copied.
     destinationRepository: Repository copied to. Format:
       projects/{project}/locations/{location}/repositories/{repository}
     packagesCopiedCount: The total number of packages successfully copied.
-      This equals the number of packages in the source repository.
+    skippedVersionErrorCount: Indicates the total number of skipped version
+      errors encountered during the repo copy.
+    skippedVersionErrorSamples: Lists up to the first 100 skipped version
+      errors encountered during the repo copy. The number of entries are
+      capped at 100 to avoid excessive response size. You may compare the
+      length of this list with the value of `skipped_version_error_count` to
+      determine if the list was truncated.
     sourceRepository: Repository copied from. Format:
       projects/{project}/locations/{location}/repositories/{repository}
     versionsCopiedCount: The total number of versions successfully copied.
-      This equals the number of versions in the source repository.
   """
 
-  copyStartTime = _messages.StringField(1)
-  destinationRepository = _messages.StringField(2)
-  packagesCopiedCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  sourceRepository = _messages.StringField(4)
-  versionsCopiedCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  copyCompleteTime = _messages.StringField(1)
+  copyStartTime = _messages.StringField(2)
+  destinationRepository = _messages.StringField(3)
+  packagesCopiedCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  skippedVersionErrorCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  skippedVersionErrorSamples = _messages.MessageField('SkippedVersionError', 6, repeated=True)
+  sourceRepository = _messages.StringField(7)
+  versionsCopiedCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
 
 
 class DockerImage(_messages.Message):
@@ -3608,6 +3647,22 @@ class SetIamPolicyRequest(_messages.Message):
   """
 
   policy = _messages.MessageField('Policy', 1)
+
+
+class SkippedVersionError(_messages.Message):
+  r"""Represents a version that was skipped during the repo copy due to a non-
+  transient error that should not fail the entire copy operation. For example,
+  if a version is missing an underlying file.
+
+  Fields:
+    error: Specifies the error that occurred during the version copy.
+    version: Specifies the resource name of the version that was skipped.
+      Format: projects/{project}/locations/{location}/repositories/{repository
+      }/packages/{package}/versions/{version}
+  """
+
+  error = _messages.MessageField('Status', 1)
+  version = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):

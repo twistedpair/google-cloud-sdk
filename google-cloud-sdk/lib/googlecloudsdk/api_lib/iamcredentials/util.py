@@ -149,8 +149,7 @@ class ImpersonationAccessTokenProvider(object):
     if ',' in service_account_id:
       raise InvalidImpersonationAccount(
           'More than one service accounts were specified, '
-          'which is not supported. If being set, please unset the '
-          'auth/disable_load_google_auth property and retry.')
+          'which is not supported.')
     response = GenerateAccessToken(service_account_id, scopes)
     return ImpersonationCredentials(
         service_account_id, response.accessToken, response.expireTime, scopes)

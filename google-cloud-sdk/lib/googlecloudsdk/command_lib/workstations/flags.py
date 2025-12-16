@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import argparse
+import textwrap
 
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
@@ -1232,6 +1233,21 @@ def AddStartupScriptUri(parser):
   """
   parser.add_argument(
       '--startup-script-uri', type=str, help=help_text
+  )
+
+
+def AddInstanceMetadata(parser: argparse.ArgumentParser) -> None:
+  """Adds the --instance-metadata flag to the given parser."""
+  help_text = textwrap.dedent("""\
+  Custom metadata to apply to Compute Engine instances.
+
+  Example:
+
+  $ {command} --instance-metadata=key1=value1,key2=value2
+  """)
+  parser.add_argument(
+      '--instance-metadata',
+      type=arg_parsers.ArgDict(key_type=str, value_type=str), help=help_text
   )
 
 

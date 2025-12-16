@@ -81,7 +81,7 @@ def GetSession(timeout='unset',
       redact_request_body_reason=redact_request_body_reason,
   )
   request_wrapper = RequestWrapper()
-  use_google_auth = base.UseGoogleAuth()
+  use_google_auth = True
   credentials = store.LoadIfEnabled(
       allow_account_impersonation, use_google_auth
   )

@@ -134,6 +134,16 @@ class AccessSessionSparkApplicationStageRddOperationGraphResponse(_messages.Mess
   rddOperationGraph = _messages.MessageField('RddOperationGraph', 1)
 
 
+class AccessSessionSparkApplicationStorageRddResponse(_messages.Message):
+  r"""Response containing details of a RDD for a Spark Application.
+
+  Fields:
+    rddStorageInfo: RDD storage details for a Spark Application.
+  """
+
+  rddStorageInfo = _messages.MessageField('RddStorageInfo', 1)
+
+
 class AccessSparkApplicationEnvironmentInfoResponse(_messages.Message):
   r"""Environment details of a Saprk Application.
 
@@ -226,6 +236,16 @@ class AccessSparkApplicationStageRddOperationGraphResponse(_messages.Message):
   """
 
   rddOperationGraph = _messages.MessageField('RddOperationGraph', 1)
+
+
+class AccessSparkApplicationStorageRddResponse(_messages.Message):
+  r"""RDD storage details for a Spark Application.
+
+  Fields:
+    rddStorageInfo: RDD storage details for a Spark Application.
+  """
+
+  rddStorageInfo = _messages.MessageField('RddStorageInfo', 1)
 
 
 class AccumulableInfo(_messages.Message):
@@ -2239,6 +2259,24 @@ class DataprocProjectsLocationsBatchesSparkApplicationsAccessStageRddGraphReques
   stageId = _messages.IntegerField(3)
 
 
+class DataprocProjectsLocationsBatchesSparkApplicationsAccessStorageRddRequest(_messages.Message):
+  r"""A
+  DataprocProjectsLocationsBatchesSparkApplicationsAccessStorageRddRequest
+  object.
+
+  Fields:
+    name: Required. The fully qualified name of the batch to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/batches/BATCH_ID/s
+      parkApplications/APPLICATION_ID"
+    parent: Required. Parent (Batch) resource reference.
+    rddId: Required. RDD ID
+  """
+
+  name = _messages.StringField(1, required=True)
+  parent = _messages.StringField(2)
+  rddId = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class DataprocProjectsLocationsBatchesSparkApplicationsSearchExecutorStageSummaryRequest(_messages.Message):
   r"""A DataprocProjectsLocationsBatchesSparkApplicationsSearchExecutorStageSu
   mmaryRequest object.
@@ -2587,6 +2625,36 @@ class DataprocProjectsLocationsBatchesSparkApplicationsSearchStagesRequest(_mess
   summaryMetricsMask = _messages.StringField(6)
 
 
+class DataprocProjectsLocationsBatchesSparkApplicationsSearchStorageRddsRequest(_messages.Message):
+  r"""A
+  DataprocProjectsLocationsBatchesSparkApplicationsSearchStorageRddsRequest
+  object.
+
+  Fields:
+    includeDataDistribution: Optional. Whether to include data distribution in
+      the response, false by default.
+    includePartitions: Optional. Whether to include partition info in the
+      response, false by default.
+    name: Required. The fully qualified name of the batch to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/batches/BATCH_ID/s
+      parkApplications/APPLICATION_ID"
+    pageSize: Optional. Maximum number of RDDs to return in each response. The
+      service may return fewer than this. A default value like 10 will be
+      taken if not passed or 0 value.
+    pageToken: Optional. A page token received from a previous
+      SearchSparkApplicationStorageRdds call. Provide this token to retrieve
+      the subsequent page.
+    parent: Required. Parent (Batch) resource reference.
+  """
+
+  includeDataDistribution = _messages.BooleanField(1)
+  includePartitions = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  parent = _messages.StringField(6)
+
+
 class DataprocProjectsLocationsBatchesSparkApplicationsSummarizeExecutorsRequest(_messages.Message):
   r"""A
   DataprocProjectsLocationsBatchesSparkApplicationsSummarizeExecutorsRequest
@@ -2709,8 +2777,8 @@ class DataprocProjectsLocationsOperationsListRequest(_messages.Message):
     returnPartialSuccess: When set to true, operations that are reachable are
       returned as normal, and those that are unreachable are returned in the
       ListOperationsResponse.unreachable field.This can only be true when
-      reading across collections e.g. when parent is set to
-      "projects/example/locations/-".This field is not by default supported
+      reading across collections. For example, when parent is set to
+      "projects/example/locations/-".This field is not supported by default
       and will result in an UNIMPLEMENTED error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -3025,6 +3093,75 @@ class DataprocProjectsLocationsSessionsSparkApplicationsAccessStageRddGraphReque
   name = _messages.StringField(1, required=True)
   parent = _messages.StringField(2)
   stageId = _messages.IntegerField(3)
+
+
+class DataprocProjectsLocationsSessionsSparkApplicationsAccessStorageRddRequest(_messages.Message):
+  r"""A
+  DataprocProjectsLocationsSessionsSparkApplicationsAccessStorageRddRequest
+  object.
+
+  Fields:
+    name: Required. The fully qualified name of the session to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
+      D/sparkApplications/APPLICATION_ID"
+    parent: Required. Parent (Session) resource reference.
+    rddId: Required. RDD ID
+  """
+
+  name = _messages.StringField(1, required=True)
+  parent = _messages.StringField(2)
+  rddId = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class DataprocProjectsLocationsSessionsSparkApplicationsSearchConnectExecutionsRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSparkApplicationsSearchConnectExecuti
+  onsRequest object.
+
+  Fields:
+    name: Required. The fully qualified name of the session to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
+      D/sparkApplications/APPLICATION_ID"
+    operationIds: Optional. List of Spark Connect operation IDs to filter by
+      if provided.
+    pageSize: Optional. Maximum number of executions to return in each
+      response. The service may return fewer than this. The default page size
+      is 10; the maximum page size is 100.
+    pageToken: Optional. A page token received from a previous
+      SearchSessionSparkApplicationConnectExecutions call. Provide this token
+      to retrieve the subsequent page.
+    parent: Required. Parent (Session) resource reference.
+    sessionId: Optional. Session ID to filter by if provided.
+  """
+
+  name = _messages.StringField(1, required=True)
+  operationIds = _messages.StringField(2, repeated=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5)
+  sessionId = _messages.StringField(6)
+
+
+class DataprocProjectsLocationsSessionsSparkApplicationsSearchConnectSessionsRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSparkApplicationsSearchConnectSession
+  sRequest object.
+
+  Fields:
+    name: Required. The fully qualified name of the session to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
+      D/sparkApplications/APPLICATION_ID"
+    pageSize: Optional. Maximum number of sessions to return in each response.
+      The service may return fewer than this. The default page size is 10; the
+      maximum page size is 100.
+    pageToken: Optional. A page token received from a previous
+      SearchSessionSparkApplicationConnectSessions call. Provide this token to
+      retrieve the subsequent page.
+    parent: Required. Parent (Session) resource reference.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4)
 
 
 class DataprocProjectsLocationsSessionsSparkApplicationsSearchExecutorStageSummaryRequest(_messages.Message):
@@ -3382,6 +3519,37 @@ class DataprocProjectsLocationsSessionsSparkApplicationsSearchStagesRequest(_mes
   stageIds = _messages.IntegerField(5, repeated=True)
   stageStatus = _messages.EnumField('StageStatusValueValuesEnum', 6)
   summaryMetricsMask = _messages.StringField(7)
+
+
+class DataprocProjectsLocationsSessionsSparkApplicationsSearchStorageRddsRequest(_messages.Message):
+  r"""A
+  DataprocProjectsLocationsSessionsSparkApplicationsSearchStorageRddsRequest
+  object.
+
+  Fields:
+    includeDataDistribution: Optional. Whether to include data distribution
+      information in the response, false by default.
+    includePartitions: Optional. Whether to include partition information in
+      the response, false by default.
+    name: Required. The fully qualified name of the session to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
+      D/sparkApplications/APPLICATION_ID"
+    pageSize: Optional. The maximum number of RDDs to return. The service may
+      return fewer than this value. If unspecified, at most 10 RDDs will be
+      returned. The maximum value is 100; values above 100 will be coerced to
+      100.
+    pageToken: Optional. A page token received from a previous
+      SearchSessionSparkApplicationStorageRdds call. Provide this token to
+      retrieve the subsequent page.
+    parent: Required. Parent (Session) resource reference.
+  """
+
+  includeDataDistribution = _messages.BooleanField(1)
+  includePartitions = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  parent = _messages.StringField(6)
 
 
 class DataprocProjectsLocationsSessionsSparkApplicationsSummarizeExecutorsRequest(_messages.Message):
@@ -4563,8 +4731,8 @@ class DataprocProjectsRegionsOperationsListRequest(_messages.Message):
     returnPartialSuccess: When set to true, operations that are reachable are
       returned as normal, and those that are unreachable are returned in the
       ListOperationsResponse.unreachable field.This can only be true when
-      reading across collections e.g. when parent is set to
-      "projects/example/locations/-".This field is not by default supported
+      reading across collections. For example, when parent is set to
+      "projects/example/locations/-".This field is not supported by default
       and will result in an UNIMPLEMENTED error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -5517,10 +5685,11 @@ class GceClusterConfig(_messages.Message):
       zones where the Dataproc cluster will not be located when Auto Zone is
       enabled. Only one of zone_uri or auto_zone_exclude_zone_uris can be set.
       If both are omitted, the service will pick a zone in the cluster Compute
-      Engine region. If auto_zone_exclude_zone_uris is set and there are at
-      least two zones in the Compute Engine region that are not included in
-      the auto_zone_exclude_zone_uris, the service will pick one of those
-      zones.A full URL, partial URI, or short name are valid. Examples:
+      Engine region. If auto_zone_exclude_zone_uris is set and there is more
+      than one non-excluded zone, the service will pick one of the non-
+      excluded zones. Otherwise, cluster creation will fail with
+      INVALID_ARGUMENT error.A full URL, partial URI, or short name are valid.
+      Examples:
       https://www.googleapis.com/compute/v1/projects/[project_id]/zones/[zone]
       projects/[project_id]/zones/[zone] [zone]
     confidentialInstanceConfig: Optional. Confidential Instance Config for
@@ -7254,8 +7423,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets ListOperationsRequest.return_partial_success and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -9289,6 +9458,38 @@ class SchedulingConfig(_messages.Message):
   schedulingTimeout = _messages.StringField(2)
 
 
+class SearchSessionSparkApplicationConnectExecutionsResponse(_messages.Message):
+  r"""List of Spark Connect Executions for a Spark Application.
+
+  Fields:
+    nextPageToken: This token is included in the response if there are more
+      results to fetch. To fetch additional results, provide this value as the
+      page_token in a subsequent
+      SearchSessionSparkApplicationConnectExecutionsRequest.
+    sparkConnectExecutionInfos: List of Spark Connect Executions for a Spark
+      Application.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sparkConnectExecutionInfos = _messages.MessageField('SparkConnectExecutionInfo', 2, repeated=True)
+
+
+class SearchSessionSparkApplicationConnectSessionsResponse(_messages.Message):
+  r"""List of Spark Connect Sessions for a Spark Application.
+
+  Fields:
+    nextPageToken: This token is included in the response if there are more
+      results to fetch. To fetch additional results, provide this value as the
+      page_token in a subsequent
+      SearchSessionSparkApplicationConnectSessionsRequest.
+    sparkConnectSessionInfos: List of Spark Connect Sessions for a Spark
+      Application.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sparkConnectSessionInfos = _messages.MessageField('SparkConnectSessionInfo', 2, repeated=True)
+
+
 class SearchSessionSparkApplicationExecutorStageSummaryResponse(_messages.Message):
   r"""List of Executors associated with a Spark Application Stage.
 
@@ -9409,6 +9610,19 @@ class SearchSessionSparkApplicationStagesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   sparkApplicationStages = _messages.MessageField('StageData', 2, repeated=True)
+
+
+class SearchSessionSparkApplicationStorageRddsResponse(_messages.Message):
+  r"""Response containing RDDs for a Spark Application.
+
+  Fields:
+    nextPageToken: A token, which can be sent as page_token to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    rddStorageInfos: List of RDD storage details for a Spark Application.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  rddStorageInfos = _messages.MessageField('RddStorageInfo', 2, repeated=True)
 
 
 class SearchSessionSparkApplicationsResponse(_messages.Message):
@@ -9541,6 +9755,20 @@ class SearchSparkApplicationStagesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   sparkApplicationStages = _messages.MessageField('StageData', 2, repeated=True)
+
+
+class SearchSparkApplicationStorageRddsResponse(_messages.Message):
+  r"""List of RDD storage details for a Spark Application.
+
+  Fields:
+    nextPageToken: This token is included in the response if there are more
+      results to fetch. To fetch additional results, provide this value as the
+      page_token in a subsequent SearchSparkApplicationStorageRddsRequest.
+    rddStorageInfos: List of RDD storage details for a Spark Application.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  rddStorageInfos = _messages.MessageField('RddStorageInfo', 2, repeated=True)
 
 
 class SearchSparkApplicationsResponse(_messages.Message):
@@ -10312,6 +10540,85 @@ class SparkConnectConfig(_messages.Message):
   r"""Spark connect configuration for an interactive session."""
 
 
+class SparkConnectExecutionInfo(_messages.Message):
+  r"""Represents the lifecycle and details of an Execution via Spark Connect
+
+  Enums:
+    StateValueValuesEnum: Output only. Current state of the execution.
+
+  Fields:
+    closeTimestamp: Timestamp when the execution was closed.
+    detail: Detailed information about the execution.
+    finishTimestamp: Timestamp when the execution finished.
+    jobIds: Optional. List of job ids associated with the execution.
+    jobTag: Required. Job tag of the execution.
+    operationId: Unique identifier for the operation.
+    sessionId: Required. Session ID, ties the execution to a specific Spark
+      Connect session.
+    sparkSessionTags: Optional. Tags associated with the Spark session.
+    sqlExecIds: Optional. List of sql execution ids associated with the
+      execution.
+    startTimestamp: Timestamp when the execution started.
+    state: Output only. Current state of the execution.
+    statement: statement of the execution.
+    userId: User ID of the user who started the execution.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the execution.
+
+    Values:
+      EXECUTION_STATE_UNKNOWN: Execution state is unknown.
+      EXECUTION_STATE_STARTED: Execution state is started.
+      EXECUTION_STATE_COMPILED: Execution state is compiled.
+      EXECUTION_STATE_READY: Execution state is ready.
+      EXECUTION_STATE_CANCELED: Execution state is canceled.
+      EXECUTION_STATE_FAILED: Execution state is failed.
+      EXECUTION_STATE_FINISHED: Execution state is finished.
+      EXECUTION_STATE_CLOSED: Execution state is closed.
+    """
+    EXECUTION_STATE_UNKNOWN = 0
+    EXECUTION_STATE_STARTED = 1
+    EXECUTION_STATE_COMPILED = 2
+    EXECUTION_STATE_READY = 3
+    EXECUTION_STATE_CANCELED = 4
+    EXECUTION_STATE_FAILED = 5
+    EXECUTION_STATE_FINISHED = 6
+    EXECUTION_STATE_CLOSED = 7
+
+  closeTimestamp = _messages.IntegerField(1)
+  detail = _messages.StringField(2)
+  finishTimestamp = _messages.IntegerField(3)
+  jobIds = _messages.StringField(4, repeated=True)
+  jobTag = _messages.StringField(5)
+  operationId = _messages.StringField(6)
+  sessionId = _messages.StringField(7)
+  sparkSessionTags = _messages.StringField(8, repeated=True)
+  sqlExecIds = _messages.StringField(9, repeated=True)
+  startTimestamp = _messages.IntegerField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  statement = _messages.StringField(12)
+  userId = _messages.StringField(13)
+
+
+class SparkConnectSessionInfo(_messages.Message):
+  r"""Represents session-level information for Spark Connect
+
+  Fields:
+    finishTimestamp: Timestamp when the session finished.
+    sessionId: Required. Session ID of the session.
+    startTimestamp: Timestamp when the session started.
+    totalExecution: Optional. Total number of executions in the session.
+    userId: User ID of the user who started the session.
+  """
+
+  finishTimestamp = _messages.IntegerField(1)
+  sessionId = _messages.StringField(2)
+  startTimestamp = _messages.IntegerField(3)
+  totalExecution = _messages.IntegerField(4)
+  userId = _messages.StringField(5)
+
+
 class SparkHistoryServerConfig(_messages.Message):
   r"""Spark History Server configuration for the workload.
 
@@ -10816,6 +11123,8 @@ class SparkWrapperObject(_messages.Message):
     rddOperationGraph: A RddOperationGraph attribute.
     rddStorageInfo: A RddStorageInfo attribute.
     resourceProfileInfo: A ResourceProfileInfo attribute.
+    sparkConnectExecutionInfo: Spark Connect Execution Info
+    sparkConnectSessionInfo: Spark Connect Session Info
     sparkPlanGraph: A SparkPlanGraph attribute.
     speculationStageSummary: A SpeculationStageSummary attribute.
     sqlExecutionUiData: A SqlExecutionUiData attribute.
@@ -10841,14 +11150,16 @@ class SparkWrapperObject(_messages.Message):
   rddOperationGraph = _messages.MessageField('RddOperationGraph', 13)
   rddStorageInfo = _messages.MessageField('RddStorageInfo', 14)
   resourceProfileInfo = _messages.MessageField('ResourceProfileInfo', 15)
-  sparkPlanGraph = _messages.MessageField('SparkPlanGraph', 16)
-  speculationStageSummary = _messages.MessageField('SpeculationStageSummary', 17)
-  sqlExecutionUiData = _messages.MessageField('SqlExecutionUiData', 18)
-  stageData = _messages.MessageField('StageData', 19)
-  streamBlockData = _messages.MessageField('StreamBlockData', 20)
-  streamingQueryData = _messages.MessageField('StreamingQueryData', 21)
-  streamingQueryProgress = _messages.MessageField('StreamingQueryProgress', 22)
-  taskData = _messages.MessageField('TaskData', 23)
+  sparkConnectExecutionInfo = _messages.MessageField('SparkConnectExecutionInfo', 16)
+  sparkConnectSessionInfo = _messages.MessageField('SparkConnectSessionInfo', 17)
+  sparkPlanGraph = _messages.MessageField('SparkPlanGraph', 18)
+  speculationStageSummary = _messages.MessageField('SpeculationStageSummary', 19)
+  sqlExecutionUiData = _messages.MessageField('SqlExecutionUiData', 20)
+  stageData = _messages.MessageField('StageData', 21)
+  streamBlockData = _messages.MessageField('StreamBlockData', 22)
+  streamingQueryData = _messages.MessageField('StreamingQueryData', 23)
+  streamingQueryProgress = _messages.MessageField('StreamingQueryProgress', 24)
+  taskData = _messages.MessageField('TaskData', 25)
 
 
 class SpeculationStageSummary(_messages.Message):

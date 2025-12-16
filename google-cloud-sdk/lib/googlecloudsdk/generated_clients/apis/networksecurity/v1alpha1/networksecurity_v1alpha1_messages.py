@@ -10127,6 +10127,8 @@ class UllMirroringEngine(_messages.Message):
     LabelsValue: Optional. Labels as key value pairs
 
   Fields:
+    collectors: Output only. The list of collectors associated with this
+      engine.
     createTime: Output only. [Output only] Create time stamp
     labels: Optional. Labels as key value pairs
     name: Identifier. The name of the resource.
@@ -10159,11 +10161,22 @@ class UllMirroringEngine(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  reconciling = _messages.BooleanField(4)
-  updateTime = _messages.StringField(5)
+  collectors = _messages.MessageField('UllMirroringEngineCollector', 1, repeated=True)
+  createTime = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  reconciling = _messages.BooleanField(5)
+  updateTime = _messages.StringField(6)
+
+
+class UllMirroringEngineCollector(_messages.Message):
+  r"""A reference to a UllMirroringCollector resource.
+
+  Fields:
+    name: Output only. The resource name of the UllMirroringCollector.
+  """
+
+  name = _messages.StringField(1)
 
 
 class UrlFilter(_messages.Message):

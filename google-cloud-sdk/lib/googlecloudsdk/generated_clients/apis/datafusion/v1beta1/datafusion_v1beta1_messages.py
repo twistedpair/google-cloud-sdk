@@ -642,9 +642,9 @@ class DatafusionProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -842,6 +842,8 @@ class Instance(_messages.Message):
     maintenanceEvents: Output only. The maintenance events for this instance.
     maintenancePolicy: Optional. Configure the maintenance policy for this
       instance.
+    monitoringConfig: Optional. The monitoring configuration for this
+      instance.
     name: Output only. The name of this instance is in the form of
       projects/{project}/locations/{location}/instances/{instance}.
     networkConfig: Optional. Network configuration options. These are required
@@ -1037,25 +1039,26 @@ class Instance(_messages.Message):
   loggingConfig = _messages.MessageField('LoggingConfig', 18)
   maintenanceEvents = _messages.MessageField('MaintenanceEvent', 19, repeated=True)
   maintenancePolicy = _messages.MessageField('MaintenancePolicy', 20)
-  name = _messages.StringField(21)
-  networkConfig = _messages.MessageField('NetworkConfig', 22)
-  options = _messages.MessageField('OptionsValue', 23)
-  p4ServiceAccount = _messages.StringField(24)
-  patchRevision = _messages.StringField(25)
-  privateInstance = _messages.BooleanField(26)
-  satisfiesPzi = _messages.BooleanField(27)
-  satisfiesPzs = _messages.BooleanField(28)
-  serviceAccount = _messages.StringField(29)
-  serviceEndpoint = _messages.StringField(30)
-  state = _messages.EnumField('StateValueValuesEnum', 31)
-  stateMessage = _messages.StringField(32)
-  tags = _messages.MessageField('TagsValue', 33)
-  tenantProjectId = _messages.StringField(34)
-  type = _messages.EnumField('TypeValueValuesEnum', 35)
-  updateTime = _messages.StringField(36)
-  version = _messages.StringField(37)
-  workforceIdentityServiceEndpoint = _messages.StringField(38)
-  zone = _messages.StringField(39)
+  monitoringConfig = _messages.MessageField('MonitoringConfig', 21)
+  name = _messages.StringField(22)
+  networkConfig = _messages.MessageField('NetworkConfig', 23)
+  options = _messages.MessageField('OptionsValue', 24)
+  p4ServiceAccount = _messages.StringField(25)
+  patchRevision = _messages.StringField(26)
+  privateInstance = _messages.BooleanField(27)
+  satisfiesPzi = _messages.BooleanField(28)
+  satisfiesPzs = _messages.BooleanField(29)
+  serviceAccount = _messages.StringField(30)
+  serviceEndpoint = _messages.StringField(31)
+  state = _messages.EnumField('StateValueValuesEnum', 32)
+  stateMessage = _messages.StringField(33)
+  tags = _messages.MessageField('TagsValue', 34)
+  tenantProjectId = _messages.StringField(35)
+  type = _messages.EnumField('TypeValueValuesEnum', 36)
+  updateTime = _messages.StringField(37)
+  version = _messages.StringField(38)
+  workforceIdentityServiceEndpoint = _messages.StringField(39)
+  zone = _messages.StringField(40)
 
 
 class ListAvailableVersionsResponse(_messages.Message):
@@ -1137,8 +1140,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1296,6 +1299,18 @@ class MaintenanceWindow(_messages.Message):
   """
 
   recurringTimeWindow = _messages.MessageField('RecurringTimeWindow', 1)
+
+
+class MonitoringConfig(_messages.Message):
+  r"""Monitoring configuration for a Data Fusion instance.
+
+  Fields:
+    enableInstanceV2Metrics: Optional. Option to enable the instance v2
+      metrics for this instance. This field is supported only in CDF versions
+      6.11.1.1 and above.
+  """
+
+  enableInstanceV2Metrics = _messages.BooleanField(1)
 
 
 class Namespace(_messages.Message):

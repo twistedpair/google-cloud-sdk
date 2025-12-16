@@ -1066,6 +1066,7 @@ class ComposeRequest(_messages.Message):
     SourceObjectsValueListEntry: A SourceObjectsValueListEntry object.
 
   Fields:
+    deleteSourceObjects: If true, the source objects will be deleted.
     destination: Properties of the resulting object.
     kind: The kind of item this is.
     sourceObjects: The list of source objects that will be concatenated into a
@@ -1103,9 +1104,10 @@ class ComposeRequest(_messages.Message):
     name = _messages.StringField(2)
     objectPreconditions = _messages.MessageField('ObjectPreconditionsValue', 3)
 
-  destination = _messages.MessageField('Object', 1)
-  kind = _messages.StringField(2, default='storage#composeRequest')
-  sourceObjects = _messages.MessageField('SourceObjectsValueListEntry', 3, repeated=True)
+  deleteSourceObjects = _messages.BooleanField(1)
+  destination = _messages.MessageField('Object', 2)
+  kind = _messages.StringField(3, default='storage#composeRequest')
+  sourceObjects = _messages.MessageField('SourceObjectsValueListEntry', 4, repeated=True)
 
 
 class Expr(_messages.Message):

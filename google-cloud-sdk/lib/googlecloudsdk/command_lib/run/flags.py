@@ -72,10 +72,29 @@ IDENTITY_FLAG = base.Argument(
     hidden=True,
 )
 
-ENABLE_WORKLOAD_CERTIFICATE_FLAG = base.Argument(
-    '--enable-workload-certificate',
+IDENTITY_CERTIFICATE_FLAG = base.Argument(
+    '--identity-certificate',
     help='Enables workload certificates using managed workload identity.',
     action=arg_parsers.StoreTrueFalseAction,
+    hidden=True,
+)
+
+_IDENTITY_TYPE_CHOICES = {
+    'SERVICE_ACCOUNT': 'Use a service account.',
+    'WORKLOAD_IDENTITY': 'Use a managed workload identity.',
+}
+
+_TO_ANNOTATION_IDENTITY_TYPE_STR = {
+    'SERVICE_ACCOUNT': 'service-account',
+    'WORKLOAD_IDENTITY': 'workload-identity',
+}
+
+IDENTITY_TYPE_FLAG = base.Argument(
+    '--identity-type',
+    choices=_IDENTITY_TYPE_CHOICES,
+    help=(
+        'Configures the type of identity to be used by the resource.'
+    ),
     hidden=True,
 )
 
@@ -1976,6 +1995,16 @@ def AddPriorityFlag(parser):
   )
 
 
+def AddDelayExecutionFlag(parser):
+  """Add job delay execution flag."""
+  parser.add_argument(
+      '--delay-execution',
+      action=arg_parsers.StoreTrueFalseAction,
+      hidden=True,
+      help='True if the executions of the job can be delayed to start.',
+  )
+
+
 def AddTasksFlag(parser, for_execution_overrides=False):
   """Add job number of tasks flag which maps to job.spec.template.spec.task_count."""
   help_text = (
@@ -2380,6 +2409,7 @@ def HasExecutionOverrides(args):
       'task_timeout',
       'tasks',
       'priority_tier',
+      'delay_execution',
   ]
   return HasChanges(args, overrides_flags) or FlagIsExplicitlySet(
       args, 'containers'
@@ -3113,11 +3143,18 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
               revision.IDENTITY_ANNOTATION
           )
       )
-  if FlagIsExplicitlySet(args, 'enable_workload_certificate'):
+  if FlagIsExplicitlySet(args, 'identity_certificate'):
     changes.append(
         config_changes.SetTemplateAnnotationChange(
-            revision.ENABLE_WORKLOAD_CERTIFICATE_ANNOTATION,
-            str(args.enable_workload_certificate).lower(),
+            revision.IDENTITY_CERTIFICATE_ENABLED_ANNOTATION,
+            str(args.identity_certificate).lower(),
+        )
+    )
+  if FlagIsExplicitlySet(args, 'identity_type'):
+    changes.append(
+        config_changes.SetTemplateAnnotationChange(
+            revision.IDENTITY_TYPE_ANNOTATION,
+            _TO_ANNOTATION_IDENTITY_TYPE_STR[args.identity_type],
         )
     )
   if FlagIsExplicitlySet(args, 'mesh_dataplane'):
@@ -3494,6 +3531,12 @@ def GetJobConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
     changes.append(
         config_changes.JobPriorityTierChange(
             priority_tier=args.priority_tier
+        )
+    )
+  if FlagIsExplicitlySet(args, 'delay_execution'):
+    changes.append(
+        config_changes.DelayExecutionChange(
+            delay_execution=args.delay_execution
         )
     )
   if FlagIsExplicitlySet(args, 'tasks'):

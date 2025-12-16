@@ -61,6 +61,16 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  NAMESPACES_INSTANCES = (
+      'namespaces.instances',
+      '{+name}',
+      {
+          '':
+              'namespaces/{namespacesId}/instances/{instancesId}',
+      },
+      ['name'],
+      True
+  )
   NAMESPACES_JOBS = (
       'namespaces.jobs',
       '{+name}',

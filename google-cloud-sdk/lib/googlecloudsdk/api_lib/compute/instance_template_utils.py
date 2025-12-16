@@ -59,6 +59,7 @@ def CreateNetworkInterfaceMessage(
     vlan=None,
     igmp_query=None,
     enable_vpc_scoped_dns=None,
+    service_class_id=None,
 ):
   """Creates and returns a new NetworkInterface message.
 
@@ -70,47 +71,43 @@ def CreateNetworkInterfaceMessage(
     private_ip: IPv4 internal IP address to assign to the instance.
     subnet_region: region for subnetwork,
     subnet: regional subnetwork,
-    address: specify static address for instance template
-               * None - no address,
-               * EPHEMERAL_ADDRESS - ephemeral address,
-               * string - address name to be fetched from GCE API.
-    alias_ip_ranges_string: command line string specifying a list of alias
-        IP ranges.
-    network_tier: specify network tier for instance template
-               * None - no network tier
-               * PREMIUM - network tier being PREMIUM
-               * SELECT - network tier being SELECT
-               * STANDARD - network tier being STANDARD
-    stack_type: identify whether IPv6 features are enabled
-               * IPV4_ONLY - can only have IPv4 address
-               * IPV4_IPV6 - can have both IPv4 and IPv6 address
-               * IPV6_ONLY - can only have IPv6 address
-    ipv6_network_tier: specify network tier for IPv6 access config
-               * PREMIUM - network tier being PREMIUM
-               * STANDARD - network tier being STANDARD
-    nic_type: specify the type of NetworkInterface Controller
-               * GVNIC
-               * VIRTIO_NET
+    address: specify static address for instance template * None - no address, *
+      EPHEMERAL_ADDRESS - ephemeral address, * string - address name to be
+      fetched from GCE API.
+    alias_ip_ranges_string: command line string specifying a list of alias IP
+      ranges.
+    network_tier: specify network tier for instance template * None - no network
+      tier * PREMIUM - network tier being PREMIUM * SELECT - network tier being
+      SELECT * STANDARD - network tier being STANDARD
+    stack_type: identify whether IPv6 features are enabled * IPV4_ONLY - can
+      only have IPv4 address * IPV4_IPV6 - can have both IPv4 and IPv6 address *
+      IPV6_ONLY - can only have IPv6 address
+    ipv6_network_tier: specify network tier for IPv6 access config * PREMIUM -
+      network tier being PREMIUM * STANDARD - network tier being STANDARD
+    nic_type: specify the type of NetworkInterface Controller * GVNIC *
+      VIRTIO_NET
     ipv6_public_ptr_domain: a string represents the custom PTR domain assigned
       to the interface.
     ipv6_address: a string represents the external IPv6 address reserved to the
       interface.
-    ipv6_prefix_length: a string represents the external IPv6 address
-      prefix length reserved to the interface.
+    ipv6_prefix_length: a string represents the external IPv6 address prefix
+      length reserved to the interface.
     external_ipv6_address: a string represents the external IPv6 address
       reserved to the interface.
     external_ipv6_prefix_length: a string represents the external IPv6 address
       prefix length reserved to the interface.
     internal_ipv6_address: a string represents the internal IPv6 address
       reserved to the interface.
-    internal_ipv6_prefix_length:  the internal IPv6 address prefix
-      length of the internal IPv6 address reserved to the interface.
+    internal_ipv6_prefix_length:  the internal IPv6 address prefix length of the
+      internal IPv6 address reserved to the interface.
     network_attachment: URL of a network attachment to connect the interface to.
     network_queue_count: the number of queues assigned to the network interface.
     vlan: the VLAN tag of the network interface.
     igmp_query: the IGMP query mode of the network interface.
     enable_vpc_scoped_dns: If True, indicates that this network interface can be
       used to send DNS queries to the VPC network's scope.
+    service_class_id: Producer Service's Service class Id for the region of this
+      network interface. Can only be used with network_attachment.
 
   Returns:
     network_interface: a NetworkInterface message object
@@ -236,6 +233,9 @@ def CreateNetworkInterfaceMessage(
   if enable_vpc_scoped_dns:
     network_interface.enableVpcScopedDns = enable_vpc_scoped_dns
 
+  if service_class_id:
+    network_interface.serviceClassId = service_class_id
+
   return network_interface
 
 
@@ -246,6 +246,7 @@ def CreateNetworkInterfaceMessages(
     network_interface_arg,
     subnet_region,
     support_enable_vpc_scoped_dns=False,
+    support_service_class_id=False,
 ):
   """Create network interface messages.
 
@@ -257,6 +258,8 @@ def CreateNetworkInterfaceMessages(
     subnet_region: region of the subnetwork.
     support_enable_vpc_scoped_dns: Indicates whether setting enable vpc scoped
       dns on network interfaces is supported.
+    support_service_class_id: Indicates whether setting service class id on
+      network interfaces is supported.
 
   Returns:
     list, items are NetworkInterfaceMessages.
@@ -278,6 +281,9 @@ def CreateNetworkInterfaceMessages(
       enable_vpc_scoped_dns = None
       if support_enable_vpc_scoped_dns:
         enable_vpc_scoped_dns = 'enable-vpc-scoped-dns' in interface
+      service_class_id = None
+      if support_service_class_id:
+        service_class_id = interface.get('service-class-id', None)
 
       result.append(
           CreateNetworkInterfaceMessage(
@@ -316,6 +322,7 @@ def CreateNetworkInterfaceMessages(
               vlan=interface.get('vlan', None),
               igmp_query=interface.get('igmp-query', None),
               enable_vpc_scoped_dns=enable_vpc_scoped_dns,
+              service_class_id=service_class_id,
           )
       )
   return result

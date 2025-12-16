@@ -684,15 +684,12 @@ def add_dataset_config_location_flag(parser, is_required=True):
   )
 
 
-def add_dataset_config_create_update_flags(
-    parser, is_update=False, release_track=base.ReleaseTrack.GA
-):
+def add_dataset_config_create_update_flags(parser, is_update=False):
   """Adds the flags for the dataset-config create and update commands.
 
   Args:
     parser (parser_arguments.ArgumentInterceptor): Parser passed to surface.
     is_update (bool): True if flags are for the dataset-configs update command.
-    release_track (base.ReleaseTrack): The release track of command.
   """
   parser.add_argument(
       '--retention-period-days',
@@ -702,18 +699,17 @@ def add_dataset_config_create_update_flags(
       help='Provide retention period for the config.',
   )
 
-  if release_track == base.ReleaseTrack.ALPHA:
-    parser.add_argument(
-        '--activity-data-retention-period-days',
-        type=int,
-        metavar='ACTIVITY_DATA_RETENTION_DAYS',
-        required=False,
-        help=(
-            'Provide retention period for the activity data in the config. This'
-            ' overrides the retention period for activity data. Otherwise, the'
-            ' `retention_period_days` value is used for activity data as well.'
-        ),
-    )
+  parser.add_argument(
+      '--activity-data-retention-period-days',
+      type=int,
+      metavar='ACTIVITY_DATA_RETENTION_DAYS',
+      required=False,
+      help=(
+          'Provide retention period for the activity data in the config. This'
+          ' overrides the retention period for activity data. Otherwise, the'
+          ' `retention_period_days` value is used for activity data as well.'
+      ),
+  )
 
   parser.add_argument(
       '--description',
@@ -1317,15 +1313,27 @@ def check_if_use_gsutil_style(args):
   return use_gsutil_style
 
 
-def add_batch_jobs_flags(parser):
+def add_batch_jobs_flags(parser, track=base.ReleaseTrack.GA):
   """Adds the flags for the batch-operations jobs create command."""
 
-  parser.add_argument(
+  bucket_source = parser.add_group(mutex=True, required=True)
+  bucket_source.add_argument(
       '--bucket',
-      required=True,
-      help='Bucket containing the objects that the batch job will operate on.',
+      help=(
+          'Bucket containing the objects that the batch job will operate on.'
+      ),
       type=str,
   )
+  if track == base.ReleaseTrack.ALPHA:
+    bucket_source.add_argument(
+        '--bucket-list',
+        help=(
+            'List of buckets containing the objects that the batch job will'
+            ' operate on.'
+        ),
+        type=arg_parsers.ArgList(),
+        metavar='BUCKETS',
+    )
 
   source = parser.add_group(
       mutex=True,

@@ -48,8 +48,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -152,11 +152,80 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class ObservabilityFoldersLocationsGetSettingsRequest(_messages.Message):
+  r"""A ObservabilityFoldersLocationsGetSettingsRequest object.
+
+  Fields:
+    name: Required. Name of the settings to retrieve. Name format:
+      "projects/[PROJECT_ID]/locations/[LOCATION]/settings"
+      "folders/[FOLDER_ID]/locations/[LOCATION]/settings"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION]/settings"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ObservabilityFoldersLocationsUpdateSettingsRequest(_messages.Message):
+  r"""A ObservabilityFoldersLocationsUpdateSettingsRequest object.
+
+  Fields:
+    name: Identifier. The resource name of the settings.
+    settings: A Settings resource to be passed as the request body.
+    updateMask: Optional. The field mask specifying which fields of the
+      settings are to be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  settings = _messages.MessageField('Settings', 2)
+  updateMask = _messages.StringField(3)
+
+
+class ObservabilityOrganizationsLocationsGetSettingsRequest(_messages.Message):
+  r"""A ObservabilityOrganizationsLocationsGetSettingsRequest object.
+
+  Fields:
+    name: Required. Name of the settings to retrieve. Name format:
+      "projects/[PROJECT_ID]/locations/[LOCATION]/settings"
+      "folders/[FOLDER_ID]/locations/[LOCATION]/settings"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION]/settings"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ObservabilityOrganizationsLocationsUpdateSettingsRequest(_messages.Message):
+  r"""A ObservabilityOrganizationsLocationsUpdateSettingsRequest object.
+
+  Fields:
+    name: Identifier. The resource name of the settings.
+    settings: A Settings resource to be passed as the request body.
+    updateMask: Optional. The field mask specifying which fields of the
+      settings are to be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  settings = _messages.MessageField('Settings', 2)
+  updateMask = _messages.StringField(3)
+
+
 class ObservabilityProjectsLocationsGetRequest(_messages.Message):
   r"""A ObservabilityProjectsLocationsGetRequest object.
 
   Fields:
     name: Resource name for the location.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ObservabilityProjectsLocationsGetSettingsRequest(_messages.Message):
+  r"""A ObservabilityProjectsLocationsGetSettingsRequest object.
+
+  Fields:
+    name: Required. Name of the settings to retrieve. Name format:
+      "projects/[PROJECT_ID]/locations/[LOCATION]/settings"
+      "folders/[FOLDER_ID]/locations/[LOCATION]/settings"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION]/settings"
   """
 
   name = _messages.StringField(1, required=True)
@@ -229,9 +298,9 @@ class ObservabilityProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -353,6 +422,21 @@ class ObservabilityProjectsLocationsTraceScopesPatchRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   traceScope = _messages.MessageField('TraceScope', 2)
+  updateMask = _messages.StringField(3)
+
+
+class ObservabilityProjectsLocationsUpdateSettingsRequest(_messages.Message):
+  r"""A ObservabilityProjectsLocationsUpdateSettingsRequest object.
+
+  Fields:
+    name: Identifier. The resource name of the settings.
+    settings: A Settings resource to be passed as the request body.
+    updateMask: Optional. The field mask specifying which fields of the
+      settings are to be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  settings = _messages.MessageField('Settings', 2)
   updateMask = _messages.StringField(3)
 
 
@@ -512,6 +596,31 @@ class Scope(_messages.Message):
   name = _messages.StringField(2)
   traceScope = _messages.StringField(3)
   updateTime = _messages.StringField(4)
+
+
+class Settings(_messages.Message):
+  r"""Describes the settings associated with a project, organization, or
+  folder.
+
+  Fields:
+    defaultStorageLocation: Optional. The location which should be used when
+      any regional resources are provisioned by GCP.
+    kmsKeyName: Optional. The resource name for the configured Cloud KMS key.
+      KMS key name format: "projects/[PROJECT_ID]/locations/[LOCATION]/keyRing
+      s/[KEYRING]/cryptoKeys/[KEY]" For example: `"projects/my-
+      project/locations/us-central1/keyRings/my-ring/cryptoKeys/my-key"`
+    name: Identifier. The resource name of the settings.
+    serviceAccountId: Output only. The service account for the given resource
+      container, such as project or folder. This will be used by Cloud
+      Observability to perform actions in the container's project like access
+      KMS keys or create Links. Always the same service account per resource
+      container regardless of region.
+  """
+
+  defaultStorageLocation = _messages.StringField(1)
+  kmsKeyName = _messages.StringField(2)
+  name = _messages.StringField(3)
+  serviceAccountId = _messages.StringField(4)
 
 
 class StandardQueryParameters(_messages.Message):

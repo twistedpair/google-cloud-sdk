@@ -32,7 +32,6 @@ import textwrap
 
 from apitools.base.py import exceptions
 from googlecloudsdk.api_lib.oslogin import client as oslogin_client
-from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.oslogin import oslogin_utils
 from googlecloudsdk.command_lib.util import gaia
 from googlecloudsdk.core import config
@@ -1360,10 +1359,7 @@ def GetOsloginState(
       cloud_run_params['project_id'] if cloud_run_params else project.name
   )
 
-  if release_track in [
-      base.ReleaseTrack.ALPHA,
-      base.ReleaseTrack.BETA,
-  ] and (oslogin_state.third_party_user or oslogin_state.require_certificates):
+  if (oslogin_state.third_party_user or oslogin_state.require_certificates):
     user_email = quote(user_email, safe=':@')
     if app_engine_params:
       ValidateCertificate(oslogin_state, app_engine_params)
@@ -1418,18 +1414,6 @@ def GetOsloginState(
   # exists associated with the project. If either are not set, import an SSH
   # public key. Otherwise update the expiration time if needed.
   else:
-    if oslogin_state.third_party_user:
-      raise NotImplementedError(
-          'SSH using federated workforce identities is not yet generally '
-          'available (GA). Please use `gcloud beta compute ssh` to SSH using '
-          'a third-party identity.'
-      )
-    if oslogin_state.require_certificates:
-      raise NotImplementedError(
-          'SSH using certificates is not yet generally available (GA). Please'
-          ' use `gcloud beta compute ssh` to SSH to VMs that require'
-          ' certificate authentication.'
-      )
     login_profile = oslogin.GetLoginProfile(
         user_email,
         cloud_run_params['project_id'] if cloud_run_params else project.name,

@@ -396,11 +396,6 @@ def AvailableAccounts():
   return sorted(accounts)
 
 
-def GoogleAuthDisabledGlobally():
-  """Returns True if google-auth is disabled globally."""
-  return properties.VALUES.auth.disable_load_google_auth.GetBool()
-
-
 def _TokenExpiresWithinWindow(expiry_window,
                               token_expiry_time,
                               max_window_seconds=3600):
@@ -574,7 +569,6 @@ def LoadFreshCredential(account=None,
     oauth2client.client.Credentials.
 
     * use_google_auth is True
-    * google-auth is not globally disabled by auth/disable_load_google_auth.
 
   Raises:
     NoActiveAccountException: If account is not provided and there is no
@@ -621,7 +615,6 @@ def LoadIfEnabled(allow_account_impersonation=True, use_google_auth=True):
     oauth2client.client.Credentials.
 
     * use_google_auth is True
-    * google-auth is not globally disabled by auth/disable_load_google_auth.
 
   Raises:
     NoActiveAccountException: If account is not provided and there is no
@@ -830,7 +823,6 @@ def Load(
     oauth2client.client.Credentials.
 
     * use_google_auth is True
-    * google-auth is not globally disabled by auth/disable_load_google_auth.
 
   Raises:
     NoActiveAccountException: If account is not provided and there is no
@@ -844,8 +836,6 @@ def Load(
     AccountImpersonationError: If impersonation is requested but an
       impersonation provider is not configured.
   """
-  use_google_auth = use_google_auth and (not GoogleAuthDisabledGlobally())
-
   impersonate_service_account = (
       properties.VALUES.auth.impersonate_service_account.Get())
   if allow_account_impersonation and impersonate_service_account:
@@ -1754,8 +1744,6 @@ def AcquireFromToken(refresh_token,
     * use_google_auth=True
     * google-auth is not globally disabled by auth/disable_load_google_auth.
   """
-  use_google_auth = use_google_auth and (not GoogleAuthDisabledGlobally())
-
   if token_uri is None:
     token_uri = c_creds.GetDefaultTokenUri()
   if use_google_auth:

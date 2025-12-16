@@ -49,6 +49,8 @@ class CloudkmsV1(base_api.BaseApiClient):
     self.projects_locations_keyRings_importJobs = self.ProjectsLocationsKeyRingsImportJobsService(self)
     self.projects_locations_keyRings = self.ProjectsLocationsKeyRingsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_singleTenantHsmInstances_proposals = self.ProjectsLocationsSingleTenantHsmInstancesProposalsService(self)
+    self.projects_locations_singleTenantHsmInstances = self.ProjectsLocationsSingleTenantHsmInstancesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -1715,6 +1717,269 @@ class CloudkmsV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='CloudkmsProjectsLocationsOperationsGetRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSingleTenantHsmInstancesProposalsService(base_api.BaseApiService):
+    """Service class for the projects_locations_singleTenantHsmInstances_proposals resource."""
+
+    _NAME = 'projects_locations_singleTenantHsmInstances_proposals'
+
+    def __init__(self, client):
+      super(CloudkmsV1.ProjectsLocationsSingleTenantHsmInstancesProposalsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Approve(self, request, global_params=None):
+      r"""Approves a SingleTenantHsmInstanceProposal for a given SingleTenantHsmInstance. The proposal must be in the PENDING state.
+
+      Args:
+        request: (CloudkmsProjectsLocationsSingleTenantHsmInstancesProposalsApproveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ApproveSingleTenantHsmInstanceProposalResponse) The response message.
+      """
+      config = self.GetMethodConfig('Approve')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Approve.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/singleTenantHsmInstances/{singleTenantHsmInstancesId}/proposals/{proposalsId}:approve',
+        http_method='POST',
+        method_id='cloudkms.projects.locations.singleTenantHsmInstances.proposals.approve',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:approve',
+        request_field='approveSingleTenantHsmInstanceProposalRequest',
+        request_type_name='CloudkmsProjectsLocationsSingleTenantHsmInstancesProposalsApproveRequest',
+        response_type_name='ApproveSingleTenantHsmInstanceProposalResponse',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new SingleTenantHsmInstanceProposal for a given SingleTenantHsmInstance.
+
+      Args:
+        request: (CloudkmsProjectsLocationsSingleTenantHsmInstancesProposalsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/singleTenantHsmInstances/{singleTenantHsmInstancesId}/proposals',
+        http_method='POST',
+        method_id='cloudkms.projects.locations.singleTenantHsmInstances.proposals.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['singleTenantHsmInstanceProposalId'],
+        relative_path='v1/{+parent}/proposals',
+        request_field='singleTenantHsmInstanceProposal',
+        request_type_name='CloudkmsProjectsLocationsSingleTenantHsmInstancesProposalsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a SingleTenantHsmInstanceProposal.
+
+      Args:
+        request: (CloudkmsProjectsLocationsSingleTenantHsmInstancesProposalsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/singleTenantHsmInstances/{singleTenantHsmInstancesId}/proposals/{proposalsId}',
+        http_method='DELETE',
+        method_id='cloudkms.projects.locations.singleTenantHsmInstances.proposals.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='CloudkmsProjectsLocationsSingleTenantHsmInstancesProposalsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Execute(self, request, global_params=None):
+      r"""Executes a SingleTenantHsmInstanceProposal for a given SingleTenantHsmInstance. The proposal must be in the APPROVED state.
+
+      Args:
+        request: (CloudkmsProjectsLocationsSingleTenantHsmInstancesProposalsExecuteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Execute')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Execute.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/singleTenantHsmInstances/{singleTenantHsmInstancesId}/proposals/{proposalsId}:execute',
+        http_method='POST',
+        method_id='cloudkms.projects.locations.singleTenantHsmInstances.proposals.execute',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:execute',
+        request_field='executeSingleTenantHsmInstanceProposalRequest',
+        request_type_name='CloudkmsProjectsLocationsSingleTenantHsmInstancesProposalsExecuteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns metadata for a given SingleTenantHsmInstanceProposal.
+
+      Args:
+        request: (CloudkmsProjectsLocationsSingleTenantHsmInstancesProposalsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SingleTenantHsmInstanceProposal) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/singleTenantHsmInstances/{singleTenantHsmInstancesId}/proposals/{proposalsId}',
+        http_method='GET',
+        method_id='cloudkms.projects.locations.singleTenantHsmInstances.proposals.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='CloudkmsProjectsLocationsSingleTenantHsmInstancesProposalsGetRequest',
+        response_type_name='SingleTenantHsmInstanceProposal',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists SingleTenantHsmInstanceProposals.
+
+      Args:
+        request: (CloudkmsProjectsLocationsSingleTenantHsmInstancesProposalsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSingleTenantHsmInstanceProposalsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/singleTenantHsmInstances/{singleTenantHsmInstancesId}/proposals',
+        http_method='GET',
+        method_id='cloudkms.projects.locations.singleTenantHsmInstances.proposals.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'showDeleted'],
+        relative_path='v1/{+parent}/proposals',
+        request_field='',
+        request_type_name='CloudkmsProjectsLocationsSingleTenantHsmInstancesProposalsListRequest',
+        response_type_name='ListSingleTenantHsmInstanceProposalsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSingleTenantHsmInstancesService(base_api.BaseApiService):
+    """Service class for the projects_locations_singleTenantHsmInstances resource."""
+
+    _NAME = 'projects_locations_singleTenantHsmInstances'
+
+    def __init__(self, client):
+      super(CloudkmsV1.ProjectsLocationsSingleTenantHsmInstancesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new SingleTenantHsmInstance in a given Project and Location. User must create a RegisterTwoFactorAuthKeys proposal with this single-tenant HSM instance to finish setup of the instance.
+
+      Args:
+        request: (CloudkmsProjectsLocationsSingleTenantHsmInstancesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/singleTenantHsmInstances',
+        http_method='POST',
+        method_id='cloudkms.projects.locations.singleTenantHsmInstances.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['singleTenantHsmInstanceId'],
+        relative_path='v1/{+parent}/singleTenantHsmInstances',
+        request_field='singleTenantHsmInstance',
+        request_type_name='CloudkmsProjectsLocationsSingleTenantHsmInstancesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns metadata for a given SingleTenantHsmInstance.
+
+      Args:
+        request: (CloudkmsProjectsLocationsSingleTenantHsmInstancesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SingleTenantHsmInstance) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/singleTenantHsmInstances/{singleTenantHsmInstancesId}',
+        http_method='GET',
+        method_id='cloudkms.projects.locations.singleTenantHsmInstances.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='CloudkmsProjectsLocationsSingleTenantHsmInstancesGetRequest',
+        response_type_name='SingleTenantHsmInstance',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists SingleTenantHsmInstances.
+
+      Args:
+        request: (CloudkmsProjectsLocationsSingleTenantHsmInstancesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSingleTenantHsmInstancesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/singleTenantHsmInstances',
+        http_method='GET',
+        method_id='cloudkms.projects.locations.singleTenantHsmInstances.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'showDeleted'],
+        relative_path='v1/{+parent}/singleTenantHsmInstances',
+        request_field='',
+        request_type_name='CloudkmsProjectsLocationsSingleTenantHsmInstancesListRequest',
+        response_type_name='ListSingleTenantHsmInstancesResponse',
         supports_download=False,
     )
 

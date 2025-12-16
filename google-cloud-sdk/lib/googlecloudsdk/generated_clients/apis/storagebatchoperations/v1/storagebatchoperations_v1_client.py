@@ -39,10 +39,48 @@ class StoragebatchoperationsV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_jobs_bucketOperations = self.ProjectsLocationsJobsBucketOperationsService(self)
     self.projects_locations_jobs = self.ProjectsLocationsJobsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsJobsBucketOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_jobs_bucketOperations resource."""
+
+    _NAME = 'projects_locations_jobs_bucketOperations'
+
+    def __init__(self, client):
+      super(StoragebatchoperationsV1.ProjectsLocationsJobsBucketOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists BucketOperations in a given project and job.
+
+      Args:
+        request: (StoragebatchoperationsProjectsLocationsJobsBucketOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBucketOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}/bucketOperations',
+        http_method='GET',
+        method_id='storagebatchoperations.projects.locations.jobs.bucketOperations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/bucketOperations',
+        request_field='',
+        request_type_name='StoragebatchoperationsProjectsLocationsJobsBucketOperationsListRequest',
+        response_type_name='ListBucketOperationsResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsJobsService(base_api.BaseApiService):
     """Service class for the projects_locations_jobs resource."""

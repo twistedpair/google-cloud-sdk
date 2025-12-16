@@ -324,7 +324,8 @@ class AndroidRoboTest(_messages.Message):
       ROBO_MODE_UNSPECIFIED: This means that the server should choose the
         mode. Recommended.
       ROBO_VERSION_1: Runs Robo in UIAutomator-only mode without app resigning
-      ROBO_VERSION_2: Runs Robo in standard Espresso with UIAutomator fallback
+      ROBO_VERSION_2: Deprecated: Use ROBO_VERSION_1 instead for all use
+        cases. Runs Robo in standard Espresso with UIAutomator fallback
     """
     ROBO_MODE_UNSPECIFIED = 0
     ROBO_VERSION_1 = 1

@@ -677,7 +677,7 @@ def AddUpdateInstanceFlags(parser):
   gpu_group.add_argument(
       '--install-gpu-driver',
       help='Install gpu driver',
-      type=bool)
+      action='store_true',)
   gpu_group.add_argument(
       '--custom-gpu-driver-path',
       help='custom gpu driver path',

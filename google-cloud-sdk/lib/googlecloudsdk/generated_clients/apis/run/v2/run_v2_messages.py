@@ -275,6 +275,8 @@ class GoogleCloudRunV2Condition(_messages.Message):
       CANCELLED: The execution was cancelled by users.
       CANCELLING: The execution is in the process of being cancelled.
       DELETED: The execution was deleted.
+      FLEX_START_PENDING: A Flex priority execution is waiting for a start
+        time.
     """
     EXECUTION_REASON_UNDEFINED = 0
     JOB_STATUS_SERVICE_POLLING_ERROR = 1
@@ -282,6 +284,7 @@ class GoogleCloudRunV2Condition(_messages.Message):
     CANCELLED = 3
     CANCELLING = 4
     DELETED = 5
+    FLEX_START_PENDING = 6
 
   class ReasonValueValuesEnum(_messages.Enum):
     r"""Output only. A common (service-level) reason for this condition.
@@ -1543,10 +1546,13 @@ class GoogleCloudRunV2ListServicesResponse(_messages.Message):
     nextPageToken: A token indicating there are more items than page_size. Use
       it in the next ListServices request to continue.
     services: The resulting list of Services.
+    unreachable: Output only. For global requests, returns the list of regions
+      that could not be reached within the deadline.
   """
 
   nextPageToken = _messages.StringField(1)
   services = _messages.MessageField('GoogleCloudRunV2Service', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class GoogleCloudRunV2ListTasksResponse(_messages.Message):
@@ -3429,11 +3435,7 @@ class GoogleCloudRunV2WorkerPool(_messages.Message):
       Cloud Run.
     createTime: Output only. The creation time.
     creator: Output only. Email address of the authenticated creator.
-    customAudiences: One or more custom audiences that you want this worker
-      pool to support. Specify each custom audience as the full URL in a
-      string. The custom audiences are encoded in the token and used to
-      authenticate requests. For more information, see
-      https://cloud.google.com/run/docs/configuring/custom-audiences.
+    customAudiences: Not supported, and ignored by Cloud Run.
     deleteTime: Output only. The deletion time. It is only populated as a
       response to a Delete request.
     description: User-provided description of the WorkerPool. This field
@@ -3517,6 +3519,9 @@ class GoogleCloudRunV2WorkerPool(_messages.Message):
       containing its readiness status, and detailed error information in case
       it did not reach a serving state. See comments in `reconciling` for
       additional information on reconciliation process in Cloud Run.
+    threatDetectionEnabled: Output only. Indicates whether Cloud Run Threat
+      Detection monitoring is enabled for the parent project of this worker
+      pool.
     uid: Output only. Server assigned unique identifier for the trigger. The
       value is a UUID4 string and guaranteed to remain unchanged until the
       resource is deleted.
@@ -3666,8 +3671,9 @@ class GoogleCloudRunV2WorkerPool(_messages.Message):
   scaling = _messages.MessageField('GoogleCloudRunV2WorkerPoolScaling', 25)
   template = _messages.MessageField('GoogleCloudRunV2WorkerPoolRevisionTemplate', 26)
   terminalCondition = _messages.MessageField('GoogleCloudRunV2Condition', 27)
-  uid = _messages.StringField(28)
-  updateTime = _messages.StringField(29)
+  threatDetectionEnabled = _messages.BooleanField(28)
+  uid = _messages.StringField(29)
+  updateTime = _messages.StringField(30)
 
 
 class GoogleCloudRunV2WorkerPoolRevisionTemplate(_messages.Message):
@@ -4920,6 +4926,11 @@ class GoogleDevtoolsCloudbuildV1MavenArtifact(_messages.Message):
   Fields:
     artifactId: Maven `artifactId` value used when uploading the artifact to
       Artifact Registry.
+    deployFolder: Optional. Path to a folder containing the files to upload to
+      Artifact Registry. This can be either an absolute path, e.g.
+      `/workspace/my-app/target/`, or a relative path from /workspace, e.g.
+      `my-app/target/`. This field is mutually exclusive with the `path`
+      field.
     groupId: Maven `groupId` value used when uploading the artifact to
       Artifact Registry.
     path: Optional. Path to an artifact in the build's workspace to be
@@ -4935,10 +4946,11 @@ class GoogleDevtoolsCloudbuildV1MavenArtifact(_messages.Message):
   """
 
   artifactId = _messages.StringField(1)
-  groupId = _messages.StringField(2)
-  path = _messages.StringField(3)
-  repository = _messages.StringField(4)
-  version = _messages.StringField(5)
+  deployFolder = _messages.StringField(2)
+  groupId = _messages.StringField(3)
+  path = _messages.StringField(4)
+  repository = _messages.StringField(5)
+  version = _messages.StringField(6)
 
 
 class GoogleDevtoolsCloudbuildV1NpmPackage(_messages.Message):
@@ -5790,8 +5802,8 @@ class GoogleLongrunningListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -6425,9 +6437,9 @@ class RunProjectsLocationsOperationsListRequest(_messages.Message):
       by a previous list call.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """

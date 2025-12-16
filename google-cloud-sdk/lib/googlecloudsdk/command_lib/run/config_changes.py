@@ -1807,6 +1807,21 @@ class JobPriorityTierChange(TemplateConfigChanger):
 
 
 @dataclasses.dataclass(frozen=True)
+class DelayExecutionChange(TemplateConfigChanger):
+  """Represents the intent to update the job's delay execution setting.
+
+  Attributes:
+    delay_execution: True if the triggered execution can be delayed.
+  """
+
+  delay_execution: bool
+
+  def Adjust(self, resource):
+    resource.execution_template.spec.delayExecution = self.delay_execution
+    return resource
+
+
+@dataclasses.dataclass(frozen=True)
 class JobTaskTimeoutChange(TemplateConfigChanger):
   """Represents the user intent to update a job's instance deadline.
 

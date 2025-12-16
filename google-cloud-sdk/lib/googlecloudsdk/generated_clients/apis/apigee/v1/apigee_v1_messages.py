@@ -4882,9 +4882,9 @@ class ApigeeOrganizationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -6703,6 +6703,24 @@ class GoogleCloudApigeeV1ApiProduct(_messages.Message):
       service.
     lastModifiedAt: Response only. Modified time of this environment as
       milliseconds since epoch.
+    llmOperationGroup: Optional. Configuration used to group Apigee proxies
+      with resources, method types, LLM model and quotas. The resource refers
+      to the resource URI (excluding the base path). With this grouping, the
+      API product creator is able to fine-tune and give precise control over
+      which REST methods have access to specific resources, specific LLM model
+      and how many calls can be made (using the `quota` setting). **Note:**
+      The `api_resources` setting cannot be specified for both the API product
+      and llm operation group; otherwise the call will fail.
+    llmQuota: Optional. Number of LLM tokens permitted per app by this API
+      product for the specified `llm_quota_interval` and
+      `llm_quota_time_unit`. For example, an `llm_quota` of 50,000, for an
+      `llm_quota_interval` of 12 and an `llm_quota_time_unit` of hours means
+      50,000 llm tokens are allowed to be used every 12 hours.
+    llmQuotaInterval: Optional. Time interval over which the number of tokens
+      from LLM responses is calculated.
+    llmQuotaTimeUnit: Optional. Time unit defined for the
+      `llm_quota_interval`. Valid values include `minute`, `hour`, `day`, or
+      `month`.
     name: Internal name of the API product. Characters you can use in the name
       are restricted to: `A-Z0-9._\-$ %`. **Note:** The internal name cannot
       be edited when updating the API product.
@@ -6793,15 +6811,19 @@ class GoogleCloudApigeeV1ApiProduct(_messages.Message):
   graphqlOperationGroup = _messages.MessageField('GoogleCloudApigeeV1GraphQLOperationGroup', 8)
   grpcOperationGroup = _messages.MessageField('GoogleCloudApigeeV1GrpcOperationGroup', 9)
   lastModifiedAt = _messages.IntegerField(10)
-  name = _messages.StringField(11)
-  operationGroup = _messages.MessageField('GoogleCloudApigeeV1OperationGroup', 12)
-  proxies = _messages.StringField(13, repeated=True)
-  quota = _messages.StringField(14)
-  quotaCounterScope = _messages.EnumField('QuotaCounterScopeValueValuesEnum', 15)
-  quotaInterval = _messages.StringField(16)
-  quotaTimeUnit = _messages.StringField(17)
-  scopes = _messages.StringField(18, repeated=True)
-  space = _messages.StringField(19)
+  llmOperationGroup = _messages.MessageField('GoogleCloudApigeeV1LlmOperationGroup', 11)
+  llmQuota = _messages.StringField(12)
+  llmQuotaInterval = _messages.StringField(13)
+  llmQuotaTimeUnit = _messages.StringField(14)
+  name = _messages.StringField(15)
+  operationGroup = _messages.MessageField('GoogleCloudApigeeV1OperationGroup', 16)
+  proxies = _messages.StringField(17, repeated=True)
+  quota = _messages.StringField(18)
+  quotaCounterScope = _messages.EnumField('QuotaCounterScopeValueValuesEnum', 19)
+  quotaInterval = _messages.StringField(20)
+  quotaTimeUnit = _messages.StringField(21)
+  scopes = _messages.StringField(22, repeated=True)
+  space = _messages.StringField(23)
 
 
 class GoogleCloudApigeeV1ApiProductRef(_messages.Message):
@@ -10679,6 +10701,81 @@ class GoogleCloudApigeeV1ListTraceConfigOverridesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   traceConfigOverrides = _messages.MessageField('GoogleCloudApigeeV1TraceConfigOverride', 2, repeated=True)
+
+
+class GoogleCloudApigeeV1LlmOperation(_messages.Message):
+  r"""Represents the pairing of REST resource path, model and the actions
+  (verbs) allowed on the resource path.
+
+  Fields:
+    methods: Optional. methods refers to the REST verbs as in
+      https://httpwg.org/specs/rfc9110.html For example: GET, POST, PUT,
+      DELETE, etc. They need to be in uppercase. When none specified, all verb
+      types are allowed.
+    model: Required. LLM model name associated with the API proxy
+    resource: Required. REST resource path associated with the API proxy or
+      remote service.
+  """
+
+  methods = _messages.StringField(1, repeated=True)
+  model = _messages.StringField(2)
+  resource = _messages.StringField(3)
+
+
+class GoogleCloudApigeeV1LlmOperationConfig(_messages.Message):
+  r"""Binds the resources in an API proxy or remote service with the allowed
+  REST methods and associated quota enforcement.
+
+  Fields:
+    apiSource: Required. Name of the API proxy or remote service with which
+      the resources, methods, and quota are associated.
+    attributes: Optional. Custom attributes associated with the operation.
+    llmOperations: Required. List of resource/method/model for the API proxy
+      to which quota will applied. **Note**: Currently, you can specify only a
+      single resource/method/model mapping. The call will fail if more than
+      one resource/method/model mappings are provided.
+    llmTokenQuota: Required. LLM token Quota parameters to be enforced for the
+      resources, methods, and API source & LLM model combination. If none are
+      specified, quota enforcement will not be done.
+  """
+
+  apiSource = _messages.StringField(1)
+  attributes = _messages.MessageField('GoogleCloudApigeeV1Attribute', 2, repeated=True)
+  llmOperations = _messages.MessageField('GoogleCloudApigeeV1LlmOperation', 3, repeated=True)
+  llmTokenQuota = _messages.MessageField('GoogleCloudApigeeV1LlmTokenQuota', 4)
+
+
+class GoogleCloudApigeeV1LlmOperationGroup(_messages.Message):
+  r"""List of LLM operation configuration details associated with Apigee API
+  proxies.
+
+  Fields:
+    operationConfigs: Required. List of LLM operation configurations for
+      either Apigee API proxies that are associated with this API product.
+  """
+
+  operationConfigs = _messages.MessageField('GoogleCloudApigeeV1LlmOperationConfig', 1, repeated=True)
+
+
+class GoogleCloudApigeeV1LlmTokenQuota(_messages.Message):
+  r"""LLM Token Quota contains the essential parameters needed that can be
+  applied on the resources, methods, models, API source combination associated
+  with this API product. While LLM Token Quota is optional, setting it
+  prevents requests from exceeding the provisioned parameters.
+
+  Fields:
+    interval: Required. Time interval over which the number of request
+      messages is calculated.
+    limit: Required. Upper limit of LLM tokens allowed for the time interval
+      and time unit specified. Requests exceeding this limit will be rejected.
+    timeUnit: Optional. Time unit defined for the `interval`. Valid values
+      include `minute`, `hour`, `day`, or `month`. If `limit` and `interval`
+      are valid, the default value is `hour`; otherwise, the default is null.
+  """
+
+  interval = _messages.StringField(1)
+  limit = _messages.StringField(2)
+  timeUnit = _messages.StringField(3)
 
 
 class GoogleCloudApigeeV1MaintenanceUpdatePolicy(_messages.Message):
@@ -14865,8 +14962,8 @@ class GoogleLongrunningListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)

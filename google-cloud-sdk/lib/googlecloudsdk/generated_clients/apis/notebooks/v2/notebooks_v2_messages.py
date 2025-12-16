@@ -44,12 +44,14 @@ class AcceleratorConfig(_messages.Message):
       NVIDIA_H100_80GB: Accelerator type is Nvidia Tesla H100 - 80GB.
       NVIDIA_H100_MEGA_80GB: Accelerator type is Nvidia Tesla H100 - MEGA
         80GB.
+      NVIDIA_H200_141GB: Accelerator type is Nvidia Tesla H200 - 141GB.
       NVIDIA_TESLA_T4_VWS: Accelerator type is NVIDIA Tesla T4 Virtual
         Workstations.
       NVIDIA_TESLA_P100_VWS: Accelerator type is NVIDIA Tesla P100 Virtual
         Workstations.
       NVIDIA_TESLA_P4_VWS: Accelerator type is NVIDIA Tesla P4 Virtual
         Workstations.
+      NVIDIA_B200: Accelerator type is NVIDIA B200.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_P100 = 1
@@ -61,9 +63,11 @@ class AcceleratorConfig(_messages.Message):
     NVIDIA_L4 = 7
     NVIDIA_H100_80GB = 8
     NVIDIA_H100_MEGA_80GB = 9
-    NVIDIA_TESLA_T4_VWS = 10
-    NVIDIA_TESLA_P100_VWS = 11
-    NVIDIA_TESLA_P4_VWS = 12
+    NVIDIA_H200_141GB = 10
+    NVIDIA_TESLA_T4_VWS = 11
+    NVIDIA_TESLA_P100_VWS = 12
+    NVIDIA_TESLA_P4_VWS = 13
+    NVIDIA_B200 = 14
 
   coreCount = _messages.IntegerField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -213,12 +217,14 @@ class BootDisk(_messages.Message):
       PD_SSD: SSD persistent disk type.
       PD_BALANCED: Balanced persistent disk type.
       PD_EXTREME: Extreme persistent disk type.
+      HYPERDISK_BALANCED: Hyperdisk Balanced persistent disk type.
     """
     DISK_TYPE_UNSPECIFIED = 0
     PD_STANDARD = 1
     PD_SSD = 2
     PD_BALANCED = 3
     PD_EXTREME = 4
+    HYPERDISK_BALANCED = 5
 
   diskEncryption = _messages.EnumField('DiskEncryptionValueValuesEnum', 1)
   diskSizeGb = _messages.IntegerField(2)
@@ -419,12 +425,14 @@ class DataDisk(_messages.Message):
       PD_SSD: SSD persistent disk type.
       PD_BALANCED: Balanced persistent disk type.
       PD_EXTREME: Extreme persistent disk type.
+      HYPERDISK_BALANCED: Hyperdisk Balanced persistent disk type.
     """
     DISK_TYPE_UNSPECIFIED = 0
     PD_STANDARD = 1
     PD_SSD = 2
     PD_BALANCED = 3
     PD_EXTREME = 4
+    HYPERDISK_BALANCED = 5
 
   diskEncryption = _messages.EnumField('DiskEncryptionValueValuesEnum', 1)
   diskSizeGb = _messages.IntegerField(2)
@@ -978,8 +986,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1528,9 +1536,9 @@ class NotebooksProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """

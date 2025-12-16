@@ -39,11 +39,163 @@ class ObservabilityV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.folders_locations = self.FoldersLocationsService(self)
+    self.folders = self.FoldersService(self)
+    self.organizations_locations = self.OrganizationsLocationsService(self)
+    self.organizations = self.OrganizationsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_scopes = self.ProjectsLocationsScopesService(self)
     self.projects_locations_traceScopes = self.ProjectsLocationsTraceScopesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class FoldersLocationsService(base_api.BaseApiService):
+    """Service class for the folders_locations resource."""
+
+    _NAME = 'folders_locations'
+
+    def __init__(self, client):
+      super(ObservabilityV1.FoldersLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetSettings(self, request, global_params=None):
+      r"""Get Settings.
+
+      Args:
+        request: (ObservabilityFoldersLocationsGetSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Settings) The response message.
+      """
+      config = self.GetMethodConfig('GetSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations/{locationsId}/settings',
+        http_method='GET',
+        method_id='observability.folders.locations.getSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ObservabilityFoldersLocationsGetSettingsRequest',
+        response_type_name='Settings',
+        supports_download=False,
+    )
+
+    def UpdateSettings(self, request, global_params=None):
+      r"""Update Settings.
+
+      Args:
+        request: (ObservabilityFoldersLocationsUpdateSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations/{locationsId}/settings',
+        http_method='PATCH',
+        method_id='observability.folders.locations.updateSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='settings',
+        request_type_name='ObservabilityFoldersLocationsUpdateSettingsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class FoldersService(base_api.BaseApiService):
+    """Service class for the folders resource."""
+
+    _NAME = 'folders'
+
+    def __init__(self, client):
+      super(ObservabilityV1.FoldersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class OrganizationsLocationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations resource."""
+
+    _NAME = 'organizations_locations'
+
+    def __init__(self, client):
+      super(ObservabilityV1.OrganizationsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetSettings(self, request, global_params=None):
+      r"""Get Settings.
+
+      Args:
+        request: (ObservabilityOrganizationsLocationsGetSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Settings) The response message.
+      """
+      config = self.GetMethodConfig('GetSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/settings',
+        http_method='GET',
+        method_id='observability.organizations.locations.getSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ObservabilityOrganizationsLocationsGetSettingsRequest',
+        response_type_name='Settings',
+        supports_download=False,
+    )
+
+    def UpdateSettings(self, request, global_params=None):
+      r"""Update Settings.
+
+      Args:
+        request: (ObservabilityOrganizationsLocationsUpdateSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/settings',
+        http_method='PATCH',
+        method_id='observability.organizations.locations.updateSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='settings',
+        request_type_name='ObservabilityOrganizationsLocationsUpdateSettingsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class OrganizationsService(base_api.BaseApiService):
+    """Service class for the organizations resource."""
+
+    _NAME = 'organizations'
+
+    def __init__(self, client):
+      super(ObservabilityV1.OrganizationsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
@@ -409,6 +561,33 @@ class ObservabilityV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetSettings(self, request, global_params=None):
+      r"""Get Settings.
+
+      Args:
+        request: (ObservabilityProjectsLocationsGetSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Settings) The response message.
+      """
+      config = self.GetMethodConfig('GetSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/settings',
+        http_method='GET',
+        method_id='observability.projects.locations.getSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ObservabilityProjectsLocationsGetSettingsRequest',
+        response_type_name='Settings',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists information about the supported locations for this service.
 
@@ -433,6 +612,33 @@ class ObservabilityV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ObservabilityProjectsLocationsListRequest',
         response_type_name='ListLocationsResponse',
+        supports_download=False,
+    )
+
+    def UpdateSettings(self, request, global_params=None):
+      r"""Update Settings.
+
+      Args:
+        request: (ObservabilityProjectsLocationsUpdateSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/settings',
+        http_method='PATCH',
+        method_id='observability.projects.locations.updateSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='settings',
+        request_type_name='ObservabilityProjectsLocationsUpdateSettingsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

@@ -378,6 +378,19 @@ def LocationAttributeConfig(location_arguments, region_resource_command=False):
       fallthroughs=location_fallthroughs)
 
 
+def TransportAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='transport', help_text='The transport Id.'
+  )
+
+
+def RemoteProfileAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='remote_profile',
+      help_text='The remote profile Id.',
+  )
+
+
 def GetSpokeResourceSpec(location_arguments):
   return concepts.ResourceSpec(
       'networkconnectivity.projects.locations.spokes',
@@ -396,6 +409,30 @@ def GetRegionResourceSpec(location_arguments):
           location_arguments, region_resource_command=True
       ),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False,
+  )
+
+
+def GetTransportResourceSpec(location_arguments):
+  return concepts.ResourceSpec(
+      'networkconnectivity.projects.locations.transports',
+      resource_name='transport',
+      transportsId=TransportAttributeConfig(),
+      locationsId=LocationAttributeConfig(location_arguments),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      api_version='v1beta',
+      disable_auto_completers=False,
+  )
+
+
+def GetRemoteProfileResourceSpec(location_arguments):
+  return concepts.ResourceSpec(
+      'networkconnectivity.projects.locations.transports.remoteProfiles',
+      resource_name='remoteProfile',
+      remoteProfilesId=RemoteProfileAttributeConfig(),
+      locationsId=LocationAttributeConfig(location_arguments),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      api_version='v1beta',
       disable_auto_completers=False,
   )
 
@@ -508,3 +545,82 @@ def AddExportPscGlobalGoogleApisFlag(parser):
       hidden=True,
       help="""Whether propagation for Private Service Connect for global Google APIs is enabled for the hub.""",
   )
+
+
+def AddActivationKeyFlag(parser, help_text):
+  """Adds the --activation-key flag to the given parser."""
+  parser.add_argument('--activation-key', required=False, help=help_text)
+
+
+def AddRemoteAccountIdFlag(parser, help_text):
+  """Adds the --remote-account-id flag to the given parser."""
+  parser.add_argument('--remote-account-id', required=False, help=help_text)
+
+
+def AddProfileFlag(parser, help_text):
+  """Adds the --remote_profile flag to the given parser."""
+  parser.add_argument('--remote-profile', required=True, help=help_text)
+
+
+def AddBandwidthFlag(parser, help_text):
+  """Adds the --bandwidth flag to the given parser."""
+  parser.add_argument('--bandwidth', required=True, help=help_text)
+
+
+def AddAdvertisedRoutesFlag(parser, help_text):
+  """Adds the --advertised-routes flag to the given parser."""
+  parser.add_argument('--advertised-routes', required=True, help=help_text)
+
+
+def AddEnableAdminFlag(parser, help_text):
+  """Adds the --enable-admin flag to the given parser."""
+  parser.add_argument(
+      '--enable-admin',
+      action=arg_parsers.StoreTrueFalseAction,
+      required=False,
+      help=help_text,
+  )
+
+
+def AddStackTypeFlag(parser, help_text):
+  """Adds the --stack-type flag to the given parser."""
+  parser.add_argument(
+      '--stack-type',
+      required=False,
+      help=help_text,
+      default='IPV4_ONLY',
+  )
+
+
+def AddTransportResourceArg(parser, desc):
+  """Add a resource argument for a transport.
+
+  Args:
+    parser: the parser for the command.
+    desc: the string to describe the resource, such as 'to create'.
+  """
+
+  location_arguments = GetResourceLocationArguments(
+      ResourceLocationType.REGION_ONLY
+  )
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name='transport',
+      concept_spec=GetTransportResourceSpec(location_arguments),
+      required=True,
+      group_help='Name of the transport {}.'.format(desc),
+  )
+  concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
+def AddRemoteProfileResourceArg(parser, desc):
+  """Add a resource argument for a remote transport profile."""
+  location_arguments = GetResourceLocationArguments(
+      ResourceLocationType.REGION_ONLY
+  )
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name='remote_profile',
+      concept_spec=GetRemoteProfileResourceSpec(location_arguments),
+      required=True,
+      group_help='Name of the remote transport profile {}.'.format(desc),
+  )
+  concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)

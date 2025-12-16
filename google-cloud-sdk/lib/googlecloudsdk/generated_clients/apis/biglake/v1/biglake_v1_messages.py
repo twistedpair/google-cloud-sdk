@@ -750,7 +750,13 @@ class IcebergCatalog(_messages.Message):
     credential_mode: Optional. The credential mode for the catalog.
     default_location: Optional. The default storage location for the catalog,
       e.g., `gs://my-bucket`. For the Google Cloud Storage Bucket catalog this
-      is output only.
+      is output only. For BigLake flexible catalogs, this field must be
+      provided and point to a Google Cloud Storage bucket or a path within
+      that bucket. This path serves as the base directory for constructing the
+      full path to a table's data and metadata directories when a location is
+      not specified at the namespace or table level. The full path is formed
+      by appending the namespace and table identifiers to the default
+      location.
     name: Identifier. The catalog name, `projects/my-project/catalogs/my-
       catalog`. This field is immutable. This field is ignored for
       CreateIcebergCatalog.

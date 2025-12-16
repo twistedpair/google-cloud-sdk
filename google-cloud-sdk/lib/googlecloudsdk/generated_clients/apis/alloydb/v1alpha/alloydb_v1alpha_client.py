@@ -1017,6 +1017,33 @@ class AlloydbV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single Endpoint.
+
+      Args:
+        request: (AlloydbProjectsLocationsEndpointsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}',
+        http_method='DELETE',
+        method_id='alloydb.projects.locations.endpoints.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag', 'requestId', 'validateOnly'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='AlloydbProjectsLocationsEndpointsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details of a single Endpoint.
 

@@ -679,14 +679,22 @@ class Instance(_messages.Message):
       information about the current instance state.
 
   Messages:
-    LabelsValue: Optional. Labels as key value pairs.
+    LabelsValue: Optional. Labels as key value pairs. Keys and values can
+      contain only lowercase letters, numeric characters, underscores, and
+      dashes. For more information, see [Requirements for
+      labels](https://cloud.google.com/resource-manager/docs/best-practices-
+      labels#label_encoding).
 
   Fields:
     createTime: Output only. Create timestamp.
     hostConfig: Output only. A list of hostnames for this instance.
     kmsKey: Optional. Immutable. Customer-managed encryption key name, in the
       format projects/*/locations/*/keyRings/*/cryptoKeys/*.
-    labels: Optional. Labels as key value pairs.
+    labels: Optional. Labels as key value pairs. Keys and values can contain
+      only lowercase letters, numeric characters, underscores, and dashes. For
+      more information, see [Requirements for
+      labels](https://cloud.google.com/resource-manager/docs/best-practices-
+      labels#label_encoding).
     name: Optional. A unique identifier for an instance. The name should be of
       the format: `projects/{project_number}/locations/{location_id}/instances
       /{instance_id}` `project_number`: Maps to a unique int64 id assigned to
@@ -741,7 +749,11 @@ class Instance(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs.
+    r"""Optional. Labels as key value pairs. Keys and values can contain only
+    lowercase letters, numeric characters, underscores, and dashes. For more
+    information, see [Requirements for
+    labels](https://cloud.google.com/resource-manager/docs/best-practices-
+    labels#label_encoding).
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -948,8 +960,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1771,9 +1783,9 @@ class SecuresourcemanagerProjectsLocationsOperationsListRequest(_messages.Messag
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """

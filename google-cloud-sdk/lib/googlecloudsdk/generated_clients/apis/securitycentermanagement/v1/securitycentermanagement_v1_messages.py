@@ -758,8 +758,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1140,7 +1140,7 @@ class SecurityCenterService(_messages.Message):
       threat-detection-aws` * `cloud-run-threat-detection` * `vm-manager` *
       `ec2-vulnerability-assessment` * `gce-vulnerability-assessment` *
       `azure-vulnerability-assessment` * `notebook-security-scanner` *
-      `artifact-analysis`
+      `artifact-analysis` * `agent-engine-threat-detection`
     serviceConfig: Optional. Additional service-specific configuration. Not
       all services will utilize this field.
     updateTime: Output only. The time the service was last updated. This could
@@ -1575,7 +1575,8 @@ class SecuritycentermanagementFoldersLocationsSecurityCenterServicesGetRequest(_
       `vm-threat-detection` * `web-security-scanner` * `vm-threat-detection-
       aws` * `cloud-run-threat-detection` * `vm-manager` * `ec2-vulnerability-
       assessment` * `gce-vulnerability-assessment` * `azure-vulnerability-
-      assessment` * `notebook-security-scanner` * `artifact-analysis`
+      assessment` * `notebook-security-scanner` * `artifact-analysis` *
+      `agent-engine-threat-detection`
     showEligibleModulesOnly: Optional. Set to `true` to show only modules that
       are in scope. By default, all modules are shown.
   """
@@ -1629,7 +1630,7 @@ class SecuritycentermanagementFoldersLocationsSecurityCenterServicesPatchRequest
       threat-detection-aws` * `cloud-run-threat-detection` * `vm-manager` *
       `ec2-vulnerability-assessment` * `gce-vulnerability-assessment` *
       `azure-vulnerability-assessment` * `notebook-security-scanner` *
-      `artifact-analysis`
+      `artifact-analysis` * `agent-engine-threat-detection`
     securityCenterService: A SecurityCenterService resource to be passed as
       the request body.
     updateMask: Optional. Required. The fields to update. Accepts the
@@ -2116,9 +2117,9 @@ class SecuritycentermanagementOrganizationsLocationsOperationsListRequest(_messa
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -2145,7 +2146,8 @@ class SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesGetReq
       `vm-threat-detection` * `web-security-scanner` * `vm-threat-detection-
       aws` * `cloud-run-threat-detection` * `vm-manager` * `ec2-vulnerability-
       assessment` * `gce-vulnerability-assessment` * `azure-vulnerability-
-      assessment` * `notebook-security-scanner` * `artifact-analysis`
+      assessment` * `notebook-security-scanner` * `artifact-analysis` *
+      `agent-engine-threat-detection`
     showEligibleModulesOnly: Optional. Set to `true` to show only modules that
       are in scope. By default, all modules are shown.
   """
@@ -2197,7 +2199,7 @@ class SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesPatchR
       threat-detection-aws` * `cloud-run-threat-detection` * `vm-manager` *
       `ec2-vulnerability-assessment` * `gce-vulnerability-assessment` *
       `azure-vulnerability-assessment` * `notebook-security-scanner` *
-      `artifact-analysis`
+      `artifact-analysis` * `agent-engine-threat-detection`
     securityCenterService: A SecurityCenterService resource to be passed as
       the request body.
     updateMask: Optional. Required. The fields to update. Accepts the
@@ -2715,9 +2717,9 @@ class SecuritycentermanagementProjectsLocationsOperationsListRequest(_messages.M
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -2745,7 +2747,8 @@ class SecuritycentermanagementProjectsLocationsSecurityCenterServicesGetRequest(
       `vm-threat-detection` * `web-security-scanner` * `vm-threat-detection-
       aws` * `cloud-run-threat-detection` * `vm-manager` * `ec2-vulnerability-
       assessment` * `gce-vulnerability-assessment` * `azure-vulnerability-
-      assessment` * `notebook-security-scanner` * `artifact-analysis`
+      assessment` * `notebook-security-scanner` * `artifact-analysis` *
+      `agent-engine-threat-detection`
     showEligibleModulesOnly: Optional. Set to `true` to show only modules that
       are in scope. By default, all modules are shown.
   """
@@ -2799,7 +2802,7 @@ class SecuritycentermanagementProjectsLocationsSecurityCenterServicesPatchReques
       threat-detection-aws` * `cloud-run-threat-detection` * `vm-manager` *
       `ec2-vulnerability-assessment` * `gce-vulnerability-assessment` *
       `azure-vulnerability-assessment` * `notebook-security-scanner` *
-      `artifact-analysis`
+      `artifact-analysis` * `agent-engine-threat-detection`
     securityCenterService: A SecurityCenterService resource to be passed as
       the request body.
     updateMask: Optional. Required. The fields to update. Accepts the

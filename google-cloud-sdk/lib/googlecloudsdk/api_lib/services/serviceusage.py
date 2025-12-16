@@ -65,6 +65,14 @@ _PROTECTED_SERVICES = {
                               'Anthos clusters.')
 }
 
+# Set of wave 0 services to be listed in --available
+_MCP_LIST_WAVE_0_SERVICES = frozenset({
+    'services/bigquery.googleapis.com',
+    'services/compute.googleapis.com',
+    'services/container.googleapis.com',
+    'services/mapstools.googleapis.com',
+})
+
 
 class ContainerType(enum.Enum):
   """Return the container type."""
@@ -1718,9 +1726,10 @@ def ListMcpServicesV2Beta(
       for public_service in _ListPublicServices(
           page_size, _MCP_LIST_FILTER, limit
       ):
-        service_to_endpoint[public_service.name] = (
-            public_service.mcpServer.urls[0]
-        )
+        if public_service.name in _MCP_LIST_WAVE_0_SERVICES:
+          service_to_endpoint[public_service.name] = (
+              public_service.mcpServer.urls[0]
+          )
     result = []
     service_info = collections.namedtuple(
         'ServiceList', ['name', 'mcp_endpoint']

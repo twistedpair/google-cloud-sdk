@@ -1750,17 +1750,15 @@ def AddAirflowConfigUpdateFlagsToGroup(update_type_group):
                                     AIRFLOW_CONFIGS_FLAG_GROUP_DESCRIPTION)
 
 
-def AddEnvUpgradeFlagsToGroup(update_type_group, release_track):
+def AddEnvUpgradeFlagsToGroup(update_type_group):
   """Adds flag group to perform in-place env upgrades.
 
   Args:
     update_type_group: argument group, the group to which flags should be added.
-    release_track: gcloud version to add flags to.
   """
   upgrade_group = update_type_group.add_argument_group(
       ENV_UPGRADE_GROUP_DESCRIPTION, mutex=True)
-  if release_track != base.ReleaseTrack.GA:
-    UPDATE_AIRFLOW_VERSION_FLAG.AddToParser(upgrade_group)
+  UPDATE_AIRFLOW_VERSION_FLAG.AddToParser(upgrade_group)
   UPDATE_IMAGE_VERSION_FLAG.AddToParser(upgrade_group)
 
 

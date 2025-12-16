@@ -38,6 +38,7 @@ from googlecloudsdk.api_lib.run import configuration
 from googlecloudsdk.api_lib.run import domain_mapping
 from googlecloudsdk.api_lib.run import execution
 from googlecloudsdk.api_lib.run import global_methods
+from googlecloudsdk.api_lib.run import instance
 from googlecloudsdk.api_lib.run import job
 from googlecloudsdk.api_lib.run import metric_names
 from googlecloudsdk.api_lib.run import revision
@@ -1899,6 +1900,22 @@ class ServerlessOperations(object):
     except api_exceptions.HttpNotFoundError:
       return None
 
+  def GetInstance(self, instance_ref):
+    """Return the relevant Instance from the server, or None if 404."""
+    messages = self.messages_module
+    get_request = messages.RunNamespacesInstancesGetRequest(
+        name=instance_ref.RelativeName()
+    )
+
+    try:
+      with metrics.RecordDuration(metric_names.GET_INSTANCE):
+        instance_response = self._client.namespaces_instances.Get(get_request)
+        return instance.Instance(instance_response, messages)
+    except api_exceptions.InvalidDataFromServerError as e:
+      serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
+    except api_exceptions.HttpNotFoundError:
+      return None
+
   def GetTask(self, task_ref):
     """Return the relevant Task from the server, or None if 404."""
     messages = self.messages_module
@@ -1941,6 +1958,19 @@ class ServerlessOperations(object):
       with metrics.RecordDuration(metric_names.LIST_JOBS):
         response = self._client.namespaces_jobs.List(request)
         return [job.Job(item, messages) for item in response.items]
+    except api_exceptions.InvalidDataFromServerError as e:
+      serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
+
+  def ListInstances(self, namespace_ref):
+    """Returns all instances in the namespace."""
+    messages = self.messages_module
+    request = messages.RunNamespacesInstancesListRequest(
+        parent=namespace_ref.RelativeName()
+    )
+    try:
+      with metrics.RecordDuration(metric_names.LIST_INSTANCES):
+        response = self._client.namespaces_instances.List(request)
+        return [instance.Instance(item, messages) for item in response.items]
     except api_exceptions.InvalidDataFromServerError as e:
       serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
 
@@ -2192,7 +2222,12 @@ class ServerlessOperations(object):
       run_job = change.Adjust(run_job)
 
   def GetExecutionOverrides(
-      self, tasks, task_timeout, priority_tier, container_overrides
+      self,
+      tasks,
+      task_timeout,
+      priority_tier,
+      delay_execution,
+      container_overrides,
   ):
     return self.messages_module.Overrides(
         containerOverrides=container_overrides,
@@ -2201,6 +2236,7 @@ class ServerlessOperations(object):
         priorityTier=self.messages_module.Overrides.PriorityTierValueValuesEnum(
             priority_tier.upper()
         ),
+        delayExecution=delay_execution,
     )
 
   def MakeContainerOverride(self, name, update_env_vars, args, clear_args):

@@ -189,8 +189,8 @@ class Entitlement(_messages.Message):
       mismatch while updating an entitlement, then the server rejects the
       request.
     maxRequestDuration: Required. The maximum amount of time that access is
-      granted for a request. A requester can ask for a duration less than
-      this, but never more. The supported range is between 30 minutes and 168
+      granted for a request. A requester can ask for a shorter duration but
+      never a longer one. The supported range is between 30 minutes and 168
       hours (7 days).
     name: Identifier. Name of the entitlement. Possible formats: *
       `organizations/{organization-
@@ -489,7 +489,7 @@ class Grant(_messages.Message):
     privilegedAccess: Output only. The access that would be granted by this
       grant.
     requestedDuration: Required. The amount of time access is needed for. This
-      value should be less than the `max_request_duration` value of the
+      value should be shorter than the `max_request_duration` value of the
       entitlement.
     requestedPrivilegedAccess: Optional. The accesses requested to be granted
       by this grant.
@@ -632,8 +632,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1241,11 +1241,11 @@ class PrivilegedaccessmanagerFoldersLocationsFetchEffectiveSettingsRequest(_mess
   object.
 
   Fields:
-    parent: Required. The resource for which the effective settings should be
-      fetched. Should be in one of the following formats: *
-      `projects/{project-number|project-id}/locations/{region}` *
-      `folders/{folder-number}/locations/{region}` *
-      `organizations/{organization-number}/locations/{region}`
+    parent: Required. The resource for which the effective settings is
+      fetched, in one of the following formats: * `projects/{project-
+      number|project-id}/locations/{region}` * `folders/{folder-
+      number}/locations/{region}` * `organizations/{organization-
+      number}/locations/{region}`
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1325,9 +1325,9 @@ class PrivilegedaccessmanagerFoldersLocationsOperationsListRequest(_messages.Mes
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -1715,11 +1715,11 @@ class PrivilegedaccessmanagerOrganizationsLocationsFetchEffectiveSettingsRequest
   object.
 
   Fields:
-    parent: Required. The resource for which the effective settings should be
-      fetched. Should be in one of the following formats: *
-      `projects/{project-number|project-id}/locations/{region}` *
-      `folders/{folder-number}/locations/{region}` *
-      `organizations/{organization-number}/locations/{region}`
+    parent: Required. The resource for which the effective settings is
+      fetched, in one of the following formats: * `projects/{project-
+      number|project-id}/locations/{region}` * `folders/{folder-
+      number}/locations/{region}` * `organizations/{organization-
+      number}/locations/{region}`
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1803,9 +1803,9 @@ class PrivilegedaccessmanagerOrganizationsLocationsOperationsListRequest(_messag
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -2190,11 +2190,11 @@ class PrivilegedaccessmanagerProjectsLocationsFetchEffectiveSettingsRequest(_mes
   object.
 
   Fields:
-    parent: Required. The resource for which the effective settings should be
-      fetched. Should be in one of the following formats: *
-      `projects/{project-number|project-id}/locations/{region}` *
-      `folders/{folder-number}/locations/{region}` *
-      `organizations/{organization-number}/locations/{region}`
+    parent: Required. The resource for which the effective settings is
+      fetched, in one of the following formats: * `projects/{project-
+      number|project-id}/locations/{region}` * `folders/{folder-
+      number}/locations/{region}` * `organizations/{organization-
+      number}/locations/{region}`
   """
 
   parent = _messages.StringField(1, required=True)
@@ -2275,9 +2275,9 @@ class PrivilegedaccessmanagerProjectsLocationsOperationsListRequest(_messages.Me
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """

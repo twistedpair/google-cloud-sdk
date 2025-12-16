@@ -427,7 +427,7 @@ class ApihubV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Update an operation in an API version. The following fields in the ApiOperation resource can be updated: * details.description * details.documentation * details.http_operation.path * details.http_operation.method * details.deprecated * attributes * details.mcp_tool.title * details.mcp_tool.description * details.input_schema * details.output_schema * details.mcp_tool.annotations.title * details.mcp_tool.annotations.read_only_hint * details.mcp_tool.annotations.destructive_hint * details.mcp_tool.annotations.idempotent_hint * details.mcp_tool.annotations.open_world_hint * details.mcp_tool.annotations.additional_hints The update_mask should be used to specify the fields being updated. An operation can be updated only if the operation was created via CreateApiOperation API. If the operation was created by parsing the spec, then it can be edited by updating the spec.
+      r"""Update an operation in an API version. The following fields in the ApiOperation resource can be updated: * details.description * details.documentation * details.http_operation.path * details.http_operation.method * details.deprecated * attributes * details.mcp_tool.title * details.mcp_tool.description * details.mcp_tool.input_schema * details.mcp_tool.output_schema * details.input_schema * details.output_schema * details.mcp_tool.annotations.title * details.mcp_tool.annotations.read_only_hint * details.mcp_tool.annotations.destructive_hint * details.mcp_tool.annotations.idempotent_hint * details.mcp_tool.annotations.open_world_hint * details.mcp_tool.annotations.additional_hints The update_mask should be used to specify the fields being updated. An operation can be updated only if the operation was created via CreateApiOperation API. If the operation was created by parsing the spec, then it can be edited by updating the spec.
 
       Args:
         request: (ApihubProjectsLocationsApisVersionsOperationsPatchRequest) input message
@@ -514,6 +514,33 @@ class ApihubV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApihubProjectsLocationsApisVersionsSpecsDeleteRequest',
         response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def FetchAdditionalSpecContent(self, request, global_params=None):
+      r"""Fetch additional spec content.
+
+      Args:
+        request: (ApihubProjectsLocationsApisVersionsSpecsFetchAdditionalSpecContentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApihubV1FetchAdditionalSpecContentResponse) The response message.
+      """
+      config = self.GetMethodConfig('FetchAdditionalSpecContent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchAdditionalSpecContent.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}/versions/{versionsId}/specs/{specsId}:fetchAdditionalSpecContent',
+        http_method='GET',
+        method_id='apihub.projects.locations.apis.versions.specs.fetchAdditionalSpecContent',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['specContentType'],
+        relative_path='v1/{+name}:fetchAdditionalSpecContent',
+        request_field='',
+        request_type_name='ApihubProjectsLocationsApisVersionsSpecsFetchAdditionalSpecContentRequest',
+        response_type_name='GoogleCloudApihubV1FetchAdditionalSpecContentResponse',
         supports_download=False,
     )
 

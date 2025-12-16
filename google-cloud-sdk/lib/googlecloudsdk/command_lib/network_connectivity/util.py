@@ -84,6 +84,23 @@ LIST_SPOKES_FORMAT = """
     )
 """
 
+LIST_TRANSPORTS_FORMAT = """
+    table(
+      name.basename(),
+      remoteProfile.basename():label=PROFILE,
+      bandwidth:label=BANDWIDTH,
+      state:label=STATE
+    )
+"""
+
+LIST_REMOTE_PROFILES_FORMAT = """
+    table(
+      name.basename(),
+      provider:label=PROVIDER,
+      providerSite:label=LOCATION
+    )
+"""
+
 
 def AppendLocationsGlobalToParent(unused_ref, unused_args, request):
   """Add locations/global to parent path."""

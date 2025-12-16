@@ -143,6 +143,94 @@ class AccessRulesOptions(_messages.Message):
   defaultSquashUid = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
+class Backup(_messages.Message):
+  r"""A backup of a Managed Lustre instance.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the backup.
+
+  Messages:
+    LabelsValue: Optional. Resource labels to represent user provided
+      metadata.
+
+  Fields:
+    createTime: Output only. The time when the backup was created.
+    description: Optional. A description of the backup with 2048 characters or
+      less.
+    downloadBytes: Output only. Amount of bytes that will be downloaded if the
+      backup is restored. This may be different than storage bytes, since
+      sequential backups of the same disk will share storage.
+    kmsKey: Optional. Immutable. The Cloud KMS key name to use for data
+      encryption. If not set, the backup will use Google-managed encryption
+      keys. If set, the backup will use customer-managed encryption keys. The
+      key must be in the same region as the backup.
+    labels: Optional. Resource labels to represent user provided metadata.
+    name: Identifier. The resource name of the backup, in the format
+      `projects/{project}/locations/{location}/backups/{backup}`.
+    sourceInstance: Immutable. The source instance of the backup.
+    state: Output only. The state of the backup.
+    storageBytes: Output only. The size of the storage used by the backup. As
+      backups share storage, this number is expected to change with backup
+      creation/deletion.
+    uid: Output only. Unique ID of the backup.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the backup.
+
+    Values:
+      STATE_UNSPECIFIED: The backup state is unknown.
+      CREATING: The backup is being created.
+      UPLOADING: The backup is in the process of being uploaded.
+      ERROR: The backup is in an error state, and cannot be used for restoring
+        new instances.
+      SUCCEEDED: The backup has successfully completed creation and is ready
+        for use.
+      DELETING: The backup is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    UPLOADING = 2
+    ERROR = 3
+    SUCCEEDED = 4
+    DELETING = 5
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Resource labels to represent user provided metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  downloadBytes = _messages.IntegerField(3)
+  kmsKey = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  sourceInstance = _messages.MessageField('SourceInstance', 7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  storageBytes = _messages.IntegerField(9)
+  uid = _messages.StringField(10)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -269,7 +357,7 @@ class Instance(_messages.Message):
     accessRulesOptions: Optional. The access rules options for the instance.
     auditLogLevel: Optional. The file system audit log level for the instance.
     capacityGib: Required. The storage capacity of the instance in gibibytes
-      (GiB). Allowed values are from `18000` to `7632000`, depending on the
+      (GiB). Allowed values are from `9000` to `7632000`, depending on the
       `perUnitStorageThroughput`. See [Performance tiers and maximum storage
       capacities](https://cloud.google.com/managed-lustre/docs/create-
       instance#performance-tiers) for specific minimums, maximums, and step
@@ -307,6 +395,9 @@ class Instance(_messages.Message):
       resource_policy}
     satisfiesPzi: Output only. Reserved for future use
     satisfiesPzs: Output only. Reserved for future use
+    sourceBackup: Optional. The source backup used to create the instance.
+      Only set this field if the instance is being created from a backup.
+      Format: projects/{project}/locations/{location}/backups/{backup}
     state: Output only. The state of the instance.
     stateReason: Output only. The reason why the instance is in a certain
       state (e.g. SUSPENDED).
@@ -395,11 +486,27 @@ class Instance(_messages.Message):
   placementPolicy = _messages.StringField(15)
   satisfiesPzi = _messages.BooleanField(16)
   satisfiesPzs = _messages.BooleanField(17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  stateReason = _messages.StringField(19)
-  uid = _messages.StringField(20)
-  upcomingMaintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 21)
-  updateTime = _messages.StringField(22)
+  sourceBackup = _messages.StringField(18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  stateReason = _messages.StringField(20)
+  uid = _messages.StringField(21)
+  upcomingMaintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 22)
+  updateTime = _messages.StringField(23)
+
+
+class ListBackupsResponse(_messages.Message):
+  r"""Message for response to listing backups
+
+  Fields:
+    backups: Response from ListBackups.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Unordered list. Locations that could not be reached.
+  """
+
+  backups = _messages.MessageField('Backup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -539,6 +646,122 @@ class LustrePath(_messages.Message):
   """
 
   path = _messages.StringField(1)
+
+
+class LustreProjectsLocationsBackupsCreateRequest(_messages.Message):
+  r"""A LustreProjectsLocationsBackupsCreateRequest object.
+
+  Fields:
+    backup: A Backup resource to be passed as the request body.
+    backupId: Required. The ID to use for the backup.
+    parent: Required. The project and location in which the backup should be
+      created, in the format
+      `projects/{project_number}/locations/{location_id}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  backup = _messages.MessageField('Backup', 1)
+  backupId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class LustreProjectsLocationsBackupsDeleteRequest(_messages.Message):
+  r"""A LustreProjectsLocationsBackupsDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the instance to delete, in the format
+      `projects/{projectId}/locations/{location}/backups/{backupId}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class LustreProjectsLocationsBackupsGetRequest(_messages.Message):
+  r"""A LustreProjectsLocationsBackupsGetRequest object.
+
+  Fields:
+    name: Required. The instance resource name, in the format
+      `projects/{projectId}/locations/{location}/backups/{backupId}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LustreProjectsLocationsBackupsListRequest(_messages.Message):
+  r"""A LustreProjectsLocationsBackupsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results.
+    orderBy: Optional. Desired order of results.
+    pageSize: Optional. Requested page size. The server might return fewer
+      items than requested. If unspecified, the server will pick an
+      appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. The project and location for which to retrieve a list of
+      backups, in the format `projects/{projectId}/locations/{location}`. To
+      retrieve backup information for all locations, use "-" as the value of
+      `{location}`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class LustreProjectsLocationsBackupsPatchRequest(_messages.Message):
+  r"""A LustreProjectsLocationsBackupsPatchRequest object.
+
+  Fields:
+    backup: A Backup resource to be passed as the request body.
+    name: Identifier. The resource name of the backup, in the format
+      `projects/{project}/locations/{location}/backups/{backup}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. The fields specified in the update_mask are relative
+      to the resource, not the full request. A field will be overwritten if it
+      is in the mask. If no mask is provided then all fields present in the
+      request are overwritten.
+  """
+
+  backup = _messages.MessageField('Backup', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class LustreProjectsLocationsGetRequest(_messages.Message):
@@ -972,6 +1195,29 @@ class ReconciliationOperationMetadata(_messages.Message):
 
   deleteResource = _messages.BooleanField(1)
   exclusiveAction = _messages.EnumField('ExclusiveActionValueValuesEnum', 2)
+
+
+class SourceInstance(_messages.Message):
+  r"""The source instance that the backup was created from.
+
+  Fields:
+    capacityGib: Output only. The Capacity in GiB of the source instance
+      during time of backup creation.
+    name: Required. Immutable. The resource name of the source Lustre
+      instance, in the format `projects/{project_number}/locations/{location_i
+      d}/instances/{instance_id}`, used to create this backup. If the source
+      instance was deleted and recreated; use "uid" of the source instance to
+      check the version used.
+    perUnitStorageThroughput: Output only. The per unit storage throughput of
+      the source Lustre instance that this backup is created from.
+    uid: Output only. The unique identifier of the source Lustre instance that
+      this backup is created from.
+  """
+
+  capacityGib = _messages.IntegerField(1)
+  name = _messages.StringField(2)
+  perUnitStorageThroughput = _messages.IntegerField(3)
+  uid = _messages.StringField(4)
 
 
 class StandardQueryParameters(_messages.Message):

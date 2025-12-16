@@ -43,6 +43,7 @@ class RunV1(base_api.BaseApiClient):
     self.namespaces_configurations = self.NamespacesConfigurationsService(self)
     self.namespaces_domainmappings = self.NamespacesDomainmappingsService(self)
     self.namespaces_executions = self.NamespacesExecutionsService(self)
+    self.namespaces_instances = self.NamespacesInstancesService(self)
     self.namespaces_jobs = self.NamespacesJobsService(self)
     self.namespaces_revisions = self.NamespacesRevisionsService(self)
     self.namespaces_routes = self.NamespacesRoutesService(self)
@@ -397,6 +398,178 @@ class RunV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='RunNamespacesExecutionsListRequest',
         response_type_name='ListExecutionsResponse',
+        supports_download=False,
+    )
+
+  class NamespacesInstancesService(base_api.BaseApiService):
+    """Service class for the namespaces_instances resource."""
+
+    _NAME = 'namespaces_instances'
+
+    def __init__(self, client):
+      super(RunV1.NamespacesInstancesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a Instance.
+
+      Args:
+        request: (RunNamespacesInstancesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Instance) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/run.googleapis.com/v1/namespaces/{namespacesId}/instances',
+        http_method='POST',
+        method_id='run.namespaces.instances.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['region'],
+        relative_path='apis/run.googleapis.com/v1/{+parent}/instances',
+        request_field='instance',
+        request_type_name='RunNamespacesInstancesCreateRequest',
+        response_type_name='Instance',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a Instance.
+
+      Args:
+        request: (RunNamespacesInstancesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Status) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/run.googleapis.com/v1/namespaces/{namespacesId}/instances/{instancesId}',
+        http_method='DELETE',
+        method_id='run.namespaces.instances.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['apiVersion', 'kind', 'propagationPolicy', 'region'],
+        relative_path='apis/run.googleapis.com/v1/{+name}',
+        request_field='',
+        request_type_name='RunNamespacesInstancesDeleteRequest',
+        response_type_name='Status',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get an Instance.
+
+      Args:
+        request: (RunNamespacesInstancesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Instance) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/run.googleapis.com/v1/namespaces/{namespacesId}/instances/{instancesId}',
+        http_method='GET',
+        method_id='run.namespaces.instances.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['region'],
+        relative_path='apis/run.googleapis.com/v1/{+name}',
+        request_field='',
+        request_type_name='RunNamespacesInstancesGetRequest',
+        response_type_name='Instance',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List Instances. Results are sorted by creation time, descending.
+
+      Args:
+        request: (RunNamespacesInstancesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListInstancesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/run.googleapis.com/v1/namespaces/{namespacesId}/instances',
+        http_method='GET',
+        method_id='run.namespaces.instances.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'region', 'resourceVersion', 'watch'],
+        relative_path='apis/run.googleapis.com/v1/{+parent}/instances',
+        request_field='',
+        request_type_name='RunNamespacesInstancesListRequest',
+        response_type_name='ListInstancesResponse',
+        supports_download=False,
+    )
+
+    def Start(self, request, global_params=None):
+      r"""Start an Instance which has been stopped.
+
+      Args:
+        request: (RunNamespacesInstancesStartRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Instance) The response message.
+      """
+      config = self.GetMethodConfig('Start')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Start.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/run.googleapis.com/v1/namespaces/{namespacesId}/instances/{instancesId}:start',
+        http_method='POST',
+        method_id='run.namespaces.instances.start',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='apis/run.googleapis.com/v1/{+name}:start',
+        request_field='startInstanceRequest',
+        request_type_name='RunNamespacesInstancesStartRequest',
+        response_type_name='Instance',
+        supports_download=False,
+    )
+
+    def Stop(self, request, global_params=None):
+      r"""Stop an Instance that is running.
+
+      Args:
+        request: (RunNamespacesInstancesStopRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Instance) The response message.
+      """
+      config = self.GetMethodConfig('Stop')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Stop.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/run.googleapis.com/v1/namespaces/{namespacesId}/instances/{instancesId}:stop',
+        http_method='POST',
+        method_id='run.namespaces.instances.stop',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='apis/run.googleapis.com/v1/{+name}:stop',
+        request_field='stopInstanceRequest',
+        request_type_name='RunNamespacesInstancesStopRequest',
+        response_type_name='Instance',
         supports_download=False,
     )
 

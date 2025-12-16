@@ -1852,9 +1852,13 @@ class BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsFetchForResourceTyp
     filter: Optional. A filter expression that filters the results fetched in
       the response. The expression must specify the field name, a comparison
       operator, and the value that you want to use for filtering. Supported
-      fields:
+      fields: * name * state * backup_type * create_time * expire_time *
+      enforced_retention_end_time * gcp_backup_plan_info.backup_plan *
+      cloud_sql_instance_backup_properties.instance_tier *
+      cloud_sql_instance_backup_properties.database_installed_version
     orderBy: Optional. A comma-separated list of fields to order by, sorted in
-      ascending order. Use "desc" after a field name for descending.
+      ascending order. Use "desc" after a field name for descending. Supported
+      fields: * name
     pageSize: Optional. The maximum number of Backups to return. The service
       may return fewer than this value. If unspecified, at most 50 Backups
       will be returned. The maximum value is 100; values above 100 will be
@@ -2729,9 +2733,9 @@ class BackupdrProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -2788,7 +2792,8 @@ class BackupdrProjectsLocationsTrialEndRequest(_messages.Message):
   Fields:
     endTrialRequest: A EndTrialRequest resource to be passed as the request
       body.
-    parent: Required. The parent resource where this trial will be ended.
+    parent: Required. The parent resource where the trial has been created.
+      Format: projects/{project}/locations/{location}
   """
 
   endTrialRequest = _messages.MessageField('EndTrialRequest', 1)
@@ -4621,8 +4626,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)

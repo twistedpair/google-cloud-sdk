@@ -1330,7 +1330,6 @@ def AddStorageSizeForStorageShrink(parser):
           upper_bound='65536GB',
           suggested_binary_size_scales=['GB'],
       ),
-      required=True,
       help=(
           'The target storage size must be an integer that represents the'
           ' number of GB. For example, --storage-size=10GB'

@@ -331,6 +331,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
     self.trainingPipelines = self.TrainingPipelinesService(self)
     self.tuningJobs_operations = self.TuningJobsOperationsService(self)
     self.tuningJobs = self.TuningJobsService(self)
+    self.v1beta1 = self.V1beta1Service(self)
 
   class AgentsOperationsService(base_api.BaseApiService):
     """Service class for the agents_operations resource."""
@@ -29830,7 +29831,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       r"""Evaluates a dataset based on a set of given metrics.
 
       Args:
-        request: (AiplatformProjectsLocationsEvaluateDatasetRequest) input message
+        request: (GoogleCloudAiplatformV1beta1EvaluateDatasetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (GoogleLongrunningOperation) The response message.
@@ -29847,8 +29848,8 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         path_params=['location'],
         query_params=[],
         relative_path='v1beta1/{+location}:evaluateDataset',
-        request_field='googleCloudAiplatformV1beta1EvaluateDatasetRequest',
-        request_type_name='AiplatformProjectsLocationsEvaluateDatasetRequest',
+        request_field='<request>',
+        request_type_name='GoogleCloudAiplatformV1beta1EvaluateDatasetRequest',
         response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
@@ -29857,7 +29858,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       r"""Evaluates instances based on a given metric.
 
       Args:
-        request: (AiplatformProjectsLocationsEvaluateInstancesRequest) input message
+        request: (GoogleCloudAiplatformV1beta1EvaluateInstancesRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (GoogleCloudAiplatformV1beta1EvaluateInstancesResponse) The response message.
@@ -29874,8 +29875,8 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         path_params=['location'],
         query_params=[],
         relative_path='v1beta1/{+location}:evaluateInstances',
-        request_field='googleCloudAiplatformV1beta1EvaluateInstancesRequest',
-        request_type_name='AiplatformProjectsLocationsEvaluateInstancesRequest',
+        request_field='<request>',
+        request_type_name='GoogleCloudAiplatformV1beta1EvaluateInstancesRequest',
         response_type_name='GoogleCloudAiplatformV1beta1EvaluateInstancesResponse',
         supports_download=False,
     )
@@ -29884,7 +29885,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       r"""Generates rubrics for a given prompt. A rubric represents a single testable criterion for evaluation. One input prompt could have multiple rubrics This RPC allows users to get suggested rubrics based on provided prompt, which can then be reviewed and used for subsequent evaluations.
 
       Args:
-        request: (AiplatformProjectsLocationsGenerateInstanceRubricsRequest) input message
+        request: (GoogleCloudAiplatformV1beta1GenerateInstanceRubricsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (GoogleCloudAiplatformV1beta1GenerateInstanceRubricsResponse) The response message.
@@ -29901,8 +29902,8 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         path_params=['location'],
         query_params=[],
         relative_path='v1beta1/{+location}:generateInstanceRubrics',
-        request_field='googleCloudAiplatformV1beta1GenerateInstanceRubricsRequest',
-        request_type_name='AiplatformProjectsLocationsGenerateInstanceRubricsRequest',
+        request_field='<request>',
+        request_type_name='GoogleCloudAiplatformV1beta1GenerateInstanceRubricsRequest',
         response_type_name='GoogleCloudAiplatformV1beta1GenerateInstanceRubricsResponse',
         supports_download=False,
     )
@@ -34198,3 +34199,91 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       super(AiplatformV1beta1.TuningJobsService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class V1beta1Service(base_api.BaseApiService):
+    """Service class for the v1beta1 resource."""
+
+    _NAME = 'v1beta1'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.V1beta1Service, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def EvaluateDataset(self, request, global_params=None):
+      r"""Evaluates a dataset based on a set of given metrics.
+
+      Args:
+        request: (GoogleCloudAiplatformV1beta1EvaluateDatasetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('EvaluateDataset')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EvaluateDataset.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='aiplatform.evaluateDataset',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v1beta1:evaluateDataset',
+        request_field='<request>',
+        request_type_name='GoogleCloudAiplatformV1beta1EvaluateDatasetRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def EvaluateInstances(self, request, global_params=None):
+      r"""Evaluates instances based on a given metric.
+
+      Args:
+        request: (GoogleCloudAiplatformV1beta1EvaluateInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1EvaluateInstancesResponse) The response message.
+      """
+      config = self.GetMethodConfig('EvaluateInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EvaluateInstances.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='aiplatform.evaluateInstances',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v1beta1:evaluateInstances',
+        request_field='<request>',
+        request_type_name='GoogleCloudAiplatformV1beta1EvaluateInstancesRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1EvaluateInstancesResponse',
+        supports_download=False,
+    )
+
+    def GenerateInstanceRubrics(self, request, global_params=None):
+      r"""Generates rubrics for a given prompt. A rubric represents a single testable criterion for evaluation. One input prompt could have multiple rubrics This RPC allows users to get suggested rubrics based on provided prompt, which can then be reviewed and used for subsequent evaluations.
+
+      Args:
+        request: (GoogleCloudAiplatformV1beta1GenerateInstanceRubricsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1GenerateInstanceRubricsResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateInstanceRubrics')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateInstanceRubrics.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='aiplatform.generateInstanceRubrics',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v1beta1:generateInstanceRubrics',
+        request_field='<request>',
+        request_type_name='GoogleCloudAiplatformV1beta1GenerateInstanceRubricsRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1GenerateInstanceRubricsResponse',
+        supports_download=False,
+    )

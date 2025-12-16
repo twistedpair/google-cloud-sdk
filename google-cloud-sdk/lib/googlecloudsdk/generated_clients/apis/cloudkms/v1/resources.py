@@ -119,6 +119,29 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SINGLETENANTHSMINSTANCES = (
+      'projects.locations.singleTenantHsmInstances',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'singleTenantHsmInstances/{singleTenantHsmInstancesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SINGLETENANTHSMINSTANCES_PROPOSALS = (
+      'projects.locations.singleTenantHsmInstances.proposals',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'singleTenantHsmInstances/{singleTenantHsmInstancesId}/'
+              'proposals/{proposalsId}',
+      },
+      ['name'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

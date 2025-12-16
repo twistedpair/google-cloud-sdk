@@ -25,6 +25,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.util import apis_util
 from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import transport
 from googlecloudsdk.generated_clients.apis import apis_map
@@ -222,6 +223,7 @@ def _GetGapicClientInstance(
     attempt_direct_path=False,
     redact_request_body_reason=None,
     custom_interceptors=None,
+    region=None,
 ):
   """Returns an instance of the GAPIC API client specified in the args.
 
@@ -244,6 +246,7 @@ def _GetGapicClientInstance(
       redacted if --log-http is used. If None, the body is not redacted.
     custom_interceptors: list[grpc interceptor], a list of custom interceptors
     to add to the channel.
+    region: str, Region (or multi-region) for regionalized endpoints (REP).
 
   Returns:
     An instance of the specified GAPIC API client.
@@ -263,6 +266,11 @@ def _GetGapicClientInstance(
 
     if endpoint_override is not None:
       return address
+
+    # Note that regionalized endpoints are incompatible with mTLS / non-Google
+    # universe domains.
+    if _ShouldUseRegionalEndpoints(api_name, api_version, region):
+      return _GetRegionalizedEndpoint(address, region)
 
     return UniversifyAddress(address)
 
@@ -317,14 +325,37 @@ class UnsupportedEndpointModeError(exceptions.Error):
   """Error when regional/endpoint_mode property is unsupported by a command."""
 
 
-def _ShouldUseRegionalEndpoints():
+def _ShouldUseRegionalEndpoints(api_name, api_version, region):
   """Returns whether or not regional endpoint should be used.
 
   Depending on the user-specified regional/endpoint_mode setting and the
   developer-specified command annotation, this function calculates whether or
   not to use regional endpoints. In case of an invalid combination, an error
-  will be raised.
+  will be raised. The full matrix is as follows:
 
+  +--------------+-------------------------------------------------------------+
+  |              |                    Command compatibility                    |
+  |  User mode   +---------------+---------------+-----------------------------+
+  |              | Only supports | Only supports | Supports both               |
+  |              | global        | regional      |                             |
+  +--------------+---------------+---------------+-----------------------------+
+  | regional     | Error         | Regional      | Regional client             |
+  |              |               | client        |                             |
+  +--------------+---------------+---------------+-----------------------------+
+  | global       | Global client | Error         | Global client               |
+  +--------------+---------------+---------------+-----------------------------+
+  | regional-    | Global client | Regional      | If region available:        |
+  | preferred    |               | client        | Regional client             |
+  |              |               |               | Otherwise: Global client    |
+  +--------------+---------------+---------------+-----------------------------+
+  | (unset)      | Global client | Regional      | Global client               |
+  |              |               | client        |                             |
+  +--------------+---------------+---------------+-----------------------------+
+
+  Args:
+    api_name: str, The API name.
+    api_version: str, The version of the API.
+    region: The region (or multi-region).
   Returns:
     bool, Whether to use regional endpoints.
   Raises:
@@ -344,14 +375,35 @@ def _ShouldUseRegionalEndpoints():
     raise UnsupportedEndpointModeError(
         f'The regional/endpoint_mode property is currently set to [{mode}], but'
         ' this command only supports regional endpoints.')
-  return (
-      compatibility == properties.VALUES.regional.REQUIRED
-      or mode == properties.VALUES.regional.REGIONAL
+
+  # Global.
+  if (
+      compatibility is None
+      or mode == properties.VALUES.regional.GLOBAL
       or (
-          mode == properties.VALUES.regional.REGIONAL_PREFERRED
+          mode is None
           and compatibility == properties.VALUES.regional.SUPPORTED
       )
-  )
+  ):
+    return False
+
+  # Regional if available.
+  known_available_regions = GetApiDef(api_name, api_version).regional_endpoints
+  if (
+      mode == properties.VALUES.regional.REGIONAL_PREFERRED
+      and compatibility == properties.VALUES.regional.SUPPORTED
+  ):
+    return region in known_available_regions
+
+  # Command requires or user explicitly requested regional endpoints.
+  if region not in known_available_regions:
+    # If the requested region isn't known to be available, it could be because
+    # this version of gcloud is older and doesn't know about it yet. We let the
+    # request through and fail open in this case rather than error out here.
+    log.info(
+        'API [%s] does not contain a known regional endpoint for region [%s].',
+        api_name, region)
+  return True
 
 
 def _GetMtlsEndpoint(api_name, api_version, client_class=None):
@@ -446,7 +498,7 @@ def _GetEffectiveApiEndpoint(
     )
   # Note that regionalized endpoints are incompatible with mTLS / non-Google
   # universe domains.
-  elif _ShouldUseRegionalEndpoints():
+  elif _ShouldUseRegionalEndpoints(api_name, api_version, region):
     url_base = urlparse(client_base_url)
     regionalized_domain = _GetRegionalizedEndpoint(url_base.netloc, region)
     address = urlunparse(url_base._replace(netloc=regionalized_domain))

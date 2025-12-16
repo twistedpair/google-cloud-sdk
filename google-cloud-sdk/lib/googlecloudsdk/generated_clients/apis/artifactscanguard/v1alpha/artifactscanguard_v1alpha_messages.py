@@ -13,6 +13,34 @@ from apitools.base.py import extra_types
 package = 'artifactscanguard'
 
 
+class AdmissionControl(_messages.Message):
+  r"""AdmissionControl defines the BinAuthz policy details when the
+  enforcement action is ADMISSION_CONTROL.
+
+  Fields:
+    deploymentProjectIds: Optional. The deployment projects where admission
+      control is enabled. This will be used to populate the default admission
+      rule in the BinAuthz policy. Format: projects/{project_id} If not set,
+      it will be same as the project_ids in the registry scope.
+    dryRun: Optional. If set to true, the BinAuthz policy will be created in
+      dry run mode. Admission control only logs the violation and deployment
+      is allowed.
+    gkeClusterNames: Optional. Google Kubernetes Engine clusters where
+      admission control is enabled. This will be used to populate the cluster
+      admission rules in the BinAuthz policy. Format: //container.googleapis.c
+      om/projects/{project_id}/locations/{location}/clusters/{cluster_name}.
+    overrideBinauthzPolicy: Optional. If set to true, the existing BinAuthz
+      policy will be updated with the enforcement mode according to dry_run
+      field in Artifact Guard policy. dry_run - true -> DRYRUN_AUDIT_LOG_ONLY
+      dry_run - false -> ENFORCED_BLOCK_AND_AUDIT_LOG
+  """
+
+  deploymentProjectIds = _messages.StringField(1, repeated=True)
+  dryRun = _messages.BooleanField(2)
+  gkeClusterNames = _messages.StringField(3, repeated=True)
+  overrideBinauthzPolicy = _messages.BooleanField(4)
+
+
 class AffectedPackage(_messages.Message):
   r"""Affected package details.
 
@@ -290,9 +318,9 @@ class ArtifactscanguardFoldersLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -556,9 +584,9 @@ class ArtifactscanguardOrganizationsLocationsOperationsListRequest(_messages.Mes
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -866,9 +894,9 @@ class ArtifactscanguardProjectsLocationsOperationsListRequest(_messages.Message)
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -1071,8 +1099,8 @@ class Empty(_messages.Message):
 
 
 class EnableAdmissionControl(_messages.Message):
-  r"""EnableAdmissionControl defines the admission control to be taken when a
-  policy is violated in the runtime scope.
+  r"""EnableAdmissionControl defines the BinAuthz policy details when the
+  enable_admission_control is true.
 
   Enums:
     EnforcementActionValueValuesEnum: Required. The enforcement action to take
@@ -1327,8 +1355,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1883,22 +1911,47 @@ class RegistryScope(_messages.Message):
   r"""RegistryScope contains the repositories and the projects that are
   associated with the registry.
 
+  Enums:
+    EnforcementActionValueValuesEnum: Optional. The enforcement action to take
+      when this policy is violated in the registry scope.
+
   Fields:
-    garRepositoryNamePatterns: Optional. At least one of the gar_repositories
-      or projects must be set. The gar repositories that this policy is
-      associated with. Format:
+    admissionControl: Optional. The admission control details for the registry
+      scope. This will be set only if the enforcement action is
+      ADMISSION_CONTROL.
+    enforcementAction: Optional. The enforcement action to take when this
+      policy is violated in the registry scope.
+    garRepositoryNamePatterns: Optional. The gar repositories that this policy
+      is associated with. Format:
       {location}-[pkg_type].pkg.dev/{project_id}/REPOSITORY_PATTERN or
       {us|eu|asia}.gcr.io/{project_id} or gcr.io/{project_id}
     imageNamePatterns: Optional. The image name patterns that this policy is
       associated with. This will be a fully qualified image name. Format:
       full_repo_name/{image_name_pattern} where image_name_pattern is a regex.
     projectIds: Optional. The projects that are associated with the registry.
-      Format: projects/{project_id}
+      At least one project_id is required. Format: projects/{project_id}
   """
 
-  garRepositoryNamePatterns = _messages.StringField(1, repeated=True)
-  imageNamePatterns = _messages.StringField(2, repeated=True)
-  projectIds = _messages.StringField(3, repeated=True)
+  class EnforcementActionValueValuesEnum(_messages.Enum):
+    r"""Optional. The enforcement action to take when this policy is violated
+    in the registry scope.
+
+    Values:
+      REGISTRY_ENFORCEMENT_ACTION_UNSPECIFIED: The enforcement action is
+        unspecified.
+      AUDIT_ONLY: The policy is evaluated but no admission control is applied.
+      ADMISSION_CONTROL: The policy is evaluated and admission control takes
+        place before deployment.
+    """
+    REGISTRY_ENFORCEMENT_ACTION_UNSPECIFIED = 0
+    AUDIT_ONLY = 1
+    ADMISSION_CONTROL = 2
+
+  admissionControl = _messages.MessageField('AdmissionControl', 1)
+  enforcementAction = _messages.EnumField('EnforcementActionValueValuesEnum', 2)
+  garRepositoryNamePatterns = _messages.StringField(3, repeated=True)
+  imageNamePatterns = _messages.StringField(4, repeated=True)
+  projectIds = _messages.StringField(5, repeated=True)
 
 
 class RelatedReference(_messages.Message):
@@ -2005,9 +2058,9 @@ class RuntimeScope(_messages.Message):
       policy is violated in the runtime scope.
 
   Fields:
-    enableAdmissionControl: Optional. Whether to enable admission control for
-      the runtime scope. If true, the BinAuthz policy will be created based on
-      the enforcement action.
+    enableAdmissionControl: Whether to enable admission control for the
+      runtime scope. If true, the BinAuthz policy will be created based on the
+      enforcement action.
     enforcementAction: The enforcement action to take when this policy is
       violated in the runtime scope.
     gkeClusterNamePatterns: Optional. Google Kubernetes Engine clusters that
@@ -2018,11 +2071,11 @@ class RuntimeScope(_messages.Message):
       that are associated with the policy. Format: //container.googleapis.com/
       projects/{project_id}/locations/{location}/clusters/{cluster_id}/k8s/nam
       espaces/{namepace_pattern} where namespace_pattern is a regex.
-    overrideBinauthzPolicy: Optional. Whether to override the existing
-      BinAuthz policy for the projects in the runtime scope.
+    overrideBinauthzPolicy: Whether to override the existing BinAuthz policy
+      for the projects in the runtime scope.
     projectIds: Required. The project ID that this policy is associated with.
-      Format: projects/{project_id} The policy will be applied to all the
-      clusters in the project.
+      At least one project_id is required. Format: projects/{project_id} The
+      policy will be applied to all the clusters in the project.
   """
 
   class EnforcementActionValueValuesEnum(_messages.Enum):

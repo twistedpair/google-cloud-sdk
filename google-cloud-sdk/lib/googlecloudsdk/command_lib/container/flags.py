@@ -5580,7 +5580,7 @@ net.ipv4.tcp_max_orphans                           | Must be between [16384, 262
 net.ipv4.tcp_max_tw_buckets                        | Must be between [4096, 2147483647]
 net.ipv4.tcp_syn_retries                           | Must be between [1, 127]
 net.ipv4.tcp_ecn                                   | Must be {0, 1, 2}
-net.ipv4.tcp_congestion_control                    | Must be string containing only letters and numbers
+net.ipv4.tcp_congestion_control                    | Supported values for COS: 'reno', 'cubic', 'bbr', 'lp', 'htcp'. Supported values for Ubuntu: 'reno', 'cubic', 'bbr', 'lp', 'htcp', 'vegas', 'dctcp', 'bic', 'cdg', 'highspeed', 'hybla', 'illinois', 'nv', 'scalable', 'veno', 'westwood', 'yeah'.
 net.netfilter.nf_conntrack_max                     | Must be between [65536, 4194304]
 net.netfilter.nf_conntrack_buckets                 | Must be between [65536, 524288]. Recommend setting: nf_conntrack_max = nf_conntrack_buckets * 4
 net.netfilter.nf_conntrack_tcp_timeout_close_wait  | Must be between [60, 3600]

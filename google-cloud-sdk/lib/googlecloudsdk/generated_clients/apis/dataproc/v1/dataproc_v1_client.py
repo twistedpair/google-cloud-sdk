@@ -536,6 +536,33 @@ class DataprocV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def AccessStorageRdd(self, request, global_params=None):
+      r"""Obtains details about a single RDD for a Spark Application including Data Distribution and Partitions.
+
+      Args:
+        request: (DataprocProjectsLocationsBatchesSparkApplicationsAccessStorageRddRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AccessSparkApplicationStorageRddResponse) The response message.
+      """
+      config = self.GetMethodConfig('AccessStorageRdd')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AccessStorageRdd.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/batches/{batchesId}/sparkApplications/{sparkApplicationsId}:accessStorageRdd',
+        http_method='GET',
+        method_id='dataproc.projects.locations.batches.sparkApplications.accessStorageRdd',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['parent', 'rddId'],
+        relative_path='v1/{+name}:accessStorageRdd',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsBatchesSparkApplicationsAccessStorageRddRequest',
+        response_type_name='AccessSparkApplicationStorageRddResponse',
+        supports_download=False,
+    )
+
     def Search(self, request, global_params=None):
       r"""Obtain high level information and list of Spark Applications corresponding to a batch.
 
@@ -776,6 +803,33 @@ class DataprocV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataprocProjectsLocationsBatchesSparkApplicationsSearchStagesRequest',
         response_type_name='SearchSparkApplicationStagesResponse',
+        supports_download=False,
+    )
+
+    def SearchStorageRdds(self, request, global_params=None):
+      r"""Obtains details about all RDDs for a Spark Application. Supports optionally including Data Distribution and Partitions.
+
+      Args:
+        request: (DataprocProjectsLocationsBatchesSparkApplicationsSearchStorageRddsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchSparkApplicationStorageRddsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchStorageRdds')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchStorageRdds.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/batches/{batchesId}/sparkApplications/{sparkApplicationsId}:searchStorageRdds',
+        http_method='GET',
+        method_id='dataproc.projects.locations.batches.sparkApplications.searchStorageRdds',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['includeDataDistribution', 'includePartitions', 'pageSize', 'pageToken', 'parent'],
+        relative_path='v1/{+name}:searchStorageRdds',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsBatchesSparkApplicationsSearchStorageRddsRequest',
+        response_type_name='SearchSparkApplicationStorageRddsResponse',
         supports_download=False,
     )
 
@@ -1575,6 +1629,33 @@ class DataprocV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def AccessStorageRdd(self, request, global_params=None):
+      r"""Obtain details about a specific RDD for a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsAccessStorageRddRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AccessSessionSparkApplicationStorageRddResponse) The response message.
+      """
+      config = self.GetMethodConfig('AccessStorageRdd')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AccessStorageRdd.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications/{sparkApplicationsId}:accessStorageRdd',
+        http_method='GET',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.accessStorageRdd',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['parent', 'rddId'],
+        relative_path='v1/{+name}:accessStorageRdd',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsAccessStorageRddRequest',
+        response_type_name='AccessSessionSparkApplicationStorageRddResponse',
+        supports_download=False,
+    )
+
     def Search(self, request, global_params=None):
       r"""Obtain high level information and list of Spark Applications corresponding to a batch.
 
@@ -1599,6 +1680,60 @@ class DataprocV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsSearchRequest',
         response_type_name='SearchSessionSparkApplicationsResponse',
+        supports_download=False,
+    )
+
+    def SearchConnectExecutions(self, request, global_params=None):
+      r"""Obtain data corresponding to Spark Connect Executions for a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsSearchConnectExecutionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchSessionSparkApplicationConnectExecutionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchConnectExecutions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchConnectExecutions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications/{sparkApplicationsId}:searchConnectExecutions',
+        http_method='GET',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.searchConnectExecutions',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['operationIds', 'pageSize', 'pageToken', 'parent', 'sessionId'],
+        relative_path='v1/{+name}:searchConnectExecutions',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsSearchConnectExecutionsRequest',
+        response_type_name='SearchSessionSparkApplicationConnectExecutionsResponse',
+        supports_download=False,
+    )
+
+    def SearchConnectSessions(self, request, global_params=None):
+      r"""Obtain data corresponding to Spark Connect Sessions for a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsSearchConnectSessionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchSessionSparkApplicationConnectSessionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchConnectSessions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchConnectSessions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications/{sparkApplicationsId}:searchConnectSessions',
+        http_method='GET',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.searchConnectSessions',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken', 'parent'],
+        relative_path='v1/{+name}:searchConnectSessions',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsSearchConnectSessionsRequest',
+        response_type_name='SearchSessionSparkApplicationConnectSessionsResponse',
         supports_download=False,
     )
 
@@ -1815,6 +1950,33 @@ class DataprocV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsSearchStagesRequest',
         response_type_name='SearchSessionSparkApplicationStagesResponse',
+        supports_download=False,
+    )
+
+    def SearchStorageRdds(self, request, global_params=None):
+      r"""Obtain details about all RDDs for a Spark Application. Supports optionally including Data Distribution and Partitions.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsSearchStorageRddsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchSessionSparkApplicationStorageRddsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchStorageRdds')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchStorageRdds.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications/{sparkApplicationsId}:searchStorageRdds',
+        http_method='GET',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.searchStorageRdds',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['includeDataDistribution', 'includePartitions', 'pageSize', 'pageToken', 'parent'],
+        relative_path='v1/{+name}:searchStorageRdds',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsSearchStorageRddsRequest',
+        response_type_name='SearchSessionSparkApplicationStorageRddsResponse',
         supports_download=False,
     )
 

@@ -91,6 +91,8 @@ class Cluster(_messages.Message):
       used.
     enableClusterIsolation: Optional. This denotes if the cluster is required
       to be isolated. go/cluster-isolation-in-gdcc-cluster
+    enableRemoteBackup: Optional. If true, the remote backup/restore feature
+      will be enabled for this cluster.
     endpoint: Output only. The IP address of the Kubernetes API server.
     externalLoadBalancerAddressPools: Optional. External load balancer pools
       for cluster.
@@ -191,26 +193,27 @@ class Cluster(_messages.Message):
   createTime = _messages.StringField(8)
   defaultMaxPodsPerNode = _messages.IntegerField(9, variant=_messages.Variant.INT32)
   enableClusterIsolation = _messages.BooleanField(10)
-  endpoint = _messages.StringField(11)
-  externalLoadBalancerAddressPools = _messages.MessageField('ExternalLoadBalancerPool', 12, repeated=True)
-  externalLoadBalancerIpv4AddressPools = _messages.StringField(13, repeated=True)
-  externalLoadBalancerIpv6AddressPools = _messages.StringField(14, repeated=True)
-  fleet = _messages.MessageField('Fleet', 15)
-  googleGroupAuthentication = _messages.MessageField('GoogleGroupAuthenticationConfig', 16)
-  labels = _messages.MessageField('LabelsValue', 17)
-  maintenanceEvents = _messages.MessageField('MaintenanceEvent', 18, repeated=True)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 19)
-  name = _messages.StringField(20)
-  networking = _messages.MessageField('ClusterNetworking', 21)
-  nodeVersion = _messages.StringField(22)
-  port = _messages.IntegerField(23, variant=_messages.Variant.INT32)
-  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 24)
-  status = _messages.EnumField('StatusValueValuesEnum', 25)
-  survivabilityConfig = _messages.MessageField('SurvivabilityConfig', 26)
-  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 27)
-  targetVersion = _messages.StringField(28)
-  updateTime = _messages.StringField(29)
-  zoneStorageEncryption = _messages.MessageField('ZoneStorageEncryption', 30)
+  enableRemoteBackup = _messages.BooleanField(11)
+  endpoint = _messages.StringField(12)
+  externalLoadBalancerAddressPools = _messages.MessageField('ExternalLoadBalancerPool', 13, repeated=True)
+  externalLoadBalancerIpv4AddressPools = _messages.StringField(14, repeated=True)
+  externalLoadBalancerIpv6AddressPools = _messages.StringField(15, repeated=True)
+  fleet = _messages.MessageField('Fleet', 16)
+  googleGroupAuthentication = _messages.MessageField('GoogleGroupAuthenticationConfig', 17)
+  labels = _messages.MessageField('LabelsValue', 18)
+  maintenanceEvents = _messages.MessageField('MaintenanceEvent', 19, repeated=True)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 20)
+  name = _messages.StringField(21)
+  networking = _messages.MessageField('ClusterNetworking', 22)
+  nodeVersion = _messages.StringField(23)
+  port = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 25)
+  status = _messages.EnumField('StatusValueValuesEnum', 26)
+  survivabilityConfig = _messages.MessageField('SurvivabilityConfig', 27)
+  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 28)
+  targetVersion = _messages.StringField(29)
+  updateTime = _messages.StringField(30)
+  zoneStorageEncryption = _messages.MessageField('ZoneStorageEncryption', 31)
 
 
 class ClusterNetworking(_messages.Message):
@@ -751,9 +754,9 @@ class EdgecontainerProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -999,8 +1002,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)

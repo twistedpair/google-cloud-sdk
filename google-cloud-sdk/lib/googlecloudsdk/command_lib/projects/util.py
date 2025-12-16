@@ -19,17 +19,22 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import datetime
+import enum
 import re
 
 from apitools.base.py import exceptions as apitools_exceptions
+from apitools.base.py import list_pager
 from apitools.base.py.exceptions import HttpForbiddenError
 from googlecloudsdk.api_lib.cloudresourcemanager import organizations
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_util
 from googlecloudsdk.api_lib.iam import policies
 from googlecloudsdk.api_lib.resource_manager import folders
+from googlecloudsdk.api_lib.resource_manager import tags
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.projects import exceptions
+from googlecloudsdk.command_lib.resource_manager import tag_utils
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
@@ -63,16 +68,31 @@ _VALID_PROJECT_REGEX = re.compile(
     r'$')
 
 
+@enum.unique
+class Environment(enum.Enum):
+  PRODUCTION = 'Production'
+  DEVELOPMENT = 'Development'
+  TEST = 'Test'
+  STAGING = 'Staging'
+
+
 _ENV_STANDARD_TO_VARIANT_VALUE_MAPPING = {
     # Production
-    'Production': {'Prod', 'prod', 'Production', 'production'},
+    Environment.PRODUCTION: {'Prod', 'prod', 'Production', 'production'},
     # Development
-    'Development': {'Dev', 'dev', 'Development', 'development'},
+    Environment.DEVELOPMENT: {'Dev', 'dev', 'Development', 'development'},
     # Test
-    'Test': {'Test', 'test', 'Testing', 'testing QA', 'qa',
-             'Quality assurance', 'quality assurance'},
+    Environment.TEST: {
+        'Test',
+        'test',
+        'Testing',
+        'testing QA',
+        'qa',
+        'Quality assurance',
+        'quality assurance',
+    },
     # Staging
-    'Staging': {'Staging', 'staging', 'Stage', 'stage'},
+    Environment.STAGING: {'Staging', 'staging', 'Stage', 'stage'},
 }
 
 _ENV_VARIANT_TO_STANDARD_VALUE_MAPPING = {}
@@ -138,12 +158,12 @@ def IdFromName(project_name):
     return '{}{:02}'.format((now - _CLOUD_CONSOLE_LAUNCH_DATE).days, now.hour)
 
   def GenIds(name):
-    base = SimplifyName(name)
+    base_ = SimplifyName(name)
     # Cloud Console generates the two following candidates in the opposite
     # order, but they are validating uniqueness and we're not, so we put the
     # "more unique" suggestion first.
-    yield base + '-' + CloudConsoleNowString()
-    yield base
+    yield base_ + '-' + CloudConsoleNowString()
+    yield base_
     # Cloud Console has an four-tier "allocate an unused id" architecture for
     # coining ids *not* based on the project name. This might be sensible for
     # an interface where ids are expected to be auto-generated, but seems like
@@ -269,57 +289,94 @@ def GetIamPolicyWithAncestors(project_id, include_deny, release_track):
         ' ancestors')
 
 
-def GetEnvironmentTag(tags):
-  """Returns the environment tag for the project."""
-  for tag in tags.additionalProperties:
-    if tag.key == 'environment':
-      return tag
-  return None
+def GetEnvironmentTag(project_id):
+  """Returns the environment tag for the project id."""
+  messages = tags.TagMessages()
+  project_ref = ParseProject(project_id)
+  resource_name = tag_utils.GetCanonicalResourceName(
+      project_ref.RelativeName(), None, base.ReleaseTrack.GA
+  )
+  try:
+    effective_tags_request = (
+        messages.CloudresourcemanagerEffectiveTagsListRequest(
+            parent=resource_name
+        )
+    )
+    effective_tags_response = list_pager.YieldFromList(
+        tags.EffectiveTagsService(),
+        effective_tags_request,
+        batch_size_attribute='pageSize',
+        field='effectiveTags',
+    )
+
+    for effective_tag in effective_tags_response:
+      if effective_tag.namespacedTagKey.endswith('/environment'):
+        return (
+            effective_tag.namespacedTagKey.split('/')[-1],
+            effective_tag.namespacedTagValue.split('/')[-1],
+        )
+  except (apitools_exceptions.HttpError, core_exceptions.Error) as e:
+    # Gracefully print a warning message.
+    log.info(
+        'Unable to get environment tag for project [{0}]: {1}'.format(
+            project_id, e
+        )
+    )
+  return (None, None)
 
 
 def GetStandardEnvironmentValue(value):
   return _ENV_VARIANT_TO_STANDARD_VALUE_MAPPING.get(value, None)
 
 
-def CheckAndPrintEnvironmentTagMessageWithProjectID(project_id):
-  """Checks for environment tag and prints a message given project ID."""
-  try:
-    project_ref = ParseProject(project_id)
-    project = projects_api.Get(project_ref)
-    CheckAndPrintEnvironmentTagMessageWithProject(project)
-  except (apitools_exceptions.HttpError, core_exceptions.Error) as e:
-    # Gracefully print a warning message.
+def PrintEnvironmentTagMessage(project_id):
+  """Prints environment tag message given project ID."""
+  env_tag_key, env_tag_value = GetEnvironmentTag(project_id)
+  if not env_tag_key:
     log.info(
-        'Unable to get environment tag for project [{0}]: {1}'
-        .format(project_id, e)
+        "Project '{0}' lacks an 'environment' tag. Please create or add a tag"
+        " with key 'environment' and a value like 'Production',"
+        " 'Development', 'Test', or 'Staging'. Add an 'environment' tag using"
+        " `gcloud resource-manager tags bindings create`. See"
+        " https://cloud.google.com/resource-manager/docs/creating-managing-projects#designate_project_environments_with_tags"
+        " for details.".format(project_id)
     )
+    return
 
+  env_standard_value = GetStandardEnvironmentValue(
+      env_tag_value
+  )
+  if not env_standard_value:
+    log.info(
+        "Project '{0}' has an 'environment' tag with an"
+        " unrecognized value. Please use a standard value such as"
+        " 'Production', 'Development', 'Test', or 'Staging'. You can update"
+        " the tag value using `gcloud resource-manager tags bindings"
+        " create`. Refer to https://cloud.google.com/resource-manager/docs/"
+        "creating-managing-projects#designate_project_environments_with_tags"
+        " for more guidance.".format(project_id)
+    )
+    return
 
-def CheckAndPrintEnvironmentTagMessageWithProject(project):
-  """Checks for environment tag and prints a message."""
-  env_tag = GetEnvironmentTag(project.tags) if project.tags else None
-  if env_tag:
-    env_standard_value = GetStandardEnvironmentValue(env_tag.value)
-    if env_standard_value:
-      log.info(
-          "Project '{0}' is tagged as 'environment: {1}'. Making"
-          " changes could affect your '{2}' apps. If incorrect, you can update"
-          " it by managing the tag binding for the 'environment' key using"
-          ' `gcloud resource-manager tags bindings create`.'.format(
-              project.projectId, env_tag.value, env_standard_value
-          )
-      )
-    else:
-      log.info(
-          "Project '{0}' has an 'environment' tag key with invalid"
-          " value. Use either 'Production', 'Development', 'Test', or"
-          " 'Staging'. Add an 'environment' tag using `gcloud resource-manager"
-          ' tags bindings create`.'.format(project.projectId)
-      )
+  if env_standard_value == Environment.PRODUCTION:
+    log.warning(
+        "Project '{0}' is designated as '{2}'(tagged 'environment: {1}')."
+        " Making changes could affect your '{2}' apps."
+        ' Learn more at https://cloud.google.com/resource-manager/docs/'
+        'creating-managing-projects#designate_project_environments_with_tags'
+        .format(
+            project_id, env_tag_value, env_standard_value.value
+        )
+    )
   else:
     log.info(
-        "Project '{0}' has no 'environment' tag set. Use either"
-        " 'Production', 'Development', 'Test', or 'Staging'. Add an"
-        " 'environment' tag using `gcloud resource-manager tags bindings"
-        ' create`.'.format(project.projectId)
+        "Caution: Project '{0}' is designated as '{2}'(tagged"
+        " 'environment: {1}'). Making changes could affect your '{2}'"
+        ' apps. If incorrect, you can update it by managing the tag'
+        " binding for the 'environment' key using `gcloud"
+        " resource-manager tags bindings create`. Learn more at"
+        ' https://cloud.google.com/resource-manager/docs/creating-managing-projects#designate_project_environments_with_tags'
+        .format(
+            project_id, env_tag_value, env_standard_value.value
+        )
     )

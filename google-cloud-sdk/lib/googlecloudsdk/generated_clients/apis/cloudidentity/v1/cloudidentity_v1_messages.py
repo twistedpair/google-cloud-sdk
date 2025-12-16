@@ -1347,7 +1347,7 @@ class CloudidentityPoliciesGetRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the policy to retrieve. Format:
-      "policies/{policy}".
+      `policies/{policy}`.
   """
 
   name = _messages.StringField(1, required=True)

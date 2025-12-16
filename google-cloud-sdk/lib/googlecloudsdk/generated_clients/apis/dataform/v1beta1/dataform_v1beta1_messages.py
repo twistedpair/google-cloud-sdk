@@ -453,6 +453,9 @@ class CompilationResult(_messages.Message):
       internally to serve the resource. For example: timestamps, flags, status
       fields, etc. The format of this field is a JSON string.
     name: Output only. The compilation result's name.
+    privateResourceMetadata: Output only. Metadata indicating whether this
+      resource is user-scoped. `CompilationResult` resource is `user_scoped`
+      only if it is sourced from a workspace.
     releaseConfig: Immutable. The name of the release config to compile. Must
       be in the format
       `projects/*/locations/*/repositories/*/releaseConfigs/*`.
@@ -471,9 +474,10 @@ class CompilationResult(_messages.Message):
   gitCommitish = _messages.StringField(6)
   internalMetadata = _messages.StringField(7)
   name = _messages.StringField(8)
-  releaseConfig = _messages.StringField(9)
-  resolvedGitCommitSha = _messages.StringField(10)
-  workspace = _messages.StringField(11)
+  privateResourceMetadata = _messages.MessageField('PrivateResourceMetadata', 9)
+  releaseConfig = _messages.StringField(10)
+  resolvedGitCommitSha = _messages.StringField(11)
+  workspace = _messages.StringField(12)
 
 
 class CompilationResultAction(_messages.Message):
@@ -751,9 +755,9 @@ class DataformProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -2190,8 +2194,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -2724,6 +2728,17 @@ class PolicyName(_messages.Message):
   id = _messages.StringField(1)
   region = _messages.StringField(2)
   type = _messages.StringField(3)
+
+
+class PrivateResourceMetadata(_messages.Message):
+  r"""Metadata used to identify if a resource is user scoped.
+
+  Fields:
+    userScoped: Output only. If true, this resource is user-scoped, meaning it
+      is either a workspace or sourced from a workspace.
+  """
+
+  userScoped = _messages.BooleanField(1)
 
 
 class PullGitCommitsRequest(_messages.Message):
@@ -3544,6 +3559,10 @@ class WorkflowInvocation(_messages.Message):
       will be used.
     invocationTiming: Output only. This workflow invocation's timing details.
     name: Output only. The workflow invocation's name.
+    privateResourceMetadata: Output only. Metadata indicating whether this
+      resource is user-scoped. `WorkflowInvocation` resource is `user_scoped`
+      only if it is sourced from a compilation result and the compilation
+      result is user-scoped.
     resolvedCompilationResult: Output only. The resolved compilation result
       that was used to create this invocation. Will be in the format
       `projects/*/locations/*/repositories/*/compilationResults/*`.
@@ -3578,9 +3597,10 @@ class WorkflowInvocation(_messages.Message):
   invocationConfig = _messages.MessageField('InvocationConfig', 4)
   invocationTiming = _messages.MessageField('Interval', 5)
   name = _messages.StringField(6)
-  resolvedCompilationResult = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  workflowConfig = _messages.StringField(9)
+  privateResourceMetadata = _messages.MessageField('PrivateResourceMetadata', 7)
+  resolvedCompilationResult = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  workflowConfig = _messages.StringField(10)
 
 
 class WorkflowInvocationAction(_messages.Message):
@@ -3657,12 +3677,16 @@ class Workspace(_messages.Message):
       internally to serve the resource. For example: timestamps, flags, status
       fields, etc. The format of this field is a JSON string.
     name: Identifier. The workspace's name.
+    privateResourceMetadata: Output only. Metadata indicating whether this
+      resource is user-scoped. For `Workspace` resources, the `user_scoped`
+      field is always `true`.
   """
 
   createTime = _messages.StringField(1)
   dataEncryptionState = _messages.MessageField('DataEncryptionState', 2)
   internalMetadata = _messages.StringField(3)
   name = _messages.StringField(4)
+  privateResourceMetadata = _messages.MessageField('PrivateResourceMetadata', 5)
 
 
 class WorkspaceCompilationOverrides(_messages.Message):

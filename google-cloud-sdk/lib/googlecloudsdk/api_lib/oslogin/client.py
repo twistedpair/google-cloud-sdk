@@ -15,6 +15,7 @@
 """oslogin client functions."""
 
 from __future__ import absolute_import
+from __future__ import annotations
 from __future__ import division
 from __future__ import unicode_literals
 
@@ -304,8 +305,9 @@ class OsloginClient(object):
         'serviceAccount': service_account,
         'computeInstance': compute_instance,
         'appEngineInstance': app_engine_instance,
-        'cloudRunService': cloud_run_deployment,
     }
+    if self.version in ('v1alpha', 'v1beta'):
+      request_kwargs['cloudRunService'] = cloud_run_deployment
     message_kwargs = {
         'parent': 'projects/{0}/locations/{1}'.format(project_id, region),
     }
@@ -317,13 +319,21 @@ class OsloginClient(object):
           **message_kwargs,
           googleCloudOsloginControlplaneRegionalV1alphaSignSshPublicKeyRequest=request,
       )
-    else:
+    elif self.version == 'v1beta':
       request = self.messages.GoogleCloudOsloginControlplaneRegionalV1betaSignSshPublicKeyRequest(
           **request_kwargs
       )
       message = self.messages.OsloginProjectsLocationsSignSshPublicKeyRequest(
           **message_kwargs,
           googleCloudOsloginControlplaneRegionalV1betaSignSshPublicKeyRequest=request,
+      )
+    else:
+      request = self.messages.SignSshPublicKeyRequest(
+          **request_kwargs
+      )
+      message = self.messages.OsloginProjectsLocationsSignSshPublicKeyRequest(
+          **message_kwargs,
+          signSshPublicKeyRequest=request,
       )
     return self.client.projects_locations.SignSshPublicKey(message)
 

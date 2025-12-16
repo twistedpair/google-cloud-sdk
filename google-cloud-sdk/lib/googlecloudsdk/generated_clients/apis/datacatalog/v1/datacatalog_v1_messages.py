@@ -695,9 +695,9 @@ class DatacatalogProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -2058,6 +2058,7 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
         Store.
       FEATURE_VIEW: Feature View resource in Vertex AI Feature Store.
       FEATURE_GROUP: Feature Group resource in Vertex AI Feature Store.
+      GRAPH: An entry type for a graph.
     """
     ENTRY_TYPE_UNSPECIFIED = 0
     TABLE = 1
@@ -2078,6 +2079,7 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
     FEATURE_ONLINE_STORE = 16
     FEATURE_VIEW = 17
     FEATURE_GROUP = 18
+    GRAPH = 19
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2368,21 +2370,18 @@ class GoogleCloudDatacatalogV1GraphSpecGraphElementTable(_messages.Message):
     dataSource: Required. The name of the data source. This is either a table
       name or a view name that is used for graph element input source. E.g.
       `Person` table or `PersonView` view.
-    destinationNodeReference: Optional. Only applies to `kind = EDGE`.
-    dynamicLabelEnabled: Optional. If true, the graph element has a dynamic
-      label in schemaless model.
-    dynamicPropertiesEnabled: Optional. If true, the graph element has dynamic
-      properties in schemaless model.
+    destinationNodeReference: Optional. The destination node reference of the
+      edge.
+    dynamicLabelColumn: Optional. If set, this is the input column for dynamic
+      label in schemaless data model.
+    dynamicPropertiesColumn: Optional. If set, this is the input column for
+      dynamic properties in schemaless data model.
     elementKeys: Required. The name of the keys of the elements in the table.
     inputSource: Required. The input source of the graph element.
     kind: Required. The kind of the graph element.
     labelAndProperties: Required. The labels and their properties for the
       graph element.
-    sourceNodeReference: Optional. Only applies to `kind = EDGE`. The
-      reference to the source node of the edge. This name must be a valid
-      `alias` of a node element in the same graph. Example, `Person` node can
-      be a source node of an edge element `Person_to_Address`. Similar rule
-      applies to `destination_node_reference`.
+    sourceNodeReference: Optional. The source node reference of the edge.
   """
 
   class InputSourceValueValuesEnum(_messages.Enum):
@@ -2411,14 +2410,34 @@ class GoogleCloudDatacatalogV1GraphSpecGraphElementTable(_messages.Message):
 
   alias = _messages.StringField(1)
   dataSource = _messages.StringField(2)
-  destinationNodeReference = _messages.StringField(3)
-  dynamicLabelEnabled = _messages.BooleanField(4)
-  dynamicPropertiesEnabled = _messages.BooleanField(5)
+  destinationNodeReference = _messages.MessageField('GoogleCloudDatacatalogV1GraphSpecGraphElementTableGraphNodeReference', 3)
+  dynamicLabelColumn = _messages.StringField(4)
+  dynamicPropertiesColumn = _messages.StringField(5)
   elementKeys = _messages.StringField(6, repeated=True)
   inputSource = _messages.EnumField('InputSourceValueValuesEnum', 7)
   kind = _messages.EnumField('KindValueValuesEnum', 8)
   labelAndProperties = _messages.MessageField('GoogleCloudDatacatalogV1GraphSpecGraphElementTableLabelAndProperties', 9, repeated=True)
-  sourceNodeReference = _messages.StringField(10)
+  sourceNodeReference = _messages.MessageField('GoogleCloudDatacatalogV1GraphSpecGraphElementTableGraphNodeReference', 10)
+
+
+class GoogleCloudDatacatalogV1GraphSpecGraphElementTableGraphNodeReference(_messages.Message):
+  r"""A reference to a source or destination node in a graph edge.
+
+  Fields:
+    edgeTableColumns: Required. The referencing columns in the edge table. The
+      size of `edge_table_columns` must be equal to the size of
+      `node_table_columns`.
+    nodeAlias: Required. The reference to the source/destination node of the
+      edge. This name must be a valid `alias` of a node element in the same
+      graph. Example, `Person` node can be a source node name of an edge
+      element `Person_to_Address`.
+    nodeTableColumns: Required. The referenced columns of the source node
+      table.
+  """
+
+  edgeTableColumns = _messages.StringField(1, repeated=True)
+  nodeAlias = _messages.StringField(2)
+  nodeTableColumns = _messages.StringField(3, repeated=True)
 
 
 class GoogleCloudDatacatalogV1GraphSpecGraphElementTableLabelAndProperties(_messages.Message):
@@ -4142,8 +4161,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)

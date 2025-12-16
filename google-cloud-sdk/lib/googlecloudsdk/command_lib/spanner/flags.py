@@ -1445,3 +1445,29 @@ def GetSpannerCliSystemCommandFlag():
       choices=['ON', 'OFF'],
       help='Enable or disable system commands. Default: ON',
   )
+
+
+def GetSpannerCliDirectedReadCommandFlag():
+  return base.Argument(
+      '--directed-read',
+      default='',
+      help=(
+          'Enables directed reads to provide the flexibility to route '
+          'read-only transactions and single reads to a specific '
+          'replica type or region (replica_location:replica_type). '
+          'The replica_type is optional and can be either '
+          'READ_ONLY or READ_WRITE.'
+          ),
+  )
+
+
+def GetSpannerCliProtoDescriptorFileCommandFlag():
+  return base.Argument(
+      '--proto-descriptor-file',
+      default='',
+      completer=FilesCompleter,
+      help=(
+          'Path of a file that contains a protobuf-serialized '
+          'google.protobuf.FileDescriptorSet message to use in this invocation.'
+          ),
+  )

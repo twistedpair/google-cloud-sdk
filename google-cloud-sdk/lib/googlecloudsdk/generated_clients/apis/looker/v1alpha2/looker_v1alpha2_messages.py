@@ -34,10 +34,13 @@ class ControlledEgressConfig(_messages.Message):
     egressFqdns: Optional. List of fully qualified domain names to be added to
       the allowlist for outbound traffic.
     marketplaceEnabled: Optional. Whether marketplace is enabled.
+    webProxyIps: Output only. The list of IP addresses used by Secure Web
+      Proxy for outbound traffic.
   """
 
   egressFqdns = _messages.StringField(1, repeated=True)
   marketplaceEnabled = _messages.BooleanField(2)
+  webProxyIps = _messages.StringField(3, repeated=True)
 
 
 class CustomDomain(_messages.Message):
@@ -575,8 +578,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -939,9 +942,9 @@ class LookerProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """

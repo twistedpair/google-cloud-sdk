@@ -618,8 +618,9 @@ class GoogleCloudSecuritypostureV1PolicyRule(_messages.Message):
     condition: A condition that determines whether this rule is used to
       evaluate the policy. When set, the google.type.Expr.expression field
       must contain 1 to 10 subexpressions, joined by the `||` or `&&`
-      operators. Each subexpression must use the `resource.matchTag()` or
-      `resource.matchTagId()` Common Expression Language (CEL) function. The
+      operators. Each subexpression must use the `resource.matchTag()`,
+      `resource.matchTagId()`, `resource.hasTagKey()`, or
+      `resource.hasTagKeyId()` Common Expression Language (CEL) function. The
       `resource.matchTag()` function takes the following arguments: *
       `key_name`: the namespaced name of the tag key, with the organization ID
       and a slash (`/`) as a prefix; for example, `123456789012/environment` *
@@ -630,6 +631,14 @@ class GoogleCloudSecuritypostureV1PolicyRule(_messages.Message):
       `tagKeys/123456789012` * `value_id`: the permanent ID of the tag value;
       for example, `tagValues/567890123456` For example:
       `resource.matchTagId('tagKeys/123456789012', 'tagValues/567890123456')`
+      The `resource.hasTagKey()` function takes the following argument: *
+      `key_name`: the namespaced name of the tag key, with the organization ID
+      and a slash (`/`) as a prefix; for example, `123456789012/environment`
+      For example: `resource.hasTagKey('123456789012/environment')` The
+      `resource.hasTagKeyId()` function takes the following arguments: *
+      `key_id`: the permanent ID of the tag key; for example,
+      `tagKeys/123456789012` For example:
+      `resource.hasTagKeyId('tagKeys/123456789012')`
     denyAll: Whether to deny all values for a list constraint. Valid only for
       list constraints.
     enforce: Whether to enforce the constraint. Valid only for boolean
@@ -881,8 +890,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -2165,9 +2174,9 @@ class SecuritypostureOrganizationsLocationsOperationsListRequest(_messages.Messa
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """

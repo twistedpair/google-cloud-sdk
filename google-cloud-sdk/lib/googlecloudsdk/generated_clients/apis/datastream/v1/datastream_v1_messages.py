@@ -128,7 +128,7 @@ class BigQueryClustering(_messages.Message):
   r"""BigQuery clustering configuration.
 
   Fields:
-    columns: Column names to set as clustering columns.
+    columns: Required. Column names to set as clustering columns.
   """
 
   columns = _messages.StringField(1, repeated=True)
@@ -164,8 +164,8 @@ class BigQueryPartitioning(_messages.Message):
   Fields:
     ingestionTimePartition: Ingestion time partitioning.
     integerRangePartition: Integer range partitioning.
-    requirePartitionFilter: If true, queries over the table require a
-      partition filter.
+    requirePartitionFilter: Optional. If true, queries over the table require
+      a partition filter.
     timeUnitPartition: Time unit column partitioning.
   """
 
@@ -598,9 +598,9 @@ class DatastreamProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -1253,14 +1253,15 @@ class IngestionTimePartition(_messages.Message):
   https://cloud.google.com/bigquery/docs/partitioned-tables#ingestion_time
 
   Enums:
-    PartitioningTimeGranularityValueValuesEnum: Partition granularity
+    PartitioningTimeGranularityValueValuesEnum: Optional. Partition
+      granularity
 
   Fields:
-    partitioningTimeGranularity: Partition granularity
+    partitioningTimeGranularity: Optional. Partition granularity
   """
 
   class PartitioningTimeGranularityValueValuesEnum(_messages.Enum):
-    r"""Partition granularity
+    r"""Optional. Partition granularity
 
     Values:
       PARTITIONING_TIME_GRANULARITY_UNSPECIFIED: Unspecified partitioing
@@ -1284,10 +1285,10 @@ class IntegerRangePartition(_messages.Message):
   https://cloud.google.com/bigquery/docs/partitioned-tables#integer_range
 
   Fields:
-    column: The partitioning column.
-    end: The ending value for range partitioning (exclusive).
-    interval: The interval of each range within the partition.
-    start: The starting value for range partitioning (inclusive).
+    column: Required. The partitioning column.
+    end: Required. The ending value for range partitioning (exclusive).
+    interval: Required. The interval of each range within the partition.
+    start: Required. The starting value for range partitioning (inclusive).
   """
 
   column = _messages.StringField(1)
@@ -1374,8 +1375,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1625,7 +1626,23 @@ class MongodbObjectIdentifier(_messages.Message):
 class MongodbProfile(_messages.Message):
   r"""MongoDB profile.
 
+  Messages:
+    AdditionalOptionsValue: Optional. Specifies additional options for the
+      MongoDB connection. The options should be sent as key-value pairs, for
+      example: `additional_options = {"serverSelectionTimeoutMS": "10000",
+      "directConnection": "true"}`. Keys are case-sensitive and should match
+      the official MongoDB connection string options:
+      https://www.mongodb.com/docs/manual/reference/connection-string-options/
+      The server will not modify the values provided by the user.
+
   Fields:
+    additionalOptions: Optional. Specifies additional options for the MongoDB
+      connection. The options should be sent as key-value pairs, for example:
+      `additional_options = {"serverSelectionTimeoutMS": "10000",
+      "directConnection": "true"}`. Keys are case-sensitive and should match
+      the official MongoDB connection string options:
+      https://www.mongodb.com/docs/manual/reference/connection-string-options/
+      The server will not modify the values provided by the user.
     hostAddresses: Required. List of host addresses for a MongoDB cluster. For
       SRV connection format, this list must contain exactly one DNS host
       without a port. For Standard connection format, this list must contain
@@ -1645,14 +1662,47 @@ class MongodbProfile(_messages.Message):
     username: Required. Username for the MongoDB connection.
   """
 
-  hostAddresses = _messages.MessageField('HostAddress', 1, repeated=True)
-  password = _messages.StringField(2)
-  replicaSet = _messages.StringField(3)
-  secretManagerStoredPassword = _messages.StringField(4)
-  srvConnectionFormat = _messages.MessageField('SrvConnectionFormat', 5)
-  sslConfig = _messages.MessageField('MongodbSslConfig', 6)
-  standardConnectionFormat = _messages.MessageField('StandardConnectionFormat', 7)
-  username = _messages.StringField(8)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AdditionalOptionsValue(_messages.Message):
+    r"""Optional. Specifies additional options for the MongoDB connection. The
+    options should be sent as key-value pairs, for example:
+    `additional_options = {"serverSelectionTimeoutMS": "10000",
+    "directConnection": "true"}`. Keys are case-sensitive and should match the
+    official MongoDB connection string options:
+    https://www.mongodb.com/docs/manual/reference/connection-string-options/
+    The server will not modify the values provided by the user.
+
+    Messages:
+      AdditionalProperty: An additional property for a AdditionalOptionsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AdditionalOptionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AdditionalOptionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  additionalOptions = _messages.MessageField('AdditionalOptionsValue', 1)
+  hostAddresses = _messages.MessageField('HostAddress', 2, repeated=True)
+  password = _messages.StringField(3)
+  replicaSet = _messages.StringField(4)
+  secretManagerStoredPassword = _messages.StringField(5)
+  srvConnectionFormat = _messages.MessageField('SrvConnectionFormat', 6)
+  sslConfig = _messages.MessageField('MongodbSslConfig', 7)
+  standardConnectionFormat = _messages.MessageField('StandardConnectionFormat', 8)
+  username = _messages.StringField(9)
 
 
 class MongodbSourceConfig(_messages.Message):
@@ -2627,8 +2677,8 @@ class RuleSet(_messages.Message):
   r"""A set of rules to apply to a set of objects.
 
   Fields:
-    customizationRules: List of customization rules to apply.
-    objectFilter: Object filter to apply the customization rules to.
+    customizationRules: Required. List of customization rules to apply.
+    objectFilter: Required. Object filter to apply the customization rules to.
   """
 
   customizationRules = _messages.MessageField('CustomizationRule', 1, repeated=True)
@@ -3024,8 +3074,10 @@ class StandardConnectionFormat(_messages.Message):
   r"""Standard connection format.
 
   Fields:
-    directConnection: Optional. Specifies whether the client connects directly
-      to the host[:port] in the connection URI.
+    directConnection: Optional. Deprecated: Use the `additional_options` map
+      to specify the `directConnection` parameter instead. For example:
+      `additional_options = {"directConnection": "true"}`. Specifies whether
+      the client connects directly to the host[:port] in the connection URI.
   """
 
   directConnection = _messages.BooleanField(1)
@@ -3334,15 +3386,16 @@ class TimeUnitPartition(_messages.Message):
   tables#date_timestamp_partitioned_tables
 
   Enums:
-    PartitioningTimeGranularityValueValuesEnum: Partition granularity.
+    PartitioningTimeGranularityValueValuesEnum: Optional. Partition
+      granularity.
 
   Fields:
-    column: The partitioning column.
-    partitioningTimeGranularity: Partition granularity.
+    column: Required. The partitioning column.
+    partitioningTimeGranularity: Optional. Partition granularity.
   """
 
   class PartitioningTimeGranularityValueValuesEnum(_messages.Enum):
-    r"""Partition granularity.
+    r"""Optional. Partition granularity.
 
     Values:
       PARTITIONING_TIME_GRANULARITY_UNSPECIFIED: Unspecified partitioing

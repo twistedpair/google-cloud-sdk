@@ -39,10 +39,156 @@ class LustreV1alpha(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_backups = self.ProjectsLocationsBackupsService(self)
     self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsBackupsService(base_api.BaseApiService):
+    """Service class for the projects_locations_backups resource."""
+
+    _NAME = 'projects_locations_backups'
+
+    def __init__(self, client):
+      super(LustreV1alpha.ProjectsLocationsBackupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new Backup in a given project and location.
+
+      Args:
+        request: (LustreProjectsLocationsBackupsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/backups',
+        http_method='POST',
+        method_id='lustre.projects.locations.backups.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['backupId', 'requestId'],
+        relative_path='v1alpha/{+parent}/backups',
+        request_field='backup',
+        request_type_name='LustreProjectsLocationsBackupsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a Backup.
+
+      Args:
+        request: (LustreProjectsLocationsBackupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/backups/{backupsId}',
+        http_method='DELETE',
+        method_id='lustre.projects.locations.backups.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='LustreProjectsLocationsBackupsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single instance.
+
+      Args:
+        request: (LustreProjectsLocationsBackupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Backup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/backups/{backupsId}',
+        http_method='GET',
+        method_id='lustre.projects.locations.backups.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='LustreProjectsLocationsBackupsGetRequest',
+        response_type_name='Backup',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists backups in a given project and location.
+
+      Args:
+        request: (LustreProjectsLocationsBackupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBackupsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/backups',
+        http_method='GET',
+        method_id='lustre.projects.locations.backups.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/backups',
+        request_field='',
+        request_type_name='LustreProjectsLocationsBackupsListRequest',
+        response_type_name='ListBackupsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a Backup.
+
+      Args:
+        request: (LustreProjectsLocationsBackupsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/backups/{backupsId}',
+        http_method='PATCH',
+        method_id='lustre.projects.locations.backups.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='backup',
+        request_type_name='LustreProjectsLocationsBackupsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
   class ProjectsLocationsInstancesService(base_api.BaseApiService):
     """Service class for the projects_locations_instances resource."""

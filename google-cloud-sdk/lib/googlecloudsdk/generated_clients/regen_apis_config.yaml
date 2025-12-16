@@ -853,11 +853,10 @@ apis:
   eventflow:
     v1beta2:
       discovery_doc: eventflow_v1beta2.json
-  # BROKEN (b/466084402) - Field [tags] not found in message [...ExperimentTemplate]
-  # faulttesting:
-  #   v1alpha:
-  #     discovery_doc: faulttesting_v1alpha.json
-  #     default: true
+  faulttesting:
+    v1alpha:
+      discovery_doc: faulttesting_v1alpha.json
+      default: true
   file:
     v1p1alpha1:
       discovery_doc: file_v1p1alpha1.json
@@ -1995,6 +1994,10 @@ apis:
     v1:
       discovery_doc: geminicloudassist_v1.json
       default: true
+  vectorsearch:
+    v1beta:
+      discovery_doc: vectorsearch_v1beta.json
+      default: true
 canonical_surfaces:
   accessapproval:
     name: accessapproval
@@ -2591,4 +2594,8 @@ canonical_surfaces:
     hidden: true
   workstations:
     name: workstations
+    hidden: true
+  vectorsearch:
+    name: vectorsearch
+    command: vectorsearch
     hidden: true

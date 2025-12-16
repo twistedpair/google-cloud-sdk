@@ -100,8 +100,14 @@ def AddHostFlag(parser, required=False):
   help_text = """\
     IP or hostname of the database.
     When `--psc-service-attachment` is also specified, this field value should be:
+
     1. For Cloud SQL PSC enabled instance - the dns_name field (e.g <uid>.<region>.sql.goog.).
+
     2. For Cloud SQL PSA instance (vpc peering) - the private ip of the instance.
+
+    3. For AlloyDB PSC enabled cluster - the dns_name field of the primary instance (e.g <uid>.<region>.alloydb-psc.goog.).
+
+    4. For AlloyDB PSA cluster - the private ip of the primary instance.
   """
   parser.add_argument('--host', help=help_text, required=required)
 

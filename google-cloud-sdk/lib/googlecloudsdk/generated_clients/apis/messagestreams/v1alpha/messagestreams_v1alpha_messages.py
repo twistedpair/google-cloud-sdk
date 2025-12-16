@@ -358,8 +358,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -830,9 +830,9 @@ class MessagestreamsProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -1592,9 +1592,6 @@ class Stream(_messages.Message):
       https://google.aip.dev/128#annotations
     createTime: Output only. [Output only] Create time stamp
     displayName: Optional. Display name of resource.
-    errorMessageBus: Optional. The resource name of the Message Bus to send
-      error messages to. This field enables dead-letter/persistent error
-      handling. See go/eaa-dlq-edd for details.
     etag: Output only. This checksum is computed by the server based on the
       value of other fields, and might be sent only on create requests to
       ensure that the client has an up-to-date value before proceeding.
@@ -1720,23 +1717,22 @@ class Stream(_messages.Message):
   annotations = _messages.MessageField('AnnotationsValue', 1)
   createTime = _messages.StringField(2)
   displayName = _messages.StringField(3)
-  errorMessageBus = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  eventarcTransformationType = _messages.EnumField('EventarcTransformationTypeValueValuesEnum', 6)
-  inputPayloadFormat = _messages.MessageField('MessagePayloadFormat', 7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  loggingConfig = _messages.MessageField('LoggingConfig', 9)
-  mediations = _messages.MessageField('Mediation', 10, repeated=True)
-  metricsConfig = _messages.MessageField('MetricsConfig', 11)
-  name = _messages.StringField(12)
-  replyBus = _messages.StringField(13)
-  retryPolicy = _messages.MessageField('InlineRetryPolicy', 14)
-  source = _messages.MessageField('Source', 15)
-  streamAction = _messages.MessageField('StreamAction', 16)
-  streamIdentityOverride = _messages.StringField(17)
-  uid = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
-  useSharedPool = _messages.BooleanField(20)
+  etag = _messages.StringField(4)
+  eventarcTransformationType = _messages.EnumField('EventarcTransformationTypeValueValuesEnum', 5)
+  inputPayloadFormat = _messages.MessageField('MessagePayloadFormat', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  loggingConfig = _messages.MessageField('LoggingConfig', 8)
+  mediations = _messages.MessageField('Mediation', 9, repeated=True)
+  metricsConfig = _messages.MessageField('MetricsConfig', 10)
+  name = _messages.StringField(11)
+  replyBus = _messages.StringField(12)
+  retryPolicy = _messages.MessageField('InlineRetryPolicy', 13)
+  source = _messages.MessageField('Source', 14)
+  streamAction = _messages.MessageField('StreamAction', 15)
+  streamIdentityOverride = _messages.StringField(16)
+  uid = _messages.StringField(17)
+  updateTime = _messages.StringField(18)
+  useSharedPool = _messages.BooleanField(19)
 
 
 class StreamAction(_messages.Message):

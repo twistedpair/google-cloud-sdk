@@ -58,40 +58,6 @@ class AdminAuditData(_messages.Message):
   permissionDelta = _messages.MessageField('PermissionDelta', 1)
 
 
-class AppMetadata(_messages.Message):
-  r"""Represents the metadata for an installed app.
-
-  Enums:
-    StateValueValuesEnum: Output only. The state of the app.
-
-  Fields:
-    disabled: Output only. Whether the app is disabled.
-    name: Immutable. The full resource name of the app to be installed.
-      Format: For OauthClient:
-      `projects/{project}/locations/{location}/oauthClients/{oauth_client}`.
-    state: Output only. The state of the app.
-    uuid: Output only. This field represents the system generated UUID for the
-      OauthClient.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The state of the app.
-
-    Values:
-      STATE_UNSPECIFIED: Default value. This value is unused.
-      ACTIVE: The app is active.
-      DELETED: The app is deleted.
-    """
-    STATE_UNSPECIFIED = 0
-    ACTIVE = 1
-    DELETED = 2
-
-  disabled = _messages.BooleanField(1)
-  name = _messages.StringField(2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
-  uuid = _messages.StringField(4)
-
-
 class AttestationRule(_messages.Message):
   r"""Defines which workloads can receive an identity within a pool. When an
   AttestationRule is defined under a managed identity, matching workloads may
@@ -577,9 +543,9 @@ class GetPolicyOptions(_messages.Message):
 class GoogleIamAdminV1WorkforcePoolProviderExtraAttributesOAuth2Client(_messages.Message):
   r"""Represents the OAuth 2.0 client credential configuration for retrieving
   additional user attributes that are not present in the initial
-  authentication credentials from the identity provider, e.g. groups. See
-  https://datatracker.ietf.org/doc/html/rfc6749#section-4.4 for more details
-  on client credentials grant flow.
+  authentication credentials from the identity provider, for example, groups.
+  See https://datatracker.ietf.org/doc/html/rfc6749#section-4.4 for more
+  details on client credentials grant flow.
 
   Enums:
     AttributesTypeValueValuesEnum: Required. Represents the IdP and type of
@@ -677,7 +643,7 @@ class GoogleIamAdminV1WorkforcePoolProviderExtraAttributesOAuth2ClientQueryParam
 
 
 class GoogleIamAdminV1WorkforcePoolProviderOidc(_messages.Message):
-  r"""Represents an OpenId Connect 1.0 identity provider.
+  r"""Represents an OpenID Connect 1.0 identity provider.
 
   Fields:
     clientId: Required. The client ID. Must match the audience claim of the
@@ -688,12 +654,12 @@ class GoogleIamAdminV1WorkforcePoolProviderOidc(_messages.Message):
       `https` scheme.
     jwksJson: Optional. OIDC JWKs in JSON String format. For details on the
       definition of a JWK, see https://tools.ietf.org/html/rfc7517. If not
-      set, the `jwks_uri` from the discovery document(fetched from the .well-
-      known path of the `issuer_uri`) will be used. Currently, RSA and EC
-      asymmetric keys are supported. The JWK must use following format and
-      include only the following fields: { "keys": [ { "kty": "RSA/EC", "alg":
-      "", "use": "sig", "kid": "", "n": "", "e": "", "x": "", "y": "", "crv":
-      "" } ] }
+      set, the `jwks_uri` from the discovery document that is fetched from the
+      well-known path of the `issuer_uri`, will be used. RSA and EC asymmetric
+      keys are supported. The JWK must use the following format and include
+      only the following fields: { "keys": [ { "kty": "RSA/EC", "alg": "",
+      "use": "sig", "kid": "", "n": "", "e": "", "x": "", "y": "", "crv": "" }
+      ] }
     webSsoConfig: Required. Configuration for web single sign-on for the OIDC
       provider. Here, web sign-in refers to console sign-in and gcloud sign-in
       through the browser.
@@ -872,109 +838,6 @@ class IamLocationsWorkforcePoolsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
-
-
-class IamLocationsWorkforcePoolsInstalledAppsCreateRequest(_messages.Message):
-  r"""A IamLocationsWorkforcePoolsInstalledAppsCreateRequest object.
-
-  Fields:
-    parent: Required. The pool to create this workforce pool installed app in.
-      Format: `locations/{location}/workforcePools/{workforce_pool}`
-    workforcePoolInstalledApp: A WorkforcePoolInstalledApp resource to be
-      passed as the request body.
-    workforcePoolInstalledAppId: Required. The ID to use for the workforce
-      pool installed app, which becomes the final component of the resource
-      name. This value should be 4-32 characters, and may contain the
-      characters [a-z0-9-]. The prefix `gcp-` is reserved for use by Google,
-      and may not be specified.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  workforcePoolInstalledApp = _messages.MessageField('WorkforcePoolInstalledApp', 2)
-  workforcePoolInstalledAppId = _messages.StringField(3)
-
-
-class IamLocationsWorkforcePoolsInstalledAppsDeleteRequest(_messages.Message):
-  r"""A IamLocationsWorkforcePoolsInstalledAppsDeleteRequest object.
-
-  Fields:
-    name: Required. The name of the workforce pool installed app to delete.
-      Format: `locations/{location}/workforcePools/{workforce_pool}/installedA
-      pps/{installed_app}`
-    validateOnly: Optional. If set, validate the request and preview the
-      response, but do not actually post it.
-  """
-
-  name = _messages.StringField(1, required=True)
-  validateOnly = _messages.BooleanField(2)
-
-
-class IamLocationsWorkforcePoolsInstalledAppsGetRequest(_messages.Message):
-  r"""A IamLocationsWorkforcePoolsInstalledAppsGetRequest object.
-
-  Fields:
-    name: Required. The name of the workforce pool installed app to retrieve.
-      Format: `locations/{location}/workforcePools/{workforce_pool}/installedA
-      pps/{installed_app}`
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class IamLocationsWorkforcePoolsInstalledAppsListRequest(_messages.Message):
-  r"""A IamLocationsWorkforcePoolsInstalledAppsListRequest object.
-
-  Fields:
-    pageSize: Optional. The maximum number of workforce pool installed apps to
-      return. If unspecified, at most 50 workforce pool installed apps will be
-      returned. The maximum value is 100; values above 100 are truncated to
-      100.
-    pageToken: Optional. A page token, received from a previous
-      `ListWorkforcePoolInstalledApps` call. Provide this to retrieve the
-      subsequent page.
-    parent: Required. The parent to list installed apps, format:
-      'locations/{location}/workforcePools/{workforce_pool}'
-    showDeleted: Optional. Whether to return soft-deleted workforce pool
-      installed apps.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  showDeleted = _messages.BooleanField(4)
-
-
-class IamLocationsWorkforcePoolsInstalledAppsPatchRequest(_messages.Message):
-  r"""A IamLocationsWorkforcePoolsInstalledAppsPatchRequest object.
-
-  Fields:
-    name: Identifier. The resource name of the workforce pool installed app.
-      Format: `locations/{location}/workforcePools/{workforce_pool}/installedA
-      pps/{installed_app}`
-    updateMask: Required. The list of fields to update.
-    workforcePoolInstalledApp: A WorkforcePoolInstalledApp resource to be
-      passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  updateMask = _messages.StringField(2)
-  workforcePoolInstalledApp = _messages.MessageField('WorkforcePoolInstalledApp', 3)
-
-
-class IamLocationsWorkforcePoolsInstalledAppsUndeleteRequest(_messages.Message):
-  r"""A IamLocationsWorkforcePoolsInstalledAppsUndeleteRequest object.
-
-  Fields:
-    name: Required. The name of the workforce pool installed app to undelete.
-      Format: `locations/{location}/workforcePools/{workforce_pool}/installedA
-      pps/{installed_app}`
-    undeleteWorkforcePoolInstalledAppRequest: A
-      UndeleteWorkforcePoolInstalledAppRequest resource to be passed as the
-      request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  undeleteWorkforcePoolInstalledAppRequest = _messages.MessageField('UndeleteWorkforcePoolInstalledAppRequest', 2)
 
 
 class IamLocationsWorkforcePoolsListRequest(_messages.Message):
@@ -1198,13 +1061,13 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsCreateRequest(_messages.Mess
   r"""A IamLocationsWorkforcePoolsProvidersScimTenantsCreateRequest object.
 
   Fields:
-    parent: Required. Agentspace only. The parent to create SCIM tenant.
-      Format: 'locations/{location}/workforcePools/{workforce_pool}/providers/
-      {provider}'
+    parent: Required. Gemini Enterprise only. The parent to create SCIM
+      tenant. Format: 'locations/{location}/workforcePools/{workforce_pool}/pr
+      oviders/{provider}'
     workforcePoolProviderScimTenant: A WorkforcePoolProviderScimTenant
       resource to be passed as the request body.
-    workforcePoolProviderScimTenantId: Required. Agentspace only. The ID to
-      use for the SCIM tenant, which becomes the final component of the
+    workforcePoolProviderScimTenantId: Required. Gemini Enterprise only. The
+      ID to use for the SCIM tenant, which becomes the final component of the
       resource name. This value should be 4-32 characters, containing the
       characters [a-z0-9-].
   """
@@ -1220,9 +1083,9 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsDeleteRequest(_messages.Mess
   Fields:
     hardDelete: Optional. Deletes the SCIM tenant immediately. This operation
       cannot be undone.
-    name: Required. Agentspace only. The name of the scim tenant to delete.
-      Format: `locations/{location}/workforcePools/{workforce_pool}/providers/
-      {provider}/scimTenants/{scim_tenant}`
+    name: Required. Gemini Enterprise only. The name of the SCIM tenant to
+      delete. Format: `locations/{location}/workforcePools/{workforce_pool}/pr
+      oviders/{provider}/scimTenants/{scim_tenant}`
   """
 
   hardDelete = _messages.BooleanField(1)
@@ -1233,9 +1096,9 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsGetRequest(_messages.Message
   r"""A IamLocationsWorkforcePoolsProvidersScimTenantsGetRequest object.
 
   Fields:
-    name: Required. Agentspace only. The name of the SCIM tenant to retrieve.
-      Format: `locations/{location}/workforcePools/{workforce_pool}/providers/
-      {provider}/scimTenants/{scim_tenant}`
+    name: Required. Gemini Enterprise only. The name of the SCIM tenant to
+      retrieve. Format: `locations/{location}/workforcePools/{workforce_pool}/
+      providers/{provider}/scimTenants/{scim_tenant}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1245,16 +1108,18 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsListRequest(_messages.Messag
   r"""A IamLocationsWorkforcePoolsProvidersScimTenantsListRequest object.
 
   Fields:
-    pageSize: Optional. Agentspace only. The maximum number of SCIM tenants to
-      return. If unspecified, at most 1 scim tenant will be returned.
-    pageToken: Optional. Agentspace only. A page token, received from a
+    pageSize: Optional. Gemini Enterprise only. The maximum number of SCIM
+      tenants to return. If unspecified, at most 50 SCIM tenants will be
+      returned. The maximum value is 100; values above 100 are truncated to
+      100.
+    pageToken: Optional. Gemini Enterprise only. A page token, received from a
       previous `ListScimTenants` call. Provide this to retrieve the subsequent
       page.
-    parent: Required. Agentspace only. The parent to list SCIM tenants.
+    parent: Required. Gemini Enterprise only. The parent to list SCIM tenants.
       Format: 'locations/{location}/workforcePools/{workforce_pool}/providers/
       {provider}'
-    showDeleted: Optional. Agentspace only. Whether to return soft-deleted
-      SCIM tenants.
+    showDeleted: Optional. Gemini Enterprise only. Whether to return soft-
+      deleted SCIM tenants.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1267,10 +1132,12 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsPatchRequest(_messages.Messa
   r"""A IamLocationsWorkforcePoolsProvidersScimTenantsPatchRequest object.
 
   Fields:
-    name: Identifier. Agentspace only. The resource name of the SCIM Tenant.
-      Format: `locations/{location}/workforcePools/{workforce_pool}/providers/
+    name: Identifier. Gemini Enterprise only. The resource name of the SCIM
+      Tenant. Format:
+      `locations/{location}/workforcePools/{workforce_pool}/providers/
       {workforce_pool_provider}/scimTenants/{scim_tenant}`
-    updateMask: Optional. Agentspace only. The list of fields to update.
+    updateMask: Optional. Gemini Enterprise only. The list of fields to
+      update.
     workforcePoolProviderScimTenant: A WorkforcePoolProviderScimTenant
       resource to be passed as the request body.
   """
@@ -1285,15 +1152,15 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsTokensCreateRequest(_message
   object.
 
   Fields:
-    parent: Required. Agentspace only. The parent tenant to create SCIM token.
-      Format: 'locations/{location}/workforcePools/{workforce_pool}/providers/
-      {provider}/scimTenants/{scim_tenant}'
+    parent: Required. Gemini Enterprise only. The parent tenant to create SCIM
+      token. Format: 'locations/{location}/workforcePools/{workforce_pool}/pro
+      viders/{provider}/scimTenants/{scim_tenant}'
     workforcePoolProviderScimToken: A WorkforcePoolProviderScimToken resource
       to be passed as the request body.
-    workforcePoolProviderScimTokenId: Required. Agentspace only. The ID to use
-      for the SCIM token, which becomes the final component of the resource
-      name. This value should be 4-32 characters and follow the pattern:
-      "([a-z]([a-z0-9\\-]{2,30}[a-z0-9]))"
+    workforcePoolProviderScimTokenId: Required. Gemini Enterprise only. The ID
+      to use for the SCIM token, which becomes the final component of the
+      resource name. This value should be 4-32 characters and follow the
+      pattern: "([a-z]([a-z0-9\\-]{2,30}[a-z0-9]))"
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1306,9 +1173,9 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsTokensDeleteRequest(_message
   object.
 
   Fields:
-    name: Required. Agentspace only. The name of the SCIM token to delete.
-      Format: `locations/{location}/workforcePools/{workforce_pool}/providers/
-      {provider}/scimTenants/{scim_tenant}/tokens/{token}`
+    name: Required. Gemini Enterprise only. The name of the SCIM token to
+      delete. Format: `locations/{location}/workforcePools/{workforce_pool}/pr
+      oviders/{provider}/scimTenants/{scim_tenant}/tokens/{token}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1318,9 +1185,9 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsTokensGetRequest(_messages.M
   r"""A IamLocationsWorkforcePoolsProvidersScimTenantsTokensGetRequest object.
 
   Fields:
-    name: Required. Agentspace only. The name of the SCIM token to retrieve.
-      Format: `locations/{location}/workforcePools/{workforce_pool}/providers/
-      {provider}/scimTenants/{scim_tenant}/tokens/{token}`
+    name: Required. Gemini Enterprise only. The name of the SCIM token to
+      retrieve. Format: `locations/{location}/workforcePools/{workforce_pool}/
+      providers/{provider}/scimTenants/{scim_tenant}/tokens/{token}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1331,16 +1198,17 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsTokensListRequest(_messages.
   object.
 
   Fields:
-    pageSize: Optional. Agentspace only. The maximum number of scim tokens to
-      return. If unspecified, at most 2 SCIM tokens will be returned.
-    pageToken: Optional. Agentspace only. A page token, received from a
+    pageSize: Optional. Gemini Enterprise only. The maximum number of SCIM
+      tokens to return. If unspecified, at most 2 SCIM tokens will be
+      returned.
+    pageToken: Optional. Gemini Enterprise only. A page token, received from a
       previous `ListWorkforcePoolProviderScimTokens` call. Provide this to
       retrieve the subsequent page.
-    parent: Required. Agentspace only. The parent to list SCIM tokens. Format:
-      'locations/{location}/workforcePools/{workforce_pool}/providers/{provide
-      r}/scimTenants/{scim_tenant}'
-    showDeleted: Optional. Agentspace only. Whether to return soft-deleted
-      scim tokens.
+    parent: Required. Gemini Enterprise only. The parent to list SCIM tokens.
+      Format: 'locations/{location}/workforcePools/{workforce_pool}/providers/
+      {provider}/scimTenants/{scim_tenant}'
+    showDeleted: Optional. Gemini Enterprise only. Whether to return soft-
+      deleted SCIM tokens.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1354,10 +1222,12 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsTokensPatchRequest(_messages
   object.
 
   Fields:
-    name: Identifier. Agentspace only. The resource name of the SCIM Token.
-      Format: `locations/{location}/workforcePools/{workforce_pool}/providers/
+    name: Identifier. Gemini Enterprise only. The resource name of the SCIM
+      Token. Format:
+      `locations/{location}/workforcePools/{workforce_pool}/providers/
       {workforce_pool_provider}/scimTenants/{scim_tenant}/tokens/{token}`
-    updateMask: Optional. Agentspace only. The list of fields to update.
+    updateMask: Optional. Gemini Enterprise only. The list of fields to
+      update.
     workforcePoolProviderScimToken: A WorkforcePoolProviderScimToken resource
       to be passed as the request body.
   """
@@ -1372,9 +1242,9 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsTokensUndeleteRequest(_messa
   object.
 
   Fields:
-    name: Required. Agentspace only. The name of the SCIM token to undelete.
-      Format: `locations/{location}/workforcePools/{workforce_pool}/providers/
-      {provider}/scimTenants/{scim_tenant}/tokens/{token}`
+    name: Required. Gemini Enterprise only. The name of the SCIM token to
+      undelete. Format: `locations/{location}/workforcePools/{workforce_pool}/
+      providers/{provider}/scimTenants/{scim_tenant}/tokens/{token}`
     undeleteWorkforcePoolProviderScimTokenRequest: A
       UndeleteWorkforcePoolProviderScimTokenRequest resource to be passed as
       the request body.
@@ -1388,9 +1258,9 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsUndeleteRequest(_messages.Me
   r"""A IamLocationsWorkforcePoolsProvidersScimTenantsUndeleteRequest object.
 
   Fields:
-    name: Required. Agentspace only. The name of the SCIM tenant to undelete.
-      Format: `locations/{location}/workforcePools/{workforce_pool}/providers/
-      {provider}/scimTenants/{scim_tenant}`
+    name: Required. Gemini Enterprise only. The name of the SCIM tenant to
+      undelete. Format: `locations/{location}/workforcePools/{workforce_pool}/
+      providers/{provider}/scimTenants/{scim_tenant}`
     undeleteWorkforcePoolProviderScimTenantRequest: A
       UndeleteWorkforcePoolProviderScimTenantRequest resource to be passed as
       the request body.
@@ -4215,21 +4085,6 @@ class ListServiceAccountsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
-class ListWorkforcePoolInstalledAppsResponse(_messages.Message):
-  r"""Response message for ListWorkforcePoolInstalledApps.
-
-  Fields:
-    nextPageToken: Optional. A token, which can be sent as `page_token` to
-      retrieve the next page. If this field is omitted, there are no
-      subsequent pages.
-    workforcePoolInstalledApps: Output only. A list of workforce pool
-      installed apps.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  workforcePoolInstalledApps = _messages.MessageField('WorkforcePoolInstalledApp', 2, repeated=True)
-
-
 class ListWorkforcePoolProviderKeysResponse(_messages.Message):
   r"""Response message for ListWorkforcePoolProviderKeys.
 
@@ -4244,15 +4099,15 @@ class ListWorkforcePoolProviderKeysResponse(_messages.Message):
 
 
 class ListWorkforcePoolProviderScimTenantsResponse(_messages.Message):
-  r"""Agentspace only. Response message for
+  r"""Gemini Enterprise only. Response message for
   ListWorkforcePoolProviderScimTenants.
 
   Fields:
-    nextPageToken: Optional. Agentspace only. A token, which can be sent as
-      `page_token` to retrieve the next page. If this field is omitted, there
-      are no subsequent pages.
-    workforcePoolProviderScimTenants: Output only. Agentspace only. A list of
-      SCIM tenants.
+    nextPageToken: Optional. Gemini Enterprise only. A token, which can be
+      sent as `page_token` to retrieve the next page. If this field is
+      omitted, there are no subsequent pages.
+    workforcePoolProviderScimTenants: Output only. Gemini Enterprise only. A
+      list of SCIM tenants.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -4260,15 +4115,15 @@ class ListWorkforcePoolProviderScimTenantsResponse(_messages.Message):
 
 
 class ListWorkforcePoolProviderScimTokensResponse(_messages.Message):
-  r"""Agentspace only. Response message for
+  r"""Gemini Enterprise only. Response message for
   ListWorkforcePoolProviderScimTokens.
 
   Fields:
-    nextPageToken: Optional. Agentspace only. A token, which can be sent as
-      `page_token` to retrieve the next page. If this field is omitted, there
-      are no subsequent pages.
-    workforcePoolProviderScimTokens: Output only. Agentspace only. A list of
-      SCIM tokens.
+    nextPageToken: Optional. Gemini Enterprise only. A token, which can be
+      sent as `page_token` to retrieve the next page. If this field is
+      omitted, there are no subsequent pages.
+    workforcePoolProviderScimTokens: Output only. Gemini Enterprise only. A
+      list of SCIM tokens.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -4401,10 +4256,7 @@ class OauthClient(_messages.Message):
       allowed to request during OAuth flows. The following scopes are
       supported: * `https://www.googleapis.com/auth/cloud-platform`: See,
       edit, configure, and delete your Google Cloud data and see the email
-      address for your Google Account. * `openid`: The OAuth client can
-      associate you with your personal information on Google Cloud. * `email`:
-      The OAuth client can read a federated identity's email address. *
-      `groups`: The OAuth client can read a federated identity's groups.
+      address for your Google Account.
     clientId: Output only. The system-generated OauthClient id.
     clientType: Immutable. The type of OauthClient. Either public or private.
       For private clients, the client secret can be managed using the
@@ -5577,7 +5429,7 @@ class TrustAnchor(_messages.Message):
 
   Fields:
     pemCertificate: PEM certificate of the PKI used for validation. Must only
-      contain one ca certificate(either root or intermediate cert).
+      contain one ca certificate (either root or intermediate cert).
   """
 
   pemCertificate = _messages.StringField(1)
@@ -5641,17 +5493,6 @@ class UndeleteServiceAccountResponse(_messages.Message):
   restoredAccount = _messages.MessageField('ServiceAccount', 1)
 
 
-class UndeleteWorkforcePoolInstalledAppRequest(_messages.Message):
-  r"""Request message for UndeleteWorkforcePoolInstalledApp.
-
-  Fields:
-    validateOnly: Optional. If set, validate the request and preview the
-      response, but do not actually post it.
-  """
-
-  validateOnly = _messages.BooleanField(1)
-
-
 class UndeleteWorkforcePoolProviderKeyRequest(_messages.Message):
   r"""Request message for UndeleteWorkforcePoolProviderKey."""
 
@@ -5661,14 +5502,14 @@ class UndeleteWorkforcePoolProviderRequest(_messages.Message):
 
 
 class UndeleteWorkforcePoolProviderScimTenantRequest(_messages.Message):
-  r"""Agentspace only. Request message for
+  r"""Gemini Enterprise only. Request message for
   UndeleteWorkforcePoolProviderScimTenant.
   """
 
 
 
 class UndeleteWorkforcePoolProviderScimTokenRequest(_messages.Message):
-  r"""Agentspace only. Request message for
+  r"""Gemini Enterprise only. Request message for
   UndeleteWorkforcePoolProviderScimToken.
   """
 
@@ -5779,72 +5620,16 @@ class WorkforcePool(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 9)
 
 
-class WorkforcePoolInstalledApp(_messages.Message):
-  r"""Represents a workforce pool installed app. Used to indicate that a
-  workforce pool administrator has completed the installation process, thereby
-  giving consent for the installed app, i.e. OAuth Client, to access workforce
-  pool users' information and resources.
-
-  Enums:
-    StateValueValuesEnum: Output only. The state of the workforce pool
-      installed app.
-
-  Fields:
-    appMetadata: Immutable. Metadata for the app.
-    createTime: Output only. The timestamp when the workforce pool installed
-      app was created.
-    deleteTime: Output only. The timestamp that the workforce pool installed
-      app was soft deleted.
-    description: Optional. A description of the workforce pool installed app.
-      Cannot exceed 256 characters.
-    displayName: Optional. A display name of the workforce pool installed app
-      Cannot exceed 32 characters.
-    expireTime: Output only. Time after which the workforce pool installed app
-      will be permanently purged and cannot be recovered.
-    name: Identifier. The resource name of the workforce pool installed app.
-      Format: `locations/{location}/workforcePools/{workforce_pool}/installedA
-      pps/{installed_app}`
-    state: Output only. The state of the workforce pool installed app.
-    updateTime: Output only. The timestamp for the last update of the
-      workforce pool installed app.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The state of the workforce pool installed app.
-
-    Values:
-      STATE_UNSPECIFIED: Default value. This value is unused.
-      ACTIVE: The workforce pool installed app is active.
-      DELETED: The workforce pool installed app is soft-deleted. Soft-deleted
-        workforce pool installed apps are permanently deleted after
-        approximately 30 days unless restored via
-        UndeleteWorkforcePoolInstalledApp.
-    """
-    STATE_UNSPECIFIED = 0
-    ACTIVE = 1
-    DELETED = 2
-
-  appMetadata = _messages.MessageField('AppMetadata', 1)
-  createTime = _messages.StringField(2)
-  deleteTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  expireTime = _messages.StringField(6)
-  name = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  updateTime = _messages.StringField(9)
-
-
 class WorkforcePoolProvider(_messages.Message):
   r"""A configuration for an external identity provider.
 
   Enums:
-    ScimUsageValueValuesEnum: Optional. Agentspace only. Specifies whether the
-      workforce identity pool provider uses SCIM-managed groups instead of the
-      `google.groups` attribute mapping for authorization checks. The
-      `scim_usage` and `extended_attributes_oauth2_client` fields are mutually
-      exclusive. A request that enables both fields on the same workforce
-      identity pool provider will produce an error.
+    ScimUsageValueValuesEnum: Optional. Gemini Enterprise only. Specifies
+      whether the workforce identity pool provider uses SCIM-managed groups
+      instead of the `google.groups` attribute mapping for authorization
+      checks. The `scim_usage` and `extended_attributes_oauth2_client` fields
+      are mutually exclusive. A request that enables both fields on the same
+      workforce identity pool provider will produce an error.
     StateValueValuesEnum: Output only. The state of the provider.
 
   Messages:
@@ -5868,7 +5653,7 @@ class WorkforcePoolProvider(_messages.Message):
       will be displayed instead. This attribute cannot be referenced in IAM
       bindings. * `google.posix_username`: The Linux username used by OS
       Login. This is an optional field and the mapped POSIX username cannot
-      exceed 32 characters, The key must match the regex
+      exceed 32 characters. The key must match the regex
       "^a-zA-Z0-9._{0,31}$". This attribute cannot be referenced in IAM
       bindings. You can also provide custom attributes by specifying
       `attribute.{custom_attribute}`, where {custom_attribute} is the name of
@@ -5931,7 +5716,7 @@ class WorkforcePoolProvider(_messages.Message):
       will be displayed instead. This attribute cannot be referenced in IAM
       bindings. * `google.posix_username`: The Linux username used by OS
       Login. This is an optional field and the mapped POSIX username cannot
-      exceed 32 characters, The key must match the regex
+      exceed 32 characters. The key must match the regex
       "^a-zA-Z0-9._{0,31}$". This attribute cannot be referenced in IAM
       bindings. You can also provide custom attributes by specifying
       `attribute.{custom_attribute}`, where {custom_attribute} is the name of
@@ -5991,13 +5776,13 @@ class WorkforcePoolProvider(_messages.Message):
     extraAttributesOauth2Client: Optional. The configuration for OAuth 2.0
       client used to get the additional user attributes. This should be used
       when users can't get the desired claims in authentication credentials.
-      Currently this configuration is only supported with OIDC protocol.
+      Currently, this configuration is only supported with OIDC protocol.
     name: Identifier. The resource name of the provider. Format: `locations/{l
       ocation}/workforcePools/{workforce_pool_id}/providers/{provider_id}`
-    oidc: An OpenId Connect 1.0 identity provider configuration.
+    oidc: An OpenID Connect 1.0 identity provider configuration.
     saml: A SAML identity provider configuration.
-    scimUsage: Optional. Agentspace only. Specifies whether the workforce
-      identity pool provider uses SCIM-managed groups instead of the
+    scimUsage: Optional. Gemini Enterprise only. Specifies whether the
+      workforce identity pool provider uses SCIM-managed groups instead of the
       `google.groups` attribute mapping for authorization checks. The
       `scim_usage` and `extended_attributes_oauth2_client` fields are mutually
       exclusive. A request that enables both fields on the same workforce
@@ -6006,17 +5791,17 @@ class WorkforcePoolProvider(_messages.Message):
   """
 
   class ScimUsageValueValuesEnum(_messages.Enum):
-    r"""Optional. Agentspace only. Specifies whether the workforce identity
-    pool provider uses SCIM-managed groups instead of the `google.groups`
-    attribute mapping for authorization checks. The `scim_usage` and
-    `extended_attributes_oauth2_client` fields are mutually exclusive. A
-    request that enables both fields on the same workforce identity pool
-    provider will produce an error.
+    r"""Optional. Gemini Enterprise only. Specifies whether the workforce
+    identity pool provider uses SCIM-managed groups instead of the
+    `google.groups` attribute mapping for authorization checks. The
+    `scim_usage` and `extended_attributes_oauth2_client` fields are mutually
+    exclusive. A request that enables both fields on the same workforce
+    identity pool provider will produce an error.
 
     Values:
-      SCIM_USAGE_UNSPECIFIED: Agentspace only. Do not use SCIM data.
-      ENABLED_FOR_GROUPS: Agentspace only. SCIM sync is enabled and SCIM-
-        managed groups are used for authorization checks.
+      SCIM_USAGE_UNSPECIFIED: Gemini Enterprise only. Do not use SCIM data.
+      ENABLED_FOR_GROUPS: Gemini Enterprise only. SCIM sync is enabled and
+        SCIM-managed groups are used for authorization checks.
     """
     SCIM_USAGE_UNSPECIFIED = 0
     ENABLED_FOR_GROUPS = 1
@@ -6057,7 +5842,7 @@ class WorkforcePoolProvider(_messages.Message):
     If not set, a generic user icon will be displayed instead. This attribute
     cannot be referenced in IAM bindings. * `google.posix_username`: The Linux
     username used by OS Login. This is an optional field and the mapped POSIX
-    username cannot exceed 32 characters, The key must match the regex
+    username cannot exceed 32 characters. The key must match the regex
     "^a-zA-Z0-9._{0,31}$". This attribute cannot be referenced in IAM
     bindings. You can also provide custom attributes by specifying
     `attribute.{custom_attribute}`, where {custom_attribute} is the name of
@@ -6197,48 +5982,86 @@ class WorkforcePoolProviderKey(_messages.Message):
 
 
 class WorkforcePoolProviderScimTenant(_messages.Message):
-  r"""Agentspace only. Represents a SCIM tenant. Used for provisioning and
-  managing identity data (such as Users and Groups) in cross-domain
+  r"""Gemini Enterprise only. Represents a SCIM tenant. Used for provisioning
+  and managing identity data (such as Users and Groups) in cross-domain
   environments.
 
   Enums:
-    StateValueValuesEnum: Output only. Agentspace only. The state of the
-      tenant.
+    StateValueValuesEnum: Output only. Gemini Enterprise only. The state of
+      the tenant.
 
   Messages:
-    ClaimMappingValue: Optional. Agentspace only. Maps BYOID claims to SCIM
-      claims.
+    ClaimMappingValue: Required. Immutable. Gemini Enterprise only. Maps SCIM
+      attributes to Google attributes. This mapping is used to associate the
+      attributes synced via SCIM with the Google Cloud attributes used in IAM
+      policies for Workforce Identity Federation. SCIM-managed user and group
+      attributes are mapped to `google.subject` and `google.group`
+      respectively. Each key must be a string specifying the Google Cloud IAM
+      attribute to map to. The supported keys are as follows: *
+      `google.subject`: The principal IAM is authenticating. You can reference
+      this value in IAM bindings. This is also the subject that appears in
+      Cloud Logging logs. This is a required field and the mapped subject
+      cannot exceed 127 bytes. * `google.group`: Group the authenticating user
+      belongs to. You can grant group access to resources using an IAM
+      `principalSet` binding; access applies to all members of the group. Each
+      value must be a [Common Expression Language]
+      (https://opensource.google/projects/cel) expression that maps SCIM user
+      or group attribute to the normalized attribute specified by the
+      corresponding map key. Example: To map the SCIM user's `externalId` to
+      `google.subject` and the SCIM group's `externalId` to `google.group`:
+      ``` { "google.subject": "user.externalId", "google.group":
+      "group.externalId" } ```
 
   Fields:
-    baseUri: Output only. Agentspace only. Represents the base URI as defined
-      in [RFC 7644, Section
+    baseUri: Output only. Gemini Enterprise only. Represents the base URI as
+      defined in [RFC 7644, Section
       1.3](https://datatracker.ietf.org/doc/html/rfc7644#section-1.3). Clients
       must use this as the root address for managing resources under the
       tenant. Format: https://iamscim.googleapis.com/{version}/{tenant_id}/
-    claimMapping: Optional. Agentspace only. Maps BYOID claims to SCIM claims.
-    description: Optional. Agentspace only. The description of the SCIM
+    claimMapping: Required. Immutable. Gemini Enterprise only. Maps SCIM
+      attributes to Google attributes. This mapping is used to associate the
+      attributes synced via SCIM with the Google Cloud attributes used in IAM
+      policies for Workforce Identity Federation. SCIM-managed user and group
+      attributes are mapped to `google.subject` and `google.group`
+      respectively. Each key must be a string specifying the Google Cloud IAM
+      attribute to map to. The supported keys are as follows: *
+      `google.subject`: The principal IAM is authenticating. You can reference
+      this value in IAM bindings. This is also the subject that appears in
+      Cloud Logging logs. This is a required field and the mapped subject
+      cannot exceed 127 bytes. * `google.group`: Group the authenticating user
+      belongs to. You can grant group access to resources using an IAM
+      `principalSet` binding; access applies to all members of the group. Each
+      value must be a [Common Expression Language]
+      (https://opensource.google/projects/cel) expression that maps SCIM user
+      or group attribute to the normalized attribute specified by the
+      corresponding map key. Example: To map the SCIM user's `externalId` to
+      `google.subject` and the SCIM group's `externalId` to `google.group`:
+      ``` { "google.subject": "user.externalId", "google.group":
+      "group.externalId" } ```
+    description: Optional. Gemini Enterprise only. The description of the SCIM
       tenant. Cannot exceed 256 characters.
-    displayName: Optional. Agentspace only. The display name of the SCIM
-      tenant. Cannot exceed 32 characters.
-    name: Identifier. Agentspace only. The resource name of the SCIM Tenant.
-      Format: `locations/{location}/workforcePools/{workforce_pool}/providers/
+    displayName: Optional. Gemini Enterprise only. The display name of the
+      SCIM tenant. Cannot exceed 32 characters.
+    name: Identifier. Gemini Enterprise only. The resource name of the SCIM
+      Tenant. Format:
+      `locations/{location}/workforcePools/{workforce_pool}/providers/
       {workforce_pool_provider}/scimTenants/{scim_tenant}`
-    purgeTime: Output only. Agentspace only. The timestamp that represents the
-      time when the SCIM tenant is purged.
+    purgeTime: Output only. Gemini Enterprise only. The timestamp that
+      represents the time when the SCIM tenant is purged.
     serviceAgent: Output only. Service Agent created by SCIM Tenant API. SCIM
       tokens created under this tenant will be attached to this service agent.
-    state: Output only. Agentspace only. The state of the tenant.
+    state: Output only. Gemini Enterprise only. The state of the tenant.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. Agentspace only. The state of the tenant.
+    r"""Output only. Gemini Enterprise only. The state of the tenant.
 
     Values:
-      STATE_UNSPECIFIED: Agentspace only. State unspecified.
-      ACTIVE: Agentspace only. The tenant is active and may be used to
+      STATE_UNSPECIFIED: Gemini Enterprise only. State unspecified.
+      ACTIVE: Gemini Enterprise only. The tenant is active and may be used to
         provision users and groups.
-      DELETED: Agentspace only. The tenant is soft-deleted. Soft-deleted
-        tenants are permanently deleted after approximately 30 days.
+      DELETED: Gemini Enterprise only. The tenant is soft-deleted. Soft-
+        deleted tenants are permanently deleted after approximately 30 days.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -6246,7 +6069,25 @@ class WorkforcePoolProviderScimTenant(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ClaimMappingValue(_messages.Message):
-    r"""Optional. Agentspace only. Maps BYOID claims to SCIM claims.
+    r"""Required. Immutable. Gemini Enterprise only. Maps SCIM attributes to
+    Google attributes. This mapping is used to associate the attributes synced
+    via SCIM with the Google Cloud attributes used in IAM policies for
+    Workforce Identity Federation. SCIM-managed user and group attributes are
+    mapped to `google.subject` and `google.group` respectively. Each key must
+    be a string specifying the Google Cloud IAM attribute to map to. The
+    supported keys are as follows: * `google.subject`: The principal IAM is
+    authenticating. You can reference this value in IAM bindings. This is also
+    the subject that appears in Cloud Logging logs. This is a required field
+    and the mapped subject cannot exceed 127 bytes. * `google.group`: Group
+    the authenticating user belongs to. You can grant group access to
+    resources using an IAM `principalSet` binding; access applies to all
+    members of the group. Each value must be a [Common Expression Language]
+    (https://opensource.google/projects/cel) expression that maps SCIM user or
+    group attribute to the normalized attribute specified by the corresponding
+    map key. Example: To map the SCIM user's `externalId` to `google.subject`
+    and the SCIM group's `externalId` to `google.group`: ``` {
+    "google.subject": "user.externalId", "google.group": "group.externalId" }
+    ```
 
     Messages:
       AdditionalProperty: An additional property for a ClaimMappingValue
@@ -6280,34 +6121,36 @@ class WorkforcePoolProviderScimTenant(_messages.Message):
 
 
 class WorkforcePoolProviderScimToken(_messages.Message):
-  r"""Agentspace only. Represents a token for the
+  r"""Gemini Enterprise only. Represents a token for the
   WorkforcePoolProviderScimTenant. Used for authenticating SCIM provisioning
   requests.
 
   Enums:
-    StateValueValuesEnum: Output only. Agentspace only. The state of the
-      token.
+    StateValueValuesEnum: Output only. Gemini Enterprise only. The state of
+      the token.
 
   Fields:
-    displayName: Optional. Agentspace only. The display name of the SCIM
-      token. Cannot exceed 32 characters.
-    name: Identifier. Agentspace only. The resource name of the SCIM Token.
-      Format: `locations/{location}/workforcePools/{workforce_pool}/providers/
+    displayName: Optional. Gemini Enterprise only. The display name of the
+      SCIM token. Cannot exceed 32 characters.
+    name: Identifier. Gemini Enterprise only. The resource name of the SCIM
+      Token. Format:
+      `locations/{location}/workforcePools/{workforce_pool}/providers/
       {workforce_pool_provider}/scimTenants/{scim_tenant}/tokens/{token}`
-    securityToken: Output only. Agentspace only. The token string. Provide
-      this to the IdP for authentication. Will be set only during creation.
-    state: Output only. Agentspace only. The state of the token.
+    securityToken: Output only. Gemini Enterprise only. The token string.
+      Provide this to the IdP for authentication. Will be set only during
+      creation.
+    state: Output only. Gemini Enterprise only. The state of the token.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. Agentspace only. The state of the token.
+    r"""Output only. Gemini Enterprise only. The state of the token.
 
     Values:
-      STATE_UNSPECIFIED: Agentspace only. State unspecified.
-      ACTIVE: Agentspace only. The token is active and may be used to
+      STATE_UNSPECIFIED: Gemini Enterprise only. State unspecified.
+      ACTIVE: Gemini Enterprise only. The token is active and may be used to
         provision users and groups.
-      DELETED: Agentspace only. The token is soft-deleted. Soft-deleted tokens
-        are permanently deleted after approximately 30 days.
+      DELETED: Gemini Enterprise only. The token is soft-deleted. Soft-deleted
+        tokens are permanently deleted after approximately 30 days.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1

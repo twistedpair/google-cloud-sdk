@@ -331,6 +331,22 @@ class CloudfunctionsProjectsLocationsFunctionsAbortFunctionUpgradeRequest(_messa
   name = _messages.StringField(2, required=True)
 
 
+class CloudfunctionsProjectsLocationsFunctionsCommitFunctionUpgradeAsGen2Request(_messages.Message):
+  r"""A
+  CloudfunctionsProjectsLocationsFunctionsCommitFunctionUpgradeAsGen2Request
+  object.
+
+  Fields:
+    commitFunctionUpgradeAsGen2Request: A CommitFunctionUpgradeAsGen2Request
+      resource to be passed as the request body.
+    name: Required. The name of the function for which upgrade should be
+      committed to Gen2.
+  """
+
+  commitFunctionUpgradeAsGen2Request = _messages.MessageField('CommitFunctionUpgradeAsGen2Request', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class CloudfunctionsProjectsLocationsFunctionsCommitFunctionUpgradeRequest(_messages.Message):
   r"""A CloudfunctionsProjectsLocationsFunctionsCommitFunctionUpgradeRequest
   object.
@@ -632,9 +648,9 @@ class CloudfunctionsProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -658,6 +674,10 @@ class CloudfunctionsProjectsLocationsRuntimesListRequest(_messages.Message):
 
   filter = _messages.StringField(1)
   parent = _messages.StringField(2, required=True)
+
+
+class CommitFunctionUpgradeAsGen2Request(_messages.Message):
+  r"""Request for the `CommitFunctionUpgradeAsGen2` method."""
 
 
 class CommitFunctionUpgradeRequest(_messages.Message):
@@ -1108,6 +1128,7 @@ class GoogleCloudFunctionsV2betaOperationMetadata(_messages.Message):
       ABORT_FUNCTION_UPGRADE: AbortFunctionUpgrade
       COMMIT_FUNCTION_UPGRADE: CommitFunctionUpgrade
       DETACH_FUNCTION: DetachFunction
+      COMMIT_FUNCTION_UPGRADE_AS_GEN2: CommitFunctionUpgradeAsGen2
     """
     OPERATIONTYPE_UNSPECIFIED = 0
     CREATE_FUNCTION = 1
@@ -1119,6 +1140,7 @@ class GoogleCloudFunctionsV2betaOperationMetadata(_messages.Message):
     ABORT_FUNCTION_UPGRADE = 7
     COMMIT_FUNCTION_UPGRADE = 8
     DETACH_FUNCTION = 9
+    COMMIT_FUNCTION_UPGRADE_AS_GEN2 = 10
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class RequestResourceValue(_messages.Message):
@@ -1290,8 +1312,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)

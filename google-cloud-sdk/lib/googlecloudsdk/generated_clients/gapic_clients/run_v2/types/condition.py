@@ -255,6 +255,9 @@ class Condition(proto.Message):
                 cancelled.
             DELETED (5):
                 The execution was deleted.
+            FLEX_START_PENDING (6):
+                A Flex priority execution is waiting for a
+                start time.
         """
         EXECUTION_REASON_UNDEFINED = 0
         JOB_STATUS_SERVICE_POLLING_ERROR = 1
@@ -262,6 +265,7 @@ class Condition(proto.Message):
         CANCELLED = 3
         CANCELLING = 4
         DELETED = 5
+        FLEX_START_PENDING = 6
 
     type_: str = proto.Field(
         proto.STRING,

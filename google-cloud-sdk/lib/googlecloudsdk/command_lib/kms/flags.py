@@ -39,6 +39,9 @@ LOCATION_COLLECTION = 'cloudkms.projects.locations'
 CRYPTO_KEY_COLLECTION = 'cloudkms.projects.locations.keyRings.cryptoKeys'
 CRYPTO_KEY_VERSION_COLLECTION = '%s.cryptoKeyVersions' % CRYPTO_KEY_COLLECTION
 IMPORT_JOB_COLLECTION = 'cloudkms.projects.locations.keyRings.importJobs'
+SINGLE_TENANT_HSM_INSTANCE_COLLECTION = (
+    'cloudkms.projects.locations.singleTenantHsmInstances'
+)
 # list command aggregators
 
 
@@ -79,6 +82,16 @@ class LocationCompleter(ListCommandCompleter):
     super(LocationCompleter, self).__init__(
         collection=LOCATION_COLLECTION,
         list_command='kms locations list --uri',
+        **kwargs
+    )
+
+
+class SingleTenantHsmInstanceCompleter(ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(SingleTenantHsmInstanceCompleter, self).__init__(
+        collection=SINGLE_TENANT_HSM_INSTANCE_COLLECTION,
+        list_command='kms single-tenant-hsm-instances list --uri',
         **kwargs
     )
 
@@ -172,6 +185,14 @@ def AddLocationFlag(parser, resource='resource'):
   )
 
 
+def AddSingleTenantInstance(parser, resource='resource'):
+  parser.add_argument(
+      '--single-tenant-hsm-instance',
+      completer=SingleTenantHsmInstanceCompleter,
+      help='Single tenant HSM instance of the {0}.'.format(resource),
+  )
+
+
 def AddKeyRingFlag(parser, resource='resource'):
   parser.add_argument(
       '--keyring',
@@ -190,6 +211,14 @@ def AddKeyResourceFlags(parser, help_text=None):
   AddLocationFlag(parser, 'keyring')
   AddKeyRingFlag(parser, 'key')
   AddCryptoKeyFlag(parser, help_text)
+
+
+def AddSingleTenantHsmInstanceFlag(parser):
+  parser.add_argument(
+      '--single-tenant-hsm-instance',
+      completer=SingleTenantHsmInstanceCompleter,
+      help='The single tenant HSM instance to use for the import job.',
+  )
 
 
 def AddCryptoKeyVersionFlag(parser, help_action, required=False):
@@ -344,7 +373,13 @@ def AddIvFileFlag(parser, help_action):
 def AddProtectionLevelFlag(parser):
   parser.add_argument(
       '--protection-level',
-      choices=['software', 'hsm', 'external', 'external-vpc'],
+      choices=[
+          'software',
+          'hsm',
+          'hsm-single-tenant',
+          'external',
+          'external-vpc',
+      ],
       default='software',
       help='Protection level of the key.',
   )
@@ -353,7 +388,7 @@ def AddProtectionLevelFlag(parser):
 def AddRequiredProtectionLevelFlag(parser):
   parser.add_argument(
       '--protection-level',
-      choices=['software', 'hsm'],
+      choices=['software', 'hsm', 'hsm-single-tenant'],
       help='Protection level of the import job.',
       required=True,
   )
@@ -792,6 +827,17 @@ def ParseImportJobName(args):
           'projectsId': properties.VALUES.core.project.GetOrFail,
       },
       collection=IMPORT_JOB_COLLECTION,
+  )
+
+
+def ParseSingleTenantHsmInstanceName(args):
+  return resources.REGISTRY.Parse(
+      args.single_tenant_hsm_instance,
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'locationsId': args.MakeGetOrRaise('--location'),
+      },
+      collection=SINGLE_TENANT_HSM_INSTANCE_COLLECTION,
   )
 
 

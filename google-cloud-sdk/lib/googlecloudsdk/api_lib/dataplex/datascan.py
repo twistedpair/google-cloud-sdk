@@ -22,6 +22,7 @@ from googlecloudsdk.api_lib.dataplex import util as dataplex_api
 from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.command_lib.iam import iam_util
+from googlecloudsdk.generated_clients.apis.dataplex.v1 import dataplex_v1_messages
 
 
 def GenerateData(args: parser_extensions.Namespace):
@@ -193,12 +194,34 @@ def GenerateSchedule(args):
   return schedule
 
 
-def GenerateTrigger(args):
-  """Generate DataQualitySpec From Arguments."""
+def GenerateTrigger(
+    args: parser_extensions.Namespace,
+) -> dataplex_v1_messages.GoogleCloudDataplexV1Trigger:
+  """Generates Trigger for data scan From Arguments.
+
+  Args:
+    args: The arguments of the command.
+
+  Returns:
+    The trigger for the data scan.
+  """
   module = dataplex_api.GetMessageModule()
   trigger = module.GoogleCloudDataplexV1Trigger()
-  if args.IsSpecified('schedule'):
+  is_one_time_scan = args.IsKnownAndSpecified('one_time') and args.one_time
+  is_ttl_after_scan_completion = args.IsKnownAndSpecified(
+      'ttl_after_scan_completion'
+  )
+  if is_ttl_after_scan_completion and not is_one_time_scan:
+    raise ValueError(
+        'ttl_after_scan_completion is only supported for one-time scans.'
+        ' Provide --one-time to enable one-time scan.'
+    )
+  if args.IsKnownAndSpecified('schedule'):
     trigger.schedule = GenerateSchedule(args)
+  elif is_one_time_scan:
+    trigger.oneTime = module.GoogleCloudDataplexV1TriggerOneTime()
+    if is_ttl_after_scan_completion:
+      trigger.oneTime.ttlAfterScanCompletion = args.ttl_after_scan_completion
   else:
     trigger.onDemand = module.GoogleCloudDataplexV1TriggerOnDemand()
   return trigger

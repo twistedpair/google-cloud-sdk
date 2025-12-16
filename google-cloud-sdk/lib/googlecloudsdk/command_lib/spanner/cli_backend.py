@@ -75,6 +75,8 @@ class SpannerCliWrapper(binary_operations.BinaryBackedOperation):
       init_command=None,
       init_command_add=None,
       verbose=False,
+      directed_read=None,
+      proto_descriptor_file=None,
       **kwargs,
   ):
     del kwargs
@@ -121,6 +123,14 @@ class SpannerCliWrapper(binary_operations.BinaryBackedOperation):
       formatted_arguments += (f"--init-command={init_command}",)
     if init_command_add:
       formatted_arguments += (f"--init-command-add={init_command_add}",)
+    if verbose:
+      formatted_arguments += ("--verbose",)
+    if directed_read:
+      formatted_arguments += (f"--directed-read={directed_read}",)
+    if proto_descriptor_file:
+      formatted_arguments += (
+          f"--proto-descriptor-file={proto_descriptor_file}",
+      )
 
     return formatted_arguments
 

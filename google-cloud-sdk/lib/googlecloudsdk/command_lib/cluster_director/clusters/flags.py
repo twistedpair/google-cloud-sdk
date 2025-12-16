@@ -800,13 +800,14 @@ def AddSlurmLoginNode(
     flag_name = f"update-{name}"
     help_text = f"""
         Parameters to update slurm cluster login node.
-        Only count and startupScript can be updated.
+        Only bootDisk, count and startupScript can be updated.
 
         For e.g. --{flag_name} count=2,startupScript="echo hello"
     """
     spec = {
         "count": int,
         "startupScript": arg_parsers.ArgObject(),
+        "bootDisk": flag_types.PROTO_BOOT_DISK_TYPE,
     }
     req_keys = []
   else:
@@ -834,6 +835,7 @@ def AddSlurmLoginNode(
         "enablePublicIPs": bool,
         "startupScript": arg_parsers.ArgObject(),
         "labels": flag_types.LABEL,
+        "bootDisk": flag_types.PROTO_BOOT_DISK_TYPE,
     }
     req_keys = ["machineType", "zone"]
   parser.add_argument(

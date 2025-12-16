@@ -364,6 +364,36 @@ class BackupRun(_messages.Message):
   status = _messages.EnumField('StatusValueValuesEnum', 4)
 
 
+class BigQueryResourceMetadata(_messages.Message):
+  r"""BigQueryResourceMetadata contains information about the BigQuery
+  resource. Next ID: 9
+
+  Fields:
+    createTime: The creation time of the resource, i.e. the time when resource
+      is created and recorded in partner service.
+    fullResourceName: Required. Full resource name of this instance.
+    location: Required. location of the resource
+    product: The product this resource represents.
+    resourceContainer: Closest parent Cloud Resource Manager container of this
+      resource. It must be resource name of a Cloud Resource Manager project
+      with the format of "/", such as "projects/123". For GCP provided
+      resources, number should be project number.
+    resourceId: Required. Database resource id.
+    updateTime: The time at which the resource was updated and recorded at
+      partner service.
+    userLabelSet: User-provided labels associated with the resource
+  """
+
+  createTime = _messages.StringField(1)
+  fullResourceName = _messages.StringField(2)
+  location = _messages.StringField(3)
+  product = _messages.MessageField('Product', 4)
+  resourceContainer = _messages.StringField(5)
+  resourceId = _messages.MessageField('DatabaseResourceId', 6)
+  updateTime = _messages.StringField(7)
+  userLabelSet = _messages.MessageField('UserLabels', 8)
+
+
 class CertChain(_messages.Message):
   r"""A CertChain object.
 
@@ -813,6 +843,8 @@ class ConfigBasedSignalData(_messages.Message):
         all incoming connections to use SSL or not.
       SIGNAL_TYPE_EXTENDED_SUPPORT: Represents if a resource version is in
         extended support.
+      SIGNAL_TYPE_NO_AUTOMATED_BACKUP_POLICY: Represents if a resource has no
+        automated backup policy.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_OUTDATED_MINOR_VERSION = 1
@@ -821,6 +853,7 @@ class ConfigBasedSignalData(_messages.Message):
     SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS = 4
     SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS = 5
     SIGNAL_TYPE_EXTENDED_SUPPORT = 6
+    SIGNAL_TYPE_NO_AUTOMATED_BACKUP_POLICY = 7
 
   fullResourceName = _messages.StringField(1)
   lastRefreshTime = _messages.StringField(2)
@@ -923,6 +956,7 @@ class DatabaseResourceFeed(_messages.Message):
   Fields:
     backupdrMetadata: BackupDR metadata is used to ingest metadata from
       BackupDR.
+    bigqueryResourceMetadata: For BigQuery resource metadata.
     configBasedSignalData: Config based signal data is used to ingest signals
       that are generated based on the configuration of the database resource.
     databaseResourceSignalData: Database resource signal data is used to
@@ -955,6 +989,7 @@ class DatabaseResourceFeed(_messages.Message):
       CONFIG_BASED_SIGNAL_DATA: Database config based signal data
       BACKUPDR_METADATA: Database resource metadata from BackupDR
       DATABASE_RESOURCE_SIGNAL_DATA: Database resource signal data
+      BIGQUERY_RESOURCE_METADATA: BigQuery resource metadata
     """
     FEEDTYPE_UNSPECIFIED = 0
     RESOURCE_METADATA = 1
@@ -964,18 +999,20 @@ class DatabaseResourceFeed(_messages.Message):
     CONFIG_BASED_SIGNAL_DATA = 5
     BACKUPDR_METADATA = 6
     DATABASE_RESOURCE_SIGNAL_DATA = 7
+    BIGQUERY_RESOURCE_METADATA = 8
 
   backupdrMetadata = _messages.MessageField('BackupDRMetadata', 1)
-  configBasedSignalData = _messages.MessageField('ConfigBasedSignalData', 2)
-  databaseResourceSignalData = _messages.MessageField('DatabaseResourceSignalData', 3)
-  feedTimestamp = _messages.StringField(4)
-  feedType = _messages.EnumField('FeedTypeValueValuesEnum', 5)
-  observabilityMetricData = _messages.MessageField('ObservabilityMetricData', 6)
-  recommendationSignalData = _messages.MessageField('DatabaseResourceRecommendationSignalData', 7)
-  resourceHealthSignalData = _messages.MessageField('DatabaseResourceHealthSignalData', 8)
-  resourceId = _messages.MessageField('DatabaseResourceId', 9)
-  resourceMetadata = _messages.MessageField('DatabaseResourceMetadata', 10)
-  skipIngestion = _messages.BooleanField(11)
+  bigqueryResourceMetadata = _messages.MessageField('BigQueryResourceMetadata', 2)
+  configBasedSignalData = _messages.MessageField('ConfigBasedSignalData', 3)
+  databaseResourceSignalData = _messages.MessageField('DatabaseResourceSignalData', 4)
+  feedTimestamp = _messages.StringField(5)
+  feedType = _messages.EnumField('FeedTypeValueValuesEnum', 6)
+  observabilityMetricData = _messages.MessageField('ObservabilityMetricData', 7)
+  recommendationSignalData = _messages.MessageField('DatabaseResourceRecommendationSignalData', 8)
+  resourceHealthSignalData = _messages.MessageField('DatabaseResourceHealthSignalData', 9)
+  resourceId = _messages.MessageField('DatabaseResourceId', 10)
+  resourceMetadata = _messages.MessageField('DatabaseResourceMetadata', 11)
+  skipIngestion = _messages.BooleanField(12)
 
 
 class DatabaseResourceHealthSignalData(_messages.Message):
@@ -1512,7 +1549,8 @@ class DatabaseResourceId(_messages.Message):
       PROVIDER_OTHER.
     resourceType: Required. The type of resource this ID is identifying. Ex
       go/keep-sorted start alloydb.googleapis.com/Cluster,
-      alloydb.googleapis.com/Instance, bigtableadmin.googleapis.com/Cluster,
+      alloydb.googleapis.com/Instance, bigquery.googleapis.com/Dataset,
+      bigtableadmin.googleapis.com/Cluster,
       bigtableadmin.googleapis.com/Instance compute.googleapis.com/Instance
       firestore.googleapis.com/Database, redis.googleapis.com/Instance,
       redis.googleapis.com/Cluster,
@@ -2247,6 +2285,8 @@ class DatabaseResourceSignalData(_messages.Message):
         all incoming connections to use SSL or not.
       SIGNAL_TYPE_EXTENDED_SUPPORT: Represents if a resource version is in
         extended support.
+      SIGNAL_TYPE_NO_AUTOMATED_BACKUP_POLICY: Represents if a resource has no
+        automated backup policy.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_OUTDATED_MINOR_VERSION = 1
@@ -2255,6 +2295,7 @@ class DatabaseResourceSignalData(_messages.Message):
     SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS = 4
     SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS = 5
     SIGNAL_TYPE_EXTENDED_SUPPORT = 6
+    SIGNAL_TYPE_NO_AUTOMATED_BACKUP_POLICY = 7
 
   fullResourceName = _messages.StringField(1)
   lastRefreshTime = _messages.StringField(2)
@@ -3143,8 +3184,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -4555,9 +4596,9 @@ class RedisProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """

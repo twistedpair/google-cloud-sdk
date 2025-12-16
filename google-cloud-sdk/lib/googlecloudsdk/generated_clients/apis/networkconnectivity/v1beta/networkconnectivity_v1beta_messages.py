@@ -4652,15 +4652,14 @@ class NetworkconnectivityProjectsLocationsTransportsCreateRequest(_messages.Mess
       not supported (00000000-0000-0000-0000-000000000000).
     transportId: Required. Unique id of the Transport to be created. @pattern:
       ^[-a-z0-9](?:[-a-z0-9]{0,44})[a-z0-9]$
-    transportsV1BetaCreateTransportRequest: A
-      TransportsV1BetaCreateTransportRequest resource to be passed as the
-      request body.
+    transportsV1BetaTransport: A TransportsV1BetaTransport resource to be
+      passed as the request body.
   """
 
   parent = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
   transportId = _messages.StringField(3)
-  transportsV1BetaCreateTransportRequest = _messages.MessageField('TransportsV1BetaCreateTransportRequest', 4)
+  transportsV1BetaTransport = _messages.MessageField('TransportsV1BetaTransport', 4)
 
 
 class NetworkconnectivityProjectsLocationsTransportsDeleteRequest(_messages.Message):
@@ -4817,12 +4816,12 @@ class TransportsListRemoteProfilesResponse(_messages.Message):
   Fields:
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
-    remoteProfiles: The list of remote profiles.
+    remoteTransportProfiles: The list of remote profiles.
     unreachable: Locations that could not be reached.
   """
 
   nextPageToken = _messages.StringField(1)
-  remoteProfiles = _messages.MessageField('TransportsV1BetaRemoteProfile', 2, repeated=True)
+  remoteTransportProfiles = _messages.MessageField('TransportsV1BetaRemoteProfile', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -4841,23 +4840,6 @@ class TransportsListTransportsResponse(_messages.Message):
   region = _messages.StringField(2)
   transports = _messages.MessageField('TransportsV1BetaTransport', 3, repeated=True)
   unreachable = _messages.StringField(4, repeated=True)
-
-
-class TransportsV1BetaCreateTransportRequest(_messages.Message):
-  r"""The request for Transports.CreateTransport.
-
-  Fields:
-    parent: The parent resource of the transport.
-    region: The region of the transport.
-    transport: The transport to create.
-    transportId: The ID to use for the transport, which will become the final
-      component of the transport's resource name.
-  """
-
-  parent = _messages.StringField(1)
-  region = _messages.StringField(2)
-  transport = _messages.MessageField('TransportsV1BetaTransport', 3)
-  transportId = _messages.StringField(4)
 
 
 class TransportsV1BetaRemoteProfile(_messages.Message):

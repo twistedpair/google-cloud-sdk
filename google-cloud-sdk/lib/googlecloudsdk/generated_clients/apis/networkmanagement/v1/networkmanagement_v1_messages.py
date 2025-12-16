@@ -909,6 +909,8 @@ class DropInfo(_messages.Message):
       NO_MATCHING_NAT64_GATEWAY: Packet with destination IP address within the
         reserved NAT64 range is dropped due to no matching NAT gateway in the
         subnet.
+      NO_CONFIGURED_PRIVATE_NAT64_RULE: Packet is dropped due to matching a
+        Private NAT64 gateway with no rules for source IPv6 addresses.
       LOAD_BALANCER_BACKEND_IP_VERSION_MISMATCH: Packet is dropped due to
         being sent to a backend of a passthrough load balancer that doesn't
         use the same IP version as the frontend.
@@ -1024,15 +1026,16 @@ class DropInfo(_messages.Message):
     UNSUPPORTED_ROUTE_MATCHED_FOR_NAT64_DESTINATION = 88
     TRAFFIC_FROM_HYBRID_ENDPOINT_TO_INTERNET_DISALLOWED = 89
     NO_MATCHING_NAT64_GATEWAY = 90
-    LOAD_BALANCER_BACKEND_IP_VERSION_MISMATCH = 91
-    NO_KNOWN_ROUTE_FROM_NCC_NETWORK_TO_DESTINATION = 92
-    CLOUD_NAT_PROTOCOL_UNSUPPORTED = 93
-    L2_INTERCONNECT_UNSUPPORTED_PROTOCOL = 94
-    L2_INTERCONNECT_UNSUPPORTED_PORT = 95
-    L2_INTERCONNECT_DESTINATION_IP_MISMATCH = 96
-    NCC_ROUTE_WITHIN_HYBRID_SUBNET_UNSUPPORTED = 97
-    HYBRID_SUBNET_REGION_MISMATCH = 98
-    HYBRID_SUBNET_NO_ROUTE = 99
+    NO_CONFIGURED_PRIVATE_NAT64_RULE = 91
+    LOAD_BALANCER_BACKEND_IP_VERSION_MISMATCH = 92
+    NO_KNOWN_ROUTE_FROM_NCC_NETWORK_TO_DESTINATION = 93
+    CLOUD_NAT_PROTOCOL_UNSUPPORTED = 94
+    L2_INTERCONNECT_UNSUPPORTED_PROTOCOL = 95
+    L2_INTERCONNECT_UNSUPPORTED_PORT = 96
+    L2_INTERCONNECT_DESTINATION_IP_MISMATCH = 97
+    NCC_ROUTE_WITHIN_HYBRID_SUBNET_UNSUPPORTED = 98
+    HYBRID_SUBNET_REGION_MISMATCH = 99
+    HYBRID_SUBNET_NO_ROUTE = 100
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   destinationGeolocationCode = _messages.StringField(2)
@@ -1897,8 +1900,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -2190,9 +2193,13 @@ class NatInfo(_messages.Message):
   r"""For display only. Metadata associated with NAT.
 
   Enums:
+    CloudNatGatewayTypeValueValuesEnum: Type of Cloud NAT gateway. Only valid
+      when `type` is CLOUD_NAT.
     TypeValueValuesEnum: Type of NAT.
 
   Fields:
+    cloudNatGatewayType: Type of Cloud NAT gateway. Only valid when `type` is
+      CLOUD_NAT.
     natGatewayName: The name of Cloud NAT Gateway. Only valid when type is
       CLOUD_NAT.
     networkUri: URI of the network where NAT translation takes place.
@@ -2212,6 +2219,24 @@ class NatInfo(_messages.Message):
     routerUri: Uri of the Cloud Router. Only valid when type is CLOUD_NAT.
     type: Type of NAT.
   """
+
+  class CloudNatGatewayTypeValueValuesEnum(_messages.Enum):
+    r"""Type of Cloud NAT gateway. Only valid when `type` is CLOUD_NAT.
+
+    Values:
+      CLOUD_NAT_GATEWAY_TYPE_UNSPECIFIED: Type is unspecified.
+      PUBLIC_NAT44: Public NAT gateway.
+      PUBLIC_NAT64: Public NAT64 gateway.
+      PRIVATE_NAT_NCC: Private NAT gateway for NCC.
+      PRIVATE_NAT_HYBRID: Private NAT gateway for hybrid connectivity.
+      PRIVATE_NAT64: Private NAT64 gateway.
+    """
+    CLOUD_NAT_GATEWAY_TYPE_UNSPECIFIED = 0
+    PUBLIC_NAT44 = 1
+    PUBLIC_NAT64 = 2
+    PRIVATE_NAT_NCC = 3
+    PRIVATE_NAT_HYBRID = 4
+    PRIVATE_NAT64 = 5
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Type of NAT.
@@ -2233,19 +2258,20 @@ class NatInfo(_messages.Message):
     PRIVATE_SERVICE_CONNECT = 4
     GKE_POD_IP_MASQUERADING = 5
 
-  natGatewayName = _messages.StringField(1)
-  networkUri = _messages.StringField(2)
-  newDestinationIp = _messages.StringField(3)
-  newDestinationPort = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  newSourceIp = _messages.StringField(5)
-  newSourcePort = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  oldDestinationIp = _messages.StringField(7)
-  oldDestinationPort = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  oldSourceIp = _messages.StringField(9)
-  oldSourcePort = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  protocol = _messages.StringField(11)
-  routerUri = _messages.StringField(12)
-  type = _messages.EnumField('TypeValueValuesEnum', 13)
+  cloudNatGatewayType = _messages.EnumField('CloudNatGatewayTypeValueValuesEnum', 1)
+  natGatewayName = _messages.StringField(2)
+  networkUri = _messages.StringField(3)
+  newDestinationIp = _messages.StringField(4)
+  newDestinationPort = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  newSourceIp = _messages.StringField(6)
+  newSourcePort = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  oldDestinationIp = _messages.StringField(8)
+  oldDestinationPort = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  oldSourceIp = _messages.StringField(10)
+  oldSourcePort = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  protocol = _messages.StringField(12)
+  routerUri = _messages.StringField(13)
+  type = _messages.EnumField('TypeValueValuesEnum', 14)
 
 
 class NetworkInfo(_messages.Message):
@@ -2346,9 +2372,9 @@ class NetworkmanagementOrganizationsLocationsOperationsListRequest(_messages.Mes
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -2687,9 +2713,9 @@ class NetworkmanagementProjectsLocationsGlobalOperationsListRequest(_messages.Me
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """

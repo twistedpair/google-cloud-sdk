@@ -240,12 +240,7 @@ class PipelineClientV1(base.EventarcClientBase):
       update_mask.append('mediations')
     if logging_config:
       update_mask.append('loggingConfig')
-    if (
-        max_retry_attempts
-        or max_retry_attempts
-        or min_retry_delay
-        or max_retry_delay
-    ):
+    if max_retry_attempts or min_retry_delay or max_retry_delay:
       update_mask.append('retryPolicy')
     if crypto_key or clear_crypto_key:
       update_mask.append('cryptoKeyName')

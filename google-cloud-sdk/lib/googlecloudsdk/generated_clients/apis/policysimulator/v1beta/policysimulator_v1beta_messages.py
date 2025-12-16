@@ -83,7 +83,7 @@ class GoogleCloudOrgpolicyV2CustomConstraint(_messages.Message):
     actionType: Allow or deny type.
     condition: A Common Expression Language (CEL) condition which is used in
       the evaluation of the constraint. For example:
-      `resource.instanceName.matches("[production|test]_.*_(\d)+")` or,
+      `resource.instanceName.matches("(production|test)_(.+_)?[\d]+")` or,
       `resource.management.auto_upgrade == true` The max length of the
       condition is 1000 characters.
     description: Detailed information about this custom policy constraint. The
@@ -335,16 +335,30 @@ class GoogleCloudOrgpolicyV2PolicySpecPolicyRule(_messages.Message):
   Fields:
     allowAll: Setting this to true means that all values are allowed. This
       field can be set only in policies for list constraints.
-    condition: A condition which determines whether this rule is used in the
-      evaluation of the policy. When set, the `expression` field in the `Expr'
-      must include from 1 to 10 subexpressions, joined by the "||" or "&&"
-      operators. Each subexpression must be of the form
-      "resource.matchTag('/tag_key_short_name, 'tag_value_short_name')". or
-      "resource.matchTagId('tagKeys/key_id', 'tagValues/value_id')". where
-      key_name and value_name are the resource names for Label Keys and
-      Values. These names are available from the Tag Manager Service. An
-      example expression is: "resource.matchTag('123456789/environment,
-      'prod')". or "resource.matchTagId('tagKeys/123', 'tagValues/456')".
+    condition: A condition that determines whether this rule is used to
+      evaluate the policy. When set, the google.type.Expr.expression field
+      must contain 1 to 10 subexpressions, joined by the `||` or `&&`
+      operators. Each subexpression must use the `resource.matchTag()`,
+      `resource.matchTagId()`, `resource.hasTagKey()`, or
+      `resource.hasTagKeyId()` Common Expression Language (CEL) function. The
+      `resource.matchTag()` function takes the following arguments: *
+      `key_name`: the namespaced name of the tag key, with the organization ID
+      and a slash (`/`) as a prefix; for example, `123456789012/environment` *
+      `value_name`: the short name of the tag value For example:
+      `resource.matchTag('123456789012/environment, 'prod')` The
+      `resource.matchTagId()` function takes the following arguments: *
+      `key_id`: the permanent ID of the tag key; for example,
+      `tagKeys/123456789012` * `value_id`: the permanent ID of the tag value;
+      for example, `tagValues/567890123456` For example:
+      `resource.matchTagId('tagKeys/123456789012', 'tagValues/567890123456')`
+      The `resource.hasTagKey()` function takes the following argument: *
+      `key_name`: the namespaced name of the tag key, with the organization ID
+      and a slash (`/`) as a prefix; for example, `123456789012/environment`
+      For example: `resource.hasTagKey('123456789012/environment')` The
+      `resource.hasTagKeyId()` function takes the following arguments: *
+      `key_id`: the permanent ID of the tag key; for example,
+      `tagKeys/123456789012` For example:
+      `resource.hasTagKeyId('tagKeys/123456789012')`
     denyAll: Setting this to true means that all values are denied. This field
       can be set only in policies for list constraints.
     enforce: If `true`, then the policy is enforced. If `false`, then any
@@ -1309,12 +1323,12 @@ class GoogleCloudPolicysimulatorV1betaActivityBacktestResult(_messages.Message):
     lastAccessDate: The date when the resource was last accessed.
     lastRecordedDecision: The most recently recorded decision of the access
       under evaluation.
-    name: Identifier. The resource name of the `ActivityBacktestResult` that
-      owns the ActivityBacketest. Expected format: `projects/{project}/locatio
-      ns/global/activityBacktestResults/{activity_backtest_result_id}` `folder
-      s/{folder}/locations/global/activityBacktestResults/{activity_backtest_r
-      esult_id}` `organizations/{organization}/locations/global/activityBackte
-      stResults/{activity_backtest_result_id}`
+    name: Identifier. The resource name of the `ActivityBacktestResult`.
+      Expected format: `projects/{project}/locations/global/activityBacktestRe
+      sults/{activity_backtest_result_id}` `folders/{folder}/locations/global/
+      activityBacktestResults/{activity_backtest_result_id}` `organizations/{o
+      rganization}/locations/global/activityBacktestResults/{activity_backtest
+      _result_id}`
     postChangeDecision: The decision of the access under evaluation with the
       policy overlay (using proposed policies).
   """
@@ -3742,8 +3756,8 @@ class GoogleCloudPolicysimulatorV1betaSearchActivityBacktestResultsResponse(_mes
   searchResults = _messages.MessageField('GoogleCloudPolicysimulatorV1betaSearchActivityBacktestResultsResponseSearchActivityBacktestResult', 2, repeated=True)
 
 
-class GoogleCloudPolicysimulatorV1betaSearchActivityBacktestResultsResponseInacessibleResults(_messages.Message):
-  r"""It represents the result of a search in case of inacessible results.
+class GoogleCloudPolicysimulatorV1betaSearchActivityBacktestResultsResponseInaccessibleResults(_messages.Message):
+  r"""It represents the result of a search in case of inaccessible results.
   This could be the resource that owns a collection of results that was
   inaccessible.
 
@@ -3765,12 +3779,12 @@ class GoogleCloudPolicysimulatorV1betaSearchActivityBacktestResultsResponseSearc
 
   Fields:
     activityBacktestResult: The activity backtest result.
-    inaccessibleResults: The result of a search in case of inacessible
+    inaccessibleResults: The result of a search in case of inaccessible
       results.
   """
 
   activityBacktestResult = _messages.MessageField('GoogleCloudPolicysimulatorV1betaActivityBacktestResult', 1)
-  inaccessibleResults = _messages.MessageField('GoogleCloudPolicysimulatorV1betaSearchActivityBacktestResultsResponseInacessibleResults', 2)
+  inaccessibleResults = _messages.MessageField('GoogleCloudPolicysimulatorV1betaSearchActivityBacktestResultsResponseInaccessibleResults', 2)
 
 
 class GoogleCloudPolicysimulatorV1betaSearchScopedActivityBacktestResultsResponse(_messages.Message):
@@ -4421,8 +4435,8 @@ class GoogleLongrunningListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -5049,9 +5063,9 @@ class PolicysimulatorFoldersLocationsReplaysOperationsListRequest(_messages.Mess
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -5106,9 +5120,9 @@ class PolicysimulatorOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -5655,9 +5669,9 @@ class PolicysimulatorOrganizationsLocationsReplaysOperationsListRequest(_message
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -6072,9 +6086,9 @@ class PolicysimulatorProjectsLocationsReplaysOperationsListRequest(_messages.Mes
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """

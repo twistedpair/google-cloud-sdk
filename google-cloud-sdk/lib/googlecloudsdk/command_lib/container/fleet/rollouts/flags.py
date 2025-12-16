@@ -70,6 +70,38 @@ class RolloutFlags:
         """),
     )
 
+  def AddExcludeMembershipNames(self):
+    self.parser.add_argument(
+        '--exclude-membership-names',
+        type=arg_parsers.ArgList(),
+        metavar='MEMBERSHIP_NAME',
+        help=textwrap.dedent("""\
+            Comma-separated list of full names of memberships to exclude
+            from the rollout. The memberships must use the following format:
+
+            `projects/<PROJECT_NUMBER>/locations/global/memberships/<MEMBERSHIP_ID>`.
+
+            Either this flag or `--include-membership-names` can be specified,
+            but not both.
+        """),
+    )
+
+  def AddIncludeMembershipNames(self):
+    self.parser.add_argument(
+        '--include-membership-names',
+        type=arg_parsers.ArgList(),
+        metavar='MEMBERSHIP_NAME',
+        help=textwrap.dedent("""\
+            Comma-separated list of full names of memberships to include in
+            the rollout. The memberships must use the following format:
+
+            `projects/<PROJECT_NUMBER>/locations/global/memberships/<MEMBERSHIP_ID>`.
+
+            Either this flag or `--excluded-membership-names` can be specified,
+            but not both.
+        """),
+    )
+
   def AddLabels(self):
     self.parser.add_argument(
         '--labels',
@@ -137,9 +169,7 @@ class RolloutFlags:
 
   def AddRolloutTypeConfig(self):
     rollout_type_mutex_group = self.parser.add_mutually_exclusive_group(
-        help=(
-            'Configuration for specific rollout types.'
-        ),
+        help='Configuration for specific rollout types.',
     )
     self._AddVersionUpgrade(rollout_type_mutex_group)
     self._AddFeatureUpdate(rollout_type_mutex_group)
@@ -375,8 +405,39 @@ class RolloutFlagParser:
     return self.args.start_time.strftime('%Y-%m-%dT%H:%M:%SZ')
 
   def _ManagedRolloutConfig(self) -> fleet_messages.ManagedRolloutConfig:
+    """Constructs message ManagedRolloutConfig.
+
+    Parses arguments related to the managed rollout configuration, such as
+    `--soak-duration` and `--exclude-membership-names`.
+
+    Returns:
+      A fleet_messages.ManagedRolloutConfig instance or None if no related
+      flags were specified.
+    """
     managed_rollout_config = fleet_messages.ManagedRolloutConfig()
     managed_rollout_config.soakDuration = self._SoakDuration()
+
+    uipr_rollout_config = fleet_messages.UIPRRolloutConfig()
+
+    if (
+        '--exclude-membership-names' in self.args.GetSpecifiedArgs()
+        and '--include-membership-names' in self.args.GetSpecifiedArgs()
+    ):
+      raise ValueError(
+          '`--exclude-membership-names` and `--include-membership-names` cannot'
+          ' be set at the same time.'
+      )
+
+    if '--exclude-membership-names' in self.args.GetSpecifiedArgs():
+      for membership in self.args.exclude_membership_names:
+        uipr_rollout_config.excludedMembershipNames.append(membership)
+
+    if '--include-membership-names' in self.args.GetSpecifiedArgs():
+      for membership in self.args.include_membership_names:
+        uipr_rollout_config.includeMembershipNames.append(membership)
+
+    managed_rollout_config.uiprRolloutConfig = uipr_rollout_config
+
     return self.TrimEmpty(managed_rollout_config)
 
   def _SoakDuration(self) -> str:

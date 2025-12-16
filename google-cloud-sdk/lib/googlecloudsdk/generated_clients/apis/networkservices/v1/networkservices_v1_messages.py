@@ -106,8 +106,10 @@ class AuthzExtension(_messages.Message):
       `EXTERNAL_MANAGED`. For more information, refer to [Backend services
       overview](https://cloud.google.com/load-balancing/docs/backend-service).
     WireFormatValueValuesEnum: Optional. The format of communication supported
-      by the callout extension. If not specified, the default value
-      `EXT_PROC_GRPC` is used.
+      by the callout extension. This field is supported only for regional
+      `AuthzExtension` resources. If not specified, the default value
+      `EXT_PROC_GRPC` is used. Global `AuthzExtension` resources use the
+      `EXT_PROC_GRPC` wire format.
 
   Messages:
     LabelsValue: Optional. Set of labels associated with the `AuthzExtension`
@@ -170,7 +172,9 @@ class AuthzExtension(_messages.Message):
       the stream. The timeout must be between 10-10000 milliseconds.
     updateTime: Output only. The timestamp when the resource was updated.
     wireFormat: Optional. The format of communication supported by the callout
-      extension. If not specified, the default value `EXT_PROC_GRPC` is used.
+      extension. This field is supported only for regional `AuthzExtension`
+      resources. If not specified, the default value `EXT_PROC_GRPC` is used.
+      Global `AuthzExtension` resources use the `EXT_PROC_GRPC` wire format.
   """
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
@@ -193,7 +197,9 @@ class AuthzExtension(_messages.Message):
 
   class WireFormatValueValuesEnum(_messages.Enum):
     r"""Optional. The format of communication supported by the callout
-    extension. If not specified, the default value `EXT_PROC_GRPC` is used.
+    extension. This field is supported only for regional `AuthzExtension`
+    resources. If not specified, the default value `EXT_PROC_GRPC` is used.
+    Global `AuthzExtension` resources use the `EXT_PROC_GRPC` wire format.
 
     Values:
       WIRE_FORMAT_UNSPECIFIED: Not specified.
@@ -203,7 +209,7 @@ class AuthzExtension(_messages.Message):
         protocol. All `supported_events` for a client request are sent as part
         of the same gRPC stream.
       EXT_AUTHZ_GRPC: The extension service uses Envoy's `ext_authz` gRPC API.
-        The backend service for the extension must use HTTP2, or H2C as the
+        The backend service for the extension must use HTTP2 or H2C as the
         protocol. `EXT_AUTHZ_GRPC` is only supported for regional
         `AuthzExtension` resources.
     """
@@ -1903,9 +1909,9 @@ class Gateway(_messages.Message):
       ENVOY_HEADERS_UNSPECIFIED: Defaults to NONE.
       NONE: Suppress envoy debug headers.
       DEBUG_HEADERS: Envoy will insert default internal debug headers into
-        upstream requests: x-envoy-attempt-count x-envoy-is-timeout-retry
-        x-envoy-expected-rq-timeout-ms x-envoy-original-path x-envoy-upstream-
-        stream-duration-ms
+        upstream requests: x-envoy-attempt-count, x-envoy-is-timeout-retry,
+        x-envoy-expected-rq-timeout-ms, x-envoy-original-path, x-envoy-
+        upstream-stream-duration-ms
     """
     ENVOY_HEADERS_UNSPECIFIED = 0
     NONE = 1
@@ -3957,8 +3963,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -4314,9 +4320,9 @@ class Mesh(_messages.Message):
       ENVOY_HEADERS_UNSPECIFIED: Defaults to NONE.
       NONE: Suppress envoy debug headers.
       DEBUG_HEADERS: Envoy will insert default internal debug headers into
-        upstream requests: x-envoy-attempt-count x-envoy-is-timeout-retry
-        x-envoy-expected-rq-timeout-ms x-envoy-original-path x-envoy-upstream-
-        stream-duration-ms
+        upstream requests: x-envoy-attempt-count, x-envoy-is-timeout-retry,
+        x-envoy-expected-rq-timeout-ms, x-envoy-original-path, x-envoy-
+        upstream-stream-duration-ms
     """
     ENVOY_HEADERS_UNSPECIFIED = 0
     NONE = 1
@@ -4393,7 +4399,10 @@ class MulticastConsumerAssociation(_messages.Message):
     description: Optional. An optional text description of the multicast
       consumer association.
     labels: Optional. Labels as key-value pairs
-    multicastDomainActivation: A string attribute.
+    multicastDomainActivation: Optional. The resource name of the multicast
+      domain activation that is in the same zone as this multicast consumer
+      association. Use the following format:
+      `projects/*/locations/*/multicastDomainActivations/*`.
     name: Identifier. The resource name of the multicast consumer association.
       Use the following format:
       `projects/*/locations/*/multicastConsumerAssociations/*`.
@@ -5061,8 +5070,8 @@ class MulticastProducerAssociation(_messages.Message):
     labels: Optional. Labels as key-value pairs
     multicastDomainActivation: Optional. The resource name of the multicast
       domain activation that is in the same zone as this multicast producer
-      association. Use the following format: //
-      `projects/*/locations/*/multicastProducerAssociations/*`.
+      association. Use the following format:
+      `projects/*/locations/*/multicastDomainActivations/*`.
     name: Identifier. The resource name of the multicast producer association.
       Use the following format:
       `projects/*/locations/*/multicastProducerAssociations/*`.
@@ -7805,9 +7814,9 @@ class NetworkservicesProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """

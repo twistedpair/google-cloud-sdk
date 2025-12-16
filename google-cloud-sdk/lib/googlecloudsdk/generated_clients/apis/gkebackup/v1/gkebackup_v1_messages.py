@@ -1078,54 +1078,6 @@ class GetBackupIndexDownloadUrlResponse(_messages.Message):
   signedUrl = _messages.StringField(1)
 
 
-class GetTagsResponse(_messages.Message):
-  r"""Response message for GetTags.
-
-  Messages:
-    TagsValue: Required. Tag keys/values directly bound to this resource. Each
-      item in the map must be expressed as " : ". For example:
-      "123/environment" : "production", "123/costCenter" : "marketing"
-
-  Fields:
-    etag: A checksum based on the current bindings. This field is always set
-      in server responses.
-    name: Required. The full resource name of the service resource.
-    tags: Required. Tag keys/values directly bound to this resource. Each item
-      in the map must be expressed as " : ". For example: "123/environment" :
-      "production", "123/costCenter" : "marketing"
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class TagsValue(_messages.Message):
-    r"""Required. Tag keys/values directly bound to this resource. Each item
-    in the map must be expressed as " : ". For example: "123/environment" :
-    "production", "123/costCenter" : "marketing"
-
-    Messages:
-      AdditionalProperty: An additional property for a TagsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type TagsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a TagsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  etag = _messages.StringField(1)
-  name = _messages.StringField(2)
-  tags = _messages.MessageField('TagsValue', 3)
-
-
 class GkebackupProjectsLocationsBackupChannelsBackupPlanAssociationsGetRequest(_messages.Message):
   r"""A
   GkebackupProjectsLocationsBackupChannelsBackupPlanAssociationsGetRequest
@@ -1656,16 +1608,6 @@ class GkebackupProjectsLocationsBackupPlansGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class GkebackupProjectsLocationsBackupPlansGetTagsRequest(_messages.Message):
-  r"""A GkebackupProjectsLocationsBackupPlansGetTagsRequest object.
-
-  Fields:
-    name: Required. The full resource name of the service resource.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class GkebackupProjectsLocationsBackupPlansListRequest(_messages.Message):
   r"""A GkebackupProjectsLocationsBackupPlansListRequest object.
 
@@ -1730,19 +1672,6 @@ class GkebackupProjectsLocationsBackupPlansSetIamPolicyRequest(_messages.Message
 
   resource = _messages.StringField(1, required=True)
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class GkebackupProjectsLocationsBackupPlansSetTagsRequest(_messages.Message):
-  r"""A GkebackupProjectsLocationsBackupPlansSetTagsRequest object.
-
-  Fields:
-    name: Required. The full resource name of the service resource.
-    setTagsRequest: A SetTagsRequest resource to be passed as the request
-      body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  setTagsRequest = _messages.MessageField('SetTagsRequest', 2)
 
 
 class GkebackupProjectsLocationsBackupPlansTestIamPermissionsRequest(_messages.Message):
@@ -1839,9 +1768,9 @@ class GkebackupProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -2106,16 +2035,6 @@ class GkebackupProjectsLocationsRestorePlansGetRequest(_messages.Message):
   Fields:
     name: Required. Fully qualified RestorePlan name. Format:
       `projects/*/locations/*/restorePlans/*`
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class GkebackupProjectsLocationsRestorePlansGetTagsRequest(_messages.Message):
-  r"""A GkebackupProjectsLocationsRestorePlansGetTagsRequest object.
-
-  Fields:
-    name: Required. The full resource name of the service resource.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2446,19 +2365,6 @@ class GkebackupProjectsLocationsRestorePlansSetIamPolicyRequest(_messages.Messag
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
-class GkebackupProjectsLocationsRestorePlansSetTagsRequest(_messages.Message):
-  r"""A GkebackupProjectsLocationsRestorePlansSetTagsRequest object.
-
-  Fields:
-    name: Required. The full resource name of the service resource.
-    setTagsRequest: A SetTagsRequest resource to be passed as the request
-      body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  setTagsRequest = _messages.MessageField('SetTagsRequest', 2)
-
-
 class GkebackupProjectsLocationsRestorePlansTestIamPermissionsRequest(_messages.Message):
   r"""A GkebackupProjectsLocationsRestorePlansTestIamPermissionsRequest
   object.
@@ -2489,8 +2395,8 @@ class GoogleLongrunningListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -4019,107 +3925,6 @@ class SetIamPolicyRequest(_messages.Message):
 
   policy = _messages.MessageField('Policy', 1)
   updateMask = _messages.StringField(2)
-
-
-class SetTagsRequest(_messages.Message):
-  r"""Request message for SetTags.
-
-  Messages:
-    TagsValue: Required. These bindings will override any bindings previously
-      set and will be effective immediately. Each item in the map must be
-      expressed as " : ". For example: "123/environment" : "production",
-      "123/costCenter" : "marketing"
-
-  Fields:
-    etag: Optional. A checksum based on the current bindings which can be
-      passed to prevent race conditions. If not passed, etag check would be
-      skipped.
-    requestId: Optional. A unique identifier for this request. Must be a valid
-      UUID. This request is only idempotent if a `request_id` is provided.
-    tags: Required. These bindings will override any bindings previously set
-      and will be effective immediately. Each item in the map must be
-      expressed as " : ". For example: "123/environment" : "production",
-      "123/costCenter" : "marketing"
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class TagsValue(_messages.Message):
-    r"""Required. These bindings will override any bindings previously set and
-    will be effective immediately. Each item in the map must be expressed as "
-    : ". For example: "123/environment" : "production", "123/costCenter" :
-    "marketing"
-
-    Messages:
-      AdditionalProperty: An additional property for a TagsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type TagsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a TagsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  etag = _messages.StringField(1)
-  requestId = _messages.StringField(2)
-  tags = _messages.MessageField('TagsValue', 3)
-
-
-class SetTagsResponse(_messages.Message):
-  r"""Response message for SetTags.
-
-  Messages:
-    TagsValue: Required. Tag keys/values directly bound to this resource. Each
-      item in the map must be expressed as " : ". For example:
-      "123/environment" : "production", "123/costCenter" : "marketing"
-
-  Fields:
-    etag: A checksum based on the current bindings. This field is always set
-      in server responses.
-    name: Required. The full resource name of the service resource.
-    tags: Required. Tag keys/values directly bound to this resource. Each item
-      in the map must be expressed as " : ". For example: "123/environment" :
-      "production", "123/costCenter" : "marketing"
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class TagsValue(_messages.Message):
-    r"""Required. Tag keys/values directly bound to this resource. Each item
-    in the map must be expressed as " : ". For example: "123/environment" :
-    "production", "123/costCenter" : "marketing"
-
-    Messages:
-      AdditionalProperty: An additional property for a TagsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type TagsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a TagsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  etag = _messages.StringField(1)
-  name = _messages.StringField(2)
-  tags = _messages.MessageField('TagsValue', 3)
 
 
 class StandardQueryParameters(_messages.Message):

@@ -378,3 +378,114 @@ class GroupsClient(object):
         name=group_ref.RelativeName()
     )
     return self.group_service.Get(get_req)
+
+
+class TransportsClient(object):
+  """Client for transport service in network connectivity API."""
+
+  def __init__(self, release_track=base.ReleaseTrack.BETA):
+    self.release_track = release_track
+    self.client = networkconnectivity_util.GetClientInstance(release_track)
+    self.messages = networkconnectivity_util.GetMessagesModule(release_track)
+    self.transport_service = self.client.projects_locations_transports
+    self.operation_service = self.client.projects_locations_operations
+
+  def Get(self, transport_ref):
+    """Call API to get an existing transport."""
+    get_req = (
+        self.messages.NetworkconnectivityProjectsLocationsTransportsGetRequest(
+            name=transport_ref.RelativeName()
+        )
+    )
+    return self.transport_service.Get(get_req)
+
+  def List(
+      self,
+      location_ref,
+      limit=None,
+      filter_expression=None,
+      order_by='',
+      page_size=None,
+      page_token=None,
+  ):
+    """Call API to list transports."""
+    list_req = (
+        self.messages.NetworkconnectivityProjectsLocationsTransportsListRequest(
+            parent=location_ref,
+            filter=filter_expression,
+            orderBy=order_by,
+            pageSize=page_size,
+            pageToken=page_token,
+        )
+    )
+    return list_pager.YieldFromList(
+        self.transport_service,
+        list_req,
+        field='transports',
+        limit=limit,
+        batch_size_attribute='pageSize',
+    )
+
+  def CreateBeta(self, transport_ref, transport_request):
+    """Call API to create a new transport in the BETA release track."""
+    parent = transport_ref.Parent().RelativeName()
+    transport_id = transport_ref.Name()
+
+    create_req = self.messages.NetworkconnectivityProjectsLocationsTransportsCreateRequest(
+        parent=parent,
+        transportId=transport_id,
+        transportsV1BetaTransport=transport_request,
+    )
+    return self.transport_service.Create(create_req)
+
+  def DeleteBeta(self, transport_ref):
+    """Call API to delete an existing transport in the BETA release track."""
+    delete_req = self.messages.NetworkconnectivityProjectsLocationsTransportsDeleteRequest(
+        name=transport_ref.RelativeName()
+    )
+    return self.transport_service.Delete(delete_req)
+
+
+class RemoteProfilesClient(object):
+  """Client for remote transport profile service in network connectivity API."""
+
+  def __init__(self, release_track=base.ReleaseTrack.BETA):
+    self.release_track = release_track
+    self.client = networkconnectivity_util.GetClientInstance(release_track)
+    self.messages = networkconnectivity_util.GetMessagesModule(release_track)
+    self.remote_profile_service = (
+        self.client.projects_locations_transports_remoteTransportProfiles
+    )
+    self.operation_service = self.client.projects_locations_operations
+
+  def Get(self, remote_profile_ref):
+    """Call API to get an existing remote transport profile."""
+    get_req = self.messages.NetworkconnectivityProjectsLocationsTransportsRemoteProfilesGetRequest(
+        name=remote_profile_ref.RelativeName()
+    )
+    return self.remote_profile_service.Get(get_req)
+
+  def List(
+      self,
+      location_ref,
+      limit=None,
+      filter_expression=None,
+      order_by='',
+      page_size=None,
+      page_token=None,
+  ):
+    """Call API to list remote transport profiles."""
+    list_req = self.messages.NetworkconnectivityProjectsLocationsTransportsRemoteProfilesListRequest(
+        parent=location_ref,
+        filter=filter_expression,
+        orderBy=order_by,
+        pageSize=page_size,
+        pageToken=page_token,
+    )
+    return list_pager.YieldFromList(
+        self.remote_profile_service,
+        list_req,
+        field='remoteTransportProfiles',
+        limit=limit,
+        batch_size_attribute='pageSize',
+    )

@@ -1686,6 +1686,17 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class FirewallPolicyRuleOperationMetadata(_messages.Message):
+  r"""A FirewallPolicyRuleOperationMetadata object.
+
+  Fields:
+    allocatedPriority: The priority allocated for the firewall policy rule if
+      query parameters specified minPriority/maxPriority.
+  """
+
+  allocatedPriority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class GlobalSetPolicyRequest(_messages.Message):
   r"""A GlobalSetPolicyRequest object.
 
@@ -1919,6 +1930,8 @@ class Operation(_messages.Message):
       value is in RFC3339 text format.
     error: [Output Only] If errors are generated during processing of the
       operation, this field will be populated.
+    firewallPolicyRuleOperationMetadata: A FirewallPolicyRuleOperationMetadata
+      attribute.
     httpErrorMessage: [Output Only] If the operation fails, this field
       contains the HTTP error message that was returned, such as `NOT FOUND`.
     httpErrorStatusCode: [Output Only] If the operation fails, this field
@@ -1930,11 +1943,11 @@ class Operation(_messages.Message):
       value is in RFC3339 text format.
     instancesBulkInsertOperationMetadata: A
       InstancesBulkInsertOperationMetadata attribute.
-    kind: [Output Only] Type of the resource. Always `compute#operation` for
-      Operation resources.
+    kind: Output only. [Output Only] Type of the resource. Always
+      `compute#operation` for Operation resources.
     name: [Output Only] Name of the operation.
-    operationGroupId: [Output Only] An ID that represents a group of
-      operations, such as when a group of operations results from a
+    operationGroupId: Output only. [Output Only] An ID that represents a group
+      of operations, such as when a group of operations results from a
       `bulkInsert` API request.
     operationType: [Output Only] The type of operation, such as `insert`,
       `update`, or `delete`, and so on.
@@ -1946,13 +1959,13 @@ class Operation(_messages.Message):
     region: [Output Only] The URL of the region where the operation resides.
       Only applicable when performing regional operations.
     selfLink: [Output Only] Server-defined URL for the resource.
-    selfLinkWithId: [Output Only] Server-defined URL for this resource with
-      the resource id.
+    selfLinkWithId: Output only. [Output Only] Server-defined URL for this
+      resource with the resource id.
     setAutoscalerLinkOperationMetadata: This field is used internally by the
       Autoscaler team and should not be promoted to "alpha/beta/v1".
-    setCommonInstanceMetadataOperationMetadata: [Output Only] If the operation
-      is for projects.setCommonInstanceMetadata, this field will contain
-      information on all underlying zonal actions and their state.
+    setCommonInstanceMetadataOperationMetadata: Output only. [Output Only] If
+      the operation is for projects.setCommonInstanceMetadata, this field will
+      contain information on all underlying zonal actions and their state.
     startTime: [Output Only] The time that this operation was started by the
       server. This value is in RFC3339 text format.
     status: [Output Only] The status of the operation, which can be one of the
@@ -2005,11 +2018,11 @@ class Operation(_messages.Message):
         ErrorDetailsValueListEntry: A ErrorDetailsValueListEntry object.
 
       Fields:
-        arguments: [Output Only] Optional error details WARNING: DO NOT MAKE
-          VISIBLE This is for internal use-only (like componentization) (thus
-          the visibility "none") and in case of public exposure it is strongly
-          recommended to follow pattern of: https://aip.dev/193 and expose as
-          details field.
+        arguments: Output only. [Output Only] Optional error details WARNING:
+          DO NOT MAKE VISIBLE This is for internal use-only (like
+          componentization) (thus the visibility "none") and in case of public
+          exposure it is strongly recommended to follow pattern of:
+          https://aip.dev/193 and expose as details field.
         code: [Output Only] The error type identifier for this error.
         debugInfo: A DebugInfo attribute.
         errorDetails: [Output Only] An optional list of messages that contain
@@ -2221,29 +2234,30 @@ class Operation(_messages.Message):
   description = _messages.StringField(3)
   endTime = _messages.StringField(4)
   error = _messages.MessageField('ErrorValue', 5)
-  httpErrorMessage = _messages.StringField(6)
-  httpErrorStatusCode = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
-  insertTime = _messages.StringField(9)
-  instancesBulkInsertOperationMetadata = _messages.MessageField('InstancesBulkInsertOperationMetadata', 10)
-  kind = _messages.StringField(11, default='compute#operation')
-  name = _messages.StringField(12)
-  operationGroupId = _messages.StringField(13)
-  operationType = _messages.StringField(14)
-  progress = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  region = _messages.StringField(16)
-  selfLink = _messages.StringField(17)
-  selfLinkWithId = _messages.StringField(18)
-  setAutoscalerLinkOperationMetadata = _messages.MessageField('SetAutoscalerLinkOperationMetadata', 19)
-  setCommonInstanceMetadataOperationMetadata = _messages.MessageField('SetCommonInstanceMetadataOperationMetadata', 20)
-  startTime = _messages.StringField(21)
-  status = _messages.EnumField('StatusValueValuesEnum', 22)
-  statusMessage = _messages.StringField(23)
-  targetId = _messages.IntegerField(24, variant=_messages.Variant.UINT64)
-  targetLink = _messages.StringField(25)
-  user = _messages.StringField(26)
-  warnings = _messages.MessageField('WarningsValueListEntry', 27, repeated=True)
-  zone = _messages.StringField(28)
+  firewallPolicyRuleOperationMetadata = _messages.MessageField('FirewallPolicyRuleOperationMetadata', 6)
+  httpErrorMessage = _messages.StringField(7)
+  httpErrorStatusCode = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  insertTime = _messages.StringField(10)
+  instancesBulkInsertOperationMetadata = _messages.MessageField('InstancesBulkInsertOperationMetadata', 11)
+  kind = _messages.StringField(12, default='compute#operation')
+  name = _messages.StringField(13)
+  operationGroupId = _messages.StringField(14)
+  operationType = _messages.StringField(15)
+  progress = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  region = _messages.StringField(17)
+  selfLink = _messages.StringField(18)
+  selfLinkWithId = _messages.StringField(19)
+  setAutoscalerLinkOperationMetadata = _messages.MessageField('SetAutoscalerLinkOperationMetadata', 20)
+  setCommonInstanceMetadataOperationMetadata = _messages.MessageField('SetCommonInstanceMetadataOperationMetadata', 21)
+  startTime = _messages.StringField(22)
+  status = _messages.EnumField('StatusValueValuesEnum', 23)
+  statusMessage = _messages.StringField(24)
+  targetId = _messages.IntegerField(25, variant=_messages.Variant.UINT64)
+  targetLink = _messages.StringField(26)
+  user = _messages.StringField(27)
+  warnings = _messages.MessageField('WarningsValueListEntry', 28, repeated=True)
+  zone = _messages.StringField(29)
 
 
 class OperationsListResponse(_messages.Message):
@@ -2756,11 +2770,11 @@ class ResourceUpdate(_messages.Message):
         ErrorDetailsValueListEntry: A ErrorDetailsValueListEntry object.
 
       Fields:
-        arguments: [Output Only] Optional error details WARNING: DO NOT MAKE
-          VISIBLE This is for internal use-only (like componentization) (thus
-          the visibility "none") and in case of public exposure it is strongly
-          recommended to follow pattern of: https://aip.dev/193 and expose as
-          details field.
+        arguments: Output only. [Output Only] Optional error details WARNING:
+          DO NOT MAKE VISIBLE This is for internal use-only (like
+          componentization) (thus the visibility "none") and in case of public
+          exposure it is strongly recommended to follow pattern of:
+          https://aip.dev/193 and expose as details field.
         code: [Output Only] The error type identifier for this error.
         debugInfo: A DebugInfo attribute.
         errorDetails: [Output Only] An optional list of messages that contain

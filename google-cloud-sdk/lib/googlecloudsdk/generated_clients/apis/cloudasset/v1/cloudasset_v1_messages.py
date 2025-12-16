@@ -2751,7 +2751,7 @@ class GoogleCloudAssetV1CustomConstraint(_messages.Message):
   Fields:
     actionType: Allow or deny type.
     condition: Organization Policy condition/expression. For example:
-      `resource.instanceName.matches("[production|test]_.*_(\d)+")'` or,
+      `resource.instanceName.matches("(production|test)_(.+_)?[\d]+")'` or,
       `resource.management.auto_upgrade == true`
     description: Detailed information about this custom policy constraint.
     displayName: One line display name for the UI.

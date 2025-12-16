@@ -912,6 +912,10 @@ class CloudsecuritycomplianceFoldersLocationsFrameworkComplianceSummariesListReq
   r"""A CloudsecuritycomplianceFoldersLocationsFrameworkComplianceSummariesLis
   tRequest object.
 
+  Enums:
+    ViewValueValuesEnum: Optional. Specifies the level of detail to return in
+      the response.
+
   Fields:
     filter: Optional. The filtering results.
     pageSize: Optional. The requested page size. The server might return fewer
@@ -920,12 +924,30 @@ class CloudsecuritycomplianceFoldersLocationsFrameworkComplianceSummariesListReq
     pageToken: Optional. A token that identifies the page of results that the
       server should return.
     parent: Required. The parent scope for the framework compliance summary.
+    view: Optional. Specifies the level of detail to return in the response.
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the level of detail to return in the response.
+
+    Values:
+      FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_UNSPECIFIED: The default / unset
+        value. The API will default to the BASIC view.
+      FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_BASIC: Includes basic compliance
+        metadata, but omits trend data.
+      FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_FULL: Includes all information,
+        including trend data for passing controls. Trend data is provided for
+        the last 30 days.
+    """
+    FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_UNSPECIFIED = 0
+    FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_BASIC = 1
+    FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_FULL = 2
 
   filter = _messages.StringField(1)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 5)
 
 
 class CloudsecuritycomplianceFoldersLocationsOperationDetailsGetRequest(_messages.Message):
@@ -1286,6 +1308,10 @@ class CloudsecuritycomplianceOrganizationsLocationsFrameworkComplianceSummariesL
   r"""A CloudsecuritycomplianceOrganizationsLocationsFrameworkComplianceSummar
   iesListRequest object.
 
+  Enums:
+    ViewValueValuesEnum: Optional. Specifies the level of detail to return in
+      the response.
+
   Fields:
     filter: Optional. The filtering results.
     pageSize: Optional. The requested page size. The server might return fewer
@@ -1294,12 +1320,30 @@ class CloudsecuritycomplianceOrganizationsLocationsFrameworkComplianceSummariesL
     pageToken: Optional. A token that identifies the page of results that the
       server should return.
     parent: Required. The parent scope for the framework compliance summary.
+    view: Optional. Specifies the level of detail to return in the response.
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the level of detail to return in the response.
+
+    Values:
+      FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_UNSPECIFIED: The default / unset
+        value. The API will default to the BASIC view.
+      FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_BASIC: Includes basic compliance
+        metadata, but omits trend data.
+      FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_FULL: Includes all information,
+        including trend data for passing controls. Trend data is provided for
+        the last 30 days.
+    """
+    FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_UNSPECIFIED = 0
+    FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_BASIC = 1
+    FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_FULL = 2
 
   filter = _messages.StringField(1)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 5)
 
 
 class CloudsecuritycomplianceOrganizationsLocationsFrameworkDeploymentsCreateRequest(_messages.Message):
@@ -1790,6 +1834,10 @@ class CloudsecuritycomplianceProjectsLocationsFrameworkComplianceSummariesListRe
   r"""A CloudsecuritycomplianceProjectsLocationsFrameworkComplianceSummariesLi
   stRequest object.
 
+  Enums:
+    ViewValueValuesEnum: Optional. Specifies the level of detail to return in
+      the response.
+
   Fields:
     filter: Optional. The filtering results.
     pageSize: Optional. The requested page size. The server might return fewer
@@ -1798,12 +1846,30 @@ class CloudsecuritycomplianceProjectsLocationsFrameworkComplianceSummariesListRe
     pageToken: Optional. A token that identifies the page of results that the
       server should return.
     parent: Required. The parent scope for the framework compliance summary.
+    view: Optional. Specifies the level of detail to return in the response.
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the level of detail to return in the response.
+
+    Values:
+      FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_UNSPECIFIED: The default / unset
+        value. The API will default to the BASIC view.
+      FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_BASIC: Includes basic compliance
+        metadata, but omits trend data.
+      FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_FULL: Includes all information,
+        including trend data for passing controls. Trend data is provided for
+        the last 30 days.
+    """
+    FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_UNSPECIFIED = 0
+    FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_BASIC = 1
+    FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_FULL = 2
 
   filter = _messages.StringField(1)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 5)
 
 
 class CloudsecuritycomplianceProjectsLocationsOperationDetailsGetRequest(_messages.Message):
@@ -2452,6 +2518,10 @@ class FrameworkComplianceSummary(_messages.Message):
 
   Fields:
     controlAssessmentDetails: The control assessment details of the framework.
+    controlsPassingTrend: Output only. The trend of controls that are passing
+      for the given duration.
+    findingCount: Output only. The count of the findings generated against the
+      framework.
     framework: The name of the framework.
     frameworkCategories: The list of framework categories supported by the
       framework.
@@ -2510,15 +2580,17 @@ class FrameworkComplianceSummary(_messages.Message):
     GCP = 3
 
   controlAssessmentDetails = _messages.MessageField('ControlAssessmentDetails', 1)
-  framework = _messages.StringField(2)
-  frameworkCategories = _messages.EnumField('FrameworkCategoriesValueListEntryValuesEnum', 3, repeated=True)
-  frameworkDisplayName = _messages.StringField(4)
-  frameworkType = _messages.EnumField('FrameworkTypeValueValuesEnum', 5)
-  majorRevisionId = _messages.IntegerField(6)
-  minorRevisionId = _messages.IntegerField(7)
-  name = _messages.StringField(8)
-  supportedCloudProviders = _messages.EnumField('SupportedCloudProvidersValueListEntryValuesEnum', 9, repeated=True)
-  targetResourceDetails = _messages.MessageField('TargetResourceDetails', 10, repeated=True)
+  controlsPassingTrend = _messages.MessageField('Trend', 2)
+  findingCount = _messages.IntegerField(3)
+  framework = _messages.StringField(4)
+  frameworkCategories = _messages.EnumField('FrameworkCategoriesValueListEntryValuesEnum', 5, repeated=True)
+  frameworkDisplayName = _messages.StringField(6)
+  frameworkType = _messages.EnumField('FrameworkTypeValueValuesEnum', 7)
+  majorRevisionId = _messages.IntegerField(8)
+  minorRevisionId = _messages.IntegerField(9)
+  name = _messages.StringField(10)
+  supportedCloudProviders = _messages.EnumField('SupportedCloudProvidersValueListEntryValuesEnum', 11, repeated=True)
+  targetResourceDetails = _messages.MessageField('TargetResourceDetails', 12, repeated=True)
 
 
 class FrameworkDeployment(_messages.Message):
@@ -3433,6 +3505,19 @@ class TargetResourceDetails(_messages.Message):
   targetResource = _messages.StringField(5)
   targetResourceDisplayName = _messages.StringField(6)
   updateTime = _messages.StringField(7)
+
+
+class Trend(_messages.Message):
+  r"""The trend of a compliance metric.
+
+  Fields:
+    duration: Output only. The duration for the trend.
+    valuePercent: Output only. The trend value as a percentage. The value can
+      be positive or negative.
+  """
+
+  duration = _messages.StringField(1)
+  valuePercent = _messages.FloatField(2)
 
 
 class Validation(_messages.Message):

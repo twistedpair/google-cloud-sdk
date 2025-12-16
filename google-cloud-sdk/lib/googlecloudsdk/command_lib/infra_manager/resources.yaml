@@ -133,3 +133,11 @@ resource_drift:
     attribute_name: resource_drift
     help: resource drift TBD
   disable_auto_completers: false
+automigrationconfig:
+  name: autoMigrationConfig
+  plural_name: autoMigrationConfigs
+  collection: config.projects.locations.autoMigrationConfig
+  attributes:
+  - *project
+  - *location
+  disable_auto_completers: false

@@ -311,3 +311,16 @@ def AddNetworkAttachmentArg(parser):
         The network attachment URL this network interface should connect to.
       """,
   )
+
+
+def AddServiceClassIdArg(parser):
+  parser.add_argument(
+      '--service-class-id',
+      type=str,
+      help="""
+        The regional Service Class ID for the producer service associated
+        with this network interface. Can only be used with network_attachment.
+        It is not possible to use on its own; however, network_attachment
+        can be used without service_class_id.
+      """,
+  )

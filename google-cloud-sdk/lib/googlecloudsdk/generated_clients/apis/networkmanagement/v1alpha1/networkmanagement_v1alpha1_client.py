@@ -296,6 +296,33 @@ class NetworkmanagementV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def DownloadRecreateInstallScript(self, request, global_params=None):
+      r"""Downloads an install script for a specific Container MonitoringPoint.
+
+      Args:
+        request: (NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPointsDownloadRecreateInstallScriptRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('DownloadRecreateInstallScript')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DownloadRecreateInstallScript.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/networkMonitoringProviders/{networkMonitoringProvidersId}/monitoringPoints/{monitoringPointsId}:downloadRecreateInstallScript',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.networkMonitoringProviders.monitoringPoints.downloadRecreateInstallScript',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['hostname'],
+        relative_path='v1alpha1/{+name}:downloadRecreateInstallScript',
+        request_field='',
+        request_type_name='NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPointsDownloadRecreateInstallScriptRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets the MonitoringPoint resource.
 

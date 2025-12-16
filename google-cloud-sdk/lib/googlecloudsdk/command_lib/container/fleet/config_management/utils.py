@@ -18,11 +18,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.container.fleet import client
 from googlecloudsdk.api_lib.container.fleet import util
 
 CONFIG_MANAGEMENT_FEATURE_NAME = 'configmanagement'
 
+# TODO(b/433355766): Move code not used by GA commands into separate file.
 APPLY_SPEC_VERSION_1 = """
 applySpecVersion: 1
 spec:
@@ -90,52 +90,86 @@ STATUS_NOT_INSTALLED = 'NOT_INSTALLED'
 STATUS_INSTALLED = 'INSTALLED'
 
 
-def versions_for_member(feature, membership):
-  """Parses the version fields from an ACM Feature for a given membership.
+# TODO(b/459918638): Python unit test this complex helper.
+def extract_membership_versions_from_feature(
+    feature,
+    memberships: list[str]
+) -> tuple[list[str], list[str]]:
+  """Returns a spec version list and a state version list for memberships.
 
   Args:
-    feature: A v1alpha, v1beta, or v1 ACM Feature.
-    membership: The full membership name whose version to return.
+    feature: v1 Feature from which the versions are extracted.
+    memberships: List of full Membership names to extract versions for.
 
   Returns:
-    A tuple of the form (spec.version, state.spec.version), with unset versions
-    defaulting to the empty string.
+    tuple of 2 lists:
+      - List of version field values from the configmanagement spec on Feature
+        for each Membership in the order of memberships. Empty string elements
+        for Memberships whose version field is not set.
+      - List of version field values from membershipSpec in the configmanagement
+        state on Feature for each Membership in the order of memberships. Empty
+        string elements for Memberships whose version field is not set.
   """
-  spec_version = None
-  specs = client.HubClient.ToPyDict(feature.membershipSpecs)
-  for full_membership, spec in specs.items():
-    if util.MembershipPartialName(
-        full_membership) == util.MembershipPartialName(membership):
-      if spec is not None and spec.configmanagement is not None:
-        spec_version = spec.configmanagement.version
-      break
+  partial_memberships = [util.MembershipPartialName(m) for m in memberships]
+  partial_membership_checker = set(partial_memberships)
+  spec_versions_by_partial_membership = {}
+  if feature.membershipSpecs:
+    spec_versions_by_partial_membership = {
+        util.MembershipPartialName(entry.key):
+            entry.value.configmanagement.version
+        for entry in feature.membershipSpecs.additionalProperties
+        if (util.MembershipPartialName(entry.key) in partial_membership_checker
+            # value cannot be None; check unit tests.
+            # configmanagement should never be None, but check just to be safe.
+            and entry.value.configmanagement
+            # Do not mix None with strings.
+            and entry.value.configmanagement.version)
+    }
+  spec_versions = [
+      spec_versions_by_partial_membership.get(m, '')
+      for m in partial_memberships
+  ]
+  state_versions_by_partial_membership = {}
+  if feature.membershipStates:
+    state_versions_by_partial_membership = {
+        util.MembershipPartialName(entry.key):
+            entry.value.configmanagement.membershipSpec.version
+        for entry in feature.membershipStates.additionalProperties
+        if (util.MembershipPartialName(entry.key) in partial_membership_checker
+            # value cannot be None; check unit tests.
+            # configmanagement should never be None, but check just to be safe.
+            and entry.value.configmanagement
+            and entry.value.configmanagement.membershipSpec
+            # Do not include None with strings.
+            and entry.value.configmanagement.membershipSpec.version)
+    }
+  state_versions = [
+      state_versions_by_partial_membership.get(m, '')
+      for m in partial_memberships
+  ]
+  return spec_versions, state_versions
 
-  state_version = None
-  states = client.HubClient.ToPyDict(feature.membershipStates)
-  for full_membership, state in states.items():
-    if util.MembershipPartialName(
-        full_membership) == util.MembershipPartialName(membership):
-      if state is not None and state.configmanagement is not None:
-        if state.configmanagement.membershipSpec is not None:
-          state_version = state.configmanagement.membershipSpec.version
-      break
 
-  return (spec_version or '', state_version or '')
-
-
-def get_backfill_version_from_feature(feature, membership):
-  """Get the value the version field in FeatureSpec should be set to.
+def get_backfill_versions_from_feature(
+    feature,
+    memberships: list[str]
+) -> list[str]:
+  """Returns a list of versions to backfill into the Membership configurations.
 
   Args:
-    feature: the feature obtained from hub API.
-    membership: The full membership name whose Spec will be backfilled.
+    feature: v1 Feature from which the versions are extracted.
+    memberships: List of full Membership names to extract versions for.
 
   Returns:
-    version: A string denoting the version field in MembershipConfig
+    string list: Last used version (currently configured or installed version)
+      for each Membership in the order of memberships. Empty string if neither
+      exists.
   """
-  spec_version, state_version = versions_for_member(feature, membership)
-
-  if spec_version:
-    return spec_version
-  # backfill non-specified spec version with current state_version
-  return state_version
+  spec_versions, state_versions = extract_membership_versions_from_feature(
+      feature,
+      memberships,
+  )
+  return [
+      spec_version or state_version
+      for spec_version, state_version in zip(spec_versions, state_versions)
+  ]

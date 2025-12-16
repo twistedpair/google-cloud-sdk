@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 
 import abc
 
-from googlecloudsdk.calliope import base
 from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -137,7 +136,7 @@ class CredentialWrappingMixin(object):
     handlers = _GetIAMAuthHandlers(authority_selector, authorization_token_file)
 
     if use_google_auth is None:
-      use_google_auth = base.UseGoogleAuth()
+      use_google_auth = True
     if credentials is None:
       credentials = store.LoadIfEnabled(
           allow_account_impersonation, use_google_auth

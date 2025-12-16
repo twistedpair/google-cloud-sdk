@@ -250,9 +250,10 @@ def WarnIfSettingProjectWithNoAccess(scope, project):
             project_ref, disable_api_enablement_check=True
         )
         # Check project environment tag
-        projects_util.CheckAndPrintEnvironmentTagMessageWithProject(
-            project
-        )
+        if project:
+          projects_util.PrintEnvironmentTagMessage(
+              project.projectId
+          )
     except (
         apitools_exceptions.HttpError,
         c_store.NoCredentialsForAccountException,

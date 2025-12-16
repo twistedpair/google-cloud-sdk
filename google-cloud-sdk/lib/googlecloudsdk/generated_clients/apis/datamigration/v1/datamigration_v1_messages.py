@@ -75,12 +75,14 @@ class AlloyDbSettings(_messages.Message):
       POSTGRES_15: The database version is Postgres 15.
       POSTGRES_16: The database version is Postgres 16.
       POSTGRES_17: The database version is Postgres 17.
+      POSTGRES_18: The database version is Postgres 18.
     """
     DATABASE_VERSION_UNSPECIFIED = 0
     POSTGRES_14 = 1
     POSTGRES_15 = 2
     POSTGRES_16 = 3
     POSTGRES_17 = 4
+    POSTGRES_18 = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2716,9 +2718,9 @@ class DatamigrationProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -3813,8 +3815,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)

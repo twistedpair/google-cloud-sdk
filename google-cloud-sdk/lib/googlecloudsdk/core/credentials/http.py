@@ -73,7 +73,7 @@ def Http(timeout='unset',
                           ca_certs=ca_certs)
 
   if use_google_auth is None:
-    use_google_auth = base.UseGoogleAuth()
+    use_google_auth = True
   request_wrapper = RequestWrapper()
   credentials = store.LoadIfEnabled(
       allow_account_impersonation, use_google_auth

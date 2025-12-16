@@ -968,6 +968,15 @@ class SignatureInfo(_messages.Message):
       PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256: The post-quantum stateless hash-
         based digital signature algorithm, at security level 1. Randomized
         pre-hash version supporting SHA256 digests.
+      PQ_SIGN_ML_DSA_44_EXTERNAL_MU: The post-quantum Module-Lattice-Based
+        Digital Signature Algorithm, at security level 1. Randomized version
+        supporting externally-computed message representatives.
+      PQ_SIGN_ML_DSA_65_EXTERNAL_MU: The post-quantum Module-Lattice-Based
+        Digital Signature Algorithm, at security level 3. Randomized version
+        supporting externally-computed message representatives.
+      PQ_SIGN_ML_DSA_87_EXTERNAL_MU: The post-quantum Module-Lattice-Based
+        Digital Signature Algorithm, at security level 5. Randomized version
+        supporting externally-computed message representatives.
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
@@ -1013,6 +1022,9 @@ class SignatureInfo(_messages.Message):
     PQ_SIGN_ML_DSA_87 = 41
     PQ_SIGN_SLH_DSA_SHA2_128S = 42
     PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 43
+    PQ_SIGN_ML_DSA_44_EXTERNAL_MU = 44
+    PQ_SIGN_ML_DSA_65_EXTERNAL_MU = 45
+    PQ_SIGN_ML_DSA_87_EXTERNAL_MU = 46
 
   customerKmsKeyVersion = _messages.StringField(1)
   googleKeyAlgorithm = _messages.EnumField('GoogleKeyAlgorithmValueValuesEnum', 2)

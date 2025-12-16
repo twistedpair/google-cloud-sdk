@@ -381,7 +381,15 @@ class ClusterUtil:
               label_cls=self.message_module.SlurmLoginNodes.LabelsValue,
           ),
       )
-      slurm.loginNodes.disks.append(self.MakeDisk(machine_type=machine_type))
+      boot_disk_args = login_node.get("bootDisk")
+      if boot_disk_args:
+        slurm.loginNodes.bootDisk = self.message_module.BootDisk(
+            type=boot_disk_args.get("type"),
+            sizeGb=boot_disk_args.get("sizeGb"),
+            image=boot_disk_args.get("image"),
+        )
+      else:
+        slurm.loginNodes.bootDisk = self.MakeBootDiskForLoginNode(machine_type)
     return slurm
 
   def MakeLabels(self, label_args, label_cls):
@@ -407,10 +415,26 @@ class ClusterUtil:
         ("a3-megagpu", "a3-ultragpu", "a4-highgpu", "a4x-highgpu")
     ):
       disk_type = "hyperdisk-balanced"
-    return self.message_module.Disk(
+    disk = self.message_module.Disk(
         type=disk_type,
         boot=boot,
         sourceImage=source_image,
+    )
+    if boot:
+      disk.sizeGb = 100
+    return disk
+
+  def MakeBootDiskForLoginNode(self, machine_type: str):
+    """Returns BootDisk message for login node."""
+    if machine_type.startswith(
+        ("a3-megagpu", "a3-ultragpu", "a4-highgpu", "a4x-highgpu")
+    ):
+      disk_type = "hyperdisk-balanced"
+    else:
+      disk_type = "pd-standard"
+    return self.message_module.BootDisk(
+        type=disk_type,
+        sizeGb=100,
     )
 
   def MakeClusterPatchFromConfig(self):
@@ -972,6 +996,12 @@ class ClusterUtil:
         login_nodes.count = count
       if (startup_script := login_node_patch.get("startupScript")) is not None:
         login_nodes.startupScript = self._GetBashScript(startup_script)
+      if (boot_disk := login_node_patch.get("bootDisk")) is not None:
+        login_nodes.bootDisk = self.message_module.BootDisk(
+            type=boot_disk.get("type"),
+            sizeGb=boot_disk.get("sizeGb"),
+            image=boot_disk.get("image"),
+        )
       slurm.loginNodes = login_nodes
       self.update_mask.add("orchestrator.slurm.login_nodes")
 

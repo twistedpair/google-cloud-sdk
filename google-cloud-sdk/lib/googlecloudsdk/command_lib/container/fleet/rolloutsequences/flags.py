@@ -15,6 +15,7 @@
 """Functions to add flags in rollout sequence commands."""
 
 from __future__ import absolute_import
+from __future__ import annotations
 from __future__ import division
 from __future__ import unicode_literals
 
@@ -29,7 +30,8 @@ from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.command_lib.container.fleet import resources as fleet_resources
 from googlecloudsdk.core import yaml
-from googlecloudsdk.generated_clients.apis.gkehub.v1alpha import gkehub_v1alpha_messages as fleet_messages
+from googlecloudsdk.generated_clients.apis.gkehub.v1alpha import gkehub_v1alpha_messages as fleet_messages_alpha
+from googlecloudsdk.generated_clients.apis.gkehub.v1beta import gkehub_v1beta_messages as fleet_messages_beta
 
 
 class RolloutSequenceFlags:
@@ -38,7 +40,7 @@ class RolloutSequenceFlags:
   def __init__(
       self,
       parser: parser_arguments.ArgumentInterceptor,
-      release_track: base.ReleaseTrack = base.ReleaseTrack.ALPHA,
+      release_track: base.ReleaseTrack = base.ReleaseTrack.BETA,
   ):
     self._parser = parser
     self._release_track = release_track
@@ -138,8 +140,13 @@ class RolloutSequenceFlagParser:
       return message
     return None
 
-  def RolloutSequence(self) -> fleet_messages.RolloutSequence:
-    rollout_sequence = fleet_messages.RolloutSequence()
+  def RolloutSequence(
+      self,
+  ) -> (
+      fleet_messages_alpha.RolloutSequence
+      | fleet_messages_beta.RolloutSequence
+  ):
+    rollout_sequence = self.messages.RolloutSequence()
     rollout_sequence.name = util.RolloutSequenceName(self.args)
     rollout_sequence.displayName = self._DisplayName()
     rollout_sequence.labels = self._Labels()
@@ -149,22 +156,27 @@ class RolloutSequenceFlagParser:
   def _DisplayName(self) -> str:
     return self.args.display_name
 
-  def _Labels(self) -> fleet_messages.RolloutSequence.LabelsValue:
+  def _Labels(self) -> (
+      fleet_messages_alpha.RolloutSequence.LabelsValue
+      | fleet_messages_beta.RolloutSequence.LabelsValue
+  ):
     """Parses --labels."""
     if '--labels' not in self.args.GetSpecifiedArgs():
       return None
 
     labels = self.args.labels
-    labels_value = fleet_messages.RolloutSequence.LabelsValue()
+    labels_value = self.messages.RolloutSequence.LabelsValue()
     for key, value in labels.items():
       labels_value.additionalProperties.append(
-          fleet_messages.RolloutSequence.LabelsValue.AdditionalProperty(
+          self.messages.RolloutSequence.LabelsValue.AdditionalProperty(
               key=key, value=value
           )
       )
     return labels_value
 
-  def _Stages(self) -> List[fleet_messages.Stage]:
+  def _Stages(
+      self,
+  ) -> List[fleet_messages_alpha.Stage | fleet_messages_beta.Stage]:
     """Parses --stage-config."""
     if '--stage-config' not in self.args.GetSpecifiedArgs():
       return []
@@ -182,7 +194,7 @@ class RolloutSequenceFlagParser:
     stages = []
     for stage_data in stage_data_list:
       # Initialize optional parameters to None
-      cluster_selector = fleet_messages.ClusterSelector(
+      cluster_selector = self.messages.ClusterSelector(
           labelSelector=stage_data.get('label-selector')
       )
       soak_duration = stage_data.get('soak-duration')
@@ -197,7 +209,7 @@ class RolloutSequenceFlagParser:
         raise ValueError('fleet-projects should be a list in the yaml file')
 
       cluster_selector = self.TrimEmpty(cluster_selector)
-      stage = fleet_messages.Stage(
+      stage = self.messages.Stage(
           clusterSelector=cluster_selector,
           soakDuration=soak_duration,
           fleetProjects=fleet_projects,

@@ -204,6 +204,12 @@ class ComputeUtil(object):
         message.initializeParams.diskName = disk["name"]
       if "replica-zones" in disk:
         message.initializeParams.replicaZones = disk["replica-zones"]
+      if "kms-key" in disk:
+        message.diskEncryptionKey = (
+            client_messages.CustomerEncryptionKey(
+                kmsKeyName=disk["kms-key"],
+            )
+        )
       messages.append(message)
     return messages
 

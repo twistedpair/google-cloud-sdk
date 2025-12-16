@@ -127,11 +127,23 @@ class _ColumnType(six.with_metaclass(abc.ABCMeta, object)):
     scalar_type: String, the type of the column or the element of the column
         (if the column is an array).
   """
-  # For Scalar types: there are 8 scalar types in Cloud Spanner considered as
+  # For Scalar types: there are 12 scalar types in Cloud Spanner considered as
   # valid key and column types. 'JSON', 'TOKENLIST', 'FLOAT32' however, are not
   # valid key types.
-  _SCALAR_TYPES = ('BOOL', 'BYTES', 'DATE', 'FLOAT64', 'INT64', 'STRING',
-                   'TIMESTAMP', 'NUMERIC', 'JSON', 'TOKENLIST', 'FLOAT32')
+  _SCALAR_TYPES = (
+      'BOOL',
+      'BYTES',
+      'DATE',
+      'FLOAT64',
+      'INT64',
+      'STRING',
+      'TIMESTAMP',
+      'NUMERIC',
+      'UUID',
+      'JSON',
+      'TOKENLIST',
+      'FLOAT32',
+  )
 
   def __init__(self, scalar_type):
     self.scalar_type = scalar_type

@@ -1168,6 +1168,11 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1ArtifactsMavenArtifact(_message
   Fields:
     artifactId: Maven `artifactId` value used when uploading the artifact to
       Artifact Registry.
+    deployFolder: Optional. Path to a folder containing the files to upload to
+      Artifact Registry. This can be either an absolute path, e.g.
+      `/workspace/my-app/target/`, or a relative path from /workspace, e.g.
+      `my-app/target/`. This field is mutually exclusive with the `path`
+      field.
     groupId: Maven `groupId` value used when uploading the artifact to
       Artifact Registry.
     path: Optional. Path to an artifact in the build's workspace to be
@@ -1183,10 +1188,11 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1ArtifactsMavenArtifact(_message
   """
 
   artifactId = _messages.StringField(1)
-  groupId = _messages.StringField(2)
-  path = _messages.StringField(3)
-  repository = _messages.StringField(4)
-  version = _messages.StringField(5)
+  deployFolder = _messages.StringField(2)
+  groupId = _messages.StringField(3)
+  path = _messages.StringField(4)
+  repository = _messages.StringField(5)
+  version = _messages.StringField(6)
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1ArtifactsNpmPackage(_messages.Message):

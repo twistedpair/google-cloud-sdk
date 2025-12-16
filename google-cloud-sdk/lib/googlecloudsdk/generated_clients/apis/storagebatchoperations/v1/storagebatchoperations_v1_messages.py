@@ -40,6 +40,71 @@ class BucketList(_messages.Message):
   buckets = _messages.MessageField('Bucket', 1, repeated=True)
 
 
+class BucketOperation(_messages.Message):
+  r"""BucketOperation represents a bucket-level breakdown of a Job.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the BucketOperation.
+
+  Fields:
+    bucketName: The bucket name of the objects to be transformed in the
+      BucketOperation.
+    completeTime: Output only. The time that the BucketOperation was
+      completed.
+    counters: Output only. Information about the progress of the bucket
+      operation.
+    createTime: Output only. The time that the BucketOperation was created.
+    deleteObject: Delete objects.
+    errorSummaries: Output only. Summarizes errors encountered with sample
+      error log entries.
+    manifest: Specifies objects in a manifest file.
+    name: Identifier. The resource name of the BucketOperation. This is
+      defined by the service. Format: projects/{project}/locations/global/jobs
+      /{job_id}/bucketOperations/{bucket_operation}.
+    prefixList: Specifies objects matching a prefix set.
+    putMetadata: Updates object metadata. Allows updating fixed-key and custom
+      metadata and fixed-key metadata i.e. Cache-Control, Content-Disposition,
+      Content-Encoding, Content-Language, Content-Type, Custom-Time.
+    putObjectHold: Changes object hold status.
+    rewriteObject: Rewrite the object and updates metadata like KMS key.
+    startTime: Output only. The time that the BucketOperation was started.
+    state: Output only. State of the BucketOperation.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the BucketOperation.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      QUEUED: Created but not yet started.
+      RUNNING: In progress.
+      SUCCEEDED: Completed successfully.
+      CANCELED: Cancelled by the user.
+      FAILED: Terminated due to an unrecoverable failure.
+    """
+    STATE_UNSPECIFIED = 0
+    QUEUED = 1
+    RUNNING = 2
+    SUCCEEDED = 3
+    CANCELED = 4
+    FAILED = 5
+
+  bucketName = _messages.StringField(1)
+  completeTime = _messages.StringField(2)
+  counters = _messages.MessageField('Counters', 3)
+  createTime = _messages.StringField(4)
+  deleteObject = _messages.MessageField('DeleteObject', 5)
+  errorSummaries = _messages.MessageField('ErrorSummary', 6, repeated=True)
+  manifest = _messages.MessageField('Manifest', 7)
+  name = _messages.StringField(8)
+  prefixList = _messages.MessageField('PrefixList', 9)
+  putMetadata = _messages.MessageField('PutMetadata', 10)
+  putObjectHold = _messages.MessageField('PutObjectHold', 11)
+  rewriteObject = _messages.MessageField('RewriteObject', 12)
+  startTime = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+
+
 class CancelJobRequest(_messages.Message):
   r"""Message for Job to Cancel
 
@@ -313,6 +378,20 @@ class Job(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 15)
 
 
+class ListBucketOperationsResponse(_messages.Message):
+  r"""Message for response to listing BucketOperations
+
+  Fields:
+    bucketOperations: A list of storage batch bucket operations.
+    nextPageToken: A token identifying a page of results.
+    unreachable: Locations that could not be reached.
+  """
+
+  bucketOperations = _messages.MessageField('BucketOperation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListJobsResponse(_messages.Message):
   r"""Message for response to listing Jobs
 
@@ -349,8 +428,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -963,6 +1042,28 @@ class StoragebatchoperationsProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class StoragebatchoperationsProjectsLocationsJobsBucketOperationsListRequest(_messages.Message):
+  r"""A StoragebatchoperationsProjectsLocationsJobsBucketOperationsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filters results as defined by
+      https://google.aip.dev/160.
+    orderBy: Optional. Field to sort by. Supported fields are name,
+      create_time.
+    pageSize: Optional. The list page size. Default page size is 100.
+    pageToken: Optional. The list page token.
+    parent: Required. Format:
+      projects/{project_id}/locations/global/jobs/{job_id}.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class StoragebatchoperationsProjectsLocationsJobsCancelRequest(_messages.Message):
   r"""A StoragebatchoperationsProjectsLocationsJobsCancelRequest object.
 
@@ -1114,9 +1215,9 @@ class StoragebatchoperationsProjectsLocationsOperationsListRequest(_messages.Mes
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """

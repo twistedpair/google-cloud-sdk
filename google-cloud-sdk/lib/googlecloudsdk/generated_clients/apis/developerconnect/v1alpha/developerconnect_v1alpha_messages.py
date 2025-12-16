@@ -167,8 +167,10 @@ class BitbucketCloudConfig(_messages.Message):
       credentials.
     webhookSecretSecretVersion: Required. Immutable. SecretManager resource
       containing the webhook secret used to verify webhook events, formatted
-      as `projects/*/secrets/*/versions/*`. This is used to validate and
-      create webhooks.
+      as `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*` (if regional secrets are
+      supported in that location). This is used to validate and create
+      webhooks.
     workspace: Required. The Bitbucket Cloud Workspace ID to be connected to
       Google Cloud Platform.
   """
@@ -202,7 +204,9 @@ class BitbucketDataCenterConfig(_messages.Message):
       requests to Bitbucket Data Center.
     webhookSecretSecretVersion: Required. Immutable. SecretManager resource
       containing the webhook secret used to verify webhook events, formatted
-      as `projects/*/secrets/*/versions/*`. This is used to validate webhooks.
+      as `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*` (if regional secrets are
+      supported in that location). This is used to validate webhooks.
   """
 
   authorizerCredential = _messages.MessageField('UserCredential', 1)
@@ -546,6 +550,33 @@ class DeveloperconnectProjectsLocationsAccountConnectorsUsersFetchSelfRequest(_m
   name = _messages.StringField(1, required=True)
 
 
+class DeveloperconnectProjectsLocationsAccountConnectorsUsersFinishOAuthFlowRequest(_messages.Message):
+  r"""A DeveloperconnectProjectsLocationsAccountConnectorsUsersFinishOAuthFlow
+  Request object.
+
+  Fields:
+    accountConnector: Required. The resource name of the AccountConnector in
+      the format `projects/*/locations/*/accountConnectors/*`.
+    googleOauthParams_scopes: Required. The scopes returned by Google OAuth
+      flow.
+    googleOauthParams_ticket: Required. The ticket to be used for post
+      processing the callback from Google OAuth flow.
+    googleOauthParams_versionInfo: Optional. The version info returned by
+      Google OAuth flow.
+    oauthParams_code: Required. The code to be used for getting the token from
+      SCM provider.
+    oauthParams_ticket: Required. The ticket to be used for post processing
+      the callback from SCM provider.
+  """
+
+  accountConnector = _messages.StringField(1, required=True)
+  googleOauthParams_scopes = _messages.StringField(2, repeated=True)
+  googleOauthParams_ticket = _messages.StringField(3)
+  googleOauthParams_versionInfo = _messages.StringField(4)
+  oauthParams_code = _messages.StringField(5)
+  oauthParams_ticket = _messages.StringField(6)
+
+
 class DeveloperconnectProjectsLocationsAccountConnectorsUsersListRequest(_messages.Message):
   r"""A DeveloperconnectProjectsLocationsAccountConnectorsUsersListRequest
   object.
@@ -565,6 +596,19 @@ class DeveloperconnectProjectsLocationsAccountConnectorsUsersListRequest(_messag
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class DeveloperconnectProjectsLocationsAccountConnectorsUsersStartOAuthFlowRequest(_messages.Message):
+  r"""A
+  DeveloperconnectProjectsLocationsAccountConnectorsUsersStartOAuthFlowRequest
+  object.
+
+  Fields:
+    accountConnector: Required. The resource name of the AccountConnector in
+      the format `projects/*/locations/*/accountConnectors/*`.
+  """
+
+  accountConnector = _messages.StringField(1, required=True)
 
 
 class DeveloperconnectProjectsLocationsConnectionsCreateRequest(_messages.Message):
@@ -1210,6 +1254,17 @@ class FetchReadWriteTokenResponse(_messages.Message):
   token = _messages.StringField(3)
 
 
+class FinishOAuthResponse(_messages.Message):
+  r"""Message for responding to finishing an OAuth flow.
+
+  Fields:
+    exchangeError: The error resulted from exchanging OAuth tokens from the
+      service provider.
+  """
+
+  exchangeError = _messages.MessageField('ExchangeError', 1)
+
+
 class GKEWorkload(_messages.Message):
   r"""GKEWorkload represents the Google Kubernetes Engine runtime.
 
@@ -1278,7 +1333,9 @@ class GitHubEnterpriseConfig(_messages.Message):
       the installation associated with this GitHubEnterpriseConfig.
     privateKeySecretVersion: Optional. SecretManager resource containing the
       private key of the GitHub App, formatted as
-      `projects/*/secrets/*/versions/*`.
+      `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*` (if regional secrets are
+      supported in that location).
     serverVersion: Output only. GitHub Enterprise version installed at the
       host_uri.
     serviceDirectoryConfig: Optional. Configuration for using Service
@@ -1290,7 +1347,9 @@ class GitHubEnterpriseConfig(_messages.Message):
       Enterprise.
     webhookSecretSecretVersion: Optional. SecretManager resource containing
       the webhook secret of the GitHub App, formatted as
-      `projects/*/secrets/*/versions/*`.
+      `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*` (if regional secrets are
+      supported in that location).
   """
 
   appId = _messages.IntegerField(1)
@@ -1319,7 +1378,9 @@ class GitLabConfig(_messages.Message):
       which Projects Developer Connect has access to.
     webhookSecretSecretVersion: Required. Immutable. SecretManager resource
       containing the webhook secret of a GitLab project, formatted as
-      `projects/*/secrets/*/versions/*`. This is used to validate webhooks.
+      `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*` (if regional secrets are
+      supported in that location). This is used to validate webhooks.
   """
 
   authorizerCredential = _messages.MessageField('UserCredential', 1)
@@ -1352,7 +1413,9 @@ class GitLabEnterpriseConfig(_messages.Message):
       for requests to GitLab Enterprise instance.
     webhookSecretSecretVersion: Required. Immutable. SecretManager resource
       containing the webhook secret of a GitLab project, formatted as
-      `projects/*/secrets/*/versions/*`. This is used to validate webhooks.
+      `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*` (if regional secrets are
+      supported in that location). This is used to validate webhooks.
   """
 
   authorizerCredential = _messages.MessageField('UserCredential', 1)
@@ -1599,6 +1662,7 @@ class InsightsConfig(_messages.Message):
     labels: Optional. Set of labels associated with an InsightsConfig.
     name: Identifier. The name of the InsightsConfig. Format:
       projects/{project}/locations/{location}/insightsConfigs/{insightsConfig}
+    projects: Optional. The GCP projects to track with the InsightsConfig.
     reconciling: Output only. Reconciling
       (https://google.aip.dev/128#reconciliation). Set to true if the current
       state of InsightsConfig does not match the user's intended state, and
@@ -1684,10 +1748,11 @@ class InsightsConfig(_messages.Message):
   errors = _messages.MessageField('Status', 5, repeated=True)
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
-  reconciling = _messages.BooleanField(8)
-  runtimeConfigs = _messages.MessageField('RuntimeConfig', 9, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  updateTime = _messages.StringField(11)
+  projects = _messages.MessageField('Projects', 8)
+  reconciling = _messages.BooleanField(9)
+  runtimeConfigs = _messages.MessageField('RuntimeConfig', 10, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  updateTime = _messages.StringField(12)
 
 
 class Installation(_messages.Message):
@@ -1839,7 +1904,9 @@ class OAuthCredential(_messages.Message):
   Fields:
     oauthTokenSecretVersion: Required. A SecretManager resource containing the
       OAuth token that authorizes the connection. Format:
-      `projects/*/secrets/*/versions/*`.
+      `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*` (if regional secrets are
+      supported in that location).
     username: Output only. The username associated with this token.
   """
 
@@ -2036,6 +2103,16 @@ class ProcessGitLabWebhookRequest(_messages.Message):
   body = _messages.MessageField('HttpBody', 1)
 
 
+class Projects(_messages.Message):
+  r"""Projects represents the projects to track with the InsightsConfig.
+
+  Fields:
+    projectIds: Optional. The GCP Project IDs. Format: projects/{project}
+  """
+
+  projectIds = _messages.StringField(1, repeated=True)
+
+
 class ProviderOAuthConfig(_messages.Message):
   r"""ProviderOAuthConfig is the OAuth config for a provider.
 
@@ -2197,6 +2274,66 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class StartOAuthResponse(_messages.Message):
+  r"""Message for responding to starting an OAuth flow.
+
+  Enums:
+    SystemProviderIdValueValuesEnum: The ID of the system provider.
+
+  Fields:
+    authUri: The authorization server URL to the OAuth flow of the service
+      provider.
+    clientId: The client ID to the OAuth App of the service provider.
+    codeChallenge: https://datatracker.ietf.org/doc/html/rfc7636#section-4.1
+      Follow http://shortn/_WFYl6U0NyC to include it in the AutoCodeURL.
+    codeChallengeMethod:
+      https://datatracker.ietf.org/doc/html/rfc7636#section-4.2
+    scopes: The list of scopes requested by the application.
+    systemProviderId: The ID of the system provider.
+    ticket: The ticket to be used for post processing the callback from the
+      service provider.
+  """
+
+  class SystemProviderIdValueValuesEnum(_messages.Enum):
+    r"""The ID of the system provider.
+
+    Values:
+      SYSTEM_PROVIDER_UNSPECIFIED: No system provider specified.
+      GITHUB: GitHub provider. Scopes can be found at
+        https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-
+        for-oauth-apps#available-scopes
+      GITLAB: GitLab provider. Scopes can be found at
+        https://docs.gitlab.com/user/profile/personal_access_tokens/#personal-
+        access-token-scopes
+      GOOGLE: Google provider. Recommended scopes:
+        "https://www.googleapis.com/auth/drive.readonly",
+        "https://www.googleapis.com/auth/documents.readonly"
+      SENTRY: Sentry provider. Scopes can be found at
+        https://docs.sentry.io/api/permissions/
+      ROVO: Rovo provider. Must select the "rovo" scope.
+      NEW_RELIC: New Relic provider. No scopes are allowed.
+      DATASTAX: Datastax provider. No scopes are allowed.
+      DYNATRACE: Dynatrace provider.
+    """
+    SYSTEM_PROVIDER_UNSPECIFIED = 0
+    GITHUB = 1
+    GITLAB = 2
+    GOOGLE = 3
+    SENTRY = 4
+    ROVO = 5
+    NEW_RELIC = 6
+    DATASTAX = 7
+    DYNATRACE = 8
+
+  authUri = _messages.StringField(1)
+  clientId = _messages.StringField(2)
+  codeChallenge = _messages.StringField(3)
+  codeChallengeMethod = _messages.StringField(4)
+  scopes = _messages.StringField(5, repeated=True)
+  systemProviderId = _messages.EnumField('SystemProviderIdValueValuesEnum', 6)
+  ticket = _messages.StringField(7)
+
+
 class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
@@ -2275,7 +2412,9 @@ class UserCredential(_messages.Message):
   Fields:
     userTokenSecretVersion: Required. A SecretManager resource containing the
       user token that authorizes the Developer Connect connection. Format:
-      `projects/*/secrets/*/versions/*`.
+      `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*` (if regional secrets are
+      supported in that location).
     username: Output only. The username associated with this token.
   """
 
@@ -2289,3 +2428,13 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    DeveloperconnectProjectsLocationsAccountConnectorsUsersFinishOAuthFlowRequest, 'googleOauthParams_scopes', 'googleOauthParams.scopes')
+encoding.AddCustomJsonFieldMapping(
+    DeveloperconnectProjectsLocationsAccountConnectorsUsersFinishOAuthFlowRequest, 'googleOauthParams_ticket', 'googleOauthParams.ticket')
+encoding.AddCustomJsonFieldMapping(
+    DeveloperconnectProjectsLocationsAccountConnectorsUsersFinishOAuthFlowRequest, 'googleOauthParams_versionInfo', 'googleOauthParams.versionInfo')
+encoding.AddCustomJsonFieldMapping(
+    DeveloperconnectProjectsLocationsAccountConnectorsUsersFinishOAuthFlowRequest, 'oauthParams_code', 'oauthParams.code')
+encoding.AddCustomJsonFieldMapping(
+    DeveloperconnectProjectsLocationsAccountConnectorsUsersFinishOAuthFlowRequest, 'oauthParams_ticket', 'oauthParams.ticket')

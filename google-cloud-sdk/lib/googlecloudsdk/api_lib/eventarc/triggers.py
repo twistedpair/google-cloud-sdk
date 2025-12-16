@@ -19,8 +19,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.eventarc import base
 from googlecloudsdk.api_lib.eventarc import common
-from googlecloudsdk.api_lib.eventarc.base import EventarcClientBase
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.eventarc import types
 from googlecloudsdk.core import exceptions
@@ -62,7 +62,7 @@ def TriggerActiveTime(event_type, update_time):
   return times.FormatDateTime(active_dt, fmt='%H:%M:%S', tzinfo=times.LOCAL)
 
 
-class _BaseTriggersClient(EventarcClientBase):
+class _BaseTriggersClient(base.EventarcClientBase):
   """Base Triggers Client."""
 
   def __init__(self):
@@ -169,6 +169,7 @@ class TriggersClientV1(_BaseTriggersClient):
       destination_message,
       transport_topic_ref,
       channel_ref,
+      max_retry_attempts,
       labels,
   ):
     """Builds a Trigger message with the given data.
@@ -185,15 +186,18 @@ class TriggersClientV1(_BaseTriggersClient):
         destination.
       transport_topic_ref: Resource or None, the user-provided transport topic.
       channel_ref: Resource or None, the channel for 3p events
+      max_retry_attempts: int or None, the Trigger's max retry attempts.
       labels: dict or None, the Trigger's labels.
 
     Returns:
       A Trigger message with a destination service.
     """
-    filter_messages = [] if event_filters is None else [
-        self._messages.EventFilter(attribute=key, value=value)
-        for key, value in event_filters.items()
-    ]
+    filter_messages = []
+    if event_filters is not None:
+      filter_messages = [
+          self._messages.EventFilter(attribute=key, value=value)
+          for key, value in event_filters.items()
+      ]
     if event_filters_path_pattern is not None:
       for key, value in event_filters_path_pattern.items():
         filter_messages.append(
@@ -214,8 +218,22 @@ class TriggersClientV1(_BaseTriggersClient):
         destination=destination_message,
         transport=transport,
         channel=channel,
+        retryPolicy=self._BuildRetryPolicy(max_retry_attempts),
         labels=labels,
     )
+
+  def _BuildRetryPolicy(self, max_retry_attempts):
+    """Builds a RetryPolicy message with the given data.
+
+    Args:
+      max_retry_attempts: int or None, the Trigger's max retry attempts.
+
+    Returns:
+      A RetryPolicy message with the given data.
+    """
+    if max_retry_attempts is None:
+      return None
+    return self._messages.RetryPolicy(maxAttempts=max_retry_attempts)
 
   def BuildCloudRunDestinationMessage(self, destination_run_service,
                                       destination_run_job, destination_run_path,
@@ -349,6 +367,7 @@ class TriggersClientV1(_BaseTriggersClient):
       destination_workflow_location,
       destination_function,
       destination_function_location,
+      max_retry_attempts,
       labels,
   ):
     """Builds an update mask for updating a Cloud Run trigger.
@@ -379,6 +398,7 @@ class TriggersClientV1(_BaseTriggersClient):
       destination_function: bool, whether to update the destination function.
       destination_function_location: bool, whether to update the destination
         function location.
+      max_retry_attempts: bool, whether to update the max retry attempts.
       labels: bool, whether to update the labels.
 
     Returns:
@@ -412,6 +432,8 @@ class TriggersClientV1(_BaseTriggersClient):
       update_mask.append('serviceAccount')
     if event_data_content_type:
       update_mask.append('eventDataContentType')
+    if max_retry_attempts:
+      update_mask.append('retryPolicy')
     if labels:
       update_mask.append('labels')
     if not update_mask:

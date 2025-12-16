@@ -382,19 +382,33 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
 
   @retry_util.grpc_default_retryer
   def _get_object_if_exists(self) -> resource_reference.ObjectResource | None:
-    """Returns the destination object if it exists."""
+    """Gets the destination object metadata if a resumable upload is possible.
+
+    Returns:
+      The destination object as a resource_reference.ObjectResource if it
+      exists and is not finalized. Returns None if the object does not exist
+      or if it is already finalized, as finalized objects must be overwritten
+      rather than resumed.
+    """
     try:
-      return self._delegator.get_object_metadata(
+      object_resource = self._delegator.get_object_metadata(
           self._destination_resource.storage_url.bucket_name,
           self._destination_resource.storage_url.resource_name,
           self._request_config,
       )
     except api_errors.NotFoundError:
       log.debug(
-          'Object %s does not exist. Proceeding with upload.',
+          'Object %r does not exist. Proceeding with upload.',
           self._destination_resource.storage_url.resource_name,
       )
       return None
+    if object_resource.metadata.timeFinalized is not None:
+      log.debug(
+          'Object %r is finalized. Proceeding with overwrite.',
+          self._destination_resource.storage_url.resource_name,
+      )
+      return None
+    return object_resource
 
   @retry_util.grpc_default_retryer
   def _get_object_metadata_after_upload(

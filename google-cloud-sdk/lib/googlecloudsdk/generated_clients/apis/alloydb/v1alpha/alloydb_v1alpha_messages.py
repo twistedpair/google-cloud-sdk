@@ -904,6 +904,36 @@ class AlloydbProjectsLocationsEndpointsCreateRequest(_messages.Message):
   validateOnly = _messages.BooleanField(5)
 
 
+class AlloydbProjectsLocationsEndpointsDeleteRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsEndpointsDeleteRequest object.
+
+  Fields:
+    etag: Optional. The current etag of the Endpoint. If an etag is provided
+      and does not match the current etag of the Endpoint, deletion will be
+      blocked and an ABORTED error will be returned.
+    name: Required. The name of the resource. For the required format, see the
+      comment on the Endpoint.name field.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      ignores the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if the original operation with the same request
+      ID was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, the backend validates the request, but
+      doesn't actually execute it.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
 class AlloydbProjectsLocationsEndpointsGetRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsEndpointsGetRequest object.
 
@@ -1060,9 +1090,9 @@ class AlloydbProjectsLocationsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -2347,12 +2377,13 @@ class DNSConfig(_messages.Message):
   and targets.
 
   Fields:
-    dns: The name of the DNS record, eg. .global.alloydb-psa.goog
-    dnsType: The type of the DNS record, eg. "A", "CNAME", etc.
+    dnsName: The fully qualified domain name (FQDN) of the DNS record, e.g.,
+      ".location.alloydb-psa.goog".
+    dnsRecordType: The type of the DNS record, e.g., "A", "AAAA", "CNAME".
   """
 
-  dns = _messages.StringField(1)
-  dnsType = _messages.StringField(2)
+  dnsName = _messages.StringField(1)
+  dnsRecordType = _messages.StringField(2)
 
 
 class DataplexConfig(_messages.Message):
@@ -3463,8 +3494,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -3820,6 +3851,8 @@ class OperationMetadata(_messages.Message):
       `Code.CANCELLED`.
     statusMessage: Output only. Human-readable status of the operation, if
       any.
+    switchoverClusterStatus: Output only. Metadata related to Switchover
+      status.
     target: Output only. Server-defined resource path for the target of the
       operation.
     upgradeClusterStatus: Output only. UpgradeClusterStatus related metadata.
@@ -3831,9 +3864,10 @@ class OperationMetadata(_messages.Message):
   endTime = _messages.StringField(3)
   requestedCancellation = _messages.BooleanField(4)
   statusMessage = _messages.StringField(5)
-  target = _messages.StringField(6)
-  upgradeClusterStatus = _messages.MessageField('UpgradeClusterStatus', 7)
-  verb = _messages.StringField(8)
+  switchoverClusterStatus = _messages.MessageField('SwitchoverClusterStatus', 6)
+  target = _messages.StringField(7)
+  upgradeClusterStatus = _messages.MessageField('UpgradeClusterStatus', 8)
+  verb = _messages.StringField(9)
 
 
 class PhaseProgress(_messages.Message):
@@ -3934,6 +3968,10 @@ class PromoteClusterRequest(_messages.Message):
     etag: Optional. The current etag of the Cluster. If an etag is provided
       and does not match the current etag of the Cluster, deletion will be
       blocked and an ABORTED error will be returned.
+    failover: Optional. If set, the promote operation will attempt to recreate
+      the original primary cluster as a secondary cluster when it comes back
+      online. Otherwise, the promoted cluster will be a standalone cluster.
+      Currently only supported when there is a single secondary cluster.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       ignores the request if it has already been completed. The server
@@ -3951,8 +3989,9 @@ class PromoteClusterRequest(_messages.Message):
   """
 
   etag = _messages.StringField(1)
-  requestId = _messages.StringField(2)
-  validateOnly = _messages.BooleanField(3)
+  failover = _messages.BooleanField(2)
+  requestId = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
 
 
 class PscAutoConnectionConfig(_messages.Message):
@@ -4768,6 +4807,36 @@ class StorageDatabasecenterPartnerapiV1mainBackupRun(_messages.Message):
   status = _messages.EnumField('StatusValueValuesEnum', 4)
 
 
+class StorageDatabasecenterPartnerapiV1mainBigQueryResourceMetadata(_messages.Message):
+  r"""BigQueryResourceMetadata contains information about the BigQuery
+  resource. Next ID: 9
+
+  Fields:
+    createTime: The creation time of the resource, i.e. the time when resource
+      is created and recorded in partner service.
+    fullResourceName: Required. Full resource name of this instance.
+    location: Required. location of the resource
+    product: The product this resource represents.
+    resourceContainer: Closest parent Cloud Resource Manager container of this
+      resource. It must be resource name of a Cloud Resource Manager project
+      with the format of "/", such as "projects/123". For GCP provided
+      resources, number should be project number.
+    resourceId: Required. Database resource id.
+    updateTime: The time at which the resource was updated and recorded at
+      partner service.
+    userLabelSet: User-provided labels associated with the resource
+  """
+
+  createTime = _messages.StringField(1)
+  fullResourceName = _messages.StringField(2)
+  location = _messages.StringField(3)
+  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 4)
+  resourceContainer = _messages.StringField(5)
+  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 6)
+  updateTime = _messages.StringField(7)
+  userLabelSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainUserLabels', 8)
+
+
 class StorageDatabasecenterPartnerapiV1mainCompliance(_messages.Message):
   r"""Contains compliance information about a security standard indicating
   unmet recommendations.
@@ -4814,6 +4883,8 @@ class StorageDatabasecenterPartnerapiV1mainConfigBasedSignalData(_messages.Messa
         all incoming connections to use SSL or not.
       SIGNAL_TYPE_EXTENDED_SUPPORT: Represents if a resource version is in
         extended support.
+      SIGNAL_TYPE_NO_AUTOMATED_BACKUP_POLICY: Represents if a resource has no
+        automated backup policy.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_OUTDATED_MINOR_VERSION = 1
@@ -4822,6 +4893,7 @@ class StorageDatabasecenterPartnerapiV1mainConfigBasedSignalData(_messages.Messa
     SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS = 4
     SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS = 5
     SIGNAL_TYPE_EXTENDED_SUPPORT = 6
+    SIGNAL_TYPE_NO_AUTOMATED_BACKUP_POLICY = 7
 
   fullResourceName = _messages.StringField(1)
   lastRefreshTime = _messages.StringField(2)
@@ -4855,6 +4927,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
   Fields:
     backupdrMetadata: BackupDR metadata is used to ingest metadata from
       BackupDR.
+    bigqueryResourceMetadata: For BigQuery resource metadata.
     configBasedSignalData: Config based signal data is used to ingest signals
       that are generated based on the configuration of the database resource.
     databaseResourceSignalData: Database resource signal data is used to
@@ -4891,6 +4964,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
       CONFIG_BASED_SIGNAL_DATA: Database config based signal data
       BACKUPDR_METADATA: Database resource metadata from BackupDR
       DATABASE_RESOURCE_SIGNAL_DATA: Database resource signal data
+      BIGQUERY_RESOURCE_METADATA: BigQuery resource metadata
     """
     FEEDTYPE_UNSPECIFIED = 0
     RESOURCE_METADATA = 1
@@ -4900,18 +4974,20 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
     CONFIG_BASED_SIGNAL_DATA = 5
     BACKUPDR_METADATA = 6
     DATABASE_RESOURCE_SIGNAL_DATA = 7
+    BIGQUERY_RESOURCE_METADATA = 8
 
   backupdrMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupDRMetadata', 1)
-  configBasedSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainConfigBasedSignalData', 2)
-  databaseResourceSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceSignalData', 3)
-  feedTimestamp = _messages.StringField(4)
-  feedType = _messages.EnumField('FeedTypeValueValuesEnum', 5)
-  observabilityMetricData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainObservabilityMetricData', 6)
-  recommendationSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData', 7)
-  resourceHealthSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData', 8)
-  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 9)
-  resourceMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata', 10)
-  skipIngestion = _messages.BooleanField(11)
+  bigqueryResourceMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBigQueryResourceMetadata', 2)
+  configBasedSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainConfigBasedSignalData', 3)
+  databaseResourceSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceSignalData', 4)
+  feedTimestamp = _messages.StringField(5)
+  feedType = _messages.EnumField('FeedTypeValueValuesEnum', 6)
+  observabilityMetricData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainObservabilityMetricData', 7)
+  recommendationSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData', 8)
+  resourceHealthSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData', 9)
+  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 10)
+  resourceMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata', 11)
+  skipIngestion = _messages.BooleanField(12)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_messages.Message):
@@ -5448,7 +5524,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message)
       PROVIDER_OTHER.
     resourceType: Required. The type of resource this ID is identifying. Ex
       go/keep-sorted start alloydb.googleapis.com/Cluster,
-      alloydb.googleapis.com/Instance, bigtableadmin.googleapis.com/Cluster,
+      alloydb.googleapis.com/Instance, bigquery.googleapis.com/Dataset,
+      bigtableadmin.googleapis.com/Cluster,
       bigtableadmin.googleapis.com/Instance compute.googleapis.com/Instance
       firestore.googleapis.com/Database, redis.googleapis.com/Instance,
       redis.googleapis.com/Cluster,
@@ -6183,6 +6260,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceSignalData(_messages.
         all incoming connections to use SSL or not.
       SIGNAL_TYPE_EXTENDED_SUPPORT: Represents if a resource version is in
         extended support.
+      SIGNAL_TYPE_NO_AUTOMATED_BACKUP_POLICY: Represents if a resource has no
+        automated backup policy.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_OUTDATED_MINOR_VERSION = 1
@@ -6191,6 +6270,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceSignalData(_messages.
     SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS = 4
     SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS = 5
     SIGNAL_TYPE_EXTENDED_SUPPORT = 6
+    SIGNAL_TYPE_NO_AUTOMATED_BACKUP_POLICY = 7
 
   fullResourceName = _messages.StringField(1)
   lastRefreshTime = _messages.StringField(2)
@@ -6891,6 +6971,50 @@ class SupportedDatabaseFlag(_messages.Message):
   valueType = _messages.EnumField('ValueTypeValueValuesEnum', 11)
 
 
+class SwitchoverClusterAvailability(_messages.Message):
+  r"""Read/write availability of a cluster in the switchover operation.
+
+  Enums:
+    AvailabilityValueValuesEnum: Output only. Read/write availability of the
+      cluster.
+    TypeValueValuesEnum: Type of the cluster.
+
+  Fields:
+    availability: Output only. Read/write availability of the cluster.
+    type: Type of the cluster.
+  """
+
+  class AvailabilityValueValuesEnum(_messages.Enum):
+    r"""Output only. Read/write availability of the cluster.
+
+    Values:
+      AVAILABILITY_UNSPECIFIED: Unspecified availability.
+      ACCEPTING_READ_WRITE: The cluster is accepting read and write requests.
+      ACCEPTING_READ: The cluster is accepting only read requests.
+      NOT_ACCEPTING_READ_WRITE: The cluster is not accepting read and write
+        requests.
+    """
+    AVAILABILITY_UNSPECIFIED = 0
+    ACCEPTING_READ_WRITE = 1
+    ACCEPTING_READ = 2
+    NOT_ACCEPTING_READ_WRITE = 3
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of the cluster.
+
+    Values:
+      CLUSTER_TYPE_UNSPECIFIED: Unspecified type.
+      OLD_PRIMARY: The old primary cluster before the switchover.
+      NEW_PRIMARY: The new primary cluster after the switchover.
+    """
+    CLUSTER_TYPE_UNSPECIFIED = 0
+    OLD_PRIMARY = 1
+    NEW_PRIMARY = 2
+
+  availability = _messages.EnumField('AvailabilityValueValuesEnum', 1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
 class SwitchoverClusterRequest(_messages.Message):
   r"""Message for switching over to a cluster
 
@@ -6913,6 +7037,89 @@ class SwitchoverClusterRequest(_messages.Message):
 
   requestId = _messages.StringField(1)
   validateOnly = _messages.BooleanField(2)
+
+
+class SwitchoverClusterStatus(_messages.Message):
+  r"""Status of the switchover operation.
+
+  Fields:
+    clusterAvailability: Output only. Read/write availability of the old and
+      new primary clusters in the switchover operation.
+    stages: Output only. Status of different stages of switchover.
+  """
+
+  clusterAvailability = _messages.MessageField('SwitchoverClusterAvailability', 1, repeated=True)
+  stages = _messages.MessageField('SwitchoverStageStatus', 2, repeated=True)
+
+
+class SwitchoverStageStatus(_messages.Message):
+  r"""Represents the status of a single stage in the switchover operation.
+
+  Enums:
+    StageValueValuesEnum: Stage of the switchover operation.
+    StateValueValuesEnum: Output only. State of the switchover stage.
+
+  Fields:
+    endTime: Output only. End time of the stage.
+    stage: Stage of the switchover operation.
+    startTime: Output only. Start time of the stage.
+    state: Output only. State of the switchover stage.
+  """
+
+  class StageValueValuesEnum(_messages.Enum):
+    r"""Stage of the switchover operation.
+
+    Values:
+      STAGE_UNSPECIFIED: Unspecified stage.
+      PREPARE_FOR_SWITCHOVER: Before a switchover, the system validates that
+        the clusters and their instances are in the appropriate state. It also
+        checks for any conflicting configurations, such as incompatible
+        database flags.
+      SHUTDOWN_PRIMARY: Shuts down the primary cluster. Before the shutdown,
+        the secondary cluster is synchronized with the primary by copying all
+        remaining WAL records.
+      PROMOTE_SECONDARY: Promotes the secondary cluster to be the new primary.
+      RESTART_OLD_PRIMARY: Restarts the old primary cluster as a new secondary
+        cluster and prewarms the cache.
+      UPDATE_OTHER_SECONDARIES: Update remaining secondary clusters (if any
+        exist) to replicate from the new primary.
+      FINISHING_METADATA_UPDATE: Cleanup switchover metadata and mark the
+        clusters as ready.
+      ROLLBACK: A previous stage failed, and we are rolling back the
+        operation. Depending on the failure, we might perform a full or
+        partial rollback.
+    """
+    STAGE_UNSPECIFIED = 0
+    PREPARE_FOR_SWITCHOVER = 1
+    SHUTDOWN_PRIMARY = 2
+    PROMOTE_SECONDARY = 3
+    RESTART_OLD_PRIMARY = 4
+    UPDATE_OTHER_SECONDARIES = 5
+    FINISHING_METADATA_UPDATE = 6
+    ROLLBACK = 7
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the switchover stage.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified status.
+      NOT_STARTED: The stage has not started yet.
+      SKIPPED: The stage has been skipped.
+      IN_PROGRESS: The stage is in progress.
+      SUCCEEDED: The stage has completed successfully.
+      FAILED: The stage has failed.
+    """
+    STATE_UNSPECIFIED = 0
+    NOT_STARTED = 1
+    SKIPPED = 2
+    IN_PROGRESS = 3
+    SUCCEEDED = 4
+    FAILED = 5
+
+  endTime = _messages.StringField(1)
+  stage = _messages.EnumField('StageValueValuesEnum', 2)
+  startTime = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
 class TimeBasedRetention(_messages.Message):

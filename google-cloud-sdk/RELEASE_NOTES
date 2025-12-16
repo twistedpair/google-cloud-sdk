@@ -5,6 +5,172 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 550.0.0 (2025-12-16)
+
+### Google Cloud CLI
+
+* Updated Linux bundled Python for the `gcloud` CLI to 3.13.10 with pip v25.3.
+
+### App Engine
+
+* Updated the Java SDK to version 3.0.3 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v3.0.3>.
+* Upgraded Eclipse Jetty web server to versions 12.0.31 and 12.1.5 that fixes:
+  * <https://github.com/GoogleCloudPlatform/appengine-java-standard/issues/423>
+  * <https://github.com/GoogleCloudPlatform/appengine-java-standard/issues/426>
+
+### Artifact Registry
+
+* Made the `show-package-vulnerability` flag public for `gcloud artifacts versions describe`.
+
+### BigQuery
+
+* Added an error message on how to set a quota project ID when expected by the API.
+* Updated `bq info` command to show OpenSSL version.
+* Added new `--scheduling_policy_max_slots` flag that can be used to set a slot usage cap on BigQuery jobs for either all projects under a reservation or a specific one.
+* Added new `--scheduling_policy_concurrency` flag that can be used to cap the number of concurrently running BigQuery jobs for either all projects under a reservation or a specific one.
+* Added new `--use_gcloud_config` to allow disabling the reading of the active `gcloud` CLI configuration (enabled by default).
+* Added more incompatible flag checks for Dataset and Table in `bq update`.
+* Improved error messages for unidentifiable resource names.
+* Added setting `--mtls` flag value from gcloud `context_aware.use_client_certificate` config property.
+
+### Cloud Composer
+
+* Added `--airflow-version` to `gcloud composer environments update` to upgrade Cloud Composer environment to a newer Composer version.
+
+### Cloud Dataplex
+
+* Added one-time trigger support to dataplex datascans create commands.
+
+### Cloud Filestore
+
+*   Added `gcloud filestore instances resume-replica` command for filestore
+instances. The `resume-replica` verb resumes a standby replica instance.
+
+### Cloud Key Management Service
+
+*   Added `gcloud kms single-tenant-hsm create` (beta, GA) command to
+    create a single-tenant Hardware Security Module (HSM) instance, used for
+    CryptoKeys with `HSM_SINGLE_TENANT` protection level. Requires `--location`
+    and `--total-approver-count`.
+*   Added `gcloud kms single-tenant-hsm describe` (beta, GA) command to
+    show details of a single-tenant HSM instance. Requires the instance ID as a
+    positional argument and `--location` flag.
+*   Added `gcloud kms single-tenant-hsm list` (beta, GA) command to
+    list single-tenant HSM instances.
+*   Added `gcloud kms single-tenant-hsm proposal create` (beta, GA)
+    command to create a proposal for operations on a single-tenant HSM
+    instance. Requires `--location` and `--operation-type`. Supported
+    operation types are: `register_2fa_keys`, `disable_sthi`, `enable_sthi`,
+    `delete_sthi`, `add_quorum_member`, `remove_quorum_member`, and
+    `refresh_sthi`. The `--single-tenant-hsm-instance-proposal-id` flag is
+    optional.
+*   Added `gcloud kms single-tenant-hsm proposal execute` (beta, GA)
+    command to execute an approved proposal on a single-tenant HSM instance.
+    Requires proposal ID as a positional argument, `--location` flag,
+    and `--single-tenant-hsm-instance` flag.
+*   Added `gcloud kms single-tenant-hsm proposal list` (beta, GA)
+    command to list proposals for a single-tenant HSM instance. Requires
+    `--location` and `--single-tenant-hsm-instance`.
+*   Added `gcloud kms single-tenant-hsm proposal describe` (beta, GA)
+    command to show details of a single-tenant HSM instance proposal. Requires
+    the proposal ID as a positional argument, `--location` flag, and
+    `--single-tenant-hsm-instance` flag.
+*   Added `gcloud kms single-tenant-hsm proposal delete` (beta, GA)
+    command to delete a proposal on a single-tenant HSM instance. Requires the
+    proposal ID as a positional argument, `--location` flag, and
+    `--single-tenant-hsm-instance` flag.
+*   Added `gcloud kms single-tenant-hsm proposal approve` (beta, GA)
+    command to approve a proposal on a single-tenant HSM instance. Requires the
+    proposal ID as a positional argument, `--location` flag, and
+    `--single-tenant-hsm-instance` flag. Approval payloads are provided via
+    either `--quorum-reply` or a combination of
+    `--required-challenge-replies` and `--quorum-challenge-replies`.
+    *   `--quorum-reply`: Takes a list of tuples, where each tuple contains
+        the file paths for a signed challenge and a public key, in the format
+        `('signed_challenge_file', 'public_key_file')`.
+    *   `--required-challenge-replies`: Takes a list of tuples, where each tuple
+        contains the file paths for a required signed challenge and a public
+        key, in the format `('signed_challenge_file', 'public_key_file')`.
+    *   `--quorum-challenge-replies`: Takes a list of tuples, where each tuple
+        contains the file paths for a quorum signed challenge and a public
+        key, in the format `('signed_challenge_file', 'public_key_file')`.
+*   Added `gcloud kms operations describe` (beta, GA) command to show
+    details of a KMS operation.
+*   Updated `gcloud kms keys versions describe` to allow `--attestation-file`
+    flag for key versions with protection level `HSM_SINGLE_TENANT`.
+*   Updated `gcloud kms keys versions get-certificate-chain` to allow
+    retrieving certificate chains for key versions with protection level
+    `HSM_SINGLE_TENANT`.
+*   Updated `gcloud kms import-jobs create` (beta, GA) to include
+    `--single-tenant-hsm-instance` flag, allowing users to associate the import
+    job with a specific single-tenant HSM instance.
+
+### Cloud Run
+
+* Promoted `gcloud run worker-pools` IAM policy management commands (`add-iam-policy-binding`, `get-iam-policy`, `remove-iam-policy-binding`, and `set-iam-policy`) to beta.
+
+### Cloud Spanner
+
+* Added `--directed-read` flag to `gcloud spanner cli` that enables directed
+  reads to provide the flexibility to route read-only transactions and single
+  reads to a specific replica type or region (replica_location:replica_type).
+  The replica_type is optional and can be either READ_ONLY or READ_WRITE.
+* Added `--proto-descriptor-file` flag to `gcloud spanner cli` to provide path
+  of a file that contains a
+  protobuf-serialized google.protobuf.FileDescriptorSet
+  message to use in this invocation.
+
+### Cloud Storage
+
+* Promoted `--activity-data-retention-period-days` flag in `gcloud storage insights dataset-configs` to GA.
+
+### Cloud Workstations
+
+* Added `--instance-metadata` flag to `gcloud beta workstations configs create` and `gcloud beta workstations configs update` commands.
+
+### Compute Engine
+
+* Added `--ip-collection` flag to `gcloud compute addresses create` command.
+* Added support for Workforce Identity Federation in GA gcloud.
+* Added `--resource-manager-tags` flag for alpha to
+  `gcloud compute images create` to allow users to add Resource Manager tags
+  to the image resource during creation.
+
+* Updated `gcloud compute global-vm-extension-policies` help text for
+`--rollout-conflict-behavior` and `--rollout-predefined-plan` arguments.
+
+### Developer Connect
+
+* Updated `gcloud developer-connect insights-configs create` to support `--target-projects` flag.
+
+### Eventarc
+
+* Added `--max-retry-attempts` to `gcloud eventarc triggers create` and `gcloud eventarc triggers update` to support specifying a RetryPolicy.
+
+### Kubernetes Engine
+
+* Promoted `gcloud container fleet rollouts describe|list` to beta.
+* Promoted `gcloud container fleet rolloutsequences create|describe|list|update|delete` to beta.
+
+### Network Connectivity
+
+* Added
+  `gcloud network-connectivity transport delete`,
+  `gcloud network-connectivity transport list`, and
+  `gcloud network-connectivity transport describe` commands.
+* Added `gcloud network-connectivity transport remote-profiles list` and `gcloud network-connectivity transport remote-profiles describe` commands.
+* Added `gcloud network-connectivity transport create` command.
+* Fixed `gcloud network-connectivity transport remote-profiles list` command.
+
+### Workbench
+
+* Fixed boolean flag `--install-gpu-driver` in `gcloud workbench instances update` command always parsing as true.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 549.0.1 (2025-12-10)
 
 ### Google Cloud CLI

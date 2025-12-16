@@ -238,6 +238,11 @@ class RagVectorDbConfig(proto.Message):
             The config for the Vertex Vector Search.
 
             This field is a member of `oneof`_ ``vector_db``.
+        rag_managed_vertex_vector_search (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.RagVectorDbConfig.RagManagedVertexVectorSearch):
+            The config for the RAG-managed Vertex Vector
+            Search 2.0.
+
+            This field is a member of `oneof`_ ``vector_db``.
         api_auth (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.ApiAuth):
             Authentication config for the chosen Vector
             DB.
@@ -397,6 +402,22 @@ class RagVectorDbConfig(proto.Message):
             number=2,
         )
 
+    class RagManagedVertexVectorSearch(proto.Message):
+        r"""The config for the RAG-managed Vertex Vector Search 2.0.
+
+        Attributes:
+            collection_name (str):
+                Output only. The resource name of the Vector Search 2.0
+                Collection that RAG Created for the corpus. Only populated
+                after the corpus is successfully created. Format:
+                ``projects/{project}/locations/{location}/collections/{collection_id}``
+        """
+
+        collection_name: str = proto.Field(
+            proto.STRING,
+            number=1,
+        )
+
     rag_managed_db: RagManagedDb = proto.Field(
         proto.MESSAGE,
         number=1,
@@ -426,6 +447,12 @@ class RagVectorDbConfig(proto.Message):
         number=6,
         oneof='vector_db',
         message=VertexVectorSearch,
+    )
+    rag_managed_vertex_vector_search: RagManagedVertexVectorSearch = proto.Field(
+        proto.MESSAGE,
+        number=8,
+        oneof='vector_db',
+        message=RagManagedVertexVectorSearch,
     )
     api_auth: gca_api_auth.ApiAuth = proto.Field(
         proto.MESSAGE,

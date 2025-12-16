@@ -15,6 +15,42 @@ from apitools.base.py import extra_types
 package = 'cloudkms'
 
 
+class AddQuorumMember(_messages.Message):
+  r"""Add a quorum member to the SingleTenantHsmInstance. This will increase
+  the total_approver_count by 1. The SingleTenantHsmInstance must be in the
+  ACTIVE state to perform this operation.
+
+  Fields:
+    twoFactorPublicKeyPem: Required. The public key associated with the 2FA
+      key for the new quorum member to add. Public keys must be associated
+      with RSA 2048 keys.
+  """
+
+  twoFactorPublicKeyPem = _messages.StringField(1)
+
+
+class ApproveSingleTenantHsmInstanceProposalRequest(_messages.Message):
+  r"""Request message for
+  HsmManagement.ApproveSingleTenantHsmInstanceProposal.
+
+  Fields:
+    quorumReply: Required. The reply to QuorumParameters for approving the
+      proposal.
+    requiredActionQuorumReply: Required. The reply to
+      RequiredActionQuorumParameters for approving the proposal.
+  """
+
+  quorumReply = _messages.MessageField('QuorumReply', 1)
+  requiredActionQuorumReply = _messages.MessageField('RequiredActionQuorumReply', 2)
+
+
+class ApproveSingleTenantHsmInstanceProposalResponse(_messages.Message):
+  r"""Response message for
+  HsmManagement.ApproveSingleTenantHsmInstanceProposal.
+  """
+
+
+
 class AsymmetricDecryptRequest(_messages.Message):
   r"""Request message for KeyManagementService.AsymmetricDecrypt.
 
@@ -83,12 +119,15 @@ class AsymmetricDecryptResponse(_messages.Message):
       EXTERNAL: Crypto operations are performed by an external key manager.
       EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
         backend.
+      HSM_SINGLE_TENANT: Crypto operations are performed in a single-tenant
+        HSM.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
     EXTERNAL = 3
     EXTERNAL_VPC = 4
+    HSM_SINGLE_TENANT = 5
 
   plaintext = _messages.BytesField(1)
   plaintextCrc32c = _messages.IntegerField(2)
@@ -190,12 +229,15 @@ class AsymmetricSignResponse(_messages.Message):
       EXTERNAL: Crypto operations are performed by an external key manager.
       EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
         backend.
+      HSM_SINGLE_TENANT: Crypto operations are performed in a single-tenant
+        HSM.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
     EXTERNAL = 3
     EXTERNAL_VPC = 4
+    HSM_SINGLE_TENANT = 5
 
   name = _messages.StringField(1)
   protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 2)
@@ -269,7 +311,7 @@ class AuditLogConfig(_messages.Message):
 
 
 class AutokeyConfig(_messages.Message):
-  r"""Cloud KMS Autokey configuration for a folder or project.
+  r"""Cloud KMS Autokey configuration for a folder.
 
   Enums:
     StateValueValuesEnum: Output only. The state for the AutokeyConfig.
@@ -291,7 +333,6 @@ class AutokeyConfig(_messages.Message):
       clear the configuration.
     name: Identifier. Name of the AutokeyConfig resource, e.g.
       `folders/{FOLDER_NUMBER}/autokeyConfig`
-      `projects/{PROJECT_NUMBER}/autokeyConfig`.
     state: Output only. The state for the AutokeyConfig.
   """
 
@@ -456,6 +497,33 @@ class CertificateChains(_messages.Message):
   googlePartitionCerts = _messages.StringField(3, repeated=True)
 
 
+class Challenge(_messages.Message):
+  r"""A challenge to be signed by a 2FA key.
+
+  Fields:
+    challenge: Output only. The challenge to be signed by the 2FA key
+      indicated by the public key.
+    publicKeyPem: Output only. The public key associated with the 2FA key that
+      should sign the challenge.
+  """
+
+  challenge = _messages.BytesField(1)
+  publicKeyPem = _messages.StringField(2)
+
+
+class ChallengeReply(_messages.Message):
+  r"""A reply to a challenge signed by a 2FA key.
+
+  Fields:
+    publicKeyPem: Required. The public key associated with the 2FA key.
+    signedChallenge: Required. The signed challenge associated with the 2FA
+      key. The signature must be RSASSA-PKCS1 v1.5 with a SHA256 digest.
+  """
+
+  publicKeyPem = _messages.StringField(1)
+  signedChallenge = _messages.BytesField(2)
+
+
 class ChecksummedData(_messages.Message):
   r"""Data with integrity verification field.
 
@@ -507,7 +575,6 @@ class CloudkmsFoldersUpdateAutokeyConfigRequest(_messages.Message):
     autokeyConfig: A AutokeyConfig resource to be passed as the request body.
     name: Identifier. Name of the AutokeyConfig resource, e.g.
       `folders/{FOLDER_NUMBER}/autokeyConfig`
-      `projects/{PROJECT_NUMBER}/autokeyConfig`.
     updateMask: Required. Masks which fields of the AutokeyConfig to update,
       e.g. `keyProject`.
   """
@@ -1612,6 +1679,180 @@ class CloudkmsProjectsLocationsOperationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class CloudkmsProjectsLocationsSingleTenantHsmInstancesCreateRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsSingleTenantHsmInstancesCreateRequest object.
+
+  Fields:
+    parent: Required. The resource name of the location associated with the
+      SingleTenantHsmInstance, in the format `projects/*/locations/*`.
+    singleTenantHsmInstance: A SingleTenantHsmInstance resource to be passed
+      as the request body.
+    singleTenantHsmInstanceId: Optional. It must be unique within a location
+      and match the regular expression `[a-zA-Z0-9_-]{1,63}`.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  singleTenantHsmInstance = _messages.MessageField('SingleTenantHsmInstance', 2)
+  singleTenantHsmInstanceId = _messages.StringField(3)
+
+
+class CloudkmsProjectsLocationsSingleTenantHsmInstancesGetRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsSingleTenantHsmInstancesGetRequest object.
+
+  Fields:
+    name: Required. The name of the SingleTenantHsmInstance to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudkmsProjectsLocationsSingleTenantHsmInstancesListRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsSingleTenantHsmInstancesListRequest object.
+
+  Fields:
+    filter: Optional. Only include resources that match the filter in the
+      response. For more information, see [Sorting and filtering list
+      results](https://cloud.google.com/kms/docs/sorting-and-filtering).
+    orderBy: Optional. Specify how the results should be sorted. If not
+      specified, the results will be sorted in the default order. For more
+      information, see [Sorting and filtering list
+      results](https://cloud.google.com/kms/docs/sorting-and-filtering).
+    pageSize: Optional. Optional limit on the number of
+      SingleTenantHsmInstances to include in the response. Further
+      SingleTenantHsmInstances can subsequently be obtained by including the
+      ListSingleTenantHsmInstancesResponse.next_page_token in a subsequent
+      request. If unspecified, the server will pick an appropriate default.
+    pageToken: Optional. Optional pagination token, returned earlier via
+      ListSingleTenantHsmInstancesResponse.next_page_token.
+    parent: Required. The resource name of the location associated with the
+      SingleTenantHsmInstances to list, in the format
+      `projects/*/locations/*`.
+    showDeleted: Optional. If set to true,
+      HsmManagement.ListSingleTenantHsmInstances will also return
+      SingleTenantHsmInstances in DELETED state.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  showDeleted = _messages.BooleanField(6)
+
+
+class CloudkmsProjectsLocationsSingleTenantHsmInstancesProposalsApproveRequest(_messages.Message):
+  r"""A
+  CloudkmsProjectsLocationsSingleTenantHsmInstancesProposalsApproveRequest
+  object.
+
+  Fields:
+    approveSingleTenantHsmInstanceProposalRequest: A
+      ApproveSingleTenantHsmInstanceProposalRequest resource to be passed as
+      the request body.
+    name: Required. The name of the SingleTenantHsmInstanceProposal to
+      approve.
+  """
+
+  approveSingleTenantHsmInstanceProposalRequest = _messages.MessageField('ApproveSingleTenantHsmInstanceProposalRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class CloudkmsProjectsLocationsSingleTenantHsmInstancesProposalsCreateRequest(_messages.Message):
+  r"""A
+  CloudkmsProjectsLocationsSingleTenantHsmInstancesProposalsCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The name of the SingleTenantHsmInstance associated with
+      the SingleTenantHsmInstanceProposals.
+    singleTenantHsmInstanceProposal: A SingleTenantHsmInstanceProposal
+      resource to be passed as the request body.
+    singleTenantHsmInstanceProposalId: Optional. It must be unique within a
+      location and match the regular expression `[a-zA-Z0-9_-]{1,63}`.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  singleTenantHsmInstanceProposal = _messages.MessageField('SingleTenantHsmInstanceProposal', 2)
+  singleTenantHsmInstanceProposalId = _messages.StringField(3)
+
+
+class CloudkmsProjectsLocationsSingleTenantHsmInstancesProposalsDeleteRequest(_messages.Message):
+  r"""A
+  CloudkmsProjectsLocationsSingleTenantHsmInstancesProposalsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the SingleTenantHsmInstanceProposal to delete.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudkmsProjectsLocationsSingleTenantHsmInstancesProposalsExecuteRequest(_messages.Message):
+  r"""A
+  CloudkmsProjectsLocationsSingleTenantHsmInstancesProposalsExecuteRequest
+  object.
+
+  Fields:
+    executeSingleTenantHsmInstanceProposalRequest: A
+      ExecuteSingleTenantHsmInstanceProposalRequest resource to be passed as
+      the request body.
+    name: Required. The name of the SingleTenantHsmInstanceProposal to
+      execute.
+  """
+
+  executeSingleTenantHsmInstanceProposalRequest = _messages.MessageField('ExecuteSingleTenantHsmInstanceProposalRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class CloudkmsProjectsLocationsSingleTenantHsmInstancesProposalsGetRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsSingleTenantHsmInstancesProposalsGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the SingleTenantHsmInstanceProposal to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudkmsProjectsLocationsSingleTenantHsmInstancesProposalsListRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsSingleTenantHsmInstancesProposalsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Only include resources that match the filter in the
+      response. For more information, see [Sorting and filtering list
+      results](https://cloud.google.com/kms/docs/sorting-and-filtering).
+    orderBy: Optional. Specify how the results should be sorted. If not
+      specified, the results will be sorted in the default order. For more
+      information, see [Sorting and filtering list
+      results](https://cloud.google.com/kms/docs/sorting-and-filtering).
+    pageSize: Optional. Optional limit on the number of
+      SingleTenantHsmInstanceProposals to include in the response. Further
+      SingleTenantHsmInstanceProposals can subsequently be obtained by
+      including the
+      ListSingleTenantHsmInstanceProposalsResponse.next_page_token in a
+      subsequent request. If unspecified, the server will pick an appropriate
+      default.
+    pageToken: Optional. Optional pagination token, returned earlier via
+      ListSingleTenantHsmInstanceProposalsResponse.next_page_token.
+    parent: Required. The resource name of the location associated with the
+      SingleTenantHsmInstanceProposals to list, in the format
+      `projects/*/locations/*/singleTenantHsmInstances/*`.
+    showDeleted: Optional. If set to true,
+      HsmManagement.ListSingleTenantHsmInstanceProposals will also return
+      SingleTenantHsmInstanceProposals in DELETED state.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  showDeleted = _messages.BooleanField(6)
+
+
 class CloudkmsProjectsLocationsUpdateEkmConfigRequest(_messages.Message):
   r"""A CloudkmsProjectsLocationsUpdateEkmConfigRequest object.
 
@@ -1702,8 +1943,12 @@ class CryptoKey(_messages.Message):
       CryptoKey reside and where all related cryptographic operations are
       performed. Only applicable if CryptoKeyVersions have a ProtectionLevel
       of EXTERNAL_VPC, with the resource name in the format
-      `projects/*/locations/*/ekmConnections/*`. Note, this list is non-
-      exhaustive and may apply to additional ProtectionLevels in the future.
+      `projects/*/locations/*/ekmConnections/*`. Only applicable if
+      CryptoKeyVersions have a ProtectionLevel of HSM_SINGLE_TENANT, with the
+      resource name in the format
+      `projects/*/locations/*/singleTenantHsmInstances/*`. Note, this list is
+      non-exhaustive and may apply to additional ProtectionLevels in the
+      future.
     destroyScheduledDuration: Immutable. The period of time that versions of
       this key spend in the DESTROY_SCHEDULED state before transitioning to
       DESTROYED. If not specified at creation time, the default duration is 30
@@ -1948,6 +2193,15 @@ class CryptoKeyVersion(_messages.Message):
       PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256: The post-quantum stateless hash-
         based digital signature algorithm, at security level 1. Randomized
         pre-hash version supporting SHA256 digests.
+      PQ_SIGN_ML_DSA_44_EXTERNAL_MU: The post-quantum Module-Lattice-Based
+        Digital Signature Algorithm, at security level 1. Randomized version
+        supporting externally-computed message representatives.
+      PQ_SIGN_ML_DSA_65_EXTERNAL_MU: The post-quantum Module-Lattice-Based
+        Digital Signature Algorithm, at security level 3. Randomized version
+        supporting externally-computed message representatives.
+      PQ_SIGN_ML_DSA_87_EXTERNAL_MU: The post-quantum Module-Lattice-Based
+        Digital Signature Algorithm, at security level 5. Randomized version
+        supporting externally-computed message representatives.
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
@@ -1993,6 +2247,9 @@ class CryptoKeyVersion(_messages.Message):
     PQ_SIGN_ML_DSA_87 = 41
     PQ_SIGN_SLH_DSA_SHA2_128S = 42
     PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 43
+    PQ_SIGN_ML_DSA_44_EXTERNAL_MU = 44
+    PQ_SIGN_ML_DSA_65_EXTERNAL_MU = 45
+    PQ_SIGN_ML_DSA_87_EXTERNAL_MU = 46
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""Output only. The ProtectionLevel describing how crypto operations are
@@ -2005,12 +2262,15 @@ class CryptoKeyVersion(_messages.Message):
       EXTERNAL: Crypto operations are performed by an external key manager.
       EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
         backend.
+      HSM_SINGLE_TENANT: Crypto operations are performed in a single-tenant
+        HSM.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
     EXTERNAL = 3
     EXTERNAL_VPC = 4
+    HSM_SINGLE_TENANT = 5
 
   class StateValueValuesEnum(_messages.Enum):
     r"""The current state of the CryptoKeyVersion.
@@ -2184,6 +2444,15 @@ class CryptoKeyVersionTemplate(_messages.Message):
       PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256: The post-quantum stateless hash-
         based digital signature algorithm, at security level 1. Randomized
         pre-hash version supporting SHA256 digests.
+      PQ_SIGN_ML_DSA_44_EXTERNAL_MU: The post-quantum Module-Lattice-Based
+        Digital Signature Algorithm, at security level 1. Randomized version
+        supporting externally-computed message representatives.
+      PQ_SIGN_ML_DSA_65_EXTERNAL_MU: The post-quantum Module-Lattice-Based
+        Digital Signature Algorithm, at security level 3. Randomized version
+        supporting externally-computed message representatives.
+      PQ_SIGN_ML_DSA_87_EXTERNAL_MU: The post-quantum Module-Lattice-Based
+        Digital Signature Algorithm, at security level 5. Randomized version
+        supporting externally-computed message representatives.
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
@@ -2229,6 +2498,9 @@ class CryptoKeyVersionTemplate(_messages.Message):
     PQ_SIGN_ML_DSA_87 = 41
     PQ_SIGN_SLH_DSA_SHA2_128S = 42
     PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 43
+    PQ_SIGN_ML_DSA_44_EXTERNAL_MU = 44
+    PQ_SIGN_ML_DSA_65_EXTERNAL_MU = 45
+    PQ_SIGN_ML_DSA_87_EXTERNAL_MU = 46
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""ProtectionLevel to use when creating a CryptoKeyVersion based on this
@@ -2241,12 +2513,15 @@ class CryptoKeyVersionTemplate(_messages.Message):
       EXTERNAL: Crypto operations are performed by an external key manager.
       EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
         backend.
+      HSM_SINGLE_TENANT: Crypto operations are performed in a single-tenant
+        HSM.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
     EXTERNAL = 3
     EXTERNAL_VPC = 4
+    HSM_SINGLE_TENANT = 5
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 2)
@@ -2324,12 +2599,15 @@ class DecapsulateResponse(_messages.Message):
       EXTERNAL: Crypto operations are performed by an external key manager.
       EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
         backend.
+      HSM_SINGLE_TENANT: Crypto operations are performed in a single-tenant
+        HSM.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
     EXTERNAL = 3
     EXTERNAL_VPC = 4
+    HSM_SINGLE_TENANT = 5
 
   name = _messages.StringField(1)
   protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 2)
@@ -2419,17 +2697,29 @@ class DecryptResponse(_messages.Message):
       EXTERNAL: Crypto operations are performed by an external key manager.
       EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
         backend.
+      HSM_SINGLE_TENANT: Crypto operations are performed in a single-tenant
+        HSM.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
     EXTERNAL = 3
     EXTERNAL_VPC = 4
+    HSM_SINGLE_TENANT = 5
 
   plaintext = _messages.BytesField(1)
   plaintextCrc32c = _messages.IntegerField(2)
   protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 3)
   usedPrimary = _messages.BooleanField(4)
+
+
+class DeleteSingleTenantHsmInstance(_messages.Message):
+  r"""Delete the SingleTenantHsmInstance. Deleting a SingleTenantHsmInstance
+  will make all CryptoKeys attached to the SingleTenantHsmInstance unusable.
+  The SingleTenantHsmInstance must not be in the DELETING or DELETED state to
+  perform this operation.
+  """
+
 
 
 class DestroyCryptoKeyVersionRequest(_messages.Message):
@@ -2448,6 +2738,13 @@ class Digest(_messages.Message):
   sha256 = _messages.BytesField(1)
   sha384 = _messages.BytesField(2)
   sha512 = _messages.BytesField(3)
+
+
+class DisableSingleTenantHsmInstance(_messages.Message):
+  r"""Disable the SingleTenantHsmInstance. The SingleTenantHsmInstance must be
+  in the ACTIVE state to perform this operation.
+  """
+
 
 
 class EkmConfig(_messages.Message):
@@ -2526,6 +2823,22 @@ class EkmConnection(_messages.Message):
   keyManagementMode = _messages.EnumField('KeyManagementModeValueValuesEnum', 4)
   name = _messages.StringField(5)
   serviceResolvers = _messages.MessageField('ServiceResolver', 6, repeated=True)
+
+
+class Empty(_messages.Message):
+  r"""A generic empty message that you can re-use to avoid defining duplicated
+  empty messages in your APIs. A typical example is to use it as the request
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
+  """
+
+
+
+class EnableSingleTenantHsmInstance(_messages.Message):
+  r"""Enable the SingleTenantHsmInstance. The SingleTenantHsmInstance must be
+  in the DISABLED state to perform this operation.
+  """
+
 
 
 class EncryptRequest(_messages.Message):
@@ -2632,12 +2945,15 @@ class EncryptResponse(_messages.Message):
       EXTERNAL: Crypto operations are performed by an external key manager.
       EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
         backend.
+      HSM_SINGLE_TENANT: Crypto operations are performed in a single-tenant
+        HSM.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
     EXTERNAL = 3
     EXTERNAL_VPC = 4
+    HSM_SINGLE_TENANT = 5
 
   ciphertext = _messages.BytesField(1)
   ciphertextCrc32c = _messages.IntegerField(2)
@@ -2645,6 +2961,13 @@ class EncryptResponse(_messages.Message):
   protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 4)
   verifiedAdditionalAuthenticatedDataCrc32c = _messages.BooleanField(5)
   verifiedPlaintextCrc32c = _messages.BooleanField(6)
+
+
+class ExecuteSingleTenantHsmInstanceProposalRequest(_messages.Message):
+  r"""Request message for
+  HsmManagement.ExecuteSingleTenantHsmInstanceProposal.
+  """
+
 
 
 class Expr(_messages.Message):
@@ -2725,12 +3048,15 @@ class GenerateRandomBytesRequest(_messages.Message):
       EXTERNAL: Crypto operations are performed by an external key manager.
       EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
         backend.
+      HSM_SINGLE_TENANT: Crypto operations are performed in a single-tenant
+        HSM.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
     EXTERNAL = 3
     EXTERNAL_VPC = 4
+    HSM_SINGLE_TENANT = 5
 
   lengthBytes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 2)
@@ -2881,6 +3207,15 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
       PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256: The post-quantum stateless hash-
         based digital signature algorithm, at security level 1. Randomized
         pre-hash version supporting SHA256 digests.
+      PQ_SIGN_ML_DSA_44_EXTERNAL_MU: The post-quantum Module-Lattice-Based
+        Digital Signature Algorithm, at security level 1. Randomized version
+        supporting externally-computed message representatives.
+      PQ_SIGN_ML_DSA_65_EXTERNAL_MU: The post-quantum Module-Lattice-Based
+        Digital Signature Algorithm, at security level 3. Randomized version
+        supporting externally-computed message representatives.
+      PQ_SIGN_ML_DSA_87_EXTERNAL_MU: The post-quantum Module-Lattice-Based
+        Digital Signature Algorithm, at security level 5. Randomized version
+        supporting externally-computed message representatives.
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
@@ -2926,6 +3261,9 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
     PQ_SIGN_ML_DSA_87 = 41
     PQ_SIGN_SLH_DSA_SHA2_128S = 42
     PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 43
+    PQ_SIGN_ML_DSA_44_EXTERNAL_MU = 44
+    PQ_SIGN_ML_DSA_65_EXTERNAL_MU = 45
+    PQ_SIGN_ML_DSA_87_EXTERNAL_MU = 46
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   cryptoKeyVersion = _messages.StringField(2)
@@ -2969,6 +3307,12 @@ class ImportJob(_messages.Message):
       independently of Google. Only present if the chosen ImportMethod is one
       with a protection level of HSM.
     createTime: Output only. The time at which this ImportJob was created.
+    cryptoKeyBackend: Immutable. The resource name of the backend environment
+      where the key material for the wrapping key resides and where all
+      related cryptographic operations are performed. Currently, this field is
+      only populated for keys stored in HSM_SINGLE_TENANT. Note, this list is
+      non-exhaustive and may apply to additional ProtectionLevels in the
+      future.
     expireEventTime: Output only. The time this ImportJob expired. Only
       present if state is EXPIRED.
     expireTime: Output only. The time at which this ImportJob is scheduled for
@@ -3051,12 +3395,15 @@ class ImportJob(_messages.Message):
       EXTERNAL: Crypto operations are performed by an external key manager.
       EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
         backend.
+      HSM_SINGLE_TENANT: Crypto operations are performed in a single-tenant
+        HSM.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
     EXTERNAL = 3
     EXTERNAL_VPC = 4
+    HSM_SINGLE_TENANT = 5
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of the ImportJob, indicating if it can
@@ -3079,14 +3426,15 @@ class ImportJob(_messages.Message):
 
   attestation = _messages.MessageField('KeyOperationAttestation', 1)
   createTime = _messages.StringField(2)
-  expireEventTime = _messages.StringField(3)
-  expireTime = _messages.StringField(4)
-  generateTime = _messages.StringField(5)
-  importMethod = _messages.EnumField('ImportMethodValueValuesEnum', 6)
-  name = _messages.StringField(7)
-  protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 8)
-  publicKey = _messages.MessageField('WrappingPublicKey', 9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
+  cryptoKeyBackend = _messages.StringField(3)
+  expireEventTime = _messages.StringField(4)
+  expireTime = _messages.StringField(5)
+  generateTime = _messages.StringField(6)
+  importMethod = _messages.EnumField('ImportMethodValueValuesEnum', 7)
+  name = _messages.StringField(8)
+  protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 9)
+  publicKey = _messages.MessageField('WrappingPublicKey', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
 class KeyAccessJustificationsEnrollmentConfig(_messages.Message):
@@ -3382,6 +3730,43 @@ class ListLocationsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListSingleTenantHsmInstanceProposalsResponse(_messages.Message):
+  r"""Response message for HsmManagement.ListSingleTenantHsmInstanceProposals.
+
+  Fields:
+    nextPageToken: A token to retrieve next page of results. Pass this value
+      in ListSingleTenantHsmInstanceProposalsRequest.page_token to retrieve
+      the next page of results.
+    singleTenantHsmInstanceProposals: The list of
+      SingleTenantHsmInstanceProposals.
+    totalSize: The total number of SingleTenantHsmInstanceProposals that
+      matched the query. This field is not populated if
+      ListSingleTenantHsmInstanceProposalsRequest.filter is applied.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  singleTenantHsmInstanceProposals = _messages.MessageField('SingleTenantHsmInstanceProposal', 2, repeated=True)
+  totalSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class ListSingleTenantHsmInstancesResponse(_messages.Message):
+  r"""Response message for HsmManagement.ListSingleTenantHsmInstances.
+
+  Fields:
+    nextPageToken: A token to retrieve next page of results. Pass this value
+      in ListSingleTenantHsmInstancesRequest.page_token to retrieve the next
+      page of results.
+    singleTenantHsmInstances: The list of SingleTenantHsmInstances.
+    totalSize: The total number of SingleTenantHsmInstances that matched the
+      query. This field is not populated if
+      ListSingleTenantHsmInstancesRequest.filter is applied.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  singleTenantHsmInstances = _messages.MessageField('SingleTenantHsmInstance', 2, repeated=True)
+  totalSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class Location(_messages.Message):
   r"""A resource that represents a Google Cloud location.
 
@@ -3470,10 +3855,13 @@ class LocationMetadata(_messages.Message):
       can be created in this location.
     hsmAvailable: Indicates whether CryptoKeys with protection_level HSM can
       be created in this location.
+    hsmSingleTenantAvailable: Indicates whether CryptoKeys with
+      protection_level HSM_SINGLE_TENANT can be created in this location.
   """
 
   ekmAvailable = _messages.BooleanField(1)
   hsmAvailable = _messages.BooleanField(2)
+  hsmSingleTenantAvailable = _messages.BooleanField(3)
 
 
 class MacSignRequest(_messages.Message):
@@ -3542,12 +3930,15 @@ class MacSignResponse(_messages.Message):
       EXTERNAL: Crypto operations are performed by an external key manager.
       EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
         backend.
+      HSM_SINGLE_TENANT: Crypto operations are performed in a single-tenant
+        HSM.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
     EXTERNAL = 3
     EXTERNAL_VPC = 4
+    HSM_SINGLE_TENANT = 5
 
   mac = _messages.BytesField(1)
   macCrc32c = _messages.IntegerField(2)
@@ -3642,12 +4033,15 @@ class MacVerifyResponse(_messages.Message):
       EXTERNAL: Crypto operations are performed by an external key manager.
       EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
         backend.
+      HSM_SINGLE_TENANT: Crypto operations are performed in a single-tenant
+        HSM.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
     EXTERNAL = 3
     EXTERNAL_VPC = 4
+    HSM_SINGLE_TENANT = 5
 
   name = _messages.StringField(1)
   protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 2)
@@ -3957,6 +4351,15 @@ class PublicKey(_messages.Message):
       PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256: The post-quantum stateless hash-
         based digital signature algorithm, at security level 1. Randomized
         pre-hash version supporting SHA256 digests.
+      PQ_SIGN_ML_DSA_44_EXTERNAL_MU: The post-quantum Module-Lattice-Based
+        Digital Signature Algorithm, at security level 1. Randomized version
+        supporting externally-computed message representatives.
+      PQ_SIGN_ML_DSA_65_EXTERNAL_MU: The post-quantum Module-Lattice-Based
+        Digital Signature Algorithm, at security level 3. Randomized version
+        supporting externally-computed message representatives.
+      PQ_SIGN_ML_DSA_87_EXTERNAL_MU: The post-quantum Module-Lattice-Based
+        Digital Signature Algorithm, at security level 5. Randomized version
+        supporting externally-computed message representatives.
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
@@ -4002,6 +4405,9 @@ class PublicKey(_messages.Message):
     PQ_SIGN_ML_DSA_87 = 41
     PQ_SIGN_SLH_DSA_SHA2_128S = 42
     PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 43
+    PQ_SIGN_ML_DSA_44_EXTERNAL_MU = 44
+    PQ_SIGN_ML_DSA_65_EXTERNAL_MU = 45
+    PQ_SIGN_ML_DSA_87_EXTERNAL_MU = 46
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""The ProtectionLevel of the CryptoKeyVersion public key.
@@ -4013,12 +4419,15 @@ class PublicKey(_messages.Message):
       EXTERNAL: Crypto operations are performed by an external key manager.
       EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
         backend.
+      HSM_SINGLE_TENANT: Crypto operations are performed in a single-tenant
+        HSM.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
     EXTERNAL = 3
     EXTERNAL_VPC = 4
+    HSM_SINGLE_TENANT = 5
 
   class PublicKeyFormatValueValuesEnum(_messages.Enum):
     r"""The PublicKey format specified by the customer through the
@@ -4057,6 +4466,58 @@ class PublicKey(_messages.Message):
   protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 5)
   publicKey = _messages.MessageField('ChecksummedData', 6)
   publicKeyFormat = _messages.EnumField('PublicKeyFormatValueValuesEnum', 7)
+
+
+class QuorumAuth(_messages.Message):
+  r"""Configuration for M of N quorum auth.
+
+  Fields:
+    requiredApproverCount: Output only. The required numbers of approvers. The
+      M value used for M of N quorum auth. Must be greater than or equal to 2
+      and less than or equal to total_approver_count - 1.
+    totalApproverCount: Required. The total number of approvers. This is the N
+      value used for M of N quorum auth. Must be greater than or equal to 3
+      and less than or equal to 16.
+    twoFactorPublicKeyPems: Output only. The public keys associated with the
+      2FA keys for M of N quorum auth.
+  """
+
+  requiredApproverCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  totalApproverCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  twoFactorPublicKeyPems = _messages.StringField(3, repeated=True)
+
+
+class QuorumParameters(_messages.Message):
+  r"""Parameters of quorum approval for the SingleTenantHsmInstanceProposal.
+
+  Fields:
+    approvedTwoFactorPublicKeyPems: Output only. The public keys associated
+      with the 2FA keys that have already approved the
+      SingleTenantHsmInstanceProposal by signing the challenge.
+    challenges: Output only. The challenges to be signed by 2FA keys for
+      quorum auth. M of N of these challenges are required to be signed to
+      approve the operation.
+    requiredApproverCount: Output only. The required numbers of approvers.
+      This is the M value used for M of N quorum auth. It is less than the
+      number of public keys.
+  """
+
+  approvedTwoFactorPublicKeyPems = _messages.StringField(1, repeated=True)
+  challenges = _messages.MessageField('Challenge', 2, repeated=True)
+  requiredApproverCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class QuorumReply(_messages.Message):
+  r"""The reply to QuorumParameters for approving the proposal.
+
+  Fields:
+    challengeReplies: Required. The challenge replies to approve the proposal.
+      Challenge replies can be sent across multiple requests. The proposal
+      will be approved when required_approver_count challenge replies are
+      provided.
+  """
+
+  challengeReplies = _messages.MessageField('ChallengeReply', 1, repeated=True)
 
 
 class RawDecryptRequest(_messages.Message):
@@ -4184,12 +4645,15 @@ class RawDecryptResponse(_messages.Message):
       EXTERNAL: Crypto operations are performed by an external key manager.
       EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
         backend.
+      HSM_SINGLE_TENANT: Crypto operations are performed in a single-tenant
+        HSM.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
     EXTERNAL = 3
     EXTERNAL_VPC = 4
+    HSM_SINGLE_TENANT = 5
 
   plaintext = _messages.BytesField(1)
   plaintextCrc32c = _messages.IntegerField(2)
@@ -4347,12 +4811,15 @@ class RawEncryptResponse(_messages.Message):
       EXTERNAL: Crypto operations are performed by an external key manager.
       EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
         backend.
+      HSM_SINGLE_TENANT: Crypto operations are performed in a single-tenant
+        HSM.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
     EXTERNAL = 3
     EXTERNAL_VPC = 4
+    HSM_SINGLE_TENANT = 5
 
   ciphertext = _messages.BytesField(1)
   ciphertextCrc32c = _messages.IntegerField(2)
@@ -4364,6 +4831,91 @@ class RawEncryptResponse(_messages.Message):
   verifiedAdditionalAuthenticatedDataCrc32c = _messages.BooleanField(8)
   verifiedInitializationVectorCrc32c = _messages.BooleanField(9)
   verifiedPlaintextCrc32c = _messages.BooleanField(10)
+
+
+class RefreshSingleTenantHsmInstance(_messages.Message):
+  r"""Refreshes the SingleTenantHsmInstance. This operation must be performed
+  periodically to keep the SingleTenantHsmInstance active. This operation must
+  be performed before unrefreshed_duration_until_disable has passed. The
+  SingleTenantHsmInstance must be in the ACTIVE state to perform this
+  operation.
+  """
+
+
+
+class RegisterTwoFactorAuthKeys(_messages.Message):
+  r"""Register 2FA keys for the SingleTenantHsmInstance. This operation
+  requires all Challenges to be signed by 2FA keys. The
+  SingleTenantHsmInstance must be in the PENDING_TWO_FACTOR_AUTH_REGISTRATION
+  state to perform this operation.
+
+  Fields:
+    requiredApproverCount: Required. The required numbers of approvers to set
+      for the SingleTenantHsmInstance. This is the M value used for M of N
+      quorum auth. Must be greater than or equal to 2 and less than or equal
+      to total_approver_count - 1.
+    twoFactorPublicKeyPems: Required. The public keys associated with the 2FA
+      keys for M of N quorum auth. Public keys must be associated with RSA
+      2048 keys.
+  """
+
+  requiredApproverCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  twoFactorPublicKeyPems = _messages.StringField(2, repeated=True)
+
+
+class RemoveQuorumMember(_messages.Message):
+  r"""Remove a quorum member from the SingleTenantHsmInstance. This will
+  reduce total_approver_count by 1. The SingleTenantHsmInstance must be in the
+  ACTIVE state to perform this operation.
+
+  Fields:
+    twoFactorPublicKeyPem: Required. The public key associated with the 2FA
+      key for the quorum member to remove. Public keys must be associated with
+      RSA 2048 keys.
+  """
+
+  twoFactorPublicKeyPem = _messages.StringField(1)
+
+
+class RequiredActionQuorumParameters(_messages.Message):
+  r"""Parameters for an approval that has both required challenges and a
+  quorum.
+
+  Fields:
+    approvedTwoFactorPublicKeyPems: Output only. The public keys associated
+      with the 2FA keys that have already approved the
+      SingleTenantHsmInstanceProposal by signing the challenge.
+    quorumChallenges: Output only. The challenges to be signed by 2FA keys for
+      quorum auth. M of N of these challenges are required to be signed to
+      approve the operation.
+    requiredApproverCount: Output only. The required number of quorum
+      approvers. This is the M value used for M of N quorum auth. It is less
+      than the number of public keys.
+    requiredChallenges: Output only. A list of specific challenges that must
+      be signed. For some operations, this will contain a single challenge.
+  """
+
+  approvedTwoFactorPublicKeyPems = _messages.StringField(1, repeated=True)
+  quorumChallenges = _messages.MessageField('Challenge', 2, repeated=True)
+  requiredApproverCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  requiredChallenges = _messages.MessageField('Challenge', 4, repeated=True)
+
+
+class RequiredActionQuorumReply(_messages.Message):
+  r"""The reply to RequiredActionQuorumParameters for approving the proposal.
+
+  Fields:
+    quorumChallengeReplies: Required. Quorum members' signed challenge
+      replies. These can be provided across multiple requests. The proposal
+      will be approved when required_approver_count quorum_challenge_replies
+      are provided and when all required_challenge_replies are provided.
+    requiredChallengeReplies: Required. All required challenges must be signed
+      for the proposal to be approved. These can be sent across multiple
+      requests.
+  """
+
+  quorumChallengeReplies = _messages.MessageField('ChallengeReply', 1, repeated=True)
+  requiredChallengeReplies = _messages.MessageField('ChallengeReply', 2, repeated=True)
 
 
 class RestoreCryptoKeyVersionRequest(_messages.Message):
@@ -4452,6 +5004,182 @@ class ShowEffectiveKeyAccessJustificationsPolicyConfigResponse(_messages.Message
   """
 
   effectiveKajPolicy = _messages.MessageField('KeyAccessJustificationsPolicyConfig', 1)
+
+
+class SingleTenantHsmInstance(_messages.Message):
+  r"""A SingleTenantHsmInstance represents a single-tenant HSM instance. It
+  can be used for creating CryptoKeys with a ProtectionLevel of
+  HSM_SINGLE_TENANT, as well as performing cryptographic operations using keys
+  created within the SingleTenantHsmInstance.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the
+      SingleTenantHsmInstance.
+
+  Fields:
+    createTime: Output only. The time at which the SingleTenantHsmInstance was
+      created.
+    deleteTime: Output only. The time at which the SingleTenantHsmInstance was
+      deleted.
+    disableTime: Output only. The time at which the instance will be
+      automatically disabled if not refreshed. This field is updated upon
+      creation and after each successful refresh operation and enable. A
+      RefreshSingleTenantHsmInstance operation must be made via a
+      SingleTenantHsmInstanceProposal before this time otherwise the
+      SingleTenantHsmInstance will become disabled.
+    name: Identifier. The resource name for this SingleTenantHsmInstance in
+      the format `projects/*/locations/*/singleTenantHsmInstances/*`.
+    quorumAuth: Required. The quorum auth configuration for the
+      SingleTenantHsmInstance.
+    state: Output only. The state of the SingleTenantHsmInstance.
+    unrefreshedDurationUntilDisable: Output only. The system-defined duration
+      that an instance can remain unrefreshed until it is automatically
+      disabled. This will have a value of 120 days.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the SingleTenantHsmInstance.
+
+    Values:
+      STATE_UNSPECIFIED: Not specified.
+      CREATING: The SingleTenantHsmInstance is being created.
+      PENDING_TWO_FACTOR_AUTH_REGISTRATION: The SingleTenantHsmInstance is
+        waiting for 2FA keys to be registered. This can be done by calling
+        CreateSingleTenantHsmInstanceProposal with the
+        RegisterTwoFactorAuthKeys operation.
+      ACTIVE: The SingleTenantHsmInstance is ready to use. A
+        SingleTenantHsmInstance must be in the ACTIVE state for all CryptoKeys
+        created within the SingleTenantHsmInstance to be usable.
+      DISABLING: The SingleTenantHsmInstance is being disabled.
+      DISABLED: The SingleTenantHsmInstance is disabled.
+      DELETING: The SingleTenantHsmInstance is being deleted. Requests to the
+        instance will be rejected in this state.
+      DELETED: The SingleTenantHsmInstance has been deleted.
+      FAILED: The SingleTenantHsmInstance has failed and can not be recovered
+        or used.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    PENDING_TWO_FACTOR_AUTH_REGISTRATION = 2
+    ACTIVE = 3
+    DISABLING = 4
+    DISABLED = 5
+    DELETING = 6
+    DELETED = 7
+    FAILED = 8
+
+  createTime = _messages.StringField(1)
+  deleteTime = _messages.StringField(2)
+  disableTime = _messages.StringField(3)
+  name = _messages.StringField(4)
+  quorumAuth = _messages.MessageField('QuorumAuth', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  unrefreshedDurationUntilDisable = _messages.StringField(7)
+
+
+class SingleTenantHsmInstanceProposal(_messages.Message):
+  r"""A SingleTenantHsmInstanceProposal represents a proposal to perform an
+  operation on a SingleTenantHsmInstance.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the
+      SingleTenantHsmInstanceProposal.
+
+  Fields:
+    addQuorumMember: Add a quorum member to the SingleTenantHsmInstance. This
+      will increase the total_approver_count by 1. The SingleTenantHsmInstance
+      must be in the ACTIVE state to perform this operation.
+    createTime: Output only. The time at which the
+      SingleTenantHsmInstanceProposal was created.
+    deleteSingleTenantHsmInstance: Delete the SingleTenantHsmInstance.
+      Deleting a SingleTenantHsmInstance will make all CryptoKeys attached to
+      the SingleTenantHsmInstance unusable. The SingleTenantHsmInstance must
+      be in the DISABLED or PENDING_TWO_FACTOR_AUTH_REGISTRATION state to
+      perform this operation.
+    deleteTime: Output only. The time at which the
+      SingleTenantHsmInstanceProposal was deleted.
+    disableSingleTenantHsmInstance: Disable the SingleTenantHsmInstance. The
+      SingleTenantHsmInstance must be in the ACTIVE state to perform this
+      operation.
+    enableSingleTenantHsmInstance: Enable the SingleTenantHsmInstance. The
+      SingleTenantHsmInstance must be in the DISABLED state to perform this
+      operation.
+    expireTime: The time at which the SingleTenantHsmInstanceProposal will
+      expire if not approved and executed.
+    failureReason: Output only. The root cause of the most recent failure.
+      Only present if state is FAILED.
+    name: Identifier. The resource name for this SingleTenantHsmInstance in
+      the format
+      `projects/*/locations/*/singleTenantHsmInstances/*/proposals/*`.
+    purgeTime: Output only. The time at which the soft-deleted
+      SingleTenantHsmInstanceProposal will be permanently purged. This field
+      is only populated when the state is DELETED and will be set a time after
+      expiration of the proposal, i.e. >= expire_time or (create_time + ttl).
+    quorumParameters: Output only. The quorum approval parameters for the
+      SingleTenantHsmInstanceProposal.
+    refreshSingleTenantHsmInstance: Refreshes the SingleTenantHsmInstance.
+      This operation must be performed periodically to keep the
+      SingleTenantHsmInstance active. This operation must be performed before
+      unrefreshed_duration_until_disable has passed. The
+      SingleTenantHsmInstance must be in the ACTIVE state to perform this
+      operation.
+    registerTwoFactorAuthKeys: Register 2FA keys for the
+      SingleTenantHsmInstance. This operation requires all N Challenges to be
+      signed by 2FA keys. The SingleTenantHsmInstance must be in the
+      PENDING_TWO_FACTOR_AUTH_REGISTRATION state to perform this operation.
+    removeQuorumMember: Remove a quorum member from the
+      SingleTenantHsmInstance. This will reduce total_approver_count by 1. The
+      SingleTenantHsmInstance must be in the ACTIVE state to perform this
+      operation.
+    requiredActionQuorumParameters: Output only. Parameters for an approval of
+      a SingleTenantHsmInstanceProposal that has both required challenges and
+      a quorum.
+    state: Output only. The state of the SingleTenantHsmInstanceProposal.
+    ttl: Input only. The TTL for the SingleTenantHsmInstanceProposal.
+      Proposals will expire after this duration.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the SingleTenantHsmInstanceProposal.
+
+    Values:
+      STATE_UNSPECIFIED: Not specified.
+      CREATING: The SingleTenantHsmInstanceProposal is being created.
+      PENDING: The SingleTenantHsmInstanceProposal is pending approval.
+      APPROVED: The SingleTenantHsmInstanceProposal has been approved.
+      RUNNING: The SingleTenantHsmInstanceProposal is being executed.
+      SUCCEEDED: The SingleTenantHsmInstanceProposal has been executed
+        successfully.
+      FAILED: The SingleTenantHsmInstanceProposal has failed.
+      DELETED: The SingleTenantHsmInstanceProposal has been deleted and will
+        be purged after the purge_time.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    PENDING = 2
+    APPROVED = 3
+    RUNNING = 4
+    SUCCEEDED = 5
+    FAILED = 6
+    DELETED = 7
+
+  addQuorumMember = _messages.MessageField('AddQuorumMember', 1)
+  createTime = _messages.StringField(2)
+  deleteSingleTenantHsmInstance = _messages.MessageField('DeleteSingleTenantHsmInstance', 3)
+  deleteTime = _messages.StringField(4)
+  disableSingleTenantHsmInstance = _messages.MessageField('DisableSingleTenantHsmInstance', 5)
+  enableSingleTenantHsmInstance = _messages.MessageField('EnableSingleTenantHsmInstance', 6)
+  expireTime = _messages.StringField(7)
+  failureReason = _messages.StringField(8)
+  name = _messages.StringField(9)
+  purgeTime = _messages.StringField(10)
+  quorumParameters = _messages.MessageField('QuorumParameters', 11)
+  refreshSingleTenantHsmInstance = _messages.MessageField('RefreshSingleTenantHsmInstance', 12)
+  registerTwoFactorAuthKeys = _messages.MessageField('RegisterTwoFactorAuthKeys', 13)
+  removeQuorumMember = _messages.MessageField('RemoveQuorumMember', 14)
+  requiredActionQuorumParameters = _messages.MessageField('RequiredActionQuorumParameters', 15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  ttl = _messages.StringField(17)
 
 
 class StandardQueryParameters(_messages.Message):

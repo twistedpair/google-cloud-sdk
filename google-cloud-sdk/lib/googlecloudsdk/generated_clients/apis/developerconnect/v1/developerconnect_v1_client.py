@@ -167,6 +167,33 @@ class DeveloperconnectV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def FinishOAuthFlow(self, request, global_params=None):
+      r"""Finishes OAuth flow for an account connector.
+
+      Args:
+        request: (DeveloperconnectProjectsLocationsAccountConnectorsUsersFinishOAuthFlowRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FinishOAuthResponse) The response message.
+      """
+      config = self.GetMethodConfig('FinishOAuthFlow')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FinishOAuthFlow.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/accountConnectors/{accountConnectorsId}/users:finishOAuthFlow',
+        http_method='GET',
+        method_id='developerconnect.projects.locations.accountConnectors.users.finishOAuthFlow',
+        ordered_params=['accountConnector'],
+        path_params=['accountConnector'],
+        query_params=['googleOauthParams_scopes', 'googleOauthParams_ticket', 'googleOauthParams_versionInfo', 'oauthParams_code', 'oauthParams_ticket'],
+        relative_path='v1/{+accountConnector}/users:finishOAuthFlow',
+        request_field='',
+        request_type_name='DeveloperconnectProjectsLocationsAccountConnectorsUsersFinishOAuthFlowRequest',
+        response_type_name='FinishOAuthResponse',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists Users in a given project, location, and account_connector.
 
@@ -191,6 +218,33 @@ class DeveloperconnectV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DeveloperconnectProjectsLocationsAccountConnectorsUsersListRequest',
         response_type_name='ListUsersResponse',
+        supports_download=False,
+    )
+
+    def StartOAuthFlow(self, request, global_params=None):
+      r"""Starts OAuth flow for an account connector.
+
+      Args:
+        request: (DeveloperconnectProjectsLocationsAccountConnectorsUsersStartOAuthFlowRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (StartOAuthResponse) The response message.
+      """
+      config = self.GetMethodConfig('StartOAuthFlow')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StartOAuthFlow.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/accountConnectors/{accountConnectorsId}/users:startOAuthFlow',
+        http_method='GET',
+        method_id='developerconnect.projects.locations.accountConnectors.users.startOAuthFlow',
+        ordered_params=['accountConnector'],
+        path_params=['accountConnector'],
+        query_params=[],
+        relative_path='v1/{+accountConnector}/users:startOAuthFlow',
+        request_field='',
+        request_type_name='DeveloperconnectProjectsLocationsAccountConnectorsUsersStartOAuthFlowRequest',
+        response_type_name='StartOAuthResponse',
         supports_download=False,
     )
 

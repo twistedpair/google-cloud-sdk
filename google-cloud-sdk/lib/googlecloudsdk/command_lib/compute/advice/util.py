@@ -214,7 +214,7 @@ def GetTimeRangeSpec(args, messages):
       )
 
   # End time range.
-  if args.end_time_range:
+  if getattr(args, 'end_time_range', None):
     end_time_from = args.end_time_range.get('from', None)
     if end_time_from is not None:
       flexible_time_range.endTimeNotEarlierThan = times.FormatDateTime(
