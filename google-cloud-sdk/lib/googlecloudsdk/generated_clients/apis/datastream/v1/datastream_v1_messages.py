@@ -449,15 +449,16 @@ class DatastreamProjectsLocationsConnectionProfilesListRequest(_messages.Message
   r"""A DatastreamProjectsLocationsConnectionProfilesListRequest object.
 
   Fields:
-    filter: Filter request.
-    orderBy: Order by fields for the result.
-    pageSize: Maximum number of connection profiles to return. If unspecified,
-      at most 50 connection profiles will be returned. The maximum value is
-      1000; values above 1000 will be coerced to 1000.
-    pageToken: Page token received from a previous `ListConnectionProfiles`
-      call. Provide this to retrieve the subsequent page. When paginating, all
-      other parameters provided to `ListConnectionProfiles` must match the
-      call that provided the page token.
+    filter: Optional. Filter request.
+    orderBy: Optional. Order by fields for the result.
+    pageSize: Optional. Maximum number of connection profiles to return. If
+      unspecified, at most 50 connection profiles will be returned. The
+      maximum value is 1000; values above 1000 will be coerced to 1000.
+    pageToken: Optional. Page token received from a previous
+      `ListConnectionProfiles` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `ListConnectionProfiles` must match the call that provided the page
+      token.
     parent: Required. The parent that owns the collection of connection
       profiles.
   """
@@ -511,9 +512,10 @@ class DatastreamProjectsLocationsFetchStaticIpsRequest(_messages.Message):
   Fields:
     name: Required. The resource name for the location for which static IPs
       should be returned. Must be in the format `projects/*/locations/*`.
-    pageSize: Maximum number of Ips to return, will likely not be specified.
-    pageToken: A page token, received from a previous `ListStaticIps` call.
-      will likely not be specified.
+    pageSize: Optional. Maximum number of Ips to return, will likely not be
+      specified.
+    pageToken: Optional. A page token, received from a previous
+      `ListStaticIps` call. will likely not be specified.
   """
 
   name = _messages.StringField(1, required=True)
@@ -686,16 +688,17 @@ class DatastreamProjectsLocationsPrivateConnectionsListRequest(_messages.Message
   r"""A DatastreamProjectsLocationsPrivateConnectionsListRequest object.
 
   Fields:
-    filter: Filter request.
-    orderBy: Order by fields for the result.
+    filter: Optional. Filter request.
+    orderBy: Optional. Order by fields for the result.
     pageSize: Maximum number of private connectivity configurations to return.
       If unspecified, at most 50 private connectivity configurations that will
       be returned. The maximum value is 1000; values above 1000 will be
       coerced to 1000.
-    pageToken: Page token received from a previous `ListPrivateConnections`
-      call. Provide this to retrieve the subsequent page. When paginating, all
-      other parameters provided to `ListPrivateConnections` must match the
-      call that provided the page token.
+    pageToken: Optional. Page token received from a previous
+      `ListPrivateConnections` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `ListPrivateConnections` must match the call that provided the page
+      token.
     parent: Required. The parent that owns the collection of private
       connectivity configurations.
   """
@@ -771,15 +774,16 @@ class DatastreamProjectsLocationsPrivateConnectionsRoutesListRequest(_messages.M
   r"""A DatastreamProjectsLocationsPrivateConnectionsRoutesListRequest object.
 
   Fields:
-    filter: Filter request.
-    orderBy: Order by fields for the result.
-    pageSize: Maximum number of Routes to return. The service may return fewer
-      than this value. If unspecified, at most 50 Routes will be returned. The
-      maximum value is 1000; values above 1000 will be coerced to 1000.
-    pageToken: Page token received from a previous `ListRoutes` call. Provide
-      this to retrieve the subsequent page. When paginating, all other
-      parameters provided to `ListRoutes` must match the call that provided
-      the page token.
+    filter: Optional. Filter request.
+    orderBy: Optional. Order by fields for the result.
+    pageSize: Optional. Maximum number of Routes to return. The service may
+      return fewer than this value. If unspecified, at most 50 Routes will be
+      returned. The maximum value is 1000; values above 1000 will be coerced
+      to 1000.
+    pageToken: Optional. Page token received from a previous `ListRoutes`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListRoutes` must match the call that
+      provided the page token.
     parent: Required. The parent that owns the collection of Routess.
   """
 
@@ -857,15 +861,15 @@ class DatastreamProjectsLocationsStreamsListRequest(_messages.Message):
   r"""A DatastreamProjectsLocationsStreamsListRequest object.
 
   Fields:
-    filter: Filter request.
-    orderBy: Order by fields for the result.
-    pageSize: Maximum number of streams to return. If unspecified, at most 50
-      streams will be returned. The maximum value is 1000; values above 1000
-      will be coerced to 1000.
-    pageToken: Page token received from a previous `ListStreams` call. Provide
-      this to retrieve the subsequent page. When paginating, all other
-      parameters provided to `ListStreams` must match the call that provided
-      the page token.
+    filter: Optional. Filter request.
+    orderBy: Optional. Order by fields for the result.
+    pageSize: Optional. Maximum number of streams to return. If unspecified,
+      at most 50 streams will be returned. The maximum value is 1000; values
+      above 1000 will be coerced to 1000.
+    pageToken: Optional. Page token received from a previous `ListStreams`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListStreams` must match the call that
+      provided the page token.
     parent: Required. The parent that owns the collection of streams.
   """
 
@@ -890,12 +894,13 @@ class DatastreamProjectsLocationsStreamsObjectsListRequest(_messages.Message):
   r"""A DatastreamProjectsLocationsStreamsObjectsListRequest object.
 
   Fields:
-    pageSize: Maximum number of objects to return. Default is 50. The maximum
-      value is 1000; values above 1000 will be coerced to 1000.
-    pageToken: Page token received from a previous `ListStreamObjectsRequest`
-      call. Provide this to retrieve the subsequent page. When paginating, all
-      other parameters provided to `ListStreamObjectsRequest` must match the
-      call that provided the page token.
+    pageSize: Optional. Maximum number of objects to return. Default is 50.
+      The maximum value is 1000; values above 1000 will be coerced to 1000.
+    pageToken: Optional. Page token received from a previous
+      `ListStreamObjectsRequest` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `ListStreamObjectsRequest` must match the call that provided the page
+      token.
     parent: Required. The parent stream that owns the collection of objects.
   """
 
@@ -1017,22 +1022,25 @@ class DiscoverConnectionProfileRequest(_messages.Message):
   r"""Request message for 'discover' ConnectionProfile request.
 
   Fields:
-    connectionProfile: An ad-hoc connection profile configuration.
-    connectionProfileName: A reference to an existing connection profile.
-    fullHierarchy: Whether to retrieve the full hierarchy of data objects
-      (TRUE) or only the current level (FALSE).
-    hierarchyDepth: The number of hierarchy levels below the current level to
-      be retrieved.
-    mongodbCluster: MongoDB cluster to enrich with child data objects and
+    connectionProfile: Optional. An ad-hoc connection profile configuration.
+    connectionProfileName: Optional. A reference to an existing connection
+      profile.
+    fullHierarchy: Optional. Whether to retrieve the full hierarchy of data
+      objects (TRUE) or only the current level (FALSE).
+    hierarchyDepth: Optional. The number of hierarchy levels below the current
+      level to be retrieved.
+    mongodbCluster: Optional. MongoDB cluster to enrich with child data
+      objects and metadata.
+    mysqlRdbms: Optional. MySQL RDBMS to enrich with child data objects and
       metadata.
-    mysqlRdbms: MySQL RDBMS to enrich with child data objects and metadata.
-    oracleRdbms: Oracle RDBMS to enrich with child data objects and metadata.
-    postgresqlRdbms: PostgreSQL RDBMS to enrich with child data objects and
+    oracleRdbms: Optional. Oracle RDBMS to enrich with child data objects and
       metadata.
-    salesforceOrg: Salesforce organization to enrich with child data objects
-      and metadata.
-    sqlServerRdbms: SQLServer RDBMS to enrich with child data objects and
-      metadata.
+    postgresqlRdbms: Optional. PostgreSQL RDBMS to enrich with child data
+      objects and metadata.
+    salesforceOrg: Optional. Salesforce organization to enrich with child data
+      objects and metadata.
+    sqlServerRdbms: Optional. SQLServer RDBMS to enrich with child data
+      objects and metadata.
   """
 
   connectionProfile = _messages.MessageField('ConnectionProfile', 1)

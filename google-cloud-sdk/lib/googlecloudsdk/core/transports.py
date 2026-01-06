@@ -20,15 +20,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.calliope import base
-
 
 def GetApitoolsTransport(timeout='unset',
                          response_encoding=None,
                          ca_certs=None,
                          client_certificate=None,
-                         client_key=None,
-                         client_cert_domain=None):
+                         client_key=None):
   """Get an unauthenticated transport client for use with apitools.
 
   Args:
@@ -40,28 +37,17 @@ def GetApitoolsTransport(timeout='unset',
       default
     client_certificate: str, absolute filename of a client_certificate file
     client_key: str, absolute filename of a client_key file
-    client_cert_domain: str, domain we are connecting to (used only by httplib2)
 
   Returns:
-    1. A httplib2.Http-like object backed by httplib2 or requests.
+    1. A httplib2.Http-like object backed by requests.
   """
-  if base.UseRequests():
-    # pylint: disable=g-import-not-at-top
-    from googlecloudsdk.core import requests
-    session = requests.GetSession(
-        timeout=timeout,
-        ca_certs=ca_certs,
-        client_certificate=client_certificate,
-        client_key=client_key)
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.core import requests
+  session = requests.GetSession(
+      timeout=timeout,
+      ca_certs=ca_certs,
+      client_certificate=client_certificate,
+      client_key=client_key)
 
-    return requests.GetApitoolsRequests(
-        session, response_encoding=response_encoding)
-  else:
-    from googlecloudsdk.core import http  # pylint: disable=g-import-not-at-top
-    http_client = http.Http(
-        timeout=timeout, response_encoding=response_encoding, ca_certs=ca_certs)
-    # httplib2 always applies the first client certificate
-    # in the chain for authentication
-    http_client.certificates.credentials.insert(
-        0, (client_cert_domain, client_key, client_certificate, ''))
-    return http_client
+  return requests.GetApitoolsRequests(
+      session, response_encoding=response_encoding)

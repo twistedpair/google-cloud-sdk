@@ -589,6 +589,65 @@ class Empty(_messages.Message):
 
 
 
+class ExecutePipelineRequest(_messages.Message):
+  r"""The request for Firestore.ExecutePipeline.
+
+  Fields:
+    newTransaction: Execute the pipeline in a new transaction. The identifier
+      of the newly created transaction will be returned in the first response
+      on the stream. This defaults to a read-only transaction.
+    readTime: Execute the pipeline in a snapshot transaction at the given
+      time. This must be a microsecond precision timestamp within the past one
+      hour, or if Point-in-Time Recovery is enabled, can additionally be a
+      whole minute timestamp within the past 7 days.
+    structuredPipeline: A pipelined operation.
+    transaction: Run the query within an already active transaction. The value
+      here is the opaque transaction ID to execute the query in.
+  """
+
+  newTransaction = _messages.MessageField('TransactionOptions', 1)
+  readTime = _messages.StringField(2)
+  structuredPipeline = _messages.MessageField('StructuredPipeline', 3)
+  transaction = _messages.BytesField(4)
+
+
+class ExecutePipelineResponse(_messages.Message):
+  r"""The response for Firestore.Execute.
+
+  Fields:
+    executionTime: The time at which the results are valid. This is a (not
+      strictly) monotonically increasing value across multiple responses in
+      the same stream. The API guarantees that all previously returned results
+      are still valid at the latest `execution_time`. This allows the API
+      consumer to treat the query if it ran at the latest `execution_time`
+      returned. If the query returns no results, a response with
+      `execution_time` and no `results` will be sent, and this represents the
+      time at which the operation was run.
+    explainStats: Query explain stats. This is present on the **last**
+      response if the request configured explain to run in 'analyze' or
+      'explain' mode in the pipeline options. If the query does not return any
+      results, a response with `explain_stats` and no `results` will still be
+      sent.
+    results: An ordered batch of results returned executing a pipeline. The
+      batch size is variable, and can even be zero for when only a partial
+      progress message is returned. The fields present in the returned
+      documents are only those that were explicitly requested in the pipeline,
+      this includes those like `__name__` and `__update_time__`. This is
+      explicitly a divergence from `Firestore.RunQuery` /
+      `Firestore.GetDocument` RPCs which always return such fields even when
+      they are not specified in the `mask`.
+    transaction: Newly created transaction identifier. This field is only
+      specified as part of the first response from the server, alongside the
+      `results` field when the original request specified
+      ExecuteRequest.new_transaction.
+  """
+
+  executionTime = _messages.StringField(1)
+  explainStats = _messages.MessageField('ExplainStats', 2)
+  results = _messages.MessageField('Document', 3, repeated=True)
+  transaction = _messages.BytesField(4)
+
+
 class ExecutionStats(_messages.Message):
   r"""Execution statistics for the query.
 
@@ -699,6 +758,51 @@ class ExplainOptions(_messages.Message):
   """
 
   analyze = _messages.BooleanField(1)
+
+
+class ExplainStats(_messages.Message):
+  r"""Pipeline explain stats. Depending on the explain options in the original
+  request, this can contain the optimized plan and / or execution stats.
+
+  Messages:
+    DataValue: The format depends on the `output_format` options in the
+      request. Currently there are two supported options: `TEXT` and `JSON`.
+      Both supply a `google.protobuf.StringValue`.
+
+  Fields:
+    data: The format depends on the `output_format` options in the request.
+      Currently there are two supported options: `TEXT` and `JSON`. Both
+      supply a `google.protobuf.StringValue`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DataValue(_messages.Message):
+    r"""The format depends on the `output_format` options in the request.
+    Currently there are two supported options: `TEXT` and `JSON`. Both supply
+    a `google.protobuf.StringValue`.
+
+    Messages:
+      AdditionalProperty: An additional property for a DataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  data = _messages.MessageField('DataValue', 1)
 
 
 class FieldFilter(_messages.Message):
@@ -1282,6 +1386,20 @@ class FirestoreProjectsDatabasesDocumentsDeleteRequest(_messages.Message):
   name = _messages.StringField(3, required=True)
 
 
+class FirestoreProjectsDatabasesDocumentsExecutePipelineRequest(_messages.Message):
+  r"""A FirestoreProjectsDatabasesDocumentsExecutePipelineRequest object.
+
+  Fields:
+    database: Required. Database identifier, in the form
+      `projects/{project}/databases/{database}`.
+    executePipelineRequest: A ExecutePipelineRequest resource to be passed as
+      the request body.
+  """
+
+  database = _messages.StringField(1, required=True)
+  executePipelineRequest = _messages.MessageField('ExecutePipelineRequest', 2)
+
+
 class FirestoreProjectsDatabasesDocumentsGetRequest(_messages.Message):
   r"""A FirestoreProjectsDatabasesDocumentsGetRequest object.
 
@@ -1862,6 +1980,52 @@ class FirestoreProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
 
 
+class Function(_messages.Message):
+  r"""Represents an unevaluated scalar expression. For example, the expression
+  `like(user_name, "%alice%")` is represented as: ``` name: "like" args {
+  field_reference: "user_name" } args { string_value: "%alice%" } ```
+
+  Messages:
+    OptionsValue: Optional. Optional named arguments that certain functions
+      may support.
+
+  Fields:
+    args: Optional. Ordered list of arguments the given function expects.
+    name: Required. The name of the function to evaluate. **Requires:** * must
+      be in snake case (lower case with underscore separator).
+    options: Optional. Optional named arguments that certain functions may
+      support.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class OptionsValue(_messages.Message):
+    r"""Optional. Optional named arguments that certain functions may support.
+
+    Messages:
+      AdditionalProperty: An additional property for a OptionsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type OptionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a OptionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A Value attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('Value', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  args = _messages.MessageField('Value', 1, repeated=True)
+  name = _messages.StringField(2)
+  options = _messages.MessageField('OptionsValue', 3)
+
+
 class GoogleFirestoreAdminV1Backup(_messages.Message):
   r"""A Backup of a Cloud Firestore Database. The backup contains all
   documents and index configurations for the given database at a specific
@@ -2201,7 +2365,9 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
     AppEngineIntegrationModeValueValuesEnum: The App Engine integration mode
       to use for this database.
     ConcurrencyModeValueValuesEnum: The concurrency control mode to use for
-      this database.
+      this database. If unspecified in a CreateDatabase request, this will
+      default based on the database edition: Optimistic for Enterprise and
+      Pessimistic for all other databases.
     DatabaseEditionValueValuesEnum: Immutable. The edition of the database.
     DeleteProtectionStateValueValuesEnum: State of delete protection for the
       database.
@@ -2232,7 +2398,10 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
       database.
     cmekConfig: Optional. Presence indicates CMEK is enabled for this
       database.
-    concurrencyMode: The concurrency control mode to use for this database.
+    concurrencyMode: The concurrency control mode to use for this database. If
+      unspecified in a CreateDatabase request, this will default based on the
+      database edition: Optimistic for Enterprise and Pessimistic for all
+      other databases.
     createTime: Output only. The timestamp at which this database was created.
       Databases created before 2016 do not populate create_time.
     databaseEdition: Immutable. The edition of the database.
@@ -2319,19 +2488,24 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
     DISABLED = 2
 
   class ConcurrencyModeValueValuesEnum(_messages.Enum):
-    r"""The concurrency control mode to use for this database.
+    r"""The concurrency control mode to use for this database. If unspecified
+    in a CreateDatabase request, this will default based on the database
+    edition: Optimistic for Enterprise and Pessimistic for all other
+    databases.
 
     Values:
       CONCURRENCY_MODE_UNSPECIFIED: Not used.
       OPTIMISTIC: Use optimistic concurrency control by default. This mode is
-        available for Cloud Firestore databases.
+        available for Cloud Firestore databases. This is the default setting
+        for Cloud Firestore Enterprise Edition databases.
       PESSIMISTIC: Use pessimistic concurrency control by default. This mode
         is available for Cloud Firestore databases. This is the default
-        setting for Cloud Firestore.
+        setting for Cloud Firestore Standard Edition databases.
       OPTIMISTIC_WITH_ENTITY_GROUPS: Use optimistic concurrency control with
-        entity groups by default. This is the only available mode for Cloud
-        Datastore. This mode is also available for Cloud Firestore with
-        Datastore Mode but is not recommended.
+        entity groups by default. This mode is enabled for some databases that
+        were automatically upgraded from Cloud Datastore to Cloud Firestore
+        with Datastore Mode. It is not recommended for any new databases, and
+        not supported for Firestore Native databases.
     """
     CONCURRENCY_MODE_UNSPECIFIED = 0
     OPTIMISTIC = 1
@@ -4054,6 +4228,16 @@ class PartitionQueryResponse(_messages.Message):
   partitions = _messages.MessageField('Cursor', 2, repeated=True)
 
 
+class Pipeline(_messages.Message):
+  r"""A Firestore query represented as an ordered list of operations / stages.
+
+  Fields:
+    stages: Required. Ordered list of stages to evaluate.
+  """
+
+  stages = _messages.MessageField('Stage', 1, repeated=True)
+
+
 class PlanSummary(_messages.Message):
   r"""Planning phase information for the query.
 
@@ -4281,6 +4465,55 @@ class RunQueryResponse(_messages.Message):
   transaction = _messages.BytesField(6)
 
 
+class Stage(_messages.Message):
+  r"""A single operation within a pipeline. A stage is made up of a unique
+  name, and a list of arguments. The exact number of arguments & types is
+  dependent on the stage type. To give an example, the stage `filter(state =
+  "MD")` would be encoded as: ``` name: "filter" args { function_value { name:
+  "eq" args { field_reference_value: "state" } args { string_value: "MD" } } }
+  ``` See public documentation for the full list.
+
+  Messages:
+    OptionsValue: Optional. Optional named arguments that certain functions
+      may support.
+
+  Fields:
+    args: Optional. Ordered list of arguments the given stage expects.
+    name: Required. The name of the stage to evaluate. **Requires:** * must be
+      in snake case (lower case with underscore separator).
+    options: Optional. Optional named arguments that certain functions may
+      support.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class OptionsValue(_messages.Message):
+    r"""Optional. Optional named arguments that certain functions may support.
+
+    Messages:
+      AdditionalProperty: An additional property for a OptionsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type OptionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a OptionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A Value attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('Value', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  args = _messages.MessageField('Value', 1, repeated=True)
+  name = _messages.StringField(2)
+  options = _messages.MessageField('OptionsValue', 3)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -4407,6 +4640,48 @@ class StructuredAggregationQuery(_messages.Message):
 
   aggregations = _messages.MessageField('Aggregation', 1, repeated=True)
   structuredQuery = _messages.MessageField('StructuredQuery', 2)
+
+
+class StructuredPipeline(_messages.Message):
+  r"""A Firestore query represented as an ordered list of operations / stages.
+  This is considered the top-level function which plans and executes a query.
+  It is logically equivalent to `query(stages, options)`, but prevents the
+  client from having to build a function wrapper.
+
+  Messages:
+    OptionsValue: Optional. Optional query-level arguments.
+
+  Fields:
+    options: Optional. Optional query-level arguments.
+    pipeline: Required. The pipeline query to execute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class OptionsValue(_messages.Message):
+    r"""Optional. Optional query-level arguments.
+
+    Messages:
+      AdditionalProperty: An additional property for a OptionsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type OptionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a OptionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A Value attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('Value', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  options = _messages.MessageField('OptionsValue', 1)
+  pipeline = _messages.MessageField('Pipeline', 2)
 
 
 class StructuredQuery(_messages.Message):
@@ -4656,11 +4931,19 @@ class Value(_messages.Message):
     bytesValue: A bytes value. Must not exceed 1 MiB - 89 bytes. Only the
       first 1,500 bytes are considered by queries.
     doubleValue: A double value.
+    fieldReferenceValue: Value which references a field. This is considered
+      relative (vs absolute) since it only refers to a field and not a field
+      within a particular document. **Requires:** * Must follow field
+      reference limitations. * Not allowed to be used when writing documents.
+    functionValue: A value that represents an unevaluated expression.
+      **Requires:** * Not allowed to be used when writing documents.
     geoPointValue: A geo point value representing a point on the surface of
       Earth.
     integerValue: An integer value.
     mapValue: A map value.
     nullValue: A null value.
+    pipelineValue: A value that represents an unevaluated pipeline.
+      **Requires:** * Not allowed to be used when writing documents.
     referenceValue: A reference to a document. For example:
       `projects/{project_id}/databases/{database_id}/documents/{document_path}
       `.
@@ -4683,13 +4966,16 @@ class Value(_messages.Message):
   booleanValue = _messages.BooleanField(2)
   bytesValue = _messages.BytesField(3)
   doubleValue = _messages.FloatField(4)
-  geoPointValue = _messages.MessageField('LatLng', 5)
-  integerValue = _messages.IntegerField(6)
-  mapValue = _messages.MessageField('MapValue', 7)
-  nullValue = _messages.EnumField('NullValueValueValuesEnum', 8)
-  referenceValue = _messages.StringField(9)
-  stringValue = _messages.StringField(10)
-  timestampValue = _messages.StringField(11)
+  fieldReferenceValue = _messages.StringField(5)
+  functionValue = _messages.MessageField('Function', 6)
+  geoPointValue = _messages.MessageField('LatLng', 7)
+  integerValue = _messages.IntegerField(8)
+  mapValue = _messages.MessageField('MapValue', 9)
+  nullValue = _messages.EnumField('NullValueValueValuesEnum', 10)
+  pipelineValue = _messages.MessageField('Pipeline', 11)
+  referenceValue = _messages.StringField(12)
+  stringValue = _messages.StringField(13)
+  timestampValue = _messages.StringField(14)
 
 
 class Write(_messages.Message):

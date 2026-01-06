@@ -4516,7 +4516,7 @@ class GoogleCloudDocumentaiV1NextSchema(_messages.Message):
 
   Fields:
     createTime: Output only. The time when the Schema was created.
-    displayName: Optional. The user-defined name of the Schema.
+    displayName: Required. The user-defined name of the Schema.
     labels: Optional. The GCP labels for the Schema.
     name: Identifier. The resource name of the Schema. Format:
       `projects/{project}/locations/{location}/schemas/{schema}`
@@ -5258,7 +5258,7 @@ class GoogleCloudDocumentaiV1SchemaVersion(_messages.Message):
 
   Fields:
     createTime: Output only. The time when the SchemaVersion was created.
-    displayName: Optional. The user-defined name of the SchemaVersion.
+    displayName: Required. The user-defined name of the SchemaVersion.
     labels: Optional. The GCP labels for the SchemaVersion.
     name: Identifier. The resource name of the SchemaVersion. Format: `project
       s/{project}/locations/{location}/schemas/{schema}/schemaVersions/{schema

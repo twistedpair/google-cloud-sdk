@@ -294,7 +294,7 @@ class StorageBatchOperationsApi:
         )
     )
 
-  def list_batch_jobs(self, location=None, limit=None, page_size=None):
+  def list_batch_jobs(self, location=None, page_size=None):
     if location:
       parent_string = _get_parent_string(
           properties.VALUES.core.project.Get(), location
@@ -310,8 +310,35 @@ class StorageBatchOperationsApi:
         ),
         batch_size=page_size if page_size else PAGE_SIZE,
         batch_size_attribute="pageSize",
-        limit=limit,
         field="jobs",
+    )
+
+  def get_bucket_operation(self, bucket_operation_name):
+    """Gets a bucket operation by resource name."""
+    return self.client.projects_locations_jobs_bucketOperations.Get(
+        self.messages.StoragebatchoperationsProjectsLocationsJobsBucketOperationsGetRequest(
+            name=bucket_operation_name
+        )
+    )
+
+  def list_bucket_operations(
+      self, batch_job_name, bucket_names=None, page_size=None
+  ):
+    """Lists bucket operations for a batch job."""
+    filter_expression = None
+    if bucket_names:
+      filter_expression = " OR ".join(
+          ['bucket_name="{}"'.format(bucket) for bucket in bucket_names]
+      )
+    return list_pager.YieldFromList(
+        self.client.projects_locations_jobs_bucketOperations,
+        self.messages.StoragebatchoperationsProjectsLocationsJobsBucketOperationsListRequest(
+            parent=batch_job_name,
+            filter=filter_expression,
+        ),
+        batch_size=page_size if page_size else PAGE_SIZE,
+        batch_size_attribute="pageSize",
+        field="bucketOperations",
     )
 
   def cancel_batch_job(self, batch_job_name):

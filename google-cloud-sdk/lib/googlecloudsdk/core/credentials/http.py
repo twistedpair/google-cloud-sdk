@@ -35,8 +35,7 @@ def Http(timeout='unset',
          response_encoding=None,
          ca_certs=None,
          enable_resource_quota=True,
-         allow_account_impersonation=True,
-         use_google_auth=None):
+         allow_account_impersonation=True):
   """Get an httplib2.Http client for working with the Google API.
 
   Args:
@@ -53,16 +52,10 @@ def Http(timeout='unset',
     allow_account_impersonation: bool, True to allow use of impersonated service
       account credentials for calls made with this client. If False, the active
       user credentials will always be used.
-    use_google_auth: bool, True if the calling command indicates to use
-      google-auth library for authentication. If False, authentication will
-      fallback to using the oauth2client library. If None, set the value based
-      on the configuration.
 
   Returns:
     1. A regular httplib2.Http object if no credentials are available;
-    2. Or a httplib2.Http client object authorized by oauth2client
-       credentials if use_google_auth==False;
-    3. Or a google_auth_httplib2.AuthorizedHttp client object authorized by
+    2. Or a google_auth_httplib2.AuthorizedHttp client object authorized by
        google-auth credentials.
 
   Raises:
@@ -72,23 +65,19 @@ def Http(timeout='unset',
   http_client = http.Http(timeout=timeout, response_encoding=response_encoding,
                           ca_certs=ca_certs)
 
-  if use_google_auth is None:
-    use_google_auth = True
   request_wrapper = RequestWrapper()
   credentials = store.LoadIfEnabled(
-      allow_account_impersonation, use_google_auth
+      allow_account_impersonation
   )
   http_client = request_wrapper.WrapQuota(
       http_client,
       enable_resource_quota,
       allow_account_impersonation,
-      use_google_auth,
       credentials=credentials,
   )
   http_client = request_wrapper.WrapCredentials(
       http_client,
       allow_account_impersonation,
-      use_google_auth,
       credentials=credentials,
   )
 
@@ -137,14 +126,12 @@ class RequestWrapper(transport.CredentialWrappingMixin,
       http_client,
       enable_resource_quota,
       allow_account_impersonation,
-      use_google_auth,
       credentials=None,
   ):
     """Returns an http_client with quota project handling."""
     quota_project = self.QuotaProject(
         enable_resource_quota,
         allow_account_impersonation,
-        use_google_auth,
         credentials=credentials,
     )
     if not quota_project:

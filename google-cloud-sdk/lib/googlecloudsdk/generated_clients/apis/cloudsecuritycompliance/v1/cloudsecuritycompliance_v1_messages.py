@@ -936,8 +936,8 @@ class CloudsecuritycomplianceFoldersLocationsFrameworkComplianceSummariesListReq
       FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_BASIC: Includes basic compliance
         metadata, but omits trend data.
       FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_FULL: Includes all information,
-        including trend data for passing controls. Trend data is provided for
-        the last 30 days.
+        including finding_count and controls_passing_trend. Trend data is
+        provided for the last 30 days.
     """
     FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_UNSPECIFIED = 0
     FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_BASIC = 1
@@ -1332,8 +1332,8 @@ class CloudsecuritycomplianceOrganizationsLocationsFrameworkComplianceSummariesL
       FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_BASIC: Includes basic compliance
         metadata, but omits trend data.
       FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_FULL: Includes all information,
-        including trend data for passing controls. Trend data is provided for
-        the last 30 days.
+        including finding_count and controls_passing_trend. Trend data is
+        provided for the last 30 days.
     """
     FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_UNSPECIFIED = 0
     FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_BASIC = 1
@@ -1858,8 +1858,8 @@ class CloudsecuritycomplianceProjectsLocationsFrameworkComplianceSummariesListRe
       FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_BASIC: Includes basic compliance
         metadata, but omits trend data.
       FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_FULL: Includes all information,
-        including trend data for passing controls. Trend data is provided for
-        the last 30 days.
+        including finding_count and controls_passing_trend. Trend data is
+        provided for the last 30 days.
     """
     FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_UNSPECIFIED = 0
     FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_BASIC = 1

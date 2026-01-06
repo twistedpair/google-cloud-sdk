@@ -336,8 +336,14 @@ def add_cp_and_mv_flags(parser, release_track=base.ReleaseTrack.GA):
       help_text=(
           'Read the list of resources to copy from stdin. No need to enter'
           ' a source argument if this flag is present.\nExample:'
-          ' "storage cp -I gs://bucket/destination"\n'
-          ' Note: To copy the contents of one file directly from stdin, use "-"'
+          ' "storage cp -I gs://bucket/destination".\n'
+          'The input format must consist of one path (e.g.,'
+          ' "Documents/data/file1.txt") or one object URL (e.g.,'
+          ' "gs://example-bucket/event.log") per line. Use a pipe to send the'
+          ' file list to the command. Example:'
+          ' "cat example-file-list.txt | gcloud storage cp'
+          ' --read-paths-from-stdin gs://example-destination-bucket".\n'
+          'Note: To copy the contents of one file directly from stdin, use "-"'
           ' as the source argument without the "-I" flag.'
       ),
   )

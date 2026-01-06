@@ -105,7 +105,9 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
     )
     self._finalized_resource = None
     self._redirection_handler = bidi_retry_util.BidiRedirectedTokenErrorHandler(
-        self._client, self._destination_resource
+        self._client,
+        source_resource=self._source_resource,
+        destination_resource=self._destination_resource,
     )
     self._posix_to_set = posix_to_set
 
@@ -291,7 +293,8 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
           break
     except StopIteration as e:
       raise bidi_retry_util.BidiUploadStreamClosedError(
-          'The BiDi upload stream was unexpectedly closed.'
+          'The BiDi upload stream was unexpectedly closed for object:'
+          f' {self._destination_resource.storage_url.resource_name}'
       ) from e
     finally:
       # Cancel the rpc if it is still open.
@@ -489,7 +492,12 @@ class ResumableUpload(_Upload):
         self._bidi_write_appendable_object(resuming_upload=True)
         return self._get_object_metadata_after_upload()
       except command_errors.HashMismatchError as e:
-        log.info(e)
+        log.info(
+            'Failed to validate checksum for object: %s with error: %s.'
+            'Deleting the existing object and retrying the upload.',
+            destination_object.name,
+            e,
+        )
 
     return SimpleUpload(
         client=self._client,

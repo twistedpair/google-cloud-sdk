@@ -1482,7 +1482,7 @@ def GetOsloginState(
 def IsThirdPartyUser():
   """Checks if the Authenticated User is a BYOID User."""
   try:
-    creds = c_store.LoadFreshCredential(use_google_auth=True)
+    creds = c_store.LoadFreshCredential()
   except creds_exceptions.Error:
     log.debug('Failed to load fresh credentials.')
     return False

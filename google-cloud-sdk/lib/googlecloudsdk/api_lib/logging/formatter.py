@@ -66,7 +66,7 @@ def GetTimestampFromLogFormat(is_log_entry, log):
 
 
 def GetAttributeFieldFromLog(field_name, is_log_entry, log_obj):
-  return getattr(log_obj, GetProperField(field_name, is_log_entry), '')
+  return getattr(log_obj, GetProperField(field_name, is_log_entry), None) or ''
 
 
 def GetProperField(field_name, is_log_entry):

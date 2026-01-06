@@ -573,15 +573,7 @@ class Binding(_messages.Message):
 
 
 class CreateIcebergTableRequest(_messages.Message):
-  r"""The request message for the `CreateIcebergTable` API.
-
-  Fields:
-    httpBody: Required. The request body that should be in the format of
-      Apache Iceberg's `#/components/schemas/CreateTableRequest`. Content type
-      is expected to be `application/json`.
-  """
-
-  httpBody = _messages.MessageField('HttpBody', 1)
+  r"""The request message for the `CreateIcebergTable` API."""
 
 
 class Empty(_messages.Message):
@@ -1310,16 +1302,7 @@ class UpdateIcebergNamespaceResponse(_messages.Message):
 
 
 class UpdateIcebergTableRequest(_messages.Message):
-  r"""The update message for the `UpdateIcebergTable` API.
-
-  Fields:
-    updates: Required. The request body that should be in the format of Apache
-      Iceberg's `#/components/schemas/CommitTableRequest`. Content type is
-      expected to be `application/json`. Added this field for easier json
-      parsing.
-  """
-
-  updates = _messages.MessageField('HttpBody', 1)
+  r"""The update message for the `UpdateIcebergTable` API."""
 
 
 encoding.AddCustomJsonFieldMapping(

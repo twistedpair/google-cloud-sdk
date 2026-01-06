@@ -1010,6 +1010,8 @@ class PredictionServiceClient(metaclass=PredictionServiceClientMeta):
                 Required. The name of the Endpoint requested to serve
                 the prediction. Format:
                 ``projects/{project}/locations/{location}/endpoints/{endpoint}``
+                or
+                ``projects/{project}/locations/{location}/publishers/{publisher}/models/{model}``
 
                 This corresponds to the ``endpoint`` field
                 on the ``request`` instance; if ``request`` is provided, this

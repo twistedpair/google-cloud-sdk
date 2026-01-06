@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import re
+from typing import Any
 
 from googlecloudsdk.api_lib.storage import errors as cloud_errors
 from googlecloudsdk.api_lib.storage import retry_util as storage_retry_util
@@ -124,27 +125,41 @@ class BidiRedirectedTokenErrorHandler:
   def __init__(
       self,
       client,
+      *,
+      source_resource: Any | None = None,
       destination_resource: (
           resource_reference.ObjectResource | resource_reference.UnknownResource
-      ),
+      ) | None = None,
   ):
     """Initializes the BidiRedirectedTokenErrorHandler.
 
     Args:
       client (gapic_clients.storage_v2.services.storage.client.StorageClient):
         The GAPIC client.
-      destination_resource: Metadata for the destination object.
+      source_resource: The source resource of the data transfer.
+      destination_resource: The destination resource of the data transfer.
 
     """
     self._client = client
+    self._source_resource = source_resource
     self._destination_resource = destination_resource
+    if (
+        destination_resource is not None and
+        hasattr(destination_resource, 'storage_url')
+        and destination_resource.storage_url.bucket_name
+    ):
+      self._cloud_resource = destination_resource
+    else:
+      self._cloud_resource = source_resource
     self._routing_token = None
 
   def __repr__(self) -> str:
     return (
         f'{self.__class__.__name__}('
         f'client={self._client!r}, '
+        f'source_resource={self._source_resource!r}, '
         f'destination_resource={self._destination_resource!r}, '
+        f'cloud_resource={self._cloud_resource!r}, '
         f'routing_token={self._routing_token!r})'
     )
 
@@ -185,10 +200,12 @@ class BidiRedirectedTokenErrorHandler:
         initial_request=initial_request,
         metadata=metadata_util.get_bucket_name_routing_header(
             grpc_util.get_full_bucket_name(
-                self._destination_resource.storage_url.bucket_name
+                self._cloud_resource.storage_url.bucket_name
             ),
             routing_token=self._routing_token,
         ),
+        source_resource=self._source_resource,
+        destination_resource=self._destination_resource,
     )
 
   def start_bidi_rpc_with_retry_on_redirected_token_error(

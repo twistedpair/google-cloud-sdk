@@ -132,15 +132,24 @@ class Ssh:
     ])
     try:
       output = subprocess.check_output(command, stderr=subprocess.PIPE)
-      service_data = json.loads(output)
-      return (
-          service_data.get("spec", {})
-          .get("template", {})
-          .get("spec", {})
-          .get("serviceAccountName")
-      )
     except subprocess.CalledProcessError as e:
-      raise ValueError(f"Failed to get service account: {e}")
+      raise ValueError(
+          f"Error describing deployment: {e.stderr.decode('utf-8')}"
+      ) from e
+    else:
+      service_data = json.loads(output)
+      template = service_data.get("spec", {}).get("template", {})
+      execution_environment = (
+          template.get("metadata", {})
+          .get("annotations", {})
+          .get("run.googleapis.com/execution-environment")
+      )
+      if execution_environment == "gen1":
+        raise ValueError("SSH is not supported for Cloud Run gen1 deployments.")
+      service_account = template.get("spec", {}).get("serviceAccountName")
+      if not service_account:
+        raise ValueError("Service account not found for workload.")
+      return service_account
 
   def HostKeyAlias(self):
     """Returns the host key alias for the SSH connection."""

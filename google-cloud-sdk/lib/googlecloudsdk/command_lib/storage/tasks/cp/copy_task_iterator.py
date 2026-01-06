@@ -533,6 +533,23 @@ class CopyTaskIterator:
           source_url, destination_url
       )
 
+      should_skip_file_download = (
+          copy_util.should_skip_file_download_if_outside_destination(
+              source_url,
+              source.expanded_url,
+              destination_url,
+              self._raw_destination.storage_url,
+          )
+      )
+      if should_skip_file_download:
+        message = (
+            f'Skipping copy of source URL {source_url} because it would'
+            ' be copied outside the expected destination directory:'
+            f' {self._raw_destination.storage_url.resource_name}.'
+        )
+        self._print_skip_and_maybe_send_to_manifest(message, source)
+        continue
+
       if (
           self._folders_only
           and self._delete_source

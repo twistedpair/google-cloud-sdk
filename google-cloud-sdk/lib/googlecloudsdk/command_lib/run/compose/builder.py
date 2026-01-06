@@ -15,6 +15,8 @@
 """Build config for Run Compose."""
 
 from __future__ import annotations
+
+import hashlib
 import os
 from typing import Any, Dict
 
@@ -116,6 +118,34 @@ def handle(
 
   if not all(results):
     raise exceptions.Error('One or more container builds failed.')
+
+
+def _calculate_source_fingerprint(build_config: BuildConfig) -> str:
+  """Calculates the fingerprint of the source code."""
+  if build_config.context is None:
+    return ''
+  if not os.path.isdir(build_config.context):
+    raise exceptions.Error(
+        f'Build context path is not a directory: {build_config.context}'
+    )
+
+  sha1 = hashlib.sha256()
+  for root, dirs, filenames in os.walk(build_config.context, topdown=True):
+    dirs.sort()
+    filenames.sort()
+    for filename in filenames:
+      filepath = os.path.join(root, filename)
+      relpath = os.path.relpath(filepath, build_config.context)
+      sha1.update(relpath.encode('utf-8'))
+      try:
+        with files.BinaryFileReader(filepath) as f:
+          while chunk := f.read(8192):
+            sha1.update(chunk)
+      except files.Error as e:
+        raise exceptions.Error(
+            f'Could not read file {filepath} for fingerprinting: {e}'
+        )
+  return sha1.hexdigest()
 
 
 def _poll_and_handle_build_result(

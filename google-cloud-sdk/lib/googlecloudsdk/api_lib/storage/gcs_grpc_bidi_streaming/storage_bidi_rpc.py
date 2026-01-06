@@ -31,7 +31,13 @@ _STORAGE_BIDI_RPC_WORKER_NAME = 'StorageBidiRpcWorker'
 
 
 def _execute_with_timeout(
-    target_func: Callable[..., Any], timeout: float, *, args=None, kwargs=None
+    target_func: Callable[..., Any],
+    timeout: float,
+    *,
+    source_resource: Any | None = None,
+    destination_resource: Any | None = None,
+    args=None,
+    kwargs=None,
 ) -> Any:
   """Executes target_func with args and kwargs with a timeout."""
   if args is None:
@@ -73,20 +79,28 @@ def _execute_with_timeout(
     result_dict = result_queue.get(timeout=timeout)
   except queue.Empty as e:
     log.debug(
-        'Operation %s timed out after %s seconds.',
+        'Operation %s for data transfer from source %s to destination %s,'
+        ' timed out after %s seconds.',
         getattr(target_func, '__name__', repr(target_func)),
+        source_resource,
+        destination_resource,
         timeout,
     )
     raise api_errors.RetryableApiError(
-        f'Operation {getattr(target_func, "__name__", repr(target_func))} timed'
+        f'Operation {getattr(target_func, "__name__", repr(target_func))} for'
+        f' data transfer from source {source_resource} to destination'
+        f' {destination_resource} timed'
         f' out after {timeout} seconds.'
     ) from e
   else:
     if result_dict.get('exception'):
       exception = result_dict['exception']
       log.debug(
-          'Operation %s failed with exception: %r',
+          'Operation %s for data transfer from source %s to destination %s,'
+          ' failed with exception: %r',
           getattr(target_func, '__name__', repr(target_func)),
+          source_resource,
+          destination_resource,
           exception,
       )
       raise exception
@@ -103,8 +117,11 @@ class StorageBidiRpc:
       self,
       client,
       start_rpc,
+      *,
       initial_request=None,
       metadata: list[tuple[str, str]] | None = None,
+      source_resource: Any | None = None,
+      destination_resource: Any | None = None,
   ):
     """Initializes a StorageBidiRpc instance.
 
@@ -116,11 +133,15 @@ class StorageBidiRpc:
       metadata: The metadata to use for the RPC. This is typically a list of
         tuples. The first string in the tuple is the header name and the second
         is the header value.
+      source_resource: The source resource of the RPC.
+      destination_resource: The destination resource of the RPC.
     """
     self._client = client
     self._start_rpc = start_rpc
     self._initial_request = initial_request
     self._metadata = metadata
+    self._source_resource = source_resource
+    self._destination_resource = destination_resource
     self._bidi_rpc = gapic_util.MakeBidiRpc(
         client,
         start_rpc,
@@ -138,7 +159,13 @@ class StorageBidiRpc:
     effective_timeout = (
         _DEFAULT_TIMEOUT if timeout_seconds is None else timeout_seconds
     )
-    log.debug('Opening bidi RPC with timeout: %s', effective_timeout)
+    log.debug(
+        'Opening bidi RPC with timeout: %s, for data transfer from source %s to'
+        ' destination %s.',
+        effective_timeout,
+        self._source_resource,
+        self._destination_resource,
+    )
     # Open is a blocking call due to default pre-fetching, If we are unlucky and
     # some other thread or proxy closes the connection while the open call is in
     # progress, it can get stuck in the open call forever. Hence, we need to
@@ -146,11 +173,20 @@ class StorageBidiRpc:
     # The bidi rpc currently does not provide a way to provide per method
     # timeout(see  https://github.com/grpc/grpc/issues/20562) so this custom
     # timeout implemetation is needed.
-    _execute_with_timeout(self._bidi_rpc.open, timeout=effective_timeout)
+    _execute_with_timeout(
+        self._bidi_rpc.open,
+        timeout=effective_timeout,
+        source_resource=self._source_resource,
+        destination_resource=self._destination_resource,
+    )
 
   def close(self) -> None:
     """Closes the bidi RPC."""
-    log.debug('Closing bidi RPC.')
+    log.debug(
+        'Closing bidi RPC, for data transfer from source %s to destination %s.',
+        self._source_resource,
+        self._destination_resource,
+    )
     self._bidi_rpc.close()
 
   @property
@@ -163,7 +199,11 @@ class StorageBidiRpc:
         _DEFAULT_TIMEOUT if timeout_seconds is None else timeout_seconds
     )
     log.debug(
-        'Receiving response from bidi RPC with timeout: %s', effective_timeout
+        'Receiving response from bidi RPC with timeout: %s, for data transfer'
+        ' from source %s to destination %s.',
+        effective_timeout,
+        self._source_resource,
+        self._destination_resource,
     )
     # Recv is a blocking call. If we are unlucky and some other thread or proxy
     # closes the connection while the recv call is in progress, it can get stuck
@@ -171,13 +211,29 @@ class StorageBidiRpc:
     # The bidi rpc currently does not provide a way to provide per method
     # timeout(see  https://github.com/grpc/grpc/issues/20562) so this custom
     # timeout implemetation is needed.
-    return _execute_with_timeout(self._bidi_rpc.recv, timeout=effective_timeout)
+    return _execute_with_timeout(
+        self._bidi_rpc.recv,
+        timeout=effective_timeout,
+        source_resource=self._source_resource,
+        destination_resource=self._destination_resource,
+    )
 
   def send(self, request: Any) -> None:
     """Sends a request to the bidi RPC."""
-    log.debug('Sending request to bidi RPC.')
+    log.debug(
+        'Sending request to bidi RPC, for data transfer from source %s to'
+        ' destination %s.',
+        self._source_resource,
+        self._destination_resource,
+    )
     self._bidi_rpc.send(request)
 
   def requests_done(self) -> None:
     """Signals that client is done sending requests (half-close)."""
-    self._bidi_rpc._request_queue.put(None)  # pylint: disable=protected-access
+    log.debug(
+        'Half-closing bidi RPC, for data transfer from source %s to'
+        ' destination %s.',
+        self._source_resource,
+        self._destination_resource,
+    )
+    self._bidi_rpc.send(None)

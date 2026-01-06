@@ -41,6 +41,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_APICAPABILITYENABLEMENTPOLICIES = (
+      'projects.locations.apiCapabilityEnablementPolicies',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'apiCapabilityEnablementPolicies/'
+              '{apiCapabilityEnablementPoliciesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_MCPSERVERS = (
       'projects.locations.mcpServers',
       '{+name}',
@@ -59,6 +71,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/mcpServers/'
               '{mcpServersId}/mcpTools/{mcpToolsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_OPERATIONS = (
+      'projects.locations.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/operations/'
+              '{operationsId}',
       },
       ['name'],
       True

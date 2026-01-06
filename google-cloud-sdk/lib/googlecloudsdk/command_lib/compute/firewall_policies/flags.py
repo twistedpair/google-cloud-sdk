@@ -393,6 +393,20 @@ def AddDescription(parser, required=False):
   )
 
 
+def AddRolloutPlan(parser):
+  """Adds rollout plan for the firewall policy."""
+  parser.add_argument(
+      '--rollout-plan',
+      metavar='ROLLOUT_PLAN',
+      required=False,
+      hidden=True,
+      help=(
+          'Rollout plan for the firewall policy. If not provided, the default '
+          'plan will be applied.'
+      ),
+  )
+
+
 def AddArgsCreateAssociation(parser):
   """Adds the arguments of association creation."""
   parser.add_argument(

@@ -3347,6 +3347,8 @@ class Instance(_messages.Message):
   tables in an instance are served from all Clusters in the instance.
 
   Enums:
+    EditionValueValuesEnum: Optional. The edition of the instance. See Edition
+      for details.
     StateValueValuesEnum: Output only. The current state of the instance.
     TypeValueValuesEnum: The type of the instance. Defaults to `PRODUCTION`.
 
@@ -3375,6 +3377,7 @@ class Instance(_messages.Message):
     displayName: Required. The descriptive name for this instance as it
       appears in UIs. Can be changed at any time, but should be kept globally
       unique to avoid confusion.
+    edition: Optional. The edition of the instance. See Edition for details.
     labels: Labels are a flexible and lightweight mechanism for organizing
       cloud resources into groups that reflect a customer's organizational
       needs and deployment strategies. They can be used to filter resources
@@ -3397,6 +3400,25 @@ class Instance(_messages.Message):
       in-depth overview on the difference between tags and labels.
     type: The type of the instance. Defaults to `PRODUCTION`.
   """
+
+  class EditionValueValuesEnum(_messages.Enum):
+    r"""Optional. The edition of the instance. See Edition for details.
+
+    Values:
+      EDITION_UNSPECIFIED: The edition is unspecified. This is treated as
+        `ENTERPRISE`.
+      ENTERPRISE: The Enterprise edition. This is the default offering that is
+        designed to meet the needs of most enterprise workloads.
+      ENTERPRISE_PLUS: The Enterprise Plus edition. This is a premium tier
+        that is designed for demanding, multi-tenant workloads requiring the
+        highest levels of performance, scale, and global availability. The
+        nodes in the Enterprise Plus tier come at a higher cost than the
+        Enterprise tier. Any Enterprise Plus features must be disabled before
+        downgrading to Enterprise.
+    """
+    EDITION_UNSPECIFIED = 0
+    ENTERPRISE = 1
+    ENTERPRISE_PLUS = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of the instance.
@@ -3491,13 +3513,14 @@ class Instance(_messages.Message):
 
   createTime = _messages.StringField(1)
   displayName = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  satisfiesPzi = _messages.BooleanField(5)
-  satisfiesPzs = _messages.BooleanField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  tags = _messages.MessageField('TagsValue', 8)
-  type = _messages.EnumField('TypeValueValuesEnum', 9)
+  edition = _messages.EnumField('EditionValueValuesEnum', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  satisfiesPzi = _messages.BooleanField(6)
+  satisfiesPzs = _messages.BooleanField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  tags = _messages.MessageField('TagsValue', 9)
+  type = _messages.EnumField('TypeValueValuesEnum', 10)
 
 
 class Intersection(_messages.Message):

@@ -81,15 +81,13 @@ def GetSession(timeout='unset',
       redact_request_body_reason=redact_request_body_reason,
   )
   request_wrapper = RequestWrapper()
-  use_google_auth = True
   credentials = store.LoadIfEnabled(
-      allow_account_impersonation, use_google_auth
+      allow_account_impersonation
   )
   session = request_wrapper.WrapQuota(
       session,
       enable_resource_quota,
       allow_account_impersonation,
-      True,
       credentials=credentials,
   )
   session = request_wrapper.WrapCredentials(
@@ -141,14 +139,12 @@ class RequestWrapper(
       http_client,
       enable_resource_quota,
       allow_account_impersonation,
-      use_google_auth,
       credentials=None,
   ):
     """Returns an http_client with quota project handling."""
     quota_project = self.QuotaProject(
         enable_resource_quota,
         allow_account_impersonation,
-        use_google_auth,
         credentials=credentials,
     )
     if not quota_project:

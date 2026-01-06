@@ -406,7 +406,7 @@ ENABLE_IP_ALIAS_FLAG = base.Argument(
     default=None,
     action='store_true',
     help="""\
-    Enable use of alias IPs (https://cloud.google.com/compute/docs/alias-ip/)
+    Enable use of link:https://cloud.google.com/compute/docs/alias-ip[alias IPs]
     for Pod IPs. This will require at least two secondary ranges in the
     subnetwork, one for the pod IPs and another to reserve space for the
     services range.
@@ -417,8 +417,7 @@ DISABLE_MASTER_AUTHORIZED_NETWORKS_FLAG = base.Argument(
     default=None,
     action='store_true',
     help="""\
-    Disable Master Authorized Networks feature
-    (https://cloud.google.com/kubernetes-engine/docs/how-to/authorized-networks/)
+    Disable link:https://cloud.google.com/kubernetes-engine/docs/how-to/authorized-networks[Master Authorized Networks feature]
     in the Composer Environment's GKE cluster.
     """)
 
@@ -427,9 +426,8 @@ ENABLE_MASTER_AUTHORIZED_NETWORKS_FLAG = base.Argument(
     default=None,
     action='store_true',
     help="""\
-    Enable Master Authorized Networks feature
-    (https://cloud.google.com/kubernetes-engine/docs/how-to/authorized-networks/)
-    in the Composer Environment's GKE cluster.
+    Enable link:https://cloud.google.com/kubernetes-engine/docs/how-to/authorized-networks[Master Authorized Networks feature]
+     in the Composer Environment's GKE cluster.
     """)
 
 MASTER_AUTHORIZED_NETWORKS_FLAG = base.Argument(
@@ -467,11 +465,10 @@ NETWORK_FLAG = base.Argument(
 
 SUBNETWORK_FLAG = base.Argument(
     '--subnetwork',
-    help=(
-        'The Compute Engine Subnetwork '
-        '(https://cloud.google.com/compute/docs/subnetworks) to which the '
-        'environment will be connected.'
-    ),
+    help="""\
+    The link:https://cloud.google.com/compute/docs/subnetworks[Compute Engine Subnetwork]
+    to which the environment will be connected.
+    """,
 )
 
 NETWORK_ATTACHMENT = base.Argument(
@@ -1065,8 +1062,8 @@ ENABLE_IP_MASQ_AGENT_FLAG = base.Argument(
     default=None,
     action='store_true',
     help="""\
-    When enabled, the IP Masquarade Agent
-    (https://cloud.google.com/composer/docs/enable-ip-masquerade-agent)
+    When enabled, the
+     link:https://cloud.google.com/composer/docs/enable-ip-masquerade-agent[IP Masquerade Agent]
     is deployed to your environment's cluster.
     It performs many-to-one IP address translations to hide a pod's IP address
     behind the cluster node's IP address. This is done when sending traffic to

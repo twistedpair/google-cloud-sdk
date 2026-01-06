@@ -30,13 +30,10 @@ from google.oauth2 import credentials
 from google.oauth2 import reauth as google_auth_reauth
 from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core import http
 from googlecloudsdk.core import log
-from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import retry
 from oauth2client import client as oauth2client_client
-from oauth2client.contrib import reauth
 from pyu2f import errors as pyu2f_errors
 import six
 from six.moves import http_client
@@ -108,53 +105,16 @@ class Credentials(credentials.Credentials):
             'cannot prompt during non-interactive execution.'
         )
 
-      # When we clean up oauth2client code in the future, we can remove the else
-      # part.
-      if properties.VALUES.auth.reauth_use_google_auth.GetBool():
-        log.debug('using google-auth reauth')
+      log.debug('using google-auth reauth')
 
-        try:
-          from pyu2f.convenience import customauthenticator  # pylint: disable=g-import-not-at-top
+      try:
+        from pyu2f.convenience import customauthenticator  # pylint: disable=g-import-not-at-top
 
-          # pyu2f has a hardcoded 5s timeout for the users to touch the security
-          # key. Here we extend it to 15s.
-          customauthenticator.U2F_SIGNATURE_TIMEOUT_SECONDS = 15
-          self._rapt_token = google_auth_reauth.get_rapt_token(
-              request,
-              self._client_id,
-              self._client_secret,
-              self._refresh_token,
-              self._token_uri,
-              list(self.scopes or []),
-          )
-
-        except pyu2f_errors.OsHidError as e:
-          # The device does not have a security key attached.
-          # Sometimes manually re-authenticating gets around this.
-          raise google_auth_exceptions.ReauthFailError(
-              'A security key reauthentication challenge was issued but no key'
-              ' was found. Try manually reauthenticating.'
-          ) from e
-
-        except KeyError:
-          # context: b/328663283
-          # pyu2f lib doesn't handle the timeout well. When timeout happens, the
-          # key challenge pair is ('', ''), which doesn't exist in the client
-          # data map and causes a key error, see
-          # https://github.com/google/pyu2f/blob/master/pyu2f/convenience/customauthenticator.py#L108
-          raise google_auth_exceptions.RefreshError(
-              'Failed to obtain reauth rapt token. Did you touch the security '
-              'key within the 15 second timeout window?'
-          )
-      else:
-        # reauth.GetRaptToken is implemented in oauth2client and it is built on
-        # httplib2. GetRaptToken does not work with
-        # google.auth.transport.Request.
-        log.debug('using oauth2client reauth')
-        response_encoding = None if six.PY2 else 'utf-8'
-        http_request = http.Http(response_encoding=response_encoding).request
-        self._rapt_token = reauth.GetRaptToken(
-            http_request,
+        # pyu2f has a hardcoded 5s timeout for the users to touch the security
+        # key. Here we extend it to 15s.
+        customauthenticator.U2F_SIGNATURE_TIMEOUT_SECONDS = 15
+        self._rapt_token = google_auth_reauth.get_rapt_token(
+            request,
             self._client_id,
             self._client_secret,
             self._refresh_token,
@@ -162,7 +122,26 @@ class Credentials(credentials.Credentials):
             list(self.scopes or []),
         )
 
-    return self._Refresh(request)
+      except pyu2f_errors.OsHidError as e:
+        # The device does not have a security key attached.
+        # Sometimes manually re-authenticating gets around this.
+        raise google_auth_exceptions.ReauthFailError(
+            'A security key reauthentication challenge was issued but no key'
+            ' was found. Try manually reauthenticating.'
+        ) from e
+
+      except KeyError:
+        # context: b/328663283
+        # pyu2f lib doesn't handle the timeout well. When timeout happens, the
+        # key challenge pair is ('', ''), which doesn't exist in the client
+        # data map and causes a key error, see
+        # https://github.com/google/pyu2f/blob/master/pyu2f/convenience/customauthenticator.py#L108
+        raise google_auth_exceptions.RefreshError(
+            'Failed to obtain reauth rapt token. Did you touch the security '
+            'key within the 15 second timeout window?'
+        )
+
+    self._Refresh(request)
 
   def _Refresh(self, request):
     if (self._refresh_token is None or self._token_uri is None or

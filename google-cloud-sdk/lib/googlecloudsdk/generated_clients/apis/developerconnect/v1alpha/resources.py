@@ -82,6 +82,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_INSIGHTSCONFIGS_DEPLOYMENTEVENTS = (
+      'projects.locations.insightsConfigs.deploymentEvents',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/insightsConfigs/'
+              '{insightsConfigsId}/deploymentEvents/{deploymentEventsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_SECRETS = (
       'projects.secrets',
       'projects/{projectsId}/secrets/{secretsId}',

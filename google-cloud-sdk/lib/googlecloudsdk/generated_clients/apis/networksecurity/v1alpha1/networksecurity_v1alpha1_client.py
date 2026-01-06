@@ -6110,6 +6110,33 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListNetworks(self, request, global_params=None):
+      r"""List the networks configured for mirroring for a given UllMirroringEngine.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsUllMirroringEnginesListNetworksRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListNetworksForEngineResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListNetworks')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListNetworks.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/ullMirroringEngines/{ullMirroringEnginesId}:listNetworks',
+        http_method='POST',
+        method_id='networksecurity.projects.locations.ullMirroringEngines.listNetworks',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:listNetworks',
+        request_field='listNetworksForEngineRequest',
+        request_type_name='NetworksecurityProjectsLocationsUllMirroringEnginesListNetworksRequest',
+        response_type_name='ListNetworksForEngineResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates a UllMirroringEngine resource.
 

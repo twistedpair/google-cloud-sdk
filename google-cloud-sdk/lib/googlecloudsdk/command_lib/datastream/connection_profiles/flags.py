@@ -464,6 +464,13 @@ def AddMongodbProfileGroup(parser, required=True):
       action='store_true',
       default=False,
   )
+  mongodb_profile.add_argument(
+      '--mongodb-additional-options',
+      metavar='MONGODB_PROFILE_ADDITIONAL_OPTIONS',
+      type=arg_parsers.ArgDict(),
+      default='',
+      help="""Specifies additional options for the MongoDB connection.""",
+  )
   ssl_config = mongodb_profile.add_group()
   ssl_config.add_argument(
       '--mongodb-tls',

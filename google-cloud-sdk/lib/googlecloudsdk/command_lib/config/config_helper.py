@@ -20,7 +20,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.core import config
-from googlecloudsdk.core.credentials import creds as c_creds
 
 
 class ConfigHelperResult(object):
@@ -49,12 +48,8 @@ class Credential(object):
   _EXPIRY_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
   def __init__(self, cred):
-    if c_creds.IsOauth2ClientCredentials(cred):
-      self.access_token = cred.access_token
-      expiry = getattr(cred, 'token_expiry', None)
-    else:
-      self.access_token = cred.token
-      expiry = getattr(cred, 'expiry', None)
+    self.access_token = cred.token
+    expiry = getattr(cred, 'expiry', None)
 
     self.token_expiry = (
         expiry.strftime(Credential._EXPIRY_FORMAT) if expiry else None)

@@ -3143,6 +3143,8 @@ class MirroringEndpointGroup(_messages.Message):
   Enums:
     StateValueValuesEnum: Output only. The current state of the endpoint
       group. See https://google.aip.dev/216.
+    TypeValueValuesEnum: Immutable. The type of the endpoint group. If left
+      unspecified, defaults to DIRECT.
 
   Messages:
     LabelsValue: Optional. Labels are key/value pairs that help to organize
@@ -3172,6 +3174,8 @@ class MirroringEndpointGroup(_messages.Message):
       the group). See https://google.aip.dev/128.
     state: Output only. The current state of the endpoint group. See
       https://google.aip.dev/216.
+    type: Immutable. The type of the endpoint group. If left unspecified,
+      defaults to DIRECT.
     updateTime: Output only. The timestamp when the resource was most recently
       updated. See https://google.aip.dev/148#timestamps.
   """
@@ -3205,6 +3209,18 @@ class MirroringEndpointGroup(_messages.Message):
     DELETING = 4
     OUT_OF_SYNC = 5
     DELETE_FAILED = 6
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Immutable. The type of the endpoint group. If left unspecified,
+    defaults to DIRECT.
+
+    Values:
+      TYPE_UNSPECIFIED: Not set.
+      DIRECT: An endpoint group that sends packets to a single deployment
+        group.
+    """
+    TYPE_UNSPECIFIED = 0
+    DIRECT = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -3240,7 +3256,8 @@ class MirroringEndpointGroup(_messages.Message):
   name = _messages.StringField(7)
   reconciling = _messages.BooleanField(8)
   state = _messages.EnumField('StateValueValuesEnum', 9)
-  updateTime = _messages.StringField(10)
+  type = _messages.EnumField('TypeValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
 
 
 class MirroringEndpointGroupAssociation(_messages.Message):

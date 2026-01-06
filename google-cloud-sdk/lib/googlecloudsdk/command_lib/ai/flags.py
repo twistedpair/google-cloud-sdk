@@ -24,6 +24,7 @@ import textwrap
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.ai import constants
@@ -560,6 +561,14 @@ The number of nodes per replica for multihost GPU deployments. Required for
 multihost GPU deployments.
 """,
     ).AddToParser(parser)
+    base.Argument(
+        '--min-gpu-driver-version',
+        type=str,
+        hidden=True,
+        help=textwrap.dedent("""\
+The minimum GPU driver version that this machine requires. For example, "535.104.06".
+"""),
+    ).AddToParser(parser)
 
   base.Argument(
       '--gpu-partition-size',
@@ -877,17 +886,47 @@ to the resource project.
 
 
 def RegionAttributeConfig(prompt_func=region_util.PromptForRegion):
+  """Gets a ResourceParameterAttributeConfig for a Vertex AI region.
+
+  Args:
+    prompt_func: function, the function to prompt a list of available regions
+      and return a string of the region that is selected by user.
+
+  Returns:
+    A concepts.ResourceParameterAttributeConfig for the region.
+  """
+  help_text = 'Cloud region for the {resource}.'
+  fallthroughs = [deps.ArgFallthrough('--region')]
+
+  if properties.IsDefaultUniverse():
+    fallthroughs.extend([
+        deps.PropertyFallthrough(properties.VALUES.ai.region),
+        deps.Fallthrough(
+            function=prompt_func,
+            hint='choose one from the prompted list of available regions',
+        ),
+    ])
+  else:  # Non-default universe
+
+    def _NonDefaultUniverseRegionRequired():
+      raise exceptions.RequiredArgumentException(
+          '--region',
+          'The --region flag is required when operating in the current'
+          ' environment.',
+      )
+
+    fallthroughs.append(
+        deps.Fallthrough(
+            _NonDefaultUniverseRegionRequired,
+            hint='Region is required in this environment.',
+        )
+    )
+    help_text += ' This flag is required in the current environment.'
+
   return concepts.ResourceParameterAttributeConfig(
       name='region',
-      help_text='Cloud region for the {resource}.',
-      fallthroughs=[
-          deps.ArgFallthrough('--region'),
-          deps.PropertyFallthrough(properties.VALUES.ai.region),
-          deps.Fallthrough(
-              function=prompt_func,
-              hint='choose one from the prompted list of available regions',
-          ),
-      ],
+      help_text=help_text,
+      fallthroughs=fallthroughs,
   )
 
 

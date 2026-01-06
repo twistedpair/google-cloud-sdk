@@ -4550,11 +4550,13 @@ class Hash(_messages.Message):
         encoded. See b/244466565 and https://github.com/in-
         toto/attestation/pull/108.
       SHA512: A SHA-512 hash.
+      DIRSUM_SHA256: A Dirsum SHA-256 hash.
     """
     HASH_TYPE_UNSPECIFIED = 0
     SHA256 = 1
     GO_MODULE_H1 = 2
     SHA512 = 3
+    DIRSUM_SHA256 = 4
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
   value = _messages.BytesField(2)

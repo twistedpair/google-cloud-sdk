@@ -380,7 +380,7 @@ def AutoscalingHighPriorityCpuTarget(required=False, hidden=False):
   )
 
 
-def AutoscalingTotalCpuTarget(required=False, hidden=True):
+def AutoscalingTotalCpuTarget(required=False, hidden=False):
   return base.Argument(
       '--autoscaling-total-cpu-target',
       required=required,
@@ -405,7 +405,7 @@ def AutoscalingStorageTarget(required=False):
   )
 
 
-def DisableHighPriorityCpuAutoscaling(required=False, hidden=True):
+def DisableHighPriorityCpuAutoscaling(required=False, hidden=False):
   return base.Argument(
       '--disable-high-priority-cpu-autoscaling',
       required=required,
@@ -418,7 +418,7 @@ def DisableHighPriorityCpuAutoscaling(required=False, hidden=True):
   )
 
 
-def DisableTotalCpuAutoscaling(required=False, hidden=True):
+def DisableTotalCpuAutoscaling(required=False, hidden=False):
   return base.Argument(
       '--disable-total-cpu-autoscaling',
       required=required,
@@ -428,18 +428,17 @@ def DisableTotalCpuAutoscaling(required=False, hidden=True):
   )
 
 
-def DisableDownScaling(required=False, hidden=True):
+def DisableDownScaling(*, required=False):
   return base.Argument(
       '--disable-downscaling',
       required=required,
-      hidden=hidden,
       action=arg_parsers.StoreTrueFalseAction,
       help='Set the flag to disable downscaling for the autoscaled instance.',
   )
 
 
 def AsymmetricAutoscalingOptionFlag(
-    include_total_cpu_target=False, include_disable_autoscaling_args=False
+    include_total_cpu_target=True, include_disable_autoscaling_args=True
 ):
   """Adds the --asymmetric-autoscaling-option flag.
 
@@ -616,20 +615,18 @@ def AddCapacityArgsForInstance(
       help='Autoscaling'
   )
   if autoscaling_cpu_target_group:
-    # TODO(b/424254143): Add help text for the cpu target options group "Specify
-    # both or only one of the CPU targets:"
     cpu_target_options_group_parser = (
         autoscaling_config_group_parser.add_argument_group(
             required=require_all_autoscaling_args,
-            help='',
+            help='Specify one or both CPU targets:',
         )
     )
     AutoscalingHighPriorityCpuTarget(
         required=False
     ).AddToParser(cpu_target_options_group_parser)
-    AutoscalingTotalCpuTarget(
-        required=False, hidden=True
-    ).AddToParser(cpu_target_options_group_parser)
+    AutoscalingTotalCpuTarget(required=False, hidden=False).AddToParser(
+        cpu_target_options_group_parser
+    )
   else:
     AutoscalingHighPriorityCpuTarget(
         required=require_all_autoscaling_args
@@ -637,7 +634,7 @@ def AddCapacityArgsForInstance(
 
   if add_disable_downscaling_flag:
     DisableDownScaling(
-        required=False, hidden=True
+        required=False
     ).AddToParser(autoscaling_config_group_parser)
 
   AutoscalingStorageTarget(
@@ -740,7 +737,7 @@ def AddCapacityArgsForInstancePartition(
   cpu_target_options_group_parser = (
       autoscaling_config_group_parser.add_argument_group(
           required=require_all_autoscaling_args,
-          help='Target for high priority CPU utilization.',
+          help='Autoscaling CPU targets.',
       )
   )
   AutoscalingHighPriorityCpuTarget(

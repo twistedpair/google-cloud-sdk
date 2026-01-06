@@ -274,8 +274,7 @@ class KubeconfigConnectionContext(ConnectionInfo):
           response_encoding=transport.ENCODING,
           ca_certs=self.ca_certs,
           client_certificate=self.client_cert,
-          client_key=self.client_key,
-          client_cert_domain=self.client_cert_domain)
+          client_key=self.client_key)
       return http_client
     from googlecloudsdk.core.credentials import transports  # pylint: disable=g-import-not-at-top
     http_client = transports.GetApitoolsTransport(

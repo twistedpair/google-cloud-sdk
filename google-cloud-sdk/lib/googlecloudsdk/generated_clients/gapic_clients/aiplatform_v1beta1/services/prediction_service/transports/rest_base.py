@@ -535,6 +535,11 @@ class _BasePredictionServiceRestTransport(PredictionServiceTransport):
             },
         {
                 'method': 'post',
+                'uri': '/v1beta1/{endpoint=projects/*/locations/*/endpoints/openapi}/completions',
+                'body': 'http_body',
+            },
+        {
+                'method': 'post',
                 'uri': '/v1beta1/{endpoint=projects/*/locations/*/endpoints/google}/science/inference',
                 'body': 'http_body',
             },

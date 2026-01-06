@@ -18,15 +18,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import json
-
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.credentials import creds as c_creds
 from googlecloudsdk.core.credentials import p12_service_account
-from googlecloudsdk.core.util import files
-
-from oauth2client import service_account
 
 _SERVICE_ACCOUNT_TYPE = 'service_account'
 
@@ -50,34 +45,6 @@ class BadCredentialJsonFileException(Error):
 def IsServiceAccountConfig(content_json):
   """Returns whether a JSON content corresponds to an service account cred."""
   return (content_json or {}).get('type') == _SERVICE_ACCOUNT_TYPE
-
-
-def CredentialsFromAdcFile(filename):
-  """Load credentials from given service account json file."""
-  content = files.ReadFileContents(filename)
-  try:
-    json_key = json.loads(content)
-    return CredentialsFromAdcDict(json_key)
-  except ValueError as e:
-    raise BadCredentialFileException('Could not read json file {0}: {1}'.format(
-        filename, e))
-
-
-def CredentialsFromAdcDict(json_key):
-  """Creates oauth2client creds from a dict of application default creds."""
-  if 'client_email' not in json_key:
-    raise BadCredentialJsonFileException(
-        'The .json key file is not in a valid format.')
-
-  json_key['token_uri'] = c_creds.GetEffectiveTokenUriFromCreds(json_key)
-
-  creds = service_account.ServiceAccountCredentials.from_json_keyfile_dict(
-      json_key, scopes=config.CLOUDSDK_SCOPES)
-  # User agent needs to be set separately, see
-  # https://github.com/google/oauth2client/issues/445
-  # pylint: disable=protected-access
-  creds.user_agent = creds._user_agent = config.CLOUDSDK_USER_AGENT
-  return creds
 
 
 def CredentialsFromAdcDictGoogleAuth(json_key):

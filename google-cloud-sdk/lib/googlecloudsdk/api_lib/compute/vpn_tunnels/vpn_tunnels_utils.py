@@ -61,6 +61,8 @@ class VpnTunnelHelper(object):
       peer_gcp_gateway,
       params=None,
       support_tagging_at_creation=False,
+      support_capacity_tier=False,
+      capacity_tier=None,
   ):
     """Returns the HA VpnTunnel message for an insert request.
 
@@ -86,6 +88,8 @@ class VpnTunnelHelper(object):
       params: Dictionary of params to set on the request.
       support_tagging_at_creation: Boolean representing the support of tagging
         at creation.
+      support_capacity_tier: Boolean representing the support of capacity tier.
+      capacity_tier: String representing the capacity tier of the VPN tunnel.
 
     Returns:
       The VpnTunnel message object that can be used in an insert request.
@@ -105,6 +109,9 @@ class VpnTunnelHelper(object):
     }
     if (support_tagging_at_creation and params is not None):
       vpn_tunnel_args['params'] = params
+
+    if support_capacity_tier and capacity_tier is not None:
+      vpn_tunnel_args['capacityTier'] = capacity_tier
 
     return self._messages.VpnTunnel(
         **vpn_tunnel_args
@@ -126,6 +133,8 @@ class VpnTunnelHelper(object):
       cipher_suite=None,
       params=None,
       support_tagging_at_creation=False,
+      support_capacity_tier=False,
+      capacity_tier=None,
   ):
     """Returns the HA VpnTunnel message for an insert request.
 
@@ -153,6 +162,8 @@ class VpnTunnelHelper(object):
       params: Dictionary of params to set on the request.
       support_tagging_at_creation: Boolean representing the support of tagging
         at creation.
+      support_capacity_tier: Boolean representing the support of capacity tier.
+      capacity_tier: String representing the capacity tier of the VPN tunnel.
 
     Returns:
       The VpnTunnel message object that can be used in an insert request.
@@ -173,6 +184,9 @@ class VpnTunnelHelper(object):
     }
     if (support_tagging_at_creation and params is not None):
       vpn_tunnel_args['params'] = params
+
+    if support_capacity_tier and capacity_tier is not None:
+      vpn_tunnel_args['capacityTier'] = capacity_tier
 
     return self._messages.VpnTunnel(
         **vpn_tunnel_args

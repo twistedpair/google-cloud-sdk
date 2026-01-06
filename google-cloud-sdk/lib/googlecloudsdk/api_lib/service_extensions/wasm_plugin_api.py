@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.service_extensions import util
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core import resources
 
 
@@ -39,6 +40,7 @@ class Client:
     self._resource_parser.RegisterApiByName(
         'networkservices', util.API_VERSION_FOR_TRACK.get(release_track)
     )
+    self._release_track = release_track
 
   def CreateWasmPlugin(
       self,
@@ -49,19 +51,31 @@ class Client:
       log_config=None,
       main_version=None,
       versions=None,
+      kms_key_name=None,
   ):
     """Calls the CreateWasmPlugin API."""
+    if self._release_track in [base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA]:
+      wasm_plugin = self.messages.WasmPlugin(
+          description=description,
+          labels=labels,
+          logConfig=log_config,
+          mainVersionId=main_version,
+          versions=versions,
+          kmsKeyName=kms_key_name,
+      )
+    else:
+      wasm_plugin = self.messages.WasmPlugin(
+          description=description,
+          labels=labels,
+          logConfig=log_config,
+          mainVersionId=main_version,
+          versions=versions,
+      )
     request = (
         self.messages.NetworkservicesProjectsLocationsWasmPluginsCreateRequest(
             parent=parent,
             wasmPluginId=name,
-            wasmPlugin=self.messages.WasmPlugin(
-                description=description,
-                labels=labels,
-                logConfig=log_config,
-                mainVersionId=main_version,
-                versions=versions,
-            ),
+            wasmPlugin=wasm_plugin,
         )
     )
     return self._wasm_plugin_client.Create(request)
@@ -74,18 +88,29 @@ class Client:
       description=None,
       labels=None,
       log_config=None,
+      kms_key_name=None,
   ):
     """Calls the UpdateWasmPlugin API."""
+    if self._release_track in [base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA]:
+      wasm_plugin = self.messages.WasmPlugin(
+          mainVersionId=main_version,
+          description=description,
+          labels=labels,
+          logConfig=log_config,
+          kmsKeyName=kms_key_name,
+      )
+    else:
+      wasm_plugin = self.messages.WasmPlugin(
+          mainVersionId=main_version,
+          description=description,
+          labels=labels,
+          logConfig=log_config,
+      )
     request = (
         self.messages.NetworkservicesProjectsLocationsWasmPluginsPatchRequest(
             name=name,
             updateMask=update_mask,
-            wasmPlugin=self.messages.WasmPlugin(
-                mainVersionId=main_version,
-                description=description,
-                labels=labels,
-                logConfig=log_config,
-            ),
+            wasmPlugin=wasm_plugin,
         )
     )
     return self._wasm_plugin_client.Patch(request)

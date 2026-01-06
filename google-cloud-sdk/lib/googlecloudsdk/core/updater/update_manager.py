@@ -41,7 +41,6 @@ from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.universe_descriptor import universe_descriptor
 from googlecloudsdk.core.updater import installers
 from googlecloudsdk.core.updater import local_state
-from googlecloudsdk.core.updater import python_manager
 from googlecloudsdk.core.updater import release_notes
 from googlecloudsdk.core.updater import snapshots
 from googlecloudsdk.core.updater import update_check
@@ -216,6 +215,10 @@ class PostProcessingError(Error):
   """Error for when post processing failed.
   """
   pass
+
+
+class UpdateMacosPythonError(Error):
+  """Error for when macOS Python update failed."""
 
 
 class NoRegisteredRepositoriesError(Error):
@@ -1094,6 +1097,7 @@ version [{1}].  To clear your fixed version setting, run:
       last_update_check.SetFromSnapshot(
           new_diff.latest, bool(new_diff.AvailableUpdates()), force=True)
 
+    self._UpdateMacosPython()
     self._PostProcess(snapshot=diff.latest)
 
     try:
@@ -1104,9 +1108,6 @@ version [{1}].  To clear your fixed version setting, run:
           'Failed to update universe descriptors: %s',
           e,
       )
-
-    # Install Python on Mac if not already installed.
-    python_manager.PromptAndInstallPythonOnMac()
 
     sha256dict2 = self._HashRcfiles(_SHELL_RCFILES)
     if sha256dict1 != sha256dict2:
@@ -1623,6 +1624,64 @@ prompt, or run:
       log.warning(
           'Post processing failed.  Run `gcloud info --show-log` '
           'to view the failures.'
+      )
+
+  def _UpdateMacosPython(self):
+    """Runs the gcloud command to update the managed Python install on macOS.
+
+    This runs gcloud as a subprocess so that the new version of gcloud (the one
+    we just updated to) is run instead of the old code (which is running here).
+    We do this so the new gcloud version can decide which Python and
+    additional module versions it needs.
+    """
+    if platforms.OperatingSystem.Current() != platforms.OperatingSystem.MACOSX:
+      return
+
+    command = ['components', 'update-macos-python']
+    gcloud_path = self._GetGcloudPath()
+
+    # The `gcloud components update-macos-python` command only exists in
+    # sufficiently new versions of gcloud. If we're downgrading to a version
+    # where it's not present, gcloud will exit with a return code of 2 when
+    # trying to run it, since the command couldn't be parsed. This is fine and
+    # expected, so we first check for existence of the command by running with
+    # -h and suppressing output, to avoid showing a confusing error message.
+    # (Note: because the command takes no flags, it's safe to assume a return
+    # code of 2 means the command didn't exist, as opposed to an argument
+    # parsing error within the command.)
+    check_args = execution_utils.ArgsForExecutableTool(
+        gcloud_path, *(command + ['-h']))
+    try:
+      ret_val = execution_utils.Exec(
+          check_args,
+          no_exit=True,
+          out_func=lambda x: None,
+          err_func=lambda x: None)
+      if ret_val == 2:
+        return
+    except (OSError, execution_utils.InvalidCommandError,
+            execution_utils.PermissionError):
+      log.debug('Failed to check existence of update-macos-python command',
+                exc_info=True)
+
+    gcloud_args = execution_utils.ArgsForExecutableTool(gcloud_path, *command)
+    self.__Write(log.status)
+    try:
+      # Catch any failures to run the `update-macos-python` command and log a
+      # warning, so as to allow the rest of the `components update` to proceed.
+      try:
+        ret_val = execution_utils.Exec(gcloud_args, no_exit=True)
+      except (OSError, execution_utils.InvalidCommandError,
+              execution_utils.PermissionError):
+        log.debug('Failed to update macOS Python and modules', exc_info=True)
+        raise UpdateMacosPythonError()
+      if ret_val != 0:
+        log.debug('macOS Python/module update exited non-zero: %d', ret_val)
+        raise UpdateMacosPythonError()
+    except UpdateMacosPythonError:
+      log.warning(
+          'Updating macOS Python and modules failed; proceeding with update.'
+          ' Run `gcloud components update-macos-python` to retry this step.'
       )
 
 

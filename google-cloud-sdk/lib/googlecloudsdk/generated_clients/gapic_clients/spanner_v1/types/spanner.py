@@ -334,14 +334,17 @@ class RequestOptions(proto.Message):
             A tag used for statistics collection about this transaction.
             Both ``request_tag`` and ``transaction_tag`` can be
             specified for a read or query that belongs to a transaction.
-            The value of transaction_tag should be the same for all
-            requests belonging to the same transaction. If this request
-            doesn't belong to any transaction, ``transaction_tag`` is
-            ignored. Legal characters for ``transaction_tag`` values are
-            all printable characters (ASCII 32 - 126) and the length of
-            a ``transaction_tag`` is limited to 50 characters. Values
-            that exceed this limit are truncated. Any leading underscore
-            (\_) characters are removed from the string.
+            To enable tagging on a transaction, ``transaction_tag`` must
+            be set to the same value for all requests belonging to the
+            same transaction, including
+            [BeginTransaction][google.spanner.v1.Spanner.BeginTransaction].
+            If this request doesn't belong to any transaction,
+            ``transaction_tag`` is ignored. Legal characters for
+            ``transaction_tag`` values are all printable characters
+            (ASCII 32 - 126) and the length of a ``transaction_tag`` is
+            limited to 50 characters. Values that exceed this limit are
+            truncated. Any leading underscore (\_) characters are
+            removed from the string.
     """
     class Priority(proto.Enum):
         r"""The relative priority for requests. Note that priority isn't
@@ -1097,8 +1100,8 @@ class PartitionQueryRequest(proto.Message):
             with a ``PartitionedDml`` transaction for large,
             partition-friendly DML operations.
         params (google.protobuf.struct_pb2.Struct):
-            Parameter names and values that bind to placeholders in the
-            SQL string.
+            Optional. Parameter names and values that bind to
+            placeholders in the SQL string.
 
             A parameter placeholder consists of the ``@`` character
             followed by the parameter name (for example,
@@ -1114,9 +1117,10 @@ class PartitionQueryRequest(proto.Message):
             It's an error to execute a SQL statement with unbound
             parameters.
         param_types (MutableMapping[str, googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.Type]):
-            It isn't always possible for Cloud Spanner to infer the
-            right SQL type from a JSON value. For example, values of
-            type ``BYTES`` and values of type ``STRING`` both appear in
+            Optional. It isn't always possible for Cloud Spanner to
+            infer the right SQL type from a JSON value. For example,
+            values of type ``BYTES`` and values of type ``STRING`` both
+            appear in
             [params][google.spanner.v1.PartitionQueryRequest.params] as
             JSON strings.
 

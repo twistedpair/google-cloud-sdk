@@ -11027,6 +11027,11 @@ class GoogleCloudDialogflowV2AgentCoachingContext(_messages.Message):
 class GoogleCloudDialogflowV2AgentCoachingInstruction(_messages.Message):
   r"""Agent Coaching instructions that customer can configure.
 
+  Enums:
+    TriggeringEventValueValuesEnum: Optional. The event that should trigger
+      this instruction. If UNSPECIFIED, the instruction triggering will be
+      same as the generator's trigger_event.
+
   Fields:
     agentAction: Optional. The action that human agent should take. For
       example, "apologize for the slow shipping". If the users only want to
@@ -11042,7 +11047,31 @@ class GoogleCloudDialogflowV2AgentCoachingInstruction(_messages.Message):
       "call GetOrderTime with order_number={order number provided by the
       customer}". If the users don't have plugins or don't want to trigger
       plugins, the system_action can be empty
+    triggeringEvent: Optional. The event that should trigger this instruction.
+      If UNSPECIFIED, the instruction triggering will be same as the
+      generator's trigger_event.
   """
+
+  class TriggeringEventValueValuesEnum(_messages.Enum):
+    r"""Optional. The event that should trigger this instruction. If
+    UNSPECIFIED, the instruction triggering will be same as the generator's
+    trigger_event.
+
+    Values:
+      TRIGGER_EVENT_UNSPECIFIED: Default value for TriggerEvent.
+      END_OF_UTTERANCE: Triggers when each chat message or voice utterance
+        ends.
+      MANUAL_CALL: Triggers on the conversation manually by API calls.
+      CUSTOMER_MESSAGE: Triggers after each customer message.
+      AGENT_MESSAGE: Triggers after each agent message.
+      TOOL_CALL_COMPLETION: Triggers on tool call completion.
+    """
+    TRIGGER_EVENT_UNSPECIFIED = 0
+    END_OF_UTTERANCE = 1
+    MANUAL_CALL = 2
+    CUSTOMER_MESSAGE = 3
+    AGENT_MESSAGE = 4
+    TOOL_CALL_COMPLETION = 5
 
   agentAction = _messages.StringField(1)
   condition = _messages.StringField(2)
@@ -11050,6 +11079,7 @@ class GoogleCloudDialogflowV2AgentCoachingInstruction(_messages.Message):
   displayName = _messages.StringField(4)
   duplicateCheckResult = _messages.MessageField('GoogleCloudDialogflowV2AgentCoachingInstructionDuplicateCheckResult', 5)
   systemAction = _messages.StringField(6)
+  triggeringEvent = _messages.EnumField('TriggeringEventValueValuesEnum', 7)
 
 
 class GoogleCloudDialogflowV2AgentCoachingInstructionDuplicateCheckResult(_messages.Message):
@@ -14300,10 +14330,26 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfigMessageAnalysisConfig(_mes
       ListMessagesResponse.messages.SentimentAnalysisResult If Pub/Sub
       notification is configured, result will be in
       ConversationEvent.new_message_payload.SentimentAnalysisResult.
+    enableSentimentAnalysisV3: Optional. Enables sentiment analysis for audio
+      input and conversation messages. If unspecified, defaults to false. If
+      this flag is set to true, other 'enable_sentiment_analysis' fields will
+      be ignored. Sentiment analysis inspects user input and identifies the
+      prevailing subjective opinion, especially to determine a user's attitude
+      as positive, negative, or neutral. https://cloud.google.com/natural-
+      language/docs/basics#sentiment_analysis For
+      Participants.StreamingAnalyzeContent method, result will be in
+      StreamingAnalyzeContentResponse.message.SentimentAnalysisResult. For
+      Participants.AnalyzeContent method, result will be in
+      AnalyzeContentResponse.message.SentimentAnalysisResult For
+      Conversations.ListMessages method, result will be in
+      ListMessagesResponse.messages.SentimentAnalysisResult If Pub/Sub
+      notification is configured, result will be in
+      ConversationEvent.new_message_payload.SentimentAnalysisResult.
   """
 
   enableEntityExtraction = _messages.BooleanField(1)
   enableSentimentAnalysis = _messages.BooleanField(2)
+  enableSentimentAnalysisV3 = _messages.BooleanField(3)
 
 
 class GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionConfig(_messages.Message):
@@ -20050,6 +20096,11 @@ class GoogleCloudDialogflowV2WebhookResponse(_messages.Message):
 class GoogleCloudDialogflowV2beta1AgentCoachingInstruction(_messages.Message):
   r"""Agent Coaching instructions that customer can configure.
 
+  Enums:
+    TriggeringEventValueValuesEnum: Optional. The event that should trigger
+      this instruction. If UNSPECIFIED, the instruction triggering will be
+      same as the generator's trigger_event.
+
   Fields:
     agentAction: Optional. The action that human agent should take. For
       example, "apologize for the slow shipping". If the users only want to
@@ -20065,7 +20116,31 @@ class GoogleCloudDialogflowV2beta1AgentCoachingInstruction(_messages.Message):
       "call GetOrderTime with order_number={order number provided by the
       customer}". If the users don't have plugins or don't want to trigger
       plugins, the system_action can be empty
+    triggeringEvent: Optional. The event that should trigger this instruction.
+      If UNSPECIFIED, the instruction triggering will be same as the
+      generator's trigger_event.
   """
+
+  class TriggeringEventValueValuesEnum(_messages.Enum):
+    r"""Optional. The event that should trigger this instruction. If
+    UNSPECIFIED, the instruction triggering will be same as the generator's
+    trigger_event.
+
+    Values:
+      TRIGGER_EVENT_UNSPECIFIED: Default value for TriggerEvent.
+      END_OF_UTTERANCE: Triggers when each chat message or voice utterance
+        ends.
+      MANUAL_CALL: Triggers on the conversation manually by API calls.
+      CUSTOMER_MESSAGE: Triggers after each customer message.
+      AGENT_MESSAGE: Triggers after each agent message.
+      TOOL_CALL_COMPLETION: Triggers on tool call completion.
+    """
+    TRIGGER_EVENT_UNSPECIFIED = 0
+    END_OF_UTTERANCE = 1
+    MANUAL_CALL = 2
+    CUSTOMER_MESSAGE = 3
+    AGENT_MESSAGE = 4
+    TOOL_CALL_COMPLETION = 5
 
   agentAction = _messages.StringField(1)
   condition = _messages.StringField(2)
@@ -20073,6 +20148,7 @@ class GoogleCloudDialogflowV2beta1AgentCoachingInstruction(_messages.Message):
   displayName = _messages.StringField(4)
   duplicateCheckResult = _messages.MessageField('GoogleCloudDialogflowV2beta1AgentCoachingInstructionDuplicateCheckResult', 5)
   systemAction = _messages.StringField(6)
+  triggeringEvent = _messages.EnumField('TriggeringEventValueValuesEnum', 7)
 
 
 class GoogleCloudDialogflowV2beta1AgentCoachingInstructionDuplicateCheckResult(_messages.Message):

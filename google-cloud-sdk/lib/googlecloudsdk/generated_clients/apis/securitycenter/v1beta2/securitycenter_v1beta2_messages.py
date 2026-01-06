@@ -1683,10 +1683,14 @@ class File(_messages.Message):
   r"""File information about the related binary/library used by an executable,
   or the script used by a script interpreter
 
+  Enums:
+    FileLoadStateValueValuesEnum: The load state of the file.
+
   Fields:
     contents: Prefix of the file contents as a JSON-encoded string.
     diskPath: Path of the file in terms of underlying disk/partition
       identifiers.
+    fileLoadState: The load state of the file.
     hashedSize: The length in bytes of the file prefix that was hashed. If
       hashed_size == size, any hashes reported represent the entire file.
     operations: Operation(s) performed on a file.
@@ -1698,14 +1702,29 @@ class File(_messages.Message):
     size: Size of the file in bytes.
   """
 
+  class FileLoadStateValueValuesEnum(_messages.Enum):
+    r"""The load state of the file.
+
+    Values:
+      FILE_LOAD_STATE_UNSPECIFIED: The file state is unspecified.
+      LOADED_BY_PROCESS: The file is being used by an active process at the
+        time of scanning.
+      NOT_LOADED_BY_PROCESS: The file is not being used by any active process
+        at the time of scanning.
+    """
+    FILE_LOAD_STATE_UNSPECIFIED = 0
+    LOADED_BY_PROCESS = 1
+    NOT_LOADED_BY_PROCESS = 2
+
   contents = _messages.StringField(1)
   diskPath = _messages.MessageField('DiskPath', 2)
-  hashedSize = _messages.IntegerField(3)
-  operations = _messages.MessageField('FileOperation', 4, repeated=True)
-  partiallyHashed = _messages.BooleanField(5)
-  path = _messages.StringField(6)
-  sha256 = _messages.StringField(7)
-  size = _messages.IntegerField(8)
+  fileLoadState = _messages.EnumField('FileLoadStateValueValuesEnum', 3)
+  hashedSize = _messages.IntegerField(4)
+  operations = _messages.MessageField('FileOperation', 5, repeated=True)
+  partiallyHashed = _messages.BooleanField(6)
+  path = _messages.StringField(7)
+  sha256 = _messages.StringField(8)
+  size = _messages.IntegerField(9)
 
 
 class FileOperation(_messages.Message):
@@ -4918,10 +4937,14 @@ class GoogleCloudSecuritycenterV2File(_messages.Message):
   r"""File information about the related binary/library used by an executable,
   or the script used by a script interpreter
 
+  Enums:
+    FileLoadStateValueValuesEnum: The load state of the file.
+
   Fields:
     contents: Prefix of the file contents as a JSON-encoded string.
     diskPath: Path of the file in terms of underlying disk/partition
       identifiers.
+    fileLoadState: The load state of the file.
     hashedSize: The length in bytes of the file prefix that was hashed. If
       hashed_size == size, any hashes reported represent the entire file.
     operations: Operation(s) performed on a file.
@@ -4933,14 +4956,29 @@ class GoogleCloudSecuritycenterV2File(_messages.Message):
     size: Size of the file in bytes.
   """
 
+  class FileLoadStateValueValuesEnum(_messages.Enum):
+    r"""The load state of the file.
+
+    Values:
+      FILE_LOAD_STATE_UNSPECIFIED: The file state is unspecified.
+      LOADED_BY_PROCESS: The file is being used by an active process at the
+        time of scanning.
+      NOT_LOADED_BY_PROCESS: The file is not being used by any active process
+        at the time of scanning.
+    """
+    FILE_LOAD_STATE_UNSPECIFIED = 0
+    LOADED_BY_PROCESS = 1
+    NOT_LOADED_BY_PROCESS = 2
+
   contents = _messages.StringField(1)
   diskPath = _messages.MessageField('GoogleCloudSecuritycenterV2DiskPath', 2)
-  hashedSize = _messages.IntegerField(3)
-  operations = _messages.MessageField('GoogleCloudSecuritycenterV2FileOperation', 4, repeated=True)
-  partiallyHashed = _messages.BooleanField(5)
-  path = _messages.StringField(6)
-  sha256 = _messages.StringField(7)
-  size = _messages.IntegerField(8)
+  fileLoadState = _messages.EnumField('FileLoadStateValueValuesEnum', 3)
+  hashedSize = _messages.IntegerField(4)
+  operations = _messages.MessageField('GoogleCloudSecuritycenterV2FileOperation', 5, repeated=True)
+  partiallyHashed = _messages.BooleanField(6)
+  path = _messages.StringField(7)
+  sha256 = _messages.StringField(8)
+  size = _messages.IntegerField(9)
 
 
 class GoogleCloudSecuritycenterV2FileOperation(_messages.Message):

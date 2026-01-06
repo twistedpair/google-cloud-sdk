@@ -55,6 +55,33 @@ class StoragebatchoperationsV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Get(self, request, global_params=None):
+      r"""Gets a BucketOperation.
+
+      Args:
+        request: (StoragebatchoperationsProjectsLocationsJobsBucketOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BucketOperation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}/bucketOperations/{bucketOperationsId}',
+        http_method='GET',
+        method_id='storagebatchoperations.projects.locations.jobs.bucketOperations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='StoragebatchoperationsProjectsLocationsJobsBucketOperationsGetRequest',
+        response_type_name='BucketOperation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists BucketOperations in a given project and job.
 
@@ -165,7 +192,7 @@ class StoragebatchoperationsV1(base_api.BaseApiClient):
         method_id='storagebatchoperations.projects.locations.jobs.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['requestId'],
+        query_params=['force', 'requestId'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='StoragebatchoperationsProjectsLocationsJobsDeleteRequest',

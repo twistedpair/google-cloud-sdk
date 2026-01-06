@@ -1258,6 +1258,8 @@ class MultiScopeLister(object):
       for request in requests:
         if request[1] == 'List':
           request[2].views = self.subnetwork_views_flag
+        if request[1] == 'AggregatedList':
+          request[2].views = self.subnetwork_views_flag
 
     errors = []
     for item in request_helper.ListJson(

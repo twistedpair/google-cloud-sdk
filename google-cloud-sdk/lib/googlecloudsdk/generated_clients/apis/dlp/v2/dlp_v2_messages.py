@@ -4927,8 +4927,7 @@ class GooglePrivacyDlpV2CustomInfoType(_messages.Message):
       take precedence over that of the original InfoType. If unset for a
       CustomInfoType, it will default to HIGH. This only applies to data
       profiling.
-    storedType: Load an existing `StoredInfoType` resource for use in
-      `InspectDataSource`. Not currently supported in `InspectContent`.
+    storedType: Loads an existing `StoredInfoType` resource.
     surrogateType: Message for detecting output from deidentification
       transformations that support reversing.
   """

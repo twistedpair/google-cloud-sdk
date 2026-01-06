@@ -826,6 +826,12 @@ class MigrationJobsClient(object):
           self._GetSqlserverHomogeneousMigrationJobConfig(args)
       )
 
+    if getattr(args, 'use_postgres_native', False):
+      postgres_homogeneous_config = self.messages.PostgresHomogeneousConfig(
+          isNativeLogical=True
+      )
+      migration_job_obj.postgresHomogeneousConfig = postgres_homogeneous_config
+
     if args.IsKnownAndSpecified('databases_filter') or args.IsKnownAndSpecified(
         'all_databases'
     ):

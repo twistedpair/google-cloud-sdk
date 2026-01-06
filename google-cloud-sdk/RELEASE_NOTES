@@ -1,6 +1,124 @@
 # Google Cloud CLI - Release Notes
 
-Copyright 2014-2025 Google Inc. All rights reserved.
+Copyright 2014-2026 Google Inc. All rights reserved.
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
+## 551.0.0 (2026-01-06)
+
+### Breaking Changes
+
+*   **(Google Cloud CLI)** Removed the deprecated `Cloud Tools for PowerShell` component from "`gcloud` CLI".
+  * Starting this release, `Cloud Tools for PowerShell` is no longer available
+    in Google Cloud CLI. The component is removed from distribution. Cloud Tools
+    for PowerShell has not been installed by default since April 2025 and this
+    change will likely not affect you.
+  * We recommend migrating any workflows dependent on these tools to the
+    "`gcloud` CLI" or the Client Libraries to ensure future compatibility and
+    support.
+  * If you require Cloud Tools for PowerShell, you can install it manually from
+    an archived Google Cloud CLI install version 550.0.0 or older.
+
+
+### AI
+
+*   Added `--min-gpu-driver-version` flag to `gcloud beta ai endpoints deploy-model` for specifying the minimum GPU driver version.
+
+### App Engine
+
+* Updated the Java SDK to new major version 4.0.0 from 3.0.3
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v4.0.0>.
+* API breaking changes described in <https://github.com/GoogleCloudPlatform/appengine-java-standard/blob/main/RELEASENOTES.md>.
+
+### Cloud Backup DR
+
+* Promoted `gcloud backup-dr resource-backup-config` command group to GA.
+
+### Cloud Dataplex
+
+* Added `--enable-catalog-publishing` flag to `gcloud dataplex datascans dataprofile create/update` command groups.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.20.3
+  * Fixed transaction lock timeout error.
+  * Fixed bug where import job did not properly reserve imported ids.
+
+### Cloud Functions
+
+* Added flags `--network`, `--subnet`, `--network-tags`, and
+  `--direct-vpc-egress` to `gcloud functions deploy` in `alpha` and `beta`
+  tracks for supporting Direct VPC.
+
+### Cloud Memorystore
+
+* Add `--labels` flag to `gcloud redis clusters create`.
+* Add `--update-labels` flag to `gcloud redis clusters update`.
+* Add `--remove-labels` flag to `gcloud redis clusters update`.
+* Add `--clear-labels` flag to `gcloud redis clusters update`.
+
+### Cloud Run
+
+* Added `gcloud beta run worker-pools logs` command group, including `read` and
+  `tail` commands, to support viewing logs for worker pools.
+* Fixed an issue where `gcloud run services logs` and `gcloud run jobs logs`
+  command groups, including `read` and `tail` commands, would crash if a
+  request log had a missing attribute value.
+
+### Cloud Spanner
+
+* Add autoscaler flags to `gcloud spanner instance-partitons create` and `gcloud spanner instance-partitions update` commands in beta and GA.
+* Add total CPU based autoscaling flags to `gcloud spanner instances create` and `gcloud spanner instances update` commands in beta and GA.
+* Promote `disable downscaling` flag options for `gcloud spanner instances create` and `gcloud spanner instances update` commands for GA.
+
+### Cloud Storage
+
+* `gcloud storage cp`:
+  * Skipping copying files which goes outside of destination directory.
+
+### Cloud Workstations
+
+* Added `--disk-type`, `--disk-size`, `--disk-reclaim-policy`, and `--disk-source-snapshot` to `gcloud workstations configs create` and `gcloud workstations configs update`.
+* Added support for Hyperdisk with `--disk-type=hyperdisk-balanced-ha`.
+
+### Compute Engine
+
+* Added `--resource-manager-tags` flag for alpha to
+ `gcloud compute snapshots create` to allow users to add Resource Manager
+ tags to the snapshot resource during creation.
+* Added `--resource-manager-tags` flag for alpha to
+  `gcloud compute disks create` to allow users to add Resource Manager tags
+  to the disk resource during creation.
+
+### Compute Firewall Policies
+
+*   Promoted `--src-network-context` flag of `gcloud compute firewall-policies rules create` to beta.
+*   Promoted `--src-network-context` flag of `gcloud compute firewall-policies rules update` to beta.
+*   Promoted `--dest-network-context` flag of `gcloud compute firewall-policies rules create` to beta.
+*   Promoted `--dest-network-context` flag of `gcloud compute firewall-policies rules update` to beta.
+*   Promoted `--src-network-context` flag of `gcloud compute network-firewall-policies rules create` to beta.
+*   Promoted `--src-network-context` flag of `gcloud compute network-firewall-policies rules update` to beta.
+*   Promoted `--dest-network-context` flag of `gcloud compute network-firewall-policies rules create` to beta.
+*   Promoted `--dest-network-context` flag of `gcloud compute network-firewall-policies rules update` to beta.
+
+### Gemini
+
+* Promoted `gcloud gemini cloud-assist investigations` commands to beta.
+
+### Kubernetes Engine
+
+* Added `--node-drain-grace-period-seconds`,
+  `--node-drain-pdb-timeout-seconds`, and
+  `--respect-pdb-during-node-pool-deletion` to `gcloud container node-pools
+  create` and `gcloud container node-pools update` commands.
+
+### Workbench
+
+* Added `NVIDIA_H200_141GB` and `NVIDIA_B200`
+option to `--accelerator-type` flag of `gcloud workbench instances create`
+and `gcloud workbench instances update`.
+
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 

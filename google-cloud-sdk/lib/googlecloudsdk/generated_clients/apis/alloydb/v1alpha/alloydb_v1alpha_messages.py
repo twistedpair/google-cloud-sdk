@@ -1846,6 +1846,9 @@ class Cluster(_messages.Message):
         performs maintenance and upgrades on customer clusters. Updates on the
         cluster are not allowed while the cluster is in this state.
       PROMOTING: The cluster is being promoted.
+      SWITCHOVER: The cluster has entered switchover state. All updates on
+        cluster and its associated instances are restricted while the cluster
+        is in this state.
     """
     STATE_UNSPECIFIED = 0
     READY = 1
@@ -1857,6 +1860,7 @@ class Cluster(_messages.Message):
     BOOTSTRAPPING = 7
     MAINTENANCE = 8
     PROMOTING = 9
+    SWITCHOVER = 10
 
   class SubscriptionTypeValueValuesEnum(_messages.Enum):
     r"""Optional. Subscription type of the cluster.
@@ -3135,6 +3139,8 @@ class Instance(_messages.Message):
       BOOTSTRAPPING: The instance has been configured to sync data from some
         other source.
       PROMOTING: The instance is being promoted.
+      SWITCHOVER: The instance has entered switchover state. All updates on
+        instance are restricted while the instance is in this state.
     """
     STATE_UNSPECIFIED = 0
     READY = 1
@@ -3145,6 +3151,7 @@ class Instance(_messages.Message):
     FAILED = 6
     BOOTSTRAPPING = 7
     PROMOTING = 8
+    SWITCHOVER = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):

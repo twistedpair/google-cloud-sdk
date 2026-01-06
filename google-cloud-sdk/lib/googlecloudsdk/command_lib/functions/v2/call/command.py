@@ -44,7 +44,7 @@ def GenerateIdToken(impersonate_service_account: bool = False):
       # if account is None, implicitly retrieves properties.VALUES.core.account
       account,
       allow_account_impersonation=True,
-      use_google_auth=True)
+      )
 
   # sets token on property of either
   # credentials.token_response['id_token'] or

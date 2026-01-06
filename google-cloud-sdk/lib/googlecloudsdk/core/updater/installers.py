@@ -118,7 +118,7 @@ def MakeRequest(url, command_path):
         ComponentInstaller.GCS_API_DL_URL):
       raise e
     try:
-      creds = store.LoadFreshCredential(use_google_auth=True)
+      creds = store.LoadFreshCredential()
       creds.apply(headers)
     except creds_exceptions.Error as e:
       # If we fail here, it is because there are no active credentials or the

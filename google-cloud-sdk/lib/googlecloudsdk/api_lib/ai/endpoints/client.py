@@ -15,6 +15,7 @@
 """Utilities for dealing with AI Platform endpoints API."""
 
 from __future__ import absolute_import
+from __future__ import annotations
 from __future__ import division
 from __future__ import unicode_literals
 
@@ -909,10 +910,12 @@ class EndpointsClient(object):
       traffic_split=None,
       deployed_model_id=None,
       shared_resources_ref=None,
+      *,
       min_scaleup_period=None,
       idle_scaledown_period=None,
       initial_replica_count=None,
       gpu_partition_size=None,
+      min_gpu_driver_version: str | None = None,
   ):
     """Deploys a model to an existing endpoint using v1beta1 API.
 
@@ -959,6 +962,8 @@ class EndpointsClient(object):
         enrolled in scale-to-zero.
       gpu_partition_size: str or None, the partition size of the GPU
         accelerator.
+      min_gpu_driver_version: str or None, the minimum GPU driver version that
+        this machine requires.
 
     Returns:
       A long-running operation for DeployModel.
@@ -1005,6 +1010,8 @@ class EndpointsClient(object):
           )
         if gpu_partition_size is not None:
           machine_spec.gpuPartitionSize = gpu_partition_size
+        if min_gpu_driver_version is not None:
+          machine_spec.minGpuDriverVersion = min_gpu_driver_version
 
         dedicated = (
             self.messages.GoogleCloudAiplatformV1beta1DedicatedResources(

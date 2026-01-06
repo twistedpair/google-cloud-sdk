@@ -385,11 +385,11 @@ class ClusterUtil:
       if boot_disk_args:
         slurm.loginNodes.bootDisk = self.message_module.BootDisk(
             type=boot_disk_args.get("type"),
-            sizeGb=boot_disk_args.get("sizeGb"),
+            sizeGb=boot_disk_args.get("sizeGb", 100),
             image=boot_disk_args.get("image"),
         )
       else:
-        slurm.loginNodes.bootDisk = self.MakeBootDiskForLoginNode(machine_type)
+        slurm.loginNodes.bootDisk = self.MakeBootDisk(machine_type)
     return slurm
 
   def MakeLabels(self, label_args, label_cls):
@@ -424,7 +424,7 @@ class ClusterUtil:
       disk.sizeGb = 100
     return disk
 
-  def MakeBootDiskForLoginNode(self, machine_type: str):
+  def MakeBootDisk(self, machine_type: str) -> Any:
     """Returns BootDisk message for login node."""
     if machine_type.startswith(
         ("a3-megagpu", "a3-ultragpu", "a4-highgpu", "a4x-highgpu")
@@ -914,6 +914,11 @@ class ClusterUtil:
           existing_node_set.maxDynamicNodeCount = node_set.get(
               "maxDynamicNodeCount"
           )
+        if "bootDisk" in node_set:
+          self._PatchBootDiskForNodeSet(
+              existing_node_set=existing_node_set, node_set_patch=node_set
+          )
+
         slurm_node_sets[node_set_id] = existing_node_set
         is_node_sets_updated = True
     if self.args.IsSpecified("add_slurm_node_sets"):
@@ -1006,6 +1011,42 @@ class ClusterUtil:
       self.update_mask.add("orchestrator.slurm.login_nodes")
 
     return slurm
+
+  def _PatchBootDiskForNodeSet(self, *, existing_node_set, node_set_patch):
+    """Patches the bootDisk of a SlurmNodeSet."""
+    if not existing_node_set.computeInstance:
+      return
+    if not existing_node_set.computeInstance.bootDisk:
+      return
+    boot_disk_patch = node_set_patch.get("bootDisk")
+    machine_type = self._GetComputeMachineTypeFromCluster(
+        existing_node_set.resourceRequestId,
+        None,
+        use_existing_cluster=True,
+    )
+
+    # Determine the base bootDisk to patch.
+    boot_disk = existing_node_set.computeInstance.bootDisk
+    default_boot_disk = self.MakeBootDisk(machine_type)
+    if boot_disk.type is None:
+      boot_disk.type = default_boot_disk.type
+    if boot_disk.sizeGb is None:
+      boot_disk.sizeGb = default_boot_disk.sizeGb
+
+    if "type" in boot_disk_patch:
+      boot_disk.type = boot_disk_patch["type"]
+    if "sizeGb" in boot_disk_patch:
+      boot_disk.sizeGb = boot_disk_patch["sizeGb"]
+    if "image" in boot_disk_patch:
+      boot_disk.image = boot_disk_patch["image"]
+
+    # Assign the patched bootDisk to computeInstance.
+    if not existing_node_set.computeInstance:
+      existing_node_set.computeInstance = (
+          self.message_module.ComputeInstanceSlurmNodeSet(bootDisk=boot_disk)
+      )
+    else:
+      existing_node_set.computeInstance.bootDisk = boot_disk
 
   def _GetNetworkName(self, network) -> str:
     """Returns the network name."""
@@ -1278,18 +1319,36 @@ class ClusterUtil:
 
   def _MakeSlurmNodeSet(self, node_set, machine_type, storage_configs):
     """Makes a cluster slurm node set message from node set args."""
+    startup_script = self._GetBashScript(node_set.get("startupScript"))
+    compute_instance_labels = self.MakeLabels(
+        label_args=node_set.get("labels"),
+        label_cls=self.message_module.ComputeInstanceSlurmNodeSet.LabelsValue,
+    )
+    boot_disk = node_set.get("bootDisk")
+    if boot_disk:
+      compute_instance_boot_disk = self.message_module.BootDisk(
+          type=boot_disk.get("type"),
+          sizeGb=boot_disk.get("sizeGb", 100),
+          image=boot_disk.get("image"),
+      )
+    else:
+      compute_instance_boot_disk = self.MakeBootDisk(machine_type=machine_type)
     return self.message_module.SlurmNodeSet(
         id=node_set.get("id"),
         resourceRequestId=node_set.get("computeId"),
         staticNodeCount=node_set.get("staticNodeCount", 1),
         maxDynamicNodeCount=node_set.get("maxDynamicNodeCount"),
         storageConfigs=storage_configs,
-        startupScript=self._GetBashScript(node_set.get("startupScript")),
+        startupScript=startup_script,
         labels=self.MakeLabels(
             label_args=node_set.get("labels"),
             label_cls=self.message_module.SlurmNodeSet.LabelsValue,
         ),
-        bootDisk=self.MakeDisk(machine_type=machine_type),
+        computeInstance=self.message_module.ComputeInstanceSlurmNodeSet(
+            bootDisk=compute_instance_boot_disk,
+            startupScript=startup_script,
+            labels=compute_instance_labels,
+        ),
     )
 
   def _MakeSlurmPartition(self, partition):

@@ -236,6 +236,8 @@ class StreamRawPredictRequest(proto.Message):
             Required. The name of the Endpoint requested to serve the
             prediction. Format:
             ``projects/{project}/locations/{location}/endpoints/{endpoint}``
+            or
+            ``projects/{project}/locations/{location}/publishers/{publisher}/models/{model}``
         http_body (google.api.httpbody_pb2.HttpBody):
             The prediction input. Supports HTTP headers
             and arbitrary data payload.

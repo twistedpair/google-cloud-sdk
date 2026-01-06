@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import datetime
+import os
 
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors as api_errors
@@ -220,3 +221,49 @@ def raise_if_mv_early_deletion_fee_applies(object_resource):
          ' "gcloud config set storage/check_mv_early_deletion_fee False"'
         ).format(object_resource, object_resource.creation_time,
                  object_resource.storage_class, minimum_lifetime))
+
+
+def should_skip_file_download_if_outside_destination(
+    source_resource_url,
+    source_expanded_url,
+    destination_url,
+    raw_destination_url,
+):
+  """Returns True if the file downloads outside the destination directory."""
+  # The following checks are for preventing writing files outside the
+  # destination directory during downloads. For example, if a user runs:
+  # `gcloud storage cp -r gs://bucket/../etc/passwd .`
+
+  # If the source is not a recursive download or source does not contain ../,
+  # then we can skip this check.
+  if (
+      source_resource_url.versionless_url_string
+      == source_expanded_url.versionless_url_string
+      or '../' not in source_resource_url.resource_name
+  ):
+    return False
+
+  # If this is not a recursive download to a file, then we can skip this check.
+  if not (
+      isinstance(source_resource_url, storage_url.CloudUrl)
+      and isinstance(destination_url, storage_url.FileUrl)
+      and isinstance(raw_destination_url, storage_url.FileUrl)
+      # a resource_name check prevents abspath('') from defaulting to CWD.
+      and raw_destination_url.resource_name
+  ):
+    return False
+
+  container = os.path.abspath(
+      os.path.normpath(raw_destination_url.resource_name)
+  )
+  destination_path = os.path.abspath(
+      os.path.normpath(destination_url.resource_name)
+  )
+  # In a recursive copy, files are placed inside the destination directory,
+  # so we don't use an exact path match. `startswith` is used instead, but
+  # it must be made safe against matching similar paths (e.g. /a/b
+  # matching /a/bc) by ensuring a path separator is present.
+  if destination_path.startswith(os.path.join(container, '')):
+    return False
+
+  return True

@@ -538,7 +538,6 @@ def _AddVpcNetworkFlag(parser):
           ' subnetwork of the network specified by this --network flag. To'
           ' clear existing VPC network settings, use --clear-network.'
       ),
-      hidden=True,
   )
 
 
@@ -554,7 +553,6 @@ def _AddVpcSubnetFlag(parser):
           ' looked up from this subnetwork. To clear existing VPC network'
           ' settings, use --clear-network.'
       ),
-      hidden=True,
   )
 
 
@@ -569,7 +567,6 @@ def _AddVpcNetworkTagsFlag(parser):
           'Cloud Function. '
           'To clear existing tags, use --clear-network-tags.'
       ),
-      hidden=True,
   )
 
 
@@ -581,7 +578,6 @@ def _AddClearVpcNetworkTagsFlag(parser):
       help=(
           'Clears all existing network tags from the Cloud Function.'
       ),
-      hidden=True,
   )
 
 
@@ -592,9 +588,9 @@ def _AddDirectVpcEgressFlag(parser):
       choices=[x.lower() for x in EGRESS_SETTINGS],
       help_str=(
           'Specify which of the outbound traffic to send through Direct VPC'
-          ' egress. Configuring DirectVPC network is required to use this flag.'
+          ' egress. Configuring Direct VPC network is required to use this'
+          ' flag.'
       ),
-      hidden=True,
   )
   direct_vpc_egress_arg.AddToParser(parser)
 
@@ -602,12 +598,12 @@ def _AddDirectVpcEgressFlag(parser):
 def _AddNetworkInterfaceGroupFlags(parser):
   """Add flag for specifying Direct VPC network interface to the parser."""
   group = parser.add_argument_group(
-      'Direct VPC egress setting flags group.', hidden=True
+      'Direct VPC egress setting flags group.'
   )
   _AddVpcNetworkFlag(group)
   _AddVpcSubnetFlag(group)
 
-  tags_group = group.add_group(mutex=True, hidden=True)
+  tags_group = group.add_group(mutex=True)
   _AddVpcNetworkTagsFlag(tags_group)
   _AddClearVpcNetworkTagsFlag(tags_group)
 
@@ -621,13 +617,12 @@ def _AddClearVpcNetworkFlag(parser):
           'Disconnect this Cloud Function from the Direct VPC network it is'
           ' connected to.'
       ),
-      hidden=True,
   )
 
 
 def AddAllDirectVpcFlags(parser):
   """Add flags for all Direct VPC network related settings."""
-  ni_group = parser.add_group(mutex=True, hidden=True)
+  ni_group = parser.add_group(mutex=True)
   _AddNetworkInterfaceGroupFlags(ni_group)
   _AddClearVpcNetworkFlag(ni_group)
 

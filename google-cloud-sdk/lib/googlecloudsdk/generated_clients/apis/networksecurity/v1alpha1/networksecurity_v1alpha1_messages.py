@@ -3101,6 +3101,66 @@ class ListMirroringEndpointsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListNetworksForEngineRequest(_messages.Message):
+  r"""Message for requesting list of UllMirroringNetworks
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class ListNetworksForEngineResponse(_messages.Message):
+  r"""Message for response to listing UllMirroringNetworks
+
+  Fields:
+    networks: The list of Networks
+    nextPageToken: A token identifying a page of results the server should
+      return.
+  """
+
+  networks = _messages.MessageField('ListNetworksForEngineResponseNetwork', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListNetworksForEngineResponseNetwork(_messages.Message):
+  r"""Message describing a mirrored network.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of mirroring for the VPC.
+
+  Fields:
+    name: The name of the VPC network being mirrored.
+    state: Output only. State of mirroring for the VPC.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of mirroring for the VPC.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      ACTIVE: Ready.
+      CREATING: Being created.
+      DELETING: Being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    DELETING = 3
+
+  name = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
 class ListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 
@@ -8393,6 +8453,20 @@ class NetworksecurityProjectsLocationsUllMirroringEnginesGetRequest(_messages.Me
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsUllMirroringEnginesListNetworksRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsUllMirroringEnginesListNetworksRequest
+  object.
+
+  Fields:
+    listNetworksForEngineRequest: A ListNetworksForEngineRequest resource to
+      be passed as the request body.
+    name: Required. The ULL Mirroring Engine to list networks from.
+  """
+
+  listNetworksForEngineRequest = _messages.MessageField('ListNetworksForEngineRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class NetworksecurityProjectsLocationsUllMirroringEnginesListRequest(_messages.Message):

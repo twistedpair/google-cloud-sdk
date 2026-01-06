@@ -272,10 +272,12 @@ class AutoscalingTargets(_messages.Message):
   r"""The autoscaling targets for an instance.
 
   Fields:
-    highPriorityCpuUtilizationPercent: Required. The target high priority cpu
+    highPriorityCpuUtilizationPercent: Optional. The target high priority cpu
       utilization percentage that the autoscaler should be trying to achieve
       for the instance. This number is on a scale from 0 (no utilization) to
-      100 (full utilization). The valid range is [10, 90] inclusive.
+      100 (full utilization). The valid range is [10, 90] inclusive. If not
+      specified or set to 0, the autoscaler skips scaling based on high
+      priority CPU utilization.
     storageUtilizationPercent: Required. The target storage utilization
       percentage that the autoscaler should be trying to achieve for the
       instance. This number is on a scale from 0 (no utilization) to 100 (full
@@ -302,6 +304,9 @@ class Backup(_messages.Message):
   Enums:
     DatabaseDialectValueValuesEnum: Output only. The database dialect
       information for the backup.
+    MinimumRestorableEditionValueValuesEnum: Output only. The minimum edition
+      required to successfully restore the backup. Populated only if the
+      edition is Enterprise or Enterprise Plus.
     StateValueValuesEnum: Output only. The current state of the backup.
 
   Fields:
@@ -364,6 +369,9 @@ class Backup(_messages.Message):
       configured in multiple APIs: CreateBackup, UpdateBackup, CopyBackup.
       When updating or copying an existing backup, the expiration time
       specified must be less than `Backup.max_expire_time`.
+    minimumRestorableEdition: Output only. The minimum edition required to
+      successfully restore the backup. Populated only if the edition is
+      Enterprise or Enterprise Plus.
     name: Output only for the CreateBackup operation. Required for the
       UpdateBackup operation. A globally unique identifier for the backup
       which cannot be changed. Values are of the form
@@ -414,6 +422,21 @@ class Backup(_messages.Message):
     GOOGLE_STANDARD_SQL = 1
     POSTGRESQL = 2
 
+  class MinimumRestorableEditionValueValuesEnum(_messages.Enum):
+    r"""Output only. The minimum edition required to successfully restore the
+    backup. Populated only if the edition is Enterprise or Enterprise Plus.
+
+    Values:
+      EDITION_UNSPECIFIED: Edition not specified.
+      STANDARD: Standard edition.
+      ENTERPRISE: Enterprise edition.
+      ENTERPRISE_PLUS: Enterprise Plus edition.
+    """
+    EDITION_UNSPECIFIED = 0
+    STANDARD = 1
+    ENTERPRISE = 2
+    ENTERPRISE_PLUS = 3
+
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of the backup.
 
@@ -439,13 +462,14 @@ class Backup(_messages.Message):
   incrementalBackupChainId = _messages.StringField(10)
   instancePartitions = _messages.MessageField('BackupInstancePartition', 11, repeated=True)
   maxExpireTime = _messages.StringField(12)
-  name = _messages.StringField(13)
-  oldestVersionTime = _messages.StringField(14)
-  referencingBackups = _messages.StringField(15, repeated=True)
-  referencingDatabases = _messages.StringField(16, repeated=True)
-  sizeBytes = _messages.IntegerField(17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  versionTime = _messages.StringField(19)
+  minimumRestorableEdition = _messages.EnumField('MinimumRestorableEditionValueValuesEnum', 13)
+  name = _messages.StringField(14)
+  oldestVersionTime = _messages.StringField(15)
+  referencingBackups = _messages.StringField(16, repeated=True)
+  referencingDatabases = _messages.StringField(17, repeated=True)
+  sizeBytes = _messages.IntegerField(18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  versionTime = _messages.StringField(20)
 
 
 class BackupInfo(_messages.Message):
@@ -4178,36 +4202,36 @@ class PartitionQueryRequest(_messages.Message):
   r"""The request for PartitionQuery
 
   Messages:
-    ParamTypesValue: It isn't always possible for Cloud Spanner to infer the
-      right SQL type from a JSON value. For example, values of type `BYTES`
-      and values of type `STRING` both appear in params as JSON strings. In
-      these cases, `param_types` can be used to specify the exact SQL type for
-      some or all of the SQL query parameters. See the definition of Type for
-      more information about SQL types.
-    ParamsValue: Parameter names and values that bind to placeholders in the
-      SQL string. A parameter placeholder consists of the `@` character
+    ParamTypesValue: Optional. It isn't always possible for Cloud Spanner to
+      infer the right SQL type from a JSON value. For example, values of type
+      `BYTES` and values of type `STRING` both appear in params as JSON
+      strings. In these cases, `param_types` can be used to specify the exact
+      SQL type for some or all of the SQL query parameters. See the definition
+      of Type for more information about SQL types.
+    ParamsValue: Optional. Parameter names and values that bind to
+      placeholders in the SQL string. A parameter placeholder consists of the
+      `@` character followed by the parameter name (for example,
+      `@firstName`). Parameter names can contain letters, numbers, and
+      underscores. Parameters can appear anywhere that a literal value is
+      expected. The same parameter name can be used more than once, for
+      example: `"WHERE id > @msg_id AND id < @msg_id + 100"` It's an error to
+      execute a SQL statement with unbound parameters.
+
+  Fields:
+    paramTypes: Optional. It isn't always possible for Cloud Spanner to infer
+      the right SQL type from a JSON value. For example, values of type
+      `BYTES` and values of type `STRING` both appear in params as JSON
+      strings. In these cases, `param_types` can be used to specify the exact
+      SQL type for some or all of the SQL query parameters. See the definition
+      of Type for more information about SQL types.
+    params: Optional. Parameter names and values that bind to placeholders in
+      the SQL string. A parameter placeholder consists of the `@` character
       followed by the parameter name (for example, `@firstName`). Parameter
       names can contain letters, numbers, and underscores. Parameters can
       appear anywhere that a literal value is expected. The same parameter
       name can be used more than once, for example: `"WHERE id > @msg_id AND
       id < @msg_id + 100"` It's an error to execute a SQL statement with
       unbound parameters.
-
-  Fields:
-    paramTypes: It isn't always possible for Cloud Spanner to infer the right
-      SQL type from a JSON value. For example, values of type `BYTES` and
-      values of type `STRING` both appear in params as JSON strings. In these
-      cases, `param_types` can be used to specify the exact SQL type for some
-      or all of the SQL query parameters. See the definition of Type for more
-      information about SQL types.
-    params: Parameter names and values that bind to placeholders in the SQL
-      string. A parameter placeholder consists of the `@` character followed
-      by the parameter name (for example, `@firstName`). Parameter names can
-      contain letters, numbers, and underscores. Parameters can appear
-      anywhere that a literal value is expected. The same parameter name can
-      be used more than once, for example: `"WHERE id > @msg_id AND id <
-      @msg_id + 100"` It's an error to execute a SQL statement with unbound
-      parameters.
     partitionOptions: Additional options that affect how many partitions are
       created.
     sql: Required. The query request to generate partitions for. The request
@@ -4226,12 +4250,12 @@ class PartitionQueryRequest(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParamTypesValue(_messages.Message):
-    r"""It isn't always possible for Cloud Spanner to infer the right SQL type
-    from a JSON value. For example, values of type `BYTES` and values of type
-    `STRING` both appear in params as JSON strings. In these cases,
-    `param_types` can be used to specify the exact SQL type for some or all of
-    the SQL query parameters. See the definition of Type for more information
-    about SQL types.
+    r"""Optional. It isn't always possible for Cloud Spanner to infer the
+    right SQL type from a JSON value. For example, values of type `BYTES` and
+    values of type `STRING` both appear in params as JSON strings. In these
+    cases, `param_types` can be used to specify the exact SQL type for some or
+    all of the SQL query parameters. See the definition of Type for more
+    information about SQL types.
 
     Messages:
       AdditionalProperty: An additional property for a ParamTypesValue object.
@@ -4255,9 +4279,9 @@ class PartitionQueryRequest(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParamsValue(_messages.Message):
-    r"""Parameter names and values that bind to placeholders in the SQL
-    string. A parameter placeholder consists of the `@` character followed by
-    the parameter name (for example, `@firstName`). Parameter names can
+    r"""Optional. Parameter names and values that bind to placeholders in the
+    SQL string. A parameter placeholder consists of the `@` character followed
+    by the parameter name (for example, `@firstName`). Parameter names can
     contain letters, numbers, and underscores. Parameters can appear anywhere
     that a literal value is expected. The same parameter name can be used more
     than once, for example: `"WHERE id > @msg_id AND id < @msg_id + 100"` It's
@@ -5049,14 +5073,14 @@ class RequestOptions(_messages.Message):
       Any leading underscore (_) characters are removed from the string.
     transactionTag: A tag used for statistics collection about this
       transaction. Both `request_tag` and `transaction_tag` can be specified
-      for a read or query that belongs to a transaction. The value of
-      transaction_tag should be the same for all requests belonging to the
-      same transaction. If this request doesn't belong to any transaction,
-      `transaction_tag` is ignored. Legal characters for `transaction_tag`
-      values are all printable characters (ASCII 32 - 126) and the length of a
-      `transaction_tag` is limited to 50 characters. Values that exceed this
-      limit are truncated. Any leading underscore (_) characters are removed
-      from the string.
+      for a read or query that belongs to a transaction. To enable tagging on
+      a transaction, `transaction_tag` must be set to the same value for all
+      requests belonging to the same transaction, including BeginTransaction.
+      If this request doesn't belong to any transaction, `transaction_tag` is
+      ignored. Legal characters for `transaction_tag` values are all printable
+      characters (ASCII 32 - 126) and the length of a `transaction_tag` is
+      limited to 50 characters. Values that exceed this limit are truncated.
+      Any leading underscore (_) characters are removed from the string.
   """
 
   class PriorityValueValuesEnum(_messages.Enum):

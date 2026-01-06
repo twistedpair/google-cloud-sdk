@@ -35,6 +35,8 @@ VALIDATE_SERVICE = 'ValidateService'
 _RESOURCES_AVAILABLE = 'ResourcesAvailable'
 _STARTED = 'Started'
 _COMPLETED = 'Completed'
+_CONTAINER_READY = 'ContainerReady'
+_RUNNING = 'Running'
 
 
 def _CreateRepoStage():
@@ -180,6 +182,37 @@ def ExecutionStages(include_completion=False):
 
 def ExecutionDependencies():
   return {_STARTED: {_RESOURCES_AVAILABLE}, _COMPLETED: {_STARTED}}
+
+
+def InstanceDependencies():
+  """Dependencies for the Instance resource, for passing to ConditionPoller."""
+  return {
+      _RUNNING: {_RESOURCES_AVAILABLE},
+      _RESOURCES_AVAILABLE: {_CONTAINER_READY},
+  }
+
+
+def InstanceStages(
+    include_build=False,
+    include_create_repo=False,
+):
+  """Returns the list of progress tracker Stages for Instances."""
+  stages = []
+  if include_create_repo:
+    stages.append(_CreateRepoStage())
+  if include_build:
+    stages.append(_UploadSourceStage())
+    stages.append(_BuildContainerStage())
+  stages.append(
+      progress_tracker.Stage('Importing container...', key=_CONTAINER_READY)
+  )
+  stages.append(
+      progress_tracker.Stage(
+          'Provisioning resources...', key=_RESOURCES_AVAILABLE
+      )
+  )
+  stages.append(progress_tracker.Stage('Starting instance...', key=_RUNNING))
+  return stages
 
 
 def WorkerPoolStages(

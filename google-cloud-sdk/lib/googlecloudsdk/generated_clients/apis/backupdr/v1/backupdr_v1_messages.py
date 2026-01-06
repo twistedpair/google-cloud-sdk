@@ -1066,6 +1066,8 @@ class BackupPlanAssociation(_messages.Message):
     dataSource: Output only. Resource name of data source which will be used
       as storage location for backups taken. Format : projects/{project}/locat
       ions/{location}/backupVaults/{backupvault}/dataSources/{datasource}
+    filestoreInstanceBackupPlanAssociationProperties: Output only. Filestore
+      instance's backup plan association properties.
     name: Output only. Identifier. The resource name of BackupPlanAssociation
       in below format Format : projects/{project}/locations/{location}/backupP
       lanAssociations/{backupPlanAssociationId}
@@ -1106,12 +1108,13 @@ class BackupPlanAssociation(_messages.Message):
   cloudSqlInstanceBackupPlanAssociationProperties = _messages.MessageField('CloudSqlInstanceBackupPlanAssociationProperties', 4)
   createTime = _messages.StringField(5)
   dataSource = _messages.StringField(6)
-  name = _messages.StringField(7)
-  resource = _messages.StringField(8)
-  resourceType = _messages.StringField(9)
-  rulesConfigInfo = _messages.MessageField('RuleConfigInfo', 10, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
+  filestoreInstanceBackupPlanAssociationProperties = _messages.MessageField('FilestoreInstanceBackupPlanAssociationProperties', 7)
+  name = _messages.StringField(8)
+  resource = _messages.StringField(9)
+  resourceType = _messages.StringField(10)
+  rulesConfigInfo = _messages.MessageField('RuleConfigInfo', 11, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  updateTime = _messages.StringField(13)
 
 
 class BackupPlanRevision(_messages.Message):
@@ -4155,6 +4158,16 @@ class FetchUsableBackupVaultsResponse(_messages.Message):
   backupVaults = _messages.MessageField('BackupVault', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
+
+
+class FilestoreInstanceBackupPlanAssociationProperties(_messages.Message):
+  r"""Filestore instance's BPA properties.
+
+  Fields:
+    instanceCreateTime: Output only. The time when the instance was created.
+  """
+
+  instanceCreateTime = _messages.StringField(1)
 
 
 class FilestoreInstanceDataSourceReferenceProperties(_messages.Message):

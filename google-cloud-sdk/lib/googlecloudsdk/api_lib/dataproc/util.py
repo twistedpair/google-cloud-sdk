@@ -669,7 +669,7 @@ def GetCredentials(access_boundary_json):
     An access token for the user.
   """
   cred = c_store.Load(
-      None, allow_account_impersonation=True, use_google_auth=True)
+      None, allow_account_impersonation=True)
   c_store.Refresh(cred)
   if c_creds.IsOauth2ClientCredentials(cred):
     token = cred.access_token

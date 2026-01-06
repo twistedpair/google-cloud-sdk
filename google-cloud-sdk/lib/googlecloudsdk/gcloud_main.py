@@ -78,6 +78,7 @@ def _ShouldCheckSurveyPrompt(command_path):
 
   exempt_commands = [
       'gcloud.components.post-process',
+      'gcloud.components.update-macos-python',
   ]
   for exempt_command in exempt_commands:
     if command_path.startswith(exempt_command):

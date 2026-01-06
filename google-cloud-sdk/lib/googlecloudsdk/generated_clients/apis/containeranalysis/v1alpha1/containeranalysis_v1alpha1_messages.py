@@ -4296,10 +4296,12 @@ class Hash(_messages.Message):
       SHA256: A sha256 hash.
       GO_MODULE_H1: Dirhash of a Go module's source code which is then hex-
         encoded.
+      DIRSUM_SHA256: Dirsum hash of the downloaded artifact files.
     """
     NONE = 0
     SHA256 = 1
     GO_MODULE_H1 = 2
+    DIRSUM_SHA256 = 3
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
   value = _messages.BytesField(2)

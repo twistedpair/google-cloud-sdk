@@ -81,6 +81,10 @@ class ExecutionNotFoundError(exceptions.Error):
   """Indicates that a provided execution name was not found."""
 
 
+class InstanceNotFoundError(exceptions.Error):
+  """Indicates that a provided instance name was not found."""
+
+
 class WorkerNotFoundError(exceptions.Error):
   """Indicates that a provided worker name was not found."""
 

@@ -255,7 +255,7 @@ class McpServer(_messages.Message):
       `projects/{project}/locations/{location}/mcpServers/{mcp_server}`.
       Example: projects/12345/locations/us-
       central1/mcpServers/google:bigquery.googleapis.com:mcp for 1p
-      projects/12345/locations/us-central1/mcpServers/apphub:starbucks for 3p
+      projects/12345/locations/us-central1/mcpServers/apphub:starbucks for 2p
     state: Output only. The state of the MCP Server.
     urls: The base URL of the MCP server. Example:
       [geolocation.googleapis.com/mcp].
@@ -359,7 +359,7 @@ class McpTool(_messages.Message):
       Example: projects/12345/locations/us-central1/mcpServers/google:bigquery
       .googleapis.com:mcp/mcpTools/insert_job for 1p
       projects/12345/locations/us-
-      central1/mcpServers/apphub:starbucks/mcpTools/order_pizza for 3p
+      central1/mcpServers/apphub:starbucks/mcpTools/order_pizza for 2p
     outputSchema: Optional. A JSON Schema object defining the expected
       structure of the tool's output.
   """
@@ -460,6 +460,33 @@ class McpTool(_messages.Message):
   mcpServerUrls = _messages.StringField(5, repeated=True)
   name = _messages.StringField(6)
   outputSchema = _messages.MessageField('OutputSchemaValue', 7)
+
+
+class OperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    requestedCancellation: Output only. Identifies whether the user has
+      requested cancellation of the operation. Operations that have been
+      cancelled successfully have google.longrunning.Operation.error value
+      with a google.rpc.Status.code of `1`, corresponding to `Code.CANCELLED`.
+    statusMessage: Output only. Human-readable status of the operation, if
+      any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  requestedCancellation = _messages.BooleanField(4)
+  statusMessage = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
 
 
 class StandardQueryParameters(_messages.Message):

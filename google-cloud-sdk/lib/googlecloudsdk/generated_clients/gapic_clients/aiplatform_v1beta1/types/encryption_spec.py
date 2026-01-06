@@ -29,17 +29,17 @@ __protobuf__ = proto.module(
 
 
 class EncryptionSpec(proto.Message):
-    r"""Represents a customer-managed encryption key spec that can be
-    applied to a top-level resource.
+    r"""Represents a customer-managed encryption key specification
+    that can be applied to a Vertex AI resource.
 
     Attributes:
         kms_key_name (str):
-            Required. The Cloud KMS resource identifier of the customer
-            managed encryption key used to protect a resource. Has the
-            form:
-            ``projects/my-project/locations/my-region/keyRings/my-kr/cryptoKeys/my-key``.
-            The key needs to be in the same region as where the compute
-            resource is created.
+            Required. Resource name of the Cloud KMS key used to protect
+            the resource.
+
+            The Cloud KMS key must be in the same region as the
+            resource. It must have the format
+            ``projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}``.
     """
 
     kms_key_name: str = proto.Field(

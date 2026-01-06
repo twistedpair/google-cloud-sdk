@@ -2121,11 +2121,14 @@ class DnsNameMapping(_messages.Message):
       name.
     DnsScopeValueValuesEnum: Output only. The scope that the DNS name applies
       to.
+    RecordManagerValueValuesEnum: Output only. The manager for this DNS
+      record.
 
   Fields:
     connectionType: Output only. The connection type of the DNS name.
     dnsScope: Output only. The scope that the DNS name applies to.
-    name: The DNS name.
+    name: Output only. The DNS name.
+    recordManager: Output only. The manager for this DNS record.
   """
 
   class ConnectionTypeValueValuesEnum(_messages.Enum):
@@ -2146,15 +2149,34 @@ class DnsNameMapping(_messages.Message):
     r"""Output only. The scope that the DNS name applies to.
 
     Values:
-      DNS_SCOPE_UNSPECIFIED: Unknown DNS scope.
-      INSTANCE: Indicates a instance-level DNS name.
+      DNS_SCOPE_UNSPECIFIED: DNS scope not set. This value should not be used.
+      INSTANCE: Indicates an instance-level DNS name.
+      CLUSTER: Indicates a cluster-level DNS name.
     """
     DNS_SCOPE_UNSPECIFIED = 0
     INSTANCE = 1
+    CLUSTER = 2
+
+  class RecordManagerValueValuesEnum(_messages.Enum):
+    r"""Output only. The manager for this DNS record.
+
+    Values:
+      RECORD_MANAGER_UNSPECIFIED: Record manager not set. This value should
+        not be used.
+      CUSTOMER: The record may be managed by the customer. It is not
+        automatically managed by Cloud SQL automation.
+      CLOUD_SQL_AUTOMATION: The record is managed by Cloud SQL, which will
+        create, update, and delete the DNS records for the zone automatically
+        when the Cloud SQL database instance is created or updated.
+    """
+    RECORD_MANAGER_UNSPECIFIED = 0
+    CUSTOMER = 1
+    CLOUD_SQL_AUTOMATION = 2
 
   connectionType = _messages.EnumField('ConnectionTypeValueValuesEnum', 1)
   dnsScope = _messages.EnumField('DnsScopeValueValuesEnum', 2)
   name = _messages.StringField(3)
+  recordManager = _messages.EnumField('RecordManagerValueValuesEnum', 4)
 
 
 class Empty(_messages.Message):
@@ -3056,6 +3078,8 @@ class InsightsConfig(_messages.Message):
   is enabled and optional configuration.
 
   Fields:
+    enhancedQueryInsightsEnabled: Optional. Whether enhanced query insights
+      feature is enabled.
     queryInsightsEnabled: Whether Query Insights feature is enabled.
     queryPlansPerMinute: Number of query execution plans captured by Insights
       per minute for all queries combined. Default is 5.
@@ -3069,11 +3093,12 @@ class InsightsConfig(_messages.Message):
       when enabled.
   """
 
-  queryInsightsEnabled = _messages.BooleanField(1)
-  queryPlansPerMinute = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  queryStringLength = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  recordApplicationTags = _messages.BooleanField(4)
-  recordClientAddress = _messages.BooleanField(5)
+  enhancedQueryInsightsEnabled = _messages.BooleanField(1)
+  queryInsightsEnabled = _messages.BooleanField(2)
+  queryPlansPerMinute = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  queryStringLength = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  recordApplicationTags = _messages.BooleanField(5)
+  recordClientAddress = _messages.BooleanField(6)
 
 
 class InstanceReference(_messages.Message):

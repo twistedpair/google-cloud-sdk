@@ -1195,6 +1195,7 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       in the `IntegratedSystem` enum. For entries with
       `user_specified_system`, this field is optional and defaults to an empty
       timestamp.
+    spannerTableSpec: Specification of a Spanner table.
     sqlDatabaseSystemSpec: Specification that applies to a relational database
       system. Only settable when `user_specified_system` is equal to
       `SQL_DATABASE`
@@ -1351,11 +1352,12 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
   schema = _messages.MessageField('GoogleCloudDatacatalogV1Schema', 24)
   serviceSpec = _messages.MessageField('GoogleCloudDatacatalogV1ServiceSpec', 25)
   sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 26)
-  sqlDatabaseSystemSpec = _messages.MessageField('GoogleCloudDatacatalogV1SqlDatabaseSystemSpec', 27)
-  type = _messages.EnumField('TypeValueValuesEnum', 28)
-  usageSignal = _messages.MessageField('GoogleCloudDatacatalogV1UsageSignal', 29)
-  userSpecifiedSystem = _messages.StringField(30)
-  userSpecifiedType = _messages.StringField(31)
+  spannerTableSpec = _messages.MessageField('GoogleCloudDatacatalogV1SpannerTableSpec', 27)
+  sqlDatabaseSystemSpec = _messages.MessageField('GoogleCloudDatacatalogV1SqlDatabaseSystemSpec', 28)
+  type = _messages.EnumField('TypeValueValuesEnum', 29)
+  usageSignal = _messages.MessageField('GoogleCloudDatacatalogV1UsageSignal', 30)
+  userSpecifiedSystem = _messages.StringField(31)
+  userSpecifiedType = _messages.StringField(32)
 
 
 class GoogleCloudDatacatalogV1EntryOverview(_messages.Message):
@@ -1910,6 +1912,60 @@ class GoogleCloudDatacatalogV1ServiceSpec(_messages.Message):
   """
 
   cloudBigtableInstanceSpec = _messages.MessageField('GoogleCloudDatacatalogV1CloudBigtableInstanceSpec', 1)
+
+
+class GoogleCloudDatacatalogV1SpannerTableSpec(_messages.Message):
+  r"""Specification of a Spanner table.
+
+  Fields:
+    foreignKeys: Output only. The foreign keys of the table.
+    primaryKey: Output only. The primary key of the table.
+  """
+
+  foreignKeys = _messages.MessageField('GoogleCloudDatacatalogV1SpannerTableSpecSpannerForeignKey', 1, repeated=True)
+  primaryKey = _messages.MessageField('GoogleCloudDatacatalogV1SpannerTableSpecSpannerPrimaryKey', 2)
+
+
+class GoogleCloudDatacatalogV1SpannerTableSpecSpannerForeignKey(_messages.Message):
+  r"""Specification of a Spanner foreign key.
+
+  Fields:
+    columnMappings: Output only. The ordered list of column mappings for this
+      foreign key.
+    entry: Output only. The table name this foreign key referenced to. Format:
+      `projects/{PROJECT_ID}/locations/{LOCATION}/entryGroups/{ENTRY_GROUP_ID}
+      /entries/{ENTRY_ID}`
+    name: Output only. The constraint_name of the foreign key, for example,
+      FK_CustomerOrder.
+  """
+
+  columnMappings = _messages.MessageField('GoogleCloudDatacatalogV1SpannerTableSpecSpannerForeignKeyForeignKeyColumnMapping', 1, repeated=True)
+  entry = _messages.StringField(2)
+  name = _messages.StringField(3)
+
+
+class GoogleCloudDatacatalogV1SpannerTableSpecSpannerForeignKeyForeignKeyColumnMapping(_messages.Message):
+  r"""Column mapping for a Spanner foreign key.
+
+  Fields:
+    column: Output only. The column in the current table that is part of the
+      foreign key.
+    referenceColumn: Output only. The column in the referenced table that is
+      part of the foreign key.
+  """
+
+  column = _messages.StringField(1)
+  referenceColumn = _messages.StringField(2)
+
+
+class GoogleCloudDatacatalogV1SpannerTableSpecSpannerPrimaryKey(_messages.Message):
+  r"""Specification of a Spanner primary key.
+
+  Fields:
+    columns: Output only. Column names of the primary key.
+  """
+
+  columns = _messages.StringField(1, repeated=True)
 
 
 class GoogleCloudDatacatalogV1SqlDatabaseSystemSpec(_messages.Message):

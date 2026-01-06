@@ -19,6 +19,7 @@ A detailed description of auth.
 """
 
 from __future__ import absolute_import
+from __future__ import annotations
 from __future__ import division
 from __future__ import unicode_literals
 
@@ -157,9 +158,9 @@ class StaticCredentialProviders(object):
   def RemoveProvider(self, provider):
     self._providers.remove(provider)
 
-  def GetCredentials(self, account, use_google_auth=True):
+  def GetCredentials(self, account):
     for provider in self._providers:
-      cred = provider.GetCredentials(account, use_google_auth)
+      cred = provider.GetCredentials(account)
       if cred is not None:
         return cred
     return None
@@ -216,15 +217,14 @@ def _HandleGceUniverseDomain(mds_universe_domain, account):
 class GceCredentialProvider(object):
   """Provides account, project and credential data for gce vm env."""
 
-  def GetCredentials(self, account, use_google_auth=True):
+  def GetCredentials(self, account):
     if properties.VALUES.core.check_gce_metadata.GetBool():
       if account in c_gce.Metadata().Accounts():
         # Here we just return the google-auth credential without refreshing it.
         # In _Load method we will attach the token store to the cred object,
         # then refresh. This way the refreshed token can be cached in the
         # token store automatically.
-        refresh = not use_google_auth
-        return AcquireFromGCE(account, use_google_auth, refresh)
+        return AcquireFromGCE(account)
     return None
 
   def GetAccount(self):
@@ -507,8 +507,11 @@ def GetFreshAccessToken(account=None,
     allow_account_impersonation: bool, True to allow use of impersonated service
       account credentials (if that is configured).
   """
-  creds = LoadFreshCredential(account, scopes, min_expiry_duration,
-                              allow_account_impersonation, True)
+  creds = LoadFreshCredential(
+      account=account,
+      scopes=scopes,
+      min_expiry_duration=min_expiry_duration,
+      allow_account_impersonation=allow_account_impersonation)
   return _GetAccessTokenFromCreds(creds)
 
 
@@ -541,8 +544,7 @@ def GetFreshAccessTokenIfEnabled(account=None,
 def LoadFreshCredential(account=None,
                         scopes=None,
                         min_expiry_duration='1h',
-                        allow_account_impersonation=True,
-                        use_google_auth=True):
+                        allow_account_impersonation=True):
   """Load credentials and force a refresh.
 
     Will always refresh loaded credential if it is expired or would expire
@@ -559,16 +561,9 @@ def LoadFreshCredential(account=None,
     allow_account_impersonation: bool, True to allow use of impersonated service
       account credentials (if that is configured). If False, the active user
       credentials will always be loaded.
-    use_google_auth: bool, True to load credentials as google-auth credentials.
-      False to load credentials as oauth2client credentials..
 
   Returns:
-    oauth2client.client.Credentials or google.auth.credentials.Credentials.
-    When all of the following conditions are met, it returns
-    google.auth.credentials.Credentials and otherwise it returns
-    oauth2client.client.Credentials.
-
-    * use_google_auth is True
+    google.auth.credentials.Credentials.
 
   Raises:
     NoActiveAccountException: If account is not provided and there is no
@@ -586,14 +581,13 @@ def LoadFreshCredential(account=None,
   cred = Load(
       account=account,
       scopes=scopes,
-      allow_account_impersonation=allow_account_impersonation,
-      use_google_auth=use_google_auth)
+      allow_account_impersonation=allow_account_impersonation)
   RefreshIfExpireWithinWindow(cred, min_expiry_duration)
 
   return cred
 
 
-def LoadIfEnabled(allow_account_impersonation=True, use_google_auth=True):
+def LoadIfEnabled(allow_account_impersonation=True):
   """Get the credentials associated with the current account.
 
   If credentials have been disabled via properties, this will return None.
@@ -605,16 +599,12 @@ def LoadIfEnabled(allow_account_impersonation=True, use_google_auth=True):
     allow_account_impersonation: bool, True to allow use of impersonated service
       account credentials (if that is configured). If False, the active user
       credentials will always be loaded.
-    use_google_auth: bool, True to load credentials as google-auth credentials.
-    False to load credentials as oauth2client credentials..
 
   Returns:
-    oauth2client.client.Credentials or google.auth.credentials.Credentials if
+    google.auth.credentials.Credentials if
     credentials are enabled. When all of the following conditions are met, it
     returns google.auth.credentials.Credentials and otherwise it returns
     oauth2client.client.Credentials.
-
-    * use_google_auth is True
 
   Raises:
     NoActiveAccountException: If account is not provided and there is no
@@ -627,8 +617,7 @@ def LoadIfEnabled(allow_account_impersonation=True, use_google_auth=True):
   if properties.VALUES.auth.disable_credentials.GetBool():
     return None
   return Load(
-      allow_account_impersonation=allow_account_impersonation,
-      use_google_auth=use_google_auth)
+      allow_account_impersonation=allow_account_impersonation)
 
 
 def ParseImpersonationAccounts(service_account_ids):
@@ -763,7 +752,7 @@ class CredentialInfo(object):
       cred_info.file_path = cred_file_override
 
       # To figure out the account, load the cred from the cred file.
-      creds = _LoadFromFileOverride(cred_file_override, None, True)
+      creds = _LoadFromFileOverride(cred_file_override, None)
 
       # Service account can be obtained from service_account_email property.
       # External account can be call GetExternalAccountId method.
@@ -785,7 +774,6 @@ def Load(
     scopes=None,
     prevent_refresh=False,
     allow_account_impersonation=True,
-    use_google_auth=True,
     cache_only_rapt=False,
 ):
   """Get the credentials associated with the provided account.
@@ -812,17 +800,10 @@ def Load(
     allow_account_impersonation: bool, True to allow use of impersonated service
       account credentials (if that is configured). If False, the active user
       credentials will always be loaded.
-    use_google_auth: bool, True to load credentials as google-auth credentials.
-      False to load credentials as oauth2client credentials..
     cache_only_rapt: bool, True to only cache RAPT token.
 
   Returns:
-    oauth2client.client.Credentials or google.auth.credentials.Credentials.
-    When all of the following conditions are met, it returns
-    google.auth.credentials.Credentials and otherwise it returns
-    oauth2client.client.Credentials.
-
-    * use_google_auth is True
+    google.auth.credentials.Credentials.
 
   Raises:
     NoActiveAccountException: If account is not provided and there is no
@@ -849,140 +830,103 @@ def Load(
     log.warning(
         'This command is using service account impersonation. All API calls '
         'will be executed as [{}].'.format(target_principal))
-    if use_google_auth:
-      google_auth_source_creds = Load(
-          account=account,
-          allow_account_impersonation=False,
-          use_google_auth=use_google_auth,
-          cache_only_rapt=cache_only_rapt,
-      )
-      cred = IMPERSONATION_TOKEN_PROVIDER.GetElevationAccessTokenGoogleAuth(
-          google_auth_source_creds, target_principal, delegates, scopes or
-          config.CLOUDSDK_SCOPES)
-    else:
-      cred = IMPERSONATION_TOKEN_PROVIDER.GetElevationAccessToken(
-          impersonate_service_account, scopes or config.CLOUDSDK_SCOPES)
+    google_auth_source_creds = Load(
+        account=account,
+        allow_account_impersonation=False,
+        cache_only_rapt=cache_only_rapt,
+    )
+    cred = IMPERSONATION_TOKEN_PROVIDER.GetElevationAccessTokenGoogleAuth(
+        google_auth_source_creds, target_principal, delegates, scopes or
+        config.CLOUDSDK_SCOPES)
+
   else:
     cred = _Load(
         account,
         scopes,
         prevent_refresh,
-        use_google_auth,
         cache_only_rapt=cache_only_rapt,
     )
 
   return cred
 
 
-def _LoadFromFileOverride(cred_file_override, scopes, use_google_auth):
+def _LoadFromFileOverride(cred_file_override, scopes):
   """Load credentials from cred file override."""
   log.info('Using alternate credentials from file: [%s]', cred_file_override)
 
-  if not use_google_auth:
-    try:
-      cred = client.GoogleCredentials.from_stream(cred_file_override)
-    except client.Error as e:
-      raise InvalidCredentialFileException(cred_file_override, e)
+  google_auth_default = c_creds.GetGoogleAuthDefault()
+  # Import only when necessary to decrease the startup time. Move it to
+  # global once google-auth is ready to replace oauth2client.
+  # Ideally we should wrap the following two lines inside a pylint disable and
+  # enable block just like other places, but it seems it is not working here.
+  # pylint: disable=g-import-not-at-top
+  from google.auth import credentials as google_auth_creds
+  from google.auth import exceptions as google_auth_exceptions
+  from google.auth import external_account as google_auth_external_account
+  from google.auth import external_account_authorized_user as google_auth_external_account_authorized_user
+  # pylint: enable=g-import-not-at-top
 
-    if cred.create_scoped_required():
-      if scopes is None:
-        scopes = config.CLOUDSDK_SCOPES
-      cred = cred.create_scoped(scopes)
+  try:
+    # pylint: disable=protected-access
+    cred, _ = google_auth_default.load_credentials_from_file(
+        cred_file_override)
+    # pylint: enable=protected-access
+  except google_auth_exceptions.DefaultCredentialsError as e:
+    raise InvalidCredentialFileException(cred_file_override, e)
 
-    # Set token_uri after scopes since token_uri needs to be explicitly
-    # preserved when scopes are applied.
+  if scopes is None:
+    scopes = config.CLOUDSDK_SCOPES
+  cred = google_auth_creds.with_scopes_if_required(cred, scopes)
+
+  if (isinstance(cred, google_auth_external_account.Credentials) and
+      not cred.service_account_email):
+    # Reinitialize with client auth.
+    json_info = cred.info
+    json_info['client_id'] = config.CLOUDSDK_CLIENT_ID
+    json_info['client_secret'] = config.CLOUDSDK_CLIENT_NOTSOSECRET
+    cred = type(cred).from_info(json_info, scopes=config.CLOUDSDK_SCOPES)
+
+  if (isinstance(cred,
+                 google_auth_external_account_authorized_user.Credentials)):
+    # Reinitialize with client auth.
+    json_info = cred.info
+    json_info['client_id'] = config.CLOUDSDK_CLIENT_ID
+    json_info['client_secret'] = config.CLOUDSDK_CLIENT_NOTSOSECRET
+    json_info['scopes'] = config.CLOUDSDK_EXTERNAL_ACCOUNT_SCOPES
+    cred = type(cred).from_info(json_info)
+
+  # Set token_uri after scopes since token_uri needs to be explicitly
+  # preserved when scopes are applied.
+  cred_type = c_creds.CredentialTypeGoogleAuth.FromCredentials(cred)
+  if cred_type == c_creds.CredentialTypeGoogleAuth.SERVICE_ACCOUNT:
     token_uri_override = properties.VALUES.auth.token_host.Get()
+
     if token_uri_override:
-      cred_type = c_creds.CredentialType.FromCredentials(cred)
-      if cred_type in (c_creds.CredentialType.SERVICE_ACCOUNT,
-                       c_creds.CredentialType.P12_SERVICE_ACCOUNT):
-        cred.token_uri = token_uri_override
-    # The credential override is not stored in credential store, but we still
-    # want to cache access tokens between invocations.
-    cred = c_creds.MaybeAttachAccessTokenCacheStore(cred)
-  else:
-    google_auth_default = c_creds.GetGoogleAuthDefault()
-    # Import only when necessary to decrease the startup time. Move it to
-    # global once google-auth is ready to replace oauth2client.
-    # Ideally we should wrap the following two lines inside a pylint disable and
-    # enable block just like other places, but it seems it is not working here.
-    # pylint: disable=g-import-not-at-top
-    from google.auth import credentials as google_auth_creds
-    from google.auth import exceptions as google_auth_exceptions
-    from google.auth import external_account as google_auth_external_account
-    from google.auth import external_account_authorized_user as google_auth_external_account_authorized_user
-    # pylint: enable=g-import-not-at-top
-
-    try:
-      # pylint: disable=protected-access
-      cred, _ = google_auth_default.load_credentials_from_file(
-          cred_file_override)
-      # pylint: enable=protected-access
-    except google_auth_exceptions.DefaultCredentialsError as e:
-      raise InvalidCredentialFileException(cred_file_override, e)
-
-    if scopes is None:
-      scopes = config.CLOUDSDK_SCOPES
-    cred = google_auth_creds.with_scopes_if_required(cred, scopes)
-
-    if (isinstance(cred, google_auth_external_account.Credentials) and
-        not cred.service_account_email):
-      # Reinitialize with client auth.
-      json_info = cred.info
-      json_info['client_id'] = config.CLOUDSDK_CLIENT_ID
-      json_info['client_secret'] = config.CLOUDSDK_CLIENT_NOTSOSECRET
-      cred = type(cred).from_info(json_info, scopes=config.CLOUDSDK_SCOPES)
-
-    if (isinstance(cred,
-                   google_auth_external_account_authorized_user.Credentials)):
-      # Reinitialize with client auth.
-      json_info = cred.info
-      json_info['client_id'] = config.CLOUDSDK_CLIENT_ID
-      json_info['client_secret'] = config.CLOUDSDK_CLIENT_NOTSOSECRET
-      json_info['scopes'] = config.CLOUDSDK_EXTERNAL_ACCOUNT_SCOPES
-      cred = type(cred).from_info(json_info)
-
-    # Set token_uri after scopes since token_uri needs to be explicitly
-    # preserved when scopes are applied.
-    cred_type = c_creds.CredentialTypeGoogleAuth.FromCredentials(cred)
-    if cred_type == c_creds.CredentialTypeGoogleAuth.SERVICE_ACCOUNT:
-      token_uri_override = properties.VALUES.auth.token_host.Get()
-
-      if token_uri_override:
-        # pylint: disable=protected-access
-        cred._token_uri = token_uri_override
-        # pylint: enable=protected-access
-    elif cred_type == c_creds.CredentialTypeGoogleAuth.USER_ACCOUNT:
-      token_uri_override = c_creds.GetDefaultTokenUri()
       # pylint: disable=protected-access
       cred._token_uri = token_uri_override
       # pylint: enable=protected-access
+  elif cred_type == c_creds.CredentialTypeGoogleAuth.USER_ACCOUNT:
+    token_uri_override = c_creds.GetDefaultTokenUri()
+    # pylint: disable=protected-access
+    cred._token_uri = token_uri_override
+    # pylint: enable=protected-access
 
-    # Enable self signed jwt if applicable for the cred created from the file
-    # override.
-    c_creds.EnableSelfSignedJwtIfApplicable(cred)
+  # Enable self signed jwt if applicable for the cred created from the file
+  # override.
+  c_creds.EnableSelfSignedJwtIfApplicable(cred)
 
-    # The credential override is not stored in credential store, but we still
-    # want to cache access tokens between invocations.
-    cred = c_creds.MaybeAttachAccessTokenCacheStoreGoogleAuth(cred)
+  # The credential override is not stored in credential store, but we still
+  # want to cache access tokens between invocations.
+  cred = c_creds.MaybeAttachAccessTokenCacheStoreGoogleAuth(cred)
 
   return cred
 
 
-def _LoadAccessTokenCredsFromValue(access_token, use_google_auth):
+def _LoadAccessTokenCredsFromValue(access_token):
   """Loads an AccessTokenCredentials from access_token."""
   log.info('Using access token from environment variable [%s]',
            ACCESS_TOKEN_ENV_VAR_NAME)
-  # All commands should be using google-auth, we have this check in case some
-  # users disabled google-auth using the hidden auth/disable_load_google_auth.
-  if not use_google_auth:
-    raise UnsupportedCredentialsError(
-        'You may have passed an access token to gcloud using the environment '
-        'variable {}. At the same time, google-auth is disabled by '
-        'auth/disable_load_google_auth. They do not work together. Please '
-        'unset auth/disable_load_google_auth and retry.'.format(
-            ACCESS_TOKEN_ENV_VAR_NAME)
-    )
+  # All commands should be using google-auth
   access_token = access_token.strip()
   # Import only when necessary to decrease the startup time. Move it to
   # global once google-auth replaces oauth2client.
@@ -996,19 +940,10 @@ def _LoadAccessTokenCredsFromValue(access_token, use_google_auth):
   return creds
 
 
-def _LoadAccessTokenCredsFromFile(token_file, use_google_auth):
+def _LoadAccessTokenCredsFromFile(token_file):
   """Loads an AccessTokenCredentials from token_file."""
   log.info('Using access token from file: [%s]', token_file)
-  # All commands should be using google-auth, we have this check in case some
-  # users disabled google-auth using the hidden auth/disable_load_google_auth.
-  if not use_google_auth:
-    raise UnsupportedCredentialsError(
-        'You may have passed an access token to gcloud using '
-        '--access-token-file or auth/access_token_file. At the same time, '
-        'google-auth is disabled by auth/disable_load_google_auth. '
-        'They do not work together. Please unset '
-        'auth/disable_load_google_auth and retry.'
-    )
+  # All commands should be using google-auth
   content = files.ReadFileContents(token_file).strip()
   # Import only when necessary to decrease the startup time. Move it to
   # global once google-auth replaces oauth2client.
@@ -1024,7 +959,6 @@ def _Load(
     account,
     scopes,
     prevent_refresh,
-    use_google_auth=True,
     cache_only_rapt=False,
 ):
   """Helper for Load()."""
@@ -1035,11 +969,11 @@ def _Load(
   cred_file_override = properties.VALUES.auth.credential_file_override.Get()
 
   if access_token:
-    cred = _LoadAccessTokenCredsFromValue(access_token, use_google_auth)
+    cred = _LoadAccessTokenCredsFromValue(access_token)
   elif access_token_file:
-    cred = _LoadAccessTokenCredsFromFile(access_token_file, use_google_auth)
+    cred = _LoadAccessTokenCredsFromFile(access_token_file)
   elif cred_file_override:
-    cred = _LoadFromFileOverride(cred_file_override, scopes, use_google_auth)
+    cred = _LoadFromFileOverride(cred_file_override, scopes)
   else:
     if not account:
       account = properties.VALUES.core.account.Get()
@@ -1052,12 +986,12 @@ def _Load(
     store = c_creds.GetCredentialStore(
         cache_only_rapt=cache_only_rapt,
     )
-    cred = store.Load(account, use_google_auth)
+    cred = store.Load(account)
 
     if not cred:
       # Next check the static providers.
       cred = STATIC_CREDENTIAL_PROVIDERS.GetCredentials(
-          account, use_google_auth
+          account
       )
       if not cred:
         raise NoCredentialsForAccountException(account)
@@ -1428,10 +1362,7 @@ def RefreshIfExpireWithinWindow(credentials, window):
     window: string, The threshold of the remaining lifetime of the token which
       can trigger the refresh.
   """
-  if c_creds.IsOauth2ClientCredentials(credentials):
-    expiry = credentials.token_expiry
-  else:
-    expiry = credentials.expiry
+  expiry = credentials.expiry
   almost_expire = (not expiry) or _TokenExpiresWithinWindow(window, expiry)
   if almost_expire:
     Refresh(credentials)
@@ -1646,12 +1577,9 @@ def RevokeCredentials(credentials):
       c_creds.IsExternalAccountAuthorizedUserCredentials(credentials)):
     raise RevokeError('The token cannot be revoked from server because it is '
                       'not user account credentials.')
-  if c_creds.IsOauth2ClientCredentials(credentials):
-    from googlecloudsdk.core import http  # pylint: disable=g-import-not-at-top
-    credentials.revoke(http.Http())
-  else:
-    from googlecloudsdk.core import requests  # pylint: disable=g-import-not-at-top
-    credentials.revoke(requests.GoogleAuthRequest())
+
+  from googlecloudsdk.core import requests  # pylint: disable=g-import-not-at-top
+  credentials.revoke(requests.GoogleAuthRequest())
 
 
 def Revoke(account=None):
@@ -1688,7 +1616,7 @@ def Revoke(account=None):
     raise RevokeError('Cannot revoke GCE-provided credentials.')
 
   credentials = Load(
-      account, prevent_refresh=True, use_google_auth=True)
+      account, prevent_refresh=True)
   if not credentials:
     raise NoCredentialsForAccountException(account)
 
@@ -1723,74 +1651,44 @@ def Revoke(account=None):
 
 
 def AcquireFromToken(refresh_token,
-                     token_uri=None,
-                     revoke_uri=GOOGLE_OAUTH2_PROVIDER_REVOKE_URI,
-                     use_google_auth=True):
+                     token_uri=None):
   """Get credentials from an already-valid refresh token.
 
   Args:
     refresh_token: An oauth2 refresh token.
     token_uri: str, URI to use for refreshing.
-    revoke_uri: str, URI to use for revoking.
-    use_google_auth: bool, True to return google-auth credentials. False to
-    return oauth2client credentials..
 
   Returns:
-    oauth2client.client.Credentials or google.auth.credentials.Credentials.
-    When all of the following conditions are true, it returns
-    google.auth.credentials.Credentials and otherwise it returns
-    oauth2client.client.Credentials.
-
-    * use_google_auth=True
-    * google-auth is not globally disabled by auth/disable_load_google_auth.
+    google.auth.credentials.Credentials.
   """
   if token_uri is None:
     token_uri = c_creds.GetDefaultTokenUri()
-  if use_google_auth:
-    # Import only when necessary to decrease the startup time. Move it to
-    # global once google-auth is ready to replace oauth2client.
-    # pylint: disable=g-import-not-at-top
-    from google.oauth2 import credentials as google_auth_creds
-    # pylint: enable=g-import-not-at-top
-    cred = google_auth_creds.Credentials(
-        token=None,
-        refresh_token=refresh_token,
-        id_token=None,
-        token_uri=token_uri,
-        client_id=properties.VALUES.auth.client_id.Get(required=True),
-        client_secret=properties.VALUES.auth.client_secret.Get(required=True))
+  # Import only when necessary to decrease the startup time. Move it to
+  # global once google-auth is ready to replace oauth2client.
+  # pylint: disable=g-import-not-at-top
+  from google.oauth2 import credentials as google_auth_creds
+  # pylint: enable=g-import-not-at-top
+  cred = google_auth_creds.Credentials(
+      token=None,
+      refresh_token=refresh_token,
+      id_token=None,
+      token_uri=token_uri,
+      client_id=properties.VALUES.auth.client_id.Get(required=True),
+      client_secret=properties.VALUES.auth.client_secret.Get(required=True))
 
-    # always start expired
-    cred.expiry = datetime.datetime.utcnow()
-  else:
-    cred = client.OAuth2Credentials(
-        access_token=None,
-        client_id=properties.VALUES.auth.client_id.Get(required=True),
-        client_secret=properties.VALUES.auth.client_secret.Get(required=True),
-        refresh_token=refresh_token,
-        # always start expired
-        token_expiry=datetime.datetime.utcnow(),
-        token_uri=token_uri,
-        user_agent=config.CLOUDSDK_USER_AGENT,
-        revoke_uri=revoke_uri)
+  # always start expired
+  cred.expiry = datetime.datetime.now(tz=datetime.timezone.utc)
   return cred
 
 
-def AcquireFromGCE(account=None, use_google_auth=True, refresh=True):
+def AcquireFromGCE(account=None):
   """Get credentials from a GCE metadata server.
 
   Args:
     account: str, The account name to use. If none, the default is used.
-    use_google_auth: bool, True to load credentials of google-auth if it is
-      supported in the current authentication scenario. False to load
-      credentials of oauth2client.
-    refresh: bool, Whether to refresh the credential or not. The default value
-      is True.
 
   Returns:
-    oauth2client.client.Credentials or google.auth.credentials.Credentials based
-    on use_google_auth and whether google-auth is supported in the current
-    authentication sceanrio.
+    google.auth.credentials.Credentials
 
   Raises:
     c_gce.CannotConnectToMetadataServerException: If the metadata server cannot
@@ -1798,27 +1696,23 @@ def AcquireFromGCE(account=None, use_google_auth=True, refresh=True):
     TokenRefreshError: If the credentials fail to refresh.
     TokenRefreshReauthError: If the credentials fail to refresh due to reauth.
   """
-  if use_google_auth:
-    # pylint: disable=g-import-not-at-top
-    import google.auth.compute_engine as google_auth_gce
-    # pylint: enable=g-import-not-at-top
-    email = account or 'default'
-    credentials = google_auth_gce.Credentials(service_account_email=email)
+  # pylint: disable=g-import-not-at-top
+  import google.auth.compute_engine as google_auth_gce
+  # pylint: enable=g-import-not-at-top
+  email = account or 'default'
+  credentials = google_auth_gce.Credentials(service_account_email=email)
 
-    # _universe_domain is a private property without public setter, it's
-    # intended for auth lib or gcloud to fetch the universe domain from metadata
-    # server then set the _universe_domain.
-    universe_domain = c_gce.Metadata().UniverseDomain()
-    credentials._universe_domain = (  # pylint: disable=protected-access
-        universe_domain
-    )
-    # Set _universe_domain_cached to True to avoid calling metadata server
-    # universe domain endpoint again.
-    credentials._universe_domain_cached = True  # pylint: disable=protected-access
-  else:
-    credentials = oauth2client_gce.AppAssertionCredentials(email=account)
-  if refresh:
-    Refresh(credentials)
+  # _universe_domain is a private property without public setter, it's
+  # intended for auth lib or gcloud to fetch the universe domain from metadata
+  # server then set the _universe_domain.
+  universe_domain = c_gce.Metadata().UniverseDomain()
+  credentials._universe_domain = (  # pylint: disable=protected-access
+      universe_domain
+  )
+  # Set _universe_domain_cached to True to avoid calling metadata server
+  # universe domain endpoint again.
+  credentials._universe_domain_cached = True  # pylint: disable=protected-access
+
   return credentials
 
 
@@ -1826,9 +1720,7 @@ class _LegacyGenerator(object):
   """A class to generate the credential file for other tools, like gsutil & bq.
 
   The supported credentials types are user account credentials, service account
-  credentials, and p12 service account credentials. Gcloud supports two auth
-  libraries - oauth2client and google-auth. Eventually, we will deprecate
-  oauth2client.
+  credentials, and p12 service account credentials.
   """
 
   def __init__(self, account, credentials, scopes=None):
@@ -1857,16 +1749,9 @@ class _LegacyGenerator(object):
     self._adc_path = paths.LegacyCredentialsAdcPath(account)
 
   @property
-  def _is_oauth2client(self):
-    return c_creds.IsOauth2ClientCredentials(self.credentials)
-
-  @property
   def _cred_type(self):
-    if self._is_oauth2client:
-      return c_creds.CredentialType.FromCredentials(self.credentials).key
-    else:
-      return c_creds.CredentialTypeGoogleAuth.FromCredentials(
-          self.credentials).key
+    return c_creds.CredentialTypeGoogleAuth.FromCredentials(
+        self.credentials).key
 
   def Clean(self):
     """Remove the credential file."""

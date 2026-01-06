@@ -683,9 +683,12 @@ class ApihubProjectsLocationsApisVersionsSpecsFetchAdditionalSpecContentRequest(
       SPEC_CONTENT_TYPE_UNSPECIFIED: Unspecified spec content type. Defaults
         to spec content uploaded by the user.
       BOOSTED_SPEC_CONTENT: The spec content type for boosted spec.
+      GATEWAY_OPEN_API_SPEC: The spec content type for OpenAPI spec. This enum
+        is used for OpenAPI specs ingested via APIGEE X Gateway.
     """
     SPEC_CONTENT_TYPE_UNSPECIFIED = 0
     BOOSTED_SPEC_CONTENT = 1
+    GATEWAY_OPEN_API_SPEC = 2
 
   name = _messages.StringField(1, required=True)
   specContentType = _messages.EnumField('SpecContentTypeValueValuesEnum', 2)
@@ -1982,6 +1985,42 @@ class ApihubProjectsLocationsPluginsUpdateStyleGuideRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class ApihubProjectsLocationsRetrieveApiViewsRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsRetrieveApiViewsRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Required. The view type to return.
+
+  Fields:
+    filter: Optional. The filter expression.
+    pageSize: Optional. The maximum number of results to return. Default to
+      100.
+    pageToken: Optional. A page token, received from a previous
+      `RetrieveApiViews` call. Provide this to retrieve the subsequent page.
+    parent: Required. The parent resource name. Format:
+      `projects/{project}/locations/{location}`.
+    view: Required. The view type to return.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Required. The view type to return.
+
+    Values:
+      API_VIEW_TYPE_UNSPECIFIED: The default view type.
+      MCP_SERVER: The MCP server view in API hub.
+      MCP_TOOL: The MCP tool view in API hub.
+    """
+    API_VIEW_TYPE_UNSPECIFIED = 0
+    MCP_SERVER = 1
+    MCP_TOOL = 2
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 5)
+
+
 class ApihubProjectsLocationsRuntimeProjectAttachmentsCreateRequest(_messages.Message):
   r"""A ApihubProjectsLocationsRuntimeProjectAttachmentsCreateRequest object.
 
@@ -2150,9 +2189,12 @@ class GoogleCloudApihubV1AdditionalSpecContent(_messages.Message):
       SPEC_CONTENT_TYPE_UNSPECIFIED: Unspecified spec content type. Defaults
         to spec content uploaded by the user.
       BOOSTED_SPEC_CONTENT: The spec content type for boosted spec.
+      GATEWAY_OPEN_API_SPEC: The spec content type for OpenAPI spec. This enum
+        is used for OpenAPI specs ingested via APIGEE X Gateway.
     """
     SPEC_CONTENT_TYPE_UNSPECIFIED = 0
     BOOSTED_SPEC_CONTENT = 1
+    GATEWAY_OPEN_API_SPEC = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2695,6 +2737,18 @@ class GoogleCloudApihubV1ApiOperation(_messages.Message):
   sourceMetadata = _messages.MessageField('GoogleCloudApihubV1SourceMetadata', 5, repeated=True)
   spec = _messages.StringField(6)
   updateTime = _messages.StringField(7)
+
+
+class GoogleCloudApihubV1ApiView(_messages.Message):
+  r"""The view of an API.
+
+  Fields:
+    mcpServerView: Output only. MCP server view.
+    mcpToolView: Output only. MCP tools view.
+  """
+
+  mcpServerView = _messages.MessageField('GoogleCloudApihubV1FlattenedApiVersionDeploymentView', 1)
+  mcpToolView = _messages.MessageField('GoogleCloudApihubV1FlattenedApiVersionOperationDeploymentView', 2)
 
 
 class GoogleCloudApihubV1ApigeeEdgeConfig(_messages.Message):
@@ -3999,6 +4053,39 @@ class GoogleCloudApihubV1FetchAdditionalSpecContentResponse(_messages.Message):
   additionalSpecContent = _messages.MessageField('GoogleCloudApihubV1AdditionalSpecContent', 1)
 
 
+class GoogleCloudApihubV1FlattenedApiVersionDeploymentView(_messages.Message):
+  r"""A flattened view of an API, its version and one of the linked
+  deployments.
+
+  Fields:
+    api: The API.
+    deployment: The deployment.
+    version: The version.
+  """
+
+  api = _messages.MessageField('GoogleCloudApihubV1Api', 1)
+  deployment = _messages.MessageField('GoogleCloudApihubV1Deployment', 2)
+  version = _messages.MessageField('GoogleCloudApihubV1Version', 3)
+
+
+class GoogleCloudApihubV1FlattenedApiVersionOperationDeploymentView(_messages.Message):
+  r"""A flattened view of an API, its version, one of its operations and one
+  of the linked deployments. If there are no deployments linked to the
+  operation then the result will be empty.
+
+  Fields:
+    api: The API.
+    apiOperation: The API operation.
+    deployment: The deployment.
+    version: The version.
+  """
+
+  api = _messages.MessageField('GoogleCloudApihubV1Api', 1)
+  apiOperation = _messages.MessageField('GoogleCloudApihubV1ApiOperation', 2)
+  deployment = _messages.MessageField('GoogleCloudApihubV1Deployment', 3)
+  version = _messages.MessageField('GoogleCloudApihubV1Version', 4)
+
+
 class GoogleCloudApihubV1GatewayPluginAddonConfig(_messages.Message):
   r"""Configuration for gateway plugin addons. This is used to specify the
   list of gateway plugin configs for which the addon is enabled.
@@ -4754,6 +4841,29 @@ class GoogleCloudApihubV1MatchResult(_messages.Message):
   name = _messages.StringField(1)
 
 
+class GoogleCloudApihubV1McpTool(_messages.Message):
+  r"""Details describing an MCP Tool.
+
+  Fields:
+    annotations: Optional. Optional annotations for the tool.
+    description: Optional. Description of what the tool does.
+    inputSchema: Optional. Input schema for the operation. This can be parsed
+      only from MCP schema type.
+    name: Required. The name of the tool, unique within its parent scope
+      (version).
+    outputSchema: Optional. Output schema for the operation. This can be
+      parsed only from MCP schema type.
+    title: Optional. Optional title for the tool.
+  """
+
+  annotations = _messages.MessageField('GoogleCloudApihubV1ToolAnnotations', 1)
+  description = _messages.StringField(2)
+  inputSchema = _messages.MessageField('GoogleCloudApihubV1OperationSchema', 3)
+  name = _messages.StringField(4)
+  outputSchema = _messages.MessageField('GoogleCloudApihubV1OperationSchema', 5)
+  title = _messages.StringField(6)
+
+
 class GoogleCloudApihubV1MultiIntValues(_messages.Message):
   r"""The config variable value of data type multi int.
 
@@ -4846,12 +4956,14 @@ class GoogleCloudApihubV1OperationDetails(_messages.Message):
       operation. For OpenAPI spec, this will map to `operation.documentation`
       in the spec.
     httpOperation: The HTTP Operation.
+    mcpTool: The MCP Tool Operation.
   """
 
   deprecated = _messages.BooleanField(1)
   description = _messages.StringField(2)
   documentation = _messages.MessageField('GoogleCloudApihubV1Documentation', 3)
   httpOperation = _messages.MessageField('GoogleCloudApihubV1HttpOperation', 4)
+  mcpTool = _messages.MessageField('GoogleCloudApihubV1McpTool', 5)
 
 
 class GoogleCloudApihubV1OperationMetadata(_messages.Message):
@@ -4879,6 +4991,46 @@ class GoogleCloudApihubV1OperationMetadata(_messages.Message):
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class GoogleCloudApihubV1OperationSchema(_messages.Message):
+  r"""The operation schema needed for an operation.
+
+  Messages:
+    JsonSchemaValue: The JSON schema. Only valid JSON is accepted but semantic
+      validation of schema is not supported right now.
+
+  Fields:
+    jsonSchema: The JSON schema. Only valid JSON is accepted but semantic
+      validation of schema is not supported right now.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class JsonSchemaValue(_messages.Message):
+    r"""The JSON schema. Only valid JSON is accepted but semantic validation
+    of schema is not supported right now.
+
+    Messages:
+      AdditionalProperty: An additional property for a JsonSchemaValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a JsonSchemaValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  jsonSchema = _messages.MessageField('JsonSchemaValue', 1)
 
 
 class GoogleCloudApihubV1Owner(_messages.Message):
@@ -5476,6 +5628,18 @@ class GoogleCloudApihubV1ResourceConfig(_messages.Message):
   pubsubTopic = _messages.StringField(2)
 
 
+class GoogleCloudApihubV1RetrieveApiViewsResponse(_messages.Message):
+  r"""The RetrieveApiViews method's response.
+
+  Fields:
+    apiViews: The list of API views.
+    nextPageToken: Next page token.
+  """
+
+  apiViews = _messages.MessageField('GoogleCloudApihubV1ApiView', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class GoogleCloudApihubV1RuntimeProjectAttachment(_messages.Message):
   r"""Runtime project attachment represents an attachment from the runtime
   project to the host project. Api Hub looks for deployments in the attached
@@ -5880,6 +6044,60 @@ class GoogleCloudApihubV1SummaryEntry(_messages.Message):
 
   count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   severity = _messages.EnumField('SeverityValueValuesEnum', 2)
+
+
+class GoogleCloudApihubV1ToolAnnotations(_messages.Message):
+  r"""Annotations for a Tool.
+
+  Messages:
+    AdditionalHintsValue: Optional. Additional hints which may help tools and
+      not covered in defaults.
+
+  Fields:
+    additionalHints: Optional. Additional hints which may help tools and not
+      covered in defaults.
+    destructiveHint: Optional. Hint indicating if the tool may have
+      destructive side effects.
+    idempotentHint: Optional. Hint indicating if the tool is idempotent.
+    openWorldHint: Optional. Hint indicating if the tool interacts with the
+      open world (e.g., internet).
+    readOnlyHint: Optional. Hint indicating if the tool is read-only.
+    title: Optional. A human-readable title for the tool (if different from
+      Tool.title).
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AdditionalHintsValue(_messages.Message):
+    r"""Optional. Additional hints which may help tools and not covered in
+    defaults.
+
+    Messages:
+      AdditionalProperty: An additional property for a AdditionalHintsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AdditionalHintsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AdditionalHintsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  additionalHints = _messages.MessageField('AdditionalHintsValue', 1)
+  destructiveHint = _messages.BooleanField(2)
+  idempotentHint = _messages.BooleanField(3)
+  openWorldHint = _messages.BooleanField(4)
+  readOnlyHint = _messages.BooleanField(5)
+  title = _messages.StringField(6)
 
 
 class GoogleCloudApihubV1UserPasswordConfig(_messages.Message):

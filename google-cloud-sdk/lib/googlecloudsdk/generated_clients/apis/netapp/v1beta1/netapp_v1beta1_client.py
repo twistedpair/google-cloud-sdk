@@ -46,6 +46,7 @@ class NetappV1beta1(base_api.BaseApiClient):
     self.projects_locations_hostGroups = self.ProjectsLocationsHostGroupsService(self)
     self.projects_locations_kmsConfigs = self.ProjectsLocationsKmsConfigsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_storagePools_ontap = self.ProjectsLocationsStoragePoolsOntapService(self)
     self.projects_locations_storagePools = self.ProjectsLocationsStoragePoolsService(self)
     self.projects_locations_volumes_quotaRules = self.ProjectsLocationsVolumesQuotaRulesService(self)
     self.projects_locations_volumes_replications = self.ProjectsLocationsVolumesReplicationsService(self)
@@ -1093,6 +1094,124 @@ class NetappV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='NetappProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsStoragePoolsOntapService(base_api.BaseApiService):
+    """Service class for the projects_locations_storagePools_ontap resource."""
+
+    _NAME = 'projects_locations_storagePools_ontap'
+
+    def __init__(self, client):
+      super(NetappV1beta1.ProjectsLocationsStoragePoolsOntapService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def ExecuteOntapDelete(self, request, global_params=None):
+      r"""`ExecuteOntapDelete` dispatches the ONTAP `DELETE` request to the `StoragePool` cluster.
+
+      Args:
+        request: (NetappProjectsLocationsStoragePoolsOntapExecuteOntapDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ExecuteOntapDeleteResponse) The response message.
+      """
+      config = self.GetMethodConfig('ExecuteOntapDelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExecuteOntapDelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/storagePools/{storagePoolsId}/ontap/{ontapId}',
+        http_method='DELETE',
+        method_id='netapp.projects.locations.storagePools.ontap.executeOntapDelete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='NetappProjectsLocationsStoragePoolsOntapExecuteOntapDeleteRequest',
+        response_type_name='ExecuteOntapDeleteResponse',
+        supports_download=False,
+    )
+
+    def ExecuteOntapList(self, request, global_params=None):
+      r"""`ExecuteOntapList` dispatches the ONTAP `LIST` request to the `StoragePool` cluster.
+
+      Args:
+        request: (NetappProjectsLocationsStoragePoolsOntapExecuteOntapListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ExecuteOntapListResponse) The response message.
+      """
+      config = self.GetMethodConfig('ExecuteOntapList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExecuteOntapList.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/storagePools/{storagePoolsId}/ontap/{ontapId}',
+        http_method='GET',
+        method_id='netapp.projects.locations.storagePools.ontap.executeOntapList',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='NetappProjectsLocationsStoragePoolsOntapExecuteOntapListRequest',
+        response_type_name='ExecuteOntapListResponse',
+        supports_download=False,
+    )
+
+    def ExecuteOntapPatch(self, request, global_params=None):
+      r"""`ExecuteOntapPatch` dispatches the ONTAP `PATCH` request to the `StoragePool` cluster.
+
+      Args:
+        request: (NetappProjectsLocationsStoragePoolsOntapExecuteOntapPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ExecuteOntapPatchResponse) The response message.
+      """
+      config = self.GetMethodConfig('ExecuteOntapPatch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExecuteOntapPatch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/storagePools/{storagePoolsId}/ontap/{ontapId}',
+        http_method='PATCH',
+        method_id='netapp.projects.locations.storagePools.ontap.executeOntapPatch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='executeOntapPatchRequest',
+        request_type_name='NetappProjectsLocationsStoragePoolsOntapExecuteOntapPatchRequest',
+        response_type_name='ExecuteOntapPatchResponse',
+        supports_download=False,
+    )
+
+    def ExecuteOntapPost(self, request, global_params=None):
+      r"""`ExecuteOntapPost` dispatches the ONTAP `POST` request to the `StoragePool` cluster.
+
+      Args:
+        request: (NetappProjectsLocationsStoragePoolsOntapExecuteOntapPostRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ExecuteOntapPostResponse) The response message.
+      """
+      config = self.GetMethodConfig('ExecuteOntapPost')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExecuteOntapPost.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/storagePools/{storagePoolsId}/ontap/{ontapId}',
+        http_method='POST',
+        method_id='netapp.projects.locations.storagePools.ontap.executeOntapPost',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='executeOntapPostRequest',
+        request_type_name='NetappProjectsLocationsStoragePoolsOntapExecuteOntapPostRequest',
+        response_type_name='ExecuteOntapPostResponse',
         supports_download=False,
     )
 

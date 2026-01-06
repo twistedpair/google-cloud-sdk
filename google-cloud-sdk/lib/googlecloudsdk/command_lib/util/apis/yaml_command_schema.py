@@ -125,6 +125,20 @@ _DEFAULT_METHODS_BY_COMMAND_TYPE = {
 }
 
 
+class RegionalEndpointsType(Enum):
+  """A holder object for regional endpoints information specified in yaml command."""
+  REQUIRED = 'REQUIRED'
+  SUPPORTED = 'SUPPORTED'
+  NOT_SUPPORTED = 'NOT_SUPPORTED'
+
+  @classmethod
+  def FromString(cls, name):
+    if name:
+      return RegionalEndpointsType[name.upper()]
+    else:
+      return RegionalEndpointsType.NOT_SUPPORTED
+
+
 class Request(object):
   """A holder object for api request information specified in yaml command."""
 
@@ -142,6 +156,8 @@ class Request(object):
       raise util.InvalidSchemaError(
           'request.method was not specified and there is no default for this '
           'command type.')
+    self.regional_endpoints_compatibility = RegionalEndpointsType.FromString(
+        data.get('regional_endpoint_compatibility'))
     self.disable_pagination = data.get('disable_pagination', False)
     self.static_fields = data.get('static_fields', {})
     self.modify_request_hooks = [

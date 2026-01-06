@@ -260,6 +260,29 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_GOLDENGATECONNECTIONASSIGNMENTS = (
+      'projects.locations.goldenGateConnectionAssignments',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'goldenGateConnectionAssignments/'
+              '{goldenGateConnectionAssignmentsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_GOLDENGATEDEPLOYMENTS = (
+      'projects.locations.goldenGateDeployments',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'goldenGateDeployments/{goldenGateDeploymentsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_KEYRINGS_CRYPTOKEYS = (
       'projects.locations.keyRings.cryptoKeys',
       'projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/'

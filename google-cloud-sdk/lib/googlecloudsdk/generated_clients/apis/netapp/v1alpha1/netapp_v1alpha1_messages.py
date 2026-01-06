@@ -423,8 +423,12 @@ class BackupVault(_messages.Message):
       pVaults/{backup_vault_id}`
     encryptionState: Output only. Field indicating encryption state of CMEK
       backups.
+    keyStateVersion: Output only. The version of the key state. Provided as a
+      timestamp in microseconds since the UNIX epoch. This is used to filter
+      out states older than the last state applied.
     kmsConfig: Optional. Specifies the KMS config to be used for backup
-      encryption.
+      encryption. Format:
+      projects/{project}/locations/{location}/kmsConfigs/{kms_config}
     labels: Resource labels to represent user provided metadata.
     name: Identifier. The resource name of the backup vault. Format: `projects
       /{project_id}/locations/{location}/backupVaults/{backup_vault_id}`.
@@ -514,12 +518,13 @@ class BackupVault(_messages.Message):
   description = _messages.StringField(6)
   destinationBackupVault = _messages.StringField(7)
   encryptionState = _messages.EnumField('EncryptionStateValueValuesEnum', 8)
-  kmsConfig = _messages.StringField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  name = _messages.StringField(11)
-  sourceBackupVault = _messages.StringField(12)
-  sourceRegion = _messages.StringField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
+  keyStateVersion = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  kmsConfig = _messages.StringField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  name = _messages.StringField(12)
+  sourceBackupVault = _messages.StringField(13)
+  sourceRegion = _messages.StringField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
 
 
 class BlockDevice(_messages.Message):
@@ -825,6 +830,241 @@ class EstablishVolumePeeringRequest(_messages.Message):
   peerIpAddresses = _messages.StringField(2, repeated=True)
   peerSvmName = _messages.StringField(3)
   peerVolumeName = _messages.StringField(4)
+
+
+class ExecuteOntapDeleteResponse(_messages.Message):
+  r"""Response message for `ExecuteOntapDelete` API.
+
+  Messages:
+    BodyValue: The raw `JSON` body of the response.
+
+  Fields:
+    body: The raw `JSON` body of the response.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class BodyValue(_messages.Message):
+    r"""The raw `JSON` body of the response.
+
+    Messages:
+      AdditionalProperty: An additional property for a BodyValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a BodyValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  body = _messages.MessageField('BodyValue', 1)
+
+
+class ExecuteOntapListResponse(_messages.Message):
+  r"""Response message for `ExecuteOntapList` API.
+
+  Messages:
+    ResultsValueListEntry: A ResultsValueListEntry object.
+
+  Fields:
+    results: The list of results from the ONTAP `LIST` request.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResultsValueListEntry(_messages.Message):
+    r"""A ResultsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResultsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResultsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  results = _messages.MessageField('ResultsValueListEntry', 1, repeated=True)
+
+
+class ExecuteOntapPatchRequest(_messages.Message):
+  r"""Request message for `ExecuteOntapPatch` API.
+
+  Messages:
+    BodyValue: Required. The raw `JSON` body of the request. The body should
+      be in the format of the ONTAP resource. For example: ``` { "body": {
+      "field1": "value1", "field2": "value2", } } ```
+
+  Fields:
+    body: Required. The raw `JSON` body of the request. The body should be in
+      the format of the ONTAP resource. For example: ``` { "body": { "field1":
+      "value1", "field2": "value2", } } ```
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class BodyValue(_messages.Message):
+    r"""Required. The raw `JSON` body of the request. The body should be in
+    the format of the ONTAP resource. For example: ``` { "body": { "field1":
+    "value1", "field2": "value2", } } ```
+
+    Messages:
+      AdditionalProperty: An additional property for a BodyValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a BodyValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  body = _messages.MessageField('BodyValue', 1)
+
+
+class ExecuteOntapPatchResponse(_messages.Message):
+  r"""Response message for `ExecuteOntapPatch` API.
+
+  Messages:
+    BodyValue: The raw `JSON` body of the response.
+
+  Fields:
+    body: The raw `JSON` body of the response.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class BodyValue(_messages.Message):
+    r"""The raw `JSON` body of the response.
+
+    Messages:
+      AdditionalProperty: An additional property for a BodyValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a BodyValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  body = _messages.MessageField('BodyValue', 1)
+
+
+class ExecuteOntapPostRequest(_messages.Message):
+  r"""Request message for `ExecuteOntapPost` API.
+
+  Messages:
+    BodyValue: Required. The raw `JSON` body of the request. The body should
+      be in the format of the ONTAP resource. For example: ``` { "body": {
+      "field1": "value1", "field2": "value2", } } ```
+
+  Fields:
+    body: Required. The raw `JSON` body of the request. The body should be in
+      the format of the ONTAP resource. For example: ``` { "body": { "field1":
+      "value1", "field2": "value2", } } ```
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class BodyValue(_messages.Message):
+    r"""Required. The raw `JSON` body of the request. The body should be in
+    the format of the ONTAP resource. For example: ``` { "body": { "field1":
+    "value1", "field2": "value2", } } ```
+
+    Messages:
+      AdditionalProperty: An additional property for a BodyValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a BodyValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  body = _messages.MessageField('BodyValue', 1)
+
+
+class ExecuteOntapPostResponse(_messages.Message):
+  r"""Response message for `ExecuteOntapPost` API.
+
+  Messages:
+    BodyValue: The raw `JSON` body of the response.
+
+  Fields:
+    body: The raw `JSON` body of the response.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class BodyValue(_messages.Message):
+    r"""The raw `JSON` body of the response.
+
+    Messages:
+      AdditionalProperty: An additional property for a BodyValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a BodyValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  body = _messages.MessageField('BodyValue', 1)
 
 
 class ExportPolicy(_messages.Message):
@@ -1504,6 +1744,8 @@ class LocationMetadata(_messages.Message):
     SupportedServiceLevelsValueListEntryValuesEnum:
 
   Fields:
+    hasOntapProxy: Output only. Indicates if the location has ONTAP Proxy
+      support.
     hasVcp: Output only. Indicates if the location has VCP support.
     supportedFlexPerformance: Output only. Supported flex performance in a
       location.
@@ -1539,9 +1781,10 @@ class LocationMetadata(_messages.Message):
     STANDARD = 3
     FLEX = 4
 
-  hasVcp = _messages.BooleanField(1)
-  supportedFlexPerformance = _messages.EnumField('SupportedFlexPerformanceValueListEntryValuesEnum', 2, repeated=True)
-  supportedServiceLevels = _messages.EnumField('SupportedServiceLevelsValueListEntryValuesEnum', 3, repeated=True)
+  hasOntapProxy = _messages.BooleanField(1)
+  hasVcp = _messages.BooleanField(2)
+  supportedFlexPerformance = _messages.EnumField('SupportedFlexPerformanceValueListEntryValuesEnum', 3, repeated=True)
+  supportedServiceLevels = _messages.EnumField('SupportedServiceLevelsValueListEntryValuesEnum', 4, repeated=True)
 
 
 class MonthlySchedule(_messages.Message):
@@ -2250,6 +2493,72 @@ class NetappProjectsLocationsStoragePoolsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class NetappProjectsLocationsStoragePoolsOntapExecuteOntapDeleteRequest(_messages.Message):
+  r"""A NetappProjectsLocationsStoragePoolsOntapExecuteOntapDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the ONTAP resource. Format: `projects
+      /{project_number}/locations/{location_id}/storagePools/{storage_pool_id}
+      /ontap/{ontap_resource_path}`. For example:
+      `projects/123456789/locations/us-central1/storagePools/my-storage-
+      pool/ontap/api/my-ontap-resource`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetappProjectsLocationsStoragePoolsOntapExecuteOntapListRequest(_messages.Message):
+  r"""A NetappProjectsLocationsStoragePoolsOntapExecuteOntapListRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the ONTAP resource. Format: `projects
+      /{project_number}/locations/{location_id}/storagePools/{storage_pool_id}
+      /ontap/{ontap_resource_path}`. For example:
+      `projects/123456789/locations/us-central1/storagePools/my-storage-
+      pool/ontap/api/my-ontap-resource`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetappProjectsLocationsStoragePoolsOntapExecuteOntapPatchRequest(_messages.Message):
+  r"""A NetappProjectsLocationsStoragePoolsOntapExecuteOntapPatchRequest
+  object.
+
+  Fields:
+    executeOntapPatchRequest: A ExecuteOntapPatchRequest resource to be passed
+      as the request body.
+    name: Required. The resource name of the ONTAP resource. Format: `projects
+      /{project_number}/locations/{location_id}/storagePools/{storage_pool_id}
+      /ontap/{ontap_resource_path}`. For example:
+      `projects/123456789/locations/us-central1/storagePools/my-storage-
+      pool/ontap/api/my-ontap-resource`.
+  """
+
+  executeOntapPatchRequest = _messages.MessageField('ExecuteOntapPatchRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class NetappProjectsLocationsStoragePoolsOntapExecuteOntapPostRequest(_messages.Message):
+  r"""A NetappProjectsLocationsStoragePoolsOntapExecuteOntapPostRequest
+  object.
+
+  Fields:
+    executeOntapPostRequest: A ExecuteOntapPostRequest resource to be passed
+      as the request body.
+    name: Required. The resource name of the ONTAP resource. Format: `projects
+      /{project_number}/locations/{location_id}/storagePools/{storage_pool_id}
+      /ontap/{ontap_resource_path}`. For example:
+      `projects/123456789/locations/us-central1/storagePools/my-storage-
+      pool/ontap/api/my-ontap-resource`.
+  """
+
+  executeOntapPostRequest = _messages.MessageField('ExecuteOntapPostRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class NetappProjectsLocationsStoragePoolsPatchRequest(_messages.Message):
@@ -3535,6 +3844,10 @@ class StoragePool(_messages.Message):
   Enums:
     EncryptionTypeValueValuesEnum: Output only. Specifies the current pool
       encryption key source.
+    ModeValueValuesEnum: Optional. Mode of the storage pool. This field is
+      used to control whether the user can perform the ONTAP operations on the
+      storage pool using the GCNV ONTAP Mode APIs. If not specified during
+      creation, it defaults to `DEFAULT`.
     QosTypeValueValuesEnum: Optional. QoS (Quality of Service) Type of the
       storage pool
     ServiceLevelValueValuesEnum: Required. Service level of the storage pool
@@ -3582,6 +3895,10 @@ class StoragePool(_messages.Message):
     labels: Optional. Labels as key value pairs
     ldapEnabled: Optional. Flag indicating if the pool is NFS LDAP enabled or
       not.
+    mode: Optional. Mode of the storage pool. This field is used to control
+      whether the user can perform the ONTAP operations on the storage pool
+      using the GCNV ONTAP Mode APIs. If not specified during creation, it
+      defaults to `DEFAULT`.
     name: Identifier. Name of the storage pool
     network: Required. VPC Network name. Format:
       projects/{project}/global/networks/{network}
@@ -3623,6 +3940,23 @@ class StoragePool(_messages.Message):
     ENCRYPTION_TYPE_UNSPECIFIED = 0
     SERVICE_MANAGED = 1
     CLOUD_KMS = 2
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Mode of the storage pool. This field is used to control
+    whether the user can perform the ONTAP operations on the storage pool
+    using the GCNV ONTAP Mode APIs. If not specified during creation, it
+    defaults to `DEFAULT`.
+
+    Values:
+      MODE_UNSPECIFIED: The `StoragePool` `Mode` is not specified.
+      DEFAULT: The `StoragePool` and its resources are managed by the GCNV
+        APIs.
+      ONTAP: The `StoragePool` and its resources are managed by the GCNV ONTAP
+        Mode APIs.
+    """
+    MODE_UNSPECIFIED = 0
+    DEFAULT = 1
+    ONTAP = 2
 
   class QosTypeValueValuesEnum(_messages.Enum):
     r"""Optional. QoS (Quality of Service) Type of the storage pool
@@ -3735,23 +4069,24 @@ class StoragePool(_messages.Message):
   kmsConfig = _messages.StringField(14)
   labels = _messages.MessageField('LabelsValue', 15)
   ldapEnabled = _messages.BooleanField(16)
-  name = _messages.StringField(17)
-  network = _messages.StringField(18)
-  psaRange = _messages.StringField(19)
-  qosType = _messages.EnumField('QosTypeValueValuesEnum', 20)
-  replicaZone = _messages.StringField(21)
-  satisfiesPzi = _messages.BooleanField(22)
-  satisfiesPzs = _messages.BooleanField(23)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 24)
-  state = _messages.EnumField('StateValueValuesEnum', 25)
-  stateDetails = _messages.StringField(26)
-  totalIops = _messages.IntegerField(27)
-  totalThroughputMibps = _messages.IntegerField(28)
-  type = _messages.EnumField('TypeValueValuesEnum', 29)
-  unifiedPool = _messages.BooleanField(30)
-  volumeCapacityGib = _messages.IntegerField(31)
-  volumeCount = _messages.IntegerField(32, variant=_messages.Variant.INT32)
-  zone = _messages.StringField(33)
+  mode = _messages.EnumField('ModeValueValuesEnum', 17)
+  name = _messages.StringField(18)
+  network = _messages.StringField(19)
+  psaRange = _messages.StringField(20)
+  qosType = _messages.EnumField('QosTypeValueValuesEnum', 21)
+  replicaZone = _messages.StringField(22)
+  satisfiesPzi = _messages.BooleanField(23)
+  satisfiesPzs = _messages.BooleanField(24)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 25)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
+  stateDetails = _messages.StringField(27)
+  totalIops = _messages.IntegerField(28)
+  totalThroughputMibps = _messages.IntegerField(29)
+  type = _messages.EnumField('TypeValueValuesEnum', 30)
+  unifiedPool = _messages.BooleanField(31)
+  volumeCapacityGib = _messages.IntegerField(32)
+  volumeCount = _messages.IntegerField(33, variant=_messages.Variant.INT32)
+  zone = _messages.StringField(34)
 
 
 class SwitchActiveReplicaZoneRequest(_messages.Message):

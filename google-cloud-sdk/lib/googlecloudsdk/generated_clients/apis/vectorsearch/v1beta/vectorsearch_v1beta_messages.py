@@ -475,10 +475,11 @@ class GoogleCloudVectorsearchV1betaDataObject(_messages.Message):
     createTime: Output only. Timestamp the dataObject was created at.
     data: Optional. The data of the dataObject.
     dataObjectId: Output only. The id of the dataObject.
-    name: Immutable. The fully qualified resource name of the dataObject.
+    name: Identifier. The fully qualified resource name of the dataObject.
       Format: `projects/{project}/locations/{location}/collections/{collection
       }/dataObjects/{data_object_id}` The data_object_id must be 1-63
-      characters long, and comply with RFC1035.
+      characters long, and comply with
+      [RFC1035](https://www.ietf.org/rfc/rfc1035.txt).
     updateTime: Output only. Timestamp the dataObject was last updated.
     vectors: Optional. The vectors of the dataObject.
   """
@@ -575,8 +576,46 @@ class GoogleCloudVectorsearchV1betaDenseVectorField(_messages.Message):
   vertexEmbeddingConfig = _messages.MessageField('GoogleCloudVectorsearchV1betaVertexEmbeddingConfig', 2)
 
 
+class GoogleCloudVectorsearchV1betaExportDataObjectsRequest(_messages.Message):
+  r"""Request message for VectorSearchService.ExportDataObjects.
+
+  Fields:
+    gcsDestination: The Cloud Storage location where user wants to export Data
+      Objects.
+  """
+
+  gcsDestination = _messages.MessageField('GoogleCloudVectorsearchV1betaExportDataObjectsRequestGcsExportDestination', 1)
+
+
+class GoogleCloudVectorsearchV1betaExportDataObjectsRequestGcsExportDestination(_messages.Message):
+  r"""Google Cloud Storage configuration for the export.
+
+  Enums:
+    FormatValueValuesEnum: Required. The format of the exported Data Objects.
+
+  Fields:
+    exportUri: Required. URI prefix of the Cloud Storage where to export Data
+      Objects. The bucket is required to be in the same region as the
+      collection.
+    format: Required. The format of the exported Data Objects.
+  """
+
+  class FormatValueValuesEnum(_messages.Enum):
+    r"""Required. The format of the exported Data Objects.
+
+    Values:
+      FORMAT_UNSPECIFIED: Unspecified format.
+      JSON: The exported Data Objects will be in JSON format.
+    """
+    FORMAT_UNSPECIFIED = 0
+    JSON = 1
+
+  exportUri = _messages.StringField(1)
+  format = _messages.EnumField('FormatValueValuesEnum', 2)
+
+
 class GoogleCloudVectorsearchV1betaImportDataObjectsRequest(_messages.Message):
-  r"""Request message for DataObjectService.ImportDataObjects.
+  r"""Request message for VectorSearchService.ImportDataObjects.
 
   Fields:
     gcsImport: The Cloud Storage location of the input content.
@@ -893,9 +932,10 @@ class GoogleCloudVectorsearchV1betaSearchHint(_messages.Message):
   r"""Represents a hint to the search index engine.
 
   Fields:
-    useIndex: Specifies that the search should use a particular index.
-    useKnn: If set to true, the search will use the system's default K-Nearest
-      Neighbor (KNN) index engine.
+    useIndex: Optional. Specifies that the search should use a particular
+      index.
+    useKnn: Optional. If set to true, the search will use the system's default
+      K-Nearest Neighbor (KNN) index engine.
   """
 
   useIndex = _messages.MessageField('GoogleCloudVectorsearchV1betaSearchHintIndexHint', 1)
@@ -967,6 +1007,9 @@ class GoogleCloudVectorsearchV1betaSemanticSearch(_messages.Message):
       fi"}}, represented as a google.protobuf.Struct.
     outputFields: Optional. The fields to return in the search results.
     searchField: Required. The vector field to search.
+    searchHint: Optional. Sets the search hint. If no strategy is specified,
+      the service will use an index if one is available, and fall back to KNN
+      search otherwise.
     searchText: Required. The query text, which is used to generate an
       embedding according to the embedding model specified in the collection
       config.
@@ -1031,9 +1074,10 @@ class GoogleCloudVectorsearchV1betaSemanticSearch(_messages.Message):
   filter = _messages.MessageField('FilterValue', 1)
   outputFields = _messages.MessageField('GoogleCloudVectorsearchV1betaOutputFields', 2)
   searchField = _messages.StringField(3)
-  searchText = _messages.StringField(4)
-  taskType = _messages.EnumField('TaskTypeValueValuesEnum', 5)
-  topK = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  searchHint = _messages.MessageField('GoogleCloudVectorsearchV1betaSearchHint', 4)
+  searchText = _messages.StringField(5)
+  taskType = _messages.EnumField('TaskTypeValueValuesEnum', 6)
+  topK = _messages.IntegerField(7, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudVectorsearchV1betaSparseVector(_messages.Message):
@@ -1504,8 +1548,9 @@ class VectorsearchProjectsLocationsCollectionsCreateRequest(_messages.Message):
 
   Fields:
     collectionId: Required. ID of the Collection to create. The id must be
-      1-63 characters long, and comply with RFC1035. Specifically, it must be
-      1-63 characters long and match the regular expression
+      1-63 characters long, and comply with
+      [RFC1035](https://www.ietf.org/rfc/rfc1035.txt). Specifically, it must
+      be 1-63 characters long and match the regular expression
       `[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?`.
     googleCloudVectorsearchV1betaCollection: A
       GoogleCloudVectorsearchV1betaCollection resource to be passed as the
@@ -1674,10 +1719,11 @@ class VectorsearchProjectsLocationsCollectionsDataObjectsPatchRequest(_messages.
     googleCloudVectorsearchV1betaDataObject: A
       GoogleCloudVectorsearchV1betaDataObject resource to be passed as the
       request body.
-    name: Immutable. The fully qualified resource name of the dataObject.
+    name: Identifier. The fully qualified resource name of the dataObject.
       Format: `projects/{project}/locations/{location}/collections/{collection
       }/dataObjects/{data_object_id}` The data_object_id must be 1-63
-      characters long, and comply with RFC1035.
+      characters long, and comply with
+      [RFC1035](https://www.ietf.org/rfc/rfc1035.txt).
     updateMask: Optional. The update mask applies to the resource. See
       google.protobuf.FieldMask.
   """
@@ -1743,6 +1789,23 @@ class VectorsearchProjectsLocationsCollectionsDeleteRequest(_messages.Message):
   requestId = _messages.StringField(2)
 
 
+class VectorsearchProjectsLocationsCollectionsExportDataObjectsRequest(_messages.Message):
+  r"""A VectorsearchProjectsLocationsCollectionsExportDataObjectsRequest
+  object.
+
+  Fields:
+    googleCloudVectorsearchV1betaExportDataObjectsRequest: A
+      GoogleCloudVectorsearchV1betaExportDataObjectsRequest resource to be
+      passed as the request body.
+    name: Required. The resource name of the Collection from which we want to
+      export Data Objects. Format:
+      `projects/{project}/locations/{location}/collections/{collection}`.
+  """
+
+  googleCloudVectorsearchV1betaExportDataObjectsRequest = _messages.MessageField('GoogleCloudVectorsearchV1betaExportDataObjectsRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class VectorsearchProjectsLocationsCollectionsGetRequest(_messages.Message):
   r"""A VectorsearchProjectsLocationsCollectionsGetRequest object.
 
@@ -1777,8 +1840,9 @@ class VectorsearchProjectsLocationsCollectionsIndexesCreateRequest(_messages.Mes
     googleCloudVectorsearchV1betaIndex: A GoogleCloudVectorsearchV1betaIndex
       resource to be passed as the request body.
     indexId: Required. ID of the Index to create. The id must be 1-63
-      characters long, and comply with RFC1035. Specifically, it must be 1-63
-      characters long and match the regular expression
+      characters long, and comply with
+      [RFC1035](https://www.ietf.org/rfc/rfc1035.txt). Specifically, it must
+      be 1-63 characters long and match the regular expression
       `[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?`.
     parent: Required. The resource name of the Collection for which to create
       the Index. Format:
@@ -1903,11 +1967,11 @@ class VectorsearchProjectsLocationsCollectionsPatchRequest(_messages.Message):
       overwritten. The following fields support update: `display_name`,
       `description`, `labels`, `data_schema`, `vector_schema`. For
       `data_schema` and `vector_schema`, fields can only be added, not
-      modified or deleted. Partial updates for `data_schema` and
-      `vector_schema` are also supported by using sub-field paths in
-      `update_mask`, e.g. `data_schema.properties.foo` or
-      `vector_schema.my_vector_field`. If `*` is provided in the update_mask,
-      full replacement will be performed.
+      deleted, but `vertex_embedding_config` in `vector_schema` can be added
+      or removed. Partial updates for `data_schema` and `vector_schema` are
+      also supported by using sub-field paths in `update_mask`, e.g.
+      `data_schema.properties.foo` or `vector_schema.my_vector_field`. If `*`
+      is provided in the update_mask, full replacement will be performed.
   """
 
   googleCloudVectorsearchV1betaCollection = _messages.MessageField('GoogleCloudVectorsearchV1betaCollection', 1)

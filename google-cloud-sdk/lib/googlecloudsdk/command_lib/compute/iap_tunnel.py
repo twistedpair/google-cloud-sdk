@@ -634,7 +634,7 @@ class SecurityGatewayTunnelHelper(object):
 
     self._shutdown = False
 
-    self._credential = store.LoadIfEnabled(use_google_auth=True)
+    self._credential = store.LoadIfEnabled()
     self._credential_lock = threading.Lock()
 
   def _InitiateConnection(self, local_conn,
@@ -732,7 +732,7 @@ class IAPWebsocketTunnelHelper(object):
 
     self._shutdown = False
 
-    self._credential = store.LoadIfEnabled(use_google_auth=True)
+    self._credential = store.LoadIfEnabled()
     self._credential_lock = threading.Lock()
 
   def Close(self):

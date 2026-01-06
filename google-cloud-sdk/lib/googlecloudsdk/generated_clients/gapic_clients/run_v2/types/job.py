@@ -258,6 +258,9 @@ class RunJobRequest(proto.Message):
         r"""RunJob Overrides that contains Execution fields to be
         overridden.
 
+
+        .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
         Attributes:
             container_overrides (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.run_v2.types.RunJobRequest.Overrides.ContainerOverride]):
                 Per container override specification.
@@ -270,6 +273,12 @@ class RunJobRequest(proto.Message):
                 containers. Will replace existing timeout_seconds value.
             priority_tier (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.ExecutionTemplate.PriorityTier):
                 Optional. The priority tier of the execution.
+            delay_execution (bool):
+                Optional. If true, the system will start the
+                execution within the next 12 hours depending on
+                available capacity.
+
+                This field is a member of `oneof`_ ``_delay_execution``.
         """
 
         class ContainerOverride(proto.Message):
@@ -326,6 +335,11 @@ class RunJobRequest(proto.Message):
             proto.ENUM,
             number=5,
             enum=execution_template.ExecutionTemplate.PriorityTier,
+        )
+        delay_execution: bool = proto.Field(
+            proto.BOOL,
+            number=6,
+            optional=True,
         )
 
     name: str = proto.Field(

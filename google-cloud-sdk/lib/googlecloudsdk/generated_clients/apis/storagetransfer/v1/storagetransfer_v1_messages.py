@@ -1779,6 +1779,11 @@ class TransferCounters(_messages.Message):
       transferred or that failed to be deleted after being transferred.
     objectsFromSourceSkippedBySync: Objects in the data source that are not
       transferred because they already exist in the data sink.
+    unrestoredDeepArchiveObjectsSkippedCount: Number of unrestored deep
+      archive objects skipped.
+    unsupportedS3GlacierObjectsSkippedCount: Number of glacier objects
+      skipped, glacier objects are unsupported by default regardless of the
+      restore status. Allowlist the project to copy glacier objects if needed.
   """
 
   bytesCopiedToSink = _messages.IntegerField(1)
@@ -1802,6 +1807,8 @@ class TransferCounters(_messages.Message):
   objectsFoundOnlyFromSink = _messages.IntegerField(19)
   objectsFromSourceFailed = _messages.IntegerField(20)
   objectsFromSourceSkippedBySync = _messages.IntegerField(21)
+  unrestoredDeepArchiveObjectsSkippedCount = _messages.IntegerField(22)
+  unsupportedS3GlacierObjectsSkippedCount = _messages.IntegerField(23)
 
 
 class TransferJob(_messages.Message):

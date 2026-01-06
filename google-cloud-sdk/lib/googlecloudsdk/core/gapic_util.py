@@ -58,8 +58,7 @@ def GetGapicCredentials(enable_resource_quota=True,
   """
 
   credentials = store.LoadIfEnabled(
-      allow_account_impersonation=allow_account_impersonation,
-      use_google_auth=True)
+      allow_account_impersonation=allow_account_impersonation)
   if not creds.IsGoogleAuthCredentials(credentials):
     raise MissingStoredCredentialsError('Unable to load credentials')
 

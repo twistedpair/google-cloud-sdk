@@ -140,6 +140,8 @@ definitions:
       attribute_name: {type: string}
       # The help text for this attribute.
       help: {type: string}
+      # Whether the attribute can be used to set the regional endpoint.
+      regional_endpoints_flag: {type: boolean}
       # A property to act as the fallthrough for this attribute when it is not
       # provided on the command line.
       property: {$ref: "#definitions/property"}
@@ -576,6 +578,13 @@ properties:
       # The name of the method to call to perform the operation. Optional if
       # your command is one of the supported command types (not Generic).
       method: {type: string}
+      # Whether the API supports regional endpoints.
+      # If REQUIRED, the command will only support regional endpoints and will error if a regional
+      # endpoint is not specified.
+      # If SUPPORTED, the command will support a regional endpoints. If a regional endpoint
+      # is not specified, the command will use the global endpoint.
+      # If not set, the command will only use global endpoints.
+      regional_endpoint_compatibility: {enum: [REQUIRED, SUPPORTED, NOT_SUPPORTED]}
       # Used for methods that return paginated results. If set to True, makes a single api
       # request rather than utilizing YieldFromList method. YieldFromList method makes
       # continuous api request until the limit is reached or all results are returned.

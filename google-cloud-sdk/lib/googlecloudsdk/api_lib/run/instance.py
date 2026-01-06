@@ -28,13 +28,21 @@ class Instance(container_resource.ContainerResource):
 
   API_CATEGORY = 'run.googleapis.com'
   KIND = 'Instance'
-  READY_CONDITION = 'ContainerReady'
+  READY_CONDITION = 'Running'
 
   def _EnsureNodeSelector(self):
     if self.spec.nodeSelector is None:
       self.spec.nodeSelector = k8s_object.InitializedInstance(
           self._messages.InstanceSpec.NodeSelectorValue
       )
+
+  @property
+  def is_running(self):
+    return self.conditions.get('Running', False)
+
+  @property
+  def template(self):
+    return self
 
   @property
   def node_selector(self):

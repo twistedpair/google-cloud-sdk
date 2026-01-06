@@ -205,8 +205,18 @@ def AddUpdateReplicationGroup(parser):
   subgroup.add_argument(
       _ArgOrFlag('location', False),
       metavar='REPLICA-LOCATION',
-      help=('Location of replica to update. For secrets with automatic '
-            'replication policies, this can be omitted.'))
+      help=arg_parsers.UniverseHelpText(
+          default=(
+              'Location of replica to update. For secrets with automatic'
+              ' replication policies, this can be omitted.'
+          ),
+          universe_help=(
+              'This flag is not available in this universe. Specifying a'
+              ' location for replica updates is only for user-managed'
+              ' multi-replication, which is not supported.'
+          ),
+      ),
+  )
 
 
 def AddCreateReplicationPolicyGroup(parser):
@@ -216,18 +226,28 @@ def AddCreateReplicationPolicyGroup(parser):
   group.add_argument(
       _ArgOrFlag('replication-policy-file', False),
       metavar='REPLICATION-POLICY-FILE',
-      help=(
-          'JSON or YAML file to use to read the replication policy. The file '
-          'must conform to '
-          'https://cloud.google.com/secret-manager/docs/reference/rest/v1/projects.secrets#replication.'
-          'Set this to "-" to read from stdin.'))
+      help=arg_parsers.UniverseHelpText(
+          default=(
+              'JSON or YAML file to use to read the replication policy. The '
+              'file must conform to '
+              'https://cloud.google.com/secret-manager/docs/reference/rest/v1/projects.secrets#replication.'
+              'Set this to "-" to read from stdin.'),
+          universe_help=('This flag is not available in this universe. '
+                         'User-managed replication is not supported.')
+      ))
   subgroup = group.add_group(help='Inline replication arguments.')
   subgroup.add_argument(
       _ArgOrFlag('replication-policy', False),
       metavar='POLICY',
-      help=('The type of replication policy to apply to this secret. Allowed '
-            'values are "automatic" and "user-managed". If user-managed then '
-            '--locations must also be provided.'))
+      help=arg_parsers.UniverseHelpText(
+          default=('The type of replication policy to apply to this secret. '
+                   'Allowed values are "automatic" and "user-managed". If '
+                   'user-managed then --locations must also be provided.'),
+          universe_help=('The type of replication policy to apply to this '
+                         'secret. In this universe, only "automatic" is '
+                         'supported. User-managed replication is not '
+                         'available.')
+      ))
   subgroup.add_argument(
       _ArgOrFlag('kms-key-name', False),
       metavar='KMS-KEY-NAME',
@@ -239,8 +259,12 @@ def AddCreateReplicationPolicyGroup(parser):
       action=arg_parsers.UpdateAction,
       metavar='LOCATION',
       type=arg_parsers.ArgList(),
-      help=('Comma-separated list of locations in which the secret should be '
-            'replicated.'))
+      help=arg_parsers.UniverseHelpText(
+          default=('Comma-separated list of locations in which the secret '
+                   'should be replicated.'),
+          universe_help=('This flag is not available in this universe. '
+                         'User-managed replication is not supported.')
+      ))
 
 
 def AddCreateVersionDestroyTTL(parser, positional=False, **kwargs):

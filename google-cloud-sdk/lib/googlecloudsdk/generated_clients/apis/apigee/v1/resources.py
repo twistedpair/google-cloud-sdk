@@ -45,6 +45,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_APIMSERVICEEXTENSIONS = (
+      'organizations.apimServiceExtensions',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/apimServiceExtensions/'
+              '{apimServiceExtensionsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_APIPRODUCTS = (
       'organizations.apiproducts',
       '{+name}',

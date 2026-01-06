@@ -277,11 +277,15 @@ class Part(proto.Message):
                     Media resolution set to medium.
                 MEDIA_RESOLUTION_HIGH (3):
                     Media resolution set to high.
+                MEDIA_RESOLUTION_ULTRA_HIGH (4):
+                    Media resolution set to ultra high. This is
+                    for image only.
             """
             MEDIA_RESOLUTION_UNSPECIFIED = 0
             MEDIA_RESOLUTION_LOW = 1
             MEDIA_RESOLUTION_MEDIUM = 2
             MEDIA_RESOLUTION_HIGH = 3
+            MEDIA_RESOLUTION_ULTRA_HIGH = 4
 
         level: 'Part.MediaResolution.Level' = proto.Field(
             proto.ENUM,
@@ -1141,12 +1145,18 @@ class GenerationConfig(proto.Message):
                     Unspecified thinking level.
                 LOW (1):
                     Low thinking level.
+                MEDIUM (2):
+                    Medium thinking level.
                 HIGH (3):
                     High thinking level.
+                MINIMAL (4):
+                    MINIMAL thinking level.
             """
             THINKING_LEVEL_UNSPECIFIED = 0
             LOW = 1
+            MEDIUM = 2
             HIGH = 3
+            MINIMAL = 4
 
         include_thoughts: bool = proto.Field(
             proto.BOOL,

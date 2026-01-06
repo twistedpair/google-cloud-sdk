@@ -9641,6 +9641,10 @@ class WaveTemplate(_messages.Message):
       default is STRAGGLER_MIGRATION_STRATEGY_NO_MIGRATION.
 
   Fields:
+    errorBudgetCount: Optional. The error budget as a number of errored
+      clusters. This value must be non-negative.
+    errorBudgetPercentage: Optional. The error budget as a percentage of the
+      wave size. This value must be between 0.0 and 100.0.
     minimumCompletionNumber: Optional. The minimum number of upgrades to be
       completed in the wave, before automatically proceeding to the next wave.
       If not set, the default is the size of the wave.
@@ -9673,10 +9677,12 @@ class WaveTemplate(_messages.Message):
     STRAGGLER_MIGRATION_STRATEGY_NO_MIGRATION = 1
     STRAGGLER_MIGRATION_STRATEGY_LAST_WAVE = 2
 
-  minimumCompletionNumber = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  minimumCompletionPercentage = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  stragglerMigrationStrategy = _messages.EnumField('StragglerMigrationStrategyValueValuesEnum', 3)
-  upperBoundPercentage = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  errorBudgetCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  errorBudgetPercentage = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  minimumCompletionNumber = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minimumCompletionPercentage = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  stragglerMigrationStrategy = _messages.EnumField('StragglerMigrationStrategyValueValuesEnum', 5)
+  upperBoundPercentage = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
 
 
 class WorkloadIdentityFeatureSpec(_messages.Message):

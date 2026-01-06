@@ -535,6 +535,33 @@ class VectorsearchV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ExportDataObjects(self, request, global_params=None):
+      r"""Initiates a Long-Running Operation to export DataObjects from a Collection.
+
+      Args:
+        request: (VectorsearchProjectsLocationsCollectionsExportDataObjectsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('ExportDataObjects')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExportDataObjects.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/collections/{collectionsId}:exportDataObjects',
+        http_method='POST',
+        method_id='vectorsearch.projects.locations.collections.exportDataObjects',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}:exportDataObjects',
+        request_field='googleCloudVectorsearchV1betaExportDataObjectsRequest',
+        request_type_name='VectorsearchProjectsLocationsCollectionsExportDataObjectsRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details of a single Collection.
 

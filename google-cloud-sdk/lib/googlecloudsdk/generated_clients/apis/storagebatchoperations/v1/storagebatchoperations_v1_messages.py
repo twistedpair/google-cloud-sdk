@@ -145,6 +145,47 @@ class Counters(_messages.Message):
   totalObjectCount = _messages.IntegerField(4)
 
 
+class CustomContextUpdates(_messages.Message):
+  r"""Describes a collection of updates to apply to custom contexts identified
+  by key.
+
+  Messages:
+    UpdatesValue: Optional. Insert or update the existing custom contexts.
+
+  Fields:
+    keysToClear: Optional. Custom contexts to clear by key. A key cannot be
+      present in both `updates` and `keys_to_clear`.
+    updates: Optional. Insert or update the existing custom contexts.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class UpdatesValue(_messages.Message):
+    r"""Optional. Insert or update the existing custom contexts.
+
+    Messages:
+      AdditionalProperty: An additional property for a UpdatesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type UpdatesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a UpdatesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ObjectCustomContextPayload attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ObjectCustomContextPayload', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  keysToClear = _messages.StringField(1, repeated=True)
+  updates = _messages.MessageField('UpdatesValue', 2)
+
+
 class DeleteObject(_messages.Message):
   r"""Describes options to delete an object.
 
@@ -343,6 +384,7 @@ class Job(_messages.Message):
     rewriteObject: Rewrite the object and updates metadata like KMS key.
     scheduleTime: Output only. The time that the job was scheduled.
     state: Output only. State of the job.
+    updateObjectCustomContext: Update object custom context.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -376,6 +418,7 @@ class Job(_messages.Message):
   rewriteObject = _messages.MessageField('RewriteObject', 13)
   scheduleTime = _messages.StringField(14)
   state = _messages.EnumField('StateValueValuesEnum', 15)
+  updateObjectCustomContext = _messages.MessageField('UpdateObjectCustomContext', 16)
 
 
 class ListBucketOperationsResponse(_messages.Message):
@@ -577,6 +620,19 @@ class Manifest(_messages.Message):
   """
 
   manifestLocation = _messages.StringField(1)
+
+
+class ObjectCustomContextPayload(_messages.Message):
+  r"""Describes the payload of a user defined object custom context.
+
+  Fields:
+    value: The value of the object custom context. If set, `value` must NOT be
+      an empty string since it is a required field in custom context. If
+      unset, `value` will be ignored and no changes will be made to the
+      `value` field of the custom context payload.
+  """
+
+  value = _messages.StringField(1)
 
 
 class ObjectRetention(_messages.Message):
@@ -1042,6 +1098,19 @@ class StoragebatchoperationsProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class StoragebatchoperationsProjectsLocationsJobsBucketOperationsGetRequest(_messages.Message):
+  r"""A StoragebatchoperationsProjectsLocationsJobsBucketOperationsGetRequest
+  object.
+
+  Fields:
+    name: Required. `name` of the bucket operation to retrieve. Format: projec
+      ts/{project_id}/locations/global/jobs/{job_id}/bucketOperations/{bucket_
+      operation_id}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class StoragebatchoperationsProjectsLocationsJobsBucketOperationsListRequest(_messages.Message):
   r"""A StoragebatchoperationsProjectsLocationsJobsBucketOperationsListRequest
   object.
@@ -1104,6 +1173,11 @@ class StoragebatchoperationsProjectsLocationsJobsDeleteRequest(_messages.Message
   r"""A StoragebatchoperationsProjectsLocationsJobsDeleteRequest object.
 
   Fields:
+    force: Optional. If set to true, any child bucket operations of the job
+      will also be deleted. Highly recommended to be set to true by all
+      clients. Users cannot mutate bucket operations directly, so only the
+      jobs.delete permission is required to delete a job (and its child bucket
+      operations).
     name: Required. The `name` of the job to delete. Format:
       projects/{project_id}/locations/global/jobs/{job_id} .
     requestId: Optional. An optional request ID to identify requests. Specify
@@ -1113,8 +1187,9 @@ class StoragebatchoperationsProjectsLocationsJobsDeleteRequest(_messages.Message
       that zero UUID is not supported (00000000-0000-0000-0000-000000000000).
   """
 
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class StoragebatchoperationsProjectsLocationsJobsGetRequest(_messages.Message):
@@ -1227,6 +1302,20 @@ class StoragebatchoperationsProjectsLocationsOperationsListRequest(_messages.Mes
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   returnPartialSuccess = _messages.BooleanField(5)
+
+
+class UpdateObjectCustomContext(_messages.Message):
+  r"""Describes options to update object custom contexts.
+
+  Fields:
+    clearAll: If set, must be set to true and all existing object custom
+      contexts will be deleted.
+    customContextUpdates: A collection of updates to apply to specific custom
+      contexts. Use this to add, update or delete individual contexts by key.
+  """
+
+  clearAll = _messages.BooleanField(1)
+  customContextUpdates = _messages.MessageField('CustomContextUpdates', 2)
 
 
 encoding.AddCustomJsonFieldMapping(

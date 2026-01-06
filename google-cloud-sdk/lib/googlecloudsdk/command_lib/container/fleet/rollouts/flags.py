@@ -35,6 +35,11 @@ from googlecloudsdk.generated_clients.apis.gkehub.v1alpha import gkehub_v1alpha_
 _BINAUTHZ_GKE_POLICY_REGEX = (
     'projects/([^/]+)/platforms/gke/policies/([a-zA-Z0-9_-]+)'
 )
+_STRAGGLER_MIGRATION_STRATEGY_ENUMS = (
+    'STRAGGLER_MIGRATION_STRATEGY_UNSPECIFIED',
+    'STRAGGLER_MIGRATION_STRATEGY_NO_MIGRATION',
+    'STRAGGLER_MIGRATION_STRATEGY_LAST_WAVE',
+)
 
 
 # TODO(b/312311133): Deduplicate shared code between fleet and rollout commands.
@@ -59,6 +64,41 @@ class RolloutFlags:
 
   def AddAsync(self):
     base.ASYNC_FLAG.AddToParser(self.parser)
+
+  def AddCustomWaves(self):
+    self.parser.add_argument(
+        '--custom-wave',
+        type=arg_parsers.ArgDict(
+            spec={
+                'upper-bound-percentage': arg_parsers.BoundedInt(
+                    lower_bound=0, upper_bound=100
+                ),
+                'minimum-completion-percentage': arg_parsers.BoundedInt(
+                    lower_bound=0, upper_bound=100
+                ),
+                'minimum-completion-number': arg_parsers.BoundedInt(
+                    lower_bound=0
+                ),
+                'straggler-migration-strategy': str,
+            },
+            required_keys=[],
+        ),
+        action='append',
+        help=textwrap.dedent("""\
+            Comma-separated list of custom waves to be used for the rollout.
+            Each custom wave is specified as `upper-bound-percentage`,
+            `minimum-completion-percentage` or `minimum-completion-number`, and
+            `straggler-migration-strategy`.
+
+            In order to have multiple custom waves, use the `--custom-wave`
+            flag multiple times.
+
+            `straggler-migration-strategy` can be one of:
+            - 'STRAGGLER_MIGRATION_STRATEGY_UNSPECIFIED',
+            - 'STRAGGLER_MIGRATION_STRATEGY_NO_MIGRATION',
+            - 'STRAGGLER_MIGRATION_STRATEGY_LAST_WAVE',
+        """),
+    )
 
   def AddDisplayName(self):
     self.parser.add_argument(
@@ -435,6 +475,49 @@ class RolloutFlagParser:
     if '--include-membership-names' in self.args.GetSpecifiedArgs():
       for membership in self.args.include_membership_names:
         uipr_rollout_config.includeMembershipNames.append(membership)
+
+    if '--custom-wave' in self.args.GetSpecifiedArgs():
+      custom_waves = []
+      for wave in self.args.custom_wave:
+        if ('minimum-completion-percentage' in wave) and (
+            'minimum-completion-number' in wave
+        ):
+          raise ValueError(
+              'Exactly one of `minimum-completion-percentage` or '
+              '`minimum-completion-number` must be specified for each wave in '
+              '--custom-wave.'
+          )
+        custom_wave = fleet_messages.WaveTemplate()
+        if 'upper-bound-percentage' in wave:
+          custom_wave.upperBoundPercentage = wave['upper-bound-percentage']
+
+        if 'minimum-completion-percentage' in wave:
+          custom_wave.minimumCompletionPercentage = wave[
+              'minimum-completion-percentage'
+          ]
+
+        if 'minimum-completion-number' in wave:
+          custom_wave.minimumCompletionNumber = wave[
+              'minimum-completion-number'
+          ]
+
+        if 'straggler-migration-strategy' in wave:
+          if (
+              wave['straggler-migration-strategy']
+              not in _STRAGGLER_MIGRATION_STRATEGY_ENUMS
+          ):
+            raise ValueError(
+                'Invalid value for `straggler-migration-strategy`:'
+                f' {wave["straggler-migration-strategy"]}. Must be one of'
+                f' {_STRAGGLER_MIGRATION_STRATEGY_ENUMS}.'
+            )
+          custom_wave.stragglerMigrationStrategy = fleet_messages.WaveTemplate.StragglerMigrationStrategyValueValuesEnum(
+              wave['straggler-migration-strategy']
+          )
+
+        custom_waves.append(custom_wave)
+
+      uipr_rollout_config.customWaves = custom_waves
 
     managed_rollout_config.uiprRolloutConfig = uipr_rollout_config
 

@@ -528,10 +528,11 @@ class ConnectNetworkConfig(_messages.Message):
   access the Kafka Connect cluster.
 
   Fields:
-    additionalSubnets: Optional. Additional subnets may be specified. They may
-      be in another region, but must be in the same VPC network. The Connect
-      workers can communicate with network endpoints in either the primary or
-      additional subnets.
+    additionalSubnets: Optional. Deprecated: Managed Kafka Connect clusters
+      can now reach any endpoint accessible from the primary subnet without
+      the need to define additional subnets. Please see
+      https://cloud.google.com/managed-service-for-apache-kafka/docs/connect-
+      cluster/create-connect-cluster#worker-subnet for more information.
     dnsDomainNames: Optional. Additional DNS domain names from the subnet's
       network to be made visible to the Connect Cluster. When using
       MirrorMaker2, it's necessary to add the bootstrap address's dns domain
@@ -1463,18 +1464,21 @@ class ManagedkafkaProjectsLocationsClustersGetRequest(_messages.Message):
   r"""A ManagedkafkaProjectsLocationsClustersGetRequest object.
 
   Enums:
-    ViewValueValuesEnum: Optional. Specifies which parts of the Cluster
-      resource should be returned in the response.
+    ViewValueValuesEnum: Optional. Specifies the view of the Cluster resource
+      to be returned. Defaults to CLUSTER_VIEW_BASIC. See the ClusterView enum
+      for possible values.
 
   Fields:
     name: Required. The name of the cluster whose configuration to return.
-    view: Optional. Specifies which parts of the Cluster resource should be
-      returned in the response.
+    view: Optional. Specifies the view of the Cluster resource to be returned.
+      Defaults to CLUSTER_VIEW_BASIC. See the ClusterView enum for possible
+      values.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    r"""Optional. Specifies which parts of the Cluster resource should be
-    returned in the response.
+    r"""Optional. Specifies the view of the Cluster resource to be returned.
+    Defaults to CLUSTER_VIEW_BASIC. See the ClusterView enum for possible
+    values.
 
     Values:
       CLUSTER_VIEW_UNSPECIFIED: The default / unset value. The API will

@@ -22,7 +22,22 @@ import re
 
 from googlecloudsdk.command_lib.resource_manager import tag_utils
 
-SHORT_NAME_VALUE_REGEX = re.compile(r"[a-zA-Z0-9][^\"\\'/]*")
+# Regex explained:
+# [0-9]+/[a-zA-Z0-9][^\"\\\\'/]* - namespaced format for tag key
+# [0-9]+ - org id or project number
+# [a-zA-Z0-9] - starts with an alphanumeric character
+# [^\"\\\\'/]* - followed by any number of characters except single quote,
+#                double quote, forward slash and backslash
+NAMESPACED_TAG_KEY_PATTERN = r"[0-9]+/[a-zA-Z0-9][^\"\\\\'/]*"
+NAMESPACED_TAG_KEY_REGEX = re.compile(NAMESPACED_TAG_KEY_PATTERN)
+
+SHORT_NAME_VALUE_PATTERN = r"[a-zA-Z0-9][^\"\\'/]*"
+
+NAMESPACED_TAG_VALUE_PATTERN = (
+    f"({NAMESPACED_TAG_KEY_PATTERN})" + "/" + f"({SHORT_NAME_VALUE_PATTERN})"
+)
+NAMESPACED_TAG_VALUE_REGEX = re.compile(NAMESPACED_TAG_VALUE_PATTERN)
+NUMERIC_TAG_VALUE_REGEX = re.compile(r"tagValues/[0-9]+")
 
 
 def GetResourceManagerTags(resource_manager_tags):
@@ -30,23 +45,27 @@ def GetResourceManagerTags(resource_manager_tags):
 
   Args:
     resource_manager_tags: Map of resource manager tag key value pairs with
-      either namespaced name or name.
+      either namespaced or numeric format.
 
   Returns:
-    Map of resource manager tags with format tagKeys/[0-9]+, tagValues/[0-9]+
+    Map of resource manager tag key value pairs with either namespaced or
+    numeric format.
   """
 
   ret_resource_manager_tags = {}
   for key, value in resource_manager_tags.items():
-    # If the tag value is in short name format, directly pass both key and value
-    # without translation.
-    if not SHORT_NAME_VALUE_REGEX.fullmatch(value):
-      if not key.startswith("tagKeys/"):
-        key = tag_utils.GetNamespacedResource(key, tag_utils.TAG_KEYS).name
-      if not value.startswith("tagValues/"):
-        value = tag_utils.GetNamespacedResource(
-            value, tag_utils.TAG_VALUES
-        ).name
+    # If the tag value is in namespaced format, extract the namespaced
+    # key and short name value from it to pass to the API.
+    namespaced_tag_value_match = NAMESPACED_TAG_VALUE_REGEX.fullmatch(value)
+    if namespaced_tag_value_match:
+      key = namespaced_tag_value_match.group(1)
+      value = namespaced_tag_value_match.group(2)
+    elif NAMESPACED_TAG_KEY_REGEX.fullmatch(
+        key
+    ) and NUMERIC_TAG_VALUE_REGEX.fullmatch(value):
+      # If the tag key is in namespaced format, but the value is numeric,
+      # translate the key to numeric format to pass to the API.
+      key = tag_utils.GetNamespacedResource(key, tag_utils.TAG_KEYS).name
     ret_resource_manager_tags[key] = value
 
   return ret_resource_manager_tags

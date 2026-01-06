@@ -275,8 +275,7 @@ class GoogleCloudRunV2Condition(_messages.Message):
       CANCELLED: The execution was cancelled by users.
       CANCELLING: The execution is in the process of being cancelled.
       DELETED: The execution was deleted.
-      FLEX_START_PENDING: A Flex priority execution is waiting for a start
-        time.
+      DELAYED_START_PENDING: A delayed execution is waiting for a start time.
     """
     EXECUTION_REASON_UNDEFINED = 0
     JOB_STATUS_SERVICE_POLLING_ERROR = 1
@@ -284,7 +283,7 @@ class GoogleCloudRunV2Condition(_messages.Message):
     CANCELLED = 3
     CANCELLING = 4
     DELETED = 5
-    FLEX_START_PENDING = 6
+    DELAYED_START_PENDING = 6
 
   class ReasonValueValuesEnum(_messages.Enum):
     r"""Output only. A common (service-level) reason for this condition.
@@ -899,6 +898,8 @@ class GoogleCloudRunV2ExecutionTemplate(_messages.Message):
       will be rejected. All system annotations in v1 now have a corresponding
       field in v2 ExecutionTemplate. This field follows Kubernetes
       annotations' namespacing, limits, and rules.
+    delayExecution: Optional. If true, the system will start the execution
+      within the next 12 hours depending on available capacity.
     labels: Unstructured key value map that can be used to organize and
       categorize objects. User-provided labels are shared with Google's
       billing system, so they can be used to filter, or break down billing
@@ -1006,11 +1007,12 @@ class GoogleCloudRunV2ExecutionTemplate(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  parallelism = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  priorityTier = _messages.EnumField('PriorityTierValueValuesEnum', 4)
-  taskCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  template = _messages.MessageField('GoogleCloudRunV2TaskTemplate', 6)
+  delayExecution = _messages.BooleanField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  parallelism = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  priorityTier = _messages.EnumField('PriorityTierValueValuesEnum', 5)
+  taskCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  template = _messages.MessageField('GoogleCloudRunV2TaskTemplate', 7)
 
 
 class GoogleCloudRunV2ExportImageRequest(_messages.Message):
@@ -1659,6 +1661,8 @@ class GoogleCloudRunV2Overrides(_messages.Message):
 
   Fields:
     containerOverrides: Per container override specification.
+    delayExecution: Optional. If true, the system will start the execution
+      within the next 12 hours depending on available capacity.
     priorityTier: Optional. The priority tier of the execution.
     taskCount: Optional. The desired number of tasks the execution should run.
       Will replace existing task_count value.
@@ -1683,9 +1687,10 @@ class GoogleCloudRunV2Overrides(_messages.Message):
     FLEX = 2
 
   containerOverrides = _messages.MessageField('GoogleCloudRunV2ContainerOverride', 1, repeated=True)
-  priorityTier = _messages.EnumField('PriorityTierValueValuesEnum', 2)
-  taskCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  timeout = _messages.StringField(4)
+  delayExecution = _messages.BooleanField(2)
+  priorityTier = _messages.EnumField('PriorityTierValueValuesEnum', 3)
+  taskCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  timeout = _messages.StringField(5)
 
 
 class GoogleCloudRunV2Probe(_messages.Message):
@@ -4004,6 +4009,8 @@ class GoogleDevtoolsCloudbuildV1Artifacts(_messages.Message):
       Registry upon successful completion of all build steps. The build
       service account credentials will be used to perform the upload. If any
       objects fail to be pushed, the build is marked FAILURE.
+    volumes: Optional. List of volumes to mount into the artifacts upload
+      process.
   """
 
   goModules = _messages.MessageField('GoogleDevtoolsCloudbuildV1GoModule', 1, repeated=True)
@@ -4013,6 +4020,7 @@ class GoogleDevtoolsCloudbuildV1Artifacts(_messages.Message):
   objects = _messages.MessageField('GoogleDevtoolsCloudbuildV1ArtifactObjects', 5)
   oci = _messages.MessageField('GoogleDevtoolsCloudbuildV1Oci', 6, repeated=True)
   pythonPackages = _messages.MessageField('GoogleDevtoolsCloudbuildV1PythonPackage', 7, repeated=True)
+  volumes = _messages.MessageField('GoogleDevtoolsCloudbuildV1Volume', 8, repeated=True)
 
 
 class GoogleDevtoolsCloudbuildV1Build(_messages.Message):
@@ -4078,7 +4086,6 @@ class GoogleDevtoolsCloudbuildV1Build(_messages.Message):
     queueTtl: TTL in queue for this build. If provided and the build is
       enqueued longer than this value, the build will expire and the build
       status will be `EXPIRED`. The TTL starts ticking from create_time.
-    remoteConfig: Optional. Remote config for the build.
     results: Output only. Results of the build.
     secrets: Secrets to decrypt using Cloud Key Management Service. Note:
       Secret Manager is the recommended technique for managing sensitive data
@@ -4210,21 +4217,20 @@ class GoogleDevtoolsCloudbuildV1Build(_messages.Message):
   options = _messages.MessageField('GoogleDevtoolsCloudbuildV1BuildOptions', 15)
   projectId = _messages.StringField(16)
   queueTtl = _messages.StringField(17)
-  remoteConfig = _messages.StringField(18)
-  results = _messages.MessageField('GoogleDevtoolsCloudbuildV1Results', 19)
-  secrets = _messages.MessageField('GoogleDevtoolsCloudbuildV1Secret', 20, repeated=True)
-  serviceAccount = _messages.StringField(21)
-  source = _messages.MessageField('GoogleDevtoolsCloudbuildV1Source', 22)
-  sourceProvenance = _messages.MessageField('GoogleDevtoolsCloudbuildV1SourceProvenance', 23)
-  startTime = _messages.StringField(24)
-  status = _messages.EnumField('StatusValueValuesEnum', 25)
-  statusDetail = _messages.StringField(26)
-  steps = _messages.MessageField('GoogleDevtoolsCloudbuildV1BuildStep', 27, repeated=True)
-  substitutions = _messages.MessageField('SubstitutionsValue', 28)
-  tags = _messages.StringField(29, repeated=True)
-  timeout = _messages.StringField(30)
-  timing = _messages.MessageField('TimingValue', 31)
-  warnings = _messages.MessageField('GoogleDevtoolsCloudbuildV1Warning', 32, repeated=True)
+  results = _messages.MessageField('GoogleDevtoolsCloudbuildV1Results', 18)
+  secrets = _messages.MessageField('GoogleDevtoolsCloudbuildV1Secret', 19, repeated=True)
+  serviceAccount = _messages.StringField(20)
+  source = _messages.MessageField('GoogleDevtoolsCloudbuildV1Source', 21)
+  sourceProvenance = _messages.MessageField('GoogleDevtoolsCloudbuildV1SourceProvenance', 22)
+  startTime = _messages.StringField(23)
+  status = _messages.EnumField('StatusValueValuesEnum', 24)
+  statusDetail = _messages.StringField(25)
+  steps = _messages.MessageField('GoogleDevtoolsCloudbuildV1BuildStep', 26, repeated=True)
+  substitutions = _messages.MessageField('SubstitutionsValue', 27)
+  tags = _messages.StringField(28, repeated=True)
+  timeout = _messages.StringField(29)
+  timing = _messages.MessageField('TimingValue', 30)
+  warnings = _messages.MessageField('GoogleDevtoolsCloudbuildV1Warning', 31, repeated=True)
 
 
 class GoogleDevtoolsCloudbuildV1BuildApproval(_messages.Message):
@@ -4531,7 +4537,6 @@ class GoogleDevtoolsCloudbuildV1BuildStep(_messages.Message):
       to use as the name for a later build step.
     pullTiming: Output only. Stores timing information for pulling this build
       step's builder image only.
-    remoteConfig: Optional. Remote config to be used for this build step.
     results: Declaration of results for this build step.
     script: A shell script to be executed in the step. When script is
       provided, the user cannot specify the entrypoint or args.
@@ -4598,15 +4603,14 @@ class GoogleDevtoolsCloudbuildV1BuildStep(_messages.Message):
   id = _messages.StringField(9)
   name = _messages.StringField(10)
   pullTiming = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 11)
-  remoteConfig = _messages.StringField(12)
-  results = _messages.MessageField('GoogleDevtoolsCloudbuildV1StepResult', 13, repeated=True)
-  script = _messages.StringField(14)
-  secretEnv = _messages.StringField(15, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 16)
-  timeout = _messages.StringField(17)
-  timing = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 18)
-  volumes = _messages.MessageField('GoogleDevtoolsCloudbuildV1Volume', 19, repeated=True)
-  waitFor = _messages.StringField(20, repeated=True)
+  results = _messages.MessageField('GoogleDevtoolsCloudbuildV1StepResult', 12, repeated=True)
+  script = _messages.StringField(13)
+  secretEnv = _messages.StringField(14, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 15)
+  timeout = _messages.StringField(16)
+  timing = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 17)
+  volumes = _messages.MessageField('GoogleDevtoolsCloudbuildV1Volume', 18, repeated=True)
+  waitFor = _messages.StringField(19, repeated=True)
 
 
 class GoogleDevtoolsCloudbuildV1BuiltImage(_messages.Message):

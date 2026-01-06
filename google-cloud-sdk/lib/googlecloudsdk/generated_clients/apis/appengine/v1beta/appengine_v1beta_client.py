@@ -972,6 +972,33 @@ class AppengineV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ExportAppImage(self, request, global_params=None):
+      r"""Exports a user image to Artifact Registry.
+
+      Args:
+        request: (AppengineAppsServicesVersionsExportAppImageRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ExportAppImage')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExportAppImage.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/apps/{appsId}/services/{servicesId}/versions/{versionsId}:exportAppImage',
+        http_method='POST',
+        method_id='appengine.apps.services.versions.exportAppImage',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}:exportAppImage',
+        request_field='exportAppImageRequest',
+        request_type_name='AppengineAppsServicesVersionsExportAppImageRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets the specified Version resource. By default, only a BASIC_VIEW will be returned. Specify the FULL_VIEW parameter to get the full resource.
 
@@ -1766,6 +1793,33 @@ class AppengineV1beta(base_api.BaseApiClient):
         relative_path='v1beta/{+name}',
         request_field='',
         request_type_name='AppengineProjectsLocationsApplicationsServicesVersionsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def ExportAppImage(self, request, global_params=None):
+      r"""Exports a user image to Artifact Registry.
+
+      Args:
+        request: (AppengineProjectsLocationsApplicationsServicesVersionsExportAppImageRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ExportAppImage')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExportAppImage.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}/services/{servicesId}/versions/{versionsId}:exportAppImage',
+        http_method='POST',
+        method_id='appengine.projects.locations.applications.services.versions.exportAppImage',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}:exportAppImage',
+        request_field='exportAppImageRequest',
+        request_type_name='AppengineProjectsLocationsApplicationsServicesVersionsExportAppImageRequest',
         response_type_name='Operation',
         supports_download=False,
     )

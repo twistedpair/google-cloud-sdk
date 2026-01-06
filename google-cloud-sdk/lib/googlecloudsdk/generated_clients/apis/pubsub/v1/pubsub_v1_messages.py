@@ -327,6 +327,9 @@ class BigQueryConfig(_messages.Message):
       IN_TRANSIT_LOCATION_RESTRICTION: Cannot write to the destination because
         enforce_in_transit is set to true and the destination locations are
         not in the allowed regions.
+      VERTEX_AI_LOCATION_RESTRICTION: Cannot write to the BigQuery table
+        because the table is not in the same location as where Vertex AI
+        models used in `message_transform`s are deployed.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -334,6 +337,7 @@ class BigQueryConfig(_messages.Message):
     NOT_FOUND = 3
     SCHEMA_MISMATCH = 4
     IN_TRANSIT_LOCATION_RESTRICTION = 5
+    VERTEX_AI_LOCATION_RESTRICTION = 6
 
   dropUnknownFields = _messages.BooleanField(1)
   serviceAccountEmail = _messages.StringField(2)
@@ -559,6 +563,9 @@ class CloudStorageConfig(_messages.Message):
         not in the allowed regions.
       SCHEMA_MISMATCH: Cannot write to the Cloud Storage bucket due to an
         incompatibility between the topic schema and subscription settings.
+      VERTEX_AI_LOCATION_RESTRICTION: Cannot write to the Cloud Storage bucket
+        because the bucket is not in the same location as where Vertex AI
+        models used in `message_transform`s are deployed.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -566,6 +573,7 @@ class CloudStorageConfig(_messages.Message):
     NOT_FOUND = 3
     IN_TRANSIT_LOCATION_RESTRICTION = 4
     SCHEMA_MISMATCH = 5
+    VERTEX_AI_LOCATION_RESTRICTION = 6
 
   avroConfig = _messages.MessageField('AvroConfig', 1)
   bucket = _messages.StringField(2)

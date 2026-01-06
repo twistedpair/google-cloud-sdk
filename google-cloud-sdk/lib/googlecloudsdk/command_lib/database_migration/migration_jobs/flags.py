@@ -562,3 +562,14 @@ def AddHeterogeneousMigrationSourceConfigFlags(parser, is_update=False):
           Sqlserver log squence number (LSN) to start CDC data migration from.
           """
     )
+
+
+def AddPostgresHomogeneousConfigFlag(parser):
+  """Adds postgres homogeneous config flag to the given parser."""
+  parser.add_argument(
+      '--use-postgres-native',
+      action='store_true',
+      default=False,
+      help='Use native logical replication for PostgreSQL migration.',
+      hidden=True,
+  )

@@ -42,8 +42,8 @@ _DESCRIPTION_INDENT = len('description: ') - _INDENT
 _YAML_WORKAROUND = '<YAML-WORKAROUND/>'
 
 _OPTIONAL = 'Optional.'
-_OUTPUT_ONLY = 'Output only.'
 _REQUIRED = 'Required.'
+_OUTPUT_ONLY_REGEX = r'^(?:\[Output Only\]|Output only\.)'
 
 
 def _WrapDescription(depth, text):
@@ -202,7 +202,7 @@ class ExportSchemasGenerator(object):
         description = description[len(_OPTIONAL):].strip()
       elif description.startswith(_REQUIRED):
         description = description[len(_REQUIRED):].strip()
-      if description.startswith(_OUTPUT_ONLY):
+      if re.match(_OUTPUT_ONLY_REGEX, description):
         continue
 
       d = collections.OrderedDict()

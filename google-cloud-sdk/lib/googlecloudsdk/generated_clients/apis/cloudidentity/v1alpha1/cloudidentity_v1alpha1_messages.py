@@ -120,7 +120,9 @@ class BrowserInfo(_messages.Message):
     isBuiltInDnsClientEnabled: Current state of built in dns client.
     isBulkDataEntryAnalysisEnabled: Current state of bulk data analysis. Set
       to true if provider list from chrome is non-empty.
-    isChromeCleanupEnabled: Current state of chrome cleanup.
+    isChromeCleanupEnabled: Deprecated: This field is not used for Chrome
+      version 118 and later. Current state of [Chrome Cleanup](https://chromee
+      nterprise.google/policies/#ChromeCleanupEnabled).
     isChromeRemoteDesktopAppBlocked: Current state of chrome remote desktop
       app.
     isFileDownloadAnalysisEnabled: Current state of file download analysis.
@@ -1512,9 +1514,9 @@ class GoogleAppsCloudidentityDevicesV1BrowserInfo(_messages.Message):
     isBulkDataEntryAnalysisEnabled: Current state of [bulk data analysis](http
       s://chromeenterprise.google/policies/#OnBulkDataEntryEnterpriseConnector
       ). Set to true if provider list from Chrome is non-empty.
-    isChromeCleanupEnabled: Current state of [Chrome
-      Cleanup](https://chromeenterprise.google/policies/#ChromeCleanupEnabled)
-      .
+    isChromeCleanupEnabled: Deprecated: This field is not used for Chrome
+      version 118 and later. Current state of [Chrome Cleanup](https://chromee
+      nterprise.google/policies/#ChromeCleanupEnabled).
     isChromeRemoteDesktopAppBlocked: Current state of [Chrome Remote Desktop
       app](https://chromeenterprise.google/policies/#URLBlocklist).
     isFileDownloadAnalysisEnabled: Current state of [file download analysis](h

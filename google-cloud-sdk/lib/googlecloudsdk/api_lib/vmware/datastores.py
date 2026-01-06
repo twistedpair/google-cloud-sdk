@@ -86,24 +86,20 @@ class DatastoresClient(util.VmwareClientBase):
     datastore = self.messages.Datastore(description=description)
     nfs_datastore = self.messages.NfsDatastore()
     if netapp_volume:
-      nfs_datastore.googleFileService = (
-          self.messages.GoogleFileService(
-              netappVolume=netapp_volume
-          )
+      nfs_datastore.googleFileService = self.messages.GoogleFileService(
+          netappVolume=netapp_volume
       )
     elif filestore_instance:
-      nfs_datastore.googleFileService = (
-          self.messages.GoogleFileService(
-              filestoreInstance=filestore_instance
-          )
+      nfs_datastore.googleFileService = self.messages.GoogleFileService(
+          filestoreInstance=filestore_instance
       )
     elif third_party_nfs_servers:
-      nfs_datastore.thirdPartyFileService = (
-          self.messages.ThirdPartyFileService(
-              servers=third_party_nfs_servers,
-              fileShare=third_party_nfs_file_share,
-              network=third_party_nfs_network,
-          )
+      nfs_datastore.thirdPartyFileService = self.messages.ThirdPartyFileService(
+          servers=third_party_nfs_servers,
+          fileShare=third_party_nfs_file_share,
+          network='projects/{}/global/networks/{}'.format(
+              resource.projectsId, third_party_nfs_network
+          ),
       )
     datastore.nfsDatastore = nfs_datastore
     request = (

@@ -2783,6 +2783,33 @@ class ApihubV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RetrieveApiViews(self, request, global_params=None):
+      r"""Retrieve API views.
+
+      Args:
+        request: (ApihubProjectsLocationsRetrieveApiViewsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApihubV1RetrieveApiViewsResponse) The response message.
+      """
+      config = self.GetMethodConfig('RetrieveApiViews')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RetrieveApiViews.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}:retrieveApiViews',
+        http_method='GET',
+        method_id='apihub.projects.locations.retrieveApiViews',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken', 'view'],
+        relative_path='v1/{+parent}:retrieveApiViews',
+        request_field='',
+        request_type_name='ApihubProjectsLocationsRetrieveApiViewsRequest',
+        response_type_name='GoogleCloudApihubV1RetrieveApiViewsResponse',
+        supports_download=False,
+    )
+
     def SearchResources(self, request, global_params=None):
       r"""Search across API-Hub resources.
 

@@ -69,7 +69,7 @@ def GetServiceAccountCreds(json_key):
   account = properties.VALUES.core.account.Get()
   if not account:
     raise creds_exceptions.NoActiveAccountException()
-  cred = store.Load(account, prevent_refresh=True, use_google_auth=True)
+  cred = store.Load(account, prevent_refresh=True)
   if not cred:
     raise store.NoCredentialsForAccountException(account)
 
@@ -82,9 +82,5 @@ def GetServiceAccountCreds(json_key):
 
 
 def _IsServiceAccountCredentials(cred):
-  if creds.IsOauth2ClientCredentials(cred):
-    return creds.CredentialType.FromCredentials(
-        cred) == creds.CredentialType.SERVICE_ACCOUNT
-  else:
-    return creds.CredentialTypeGoogleAuth.FromCredentials(
-        cred) == creds.CredentialTypeGoogleAuth.SERVICE_ACCOUNT
+  return creds.CredentialTypeGoogleAuth.FromCredentials(
+      cred) == creds.CredentialTypeGoogleAuth.SERVICE_ACCOUNT

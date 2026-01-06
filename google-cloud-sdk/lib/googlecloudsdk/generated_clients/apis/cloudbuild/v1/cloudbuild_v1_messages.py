@@ -2946,7 +2946,7 @@ class DefaultServiceAccount(_messages.Message):
 
   Fields:
     name: Identifier. Format:
-      `projects/{project}/locations/{location}/defaultServiceAccount
+      `projects/{project}/locations/{location}/defaultServiceAccount`.
     serviceAccountEmail: Output only. The email address of the service account
       identity that will be used for a build by default. This is returned in
       the format `projects/{project}/serviceAccounts/{service_account}` where

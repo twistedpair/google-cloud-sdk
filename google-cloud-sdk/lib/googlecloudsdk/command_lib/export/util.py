@@ -68,7 +68,7 @@ def AddImportFlags(parser, schema_path=None):
   help_text = """Path to a YAML file containing configuration export data.
           Alternatively, you may omit this flag to read from standard input."""
   if schema_path is not None:
-    help_text += """For a schema describing the export/import format, see:
+    help_text += """ For a schema describing the export/import format, see:
           {}.
       """.format(schema_path)
     if '$CLOUDSDKROOT' in schema_path:

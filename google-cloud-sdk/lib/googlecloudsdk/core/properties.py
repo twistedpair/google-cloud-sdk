@@ -97,6 +97,8 @@ _PUBSUB_NOTICE_URL = (
     'https://cloud.google.com/functions/docs/writing/background#event_parameter'
 )
 
+_B_468088880_FIXED = True
+
 
 def Stringize(value):
   if isinstance(value, six.string_types):
@@ -1796,15 +1798,6 @@ class _SectionAuth(_Section):
         'service_account_disable_id_token_refresh',
         default=False,
         help_text='If True, disable ID token refresh for service account.',
-    )
-    self.reauth_use_google_auth = self._AddBool(
-        'reauth_use_google_auth',
-        hidden=True,
-        default=True,
-        help_text=(
-            'A switch to choose to use google-auth reauth or oauth2client'
-            ' reauth implementation. By default google-auth is used.'
-        ),
     )
 
 

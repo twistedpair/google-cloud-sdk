@@ -148,14 +148,6 @@ _SANDBOX_CHOICES = {
     'gen2': 'Run the application in a second generation execution environment.',
 }
 
-_PRIORITY_CHOICES = {
-    'standard': 'The system will start the job as soon as possible.',
-    'flex': (
-        'The system will start the job within the next 6 hours depending on'
-        ' available capacity."'
-    ),
-}
-
 _DEFAULT_KUBECONFIG_PATH = '~/.kube/config'
 
 _POST_CMEK_KEY_REVOCATION_ACTION_TYPE_CHOICES = {
@@ -1985,16 +1977,6 @@ def AddParallelismFlag(parser):
   )
 
 
-def AddPriorityFlag(parser):
-  """Add job priority flag."""
-  parser.add_argument(
-      '--priority-tier',
-      choices=_PRIORITY_CHOICES,
-      hidden=True,
-      help='Priority of the job.',
-  )
-
-
 def AddDelayExecutionFlag(parser):
   """Add job delay execution flag."""
   parser.add_argument(
@@ -2408,7 +2390,6 @@ def HasExecutionOverrides(args):
       'update_env_vars',
       'task_timeout',
       'tasks',
-      'priority_tier',
       'delay_execution',
   ]
   return HasChanges(args, overrides_flags) or FlagIsExplicitlySet(
@@ -3527,12 +3508,6 @@ def GetJobConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
             'parallelism', args.parallelism
         )
     )
-  if FlagIsExplicitlySet(args, 'priority_tier'):
-    changes.append(
-        config_changes.JobPriorityTierChange(
-            priority_tier=args.priority_tier
-        )
-    )
   if FlagIsExplicitlySet(args, 'delay_execution'):
     changes.append(
         config_changes.DelayExecutionChange(
@@ -3549,6 +3524,28 @@ def GetJobConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
     changes.append(config_changes.JobMaxRetriesChange(args.max_retries))
   if FlagIsExplicitlySet(args, 'task_timeout'):
     changes.append(config_changes.JobTaskTimeoutChange(args.task_timeout))
+  if 'gpu_type' in args and args.gpu_type:
+    changes.append(config_changes.GpuTypeChange(gpu_type=args.gpu_type))
+
+  _PrependClientNameAndVersionChange(args, changes)
+
+  if FlagIsExplicitlySet(args, 'containers'):
+    dependency_changes = {
+        container_name: container_args.depends_on
+        for container_name, container_args in args.containers.items()
+        if container_args.IsSpecified('depends_on')
+    }
+    if dependency_changes:
+      changes.append(
+          config_changes.ContainerDependenciesChange(dependency_changes)
+      )
+
+  return changes
+
+
+def GetInstanceConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
+  """Returns a list of changes to the instance config, based on the flags set."""
+  changes = _GetConfigurationChanges(args, release_track=release_track)
   if 'gpu_type' in args and args.gpu_type:
     changes.append(config_changes.GpuTypeChange(gpu_type=args.gpu_type))
 
@@ -4808,8 +4805,8 @@ def PromptForDefaultSource(container_name=None):
     source = console_io.PromptWithDefault(message=message, default=cwd)
 
     log.status.Print(
-        'Next time, you can use `--source .` argument to deploy the current'
-        ' directory.\n'
+        'For subsequent deployments, use the `--source .` command to deploy the'
+        ' current directory without a confirmation prompt.\n'
     )
     return source
 

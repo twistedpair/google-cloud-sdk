@@ -39,7 +39,7 @@ def ActivateCredentials(account, refresh_token):
   """Activates credentials for given account with given refresh token."""
 
   creds = c_store.AcquireFromToken(
-      refresh_token, use_google_auth=True)
+      refresh_token)
 
   c_store.ActivateCredentials(account, creds)
 
@@ -60,7 +60,7 @@ def GetForAccount(account=None):
     UnsupportedCredentialsType: if credentials are not user credentials.
   """
   try:
-    creds = c_store.Load(account, use_google_auth=True)
+    creds = c_store.Load(account)
   except (client.Error, google_auth_exceptions.GoogleAuthError):
     raise calliope_exceptions.NewErrorFromCurrentException(
         LoadingCredentialsError)

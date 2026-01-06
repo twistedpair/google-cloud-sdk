@@ -8703,7 +8703,8 @@ class PyPiRepositoryConfig(_messages.Message):
   r"""Configuration for PyPi repository
 
   Fields:
-    pypiRepository: Optional. PyPi repository address
+    pypiRepository: Optional. The PyPi repository address. Note: This field is
+      not available for batch workloads.
   """
 
   pypiRepository = _messages.StringField(1)

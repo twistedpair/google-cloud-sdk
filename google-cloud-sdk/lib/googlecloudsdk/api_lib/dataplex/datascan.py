@@ -55,7 +55,9 @@ def GenerateDataQualitySpec(args):
   return dataqualityspec
 
 
-def GenerateDataProfileSpec(args: parser_extensions.Namespace):
+def GenerateDataProfileSpec(
+    args: parser_extensions.Namespace,
+) -> dataplex_v1_messages.GoogleCloudDataplexV1DataProfileSpec:
   """Generate DataProfileSpec From Arguments."""
   module = dataplex_api.GetMessageModule()
 
@@ -67,7 +69,12 @@ def GenerateDataProfileSpec(args: parser_extensions.Namespace):
           module.GoogleCloudDataplexV1DataProfileSpec,
       )
   else:
-    exclude_fields, include_fields, sampling_percent, row_filter = [None] * 4
+    (
+        exclude_fields,
+        include_fields,
+        sampling_percent,
+        row_filter,
+    ) = [None] * 4
     if args.IsKnownAndSpecified('exclude_field_names'):
       exclude_fields = (
           module.GoogleCloudDataplexV1DataProfileSpecSelectedFields(
@@ -88,11 +95,17 @@ def GenerateDataProfileSpec(args: parser_extensions.Namespace):
       sampling_percent = float(args.sampling_percent)
     if args.IsKnownAndSpecified('row_filter'):
       row_filter = args.row_filter
+    catalog_publishing_enabled = (
+        args.enable_catalog_publishing
+        if args.IsKnownAndSpecified('enable_catalog_publishing')
+        else None
+    )
     dataprofilespec = module.GoogleCloudDataplexV1DataProfileSpec(
         excludeFields=exclude_fields,
         includeFields=include_fields,
         samplingPercent=sampling_percent,
         rowFilter=row_filter,
+        catalogPublishingEnabled=catalog_publishing_enabled,
     )
     if args.IsKnownAndSpecified('export_results_table'):
       dataprofilespec.postScanActions = module.GoogleCloudDataplexV1DataProfileSpecPostScanActions(
@@ -269,6 +282,7 @@ def GenerateUpdateMask(args: parser_extensions.Namespace):
       'sampling_percent': 'dataProfileSpec.samplingPercent',
       'include_field_names': 'dataProfileSpec.includeFields',
       'exclude_field_names': 'dataProfileSpec.excludeFields',
+      'enable_catalog_publishing': 'dataProfileSpec.catalogPublishingEnabled',
       'bigquery_publishing_table_type': (
           'dataDiscoverySpec.bigqueryPublishingConfig.tableType'
       ),

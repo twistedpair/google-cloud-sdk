@@ -2218,7 +2218,7 @@ def _GenerateIamToken() -> str:
         'Google account.'
     )
 
-  cred = c_store.Load(use_google_auth=True, allow_account_impersonation=False)
+  cred = c_store.Load(allow_account_impersonation=False)
   auth_token_file = properties.VALUES.auth.authorization_token_file.Get(
       required=True
   )

@@ -50,7 +50,6 @@ class QuotaHandlerMixin(object):
       self,
       enable_resource_quota,
       allow_account_impersonation,
-      use_google_auth,
       credentials=None,
   ):
     """Returns None or the quota project for credentials."""
@@ -58,7 +57,7 @@ class QuotaHandlerMixin(object):
       return None
     if credentials is None:
       credentials = store.LoadIfEnabled(
-          allow_account_impersonation, use_google_auth
+          allow_account_impersonation
       )
     return core_creds.GetQuotaProject(credentials)
 
@@ -78,7 +77,6 @@ class QuotaHandlerMixin(object):
       http_client,
       enable_resource_quota,
       allow_account_impersonation,
-      use_google_auth,
   ):
     """Returns a http_client with quota project handling.
 
@@ -91,10 +89,6 @@ class QuotaHandlerMixin(object):
       allow_account_impersonation: bool, True to allow use of impersonated
         service account credentials for calls made with this client. If False,
         the active user credentials will always be used.
-      use_google_auth: bool, True if the calling command indicates to use
-        google-auth library for authentication. If False, authentication will
-        fallback to using the oauth2client library. If None, set the value based
-        the configuration.
     """
 
 
@@ -105,7 +99,6 @@ class CredentialWrappingMixin(object):
       self,
       http_client,
       allow_account_impersonation=True,
-      use_google_auth=None,
       credentials=None,
   ):
     """Get an http client for working with Google APIs.
@@ -115,10 +108,6 @@ class CredentialWrappingMixin(object):
       allow_account_impersonation: bool, True to allow use of impersonated
         service account credentials for calls made with this client. If False,
         the active user credentials will always be used.
-      use_google_auth: bool, True if the calling command indicates to use
-        google-auth library for authentication. If False, authentication will
-        fallback to using the oauth2client library. If None, set the value based
-        the configuration.
       credentials: google.auth.credentials.Credentials, The credentials to use.
 
     Returns:
@@ -135,11 +124,9 @@ class CredentialWrappingMixin(object):
     )
     handlers = _GetIAMAuthHandlers(authority_selector, authorization_token_file)
 
-    if use_google_auth is None:
-      use_google_auth = True
     if credentials is None:
       credentials = store.LoadIfEnabled(
-          allow_account_impersonation, use_google_auth
+          allow_account_impersonation
       )
     if credentials:
       http_client = self.AuthorizeClient(http_client, credentials)

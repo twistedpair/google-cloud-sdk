@@ -43,6 +43,7 @@ class ApigeeV1(base_api.BaseApiClient):
     self.hybrid = self.HybridService(self)
     self.organizations_analytics_datastores = self.OrganizationsAnalyticsDatastoresService(self)
     self.organizations_analytics = self.OrganizationsAnalyticsService(self)
+    self.organizations_apimServiceExtensions = self.OrganizationsApimServiceExtensionsService(self)
     self.organizations_apiproducts_attributes = self.OrganizationsApiproductsAttributesService(self)
     self.organizations_apiproducts_rateplans = self.OrganizationsApiproductsRateplansService(self)
     self.organizations_apiproducts = self.OrganizationsApiproductsService(self)
@@ -367,6 +368,151 @@ class ApigeeV1(base_api.BaseApiClient):
       super(ApigeeV1.OrganizationsAnalyticsService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class OrganizationsApimServiceExtensionsService(base_api.BaseApiService):
+    """Service class for the organizations_apimServiceExtensions resource."""
+
+    _NAME = 'organizations_apimServiceExtensions'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsApimServiceExtensionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an APIM ServiceExtension in an organization.
+
+      Args:
+        request: (ApigeeOrganizationsApimServiceExtensionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/apimServiceExtensions',
+        http_method='POST',
+        method_id='apigee.organizations.apimServiceExtensions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['apimServiceExtensionId'],
+        relative_path='v1/{+parent}/apimServiceExtensions',
+        request_field='googleCloudApigeeV1ApimServiceExtension',
+        request_type_name='ApigeeOrganizationsApimServiceExtensionsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes APIM service extension from an organization.
+
+      Args:
+        request: (ApigeeOrganizationsApimServiceExtensionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/apimServiceExtensions/{apimServiceExtensionsId}',
+        http_method='DELETE',
+        method_id='apigee.organizations.apimServiceExtensions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsApimServiceExtensionsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets APIM service extension details.
+
+      Args:
+        request: (ApigeeOrganizationsApimServiceExtensionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ApimServiceExtension) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/apimServiceExtensions/{apimServiceExtensionsId}',
+        http_method='GET',
+        method_id='apigee.organizations.apimServiceExtensions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsApimServiceExtensionsGetRequest',
+        response_type_name='GoogleCloudApigeeV1ApimServiceExtension',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all APIM service extensions in an organization.
+
+      Args:
+        request: (ApigeeOrganizationsApimServiceExtensionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListApimServiceExtensionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/apimServiceExtensions',
+        http_method='GET',
+        method_id='apigee.organizations.apimServiceExtensions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/apimServiceExtensions',
+        request_field='',
+        request_type_name='ApigeeOrganizationsApimServiceExtensionsListRequest',
+        response_type_name='GoogleCloudApigeeV1ListApimServiceExtensionsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an APIM service extension in an organization.
+
+      Args:
+        request: (ApigeeOrganizationsApimServiceExtensionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/apimServiceExtensions/{apimServiceExtensionsId}',
+        http_method='PATCH',
+        method_id='apigee.organizations.apimServiceExtensions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudApigeeV1ApimServiceExtension',
+        request_type_name='ApigeeOrganizationsApimServiceExtensionsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
 
   class OrganizationsApiproductsAttributesService(base_api.BaseApiService):
     """Service class for the organizations_apiproducts_attributes resource."""

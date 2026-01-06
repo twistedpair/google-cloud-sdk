@@ -39,7 +39,7 @@ class AccountConnector(_messages.Message):
       `projects/{project}/locations/{location}/accountConnectors/{account_conn
       ector_id}`.
     oauthStartUri: Output only. Start OAuth flow by clicking on this URL.
-    providerOauthConfig: Provider OAuth config.
+    providerOauthConfig: Optional. Provider OAuth config.
     updateTime: Output only. The timestamp when the accountConnector was
       updated.
   """
@@ -1764,9 +1764,15 @@ class GitProxyConfig(_messages.Message):
     enabled: Optional. Setting this to true allows the git proxy to be used
       for performing git operations on the repositories linked in the
       connection.
+    httpProxyBaseUri: Output only. The base URI for the HTTP proxy endpoint.
+      Has the format
+      `https://{generatedID}-c-h-{shortRegion}.developerconnect.dev` Populated
+      only when enabled is set to true. This endpoint is used by other Google
+      services that integrate with Developer Connect.
   """
 
   enabled = _messages.BooleanField(1)
+  httpProxyBaseUri = _messages.StringField(2)
 
 
 class GitRepositoryLink(_messages.Message):
@@ -2183,7 +2189,7 @@ class ListConnectionsResponse(_messages.Message):
 
 
 class ListDeploymentEventsResponse(_messages.Message):
-  r"""Request for response to listing DeploymentEvents.
+  r"""Response to listing DeploymentEvents.
 
   Fields:
     deploymentEvents: The list of DeploymentEvents.
@@ -2571,18 +2577,18 @@ class ProviderOAuthConfig(_messages.Message):
   r"""ProviderOAuthConfig is the OAuth config for a provider.
 
   Enums:
-    SystemProviderIdValueValuesEnum: Immutable. Developer Connect provided
-      OAuth.
+    SystemProviderIdValueValuesEnum: Optional. Immutable. Developer Connect
+      provided OAuth.
 
   Fields:
     scopes: Required. User selected scopes to apply to the Oauth config In the
       event of changing scopes, user records under AccountConnector will be
       deleted and users will re-auth again.
-    systemProviderId: Immutable. Developer Connect provided OAuth.
+    systemProviderId: Optional. Immutable. Developer Connect provided OAuth.
   """
 
   class SystemProviderIdValueValuesEnum(_messages.Enum):
-    r"""Immutable. Developer Connect provided OAuth.
+    r"""Optional. Immutable. Developer Connect provided OAuth.
 
     Values:
       SYSTEM_PROVIDER_UNSPECIFIED: No system provider specified.
@@ -2592,15 +2598,21 @@ class ProviderOAuthConfig(_messages.Message):
       GITLAB: GitLab provider. Scopes can be found at
         https://docs.gitlab.com/user/profile/personal_access_tokens/#personal-
         access-token-scopes
-      GOOGLE: Google provider. Recommended scopes:
+      GOOGLE: Deprecated: This provider is no longer supported. Google
+        provider. Recommended scopes:
         "https://www.googleapis.com/auth/drive.readonly",
         "https://www.googleapis.com/auth/documents.readonly"
-      SENTRY: Sentry provider. Scopes can be found at
+      SENTRY: Deprecated: This provider is no longer supported. Sentry
+        provider. Scopes can be found at
         https://docs.sentry.io/api/permissions/
-      ROVO: Rovo provider. Must select the "rovo" scope.
-      NEW_RELIC: New Relic provider. No scopes are allowed.
-      DATASTAX: Datastax provider. No scopes are allowed.
-      DYNATRACE: Dynatrace provider.
+      ROVO: Deprecated: This provider is no longer supported. Rovo provider.
+        Must select the "rovo" scope.
+      NEW_RELIC: Deprecated: This provider is no longer supported. New Relic
+        provider. No scopes are allowed.
+      DATASTAX: Deprecated: This provider is no longer supported. Datastax
+        provider. No scopes are allowed.
+      DYNATRACE: Deprecated: This provider is no longer supported. Dynatrace
+        provider.
     """
     SYSTEM_PROVIDER_UNSPECIFIED = 0
     GITHUB = 1
@@ -2818,15 +2830,21 @@ class StartOAuthResponse(_messages.Message):
       GITLAB: GitLab provider. Scopes can be found at
         https://docs.gitlab.com/user/profile/personal_access_tokens/#personal-
         access-token-scopes
-      GOOGLE: Google provider. Recommended scopes:
+      GOOGLE: Deprecated: This provider is no longer supported. Google
+        provider. Recommended scopes:
         "https://www.googleapis.com/auth/drive.readonly",
         "https://www.googleapis.com/auth/documents.readonly"
-      SENTRY: Sentry provider. Scopes can be found at
+      SENTRY: Deprecated: This provider is no longer supported. Sentry
+        provider. Scopes can be found at
         https://docs.sentry.io/api/permissions/
-      ROVO: Rovo provider. Must select the "rovo" scope.
-      NEW_RELIC: New Relic provider. No scopes are allowed.
-      DATASTAX: Datastax provider. No scopes are allowed.
-      DYNATRACE: Dynatrace provider.
+      ROVO: Deprecated: This provider is no longer supported. Rovo provider.
+        Must select the "rovo" scope.
+      NEW_RELIC: Deprecated: This provider is no longer supported. New Relic
+        provider. No scopes are allowed.
+      DATASTAX: Deprecated: This provider is no longer supported. Datastax
+        provider. No scopes are allowed.
+      DYNATRACE: Deprecated: This provider is no longer supported. Dynatrace
+        provider.
     """
     SYSTEM_PROVIDER_UNSPECIFIED = 0
     GITHUB = 1

@@ -265,12 +265,15 @@ def _create_or_modify_transfer_options(transfer_spec, args, messages):
 
 def _create_or_modify_object_conditions(transfer_spec, args, messages):
   """Creates or modifies ObjectConditions based on args."""
-  if not (getattr(args, 'include_prefixes', None) or
-          getattr(args, 'exclude_prefixes', None) or
-          getattr(args, 'include_modified_before_absolute', None) or
-          getattr(args, 'include_modified_after_absolute', None) or
-          getattr(args, 'include_modified_before_relative', None) or
-          getattr(args, 'include_modified_after_relative', None)):
+  if not (
+      getattr(args, 'include_prefixes', None)
+      or getattr(args, 'exclude_prefixes', None)
+      or getattr(args, 'match_glob', None)
+      or getattr(args, 'include_modified_before_absolute', None)
+      or getattr(args, 'include_modified_after_absolute', None)
+      or getattr(args, 'include_modified_before_relative', None)
+      or getattr(args, 'include_modified_after_relative', None)
+  ):
     return
   if not transfer_spec.objectConditions:
     transfer_spec.objectConditions = messages.ObjectConditions()
@@ -279,6 +282,8 @@ def _create_or_modify_object_conditions(transfer_spec, args, messages):
     transfer_spec.objectConditions.includePrefixes = args.include_prefixes
   if getattr(args, 'exclude_prefixes', None):
     transfer_spec.objectConditions.excludePrefixes = args.exclude_prefixes
+  if getattr(args, 'match_glob', None) is not None:
+    transfer_spec.objectConditions.matchGlob = args.match_glob
   if getattr(args, 'include_modified_before_absolute', None):
     modified_before_datetime_string = (
         args.include_modified_before_absolute.astimezone(times.UTC).isoformat())

@@ -79,6 +79,19 @@ flag_revision:
     help: Flag Revision ID
   disable_auto_completers: false
 
+flag_attribute:
+  name: flagAttribute
+  plural_name: flagAttributes
+  collection: saasservicemgmt.projects.locations.flagAttributes
+  attributes:
+  - *project
+  - *location
+  - &flagAttribute
+    parameter_name: flagAttributesId
+    attribute_name: flag_attribute
+    help: Flag Attribute ID
+  disable_auto_completers: false
+
 rollout_kind:
   name: rolloutKindId
   plural_name: rolloutKinds

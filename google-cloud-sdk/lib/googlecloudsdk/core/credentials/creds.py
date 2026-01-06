@@ -97,16 +97,7 @@ def IsGoogleAuthGceCredentials(creds):
   return isinstance(creds, google_auth_compute_engine.Credentials)
 
 
-def _IsUserAccountCredentialsOauth2client(creds):
-  if CredentialType.FromCredentials(creds).is_user:
-    return True
-  if c_devshell.IsDevshellEnvironment():
-    return CredentialType.FromCredentials(creds) == CredentialType.GCE
-  else:
-    return False
-
-
-def _IsUserAccountCredentialsGoogleAuth(creds):
+def IsUserAccountCredentials(creds):
   if CredentialTypeGoogleAuth.FromCredentials(creds).is_user:
     return True
   if c_devshell.IsDevshellEnvironment():
@@ -116,27 +107,10 @@ def _IsUserAccountCredentialsGoogleAuth(creds):
     return False
 
 
-def IsUserAccountCredentials(creds):
-  if IsOauth2ClientCredentials(creds):
-    return _IsUserAccountCredentialsOauth2client(creds)
-  else:
-    return _IsUserAccountCredentialsGoogleAuth(creds)
-
-
-def IsOauth2clientP12AccountCredentials(creds):
-  return (CredentialType.FromCredentials(creds) ==
-          CredentialType.P12_SERVICE_ACCOUNT)
-
-
 def IsServiceAccountCredentials(creds):
-  if IsOauth2ClientCredentials(creds):
-    cred_type = CredentialType.FromCredentials(creds)
-    return cred_type in (CredentialType.SERVICE_ACCOUNT,
-                         CredentialType.P12_SERVICE_ACCOUNT)
-  else:
-    cred_type = CredentialTypeGoogleAuth.FromCredentials(creds)
-    return cred_type in (CredentialTypeGoogleAuth.SERVICE_ACCOUNT,
-                         CredentialTypeGoogleAuth.P12_SERVICE_ACCOUNT)
+  cred_type = CredentialTypeGoogleAuth.FromCredentials(creds)
+  return cred_type in (CredentialTypeGoogleAuth.SERVICE_ACCOUNT,
+                       CredentialTypeGoogleAuth.P12_SERVICE_ACCOUNT)
 
 
 def IsExternalAccountCredentials(creds):
@@ -245,7 +219,8 @@ def UseSelfSignedJwt(creds):
 def EnableSelfSignedJwtIfApplicable(creds):
   if UseSelfSignedJwt(creds):
     creds._always_use_jwt_access = True  # pylint: disable=protected-access
-    creds._create_self_signed_jwt(None)  # pylint: disable=protected-access
+    if hasattr(creds, '_create_self_signed_jwt'):
+      creds._create_self_signed_jwt(None)  # pylint: disable=protected-access
 
 
 def WithAccount(creds, account):
@@ -487,13 +462,11 @@ class SqliteCredentialStore(CredentialStore):
         accounts_dict[account_id].append(universe_domain)
     return accounts_dict
 
-  def Load(self, account_id, use_google_auth=True):
+  def Load(self, account_id):
     """Load the credentials for the account_id.
 
     Args:
       account_id: str, The account_id of the credential to load.
-      use_google_auth: bool, Whether google-auth lib should be used. Default is
-        True.
 
     Returns:
       google.auth.credentials.Credentials or client.OAuth2Credentials, The
@@ -503,17 +476,6 @@ class SqliteCredentialStore(CredentialStore):
       googlecloudsdk.core.credentials.creds.InvalidCredentialsError: If problem
         happens when loading credentials.
     """
-    if not use_google_auth:
-      with self._cursor as cur:
-        cred_json = cur.Execute(
-            'SELECT value FROM "{}" WHERE account_id = ?'.format(
-                _CREDENTIAL_TABLE_NAME
-            ),
-            (account_id,),
-        ).fetchone()
-      if cred_json is None:
-        return None
-      return FromJson(cred_json[0])
 
     with self._cursor as cur:
       table = cur.Execute(
@@ -563,25 +525,16 @@ class SqliteCredentialStore(CredentialStore):
       credentials: google.auth.credentials.Credentials or
         client.OAuth2Credentials, the credentials to be stored.
     """
-    if IsOauth2ClientCredentials(credentials):
-      value = ToJson(credentials)
-      self._Execute(
-          'REPLACE INTO "{}" (account_id, value) VALUES (?,?)'.format(
-              _CREDENTIAL_TABLE_NAME
-          ),
-          (account_id, value),
-      )
-    else:
-      value = ToJsonGoogleAuth(credentials)
-      formatted_account_id = _AccountIdFormatter.GetFormattedAccountId(
-          account_id, credentials
-      )
-      self._Execute(
-          'REPLACE INTO "{}" (account_id, value) VALUES (?,?)'.format(
-              _CREDENTIAL_TABLE_NAME
-          ),
-          (formatted_account_id, value),
-      )
+    value = ToJsonGoogleAuth(credentials)
+    formatted_account_id = _AccountIdFormatter.GetFormattedAccountId(
+        account_id, credentials
+    )
+    self._Execute(
+        'REPLACE INTO "{}" (account_id, value) VALUES (?,?)'.format(
+            _CREDENTIAL_TABLE_NAME
+        ),
+        (formatted_account_id, value),
+    )
 
   def Remove(self, account_id):
     formatted_account_id = _AccountIdFormatter.GetFormattedAccountId(
@@ -992,39 +945,29 @@ class CredentialStoreWithCache(CredentialStore):
     """Returns all the accounts stored in the cache with their universe domain."""
     return self._credential_store.GetAccountsWithUniverseDomain()
 
-  def Load(self, account_id, use_google_auth=True):
+  def Load(self, account_id):
     """Loads the credentials of account_id from the cache.
 
     Args:
       account_id: string, ID of the account to load.
-      use_google_auth: bool, True to load google-auth credentials if the type of
-        the credentials is supported by the cache. False to load oauth2client
-        credentials.
 
     Returns:
       1. None, if credentials are not found in the cache.
-      2. google.auth.credentials.Credentials, if use_google_auth is true.
-      3. client.OAuth2Credentials.
+      2. google.auth.credentials.Credentials
     """
     # Loads static credentials information from self._credential_store.
-    credentials = self._credential_store.Load(account_id, use_google_auth)
+    credentials = self._credential_store.Load(account_id)
     if credentials is None:
       return None
 
     # Loads short lived tokens from self._access_token_cache.
-    if IsOauth2ClientCredentials(credentials):
-      store = AccessTokenStore(self._access_token_cache, account_id,
-                               credentials)
-      credentials.set_store(store)
-      return store.get()
-    else:
-      store = AccessTokenStoreGoogleAuth(self._access_token_cache, account_id,
-                                         credentials)
-      credentials = store.Get()
+    store = AccessTokenStoreGoogleAuth(self._access_token_cache, account_id,
+                                       credentials)
+    credentials = store.Get()
 
-      # google-auth credentials do not support auto caching access token on
-      # credentials refresh. This logic needs to be implemented in gcloud.
-      return self._WrapCredentialsRefreshWithAutoCaching(credentials, store)
+    # google-auth credentials do not support auto caching access token on
+    # credentials refresh. This logic needs to be implemented in gcloud.
+    return self._WrapCredentialsRefreshWithAutoCaching(credentials, store)
 
   def Store(self, account_id, credentials):
     """Stores credentials into the cache with account of account_id.
@@ -1036,15 +979,9 @@ class CredentialStoreWithCache(CredentialStore):
         client.OAuth2Credentials, the credentials to be stored.
     """
     # Stores short lived tokens to self._access_token_cache.
-    if IsOauth2ClientCredentials(credentials):
-      store = AccessTokenStore(self._access_token_cache, account_id,
-                               credentials)
-      credentials.set_store(store)
-      store.put(credentials)
-    else:
-      store = AccessTokenStoreGoogleAuth(self._access_token_cache, account_id,
-                                         credentials)
-      store.Put()
+    store = AccessTokenStoreGoogleAuth(self._access_token_cache, account_id,
+                                       credentials)
+    store.Put()
 
     # Stores static credentials information to self._credential_store.
     self._credential_store.Store(account_id, credentials)
@@ -1204,47 +1141,6 @@ class CredentialTypeGoogleAuth(enum.Enum):
     if getattr(creds, 'refresh_token', None) is not None:
       return CredentialTypeGoogleAuth.USER_ACCOUNT
     return CredentialTypeGoogleAuth.UNKNOWN
-
-
-def ToJson(credentials):
-  """Given Oauth2client credentials return library independent json for it."""
-  creds_type = CredentialType.FromCredentials(credentials)
-  if creds_type == CredentialType.USER_ACCOUNT:
-    creds_dict = {
-        'type': creds_type.key,
-        'client_id': credentials.client_id,
-        'client_secret': credentials.client_secret,
-        'refresh_token': credentials.refresh_token
-    }
-    # These fields are optionally serialized as they are not required for
-    # credentials to be usable, these are used by Oauth2client.
-    for field in ('id_token', 'invalid', 'revoke_uri', 'scopes',
-                  'token_response', 'token_uri', 'user_agent', 'rapt_token'):
-      value = getattr(credentials, field, None)
-      if value:
-        # Sets are not json serializable as is, so encode as a list.
-        if isinstance(value, set):
-          value = list(value)
-        creds_dict[field] = value
-
-  elif creds_type == CredentialType.SERVICE_ACCOUNT:
-    creds_dict = credentials.serialization_data
-  elif creds_type == CredentialType.P12_SERVICE_ACCOUNT:
-    # pylint: disable=protected-access
-    creds_dict = {
-        'client_email': credentials._service_account_email,
-        'type': creds_type.key,
-        # The base64 only deals with bytes. The encoded value is bytes but is
-        # known to be a safe ascii string. To serialize it, convert it to a
-        # text object.
-        'private_key': (base64.b64encode(credentials._private_key_pkcs12)
-                        .decode('ascii')),
-        'password': credentials._private_key_password
-    }
-  else:
-    raise UnknownCredentialsType(creds_type)
-  return json.dumps(creds_dict, sort_keys=True,
-                    indent=2, separators=(',', ': '))
 
 
 def ToJsonGoogleAuth(credentials):
@@ -1764,10 +1660,7 @@ IMPERSONATION_TOKEN_URL = 'https://iamcredentials.{}/v1/projects/-/serviceAccoun
 def _ConvertCredentialsToADC(credentials, impersonated_service_account,
                              delegates, scopes=None):
   """Convert credentials with impersonation to a json dictionary."""
-  if IsOauth2ClientCredentials(credentials):
-    creds_dict = _ConvertOauth2ClientCredentialsToADC(credentials)
-  else:
-    creds_dict = _ConvertGoogleAuthCredentialsToADC(credentials)
+  creds_dict = _ConvertGoogleAuthCredentialsToADC(credentials)
 
   if not impersonated_service_account:
     return creds_dict

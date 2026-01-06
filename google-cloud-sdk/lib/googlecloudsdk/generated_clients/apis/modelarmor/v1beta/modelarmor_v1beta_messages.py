@@ -901,7 +901,7 @@ class PiAndJailbreakFilterSettings(_messages.Message):
     Values:
       PI_AND_JAILBREAK_FILTER_ENFORCEMENT_UNSPECIFIED: Same as Disabled
       ENABLED: Enabled
-      DISABLED: Enabled
+      DISABLED: Disabled
     """
     PI_AND_JAILBREAK_FILTER_ENFORCEMENT_UNSPECIFIED = 0
     ENABLED = 1

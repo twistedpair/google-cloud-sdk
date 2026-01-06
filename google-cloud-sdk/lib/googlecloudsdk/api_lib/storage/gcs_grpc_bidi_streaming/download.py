@@ -248,15 +248,17 @@ def bidi_download_object(
       and total_downloaded_data < target_size
       and not destination_pipe_is_broken
   ):
-    message = (
-        'Download not completed. Target size={}, downloaded data={}.'
+    error_message = (
+        'Download not completed for %s. Target size=%s, downloaded data=%s.'
         ' The input stream terminated before the entire content was read,'
-        ' possibly due to a network condition.'.format(
-            target_size, total_downloaded_data
-        )
+        ' possibly due to a network condition.'
+    ) % (
+        cloud_resource.storage_url.resource_name,
+        target_size,
+        total_downloaded_data,
     )
-    log.debug(message)
-    raise cloud_errors.RetryableApiError(message)
+    log.debug(error_message)
+    raise cloud_errors.RetryableApiError(error_message)
 
   return None
 
@@ -402,7 +404,9 @@ class BidiGrpcDownload(gcs_download.GcsDownload):
     self._download_strategy = download_strategy
     self._decryption_key = decryption_key
     self._redirection_handler = retry_util.BidiRedirectedTokenErrorHandler(
-        self._gapic_client, self._cloud_resource
+        self._gapic_client,
+        source_resource=self._cloud_resource,
+        destination_resource=self._download_stream,
     )
 
   def should_retry(self, exc_type, exc_value, exc_traceback):

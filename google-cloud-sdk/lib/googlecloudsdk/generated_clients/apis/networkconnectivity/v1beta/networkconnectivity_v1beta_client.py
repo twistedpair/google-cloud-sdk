@@ -2155,6 +2155,33 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Update(self, request, global_params=None):
+      r"""Updates the parameters of a single Transport.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsTransportsUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/transports/{transportsId}',
+        http_method='PATCH',
+        method_id='networkconnectivity.projects.locations.transports.update',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1beta/{transport.name}',
+        request_field='transportsV1BetaTransport',
+        request_type_name='NetworkconnectivityProjectsLocationsTransportsUpdateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 

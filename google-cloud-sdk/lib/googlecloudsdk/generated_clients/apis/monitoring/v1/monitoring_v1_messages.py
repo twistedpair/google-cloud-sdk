@@ -1164,6 +1164,17 @@ class Field(_messages.Message):
   typeUrl = _messages.StringField(10)
 
 
+class FilterControl(_messages.Message):
+  r"""A widget that displays an input field to change the value of a template
+  variable.
+
+  Fields:
+    templateVariable: Name of the template variable the widget affects.
+  """
+
+  templateVariable = _messages.StringField(1)
+
+
 class GaugeView(_messages.Message):
   r"""A gauge chart shows where the current value sits within a pre-defined
   range. The upper and lower bounds should define the possible range of values
@@ -3123,6 +3134,8 @@ class Widget(_messages.Message):
       are within the area spanned by the grouping widget are considered member
       widgets.
     errorReportingPanel: A widget that displays a list of error groups.
+    filterControl: A widget that displays an input field to change the value
+      of a template variable.
     id: Optional. The widget id. Ids may be made up of alphanumerics, dashes
       and underscores. Widget ids are optional.
     incidentList: A widget that shows list of incidents.
@@ -3147,19 +3160,20 @@ class Widget(_messages.Message):
   blank = _messages.MessageField('Empty', 2)
   collapsibleGroup = _messages.MessageField('CollapsibleGroup', 3)
   errorReportingPanel = _messages.MessageField('ErrorReportingPanel', 4)
-  id = _messages.StringField(5)
-  incidentList = _messages.MessageField('IncidentList', 6)
-  logsPanel = _messages.MessageField('LogsPanel', 7)
-  pieChart = _messages.MessageField('PieChart', 8)
-  scorecard = _messages.MessageField('Scorecard', 9)
-  sectionHeader = _messages.MessageField('SectionHeader', 10)
-  singleViewGroup = _messages.MessageField('SingleViewGroup', 11)
-  text = _messages.MessageField('Text', 12)
-  timeSeriesTable = _messages.MessageField('TimeSeriesTable', 13)
-  title = _messages.StringField(14)
-  treemap = _messages.MessageField('Treemap', 15)
-  visibilityCondition = _messages.MessageField('VisibilityCondition', 16)
-  xyChart = _messages.MessageField('XyChart', 17)
+  filterControl = _messages.MessageField('FilterControl', 5)
+  id = _messages.StringField(6)
+  incidentList = _messages.MessageField('IncidentList', 7)
+  logsPanel = _messages.MessageField('LogsPanel', 8)
+  pieChart = _messages.MessageField('PieChart', 9)
+  scorecard = _messages.MessageField('Scorecard', 10)
+  sectionHeader = _messages.MessageField('SectionHeader', 11)
+  singleViewGroup = _messages.MessageField('SingleViewGroup', 12)
+  text = _messages.MessageField('Text', 13)
+  timeSeriesTable = _messages.MessageField('TimeSeriesTable', 14)
+  title = _messages.StringField(15)
+  treemap = _messages.MessageField('Treemap', 16)
+  visibilityCondition = _messages.MessageField('VisibilityCondition', 17)
+  xyChart = _messages.MessageField('XyChart', 18)
 
 
 class XyChart(_messages.Message):

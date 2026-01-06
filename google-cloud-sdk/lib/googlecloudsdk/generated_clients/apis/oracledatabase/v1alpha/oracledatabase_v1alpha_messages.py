@@ -3137,6 +3137,326 @@ class GiVersion(_messages.Message):
   version = _messages.StringField(2)
 
 
+class GoldenGateConnectionAssignment(_messages.Message):
+  r"""Represents the metadata of a GoldenGate Connection Assignment.
+
+  Messages:
+    LabelsValue: Optional. The labels or tags associated with the
+      GoldenGateConnectionAssignment.
+
+  Fields:
+    createTime: Output only. The time when the connection assignment was
+      created.
+    displayName: Optional. The display name for the
+      GoldenGateConnectionAssignment.
+    entitlementId: Output only. The OCID of the entitlement linked to this
+      resource.
+    labels: Optional. The labels or tags associated with the
+      GoldenGateConnectionAssignment.
+    name: Identifier. The name of the GoldenGateConnectionAssignment resource
+      in the following format: projects/{project}/locations/{region}/goldenGat
+      eConnectionAssignments/{golden_gate_connection_assignment}
+    properties: Required. The properties of the
+      GoldenGateConnectionAssignment.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels or tags associated with the
+    GoldenGateConnectionAssignment.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  entitlementId = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  properties = _messages.MessageField('GoldenGateConnectionAssignmentProperties', 6)
+
+
+class GoldenGateConnectionAssignmentProperties(_messages.Message):
+  r"""The properties of a GoldenGateConnectionAssignment.
+
+  Enums:
+    StateValueValuesEnum: Output only. The lifecycle state of the connection
+      assignment.
+
+  Fields:
+    alias: Output only. Credential store alias.
+    goldenGateConnection: Required. The GoldenGateConnection resource to be
+      assigned. Format: projects/{project}/locations/{location}/goldenGateConn
+      ections/{golden_gate_connection}
+    goldenGateDeployment: Required. The GoldenGateDeployment to assign the
+      connection to. Format: projects/{project}/locations/{location}/goldenGat
+      eDeployments/{golden_gate_deployment}
+    ocid: Output only. The [OCID](https://docs.cloud.oracle.com/Content/Genera
+      l/Concepts/identifiers.htm) of the connection assignment being
+      referenced.
+    state: Output only. The lifecycle state of the connection assignment.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The lifecycle state of the connection assignment.
+
+    Values:
+      STATE_UNSPECIFIED: Lifecycle state is unspecified.
+      CREATING: Connection assignment is being created.
+      ACTIVE: Connection assignment is active.
+      FAILED: Connection assignment failed.
+      UPDATING: Connection assignment is being updated.
+      DELETING: Connection assignment is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    FAILED = 3
+    UPDATING = 4
+    DELETING = 5
+
+  alias = _messages.StringField(1)
+  goldenGateConnection = _messages.StringField(2)
+  goldenGateDeployment = _messages.StringField(3)
+  ocid = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+
+
+class GoldenGateDeployment(_messages.Message):
+  r"""GoldenGateDeployment GoldenGate Deployment resource model.
+
+  Messages:
+    LabelsValue: Optional. The labels or tags associated with the
+      GoldenGateDeployment.
+
+  Fields:
+    createTime: Output only. The date and time that the GoldenGateDeployment
+      was created.
+    displayName: Required. The display name for the GoldenGateDeployment.
+    entitlementId: Output only. The ID of the subscription entitlement
+      associated with the GoldenGateDeployment
+    gcpOracleZone: Optional. The GCP Oracle zone where Oracle
+      GoldenGateDeployment is hosted. Example: us-east4-b-r2. If not
+      specified, the system will pick a zone based on availability.
+    labels: Optional. The labels or tags associated with the
+      GoldenGateDeployment.
+    name: Identifier. The name of the GoldenGateDeployment resource in the
+      following format: projects/{project}/locations/{region}/goldenGateDeploy
+      ments/{golden_gate_deployment}
+    ociUrl: Output only. HTTPS link to OCI resources exposed to Customer via
+      UI Interface.
+    odbNetwork: Optional. The name of the OdbNetwork associated with the
+      GoldenGateDeployment.
+    odbSubnet: Required. The name of the OdbSubnet associated with the
+      GoldenGateDeployment for IP allocation.
+    properties: Required. The properties of the GoldenGateDeployment.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels or tags associated with the GoldenGateDeployment.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  entitlementId = _messages.StringField(3)
+  gcpOracleZone = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  ociUrl = _messages.StringField(7)
+  odbNetwork = _messages.StringField(8)
+  odbSubnet = _messages.StringField(9)
+  properties = _messages.MessageField('GoldenGateDeploymentProperties', 10)
+
+
+class GoldenGateDeploymentProperties(_messages.Message):
+  r"""Properties of GoldenGateDeployment.
+
+  Enums:
+    LicenseModelValueValuesEnum: Optional. The Oracle license model that
+      applies to a Deployment.
+    LifecycleStateValueValuesEnum: Output only. State of the
+      GoldenGateDeployment.
+
+  Fields:
+    cpuCoreCount: Required. The Minimum number of OCPUs to be made available
+      for this Deployment.
+    deploymentType: Required. A valid Oracle GoldenGate version. For a list of
+      supported versions, use the ListGoldenGateDeployments operation.
+    description: Optional. The description of the GoldenGateDeployment.
+    environmentType: Optional. The environment type of the
+      GoldenGateDeployment.
+    isAutoScalingEnabled: Optional. Indicates if auto scaling is enabled for
+      the Deployment's CPU core count.
+    licenseModel: Optional. The Oracle license model that applies to a
+      Deployment.
+    lifecycleState: Output only. State of the GoldenGateDeployment.
+    maintenanceConfig: Optional. The maintenance configuration of the
+      GoldenGateDeployment.
+    maintenanceWindow: Optional. The maintenance window of the
+      GoldenGateDeployment.
+    ocid: Output only. OCID of the GoldenGateDeployment.
+    oggData: Required. The ogg data of the GoldenGateDeployment.
+  """
+
+  class LicenseModelValueValuesEnum(_messages.Enum):
+    r"""Optional. The Oracle license model that applies to a Deployment.
+
+    Values:
+      LICENSE_MODEL_UNSPECIFIED: The license model is unspecified.
+      LICENSE_INCLUDED: The license model is included.
+      BRING_YOUR_OWN_LICENSE: The license model is bring your own license.
+    """
+    LICENSE_MODEL_UNSPECIFIED = 0
+    LICENSE_INCLUDED = 1
+    BRING_YOUR_OWN_LICENSE = 2
+
+  class LifecycleStateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the GoldenGateDeployment.
+
+    Values:
+      GOLDEN_GATE_DEPLOYMENT_LIFECYCLE_STATE_UNSPECIFIED: Default unspecified
+        value.
+      CREATING: The deployment is being created.
+      UPDATING: The deployment is being updated.
+      ACTIVE: The deployment is active.
+      INACTIVE: The deployment is inactive.
+      DELETING: The deployment is being deleted.
+      DELETED: The deployment is deleted.
+      FAILED: The deployment failed.
+      NEEDS_ATTENTION: The deployment needs attention.
+      IN_PROGRESS: The deployment is in progress.
+      CANCELLING: The deployment is canceling.
+      CANCELLED: The deployment is canceled.
+      SUCCEEDED: The deployment succeeded.
+      WAITING: The deployment is waiting.
+    """
+    GOLDEN_GATE_DEPLOYMENT_LIFECYCLE_STATE_UNSPECIFIED = 0
+    CREATING = 1
+    UPDATING = 2
+    ACTIVE = 3
+    INACTIVE = 4
+    DELETING = 5
+    DELETED = 6
+    FAILED = 7
+    NEEDS_ATTENTION = 8
+    IN_PROGRESS = 9
+    CANCELLING = 10
+    CANCELLED = 11
+    SUCCEEDED = 12
+    WAITING = 13
+
+  cpuCoreCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  deploymentType = _messages.StringField(2)
+  description = _messages.StringField(3)
+  environmentType = _messages.StringField(4)
+  isAutoScalingEnabled = _messages.BooleanField(5)
+  licenseModel = _messages.EnumField('LicenseModelValueValuesEnum', 6)
+  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 7)
+  maintenanceConfig = _messages.MessageField('GoldenGateMaintenanceConfig', 8)
+  maintenanceWindow = _messages.MessageField('GoldenGateMaintenanceWindow', 9)
+  ocid = _messages.StringField(10)
+  oggData = _messages.MessageField('GoldenGateOggDeployment', 11)
+
+
+class GoldenGateMaintenanceConfig(_messages.Message):
+  r"""The maintenance configuration of the GoldenGateDeployment.
+
+  Fields:
+    bundleReleaseUpgradePeriodDays: Optional. Defines auto upgrade period for
+      bundle releases. Manually configured period cannot be longer than
+      service defined period for bundle releases. This period must be shorter
+      or equal to major release upgrade period. Not passing this field during
+      create will equate to using the service default.
+    interimReleaseUpgradePeriodDays: Optional. Defines auto upgrade period for
+      interim releases. This period must be shorter or equal to bundle release
+      upgrade period.
+    isInterimReleaseAutoUpgradeEnabled: Optional. By default auto upgrade for
+      interim releases are not enabled. If auto-upgrade is enabled for interim
+      release, you have to specify interim_release_upgrade_period_days too.
+    majorReleaseUpgradePeriodDays: Optional. Defines auto upgrade period for
+      major releases. Manually configured period cannot be longer than service
+      defined period for major releases. Not passing this field during create
+      will equate to using the service default.
+    securityPatchUpgradePeriodDays: Optional. Defines auto upgrade period for
+      releases with security fix. Manually configured period cannot be longer
+      than service defined period for security releases. Not passing this
+      field during create will equate to using the service default.
+  """
+
+  bundleReleaseUpgradePeriodDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  interimReleaseUpgradePeriodDays = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  isInterimReleaseAutoUpgradeEnabled = _messages.BooleanField(3)
+  majorReleaseUpgradePeriodDays = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  securityPatchUpgradePeriodDays = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
+class GoldenGateMaintenanceWindow(_messages.Message):
+  r"""The maintenance window of the GoldenGateDeployment.
+
+  Fields:
+    day: Required. Days of the week.
+    startHour: Required. Start hour for maintenance period. Hour is in UTC.
+  """
+
+  day = _messages.StringField(1)
+  startHour = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoldenGateOggDeployment(_messages.Message):
+  r"""The Ogg data of the GoldenGateDeployment.
+
+  Fields:
+    adminPassword: Optional. The GoldenGate deployment console password.
+    adminUsername: Optional. The GoldenGate deployment console username.
+    deployment: Required. The name given to the GoldenGate service deployment.
+      The name must be 1 to 32 characters long, must contain only alphanumeric
+      characters and must start with a letter.
+    oggVersion: Optional. Version of OGG
+  """
+
+  adminPassword = _messages.StringField(1)
+  adminUsername = _messages.StringField(2)
+  deployment = _messages.StringField(3)
+  oggVersion = _messages.StringField(4)
+
+
 class IdentityConnector(_messages.Message):
   r"""The identity connector details which will allow OCI to securely access
   the resources in the customer project.
@@ -3408,6 +3728,35 @@ class ListGiVersionsResponse(_messages.Message):
 
   giVersions = _messages.MessageField('GiVersion', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListGoldenGateConnectionAssignmentsResponse(_messages.Message):
+  r"""Response message for listing GoldenGateConnectionAssignments.
+
+  Fields:
+    goldenGateConnectionAssignments: The list of
+      GoldenGateConnectionAssignments.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  goldenGateConnectionAssignments = _messages.MessageField('GoldenGateConnectionAssignment', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListGoldenGateDeploymentsResponse(_messages.Message):
+  r"""The response for `GoldenGateDeployment.List`.
+
+  Fields:
+    goldenGateDeployments: The list of GoldenGateDeployments.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Optional. Locations that could not be reached.
+  """
+
+  goldenGateDeployments = _messages.MessageField('GoldenGateDeployment', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -5296,6 +5645,198 @@ class OracledatabaseProjectsLocationsGiVersionsMinorVersionsListRequest(_message
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class OracledatabaseProjectsLocationsGoldenGateConnectionAssignmentsCreateRequest(_messages.Message):
+  r"""A
+  OracledatabaseProjectsLocationsGoldenGateConnectionAssignmentsCreateRequest
+  object.
+
+  Fields:
+    goldenGateConnectionAssignment: A GoldenGateConnectionAssignment resource
+      to be passed as the request body.
+    goldenGateConnectionAssignmentId: Required. The ID of the
+      GoldenGateConnectionAssignment to create.
+    parent: Required. The parent resource where this
+      GoldenGateConnectionAssignment will be created. Format:
+      projects/{project}/locations/{location}
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  goldenGateConnectionAssignment = _messages.MessageField('GoldenGateConnectionAssignment', 1)
+  goldenGateConnectionAssignmentId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class OracledatabaseProjectsLocationsGoldenGateConnectionAssignmentsDeleteRequest(_messages.Message):
+  r"""A
+  OracledatabaseProjectsLocationsGoldenGateConnectionAssignmentsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the GoldenGateConnectionAssignment to delete.
+      Format: projects/{project}/locations/{location}/goldenGateConnectionAssi
+      gnments/{golden_gate_connection_assignment}
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class OracledatabaseProjectsLocationsGoldenGateConnectionAssignmentsGetRequest(_messages.Message):
+  r"""A
+  OracledatabaseProjectsLocationsGoldenGateConnectionAssignmentsGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the GoldenGateConnectionAssignment to
+      retrieve. Format: projects/{project}/locations/{location}/goldenGateConn
+      ectionAssignments/{golden_gate_connection_assignment}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OracledatabaseProjectsLocationsGoldenGateConnectionAssignmentsListRequest(_messages.Message):
+  r"""A
+  OracledatabaseProjectsLocationsGoldenGateConnectionAssignmentsListRequest
+  object.
+
+  Fields:
+    filter: Optional. A filter expression that filters
+      GoldenGateConnectionAssignments listed in the response.
+    orderBy: Optional. A comma-separated list of fields to order by, sorted in
+      ascending order. Use "DESC" after a field name for descending.
+    pageSize: Optional. The maximum number of GoldenGateConnectionAssignments
+      to return. The service may return fewer than this value. If unspecified,
+      at most 50 GoldenGateConnectionAssignments will be returned. The maximum
+      value is 1000; values above 1000 will be coerced to 1000.
+    pageToken: Optional. A page token, received from a previous
+      `ListGoldenGateConnectionAssignments` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListGoldenGateConnectionAssignments` must match the call that provided
+      the page token.
+    parent: Required. The parent resource where this
+      GoldenGateConnectionAssignment will be created. Format:
+      projects/{project}/locations/{location}
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class OracledatabaseProjectsLocationsGoldenGateDeploymentsCreateRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsGoldenGateDeploymentsCreateRequest
+  object.
+
+  Fields:
+    goldenGateDeployment: A GoldenGateDeployment resource to be passed as the
+      request body.
+    goldenGateDeploymentId: Required. The ID of the GoldenGateDeployment to
+      create. This value is restricted to (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$)
+      and must be a maximum of 63 characters in length. The value must start
+      with a letter and end with a letter or a number.
+    parent: Required. The value for parent of the GoldenGateDeployment in the
+      following format: projects/{project}/locations/{location}.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  goldenGateDeployment = _messages.MessageField('GoldenGateDeployment', 1)
+  goldenGateDeploymentId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class OracledatabaseProjectsLocationsGoldenGateDeploymentsDeleteRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsGoldenGateDeploymentsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the GoldenGateDeployment in the following
+      format: projects/{project}/locations/{location}/goldenGateDeployments/{g
+      olden_gate_deployment}.
+    requestId: Optional. An optional ID to identify the request. This value is
+      used to identify duplicate requests. If you make a request with the same
+      request ID and the original request is still in progress or completed,
+      the server ignores the second request. This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class OracledatabaseProjectsLocationsGoldenGateDeploymentsGetRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsGoldenGateDeploymentsGetRequest object.
+
+  Fields:
+    name: Required. The name of the GoldenGateDeployment in the following
+      format: projects/{project}/locations/{location}/goldenGateDeployments/{g
+      olden_gate_deployment}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OracledatabaseProjectsLocationsGoldenGateDeploymentsListRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsGoldenGateDeploymentsListRequest
+  object.
+
+  Fields:
+    filter: Optional. An expression for filtering the results of the request.
+    orderBy: Optional. An expression for ordering the results of the request.
+    pageSize: Optional. The maximum number of items to return. If unspecified,
+      at most 50 GoldenGateDeployments will be returned. The maximum value is
+      1000; values above 1000 will be coerced to 1000.
+    pageToken: Optional. A page token, received from a previous
+      ListGoldenGateDeployments call. Provide this to retrieve the subsequent
+      page.
+    parent: Required. The parent value for GoldenGateDeployments in the
+      following format: projects/{project}/locations/{location}.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class OracledatabaseProjectsLocationsListRequest(_messages.Message):

@@ -2322,6 +2322,11 @@ class UpgradeInfo(_messages.Message):
         successful and 1st gen function might have broken.
       COMMIT_FUNCTION_UPGRADE_ERROR_ROLLBACK_SAFE: CommitFunctionUpgrade API
         was un-successful but safe to rollback traffic or abort.
+      COMMIT_FUNCTION_UPGRADE_AS_GEN2_SUCCESSFUL: Indicates that the
+        `CommitFunctionUpgradeAsGen2` API call succeeded and the function was
+        successfully migrated to the 2nd Gen stack.
+      COMMIT_FUNCTION_UPGRADE_AS_GEN2_ERROR: CommitFunctionUpgradeAsGen2 API
+        was un-successful and 1st gen function might have broken.
     """
     UPGRADE_STATE_UNSPECIFIED = 0
     ELIGIBLE_FOR_2ND_GEN_UPGRADE = 1
@@ -2335,6 +2340,8 @@ class UpgradeInfo(_messages.Message):
     ROLLBACK_FUNCTION_UPGRADE_TRAFFIC_ERROR = 9
     COMMIT_FUNCTION_UPGRADE_ERROR = 10
     COMMIT_FUNCTION_UPGRADE_ERROR_ROLLBACK_SAFE = 11
+    COMMIT_FUNCTION_UPGRADE_AS_GEN2_SUCCESSFUL = 12
+    COMMIT_FUNCTION_UPGRADE_AS_GEN2_ERROR = 13
 
   buildConfig = _messages.MessageField('BuildConfig', 1)
   eventTrigger = _messages.MessageField('EventTrigger', 2)

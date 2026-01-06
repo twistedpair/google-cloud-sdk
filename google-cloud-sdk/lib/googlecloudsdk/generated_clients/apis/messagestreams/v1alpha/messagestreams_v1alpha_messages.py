@@ -287,6 +287,19 @@ class GoogleOidc(_messages.Message):
   serviceAccount = _messages.StringField(2)
 
 
+class HttpStatusCodeRange(_messages.Message):
+  r"""Definition for a range of HTTP status codes.
+
+  Fields:
+    max: Required. Maximum HTTP status code in the range (inclusive). To
+      specify a single code, set max equal to min.
+    min: Required. Minimum HTTP status code in the range (inclusive).
+  """
+
+  max = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  min = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class InlineRetryPolicy(_messages.Message):
   r"""The retry policy.
 
@@ -1774,6 +1787,12 @@ class TruncatedExponentialBackoff(_messages.Message):
       absl::ZeroDuration(), it means unlimited retry duration.
     minBackoffDuration: Optional. The minimum amount of time to wait before
       retrying a job after it fails. Greater than 0.
+    retryableHttpStatusRanges: Optional. Specifies the ranges of HTTP status
+      codes that are considered retryable. If the received status code from
+      the destination falls within any of these ranges, a retry will be
+      attempted based on the configured backoff policy. Example: // Retry on
+      500-504 retryable_http_status_ranges { min: 500 max: 504 } // Retry on
+      429 retryable_http_status_ranges { min: 429 max: 429 }
   """
 
   maxBackoffDuration = _messages.StringField(1)
@@ -1781,6 +1800,7 @@ class TruncatedExponentialBackoff(_messages.Message):
   maxRetryCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   maxRetryDuration = _messages.StringField(4)
   minBackoffDuration = _messages.StringField(5)
+  retryableHttpStatusRanges = _messages.MessageField('HttpStatusCodeRange', 6, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

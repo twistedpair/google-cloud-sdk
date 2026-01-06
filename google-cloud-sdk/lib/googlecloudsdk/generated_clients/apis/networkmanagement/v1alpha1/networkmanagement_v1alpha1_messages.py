@@ -1650,10 +1650,12 @@ class Endpoint(_messages.Message):
       NON_GCP_NETWORK: A network hosted outside of Google Cloud. This can be
         an on-premises network, an internet resource or a network hosted by
         another cloud provider.
+      INTERNET: The source IP address is reachable over public internet.
     """
     NETWORK_TYPE_UNSPECIFIED = 0
     GCP_NETWORK = 1
     NON_GCP_NETWORK = 2
+    INTERNET = 3
 
   alloyDbInstance = _messages.StringField(1)
   appEngineVersion = _messages.MessageField('AppEngineVersionEndpoint', 2)
@@ -1988,6 +1990,56 @@ class GeoLocation(_messages.Message):
 
   formattedAddress = _messages.StringField(1)
   regionCode = _messages.StringField(2)
+
+
+class GkeNetworkPolicyInfo(_messages.Message):
+  r"""For display only. Metadata associated with a GKE Network Policy.
+
+  Fields:
+    action: Possible values: ALLOW, DENY
+    direction: Possible values: INGRESS, EGRESS
+    displayName: The name of the Network Policy.
+    uri: The URI of the Network Policy. Format for a Network Policy in a zonal
+      cluster: `projects//zones//clusters//k8s/namespaces//networking.k8s.io/n
+      etworkpolicies/` Format for a Network Policy in a regional cluster: `pro
+      jects//locations//clusters//k8s/namespaces//networking.k8s.io/networkpol
+      icies/`
+  """
+
+  action = _messages.StringField(1)
+  direction = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  uri = _messages.StringField(4)
+
+
+class GkeNetworkPolicySkippedInfo(_messages.Message):
+  r"""For display only. Contains information about why GKE Network Policy
+  evaluation was skipped.
+
+  Enums:
+    ReasonValueValuesEnum: Reason why Network Policy evaluation was skipped.
+
+  Fields:
+    reason: Reason why Network Policy evaluation was skipped.
+  """
+
+  class ReasonValueValuesEnum(_messages.Enum):
+    r"""Reason why Network Policy evaluation was skipped.
+
+    Values:
+      REASON_UNSPECIFIED: Unused default value.
+      NETWORK_POLICY_DISABLED: Network Policy is disabled on the cluster.
+      INGRESS_SOURCE_ON_SAME_NODE: Ingress traffic to a Pod from a source on
+        the same Node is always allowed.
+      EGRESS_FROM_NODE_NETWORK_NAMESPACE_POD: Egress traffic from a Pod that
+        uses the Node's network namespace is not subject to Network Policy.
+    """
+    REASON_UNSPECIFIED = 0
+    NETWORK_POLICY_DISABLED = 1
+    INGRESS_SOURCE_ON_SAME_NODE = 2
+    EGRESS_FROM_NODE_NETWORK_NAMESPACE_POD = 3
+
+  reason = _messages.EnumField('ReasonValueValuesEnum', 1)
 
 
 class GkePodInfo(_messages.Message):
@@ -3376,11 +3428,13 @@ class NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPoin
       CONTAINER: Monitoring Point that runs in a Docker container on GCP.
       KVM: Monitoring Point that runs in a KVM hypervisor.
       VMWARE: Monitoring Point that runs in a VMware hypervisor.
+      HELM: Monitoring Point that runs on a K8S Helm.
     """
     MONITORING_POINT_TYPE_UNSPECIFIED = 0
     CONTAINER = 1
     KVM = 2
     VMWARE = 3
+    HELM = 4
 
   _password = _messages.StringField(1)
   hostname = _messages.StringField(2)
@@ -3412,6 +3466,19 @@ class NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPoin
 
   hostname = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
+
+
+class NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPointsDownloadServerConnectConfigRequest(_messages.Message):
+  r"""A NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoring
+  PointsDownloadServerConnectConfigRequest object.
+
+  Fields:
+    parent: Required. Parent value for DownloadServerConnectConfigRequest.
+      Format: projects/{project}/locations/{location}/networkMonitoringProvide
+      rs/{network_monitoring_provider}
+  """
+
+  parent = _messages.StringField(1, required=True)
 
 
 class NetworkmanagementProjectsLocationsNetworkMonitoringProvidersMonitoringPointsGetRequest(_messages.Message):
@@ -4751,6 +4818,9 @@ class Step(_messages.Message):
     forwardingRule: Display information of a Compute Engine forwarding rule.
     gkeMaster: Display information of a Google Kubernetes Engine cluster
       master.
+    gkeNetworkPolicy: Display information of a GKE Network Policy.
+    gkeNetworkPolicySkipped: Display information of the reason why GKE Network
+      Policy evaluation was skipped.
     gkePod: Display information of a Google Kubernetes Engine Pod.
     googleService: Display information of a Google service
     hybridSubnet: Display information of a hybrid subnet.
@@ -4938,28 +5008,30 @@ class Step(_messages.Message):
   forward = _messages.MessageField('ForwardInfo', 14)
   forwardingRule = _messages.MessageField('ForwardingRuleInfo', 15)
   gkeMaster = _messages.MessageField('GKEMasterInfo', 16)
-  gkePod = _messages.MessageField('GkePodInfo', 17)
-  googleService = _messages.MessageField('GoogleServiceInfo', 18)
-  hybridSubnet = _messages.MessageField('HybridSubnetInfo', 19)
-  instance = _messages.MessageField('InstanceInfo', 20)
-  interconnectAttachment = _messages.MessageField('InterconnectAttachmentInfo', 21)
-  ipMasqueradingSkipped = _messages.MessageField('IpMasqueradingSkippedInfo', 22)
-  loadBalancer = _messages.MessageField('LoadBalancerInfo', 23)
-  loadBalancerBackendInfo = _messages.MessageField('LoadBalancerBackendInfo', 24)
-  nat = _messages.MessageField('NatInfo', 25)
-  network = _messages.MessageField('NetworkInfo', 26)
-  projectId = _messages.StringField(27)
-  proxyConnection = _messages.MessageField('ProxyConnectionInfo', 28)
-  redisCluster = _messages.MessageField('RedisClusterInfo', 29)
-  redisInstance = _messages.MessageField('RedisInstanceInfo', 30)
-  route = _messages.MessageField('RouteInfo', 31)
-  serverlessExternalConnection = _messages.MessageField('ServerlessExternalConnectionInfo', 32)
-  serverlessNeg = _messages.MessageField('ServerlessNegInfo', 33)
-  state = _messages.EnumField('StateValueValuesEnum', 34)
-  storageBucket = _messages.MessageField('StorageBucketInfo', 35)
-  vpcConnector = _messages.MessageField('VpcConnectorInfo', 36)
-  vpnGateway = _messages.MessageField('VpnGatewayInfo', 37)
-  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 38)
+  gkeNetworkPolicy = _messages.MessageField('GkeNetworkPolicyInfo', 17)
+  gkeNetworkPolicySkipped = _messages.MessageField('GkeNetworkPolicySkippedInfo', 18)
+  gkePod = _messages.MessageField('GkePodInfo', 19)
+  googleService = _messages.MessageField('GoogleServiceInfo', 20)
+  hybridSubnet = _messages.MessageField('HybridSubnetInfo', 21)
+  instance = _messages.MessageField('InstanceInfo', 22)
+  interconnectAttachment = _messages.MessageField('InterconnectAttachmentInfo', 23)
+  ipMasqueradingSkipped = _messages.MessageField('IpMasqueradingSkippedInfo', 24)
+  loadBalancer = _messages.MessageField('LoadBalancerInfo', 25)
+  loadBalancerBackendInfo = _messages.MessageField('LoadBalancerBackendInfo', 26)
+  nat = _messages.MessageField('NatInfo', 27)
+  network = _messages.MessageField('NetworkInfo', 28)
+  projectId = _messages.StringField(29)
+  proxyConnection = _messages.MessageField('ProxyConnectionInfo', 30)
+  redisCluster = _messages.MessageField('RedisClusterInfo', 31)
+  redisInstance = _messages.MessageField('RedisInstanceInfo', 32)
+  route = _messages.MessageField('RouteInfo', 33)
+  serverlessExternalConnection = _messages.MessageField('ServerlessExternalConnectionInfo', 34)
+  serverlessNeg = _messages.MessageField('ServerlessNegInfo', 35)
+  state = _messages.EnumField('StateValueValuesEnum', 36)
+  storageBucket = _messages.MessageField('StorageBucketInfo', 37)
+  vpcConnector = _messages.MessageField('VpcConnectorInfo', 38)
+  vpnGateway = _messages.MessageField('VpnGatewayInfo', 39)
+  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 40)
 
 
 class StorageBucketInfo(_messages.Message):

@@ -234,6 +234,19 @@ class ConnectionProfilesClient:
       profile.sslConfig = {}
       if args.mongodb_ca_certificate:
         profile.sslConfig.caCertificate = args.mongodb_ca_certificate
+    if args.mongodb_additional_options:
+      additional_options = []
+      for key, value in args.mongodb_additional_options.items():
+        additional_options.append(
+            self._messages.MongodbProfile.AdditionalOptionsValue.AdditionalProperty(
+                key=key, value=value
+            )
+        )
+      profile.additionalOptions = (
+          self._messages.MongodbProfile.AdditionalOptionsValue(
+              additionalProperties=additional_options
+          )
+      )
     return profile
 
   def _ParseSslConfig(self, data):

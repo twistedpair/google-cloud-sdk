@@ -1846,8 +1846,11 @@ class SecuresourcemanagerProjectsLocationsRepositoriesBranchRulesListRequest(_me
   object.
 
   Fields:
-    pageSize: A integer attribute.
-    pageToken: A string attribute.
+    pageSize: Optional. Requested page size. If unspecified, a default size of
+      30 will be used. The maximum value is 100; values above 100 will be
+      coerced to 100.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
     parent: A string attribute.
   """
 
@@ -2073,8 +2076,9 @@ class SecuresourcemanagerProjectsLocationsRepositoriesHooksListRequest(_messages
   object.
 
   Fields:
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
+    pageSize: Optional. Requested page size. If unspecified, a default size of
+      30 will be used. The maximum value is 100; values above 100 will be
+      coerced to 100.
     pageToken: Optional. A token identifying a page of results the server
       should return.
     parent: Required. Parent value for ListHooksRequest.
@@ -2213,8 +2217,9 @@ class SecuresourcemanagerProjectsLocationsRepositoriesIssuesIssueCommentsListReq
   tRequest object.
 
   Fields:
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
+    pageSize: Optional. Requested page size. If unspecified, a default size of
+      30 will be used. The maximum value is 100; values above 100 will be
+      coerced to 100.
     pageToken: Optional. A token identifying a page of results the server
       should return.
     parent: Required. The issue in which to list the comments. Format: `projec
@@ -2255,8 +2260,9 @@ class SecuresourcemanagerProjectsLocationsRepositoriesIssuesListRequest(_message
 
   Fields:
     filter: Optional. Used to filter the resulting issues list.
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
+    pageSize: Optional. Requested page size. If unspecified, a default size of
+      30 will be used. The maximum value is 100; values above 100 will be
+      coerced to 100.
     pageToken: Optional. A token identifying a page of results the server
       should return.
     parent: Required. The repository in which to list issues. Format: `project
@@ -2316,8 +2322,9 @@ class SecuresourcemanagerProjectsLocationsRepositoriesListRequest(_messages.Mess
       instances/{instance_id}`. When listing repositories via
       securesourcemanager.googleapis.com, this field is required. When listing
       repositories via *.sourcemanager.dev, this field is ignored.
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
+    pageSize: Optional. Requested page size. If unspecified, a default size of
+      30 will be used. The maximum value is 100; values above 100 will be
+      coerced to 100.
     pageToken: A token identifying a page of results the server should return.
     parent: Required. Parent value for ListRepositoriesRequest.
   """
@@ -2407,8 +2414,9 @@ class SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsListFileDiffsR
     name: Required. The pull request to list file diffs for. Format: `projects
       /{project_number}/locations/{location_id}/repositories/{repository_id}/p
       ullRequests/{pull_request_id}`
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
+    pageSize: Optional. Requested page size. If unspecified, a default size of
+      30 will be used. The maximum value is 100; values above 100 will be
+      coerced to 100.
     pageToken: Optional. A token identifying a page of results the server
       should return.
   """
@@ -2424,8 +2432,9 @@ class SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsListRequest(_m
   object.
 
   Fields:
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
+    pageSize: Optional. Requested page size. If unspecified, a default size of
+      30 will be used. The maximum value is 100; values above 100 will be
+      coerced to 100.
     pageToken: Optional. A token identifying a page of results the server
       should return.
     parent: Required. The repository in which to list pull requests. Format: `
@@ -2561,9 +2570,9 @@ class SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCom
   tCommentsListRequest object.
 
   Fields:
-    pageSize: Optional. Requested page size. If unspecified, at most 100 pull
-      request comments will be returned. The maximum value is 100; values
-      above 100 will be coerced to 100.
+    pageSize: Optional. Requested page size. If unspecified, a default size of
+      30 will be used. The maximum value is 100; values above 100 will be
+      coerced to 100.
     pageToken: Optional. A token identifying a page of results the server
       should return.
     parent: Required. The pull request in which to list pull request comments.

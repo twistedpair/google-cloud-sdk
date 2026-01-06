@@ -105,6 +105,94 @@ class ApigeeOrganizationsAnalyticsDatastoresUpdateRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class ApigeeOrganizationsApimServiceExtensionsCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsApimServiceExtensionsCreateRequest object.
+
+  Fields:
+    apimServiceExtensionId: Optional. ID used to uniquely identify of the
+      service extension. It must conform with RFC-1034, is restricted to
+      lower-cased letters, numbers and hyphens, and can have a maximum length
+      of 63 characters. Additionally, the first character must be a letter and
+      the last a letter or a number.
+    googleCloudApigeeV1ApimServiceExtension: A
+      GoogleCloudApigeeV1ApimServiceExtension resource to be passed as the
+      request body.
+    parent: Required. Name of the organization in which the service extension
+      will be created. Use the following structure in your request:
+      `organizations/{org}`
+  """
+
+  apimServiceExtensionId = _messages.StringField(1)
+  googleCloudApigeeV1ApimServiceExtension = _messages.MessageField('GoogleCloudApigeeV1ApimServiceExtension', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ApigeeOrganizationsApimServiceExtensionsDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsApimServiceExtensionsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the service extension. Use the following structure
+      in your request:
+      `organizations/{org}/apimServiceExtensions/{extension_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsApimServiceExtensionsGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsApimServiceExtensionsGetRequest object.
+
+  Fields:
+    name: Required. Name of the service extension. Use the following structure
+      in your request:
+      `organizations/{org}/apimServiceExtensions/{extension_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsApimServiceExtensionsListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsApimServiceExtensionsListRequest object.
+
+  Fields:
+    pageSize: Optional. Maximum number of items to return. If unspecified, at
+      most 25 service extension will be returned.
+    pageToken: Optional. Page token, returned from a previous
+      `ListApimServiceExtensions` call, that you can use to retrieve the next
+      page.
+    parent: Required. Name of the organization for which to list the service
+      extension. Use the following structure in your request:
+      `organizations/{org}/apimServiceExtensions`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ApigeeOrganizationsApimServiceExtensionsPatchRequest(_messages.Message):
+  r"""A ApigeeOrganizationsApimServiceExtensionsPatchRequest object.
+
+  Fields:
+    allowMissing: Optional. If set to true, and the service extension is not
+      found, a new service extension will be created. In this situation,
+      `update_mask` is ignored.
+    googleCloudApigeeV1ApimServiceExtension: A
+      GoogleCloudApigeeV1ApimServiceExtension resource to be passed as the
+      request body.
+    name: Identifier. unique name of the APIM service extension. The name must
+      conform with RFC-1034, is restricted to lower-cased letters, numbers and
+      hyphens, and can have a maximum length of 63 characters. Additionally,
+      the first character must be a letter and the last a letter or a number.
+    updateMask: Optional. The list of fields to update.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  googleCloudApigeeV1ApimServiceExtension = _messages.MessageField('GoogleCloudApigeeV1ApimServiceExtension', 2)
+  name = _messages.StringField(3, required=True)
+  updateMask = _messages.StringField(4)
+
+
 class ApigeeOrganizationsApiproductsAttributesDeleteRequest(_messages.Message):
   r"""A ApigeeOrganizationsApiproductsAttributesDeleteRequest object.
 
@@ -7093,6 +7181,134 @@ class GoogleCloudApigeeV1ApiSecurityRuntimeConfig(_messages.Message):
   updateTime = _messages.StringField(5)
 
 
+class GoogleCloudApigeeV1ApimServiceExtension(_messages.Message):
+  r"""APIM Service Extension is a resource under an Apigee Organization that
+  is used to create APIM Service Extension to route traffic to existing X
+  instances.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the APIM service extension.
+      Values other than `ACTIVE` mean the resource is not ready to use.
+
+  Fields:
+    createTime: Output only. The time that this resource was created on the
+      server.
+    extensionProcessor: Required. Name of the proxy deployed in the Apigee X
+      instance.
+    extensions: Optional. List of extensions that are part of the service
+      extension. Refer to https://cloud.google.com/service-
+      extensions/docs/quotas#limits for any limits.
+    lbForwardingRule: Required. Name of the Google Cloud LB forwarding rule.
+      Format:
+      projects/{project}/regions/{region}/forwardingRules/{forwarding_rule}
+      projects/{project}/global/forwardingRules/{forwarding_rule}
+    name: Identifier. unique name of the APIM service extension. The name must
+      conform with RFC-1034, is restricted to lower-cased letters, numbers and
+      hyphens, and can have a maximum length of 63 characters. Additionally,
+      the first character must be a letter and the last a letter or a number.
+    network: Required. The network where the forwarding rule is created.
+      Format: projects/{project}/global/networks/{network}
+    networkConfigs: Required. List of network configurations for the APIM
+      service extension.
+    state: Output only. State of the APIM service extension. Values other than
+      `ACTIVE` mean the resource is not ready to use.
+    updateTime: Output only. The time that this resource was updated on the
+      server.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the APIM service extension. Values other than
+    `ACTIVE` mean the resource is not ready to use.
+
+    Values:
+      STATE_UNSPECIFIED: Resource is in an unspecified state.
+      CREATING: Resource is being created.
+      ACTIVE: Resource is provisioned and ready to use.
+      DELETING: The resource is being deleted.
+      UPDATING: The resource is being updated.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    DELETING = 3
+    UPDATING = 4
+
+  createTime = _messages.StringField(1)
+  extensionProcessor = _messages.StringField(2)
+  extensions = _messages.MessageField('GoogleCloudApigeeV1ApimServiceExtensionExtension', 3, repeated=True)
+  lbForwardingRule = _messages.StringField(4)
+  name = _messages.StringField(5)
+  network = _messages.StringField(6)
+  networkConfigs = _messages.MessageField('GoogleCloudApigeeV1ApimServiceExtensionNetworkConfig', 7, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
+
+
+class GoogleCloudApigeeV1ApimServiceExtensionExtension(_messages.Message):
+  r"""Extension configuration for Apigee extension processor service
+  extension.
+
+  Enums:
+    SupportedEventsValueListEntryValuesEnum:
+
+  Fields:
+    failOpen: Optional. Whether this request should fail open.
+    hostname: Required. One of the hostnames of Apigee EnvGroup where the
+      proxy is deployed. This hostname (i.e FDQN) will be used to route
+      traffic from the specified forwarding rule to the environment in Apigee
+      X instance where the proxy is deployed for handling extension traffic.
+      Format: ^([a-zA-Z0-9. _-])+$
+    matchCondition: Optional. Match Condition for CEL expression. Refer to
+      https://cloud.google.com/service-extensions/docs/cel-matcher-language-
+      reference for more details.
+    name: Required. Name of the `LbTrafficExtension` resource. The name must
+      conform with RFC-1034, is restricted to lower-cased letters, numbers and
+      hyphens, and can have a maximum length of 63 characters. Additionally,
+      the first character must be a letter and the last a letter or a number.
+    supportedEvents: Optional. Supported events for the Service Extension. If
+      not specified, all events are supported.
+  """
+
+  class SupportedEventsValueListEntryValuesEnum(_messages.Enum):
+    r"""SupportedEventsValueListEntryValuesEnum enum type.
+
+    Values:
+      SUPPORTED_EVENT_UNSPECIFIED: Unspecified event.
+      REQUEST_HEADERS: Request headers event.
+      REQUEST_BODY: Request body event.
+      RESPONSE_HEADERS: Response headers event.
+      RESPONSE_BODY: Response body event.
+      REQUEST_TRAILERS: Request trailers event.
+      RESPONSE_TRAILERS: Response trailers event.
+    """
+    SUPPORTED_EVENT_UNSPECIFIED = 0
+    REQUEST_HEADERS = 1
+    REQUEST_BODY = 2
+    RESPONSE_HEADERS = 3
+    RESPONSE_BODY = 4
+    REQUEST_TRAILERS = 5
+    RESPONSE_TRAILERS = 6
+
+  failOpen = _messages.BooleanField(1)
+  hostname = _messages.StringField(2)
+  matchCondition = _messages.StringField(3)
+  name = _messages.StringField(4)
+  supportedEvents = _messages.EnumField('SupportedEventsValueListEntryValuesEnum', 5, repeated=True)
+
+
+class GoogleCloudApigeeV1ApimServiceExtensionNetworkConfig(_messages.Message):
+  r"""Network configuration for the APIM service extension.
+
+  Fields:
+    region: Required. The region for the PSC NEG.
+    subnet: Required. The subnet for the PSC NEG. Format:
+      projects/{project}/regions/{region}/subnetworks/{subnet}
+  """
+
+  region = _messages.StringField(1)
+  subnet = _messages.StringField(2)
+
+
 class GoogleCloudApigeeV1App(_messages.Message):
   r"""A GoogleCloudApigeeV1App object.
 
@@ -8958,6 +9174,10 @@ class GoogleCloudApigeeV1EndpointAttachment(_messages.Message):
         serve traffic.
       NEEDS_ATTENTION: The connection has been accepted by the PSC producer,
         but it is not ready to serve the traffic due to producer side issues.
+      ACCEPTED_LIMITED_CAPACITY: The connection has been accepted by the PSC
+        producer, but it will only serve capacity limited traffic. The
+        producer needs to take further actions to increase capacity for this
+        connection.
     """
     CONNECTION_STATE_UNSPECIFIED = 0
     UNAVAILABLE = 1
@@ -8967,6 +9187,7 @@ class GoogleCloudApigeeV1EndpointAttachment(_messages.Message):
     CLOSED = 5
     FROZEN = 6
     NEEDS_ATTENTION = 7
+    ACCEPTED_LIMITED_CAPACITY = 8
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of the endpoint attachment. Values other than
@@ -10188,6 +10409,20 @@ class GoogleCloudApigeeV1ListApiProxiesResponse(_messages.Message):
   """
 
   proxies = _messages.MessageField('GoogleCloudApigeeV1ApiProxy', 1, repeated=True)
+
+
+class GoogleCloudApigeeV1ListApimServiceExtensionsResponse(_messages.Message):
+  r"""Response for list service extensions.
+
+  Fields:
+    apimServiceExtensions: service extension in a given organization.
+    nextPageToken: Page token that you can include in an
+      `ListApimServiceExtensions` request to retrieve the next page. If
+      omitted, no subsequent pages exist.
+  """
+
+  apimServiceExtensions = _messages.MessageField('GoogleCloudApigeeV1ApimServiceExtension', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class GoogleCloudApigeeV1ListAppGroupAppsResponse(_messages.Message):

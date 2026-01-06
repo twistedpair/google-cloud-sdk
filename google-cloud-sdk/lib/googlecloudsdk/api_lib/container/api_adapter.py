@@ -373,6 +373,7 @@ PARALLELSTORECSIDRIVER = 'ParallelstoreCsiDriver'
 HIGHSCALECHECKPOINTING = 'HighScaleCheckpointing'
 LUSTRECSIDRIVER = 'LustreCsiDriver'
 RAYOPERATOR = 'RayOperator'
+SLURMOPERATOR = 'SlurmOperator'
 ISTIO = 'Istio'
 NETWORK_POLICY = 'NetworkPolicy'
 NODELOCALDNS = 'NodeLocalDNS'
@@ -412,6 +413,7 @@ ADDONS_OPTIONS = DEFAULT_ADDONS + [
     HIGHSCALECHECKPOINTING,
     LUSTRECSIDRIVER,
     RAYOPERATOR,
+    SLURMOPERATOR,
 ]
 BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [
     ISTIO,
@@ -904,6 +906,8 @@ class CreateClusterOptions(object):
       enable_lustre_multi_nic=None,
       enable_slice_controller=None,
       autopilot_general_profile=None,
+      maintenance_minor_version_disruption_interval=None,
+      maintenance_patch_version_disruption_interval=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -1213,6 +1217,12 @@ class CreateClusterOptions(object):
     self.enable_lustre_multi_nic = enable_lustre_multi_nic
     self.enable_slice_controller = enable_slice_controller
     self.autopilot_general_profile = autopilot_general_profile
+    self.maintenance_minor_version_disruption_interval = (
+        maintenance_minor_version_disruption_interval
+    )
+    self.maintenance_patch_version_disruption_interval = (
+        maintenance_patch_version_disruption_interval
+    )
 
 
 class UpdateClusterOptions(object):
@@ -1778,6 +1788,9 @@ class CreateNodePoolOptions(object):
       control_node_pool=None,
       enable_attestation=None,
       tee_policy=None,
+      node_drain_grace_period=None,
+      node_drain_pdb_timeout=None,
+      respect_pdb_during_node_pool_deletion=None,
       enable_lustre_multi_nic=None,
   ):
     self.machine_type = machine_type
@@ -1888,6 +1901,11 @@ class CreateNodePoolOptions(object):
     self.control_node_pool = control_node_pool
     self.enable_attestation = enable_attestation
     self.tee_policy = tee_policy
+    self.node_drain_grace_period = node_drain_grace_period
+    self.node_drain_pdb_timeout = node_drain_pdb_timeout
+    self.respect_pdb_during_node_pool_deletion = (
+        respect_pdb_during_node_pool_deletion
+    )
     self.enable_lustre_multi_nic = enable_lustre_multi_nic
 
 
@@ -1946,6 +1964,9 @@ class UpdateNodePoolOptions(object):
       boot_disk_provisioned_iops=None,
       boot_disk_provisioned_throughput=None,
       enable_kernel_module_signature_enforcement=None,
+      node_drain_grace_period=None,
+      node_drain_pdb_timeout=None,
+      respect_pdb_during_node_pool_deletion=None,
       enable_lustre_multi_nic=None,
   ):
     self.enable_autorepair = enable_autorepair
@@ -2004,6 +2025,11 @@ class UpdateNodePoolOptions(object):
     self.provisioned_throughput = boot_disk_provisioned_throughput
     self.enable_kernel_module_signature_enforcement = (
         enable_kernel_module_signature_enforcement
+    )
+    self.node_drain_grace_period = node_drain_grace_period
+    self.node_drain_pdb_timeout = node_drain_pdb_timeout
+    self.respect_pdb_during_node_pool_deletion = (
+        respect_pdb_during_node_pool_deletion
     )
     self.enable_lustre_multi_nic = enable_lustre_multi_nic
 
@@ -2065,6 +2091,9 @@ class UpdateNodePoolOptions(object):
         or self.provisioned_iops is not None
         or self.provisioned_throughput is not None
         or self.enable_kernel_module_signature_enforcement is not None
+        or self.node_drain_grace_period is not None
+        or self.node_drain_pdb_timeout is not None
+        or self.respect_pdb_during_node_pool_deletion is not None
         or self.enable_lustre_multi_nic is not None
     )
 
@@ -2577,6 +2606,7 @@ class APIAdapter(object):
           ),
           enable_lustre_csi_driver=options.addons.get(LUSTRECSIDRIVER, False),
           enable_ray_operator=options.addons.get(RAYOPERATOR, False),
+          enable_slurm_operator=options.addons.get(SLURMOPERATOR, False),
       )
       # CONFIGCONNECTOR is disabled by default.
       if CONFIGCONNECTOR in options.addons:
@@ -2779,6 +2809,26 @@ class APIAdapter(object):
               )
           )
       )
+    disruption_budget = None
+    if options.maintenance_minor_version_disruption_interval is not None:
+      disruption_budget = self.messages.DisruptionBudget(
+          minorVersionDisruptionInterval=(
+              options.maintenance_minor_version_disruption_interval
+          )
+          )
+    if options.maintenance_patch_version_disruption_interval is not None:
+      if disruption_budget is None:
+        disruption_budget = self.messages.DisruptionBudget()
+      disruption_budget.patchVersionDisruptionInterval = (
+          options.maintenance_patch_version_disruption_interval
+      )
+    if disruption_budget is not None:
+      if cluster.maintenancePolicy is None:
+        cluster.maintenancePolicy = self.messages.MaintenancePolicy(
+            disruptionBudget=disruption_budget
+            )
+      else:
+        cluster.maintenancePolicy.disruptionBudget = disruption_budget
 
     self.ParseResourceLabels(options, cluster)
 
@@ -4825,6 +4875,10 @@ class APIAdapter(object):
         addons.rayOperatorConfig = self.messages.RayOperatorConfig(
             enabled=not options.disable_addons.get(RAYOPERATOR)
         )
+      if options.disable_addons.get(SLURMOPERATOR) is not None:
+        addons.slurmOperatorConfig = self.messages.SlurmOperatorConfig(
+            enabled=not options.disable_addons.get(SLURMOPERATOR)
+        )
       update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
     elif (
         options.enable_ray_cluster_logging is not None
@@ -5911,6 +5965,7 @@ class APIAdapter(object):
       enable_lustre_csi_driver=None,
       enable_pod_snapshots=None,
       enable_ray_operator=None,
+      enable_slurm_operator=None,
       enable_slice_controller=None,
   ):
     """Generates an AddonsConfig object given specific parameters.
@@ -5933,6 +5988,7 @@ class APIAdapter(object):
       enable_lustre_csi_driver: whether to enable LustreCsiDriver.
       enable_pod_snapshots: whether to enable PodSnapshots.
       enable_ray_operator: whether to enable RayOperator.
+      enable_slurm_operator: whether to enable SlurmOperator.
       enable_slice_controller: whether to enable SliceController.
 
     Returns:
@@ -6001,6 +6057,10 @@ class APIAdapter(object):
       )
     if enable_ray_operator:
       addons.rayOperatorConfig = self.messages.RayOperatorConfig(enabled=True)
+    if enable_slurm_operator:
+      addons.slurmOperatorConfig = self.messages.SlurmOperatorConfig(
+          enabled=True
+      )
     if enable_slice_controller:
       addons.sliceControllerConfig = self.messages.SliceControllerConfig(
           enabled=True
@@ -6306,6 +6366,37 @@ class APIAdapter(object):
 
     return self._SendMaintenancePolicyRequest(cluster_ref, existing_policy)
 
+  def SetMaintenanceDisruptionBudget(
+      self, cluster_ref, existing_policy, minor_version_disruption_interval,
+      patch_version_disruption_interval,
+      clear_minor_version_disruption_interval,
+      clear_patch_version_disruption_interval
+  ):
+    """Sets the maintenance disruption budget for a cluster."""
+    if existing_policy is None:
+      existing_policy = self.messages.MaintenancePolicy()
+    if existing_policy.disruptionBudget is None:
+      existing_policy.disruptionBudget = self.messages.DisruptionBudget()
+    if minor_version_disruption_interval is not None:
+      existing_policy.disruptionBudget.minorVersionDisruptionInterval = (
+          minor_version_disruption_interval
+      )
+    if clear_minor_version_disruption_interval:
+      existing_policy.disruptionBudget.minorVersionDisruptionInterval = None
+    if patch_version_disruption_interval is not None:
+      existing_policy.disruptionBudget.patchVersionDisruptionInterval = (
+          patch_version_disruption_interval
+      )
+    if clear_patch_version_disruption_interval:
+      existing_policy.disruptionBudget.patchVersionDisruptionInterval = None
+
+    if (existing_policy.disruptionBudget.minorVersionDisruptionInterval is None
+        and existing_policy.disruptionBudget.patchVersionDisruptionInterval is
+        None):
+      return None
+
+    return self._SendMaintenancePolicyRequest(cluster_ref, existing_policy)
+
   def DeleteCluster(self, cluster_ref):
     """Delete a running cluster.
 
@@ -6594,6 +6685,15 @@ class APIAdapter(object):
       pool.upgradeSettings = self.UpdateUpgradeSettings(
           None, options, pool=pool
       )
+
+    if (
+        options.node_drain_grace_period is not None
+        or options.node_drain_pdb_timeout is not None
+        or options.respect_pdb_during_node_pool_deletion is not None
+    ):
+      node_drain_config = _GetNodeDrainConfig(options, self.messages)
+      if node_drain_config:
+        pool.nodeDrainConfig = node_drain_config
 
     if options.node_locations is not None:
       pool.locations = sorted(options.node_locations)
@@ -7140,6 +7240,14 @@ class APIAdapter(object):
       _AddKernelModuleSignatureEnforcementToNodeConfig(
           update_request, options, self.messages
       )
+    elif (
+        options.node_drain_grace_period is not None
+        or options.node_drain_pdb_timeout is not None
+        or options.respect_pdb_during_node_pool_deletion is not None
+    ):
+      node_drain_config = _GetNodeDrainConfig(options, self.messages)
+      if node_drain_config:
+        update_request.nodeDrainConfig = node_drain_config
     elif options.enable_lustre_multi_nic is not None:
       update_request.lustreConfig = self.messages.LustreConfig()
       update_request.lustreConfig.multiRail = self.messages.MultiRail(
@@ -8741,6 +8849,10 @@ class V1Beta1Adapter(V1Adapter):
       if disable_addons.get(RAYOPERATOR) is not None:
         addons.rayOperatorConfig = self.messages.RayOperatorConfig(
             enabled=not disable_addons.get(RAYOPERATOR)
+        )
+      if disable_addons.get(SLURMOPERATOR) is not None:
+        addons.slurmOperatorConfig = self.messages.SlurmOperatorConfig(
+            enabled=not disable_addons.get(SLURMOPERATOR)
         )
       update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
     elif (
@@ -12084,3 +12196,12 @@ def _GetAutopilotGeneralProfileEnum(options, messages):
             profile=user_input, choices=list(profile_map.keys())
         )
     )
+
+
+def _GetNodeDrainConfig(options, messages):
+  """Gets NodeDrainConfig from options."""
+  return messages.NodeDrainConfig(
+      graceTerminationDuration=options.node_drain_grace_period,
+      pdbTimeoutDuration=options.node_drain_pdb_timeout,
+      respectPdbDuringNodePoolDeletion=options.respect_pdb_during_node_pool_deletion,
+  )

@@ -715,6 +715,20 @@ class AppengineAppsServicesVersionsDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class AppengineAppsServicesVersionsExportAppImageRequest(_messages.Message):
+  r"""A AppengineAppsServicesVersionsExportAppImageRequest object.
+
+  Fields:
+    exportAppImageRequest: A ExportAppImageRequest resource to be passed as
+      the request body.
+    name: Required. Name of the App Engine version resource. Format:
+      apps/{app}/services/{service}/versions/{version}
+  """
+
+  exportAppImageRequest = _messages.MessageField('ExportAppImageRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class AppengineAppsServicesVersionsGetRequest(_messages.Message):
   r"""A AppengineAppsServicesVersionsGetRequest object.
 
@@ -1203,6 +1217,22 @@ class AppengineProjectsLocationsApplicationsServicesVersionsDeleteRequest(_messa
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class AppengineProjectsLocationsApplicationsServicesVersionsExportAppImageRequest(_messages.Message):
+  r"""A
+  AppengineProjectsLocationsApplicationsServicesVersionsExportAppImageRequest
+  object.
+
+  Fields:
+    exportAppImageRequest: A ExportAppImageRequest resource to be passed as
+      the request body.
+    name: Required. Name of the App Engine version resource. Format:
+      apps/{app}/services/{service}/versions/{version}
+  """
+
+  exportAppImageRequest = _messages.MessageField('ExportAppImageRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class AppengineProjectsLocationsApplicationsServicesVersionsPatchRequest(_messages.Message):
@@ -2058,6 +2088,25 @@ class ErrorHandler(_messages.Message):
   errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 1)
   mimeType = _messages.StringField(2)
   staticFile = _messages.StringField(3)
+
+
+class ExportAppImageRequest(_messages.Message):
+  r"""Request message for Versions.ExportAppImage.
+
+  Fields:
+    destinationRepository: Optional. The full resource name of the AR
+      repository to export to. Format:
+      projects/{project}/locations/{location}/repositories/{repository} If not
+      specified, defaults to
+      projects/{project}/locations/{location}/repositories/gae-standard in the
+      same region as the app. The default repository will be created if it
+      does not exist.
+    serviceAccount: Optional. Optional: A service account to use for
+      authenticating to Artifact Registry.
+  """
+
+  destinationRepository = _messages.StringField(1)
+  serviceAccount = _messages.StringField(2)
 
 
 class FeatureSettings(_messages.Message):

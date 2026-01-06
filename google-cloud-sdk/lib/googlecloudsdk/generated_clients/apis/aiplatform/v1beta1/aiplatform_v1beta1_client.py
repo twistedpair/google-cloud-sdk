@@ -11016,6 +11016,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Completions(self, request, global_params=None):
+      r"""Forwards arbitrary HTTP requests for both streaming and non-streaming cases. To use this method, invoke_route_prefix must be set to allow the paths that will be specified in the request.
+
+      Args:
+        request: (AiplatformProjectsLocationsEndpointsOpenapiCompletionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleApiHttpBody) The response message.
+      """
+      config = self.GetMethodConfig('Completions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Completions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/endpoints/openapi/completions',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.endpoints.openapi.completions',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=['deployedModelId'],
+        relative_path='v1beta1/{+endpoint}/completions',
+        request_field='googleApiHttpBody',
+        request_type_name='AiplatformProjectsLocationsEndpointsOpenapiCompletionsRequest',
+        response_type_name='GoogleApiHttpBody',
+        supports_download=False,
+    )
+
     def Embeddings(self, request, global_params=None):
       r"""Forwards arbitrary HTTP requests for both streaming and non-streaming cases. To use this method, invoke_route_prefix must be set to allow the paths that will be specified in the request.
 

@@ -141,6 +141,14 @@ class CommandCommon(object):
           or self._common_type._default_universe_compatible is None
       ):
         self._common_type._default_universe_compatible = False
+      # Propagate down the regional endpoint compatibility attribute.
+      if (
+          parent_group.RegionalEndpointCompatibility() is not None
+          and self._common_type._regional_endpoint_compatibility is None
+      ):
+        self._common_type._regional_endpoint_compatibility = (
+            parent_group.RegionalEndpointCompatibility())
+        self._common_type.SetRegionalEndpointHelp()
       # Propagate down the unicode supported attribute.
       if parent_group.IsUnicodeSupported():
         self._common_type._is_unicode_supported = True
@@ -179,6 +187,10 @@ class CommandCommon(object):
   def IsDefaultUniverseCompatible(self):
     """Gets the default universe compatible status of this command or group."""
     return self._common_type.IsDefaultUniverseCompatible()
+
+  def RegionalEndpointCompatibility(self):
+    """Gets the regional endpoint compatibility of this command or group."""
+    return self._common_type.RegionalEndpointCompatibility()
 
   def IsUnicodeSupported(self):
     """Gets the unicode supported status of this command or group."""

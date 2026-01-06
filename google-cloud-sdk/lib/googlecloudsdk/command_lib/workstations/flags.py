@@ -586,24 +586,6 @@ def AddPdDiskType(parser):
   )
 
 
-def AddNoPersistentStorageOrPd(parser):
-  """Adds a --no-persistent-storage or group of persistent directory flags to the given parser."""
-  top_level_mutex_group = parser.add_mutually_exclusive_group()
-
-  help_text = """\
-  If set, workstations under this configuration will not have a persistent directory."""
-  top_level_mutex_group.add_argument(
-      '--no-persistent-storage',
-      action='store_true',
-      help=help_text,
-  )
-
-  pd_group = top_level_mutex_group.add_group()
-  AddPdDiskType(pd_group)
-  AddPdReclaimPolicy(pd_group)
-  AddPdDiskSizeOrSnapshot(pd_group)
-
-
 def AddNoPersistentStorageOrPdOrDisk(parser):
   """Adds a --no-persistent-storage or group of persistent directory flags to the given parser."""
   top_level_mutex_group = parser.add_mutually_exclusive_group()
@@ -685,17 +667,6 @@ def AddPdSourceSnapshotArg():
       default='',
       help=help_text,
   )
-
-
-def AddPersistentDirectories(parser, use_default=True):
-  """Adds a --pd-disk-size, --pd-disk-type, and --pd-source-snapshot flag to the given parser."""
-  group = parser.add_mutually_exclusive_group()
-  # OPTION 1: "--pd-source-snapshot"
-  AddPdSourceSnapshotArg().AddToParser(group)
-  # OPTION 2: "--pd-disk-type" and "--pd-disk-size"
-  pd_type_size_group = group.add_group(mutex=False)
-  AddPdDiskTypeArg().AddToParser(pd_type_size_group)
-  AddPdDiskSizeArg(use_default).AddToParser(pd_type_size_group)
 
 
 def AddPersistentDirectoriesOrHyperdisks(parser, use_default=True):

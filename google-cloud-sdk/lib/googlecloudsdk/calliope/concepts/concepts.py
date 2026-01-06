@@ -143,10 +143,13 @@ class _Attribute(object):
     completer: core.cache.completion_cache.Completer, the completer associated
       with the attribute.
     value_type: the type to be accepted by the attribute arg. Defaults to str.
+    regional_endpoints_flag: bool, whether the attribute is used to determine
+      the regional endpoint for the command.
   """
 
   def __init__(self, name, param_name, help_text=None, required=False,
-               fallthroughs=None, completer=None, value_type=None):
+               fallthroughs=None, completer=None, value_type=None,
+               regional_endpoints_flag=False):
     """Initializes."""
     # Check for attributes that mix lower- and uppercase. Camel case is not
     # handled consistently among libraries.
@@ -162,6 +165,7 @@ class _Attribute(object):
     self.fallthroughs = fallthroughs or []
     self.completer = completer
     self.value_type = value_type or str
+    self.regional_endpoints_flag = regional_endpoints_flag
 
   def __eq__(self, other):
     """Overrides."""
@@ -172,7 +176,8 @@ class _Attribute(object):
             and self.required == other.required
             and self.completer == other.completer
             and self.fallthroughs == other.fallthroughs
-            and self.value_type == other.value_type)
+            and self.value_type == other.value_type
+            and self.regional_endpoints_flag == other.regional_endpoints_flag)
 
   def __hash__(self):
     return sum(map(hash, [
@@ -321,7 +326,8 @@ class ResourceSpec(ConceptSpec):
           completer=attribute_config.completer,
           value_type=attribute_config.value_type,
           completion_request_params=attribute_config.completion_request_params,
-          completion_id_field=attribute_config.completion_id_field)
+          completion_id_field=attribute_config.completion_id_field,
+          regional_endpoints_flag=attribute_config.regional_endpoints_flag)
       self._attributes.append(new_attribute)
       # Keep a map from attribute names to param names. While attribute names
       # are used for error messaging and arg creation/parsing, resource parsing
@@ -628,6 +634,7 @@ class ResourceParameterAttributeConfig(object):
     attribute_name = data['attribute_name']
     parameter_name = data['parameter_name']
     help_text = data['help']
+    regional_endpoints_flag = data.get('regional_endpoints_flag', False)
     completer = util.Hook.FromData(data, 'completer')
     completion_id_field = data.get('completion_id_field', None)
     completion_request_params_list = data.get('completion_request_params', [])
@@ -666,6 +673,7 @@ class ResourceParameterAttributeConfig(object):
     return cls(
         name=attribute_name,
         help_text=help_text,
+        regional_endpoints_flag=regional_endpoints_flag,
         fallthroughs=fallthroughs,
         completer=completer,
         completion_id_field=completion_id_field,
@@ -675,6 +683,7 @@ class ResourceParameterAttributeConfig(object):
   def __init__(self,
                name=None,
                help_text=None,
+               regional_endpoints_flag=False,
                fallthroughs=None,
                completer=None,
                completion_request_params=None,
@@ -689,6 +698,8 @@ class ResourceParameterAttributeConfig(object):
       help_text: str, generic help text for any flag based on the attribute. One
         special expansion is available to convert "{resource}" to the name of
         the resource.
+      regional_endpoints_flag: bool, whether the attribute can be used to set
+        the regional endpoint.
       fallthroughs: [deps_lib.Fallthrough], A list of fallthroughs to use to
         resolve the attribute if it is not provided on the command line.
       completer: core.cache.completion_cache.Completer, the completer
@@ -702,6 +713,7 @@ class ResourceParameterAttributeConfig(object):
     """
     self.attribute_name = name
     self.help_text = help_text
+    self.regional_endpoints_flag = regional_endpoints_flag
     self.fallthroughs = fallthroughs or []
     if completer and (completion_request_params or completion_id_field):
       raise ValueError('Custom completer and auto-completer should not be '

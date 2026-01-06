@@ -514,6 +514,7 @@ class _Common(six.with_metaclass(abc.ABCMeta, object)):
   _release_track = None
   _universe_compatible = None
   _default_universe_compatible = True
+  _regional_endpoint_compatibility = None
   _valid_release_tracks = None
   _notices = None
   _is_deprecated = False
@@ -558,6 +559,10 @@ class _Common(six.with_metaclass(abc.ABCMeta, object)):
     return cls._default_universe_compatible
 
   @classmethod
+  def RegionalEndpointCompatibility(cls):
+    return cls._regional_endpoint_compatibility
+
+  @classmethod
   def IsUnicodeSupported(cls):
     if six.PY2:
       return cls._is_unicode_supported
@@ -596,6 +601,19 @@ class _Common(six.with_metaclass(abc.ABCMeta, object)):
         if hasattr(obj, name):
           return getattr(obj, name)
     return getattr(obj, attribute, None)
+
+  @classmethod
+  def SetRegionalEndpointHelp(cls):
+    entity = (
+        'command group' if getattr(cls, 'IS_COMMAND_GROUP', False)
+        else 'command')
+    support_level = (
+        'requires'
+        if cls._regional_endpoint_compatibility == properties.VALUES.regional.REQUIRED  # pylint:disable=line-too-long
+        else 'supports')
+    help_text = f'This {entity} {support_level} regional endpoints.'
+    cls.detailed_help = getattr(cls, 'detailed_help', {})
+    cls.detailed_help.setdefault('REGIONAL ENDPOINTS', help_text)
 
   @classmethod
   def Notices(cls):
@@ -987,6 +1005,9 @@ def _RegionalEndpointCompatibility(compatibility):
     Returns:
       The decorated class.
     """
+    cmd_class._regional_endpoint_compatibility = compatibility  # pylint: disable=protected-access
+    cmd_class.SetRegionalEndpointHelp()
+
     def RunDecorator(run_func):
       @wraps(run_func)
       def WrappedRun(*args, **kw):
@@ -1329,12 +1350,6 @@ def UserProjectQuotaWithFallbackEnabled():
       properties.VALUES.billing.quota_project.Get()
       == properties.VALUES.billing.CURRENT_PROJECT_WITH_FALLBACK
   )
-
-
-def UseRequests():
-  """Returns True if using requests to make HTTP requests.
-  """
-  return True
 
 
 def LogCommand(prog, args):

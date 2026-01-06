@@ -5609,7 +5609,7 @@ vm.dirty_ratio                                     | Must be between [1, 100]
 vm.dirty_bytes                                     | Must be between [0, 68719476736]
 vm.dirty_writeback_centisecs                       | Must be between [0, 1000]
 vm.max_map_count                                   | Must be between [65536, 2147483647]
-vm.overcommit_memory                               | Must be one of {0, 1, 2}
+vm.overcommit_memory                               | Must be one of {0, 1, 2}. Not supported on machines with less than 15 GB memory.
 vm.overcommit_ratio                                | Must be between [0, 100]
 vm.vfs_cache_pressure                              | Must be between [0, 100]
 vm.swappiness                                      | Must be between [0, 200]
@@ -5660,8 +5660,10 @@ KEY                                        | VALUE
 diskCount                                  | integer
 
 
-Allocated hugepage size should not exceed 60% of available memory on the node. For example, c2d-highcpu-4 has 8GB memory, total
-allocated hugepage of 2m and 1g should not exceed 8GB * 0.6 = 4.8GB.
+The upper limit for total allocated hugepage size differs based upon machine size.
+
+* On machines with less than 30 GB memory: 60% of the total memory. For example, on e2-standard-2 machine with 8 GB of memory, you can't allocate more than 4.8 GB for hugepages.
+* On machines with more than 30 GB memory: 80% of the total memory. For example, on c4a-standard-8 machines with 32 GB of memory, hugepages cannot exceed 25.6 GB.
 
 1G hugepages are only available in following machine familes:
 c3, m2, c2d, c3d, h3, m3, a2, a3, g2.
@@ -7230,6 +7232,26 @@ def AddEnableLustreCSIDriverFlag(parser, hidden=False):
   )
 
 
+def AddEnableSlurmOperatorFlag(parser, hidden=True):
+  """Adds --enable-slurm-operator flag to the given parser.
+
+  Args:
+    parser: A given parser.
+    hidden: Indicates that the flags are hidden.
+  """
+
+  help_text = """\
+    Enable the Slurm Operator GKE add-on. This add-on is disabled by default.
+    """
+  parser.add_argument(
+      '--enable-slurm-operator',
+      action='store_true',
+      default=None,
+      help=help_text,
+      hidden=hidden,
+  )
+
+
 def AddEnableRayOperatorFlag(parser, hidden=False):
   """Adds --enable-ray-operator flag to the given parser.
 
@@ -7483,6 +7505,71 @@ def AddSecretSyncFlagGroup(
   """)
   secret_sync_group.add_argument(
       '--secret-sync-rotation-interval',
+      default=None,
+      help=help_text,
+      hidden=hidden,
+  )
+
+
+def AddMaintenanceDisruptionBudgetFlagGroup(
+    parser: parser_arguments.ArgumentInterceptor, hidden=True, is_update=False
+) -> None:
+  """Adds maintenance disruption budget flags to the given parser.
+
+  Args:
+    parser: A given parser.
+    hidden: whether the flags are hidden.
+    is_update: Whether the flag is used for an update operation.
+  """
+  maintenance_disruption_budget_group = parser.add_group(
+      mutex=False,
+      help='Flags for maintenance disruption budget configuration:',
+      hidden=hidden,
+  )
+
+  minor_group = maintenance_disruption_budget_group.add_group(mutex=True,
+                                                              hidden=hidden)
+  patch_group = maintenance_disruption_budget_group.add_group(mutex=True,
+                                                              hidden=hidden)
+
+  help_text = textwrap.dedent("""\
+      Set the maintenance disruption interval for minor version disruptions.
+  """)
+  minor_group.add_argument(
+      '--maintenance-minor-version-disruption-interval',
+      default=None,
+      help=help_text,
+      hidden=hidden,
+  )
+  help_text = textwrap.dedent("""\
+      Set the maintenance disruption interval for patch version disruptions.
+  """)
+  patch_group.add_argument(
+      '--maintenance-patch-version-disruption-interval',
+      default=None,
+      help=help_text,
+      hidden=hidden,
+  )
+
+  if not is_update:
+    return
+
+  help_text = textwrap.dedent("""\
+      Clear the maintenance disruption interval for minor version disruptions.
+  """)
+  minor_group.add_argument(
+      '--clear-maintenance-minor-version-disruption-interval',
+      action='store_true',
+      default=None,
+      help=help_text,
+      hidden=hidden,
+  )
+  help_text = textwrap.dedent("""\
+      Clear the maintenance disruption interval for patch version disruptions.
+  """)
+  patch_group.add_argument(
+      '--clear-maintenance-patch-version-disruption-interval',
+      action='store_true',
       default=None,
       help=help_text,
       hidden=hidden,
@@ -8313,4 +8400,37 @@ def AddAutopilotGeneralProfileFlag(parser, hidden=True):
       hidden=hidden,
       choices=['none', 'no-performance'],
       help=help_text,
+  )
+
+
+def AddNodeDrainSettingsFlag(parser, hidden=False):
+  """Adds the node drain settings flag to parser."""
+  group = parser.add_group(help='Node drain settings', mutex=False,
+                           hidden=hidden)
+  group.add_argument(
+      '--node-drain-grace-period-seconds',
+      default=None,
+      hidden=hidden,
+      type=str,
+      help="""\
+      The grace period in seconds for nodes to drain before being forcefully removed.
+      """,
+  )
+  group.add_argument(
+      '--node-drain-pdb-timeout-seconds',
+      default=None,
+      hidden=hidden,
+      type=str,
+      help="""\
+      The timeout in seconds for the node pool to be drained.
+      """,
+  )
+  group.add_argument(
+      '--respect-pdb-during-node-pool-deletion',
+      default=None,
+      hidden=hidden,
+      action='store_true',
+      help="""\
+      Whether to respect PDBs when deleting nodes in the node pool.
+      """,
   )

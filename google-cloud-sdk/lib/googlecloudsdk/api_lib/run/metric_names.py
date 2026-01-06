@@ -120,6 +120,12 @@ GET_INSTANCE = _SERVERLESS_PREFIX + 'get_instance'
 # Time to list instances
 LIST_INSTANCES = _SERVERLESS_PREFIX + 'list_instances'
 
+# Time to create an instance
+CREATE_INSTANCE = _SERVERLESS_PREFIX + 'create_instance'
+
+# Time to delete an instance
+DELETE_INSTANCE = _SERVERLESS_PREFIX + 'delete_instance'
+
 # Time to wait for an operation
 WAIT_OPERATION = _SERVERLESS_PREFIX + 'wait_operation'
 

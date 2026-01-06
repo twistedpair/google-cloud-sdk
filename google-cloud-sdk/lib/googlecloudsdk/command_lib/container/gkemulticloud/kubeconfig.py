@@ -304,19 +304,29 @@ def _GetConnectGatewayEndpoint():
   endpoint = properties.VALUES.api_endpoint_overrides.gkemulticloud.Get()
   # Multicloud overrides prod endpoint at run time with the regionalized version
   # so we can't simply check that endpoint is not overridden.
+  # We also need to check if the endpoint has mtls so that we can keep it in
+  # returned endpoint
   if (
       endpoint is None
       or endpoint.endswith('gkemulticloud.googleapis.com/')
+      or endpoint.endswith('gkemulticloud.mtls.googleapis.com/')
       or endpoint.endswith('preprod-gkemulticloud.sandbox.googleapis.com/')
+      or endpoint.endswith('preprod-gkemulticloud.mtls.sandbox.googleapis.com/')
   ):
+    if 'mtls' in endpoint:
+      return 'connectgateway.mtls.googleapis.com'
     return 'connectgateway.googleapis.com'
   if 'staging-gkemulticloud' in endpoint:
+    if 'mtls' in endpoint:
+      return 'staging-connectgateway.mtls.sandbox.googleapis.com'
     return 'staging-connectgateway.sandbox.googleapis.com'
   if endpoint.startswith('http://localhost') or endpoint.endswith(
       'gkemulticloud.sandbox.googleapis.com/'
   ):
+    if 'mtls' in endpoint:
+      return 'autopush-connectgateway.mtls.sandbox.googleapis.com'
     return 'autopush-connectgateway.sandbox.googleapis.com'
-  raise errors.UnknownApiEndpointOverrideError('gkemulticloud')
+  raise errors.UnknownApiEndpointOverride('gkemulticloud')
 
 
 def ExecCredential(expiration_timestamp=None, access_token=None):

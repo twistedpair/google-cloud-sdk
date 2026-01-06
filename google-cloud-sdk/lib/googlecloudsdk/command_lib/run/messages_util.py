@@ -91,6 +91,42 @@ def GetSuccessMessageForSynchronousDeploy(service, no_traffic):
   )
 
 
+def GetSuccessMessageForSynchronousWorkerPoolDeploy(
+    worker_pool_name, release_track, region, revision_name=None
+):
+  """Returns a user message for a successful worker pool deploy/update.
+
+  Args:
+    worker_pool_name: str, name of the worker pool.
+    release_track: base.ReleaseTrack, release track of the command.
+    region: str, region of the worker pool.
+    revision_name: str, name of the new revision.
+  """
+  msg = 'Worker pool [{{bold}}{name}{{reset}}]'.format(name=worker_pool_name)
+  if revision_name:
+    msg += ' revision [{{bold}}{rev}{{reset}}]'.format(rev=revision_name)
+  msg += ' has been deployed.'
+
+  if release_track.prefix is not None:
+    release_track_prefix = '{}'.format(release_track.prefix)
+  else:
+    # Tail logs is not available in GA  yet. (the underlying logging API is
+    # preview)
+    release_track_prefix = 'beta'
+  logs_command = 'gcloud {track} run worker-pools logs tail {name}'.format(
+      track=release_track_prefix, name=worker_pool_name
+  )
+  console_url = (
+      'https://console.cloud.google.com/run/worker-pools/details/'
+      '{region}/{worker_pool}'
+  ).format(region=region, worker_pool=worker_pool_name)
+
+  msg += (
+      '\nDone.\n\nSee logs with:\n{logs_command}\n\nOr visit {console_url}'
+  ).format(logs_command=logs_command, console_url=console_url)
+  return msg
+
+
 def GetStartDeployMessage(
     conn_context,
     resource_ref,

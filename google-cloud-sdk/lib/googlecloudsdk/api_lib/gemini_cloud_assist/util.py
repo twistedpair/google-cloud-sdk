@@ -23,7 +23,7 @@ from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import resources
 
 
-VERSION_MAP = {base.ReleaseTrack.ALPHA: 'v1'}
+VERSION_MAP = {base.ReleaseTrack.ALPHA: 'v1', base.ReleaseTrack.BETA: 'v1'}
 
 
 # The messages module can also be accessed from client.MESSAGES_MODULE

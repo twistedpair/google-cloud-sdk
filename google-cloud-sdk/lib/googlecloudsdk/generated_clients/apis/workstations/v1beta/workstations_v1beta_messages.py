@@ -728,6 +728,12 @@ class GceRegionalPersistentDisk(_messages.Message):
       and `RETAIN`. Defaults to `DELETE`.
 
   Fields:
+    archiveTimeout: Optional. Number of seconds to wait after initially
+      creating or subsequently shutting down the workstation before converting
+      its disk into a snapshot. This generally saves costs at the expense of
+      greater startup time on next workstation start, as the service will need
+      to create a disk from the archival snapshot. A value of `"0s"` indicates
+      that the disk will never be archived.
     diskType: Optional. The [type of the persistent
       disk](https://cloud.google.com/compute/docs/disks#disk-types) for the
       home directory. Defaults to `"pd-standard"`.
@@ -762,11 +768,12 @@ class GceRegionalPersistentDisk(_messages.Message):
     DELETE = 1
     RETAIN = 2
 
-  diskType = _messages.StringField(1)
-  fsType = _messages.StringField(2)
-  reclaimPolicy = _messages.EnumField('ReclaimPolicyValueValuesEnum', 3)
-  sizeGb = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  sourceSnapshot = _messages.StringField(5)
+  archiveTimeout = _messages.StringField(1)
+  diskType = _messages.StringField(2)
+  fsType = _messages.StringField(3)
+  reclaimPolicy = _messages.EnumField('ReclaimPolicyValueValuesEnum', 4)
+  sizeGb = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  sourceSnapshot = _messages.StringField(6)
 
 
 class GceShieldedInstanceConfig(_messages.Message):

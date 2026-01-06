@@ -128,8 +128,8 @@ class ApplyConversionWorkspaceRequest(_messages.Message):
     dryRun: Optional. Only validates the apply process, but doesn't change the
       destination database. Only works for PostgreSQL destination connection
       profile.
-    filter: Filter which entities to apply. Leaving this field empty will
-      apply all of the entities. Supports Google AIP 160 based filtering.
+    filter: Optional. Filter which entities to apply. Leaving this field empty
+      will apply all of the entities. Supports Google AIP 160 based filtering.
   """
 
   autoCommit = _messages.BooleanField(1)
@@ -1652,25 +1652,27 @@ class DatamigrationProjectsLocationsConnectionProfilesListRequest(_messages.Mess
   r"""A DatamigrationProjectsLocationsConnectionProfilesListRequest object.
 
   Fields:
-    filter: A filter expression that filters connection profiles listed in the
-      response. The expression must specify the field name, a comparison
-      operator, and the value that you want to use for filtering. The value
-      must be a string, a number, or a boolean. The comparison operator must
-      be either =, !=, >, or <. For example, list connection profiles created
-      this year by specifying **createTime %gt;
+    filter: Optional. A filter expression that filters connection profiles
+      listed in the response. The expression must specify the field name, a
+      comparison operator, and the value that you want to use for filtering.
+      The value must be a string, a number, or a boolean. The comparison
+      operator must be either =, !=, >, or <. For example, list connection
+      profiles created this year by specifying **createTime %gt;
       2020-01-01T00:00:00.000000000Z**. You can also filter nested fields. For
       example, you could specify **mySql.username = %lt;my_username%gt;** to
       list all connection profiles configured to connect with a specific
       username.
-    orderBy: A comma-separated list of fields to order results according to.
+    orderBy: Optional. A comma-separated list of fields to order results
+      according to.
     pageSize: The maximum number of connection profiles to return. The service
       may return fewer than this value. If unspecified, at most 50 connection
       profiles will be returned. The maximum value is 1000; values above 1000
       are coerced to 1000.
-    pageToken: A page token, received from a previous `ListConnectionProfiles`
-      call. Provide this to retrieve the subsequent page. When paginating, all
-      other parameters provided to `ListConnectionProfiles` must match the
-      call that provided the page token.
+    pageToken: Optional. A page token, received from a previous
+      `ListConnectionProfiles` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `ListConnectionProfiles` must match the call that provided the page
+      token.
     parent: Required. The parent which owns this collection of connection
       profiles.
   """
@@ -1803,9 +1805,9 @@ class DatamigrationProjectsLocationsConversionWorkspacesCreateRequest(_messages.
       create.
     parent: Required. The parent which owns this collection of conversion
       workspaces.
-    requestId: A unique ID used to identify the request. If the server
-      receives two requests with the same ID, then the second request is
-      ignored. It is recommended to always set this value to a UUID. The ID
+    requestId: Optional. A unique ID used to identify the request. If the
+      server receives two requests with the same ID, then the second request
+      is ignored. It is recommended to always set this value to a UUID. The ID
       must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
   """
@@ -1821,12 +1823,12 @@ class DatamigrationProjectsLocationsConversionWorkspacesDeleteRequest(_messages.
   object.
 
   Fields:
-    force: Force delete the conversion workspace, even if there's a running
-      migration that is using the workspace.
+    force: Optional. Force delete the conversion workspace, even if there's a
+      running migration that is using the workspace.
     name: Required. Name of the conversion workspace resource to delete.
-    requestId: A unique ID used to identify the request. If the server
-      receives two requests with the same ID, then the second request is
-      ignored. It is recommended to always set this value to a UUID. The ID
+    requestId: Optional. A unique ID used to identify the request. If the
+      server receives two requests with the same ID, then the second request
+      is ignored. It is recommended to always set this value to a UUID. The ID
       must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
   """
@@ -1972,20 +1974,20 @@ class DatamigrationProjectsLocationsConversionWorkspacesListRequest(_messages.Me
   r"""A DatamigrationProjectsLocationsConversionWorkspacesListRequest object.
 
   Fields:
-    filter: A filter expression that filters conversion workspaces listed in
-      the response. The expression must specify the field name, a comparison
-      operator, and the value that you want to use for filtering. The value
-      must be a string, a number, or a boolean. The comparison operator must
-      be either =, !=, >, or <. For example, list conversion workspaces
-      created this year by specifying **createTime %gt;
+    filter: Optional. A filter expression that filters conversion workspaces
+      listed in the response. The expression must specify the field name, a
+      comparison operator, and the value that you want to use for filtering.
+      The value must be a string, a number, or a boolean. The comparison
+      operator must be either =, !=, >, or <. For example, list conversion
+      workspaces created this year by specifying **createTime %gt;
       2020-01-01T00:00:00.000000000Z.** You can also filter nested fields. For
       example, you could specify **source.version = "12.c.1"** to select all
       conversion workspaces with source database version equal to 12.c.1.
-    pageSize: The maximum number of conversion workspaces to return. The
-      service may return fewer than this value. If unspecified, at most 50
+    pageSize: Optional. The maximum number of conversion workspaces to return.
+      The service may return fewer than this value. If unspecified, at most 50
       sets are returned.
-    pageToken: The nextPageToken value received in the previous call to
-      conversionWorkspaces.list, used in the subsequent request to retrieve
+    pageToken: Optional. The nextPageToken value received in the previous call
+      to conversionWorkspaces.list, used in the subsequent request to retrieve
       the next page of results. On first call this should be left blank. When
       paginating, all other parameters provided to conversionWorkspaces.list
       must match the call that provided the page token.
@@ -2008,9 +2010,9 @@ class DatamigrationProjectsLocationsConversionWorkspacesMappingRulesCreateReques
     mappingRule: A MappingRule resource to be passed as the request body.
     mappingRuleId: Required. The ID of the rule to create.
     parent: Required. The parent which owns this collection of mapping rules.
-    requestId: A unique ID used to identify the request. If the server
-      receives two requests with the same ID, then the second request is
-      ignored. It is recommended to always set this value to a UUID. The ID
+    requestId: Optional. A unique ID used to identify the request. If the
+      server receives two requests with the same ID, then the second request
+      is ignored. It is recommended to always set this value to a UUID. The ID
       must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
   """
@@ -2078,11 +2080,11 @@ class DatamigrationProjectsLocationsConversionWorkspacesMappingRulesListRequest(
   object.
 
   Fields:
-    pageSize: The maximum number of rules to return. The service may return
-      fewer than this value.
-    pageToken: The nextPageToken value received in the previous call to
-      mappingRules.list, used in the subsequent request to retrieve the next
-      page of results. On first call this should be left blank. When
+    pageSize: Optional. The maximum number of rules to return. The service may
+      return fewer than this value.
+    pageToken: Optional. The nextPageToken value received in the previous call
+      to mappingRules.list, used in the subsequent request to retrieve the
+      next page of results. On first call this should be left blank. When
       paginating, all other parameters provided to mappingRules.list must
       match the call that provided the page token.
     parent: Required. Name of the conversion workspace resource whose mapping
@@ -2103,9 +2105,9 @@ class DatamigrationProjectsLocationsConversionWorkspacesPatchRequest(_messages.M
       request body.
     name: Full name of the workspace resource, in the form of: projects/{proje
       ct}/locations/{location}/conversionWorkspaces/{conversion_workspace}.
-    requestId: A unique ID used to identify the request. If the server
-      receives two requests with the same ID, then the second request is
-      ignored. It is recommended to always set this value to a UUID. The ID
+    requestId: Optional. A unique ID used to identify the request. If the
+      server receives two requests with the same ID, then the second request
+      is ignored. It is recommended to always set this value to a UUID. The ID
       must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
     updateMask: Required. Field mask is used to specify the fields to be
@@ -2225,8 +2227,9 @@ class DatamigrationProjectsLocationsFetchStaticIpsRequest(_messages.Message):
   Fields:
     name: Required. The resource name for the location for which static IPs
       should be returned. Must be in the format `projects/*/locations/*`.
-    pageSize: Maximum number of IPs to return.
-    pageToken: A page token, received from a previous `FetchStaticIps` call.
+    pageSize: Optional. Maximum number of IPs to return.
+    pageToken: Optional. A page token, received from a previous
+      `FetchStaticIps` call.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2292,13 +2295,13 @@ class DatamigrationProjectsLocationsMigrationJobsDeleteRequest(_messages.Message
   r"""A DatamigrationProjectsLocationsMigrationJobsDeleteRequest object.
 
   Fields:
-    force: The destination CloudSQL connection profile is always deleted with
-      the migration job. In case of force delete, the destination CloudSQL
-      replica database is also deleted.
+    force: Optional. The destination CloudSQL connection profile is always
+      deleted with the migration job. In case of force delete, the destination
+      CloudSQL replica database is also deleted.
     name: Required. Name of the migration job resource to delete.
-    requestId: A unique ID used to identify the request. If the server
-      receives two requests with the same ID, then the second request is
-      ignored. It is recommended to always set this value to a UUID. The ID
+    requestId: Optional. A unique ID used to identify the request. If the
+      server receives two requests with the same ID, then the second request
+      is ignored. It is recommended to always set this value to a UUID. The ID
       must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
   """
@@ -2315,7 +2318,8 @@ class DatamigrationProjectsLocationsMigrationJobsDemoteDestinationRequest(_messa
   Fields:
     demoteDestinationRequest: A DemoteDestinationRequest resource to be passed
       as the request body.
-    name: Name of the migration job resource to demote its destination.
+    name: Required. Name of the migration job resource to demote its
+      destination.
   """
 
   demoteDestinationRequest = _messages.MessageField('DemoteDestinationRequest', 1)
@@ -2405,24 +2409,25 @@ class DatamigrationProjectsLocationsMigrationJobsListRequest(_messages.Message):
   r"""A DatamigrationProjectsLocationsMigrationJobsListRequest object.
 
   Fields:
-    filter: A filter expression that filters migration jobs listed in the
-      response. The expression must specify the field name, a comparison
-      operator, and the value that you want to use for filtering. The value
-      must be a string, a number, or a boolean. The comparison operator must
-      be either =, !=, >, or <. For example, list migration jobs created this
-      year by specifying **createTime %gt; 2020-01-01T00:00:00.000000000Z.**
-      You can also filter nested fields. For example, you could specify
-      **reverseSshConnectivity.vmIp = "1.2.3.4"** to select all migration jobs
-      connecting through the specific SSH tunnel bastion.
-    orderBy: Sort the results based on the migration job name. Valid values
-      are: "name", "name asc", and "name desc".
-    pageSize: The maximum number of migration jobs to return. The service may
-      return fewer than this value. If unspecified, at most 50 migration jobs
-      will be returned. The maximum value is 1000; values above 1000 are
-      coerced to 1000.
-    pageToken: The nextPageToken value received in the previous call to
-      migrationJobs.list, used in the subsequent request to retrieve the next
-      page of results. On first call this should be left blank. When
+    filter: Optional. A filter expression that filters migration jobs listed
+      in the response. The expression must specify the field name, a
+      comparison operator, and the value that you want to use for filtering.
+      The value must be a string, a number, or a boolean. The comparison
+      operator must be either =, !=, >, or <. For example, list migration jobs
+      created this year by specifying **createTime %gt;
+      2020-01-01T00:00:00.000000000Z.** You can also filter nested fields. For
+      example, you could specify **reverseSshConnectivity.vmIp = "1.2.3.4"**
+      to select all migration jobs connecting through the specific SSH tunnel
+      bastion.
+    orderBy: Optional. Sort the results based on the migration job name. Valid
+      values are: "name", "name asc", and "name desc".
+    pageSize: Optional. The maximum number of migration jobs to return. The
+      service may return fewer than this value. If unspecified, at most 50
+      migration jobs will be returned. The maximum value is 1000; values above
+      1000 are coerced to 1000.
+    pageToken: Optional. The nextPageToken value received in the previous call
+      to migrationJobs.list, used in the subsequent request to retrieve the
+      next page of results. On first call this should be left blank. When
       paginating, all other parameters provided to migrationJobs.list must
       match the call that provided the page token.
     parent: Required. The parent which owns this collection of migrationJobs.
@@ -2476,9 +2481,9 @@ class DatamigrationProjectsLocationsMigrationJobsObjectsListRequest(_messages.Me
   r"""A DatamigrationProjectsLocationsMigrationJobsObjectsListRequest object.
 
   Fields:
-    pageSize: Maximum number of objects to return. Default is 50. The maximum
-      value is 1000; values above 1000 will be coerced to 1000.
-    pageToken: Page token received from a previous
+    pageSize: Optional. Maximum number of objects to return. Default is 50.
+      The maximum value is 1000; values above 1000 will be coerced to 1000.
+    pageToken: Optional. Page token received from a previous
       `ListMigrationJObObjectsRequest` call. Provide this to retrieve the
       subsequent page. When paginating, all other parameters provided to
       `ListMigrationJobObjectsRequest` must match the call that provided the
@@ -2549,9 +2554,9 @@ class DatamigrationProjectsLocationsMigrationJobsPatchRequest(_messages.Message)
     migrationJob: A MigrationJob resource to be passed as the request body.
     name: The name (URI) of this migration job resource, in the form of:
       projects/{project}/locations/{location}/migrationJobs/{migrationJob}.
-    requestId: A unique ID used to identify the request. If the server
-      receives two requests with the same ID, then the second request is
-      ignored. It is recommended to always set this value to a UUID. The ID
+    requestId: Optional. A unique ID used to identify the request. If the
+      server receives two requests with the same ID, then the second request
+      is ignored. It is recommended to always set this value to a UUID. The ID
       must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
     updateMask: Required. Field mask is used to specify the fields to be
@@ -2816,21 +2821,22 @@ class DatamigrationProjectsLocationsPrivateConnectionsListRequest(_messages.Mess
   r"""A DatamigrationProjectsLocationsPrivateConnectionsListRequest object.
 
   Fields:
-    filter: A filter expression that filters private connections listed in the
-      response. The expression must specify the field name, a comparison
-      operator, and the value that you want to use for filtering. The value
-      must be a string, a number, or a boolean. The comparison operator must
-      be either =, !=, >, or <. For example, list private connections created
-      this year by specifying **createTime %gt;
+    filter: Optional. A filter expression that filters private connections
+      listed in the response. The expression must specify the field name, a
+      comparison operator, and the value that you want to use for filtering.
+      The value must be a string, a number, or a boolean. The comparison
+      operator must be either =, !=, >, or <. For example, list private
+      connections created this year by specifying **createTime %gt;
       2021-01-01T00:00:00.000000000Z**.
-    orderBy: Order by fields for the result.
-    pageSize: Maximum number of private connections to return. If unspecified,
-      at most 50 private connections that are returned. The maximum value is
-      1000; values above 1000 are coerced to 1000.
-    pageToken: Page token received from a previous `ListPrivateConnections`
-      call. Provide this to retrieve the subsequent page. When paginating, all
-      other parameters provided to `ListPrivateConnections` must match the
-      call that provided the page token.
+    orderBy: Optional. Order by fields for the result.
+    pageSize: Optional. Maximum number of private connections to return. If
+      unspecified, at most 50 private connections that are returned. The
+      maximum value is 1000; values above 1000 are coerced to 1000.
+    pageToken: Optional. Page token received from a previous
+      `ListPrivateConnections` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `ListPrivateConnections` must match the call that provided the page
+      token.
     parent: Required. The parent that owns the collection of private
       connections.
   """
@@ -4223,6 +4229,8 @@ class MigrationJob(_messages.Message):
     performanceConfig: Optional. Data dump parallelism settings used by the
       migration.
     phase: Output only. The current migration job phase.
+    postgresHomogeneousConfig: Optional. Configuration for PostgreSQL
+      homogeneous migration.
     postgresToSqlserverConfig: Configuration for heterogeneous
       **\u2248PostgreSQL to SQL Server** migrations.
     purpose: Output only. The purpose of the migration job.
@@ -4393,20 +4401,21 @@ class MigrationJob(_messages.Message):
   originalMigrationName = _messages.StringField(18)
   performanceConfig = _messages.MessageField('PerformanceConfig', 19)
   phase = _messages.EnumField('PhaseValueValuesEnum', 20)
-  postgresToSqlserverConfig = _messages.MessageField('PostgresToSqlServerConfig', 21)
-  purpose = _messages.EnumField('PurposeValueValuesEnum', 22)
-  reverseSshConnectivity = _messages.MessageField('ReverseSshConnectivity', 23)
-  satisfiesPzi = _messages.BooleanField(24)
-  satisfiesPzs = _messages.BooleanField(25)
-  source = _messages.StringField(26)
-  sourceDatabase = _messages.MessageField('DatabaseType', 27)
-  sqlserverHomogeneousMigrationJobConfig = _messages.MessageField('SqlServerHomogeneousMigrationJobConfig', 28)
-  sqlserverToPostgresConfig = _messages.MessageField('SqlServerToPostgresConfig', 29)
-  state = _messages.EnumField('StateValueValuesEnum', 30)
-  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 31)
-  type = _messages.EnumField('TypeValueValuesEnum', 32)
-  updateTime = _messages.StringField(33)
-  vpcPeeringConnectivity = _messages.MessageField('VpcPeeringConnectivity', 34)
+  postgresHomogeneousConfig = _messages.MessageField('PostgresHomogeneousConfig', 21)
+  postgresToSqlserverConfig = _messages.MessageField('PostgresToSqlServerConfig', 22)
+  purpose = _messages.EnumField('PurposeValueValuesEnum', 23)
+  reverseSshConnectivity = _messages.MessageField('ReverseSshConnectivity', 24)
+  satisfiesPzi = _messages.BooleanField(25)
+  satisfiesPzs = _messages.BooleanField(26)
+  source = _messages.StringField(27)
+  sourceDatabase = _messages.MessageField('DatabaseType', 28)
+  sqlserverHomogeneousMigrationJobConfig = _messages.MessageField('SqlServerHomogeneousMigrationJobConfig', 29)
+  sqlserverToPostgresConfig = _messages.MessageField('SqlServerToPostgresConfig', 30)
+  state = _messages.EnumField('StateValueValuesEnum', 31)
+  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 32)
+  type = _messages.EnumField('TypeValueValuesEnum', 33)
+  updateTime = _messages.StringField(34)
+  vpcPeeringConnectivity = _messages.MessageField('VpcPeeringConnectivity', 35)
 
 
 class MigrationJobObject(_messages.Message):
@@ -5224,6 +5233,16 @@ class PostgresDestinationConfig(_messages.Message):
 
   maxConcurrentConnections = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   transactionTimeout = _messages.StringField(2)
+
+
+class PostgresHomogeneousConfig(_messages.Message):
+  r"""Configuration for PostgreSQL to PostgreSQL migrations.
+
+  Fields:
+    isNativeLogical: Required. Whether the migration is native logical.
+  """
+
+  isNativeLogical = _messages.BooleanField(1)
 
 
 class PostgresSourceConfig(_messages.Message):

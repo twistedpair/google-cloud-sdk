@@ -15,6 +15,10 @@
 
 """Client for Google Cloud Storage data plane API using gRPC bidi streaming."""
 
+from __future__ import annotations
+
+from typing import Any
+
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage.gcs_grpc_bidi_streaming import download
 from googlecloudsdk.api_lib.storage.gcs_grpc_bidi_streaming import upload
@@ -23,6 +27,36 @@ from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.command_lib.storage import gzip_util
 from googlecloudsdk.command_lib.storage.tasks.cp import download_util
 from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import log
+
+
+def _log_transfer(
+    transfer_type: str,
+    source: Any,
+    destination: Any,
+    strategy: cloud_api.DownloadStrategy | cloud_api.UploadStrategy,
+) -> None:
+  """Logs transfer operation details."""
+  log.debug(
+      'Starting %s from %s to %s with strategy: %s.',
+      transfer_type,
+      source,
+      destination,
+      strategy,
+  )
+
+
+def _log_transfer_error(
+    transfer_type: str, source: Any, destination: Any, error: Exception,
+) -> None:
+  """Logs transfer operation error."""
+  log.debug(
+      'Operation %s from %s to %s failed with error: %s.',
+      transfer_type,
+      source,
+      destination,
+      error,
+  )
 
 
 class GcsGrpcBidiStreamingClient(cloud_api.CloudApi):
@@ -111,6 +145,12 @@ class GcsGrpcBidiStreamingClient(cloud_api.CloudApi):
       end_byte=None,
   ):
     """See super class."""
+    _log_transfer(
+        'download',
+        cloud_resource.storage_url.resource_name,
+        download_stream,
+        download_strategy,
+    )
     if download_util.return_and_report_if_nothing_to_download(
         cloud_resource, progress_callback
     ):
@@ -131,10 +171,18 @@ class GcsGrpcBidiStreamingClient(cloud_api.CloudApi):
         digesters=digesters,
         progress_callback=progress_callback,
         download_strategy=download_strategy,
-        decryption_key=decryption_key
+        decryption_key=decryption_key,
     )
-    downloader.run()
-
+    try:
+      downloader.run()
+    except Exception as e:
+      _log_transfer_error(
+          'download',
+          cloud_resource.storage_url.resource_name,
+          download_stream,
+          e,
+      )
+      raise
     # Unlike JSON, the response message for gRPC does not hold any
     # content-encoding information. Hence, we do not have to return the
     # server encoding here.
@@ -152,6 +200,12 @@ class GcsGrpcBidiStreamingClient(cloud_api.CloudApi):
       upload_strategy=cloud_api.UploadStrategy.SIMPLE,
   ):
     """See super class."""
+    _log_transfer(
+        'upload',
+        source_stream,
+        destination_resource,
+        upload_strategy,
+    )
     client = self._get_gapic_client(
         redact_request_body_reason=(
             'Object data is not displayed to keep the log output clean.'
@@ -195,4 +249,10 @@ class GcsGrpcBidiStreamingClient(cloud_api.CloudApi):
           'Only simple/resumable upload strategy is supported for Zonal Buckets'
           ' with bidi streaming API.'
       )
-    return uploader.run()
+    try:
+      return uploader.run()
+    except Exception as e:
+      _log_transfer_error(
+          'upload', source_stream, destination_resource, e,
+      )
+      raise
